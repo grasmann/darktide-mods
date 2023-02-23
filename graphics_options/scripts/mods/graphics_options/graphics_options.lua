@@ -871,7 +871,6 @@ mod.options = {
 --##### ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ #############################
 
 mod.extend_ui = function(self, OptionsView)
-	self:echo("extend graphics")
 	local settings = OptionsView._options_templates.settings
 	for _, setting in pairs(settings) do
 		-- Framerate cap
