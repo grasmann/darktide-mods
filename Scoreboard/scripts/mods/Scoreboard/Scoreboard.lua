@@ -1,6 +1,6 @@
 local mod = get_mod("scoreboard")
-mod.debug_inventory = false
-mod.debug_value = false
+mod.debug_inventory = true
+mod.debug_value = true
 -- mod:echo("test")
 
 -- REMOVE THIS LATER
@@ -54,6 +54,12 @@ mod.create_ui_extension = function(self, widgets)
 			end,
 			on_update = function(view_name, dt)
 				self:update_scoreboard(dt)
+				-- self:update_scoreboard_rows(dt)
+			end,
+			on_exit = function(view_name)
+				for row_index, data in pairs(self.rows) do
+					data.was_animated = nil
+				end
 			end
 		},
 		end_player_view = {
@@ -189,6 +195,87 @@ mod.update_scoreboard = function(self, dt)
 		end
 	end
 end
+
+-- local count_time = 0.1
+-- local animating_row = nil
+-- mod.row_to_animate = function(self)
+-- 	for row_index, data in pairs(self.rows) do
+-- 		local row = self.widgets_by_name["scoreboard_row_"..(row_index + 1)]
+-- 		if not data.was_animated and row and data.empty ~= true and data.visible ~= false then
+-- 			-- animating_row = row_index
+-- 			self.row_timer = count_time
+-- 			local col = 0
+-- 			-- for index, data in pairs(data.data) do
+-- 			for _, player in pairs(self.players) do
+-- 				col = col + 1
+-- 				if col < 5 then
+-- 					local account_id = player:account_id() or player:name()
+-- 					if data.data[account_id] then
+-- 						data.data[account_id].end_score = data.data[account_id].score
+-- 						data.data[account_id].score = 0
+-- 						row.content["text"..col] = data.data[account_id].score
+-- 					end
+-- 				end
+-- 			end
+-- 			data.was_animated = true
+-- 			self:echo("animating row '"..row_index.."'")
+-- 			return row_index
+-- 		end
+-- 	end
+-- end
+-- mod.update_scoreboard_rows = function(self, dt)
+-- 	-- self:echo("test")
+-- 	if not animating_row then
+-- 		animating_row = self:row_to_animate()
+-- 	end
+-- 	if animating_row then
+-- 		local row = self.widgets_by_name["scoreboard_row_"..(animating_row + 1)]
+-- 		if row then
+-- 			local players = {}
+-- 			for _, player in pairs(self.players) do
+-- 				players[#players+1] = player
+-- 			end
+-- 			local data = self.rows[animating_row]
+-- 			if self.row_timer <= 0 then
+-- 				local decimals = data.decimals or 0
+-- 				local col = 0
+-- 				-- for index, data in pairs(data_row.data) do
+-- 				for _, player in pairs(players) do
+-- 					col = col + 1
+-- 					if col < 5 then
+-- 						local account_id = player:account_id() or player:name()
+-- 						if data.data[account_id] then
+-- 							data.data[account_id].score = data.data[account_id].end_score
+-- 							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
+-- 								mod:shorten_value(data.data[account_id].score, decimals)
+-- 							row.content["text"..col] = text
+-- 						end
+-- 					end
+-- 				end
+-- 				-- data_row.was_animated = false
+-- 				animating_row = nil
+-- 			else
+-- 				local percentage = self.row_timer / count_time
+-- 				local decimals = data.decimals or 0
+-- 				local col = 0
+-- 				-- for index, data in pairs(data_row.data) do
+-- 				for _, player in pairs(players) do
+-- 					col = col + 1
+-- 					if col < 5 then
+-- 						local account_id = player:account_id() or player:name()
+-- 						if data.data[account_id] then
+-- 							data.data[account_id].score = data.data[account_id].end_score - data.data[account_id].end_score * percentage
+-- 							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
+-- 								mod:shorten_value(data.data[account_id].score, decimals)
+-- 							row.content["text"..col] = text
+-- 						end
+-- 					end
+-- 				end
+-- 				self.row_timer = self.row_timer - dt
+-- 			end
+-- 		end
+-- 	end
+-- end
 
 mod.move_scoreboard = function(self, from_offset_x, to_offset_x, callback)
 	self.scoreboard_move_timer = move_time
@@ -519,6 +606,7 @@ mod.update_stat = function(self, name, account_id, value)
 		row.data[account_id] = {
 			value = value,
 			score = new_score,
+			end_score = new_score,
 		}
 		for char_name, data in pairs(row.data) do
 			data.is_best = validation.is_best(row.data, char_name)
@@ -699,6 +787,7 @@ mod.fill_values = function(self)
 							data.data[account_id] = {
 								value = value,
 								score = value,
+								end_score = value,
 							}
 						end
 					end
@@ -719,6 +808,7 @@ mod.fill_values = function(self)
 						data.data[account_id] = {
 							value = 0,
 							score = 0,
+							end_score = 0,
 						}
 					end
 				end
@@ -803,6 +893,7 @@ mod.fill_values = function(self)
 						data.data[account_id] = {
 							value = score,
 							score = score,
+							end_score = score,
 						}
 					end
 				end
@@ -844,6 +935,7 @@ mod.fill_values = function(self)
 					while av > target_average and safety > 0 do
 						for account_id, values in pairs(data.data) do
 							values.score = values.score * 0.9
+							values.end_score = values.score
 						end
 						av = average(data.data)
 						safety = safety - 1
@@ -855,6 +947,7 @@ mod.fill_values = function(self)
 					while av < target_average and safety > 0 do
 						for account_id, values in pairs(data.data) do
 							values.score = values.score * 1.1
+							values.end_score = values.score
 						end
 						av = average(data.data)
 						safety = safety - 1

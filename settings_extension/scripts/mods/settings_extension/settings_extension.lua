@@ -39,13 +39,6 @@ mod.test_value_4 = 1
 -- ##########################################################
 -- ################ Create Widget Templates #################
 
-mod.extensions = {}
-mod.extend = function (self, func)
-	self.extensions[#self.extensions+1] = {
-		func = func,
-	}
-end
-
 -- Create value slider template
 mod.value_slider = function (self, params)
 	params.on_value_changed_function = params.change
@@ -270,14 +263,26 @@ mod.create_settings = function (self, OptionsView)
 			end
 
 			for _, setting in pairs(this_mod.options) do
-				setting.custom = true
-				setting.category = setting.category or "menu_category_mods"
-				setting.indentation_level = setting.after and 1 or 0
-				if setting.after then
-					local index = self:after_index(OptionsView, setting.after)
-					table.insert(settings, index, setting)
+				local this_setting = nil
+
+				if setting.type == "checkbox" then
+					this_setting = self:checkbox(setting)
+				elseif setting.type == "dropdown" then
+					this_setting = self:dropdown(setting)
+				elseif setting.type == "value_slider" then
+					this_setting = self:value_slider(setting)
+				elseif setting.type == "percent_slider" then
+					this_setting = self:percent_slider(setting)
+				end
+
+				this_setting.custom = true
+				this_setting.category = this_setting.category or "menu_category_mods"
+				this_setting.indentation_level = this_setting.after and 1 or 0
+				if this_setting.after then
+					local index = self:after_index(OptionsView, this_setting.after)
+					table.insert(settings, index, this_setting)
 				else
-					settings[#settings+1] = setting
+					settings[#settings+1] = this_setting
 				end
 			end
 			
@@ -286,8 +291,11 @@ mod.create_settings = function (self, OptionsView)
 end
 
 mod.extend_settings = function (self, OptionsView)
-	for _, extend in pairs(self.extensions) do
-		extend.func(OptionsView)
+	for name, this_mod in pairs(DMF.mods) do
+		--and type(this_mod.extend_ui) == "function"
+		if type(this_mod) == "table" and this_mod.extend_ui then
+			this_mod:extend_ui(OptionsView)
+		end
 	end
 end
 
@@ -297,7 +305,8 @@ end
 -- Test options
 if mod.create_test_options then
 	mod.options = {
-		mod:checkbox({
+		{
+			type = "checkbox",
 			tooltip_text = "test_checkbox_mo",
 			display_name = "test_checkbox",
 			default_value = true,
@@ -307,8 +316,9 @@ if mod.create_test_options then
 			get = function ()
 				return mod.test_value_1
 			end,
-		}),
-		mod:percent_slider({
+		},
+		{
+			type = "percent_slider",
 			tooltip_text = "test_percent_slider_mo",
 			display_name = "test_percent_slider",
 			normalized_step_size = 0.011111111111111112,
@@ -321,8 +331,9 @@ if mod.create_test_options then
 			get = function ()
 				return mod.test_value_2
 			end,
-		}),
-		mod:value_slider({
+		},
+		{
+			type = "value_slider",
 			tooltip_text = "test_value_slider_mo",
 			display_name = "test_value_slider",
 			min_value = 12,
@@ -337,8 +348,9 @@ if mod.create_test_options then
 			get = function ()
 				return mod.test_value_3
 			end,
-		}),
-		mod:dropdown({
+		},
+		{
+			type = "dropdown",
 			tooltip_text = "test_dropdown_mo",
 			display_name = "test_dropdown",
 			default_value = 1,
@@ -362,7 +374,7 @@ if mod.create_test_options then
 			get = function ()
 				return mod.test_value_4
 			end,
-		}),
+		},
 		-- mod:keybind({
 		-- 	tooltip_text = "test_keybinding_mo",
 		-- 	display_name = "test_keybinding",

@@ -4,6 +4,7 @@ local mod_data = {
 	name = "scoreboard",
 	description = mod:localize("mod_description"),
 	is_togglable = false,
+	allow_rehooking = true,
 }
 
 -- #####  ██████╗ ██████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗ #####################################################

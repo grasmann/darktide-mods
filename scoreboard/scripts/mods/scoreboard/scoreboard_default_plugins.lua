@@ -97,6 +97,7 @@ mod.scoreboard = {
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 1, font_size = 1,
+		empty = true,
 	},
 	-- Team score
 	-- Materials
@@ -184,6 +185,7 @@ mod.scoreboard = {
 			"gadget_operated",
 			-- "servo_skull_operated",
 		},
+		empty = true,
 	},
 	{
 		name = "machinery_operated", text = "Machinery",
@@ -215,6 +217,7 @@ mod.scoreboard = {
 			"ammo_picked_up",
 			"ammo_wasted",
 		},
+		empty = true,
 	},
 	{
 		name = "ammo_picked_up", text = "Picked Up",
@@ -244,6 +247,7 @@ mod.scoreboard = {
 			"health_placed",
 			"ammo_placed",
 		},
+		empty = true,
 	},
 	{
 		name = "health_placed", text = "Medipacks",
@@ -275,6 +279,7 @@ mod.scoreboard = {
 			"carrying_grims",
 			"carrying_other",
 		},
+		empty = true,
 	},
 	{
 		name = "carrying_tomes", text = "Scripture",
@@ -324,6 +329,7 @@ mod.scoreboard = {
 			"rescued_operative",
 			-- "servo_skull_operated",
 		},
+		empty = true,
 	},
 	{
 		name = "revived_operative", text = "Revived",
@@ -462,6 +468,7 @@ mod.scoreboard = {
 			"actual_damage_dealt",
 			"overkill_damage_dealt",
 		},
+		empty = true,
 	},
 	{
 		name = "actual_damage_dealt", text = "Actual",
@@ -499,6 +506,7 @@ mod.scoreboard = {
 			"weakspot_hits",
 			"critical_hits",
 		},
+		empty = true,
 	},
 	{
 		name = "weakspot_hits", text = "Weakspot",
@@ -524,36 +532,42 @@ mod.scoreboard = {
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "cultist_assault", text = "",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "cultist_melee", text = "",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_assault", text = "",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_melee", text = "",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_rifleman", text = "",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	-- Lesser enemies
 	{
@@ -616,30 +630,35 @@ mod.scoreboard = {
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_berzerker", text = "Scab Rager",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_executor", text = "Scab Mauler",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "chaos_ogryn_bulwark", text = "Bulwark",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "chaos_ogryn_executor", text = "Crusher",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	-- Gunners
 	{
@@ -664,30 +683,35 @@ mod.scoreboard = {
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_gunner", text = "Scab Gunner",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "cultist_shocktrooper", text = "Dreg Shotgunner",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_shocktrooper", text = "Scab Shotgunner",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "chaos_ogryn_gunner", text = "Reaper",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	-- Disablers
 	{
@@ -710,6 +734,7 @@ mod.scoreboard = {
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
 		indentation = 25 + mod.base_indentation,
+		visible = false,
 	},
 	{
 		name = "cultist_mutant", text = "Mutant",
@@ -717,6 +742,7 @@ mod.scoreboard = {
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
 		indentation = 25 + mod.base_indentation,
+		visible = false,
 	},
 	{
 		name = "renegade_netgunner", text = "Scab Trapper",
@@ -724,6 +750,7 @@ mod.scoreboard = {
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
 		indentation = 25 + mod.base_indentation,
+		visible = false,
 	},
 	-- Special
 	{
@@ -749,18 +776,21 @@ mod.scoreboard = {
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
 		indentation = 25 + mod.base_indentation,
+		visible = false,
 	},
 	{
 		name = "renegade_grenadier", text = "Scab Bomber",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "cultist_grenadier", text = "Dreg Bomber",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_sniper", text = "Scab Sniper",
@@ -768,18 +798,21 @@ mod.scoreboard = {
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
 		indentation = 25 + mod.base_indentation,
+		visible = false,
 	},
 	{
 		name = "renegade_flamer", text = "Scab Flamer",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "cultist_flamer", text = "Dreg Tox Flamer",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	-- Bosses
 	{
@@ -803,30 +836,35 @@ mod.scoreboard = {
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "chaos_daemonhost", text = "Daemonhost",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "chaos_plague_ogryn", text = "Plague Ogryn",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "chaos_plague_ogryn_sprayer", text = "Plague Ogryn Sprayer",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	{
 		name = "renegade_captain", text = "Captain",
 		validation = ScoreboardDefinitions.validation_types.ASC,
 		iteration = ScoreboardDefinitions.iteration_types.ADD,
 		row_height = 0, font_size = 0,
+		visible = false,
 	},
 	-- Total
 	{
