@@ -1,6 +1,6 @@
 local mod = get_mod("settings_extension")
 local DMF = get_mod("DMF")
-mod.create_test_options = true
+mod.create_test_options = false
 mod.text = "Settings Extension"
 
 local OptionsUtilities = Mods.original_require("scripts/utilities/ui/options")

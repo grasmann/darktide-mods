@@ -1,6 +1,6 @@
 local mod = get_mod("scoreboard")
-mod.debug_inventory = true
-mod.debug_value = true
+mod.debug_inventory = false
+mod.debug_value = false
 -- mod:echo("test")
 
 -- REMOVE THIS LATER
