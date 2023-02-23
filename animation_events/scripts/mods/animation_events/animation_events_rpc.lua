@@ -1,6 +1,3 @@
--- local mod_name = "AnimationEventsRPC"
--- Mods[mod_name] = {} --Mods[mod_name] or {}
--- local mod = Mods[mod_name]
 local mod = get_mod("animation_events")
 
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
@@ -10,34 +7,12 @@ local mod = get_mod("animation_events")
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
--- local animation_system_file = "scripts/extension_systems/animation/animation_system"
--- local AnimationEvents = nil
-
 mod.debug = false
 mod.event_indices = {}
 mod.anim_events = {
 	"equip_crate",
 	"drop",
 }
-
--- ##### ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #########################################################
--- ##### ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #########################################################
--- ##### █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║   ███████╗ #########################################################
--- ##### ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║ #########################################################
--- ##### ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║ #########################################################
--- ##### ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ #########################################################
-
-mod.gameplay_exit = function()
-	mod:clear_indices()
-end
-
--- mod.all_mods_loaded = function()
--- 	AnimationEvents = Mods.AnimationEvents
--- end
-
-mod.reload_mods = function()
-	mod:clear_indices()
-end
 
 -- ##### ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗ ###################################
 -- ##### ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝ ###################################
@@ -164,37 +139,21 @@ end
 -- ##### ██║  ██║╚██████╔╝╚██████╔╝██║  ██╗███████║ ###################################################################
 -- ##### ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝ ###################################################################
 
--- local attack_report_manager_file = "scripts/managers/attack_report/attack_report_manager"
--- Mods.hook.remove("add_attack_result", mod_name)
--- mod:hook(mod_name, attack_report_manager_file, "add_attack_result", function (func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
--- 	-- local player = mod:player_from_unit(attacked_unit)
--- 	-- if player then
--- 	-- 	if attack_result == "died" then
---     --         mod.event_indices[attacked_unit] = nil
---     --     end
--- 	-- end
--- 	return func(self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
--- end)
-
--- Mods.hook.remove("rpc_player_anim_event", mod_name)
 mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event", function(func, self, channel_id, unit_id, event_index, is_first_person, ...)
 	mod:handle_event(event_index, unit_id, is_first_person)
 	return func(self, channel_id, unit_id, event_index, is_first_person, ...)
 end)
 
--- Mods.hook.remove("rpc_player_anim_event_variable_float", mod_name)
 mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_float", function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
 	mod:handle_event(event_index, unit_id, is_first_person)
 	return func(self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
 end)
 
--- Mods.hook.remove("rpc_player_anim_event_variable_floats", mod_name)
 mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_floats", function(func, self, channel_id, unit_id, event_index, variable_indexes, variable_values, is_first_person, ...)
 	mod:handle_event(event_index, unit_id, is_first_person)
 	return func(self, channel_id, unit_id, event_index, variable_indexes, variable_values, is_first_person, ...)
 end)
 
--- Mods.hook.remove("rpc_player_anim_event_variable_int", mod_name)
 mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_int", function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
 	mod:handle_event(event_index, unit_id, is_first_person)
 	return func(self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)

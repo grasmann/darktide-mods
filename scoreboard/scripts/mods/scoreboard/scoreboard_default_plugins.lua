@@ -1,6 +1,6 @@
-local mod = get_mod("Scoreboard")
+local mod = get_mod("scoreboard")
 mod.debug_ = false
-mod.text = "Scoreboard"
+mod.text = "scoreboard"
 
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
 -- ##### ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗ ############################################################################
@@ -13,7 +13,7 @@ local InteractionSettings = Mods.original_require("scripts/settings/interaction/
 local interaction_results = InteractionSettings.results
 local DamageProfileTemplates = Mods.original_require("scripts/settings/damage/damage_profile_templates")
 
-local ScoreboardDefinitions = Mods.file.exec_with_return("Scoreboard/scripts/mods/Scoreboard/ScoreboardDefinitions")
+local ScoreboardDefinitions = Mods.file.exec_with_return("scoreboard/scripts/mods/scoreboard/scoreboard_definitions")
 local TextUtilities = Mods.original_require("scripts/utilities/ui/text")
 local Breed = Mods.original_require("scripts/utilities/breed")
 local WalletSettings = Mods.original_require("scripts/settings/wallet_settings")

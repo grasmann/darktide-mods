@@ -1,5 +1,5 @@
-local mod = get_mod("Scoreboard")
-mod.debug_inventory = true
+local mod = get_mod("scoreboard")
+mod.debug_inventory = false
 mod.debug_value = false
 -- mod:echo("test")
 
@@ -96,7 +96,7 @@ mod.initialize = function(self)
 	self.rows = {}
 	self.widgets = {}
 	self.widgets_by_name = {}
-	self.definitions = Mods.file.exec_with_return("Scoreboard/scripts/mods/Scoreboard", "ScoreboardDefinitions")
+	self.definitions = Mods.file.exec_with_return("scoreboard/scripts/mods/scoreboard", "scoreboard_definitions")
 	self.ui_font_settings = Mods.original_require("scripts/managers/ui/ui_font_settings")
 
 	-- local width = self.definitions.settings.width
@@ -141,13 +141,13 @@ function mod.on_all_mods_loaded()
 		local end_player_view_callback = function(package_id)
 			packages.end_player_view = package_id
 		end
-		Managers.package:load("packages/ui/views/end_player_view/end_player_view", "Scoreboard", end_player_view_callback, true)
+		Managers.package:load("packages/ui/views/end_player_view/end_player_view", "scoreboard", end_player_view_callback, true)
 	end
 	if not packages.store_item_detail_view then
 		local store_item_detail_view_callback = function(package_id)
 			packages.store_item_detail_view = package_id
 		end
-		Managers.package:load("packages/ui/views/store_item_detail_view/store_item_detail_view", "Scoreboard", store_item_detail_view_callback, true)
+		Managers.package:load("packages/ui/views/store_item_detail_view/store_item_detail_view", "scoreboard", store_item_detail_view_callback, true)
 	end
 	-- mod:initialize()
 end
@@ -158,8 +158,6 @@ end
 -- ##### ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║ ###################################
 -- ##### ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║ ###################################
 -- ##### ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ###################################
-
-
 
 local move_time = 1
 mod.update_scoreboard = function(self, dt)
@@ -565,7 +563,7 @@ mod.fill_values = function(self)
 	-- local player_manager = Managers.player
 	-- self.players = self.players or {}
 
-	self:dtf(self.rows, "self.rows", 5)
+	-- self:dtf(self.rows, "self.rows", 5)
 
 	self.players = Managers.player:players()
 	local players = {}
@@ -927,6 +925,6 @@ mod.fill_values = function(self)
 	-- mod:dtf(self.rows, "self.rows5", 5)
 end
 
-Mods.file.dofile("Scoreboard/scripts/mods/Scoreboard/ScoreboardDefaultPlugins")
+Mods.file.dofile("scoreboard/scripts/mods/scoreboard/scoreboard_default_plugins")
 
 mod:initialize()

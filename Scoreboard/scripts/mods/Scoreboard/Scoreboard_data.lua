@@ -1,7 +1,7 @@
-local mod = get_mod("Scoreboard")
+local mod = get_mod("scoreboard")
 
 local mod_data = {
-	name = "Scoreboard",
+	name = "scoreboard",
 	description = mod:localize("mod_description"),
 	is_togglable = false,
 }

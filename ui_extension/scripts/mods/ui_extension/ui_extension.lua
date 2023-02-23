@@ -8,7 +8,7 @@ local DMF = get_mod("DMF")
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
-mod.debug = true
+mod.debug = false
 mod.extensions = mod.extensions or {}
 mod.widgets = mod.widgets or {}
 mod.view_hooks = mod.view_hooks or {}

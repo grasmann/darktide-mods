@@ -1,6 +1,3 @@
--- local mod_name = "modMinion"
--- Mods[mod_name] = {} --Mods[mod_name] or {}
--- local mod = Mods[mod_name]
 local mod = get_mod("animation_events")
 
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
@@ -9,10 +6,6 @@ local mod = get_mod("animation_events")
 -- ##### ██║  ██║██╔══██║   ██║   ██╔══██║ ############################################################################
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
-
--- local animation_system_file = "scripts/extension_systems/animation/animation_system"
--- local minion_animation_extension_file = "scripts/extension_systems/animation/minion_animation_extension"
--- local mod = nil
 
 mod.anim_events = {
     "stagger_fwd",
@@ -223,21 +216,6 @@ mod.more_points = {
 }
 mod.event_indices = {}
 
--- ##### ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #########################################################
--- ##### ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #########################################################
--- ##### █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║   ███████╗ #########################################################
--- ##### ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║ #########################################################
--- ##### ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║ #########################################################
--- ##### ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ #########################################################
-
--- mod.all_mods_loaded = function()
--- 	mod = Mods.mod
--- end
-
-mod.gameplay_exit = function()
-    mod:clear_indices()
-end
-
 -- ##### ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗ ###################################
 -- ##### ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝ ###################################
 -- ##### █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗ ###################################
@@ -315,21 +293,6 @@ end
 -- ##### ██║  ██║╚██████╔╝╚██████╔╝██║  ██╗███████║ ###################################################################
 -- ##### ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝ ###################################################################
 
--- local attack_report_manager_file = "scripts/managers/attack_report/attack_report_manager"
--- Mods.hook.remove("add_attack_result", mod_name)
--- mod:hook(mod_name, attack_report_manager_file, "add_attack_result", function (func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
---     -- local unit_data_extension = ScriptUnit.has_extension(attacked_unit, "unit_data_system")
---     -- local breed_or_nil = unit_data_extension and unit_data_extension:breed()
---     -- local target_is_minion = breed_or_nil and Breed.is_minion(breed_or_nil)
---     -- if target_is_minion then
---     --     if attack_result == "died" then
---     --         mod.event_indices[attacked_unit] = nil
---     --     end
---     -- end
---     return func(self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
--- end)
-
--- Mods.hook.remove("rpc_minion_anim_event", mod_name)
 mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event", function(func, self, channel_id, unit_id, event_index, ...)
     local unit = Managers.state.unit_spawner:unit(unit_id)
     -- Find event
@@ -344,7 +307,6 @@ mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event", function(func, self, ch
     return func(self, channel_id, unit_id, event_index, ...)
 end)
 
--- Mods.hook.remove("rpc_minion_anim_event_variable_float", mod_name)
 mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event_variable_float", function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, ...)
 	local unit = Managers.state.unit_spawner:unit(unit_id)
     -- Find event
@@ -359,7 +321,6 @@ mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event_variable_float", function
     return func(self, channel_id, unit_id, event_index, variable_index, variable_value, ...)
 end)
 
--- Mods.hook.remove("anim_event", mod_name)
 mod:hook(CLASS.MinionAnimationExtension, "anim_event", function(func, self, event_name, optional_except_channel_id, ...)
     -- Check for event name
     if table.has_item(mod.anim_events, event_name) then
@@ -374,7 +335,6 @@ mod:hook(CLASS.MinionAnimationExtension, "anim_event", function(func, self, even
     return func(self, event_name, optional_except_channel_id, ...)
 end)
 
--- Mods.hook.remove("anim_event_with_variable_float", mod_name)
 mod:hook(CLASS.MinionAnimationExtension, "anim_event_with_variable_float", function(func, self, event_name, variable_name, variable_value, ...)
     -- Check for event name
     if table.has_item(mod.anim_events, event_name) then

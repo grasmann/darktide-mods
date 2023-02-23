@@ -1,4 +1,5 @@
 local mod = get_mod("graphics_options")
+-- Global localizations for settings menu widgets
 mod:add_global_localize_strings({
 	gm_framerate_cap_144 = {
 		en = "144",
@@ -88,8 +89,14 @@ mod:add_global_localize_strings({
 		en = "Volumetric fog has volumetric shadows.",
 	},
 })
+-- Local localizations
 return {
+	mod_title = {
+		en = "Graphics Options",
+		de = "Grafikeinstellungen",
+	},
 	mod_description = {
-		en = "graphics_options description",
+		en = "Additional options in the video settings.",
+		de = "Zusätzliche Optionen in den Grafikeinstellungen."
 	},
 }
