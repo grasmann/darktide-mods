@@ -7,7 +7,7 @@ local mod = get_mod("animation_events")
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
-mod.anim_events = {
+mod.minion_anim_events = {
     "stagger_fwd",
     "stagger_fwd_2",
     "stagger_fwd_3",
@@ -234,7 +234,7 @@ mod.get_unit_indices = function(self, unit)
     -- Check if unit has state machine
     if Unit.has_animation_state_machine(unit) then
         -- Iterate through animation events
-        for _, event_name in pairs(self.anim_events) do
+        for _, event_name in pairs(self.minion_anim_events) do
             -- Check if event is already set
             if not self.event_indices[unit][event_name] then
                 local index = nil
@@ -323,7 +323,7 @@ end)
 
 mod:hook(CLASS.MinionAnimationExtension, "anim_event", function(func, self, event_name, optional_except_channel_id, ...)
     -- Check for event name
-    if table.has_item(mod.anim_events, event_name) then
+    if table.has_item(mod.minion_anim_events, event_name) then
         -- Normal or heavy
         local event = mod:is_heavy_stagger(event_name) and "enemy_stagger_heavy" or "enemy_stagger"
         -- Handle event
@@ -337,7 +337,7 @@ end)
 
 mod:hook(CLASS.MinionAnimationExtension, "anim_event_with_variable_float", function(func, self, event_name, variable_name, variable_value, ...)
     -- Check for event name
-    if table.has_item(mod.anim_events, event_name) then
+    if table.has_item(mod.minion_anim_events, event_name) then
         -- Normal or heavy
         local event = mod:is_heavy_stagger(event_name) and "enemy_stagger_heavy" or "enemy_stagger"
         -- Handle event

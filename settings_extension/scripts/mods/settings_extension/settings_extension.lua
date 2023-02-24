@@ -245,44 +245,46 @@ mod.create_settings = function (self, OptionsView)
                 },
             })
 
-			local options_no_after = 0
-			for _, option in pairs(this_mod.options) do
-				if not option.after then
-					options_no_after = options_no_after + 1
-				end
-			end
+			-- local options_no_after = 0
+			-- for _, option in pairs(this_mod.options) do
+			-- 	if not option.after then
+			-- 		options_no_after = options_no_after + 1
+			-- 	end
+			-- end
 
-			if options_no_after > 0 then
-				settings[#settings+1] = {
-					widget_type = "group_header",
-					group_name = "mods_settings",
-					display_name = text_id,
-					category = "menu_category_mods",
-					custom = true,
-				}
-			end
+			-- if options_no_after > 0 then
+			-- 	settings[#settings+1] = {
+			-- 		widget_type = "group_header",
+			-- 		group_name = "mods_settings",
+			-- 		display_name = text_id,
+			-- 		category = "menu_category_mods",
+			-- 		custom = true,
+			-- 	}
+			-- end
 
 			for _, setting in pairs(this_mod.options) do
-				local this_setting = nil
+				if setting.after then
+					local this_setting = nil
 
-				if setting.type == "checkbox" then
-					this_setting = self:checkbox(setting)
-				elseif setting.type == "dropdown" then
-					this_setting = self:dropdown(setting)
-				elseif setting.type == "value_slider" then
-					this_setting = self:value_slider(setting)
-				elseif setting.type == "percent_slider" then
-					this_setting = self:percent_slider(setting)
-				end
+					if setting.type == "checkbox" then
+						this_setting = self:checkbox(setting)
+					elseif setting.type == "dropdown" then
+						this_setting = self:dropdown(setting)
+					elseif setting.type == "value_slider" then
+						this_setting = self:value_slider(setting)
+					elseif setting.type == "percent_slider" then
+						this_setting = self:percent_slider(setting)
+					end
 
-				this_setting.custom = true
-				this_setting.category = this_setting.category or "menu_category_mods"
-				this_setting.indentation_level = this_setting.after and 1 or 0
-				if this_setting.after then
-					local index = self:after_index(OptionsView, this_setting.after)
-					table.insert(settings, index, this_setting)
-				else
-					settings[#settings+1] = this_setting
+					this_setting.custom = true
+					this_setting.category = this_setting.category or "menu_category_mods"
+					this_setting.indentation_level = this_setting.after and 1 or 0
+					if this_setting.after then
+						local index = self:after_index(OptionsView, this_setting.after)
+						table.insert(settings, index, this_setting)
+					else
+						settings[#settings+1] = this_setting
+					end
 				end
 			end
 			
@@ -401,8 +403,8 @@ mod:hook(CLASS.OptionsView, "on_enter", function (func, self, ...)
 
 		self._options_templates = Mods.original_require("scripts/settings/options/options_templates")
 
-		mod:remove_modded_category(self)
-		mod:create_category(self)
+		-- mod:remove_modded_category(self)
+		-- mod:create_category(self)
 		mod:remove_modded_settings(self)
 		mod:create_settings(self)
 

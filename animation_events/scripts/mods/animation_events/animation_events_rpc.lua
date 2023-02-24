@@ -9,7 +9,7 @@ local mod = get_mod("animation_events")
 
 mod.debug = false
 mod.event_indices = {}
-mod.anim_events = {
+mod.rpc_anim_events = {
 	"equip_crate",
 	"drop",
 }
@@ -51,7 +51,7 @@ mod.get_unit_indices = function(self, unit, wielded_slot)
     -- Check if unit has state machine
     if Unit.has_animation_state_machine(unit) then
         -- Iterate through animation events
-        for _, event_name in pairs(self.anim_events) do
+        for _, event_name in pairs(self.rpc_anim_events) do
             -- Check if event is already set
             if not self.event_indices[unit][wielded_slot][event_name] then
                 local index = nil
