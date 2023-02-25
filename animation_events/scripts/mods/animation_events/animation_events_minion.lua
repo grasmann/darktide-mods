@@ -214,7 +214,7 @@ mod.more_points = {
     "stagger_shield_damage_04",
     
 }
-mod.event_indices = {}
+mod.minion_event_indices = {}
 
 -- ##### ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗ ###################################
 -- ##### ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝ ###################################
@@ -224,19 +224,19 @@ mod.event_indices = {}
 -- ##### ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ###################################
 
 mod.clear_indices = function(self)
-    self.event_indices = {}
+    self.minion_event_indices = {}
 end
 
 -- Get event indices
 mod.get_unit_indices = function(self, unit)
     -- Initialize unit event list
-    self.event_indices[unit] = self.event_indices[unit] or {}
+    self.minion_event_indices[unit] = self.minion_event_indices[unit] or {}
     -- Check if unit has state machine
     if Unit.has_animation_state_machine(unit) then
         -- Iterate through animation events
         for _, event_name in pairs(self.minion_anim_events) do
             -- Check if event is already set
-            if not self.event_indices[unit][event_name] then
+            if not self.minion_event_indices[unit][event_name] then
                 local index = nil
                 -- Check if unit has animation event
                 -- index = Unit.has_animation_event(unit, event_name)
@@ -250,14 +250,14 @@ mod.get_unit_indices = function(self, unit)
                     -- Check index
                     if index then
                         -- Write to cache
-                        self.event_indices[unit][event_name] = index
+                        self.minion_event_indices[unit][event_name] = index
                     else
                         -- Write cache dummy to prevent redetection
-                        self.event_indices[unit][event_name] = nil
+                        self.minion_event_indices[unit][event_name] = nil
                     end
                 else
                     -- Write cache dummy to prevent redetection
-                    self.event_indices[unit][event_name] = false
+                    self.minion_event_indices[unit][event_name] = false
                 end
             end
         end
@@ -269,9 +269,9 @@ mod.find_event_name = function(self, unit, event_index)
     -- Get indices if neccessary
     self:get_unit_indices(unit)
     -- Check if unit list exists
-    if self.event_indices[unit] then
+    if self.minion_event_indices[unit] then
         -- Iterate through unit event list
-        for event_name, index in pairs(self.event_indices[unit]) do
+        for event_name, index in pairs(self.minion_event_indices[unit]) do
             -- Compare index
             if index == event_index then
                 -- Return name
@@ -283,7 +283,7 @@ end
 
 -- Check for heavy stagger
 mod.is_heavy_stagger = function(self, event_name)
-    return table.has_item(self.more_points, event_name)
+    return table.contains(self.more_points, event_name)
 end
 
 -- ##### ██╗  ██╗ ██████╗  ██████╗ ██╗  ██╗███████╗ ###################################################################
@@ -323,7 +323,7 @@ end)
 
 mod:hook(CLASS.MinionAnimationExtension, "anim_event", function(func, self, event_name, optional_except_channel_id, ...)
     -- Check for event name
-    if table.has_item(mod.minion_anim_events, event_name) then
+    if table.contains(mod.minion_anim_events, event_name) then
         -- Normal or heavy
         local event = mod:is_heavy_stagger(event_name) and "enemy_stagger_heavy" or "enemy_stagger"
         -- Handle event
@@ -337,7 +337,7 @@ end)
 
 mod:hook(CLASS.MinionAnimationExtension, "anim_event_with_variable_float", function(func, self, event_name, variable_name, variable_value, ...)
     -- Check for event name
-    if table.has_item(mod.minion_anim_events, event_name) then
+    if table.contains(mod.minion_anim_events, event_name) then
         -- Normal or heavy
         local event = mod:is_heavy_stagger(event_name) and "enemy_stagger_heavy" or "enemy_stagger"
         -- Handle event

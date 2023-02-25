@@ -1485,7 +1485,7 @@ mod:hook(CLASS.AttackReportManager, "add_attack_result", function (func, self, d
 			end
 			
 			-- Check for boss
-			if table.has_item(mod.bosses, breed_or_nil.name) then
+			if table.contains(mod.bosses, breed_or_nil.name) then
 				-- Enemy is boss
 				mod:update_stat("boss_damage_dealt", account_id, actual_damage)
 				mod:update_stat("overkill_damage_dealt", account_id, overkill_damage)

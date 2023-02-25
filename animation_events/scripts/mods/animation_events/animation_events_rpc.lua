@@ -8,7 +8,7 @@ local mod = get_mod("animation_events")
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
 mod.debug = false
-mod.event_indices = {}
+mod.rpc_event_indices = {}
 mod.rpc_anim_events = {
 	"equip_crate",
 	"drop",
@@ -26,7 +26,7 @@ mod.log_to_file = function(self, name, obj)
 end
 
 mod.clear_indices = function(self)
-	self.event_indices = {}
+	self.rpc_event_indices = {}
 end
 
 -- Get player from player_unit
@@ -45,15 +45,15 @@ end
 -- Get event indices
 mod.get_unit_indices = function(self, unit, wielded_slot)
     -- Initialize unit event list
-    self.event_indices[unit] = self.event_indices[unit] or {}
+    self.rpc_event_indices[unit] = self.rpc_event_indices[unit] or {}
 	-- Initialize slot
-	self.event_indices[unit][wielded_slot] = self.event_indices[unit][wielded_slot] or {}
+	self.rpc_event_indices[unit][wielded_slot] = self.rpc_event_indices[unit][wielded_slot] or {}
     -- Check if unit has state machine
     if Unit.has_animation_state_machine(unit) then
         -- Iterate through animation events
         for _, event_name in pairs(self.rpc_anim_events) do
             -- Check if event is already set
-            if not self.event_indices[unit][wielded_slot][event_name] then
+            if not self.rpc_event_indices[unit][wielded_slot][event_name] then
                 local index = nil
                 -- Check if unit has animation event
                 -- index = Unit.has_animation_event(unit, event_name)
@@ -67,14 +67,14 @@ mod.get_unit_indices = function(self, unit, wielded_slot)
 					-- Check index
 					if index then
 						-- Write to cache
-						self.event_indices[unit][wielded_slot][event_name] = index
+						self.rpc_event_indices[unit][wielded_slot][event_name] = index
 					else
 						-- Write cache dummy to prevent redetection
-						self.event_indices[unit][wielded_slot][event_name] = nil
+						self.rpc_event_indices[unit][wielded_slot][event_name] = nil
 					end
 				else
 					-- Write cache dummy to prevent redetection
-					self.event_indices[unit][wielded_slot][event_name] = false
+					self.rpc_event_indices[unit][wielded_slot][event_name] = false
                 end
             end
         end
@@ -93,9 +93,9 @@ mod.find_event_name = function(self, player_unit, wielded_slot, event_index, is_
 	-- Get indices if neccessary
 	self:get_unit_indices(index_unit, wielded_slot)
 	-- Check if unit list exists
-	if self.event_indices[index_unit][wielded_slot] then
+	if self.rpc_event_indices[index_unit][wielded_slot] then
 		-- Iterate through unit event list
-		for event_name, index in pairs(self.event_indices[index_unit][wielded_slot]) do
+		for event_name, index in pairs(self.rpc_event_indices[index_unit][wielded_slot]) do
 			-- Compare index
 			if index == event_index then
 				-- Return name

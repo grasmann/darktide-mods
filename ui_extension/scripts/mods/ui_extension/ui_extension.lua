@@ -28,13 +28,11 @@ function mod.reload_mods()
     mod.hud_extensions = {}
     mod.widgets = {}
 	mod.view_hooks = {}
-    mod:load_extensions()
 end
 
 function mod.on_all_mods_loaded()
     mod.extensions = {}
     mod.hud_extensions = {}
-    -- mod:echo("load ui extensions")
     mod:load_extensions()
 end
 
@@ -50,12 +48,10 @@ mod.load_extensions = function(self)
     for _, this_mod in pairs(DMF.mods) do
         -- Make sure it's a table
         if type(this_mod) == "table" then
-            
             -- Check ui table
             if this_mod.ui_injection then
                 -- Iterate through ui extensions
                 for view_name, data in pairs(this_mod.ui_injection) do
-                    -- mod:echo("ui detected for '"..view_name.."'")
                     -- Add extension
                     self.extensions[#self.extensions+1] = {
                         view_name = view_name,
@@ -67,12 +63,8 @@ mod.load_extensions = function(self)
                         update = data.on_update,
                         mod = this_mod,
                     }
-                    -- if data.on_enter then mod:hook_view_(view_name, "on_enter", this_mod) end
-                    -- if data.on_exit then mod:hook_view_(view_name, "on_exit", this_mod) end
-                    -- if data.update then mod:hook_view_(view_name, "update", this_mod) end
                 end
             end
-
             -- Check hud table
             if this_mod.hud_injection then
                 -- Iterate through ui extensions
@@ -91,9 +83,6 @@ mod.load_extensions = function(self)
                         update = data.on_update,
                         mod = this_mod,
                     }
-                    -- if data.on_enter then mod:hook_view_(view_name, "on_enter", this_mod) end
-                    -- if data.on_exit then mod:hook_view_(view_name, "on_exit", this_mod) end
-                    -- if data.update then mod:hook_view_(view_name, "update", this_mod) end
                 end
             end
         end

@@ -1,18 +1,5 @@
 local mod = get_mod("scoreboard")
-mod.debug_inventory = false
-mod.debug_value = false
--- mod:echo("test")
-
--- REMOVE THIS LATER
--- Check item exist in table
-table.has_item = function(tbl, item)
-    for _, value in ipairs(tbl) do
-        if value == item then
-			return true
-		end
-    end
-    return false
-end
+local DMF = get_mod("DMF")
 
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
 -- ##### ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗ ############################################################################
@@ -21,7 +8,9 @@ end
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
-loaded_scoreboard_packages = loaded_scoreboard_packages or {}
+mod.debug_inventory = false
+mod.debug_value = false
+mod.move_time = 0.75
 
 -- ##### ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #########################################################
 -- ##### ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #########################################################
@@ -30,9 +19,52 @@ loaded_scoreboard_packages = loaded_scoreboard_packages or {}
 -- ##### ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║ #########################################################
 -- ##### ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ #########################################################
 
+-- On gameplay enter
+function mod.on_game_state_changed(status, state_name)
+	if state_name == "StateGameplay" and status == "enter" then
+		-- Clear scores
+		mod:clear()
+	end
+end
+
+-- On all mods loaded
+function mod.on_all_mods_loaded()
+	mod:load_package("packages/ui/views/end_player_view/end_player_view")
+	mod:load_package("packages/ui/views/store_item_detail_view/store_item_detail_view")
+end
+
+-- ##### ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗ ###################################
+-- ##### ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝ ###################################
+-- ##### █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗ ###################################
+-- ##### ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║ ###################################
+-- ##### ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║ ###################################
+-- ##### ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ###################################
+
+-- Initialize Mod
+mod.initialize = function(self)
+	self.text = "Scoreboard"
+	self.rows = {}
+	self.widgets = {}
+	self.widgets_by_name = {}
+	self.definitions = Mods.file.exec_with_return("scoreboard/scripts/mods/scoreboard", "scoreboard_definitions")
+	self.ui_font_settings = Mods.original_require("scripts/managers/ui/ui_font_settings")
+
+	-- Collect scoreboard entries
+	self:load_mod_scoreboards()
+
+	-- Create widgets
+	local widgets = self:create_ui_widgets()
+
+	-- Create UI extension
+	self:create_ui_extension(widgets)
+end
+
 mod.create_ui_widgets = function(self)
+	-- Create row definitions
 	local row_definitions = self:create_row_definitions()
+	-- Load widget definitions
 	local widgets = self.definitions.widgets
+	-- Assign rows
 	for name, row in pairs(row_definitions) do
 		widgets[name] = row
 	end
@@ -75,7 +107,6 @@ mod.create_ui_extension = function(self, widgets)
 		}
 	}
 	-- self.hud_injection = {
-	-- 	-- hud_element_tactical_overlay
 	-- 	hud_element_tactical_overlay = {
 	-- 		scenegraph = self.definitions.scenegraphs.end_view,
 	-- 		widgets = widgets,
@@ -91,19 +122,7 @@ mod.create_ui_extension = function(self, widgets)
 	-- 		end
 	-- 	},
 	-- }
-	-- self.hud_injection.hud_element_player_buffs.on_enter = nil
-	-- self.hud_injection.hud_element_player_buffs.on_exit = nil
-	-- self.hud_injection.hud_element_player_buffs.on_update = function(view_name, dt)
-	-- 	self.players = Managers.player:players()
-	-- 	self:fill_values()
-	-- 	self:echo("lol")
-	-- 	-- self:update_scoreboard(dt)
-	-- 	-- self:update_scoreboard_rows(dt)
-	-- end
-	-- Set debug UI extension
-	-- mod:echo("debug_inventory = '"..tostring(self.debug_inventory).."'")
 	if self.debug_inventory then
-		-- mod:echo("load inventory test")
 		self.ui_injection.inventory_view = table.clone(self.ui_injection.end_view)
 		self.ui_injection.inventory_view.on_widgets_loaded = function(widgets, widgets_by_name)
 			self.widgets = widgets
@@ -113,85 +132,16 @@ mod.create_ui_extension = function(self, widgets)
 				self:move_scoreboard(-300, 0)
 			end)
 		end
-	else
-		-- self:echo("loool")
-	end
-	-- local ui_extension = get_mod("ui_extension")
-	-- for view_name, data in pairs(self.ui_injection) do
-	-- 	ui_extension:add_extension(view_name, data)
-	-- end
-end
-
-mod.initialize = function(self)
-	
-	self.text = "Scoreboard"
-	self.rows = {}
-	self.widgets = {}
-	self.widgets_by_name = {}
-	self.definitions = Mods.file.exec_with_return("scoreboard/scripts/mods/scoreboard", "scoreboard_definitions")
-	self.ui_font_settings = Mods.original_require("scripts/managers/ui/ui_font_settings")
-
-	-- local width = self.definitions.settings.width
-	-- local height = self.definitions.settings.height
-
-	-- Collect scoreboard entries
-	self:load_mod_scoreboards()
-
-	-- Create widgets
-	local widgets = self:create_ui_widgets()
-
-	-- Create UI extension
-	self:create_ui_extension(widgets)
-
-end
-
--- ##########################################################
--- ####################### Events ###########################
-
--- On gameplay enter
-function mod.on_game_state_changed(status, state_name)
-	if state_name == "StateGameplay" and status == "enter" then
-		mod:clear()
-	else
-		-- mod:echo("state = '"..state_name.."'")
 	end
 end
 
--- On reload
-function mod.reload_mods()
-	-- mod:clear()
-	-- mod:initialize()
-	-- local ui_extension = get_mod("ui_extension")
-	-- for view_name, data in pairs(self.ui_injection) do
-	-- 	ui_extension:add_extension(view_name, data)
-	-- end
+mod.load_package = function(self, package_name)
+	local package_manager = Managers.package
+	if not package_manager:is_loading(package_name) and not package_manager:has_loaded(package_name) then
+		package_manager:load(package_name, "scoreboard", nil, true)
+	end
 end
 
--- On all mods loaded
-function mod.on_all_mods_loaded()
-	if not loaded_scoreboard_packages.end_player_view then
-		local end_player_view_callback = function(package_id)
-			loaded_scoreboard_packages.end_player_view = package_id
-		end
-		Managers.package:load("packages/ui/views/end_player_view/end_player_view", "scoreboard", end_player_view_callback, true)
-	end
-	if not loaded_scoreboard_packages.store_item_detail_view then
-		local store_item_detail_view_callback = function(package_id)
-			loaded_scoreboard_packages.store_item_detail_view = package_id
-		end
-		Managers.package:load("packages/ui/views/store_item_detail_view/store_item_detail_view", "scoreboard", store_item_detail_view_callback, true)
-	end
-	-- mod:initialize()
-end
-
--- ##### ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗ ###################################
--- ##### ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝ ###################################
--- ##### █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗ ###################################
--- ##### ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║ ###################################
--- ##### ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║ ###################################
--- ##### ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ###################################
-
-local move_time = 1
 mod.update_scoreboard = function(self, dt)
 	if self.scoreboard_move_timer then
 		if self.scoreboard_move_timer <= 0 then
@@ -203,7 +153,7 @@ mod.update_scoreboard = function(self, dt)
 				self.scoreboard_move_callback = nil
 			end
 		else
-			local percentage = self.scoreboard_move_timer / move_time
+			local percentage = self.scoreboard_move_timer / self.move_time
 			-- mod:echo(percetage)
 			local range = math.abs(self.scoreboard_move_to_offset) + math.abs(self.scoreboard_move_from_offset)
 			-- local done = range * percentage
@@ -222,89 +172,8 @@ mod.update_scoreboard = function(self, dt)
 	end
 end
 
--- local count_time = 0.1
--- local animating_row = nil
--- mod.row_to_animate = function(self)
--- 	for row_index, data in pairs(self.rows) do
--- 		local row = self.widgets_by_name["scoreboard_row_"..(row_index + 1)]
--- 		if not data.was_animated and row and data.empty ~= true and data.visible ~= false then
--- 			-- animating_row = row_index
--- 			self.row_timer = count_time
--- 			local col = 0
--- 			-- for index, data in pairs(data.data) do
--- 			for _, player in pairs(self.players) do
--- 				col = col + 1
--- 				if col < 5 then
--- 					local account_id = player:account_id() or player:name()
--- 					if data.data[account_id] then
--- 						data.data[account_id].end_score = data.data[account_id].score
--- 						data.data[account_id].score = 0
--- 						row.content["text"..col] = data.data[account_id].score
--- 					end
--- 				end
--- 			end
--- 			data.was_animated = true
--- 			self:echo("animating row '"..row_index.."'")
--- 			return row_index
--- 		end
--- 	end
--- end
--- mod.update_scoreboard_rows = function(self, dt)
--- 	-- self:echo("test")
--- 	if not animating_row then
--- 		animating_row = self:row_to_animate()
--- 	end
--- 	if animating_row then
--- 		local row = self.widgets_by_name["scoreboard_row_"..(animating_row + 1)]
--- 		if row then
--- 			local players = {}
--- 			for _, player in pairs(self.players) do
--- 				players[#players+1] = player
--- 			end
--- 			local data = self.rows[animating_row]
--- 			if self.row_timer <= 0 then
--- 				local decimals = data.decimals or 0
--- 				local col = 0
--- 				-- for index, data in pairs(data_row.data) do
--- 				for _, player in pairs(players) do
--- 					col = col + 1
--- 					if col < 5 then
--- 						local account_id = player:account_id() or player:name()
--- 						if data.data[account_id] then
--- 							data.data[account_id].score = data.data[account_id].end_score
--- 							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
--- 								mod:shorten_value(data.data[account_id].score, decimals)
--- 							row.content["text"..col] = text
--- 						end
--- 					end
--- 				end
--- 				-- data_row.was_animated = false
--- 				animating_row = nil
--- 			else
--- 				local percentage = self.row_timer / count_time
--- 				local decimals = data.decimals or 0
--- 				local col = 0
--- 				-- for index, data in pairs(data_row.data) do
--- 				for _, player in pairs(players) do
--- 					col = col + 1
--- 					if col < 5 then
--- 						local account_id = player:account_id() or player:name()
--- 						if data.data[account_id] then
--- 							data.data[account_id].score = data.data[account_id].end_score - data.data[account_id].end_score * percentage
--- 							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
--- 								mod:shorten_value(data.data[account_id].score, decimals)
--- 							row.content["text"..col] = text
--- 						end
--- 					end
--- 				end
--- 				self.row_timer = self.row_timer - dt
--- 			end
--- 		end
--- 	end
--- end
-
 mod.move_scoreboard = function(self, from_offset_x, to_offset_x, callback)
-	self.scoreboard_move_timer = move_time
+	self.scoreboard_move_timer = self.move_time
 	self.scoreboard_move_from_offset = from_offset_x
 	self.scoreboard_move_to_offset = to_offset_x
 	-- self.scoreboard_offset = from_offset_x
@@ -528,16 +397,16 @@ mod.create_row_definition = function(self, index)
 end
 
 mod.load_mod_scoreboards = function(self)
-	-- for _, this_mod in pairs(Mods) do
-		-- if type(this_mod) == "table" and this_mod.scoreboard then
-			-- for _, template in pairs(this_mod.scoreboard) do
-				-- mod:register_row(template)
-			-- end
-		-- end
-	-- end
-	for _, template in pairs(mod.scoreboard) do
-		mod:register_row(template)
+	for _, this_mod in pairs(DMF.mods) do
+		if type(this_mod) == "table" and this_mod.scoreboard then
+			for _, template in pairs(this_mod.scoreboard) do
+				mod:register_row(template)
+			end
+		end
 	end
+	-- for _, template in pairs(mod.scoreboard) do
+	-- 	mod:register_row(template)
+	-- end
 end
 
 mod.create_row_definitions = function(self)
@@ -553,9 +422,6 @@ mod.create_row_definitions = function(self)
 	end
 	return row_definitions
 end
-
--- ##########################################################
--- ##################### Functions ##########################
 
 -- Register new row
 mod.register_row = function(self, template, index)
@@ -893,7 +759,7 @@ mod.fill_values = function(self)
 
 			local rows_ready = true
 			for _, row_name in pairs(data.score_summary) do
-				if table.has_item(score_row_names, row_name) then
+				if table.contains(score_row_names, row_name) then
 					rows_ready = false
 					break
 				end
@@ -1042,6 +908,88 @@ mod.fill_values = function(self)
 	end
 
 	-- mod:dtf(self.rows, "self.rows5", 5)
+end
+
+local count_time = 0.1
+local animating_row = nil
+mod.row_to_animate = function(self)
+	for row_index, data in pairs(self.rows) do
+		local row = self.widgets_by_name["scoreboard_row_"..(row_index + 1)]
+		if not data.was_animated and row and data.empty ~= true and data.visible ~= false then
+			-- animating_row = row_index
+			self.row_timer = count_time
+			local col = 0
+			-- for index, data in pairs(data.data) do
+			for _, player in pairs(self.players) do
+				col = col + 1
+				if col < 5 then
+					local account_id = player:account_id() or player:name()
+					if data.data[account_id] then
+						data.data[account_id].end_score = data.data[account_id].score
+						data.data[account_id].score = 0
+						row.content["text"..col] = data.data[account_id].score
+					end
+				end
+			end
+			data.was_animated = true
+			self:echo("animating row '"..row_index.."'")
+			return row_index
+		end
+	end
+end
+
+mod.update_scoreboard_rows = function(self, dt)
+	-- self:echo("test")
+	if not animating_row then
+		animating_row = self:row_to_animate()
+	end
+	if animating_row then
+		local row = self.widgets_by_name["scoreboard_row_"..(animating_row + 1)]
+		if row then
+			local players = {}
+			for _, player in pairs(self.players) do
+				players[#players+1] = player
+			end
+			local data = self.rows[animating_row]
+			if self.row_timer <= 0 then
+				local decimals = data.decimals or 0
+				local col = 0
+				-- for index, data in pairs(data_row.data) do
+				for _, player in pairs(players) do
+					col = col + 1
+					if col < 5 then
+						local account_id = player:account_id() or player:name()
+						if data.data[account_id] then
+							data.data[account_id].score = data.data[account_id].end_score
+							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
+								mod:shorten_value(data.data[account_id].score, decimals)
+							row.content["text"..col] = text
+						end
+					end
+				end
+				-- data_row.was_animated = false
+				animating_row = nil
+			else
+				local percentage = self.row_timer / count_time
+				local decimals = data.decimals or 0
+				local col = 0
+				-- for index, data in pairs(data_row.data) do
+				for _, player in pairs(players) do
+					col = col + 1
+					if col < 5 then
+						local account_id = player:account_id() or player:name()
+						if data.data[account_id] then
+							data.data[account_id].score = data.data[account_id].end_score - data.data[account_id].end_score * percentage
+							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
+								mod:shorten_value(data.data[account_id].score, decimals)
+							row.content["text"..col] = text
+						end
+					end
+				end
+				self.row_timer = self.row_timer - dt
+			end
+		end
+	end
 end
 
 Mods.file.dofile("scoreboard/scripts/mods/scoreboard/scoreboard_default_plugins")
