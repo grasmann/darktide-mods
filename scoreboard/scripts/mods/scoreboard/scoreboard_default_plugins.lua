@@ -1043,22 +1043,6 @@ mod.player_from_unit = function(self, unit)
 	return nil
 end
 
--- -- Own account id
--- mod.me = function(self)
--- 	local player_manager = Managers.player
--- 	return player_manager:local_player(1):account_id()
--- end
-
--- -- Is account id own?
--- mod.is_me = function(self, account_id)
--- 	return account_id == mod:me()
--- end
-
--- -- Log object to file
--- mod.log_to_file = function(self, name, obj)
--- 	mdods(obj, name.."_"..tostring(os.time()), 5)
--- end
-
 -- Extract file name from path
 mod.file_name = function(self, url)   
     local str = url
@@ -1485,7 +1469,7 @@ mod:hook(CLASS.AttackReportManager, "add_attack_result", function (func, self, d
 			end
 			
 			-- Check for boss
-			if table.contains(mod.bosses, breed_or_nil.name) then
+			if table.array_contains(mod.bosses, breed_or_nil.name) then
 				-- Enemy is boss
 				mod:update_stat("boss_damage_dealt", account_id, actual_damage)
 				mod:update_stat("overkill_damage_dealt", account_id, overkill_damage)
@@ -1631,15 +1615,3 @@ mod:hook(CLASS.ScanningDeviceExtension, "finished_event", function (func, self, 
 	end
 	func(self, ...)
 end)
-
--- -- Minion critical
--- local husk_health_extension_file = "scripts/extension_systems/health/husk_health_extension_file"
--- Mods.hook.remove("init", mod_name)
--- Mods.hook.set_on_file(mod_name, husk_health_extension_file, "init", function (func, self, extension_init_context, unit, extension_init_data, game_session, game_object_id, owner_id, ...)
--- 	self.set_last_damaging_unit = function (extension, last_damaging_unit, hit_zone_name, last_hit_was_critical)
--- 		extension._last_damaging_unit = last_damaging_unit
--- 		extension._last_hit_zone_name = hit_zone_name
--- 		extension._last_hit_was_critical = last_hit_was_critical
--- 	end
--- 	return func(self, extension_init_context, unit, extension_init_data, game_session, game_object_id, owner_id, ...)
--- end)

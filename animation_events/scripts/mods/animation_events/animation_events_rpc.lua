@@ -7,7 +7,6 @@ local mod = get_mod("animation_events")
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
-mod.debug = false
 mod.rpc_event_indices = {}
 mod.rpc_anim_events = {
 	"equip_crate",
@@ -21,29 +20,8 @@ mod.rpc_anim_events = {
 -- ##### ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║ ###################################
 -- ##### ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ###################################
 
-mod.log_to_file = function(self, name, obj)
-	mdods(obj, name.."_"..tostring(os.time()), 5)
-end
-
-mod.clear_indices = function(self)
-	self.rpc_event_indices = {}
-end
-
--- Get player from player_unit
-mod.player_from_unit = function(self, unit)
-    if unit then
-        local player_manager = Managers.player
-        for _, player in pairs(player_manager:players()) do
-            if player.player_unit == unit then
-                return player
-            end
-        end
-    end
-    return nil
-end
-
 -- Get event indices
-mod.get_unit_indices = function(self, unit, wielded_slot)
+mod.rpc_get_unit_indices = function(self, unit, wielded_slot)
     -- Initialize unit event list
     self.rpc_event_indices[unit] = self.rpc_event_indices[unit] or {}
 	-- Initialize slot
@@ -82,7 +60,7 @@ mod.get_unit_indices = function(self, unit, wielded_slot)
 end
 
 -- Find event name by index
-mod.find_event_name = function(self, player_unit, wielded_slot, event_index, is_first_person)
+mod.rpc_find_event_name = function(self, player_unit, wielded_slot, event_index, is_first_person)
 	local index_unit = player_unit
 	-- First person
 	if is_first_person then
@@ -91,7 +69,7 @@ mod.find_event_name = function(self, player_unit, wielded_slot, event_index, is_
 		index_unit = first_person_ext:first_person_unit()
 	end
 	-- Get indices if neccessary
-	self:get_unit_indices(index_unit, wielded_slot)
+	self:rpc_get_unit_indices(index_unit, wielded_slot)
 	-- Check if unit list exists
 	if self.rpc_event_indices[index_unit][wielded_slot] then
 		-- Iterate through unit event list
@@ -105,7 +83,7 @@ mod.find_event_name = function(self, player_unit, wielded_slot, event_index, is_
 	end
 end
 
-mod.handle_event = function(self, event_index, unit_id, is_first_person)
+mod.rpc_handle_event = function(self, event_index, unit_id, is_first_person)
 	-- Get player unit
 	local unit = Managers.state.unit_spawner:unit(unit_id)
 	-- Get unit data system
@@ -121,7 +99,7 @@ mod.handle_event = function(self, event_index, unit_id, is_first_person)
 			-- Check wielded slot
 			if wielded_slot then
 				-- Get event name
-				local event_name = self:find_event_name(unit, wielded_slot, event_index, is_first_person)
+				local event_name = self:rpc_find_event_name(unit, wielded_slot, event_index, is_first_person)
 				-- Check event name
 				if event_name then
 					-- Handle event callbacks
@@ -139,22 +117,26 @@ end
 -- ##### ██║  ██║╚██████╔╝╚██████╔╝██║  ██╗███████║ ###################################################################
 -- ##### ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝ ###################################################################
 
-mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event", function(func, self, channel_id, unit_id, event_index, is_first_person, ...)
-	mod:handle_event(event_index, unit_id, is_first_person)
+mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event",
+function(func, self, channel_id, unit_id, event_index, is_first_person, ...)
+	mod:rpc_handle_event(event_index, unit_id, is_first_person)
 	return func(self, channel_id, unit_id, event_index, is_first_person, ...)
 end)
 
-mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_float", function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
-	mod:handle_event(event_index, unit_id, is_first_person)
+mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_float",
+function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
+	mod:rpc_handle_event(event_index, unit_id, is_first_person)
 	return func(self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
 end)
 
-mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_floats", function(func, self, channel_id, unit_id, event_index, variable_indexes, variable_values, is_first_person, ...)
-	mod:handle_event(event_index, unit_id, is_first_person)
+mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_floats",
+function(func, self, channel_id, unit_id, event_index, variable_indexes, variable_values, is_first_person, ...)
+	mod:rpc_handle_event(event_index, unit_id, is_first_person)
 	return func(self, channel_id, unit_id, event_index, variable_indexes, variable_values, is_first_person, ...)
 end)
 
-mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_int", function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
-	mod:handle_event(event_index, unit_id, is_first_person)
+mod:hook(CLASS.AnimationSystem, "rpc_player_anim_event_variable_int",
+function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
+	mod:rpc_handle_event(event_index, unit_id, is_first_person)
 	return func(self, channel_id, unit_id, event_index, variable_index, variable_value, is_first_person, ...)
 end)

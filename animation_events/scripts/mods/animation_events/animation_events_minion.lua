@@ -150,7 +150,7 @@ mod.minion_anim_events = {
     "stagger_shield_block_right",
     "stagger_shield_block_left",
 }
-mod.more_points = {
+mod.minion_more_points = {
     "stagger_fwd_heavy",
     "stagger_fwd_heavy_2",
     "stagger_fwd_heavy_3",
@@ -223,12 +223,8 @@ mod.minion_event_indices = {}
 -- ##### ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║ ###################################
 -- ##### ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ###################################
 
-mod.clear_indices = function(self)
-    self.minion_event_indices = {}
-end
-
 -- Get event indices
-mod.get_unit_indices = function(self, unit)
+mod.minion_get_unit_indices = function(self, unit)
     -- Initialize unit event list
     self.minion_event_indices[unit] = self.minion_event_indices[unit] or {}
     -- Check if unit has state machine
@@ -265,9 +261,9 @@ mod.get_unit_indices = function(self, unit)
 end
 
 -- Find event name by index
-mod.find_event_name = function(self, unit, event_index)
+mod.minion_find_event_name = function(self, unit, event_index)
     -- Get indices if neccessary
-    self:get_unit_indices(unit)
+    self:minion_get_unit_indices(unit)
     -- Check if unit list exists
     if self.minion_event_indices[unit] then
         -- Iterate through unit event list
@@ -283,7 +279,7 @@ end
 
 -- Check for heavy stagger
 mod.is_heavy_stagger = function(self, event_name)
-    return table.contains(self.more_points, event_name)
+    return table.array_contains(self.minion_more_points, event_name)
 end
 
 -- ##### ██╗  ██╗ ██████╗  ██████╗ ██╗  ██╗███████╗ ###################################################################
@@ -293,10 +289,11 @@ end
 -- ##### ██║  ██║╚██████╔╝╚██████╔╝██║  ██╗███████║ ###################################################################
 -- ##### ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝ ###################################################################
 
-mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event", function(func, self, channel_id, unit_id, event_index, ...)
+mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event",
+function(func, self, channel_id, unit_id, event_index, ...)
     local unit = Managers.state.unit_spawner:unit(unit_id)
     -- Find event
-    local event_name = mod:find_event_name(unit, event_index)
+    local event_name = mod:minion_find_event_name(unit, event_index)
     if event_name then
         -- Normal or heavy
         local event = mod:is_heavy_stagger(event_name) and "enemy_stagger_heavy" or "enemy_stagger"
@@ -307,10 +304,11 @@ mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event", function(func, self, ch
     return func(self, channel_id, unit_id, event_index, ...)
 end)
 
-mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event_variable_float", function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, ...)
+mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event_variable_float",
+function(func, self, channel_id, unit_id, event_index, variable_index, variable_value, ...)
 	local unit = Managers.state.unit_spawner:unit(unit_id)
     -- Find event
-    local event_name = mod:find_event_name(unit, event_index)
+    local event_name = mod:minion_find_event_name(unit, event_index)
     if event_name then
         -- Normal or heavy
         local event = mod:is_heavy_stagger(event_name) and "enemy_stagger_heavy" or "enemy_stagger"
@@ -321,9 +319,10 @@ mod:hook(CLASS.AnimationSystem, "rpc_minion_anim_event_variable_float", function
     return func(self, channel_id, unit_id, event_index, variable_index, variable_value, ...)
 end)
 
-mod:hook(CLASS.MinionAnimationExtension, "anim_event", function(func, self, event_name, optional_except_channel_id, ...)
+mod:hook(CLASS.MinionAnimationExtension, "anim_event",
+function(func, self, event_name, optional_except_channel_id, ...)
     -- Check for event name
-    if table.contains(mod.minion_anim_events, event_name) then
+    if table.array_contains(mod.minion_anim_events, event_name) then
         -- Normal or heavy
         local event = mod:is_heavy_stagger(event_name) and "enemy_stagger_heavy" or "enemy_stagger"
         -- Handle event
@@ -335,9 +334,10 @@ mod:hook(CLASS.MinionAnimationExtension, "anim_event", function(func, self, even
     return func(self, event_name, optional_except_channel_id, ...)
 end)
 
-mod:hook(CLASS.MinionAnimationExtension, "anim_event_with_variable_float", function(func, self, event_name, variable_name, variable_value, ...)
+mod:hook(CLASS.MinionAnimationExtension, "anim_event_with_variable_float",
+function(func, self, event_name, variable_name, variable_value, ...)
     -- Check for event name
-    if table.contains(mod.minion_anim_events, event_name) then
+    if table.array_contains(mod.minion_anim_events, event_name) then
         -- Normal or heavy
         local event = mod:is_heavy_stagger(event_name) and "enemy_stagger_heavy" or "enemy_stagger"
         -- Handle event
