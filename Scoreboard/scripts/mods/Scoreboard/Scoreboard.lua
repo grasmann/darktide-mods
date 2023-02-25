@@ -21,7 +21,7 @@ end
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
-packages = packages or {}
+loaded_scoreboard_packages = loaded_scoreboard_packages or {}
 
 -- ##### ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #########################################################
 -- ##### ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #########################################################
@@ -40,7 +40,7 @@ mod.create_ui_widgets = function(self)
 end
 
 mod.create_ui_extension = function(self, widgets)
-	self.ui = {
+	self.ui_injection = {
 		end_view = {
 			scenegraph = self.definitions.scenegraphs.end_view,
 			widgets = widgets,
@@ -57,9 +57,9 @@ mod.create_ui_extension = function(self, widgets)
 				-- self:update_scoreboard_rows(dt)
 			end,
 			on_exit = function(view_name)
-				for row_index, data in pairs(self.rows) do
-					data.was_animated = nil
-				end
+				-- for row_index, data in pairs(self.rows) do
+				-- 	data.was_animated = nil
+				-- end
 			end
 		},
 		end_player_view = {
@@ -74,12 +74,38 @@ mod.create_ui_extension = function(self, widgets)
 			end,
 		}
 	}
+	-- self.hud_injection = {
+	-- 	-- hud_element_tactical_overlay
+	-- 	hud_element_tactical_overlay = {
+	-- 		scenegraph = self.definitions.scenegraphs.end_view,
+	-- 		widgets = widgets,
+	-- 		on_widgets_loaded = function(widgets, widgets_by_name)
+	-- 			self.widgets = widgets
+	-- 			self.widgets_by_name = widgets_by_name
+	-- 			self:fill_values()
+	-- 		end,
+	-- 		on_update = function(view_name, dt, t, hud_element)
+	-- 			-- self.players = Managers.player:players()
+	-- 			self:fill_values()
+	-- 			hud_element:set_dirty()
+	-- 		end
+	-- 	},
+	-- }
+	-- self.hud_injection.hud_element_player_buffs.on_enter = nil
+	-- self.hud_injection.hud_element_player_buffs.on_exit = nil
+	-- self.hud_injection.hud_element_player_buffs.on_update = function(view_name, dt)
+	-- 	self.players = Managers.player:players()
+	-- 	self:fill_values()
+	-- 	self:echo("lol")
+	-- 	-- self:update_scoreboard(dt)
+	-- 	-- self:update_scoreboard_rows(dt)
+	-- end
 	-- Set debug UI extension
 	-- mod:echo("debug_inventory = '"..tostring(self.debug_inventory).."'")
 	if self.debug_inventory then
 		-- mod:echo("load inventory test")
-		self.ui.inventory_view = table.clone(self.ui.end_view)
-		self.ui.inventory_view.on_widgets_loaded = function(widgets, widgets_by_name)
+		self.ui_injection.inventory_view = table.clone(self.ui_injection.end_view)
+		self.ui_injection.inventory_view.on_widgets_loaded = function(widgets, widgets_by_name)
 			self.widgets = widgets
 			self.widgets_by_name = widgets_by_name
 			self:fill_values()
@@ -91,7 +117,7 @@ mod.create_ui_extension = function(self, widgets)
 		-- self:echo("loool")
 	end
 	-- local ui_extension = get_mod("ui_extension")
-	-- for view_name, data in pairs(self.ui) do
+	-- for view_name, data in pairs(self.ui_injection) do
 	-- 	ui_extension:add_extension(view_name, data)
 	-- end
 end
@@ -136,22 +162,22 @@ function mod.reload_mods()
 	-- mod:clear()
 	-- mod:initialize()
 	-- local ui_extension = get_mod("ui_extension")
-	-- for view_name, data in pairs(self.ui) do
+	-- for view_name, data in pairs(self.ui_injection) do
 	-- 	ui_extension:add_extension(view_name, data)
 	-- end
 end
 
 -- On all mods loaded
 function mod.on_all_mods_loaded()
-	if not packages.end_player_view then
+	if not loaded_scoreboard_packages.end_player_view then
 		local end_player_view_callback = function(package_id)
-			packages.end_player_view = package_id
+			loaded_scoreboard_packages.end_player_view = package_id
 		end
 		Managers.package:load("packages/ui/views/end_player_view/end_player_view", "scoreboard", end_player_view_callback, true)
 	end
-	if not packages.store_item_detail_view then
+	if not loaded_scoreboard_packages.store_item_detail_view then
 		local store_item_detail_view_callback = function(package_id)
-			packages.store_item_detail_view = package_id
+			loaded_scoreboard_packages.store_item_detail_view = package_id
 		end
 		Managers.package:load("packages/ui/views/store_item_detail_view/store_item_detail_view", "scoreboard", store_item_detail_view_callback, true)
 	end

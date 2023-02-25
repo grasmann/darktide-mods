@@ -10,6 +10,7 @@ local DMF = get_mod("DMF")
 
 mod.debug = false
 mod.extensions = mod.extensions or {}
+mod.hud_extensions = mod.hud_extensions or {}
 mod.widgets = mod.widgets or {}
 mod.view_hooks = mod.view_hooks or {}
 
@@ -24,12 +25,15 @@ local UIWidget = Mods.original_require("scripts/managers/ui/ui_widget")
 
 function mod.reload_mods()
     mod.extensions = {}
+    mod.hud_extensions = {}
     mod.widgets = {}
 	mod.view_hooks = {}
+    mod:load_extensions()
 end
 
 function mod.on_all_mods_loaded()
     mod.extensions = {}
+    mod.hud_extensions = {}
     -- mod:echo("load ui extensions")
     mod:load_extensions()
 end
@@ -46,19 +50,44 @@ mod.load_extensions = function(self)
     for _, this_mod in pairs(DMF.mods) do
         -- Make sure it's a table
         if type(this_mod) == "table" then
+            
             -- Check ui table
-            if this_mod.ui then
+            if this_mod.ui_injection then
                 -- Iterate through ui extensions
-                for view_name, data in pairs(this_mod.ui) do
+                for view_name, data in pairs(this_mod.ui_injection) do
                     -- mod:echo("ui detected for '"..view_name.."'")
                     -- Add extension
-                    mod.extensions[#mod.extensions+1] = {
+                    self.extensions[#self.extensions+1] = {
                         view_name = view_name,
                         widgets = data.widgets,
                         scenegraph = data.scenegraph,
                         callback = data.on_widgets_loaded,
                         on_enter = data.on_enter,
                         on_exit = data.on_exit,
+                        update = data.on_update,
+                        mod = this_mod,
+                    }
+                    -- if data.on_enter then mod:hook_view_(view_name, "on_enter", this_mod) end
+                    -- if data.on_exit then mod:hook_view_(view_name, "on_exit", this_mod) end
+                    -- if data.update then mod:hook_view_(view_name, "update", this_mod) end
+                end
+            end
+
+            -- Check hud table
+            if this_mod.hud_injection then
+                -- Iterate through ui extensions
+                for hud_element_name, data in pairs(this_mod.hud_injection) do
+                    -- mod:echo("ui detected for '"..view_name.."'")
+                    local class_name = self:class_name(hud_element_name)
+                    local short_name = hud_element_name:gsub("hud_element_", "")
+                    -- Add extension
+                    self.hud_extensions[#self.hud_extensions+1] = {
+                        hud_element_name = hud_element_name,
+                        class_name = class_name,
+                        short_name = short_name,
+                        widgets = data.widgets,
+                        scenegraph = data.scenegraph,
+                        callback = data.on_widgets_loaded,
                         update = data.on_update,
                         mod = this_mod,
                     }
@@ -186,7 +215,26 @@ mod.hook_view_ = function(self, view_name, func_name, this_mod)
             if not self._destroyed then
                 for _, extension in pairs(mod.extensions) do
                     if extension.view_name == view_name and extension[func_name] then
-                        extension[func_name](view_name, a, b)
+                        extension[func_name](view_name, a, b, self)
+                    end
+                end
+            end
+            return func(self, a, b, ...)
+        end)
+        -- self.view_hooks[hook_id] = true
+    end
+end
+
+mod.hook_hud_element = function(self, hud_element_name, func_name, this_mod)
+    local class = self:class_name(hud_element_name)
+    local hook_id = hud_element_name.."_"..func_name
+    -- if CLASS[class] and not self.view_hooks[hook_id] then
+    if CLASS[class] then
+        this_mod:hook(CLASS[class], func_name, function(func, self, a, b, ...)
+            if not self.destroyed then
+                for _, extension in pairs(mod.hud_extensions) do
+                    if extension.hud_element_name == hud_element_name and extension[func_name] then
+                        extension[func_name](hud_element_name, a, b, self)
                     end
                 end
             end
@@ -202,6 +250,124 @@ end
 -- ##### ██╔══██║██║   ██║██║   ██║██╔═██╗ ╚════██║ ###################################################################
 -- ##### ██║  ██║╚██████╔╝╚██████╔╝██║  ██╗███████║ ###################################################################
 -- ##### ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝ ###################################################################
+
+mod.get_relevant_extensions = function(self, name)
+    local relevant_extensions = {}
+    -- Iterate through registered extensions
+    -- Gather relevant entries for this view
+    for _, extension in pairs(mod.extensions) do
+        if (extension.view_name and extension.view_name == name) or
+                (extension.view_name and extension.view_name == name) then
+            relevant_extensions[#relevant_extensions+1] = extension
+        end
+    end
+end
+
+mod:hook(CLASS.HudElementBase, "init", function(func, self, parent, draw_layer, start_scale, definitions, ...)
+    -- Check if current active file
+    if not self.destroyed then
+        local relevant_extensions = {}
+        for _, extension in pairs(mod.hud_extensions) do
+            local metatable = getmetatable(self)
+            if metatable and extension.class_name == metatable.__class_name then
+                relevant_extensions[#relevant_extensions+1] = extension
+            end
+        end
+
+        if #relevant_extensions > 0 then
+            -- Iterate through relevant extensions
+            for _, extension in pairs(relevant_extensions) do
+                -- Definitions path
+                local definition_path = "scripts/ui/hud/elements/"..extension.short_name.."/"..extension.hud_element_name
+                if mod.debug then mod:echo("Path '"..definition_path.."'") end
+                -- -- Load original definitions
+                -- local orig_definitions = Mods.original_require(definition_path)
+                -- -- Check definitions
+                -- if orig_definitions then
+
+                    -- Get scenegraph definition
+                    local scenegraph_definition = definitions.scenegraph_definition
+                    -- Check scenegraph definition
+                    if scenegraph_definition then
+                        local scenegraph = table.clone(scenegraph_definition)
+
+                        -- Iterate through relevant extensions
+                        -- for _, extension in pairs(relevant_extensions) do
+                        -- Check for scenegraph extension
+                        if extension.scenegraph then
+                            scenegraph = mod:extend_scenegraph(extension, scenegraph)
+                        end
+                        -- end
+                        -- Set view scenegraph definition
+                        definitions.scenegraph_definition = scenegraph
+                    else
+                        if mod.debug then mod:echo("No scenegraph found for '"..extension.hud_element_name.."'") end
+                    end
+
+                    -- Get widget definitions
+                    local widget_definitions = definitions.widget_definitions
+                    -- Check widget definitions
+                    if widget_definitions then
+                        local widgets = table.clone(widget_definitions)
+
+                        -- -- Iterate through relevant extensions
+                        -- for _, extension in pairs(relevant_extensions) do
+                        -- Check for scenegraph extension
+                        if extension.widgets then
+                            mod.widgets[extension.hud_element_name] = mod.widgets[extension.hud_element_name] or {}
+                            widgets = mod:extend_widgets(extension, widgets)
+                        end
+                        -- end
+                        -- Set view widget definitions
+                        definitions.widget_definitions = widgets
+                    else
+                        if mod.debug then mod:echo("No widgets found for '"..extension.hud_element_name.."'") end
+                    end
+                -- end
+            end
+
+            -- On open / close
+            for _, extension in pairs(relevant_extensions) do
+                if extension.update then mod:hook_hud_element(extension.hud_element_name, "update", extension.mod) end
+            end
+
+            -- Original function
+            func(self, parent, draw_layer, start_scale, definitions, ...)
+
+            -- Iterate through relevant extensions
+            for _, extension in pairs(relevant_extensions) do
+                -- If widgets were created
+                if mod.widgets[extension.hud_element_name] then
+                    -- -- Iterate through relevant extensions
+                    -- -- Execute widget callback
+                    -- for _, extension in pairs(relevant_extensions) do
+                    -- Check for scenegraph extension
+                    if extension.callback then
+                        local widgets = {}
+                        local widgets_by_name = {}
+                        -- Get widget instances
+                        for name, _ in pairs(extension.widgets) do
+                            -- Get widget
+                            local widget = mod:find_widget(name, self)
+                            -- Set in mod list
+                            mod.widgets[extension.hud_element_name][name] = widget
+                            -- Collect
+                            widgets[#widgets+1] = widget
+                            widgets_by_name[name] = widget
+                        end
+
+                        extension.callback(widgets, widgets_by_name)
+                    end
+                end
+            end
+
+            return
+        else
+            if mod.debug then mod:echo("No hud extensions") end
+        end
+    end
+    func(self, parent, draw_layer, start_scale, definitions, ...)
+end)
 
 mod:hook(CLASS.BaseView, "_on_view_load_complete", function(func, self, loaded, ...)
     -- Check if current active file
@@ -222,6 +388,11 @@ mod:hook(CLASS.BaseView, "_on_view_load_complete", function(func, self, loaded, 
 
         -- Extend view
         if #relevant_extensions > 0 then
+            -- local possible_files = {
+            --     "scripts/ui/views/"..self.view_name.."/"..self.view_name.."_definitions",
+            --     "scripts/hud/elements/"..self.view_name.."/"..self.view_name.."_definitions"
+            --     --scripts\ui\hud\elements\tactical_overlay\hud_element_tactical_overlay.lua
+            -- }
             -- Definitions path
             local definition_path = "scripts/ui/views/"..self.view_name.."/"..self.view_name.."_definitions"
             if mod.debug then mod:echo("Path '"..definition_path.."'") end
@@ -270,7 +441,7 @@ mod:hook(CLASS.BaseView, "_on_view_load_complete", function(func, self, loaded, 
                 end
 
                 -- On open / close
-                for _, extension in pairs(mod.extensions) do
+                for _, extension in pairs(relevant_extensions) do
                     -- if extension.on_enter then mod:hook_view(self.view_name, "on_enter") end
                     -- if extension.on_exit then mod:hook_view(self.view_name, "on_exit") end
                     -- if extension.update then mod:hook_view(self.view_name, "update") end
