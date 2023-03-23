@@ -1008,7 +1008,158 @@ end
 -- ##### ██║  ██║██║ ╚████║██║██║ ╚═╝ ██║    ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║ #####################
 -- ##### ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝     ╚═╝    ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ #####################
 
-mod.animation_events = {
+mod.animation_events_add_packs = {
+	enemy_stagger = {
+		"stagger_fwd",
+		"stagger_fwd_2",
+		"stagger_fwd_3",
+		"stagger_fwd_4",
+		"stagger_fwd_light",
+		"stagger_fwd_light_2",
+		"stagger_fwd_light_3",
+		"stagger_fwd_light_4",
+		"stagger_fwd_light_5",
+		"stagger_fwd_light_6",
+		"stagger_fwd_killshot_1",
+		"stagger_fwd_killshot_2",
+
+		"stagger_bwd",
+		"stagger_bwd_2",
+		"stagger_bwd_3",
+		"stagger_bwd_4",
+		"stagger_bwd_5",
+		"stagger_bwd_6",
+		"stagger_bwd_light",
+		"stagger_bwd_light_2",
+		"stagger_bwd_light_3",
+		"stagger_bwd_light_4",
+		"stagger_bwd_light_5",
+		"stagger_bwd_light_6",
+		"stagger_bwd_light_7",
+		"stagger_bwd_light_8",
+		"stagger_bwd_sticky",
+		"stagger_bwd_sticky_2",
+		"stagger_bwd_sticky_3",
+		"stagger_bwd_killshot_1",
+		"stagger_bwd_killshot_2",
+
+		"stagger_left",
+		"stagger_left_2",
+		"stagger_left_3",
+		"stagger_left_4",
+		"stagger_left_5",
+		"stagger_left_6",
+		"stagger_left_7",
+		"stagger_left_8",
+		"stagger_left_light",
+		"stagger_left_light_2",
+		"stagger_left_light_3",
+		"stagger_left_light_4",
+		"stagger_left_sticky",
+		"stagger_left_sticky_2",
+		"stagger_left_sticky_3",
+		"stagger_left_killshot_1",
+		"stagger_left_killshot_2",
+		"run_stagger_left",
+
+		"stagger_right",
+		"stagger_right_2",
+		"stagger_right_3",
+		"stagger_right_4",
+		"stagger_right_5",
+		"stagger_right_6",
+		"stagger_right_7",
+		"stagger_right_light",
+		"stagger_right_light_2",
+		"stagger_right_light_3",
+		"stagger_right_light_4",
+		"stagger_right_sticky",
+		"stagger_right_sticky_2",
+		"stagger_right_sticky_3",
+		"run_stagger_right",
+
+		"shotgun_run_stagger_01",
+		"shotgun_run_stagger_02",
+		"shotgun_run_stagger_03",
+		"shotgun_run_stagger_04",
+
+		"stun_down",
+    	"stagger_downward",
+
+		"stagger_shield_block_01",
+		"stagger_shield_block_02",
+		"stagger_shield_block_03",
+		"stagger_shield_block_04",
+		"stagger_shield_block_05",
+
+		"stagger_shield_block_right",
+		"stagger_shield_block_left",
+	},
+	enemy_stagger_heavy = {
+		"stagger_fwd_heavy",
+		"stagger_fwd_heavy_2",
+		"stagger_fwd_heavy_3",
+		"stagger_fwd_heavy_4",
+		"stagger_fwd_heavy_5",
+		"stagger_fwd_heavy_6",
+
+		"stagger_bwd_heavy",
+		"stagger_bwd_heavy_2",
+		"stagger_bwd_heavy_3",
+		"stagger_bwd_heavy_4",
+		"stagger_bwd_heavy_5",
+		"stagger_bwd_heavy_6",
+		"stagger_bwd_heavy_7",
+		"stagger_bwd_heavy_8",
+		"stagger_bwd_heavy_9",
+
+		"stagger_left_heavy",
+		"stagger_left_heavy_2",
+		"stagger_left_heavy_3",
+		"stagger_left_heavy_4",
+		"stagger_left_heavy_5",
+		"stagger_left_heavy_6",
+
+		"stagger_right_heavy",
+		"stagger_right_heavy_2",
+		"stagger_right_heavy_3",
+		"stagger_right_heavy_4",
+		"stagger_right_heavy_5",
+		"stagger_right_heavy_6",
+
+		"stagger_up_heavy",
+		"stagger_up_heavy_2",
+		"stagger_up_heavy_3",
+
+		"stagger_down_heavy",
+
+		"stagger_explosion_front",
+		"stagger_explosion_front_2",
+		"stagger_explosion_back",
+		"stagger_explosion_left",
+		"stagger_explosion_right",
+		"stagger_expl_fwd_01",
+		"stagger_expl_bwd_01",
+		"stagger_expl_left_01",
+		"stagger_expl_right_01",
+		"stagger_expl_bwd_01",
+
+		"hit_reaction_forward",
+		"hit_reaction_backward",
+		"hit_reaction_left",
+		"hit_reaction_right",
+
+		"flinch_reaction_down",
+		"flinch_reaction_right",
+		"flinch_reaction_left",
+
+		"stagger_shield_damage_01",
+		"stagger_shield_damage_02",
+		"stagger_shield_damage_03",
+		"stagger_shield_damage_04",
+	},
+}
+mod.animation_events_add_callbacks = {
 	enemy_stagger = function(event_name, event_index, unit, first_person, context)
 		mod:enemy_stagger(event_name, event_index, unit, first_person, context)
 	end,
@@ -1230,151 +1381,153 @@ end
 -- ##### ├┴┐├─┤└─┐││    ││││ │ ├┤ ├┬┘├─┤│   │ ││ ││││└─┐ ##############################################################
 -- ##### └─┘┴ ┴└─┘┴└─┘  ┴┘└┘ ┴ └─┘┴└─┴ ┴└─┘ ┴ ┴└─┘┘└┘└─┘ ##############################################################
 
-mod:hook(CLASS.InteracteeExtension, "stopped", function (func, self, result, ...)
+mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 	-- Check if interactiong successful
 	if result == interaction_results.success then
 		local type = self:interaction_type() or ""
 		local unit = self._interactor_unit
-		local weapon_extension = ScriptUnit.extension(unit, "weapon_system")
-		local player = mod:player_from_unit(unit)
-		local profile = player:profile()
-		if player then
-			local account_id = player:account_id() or player:name()
-			-- Check type
-			if type == "default" or type == "moveable_platform" or type == "scripted_scenario" or type == "luggable_socket" or (type == "door_control_panel" and self._override_contexts.door_control_panel.description ~= "loc_interactable_door") then
-				-- Message
-				if mod:get("message_default") then
-					local color = Color.light_green(255, true)
-					local message = " operated "..TextUtilities.apply_color_to_text("Machinery", color)
-					Managers.event:trigger("event_combat_feed_kill", unit, message)
-				end
-				-- Update scoreboard
-				mod:update_stat("machinery_operated", account_id, 1)
-
-			elseif type == "pocketable" then
-				local name = self._override_contexts.pocketable.description
-				local pickup = mod.pickups[name] or name
-				local option = ""
-				local color = nil
-				-- Set carrying
-				mod.carrying[unit] = mod.carrying[unit] or {}
-				local num_carrying = #mod.carrying[unit]
-				mod.carrying[unit][pickup] = pickup
-				-- Check pickup
-				if pickup == "med_crate_pocketable" then
-					option = "ammo_health_pickup"
-					color = Color.light_blue(255, true)
-				elseif pickup == "ammo_cache_pocketable" then
-					option = "ammo_health_pickup"
-					color = Color.gray(255, true)
-				elseif pickup == "grimoire_pocketable" then
-					option = "scripture_grimoire_pickup"
-					color = Color.citadel_dawnstone(255, true)
-				elseif pickup == "scripture_pocketable" then
-					option = "scripture_grimoire_pickup"
-					color = Color.citadel_dawnstone(255, true)
-				end
-				-- Message
-				if mod:get(option) then
-					local text = Localize(name)
-					-- local character_name = player:name()
-					local message = " picked up "..TextUtilities.apply_color_to_text(text, color)
-					-- mod:echo(character_name..message)
-					Managers.event:trigger("event_combat_feed_kill", unit, message)
-				end
-				-- Update scoreboard
-				mod:update_stat("machinery_operated", account_id, 1)
-
-			elseif type == "health_station" then
-				-- Message
-				if mod:get("message_health_station") then
-					local color = Color.light_blue(255, true)
-					local message = " used "..TextUtilities.apply_color_to_text("Health Station", color)
-					Managers.event:trigger("event_combat_feed_kill", unit, message)
-				end
-				-- Update scoreboard
-				mod:update_stat("heal_station_used", account_id, 1)
-
-			elseif type == "servo_skull" or type == "servo_skull_activator" then
-				mod.interaction_units[self._unit] = unit
-				-- Message
-				if mod:get("message_decoded") then
-					local color = Color.light_green(255, true)
-					local message = " operated "..TextUtilities.apply_color_to_text("Servoskull", color)
-					Managers.event:trigger("event_combat_feed_kill", unit, message)
-				end
-				-- Update scoreboard
-				mod:update_stat("gadget_operated", account_id, 1)
-
-			elseif type == "decoding" or type == "setup_decoding" then
-				mod.interaction_units[self._unit] = unit
-
-			elseif type == "forge_material" then
-				local material = mod.forge_material[self._override_contexts.forge_material.description]
-				local count = mod.forge_material_count[material]
-				-- Message
-				if mod:get("message_forge_material") then
-					local color = Color.orange(255, true)
-					local text = Localize(self._override_contexts.forge_material.description)
-					local message = " picked up "..TextUtilities.apply_color_to_text(text.." ("..count..")", color)
-					Managers.event:trigger("event_combat_feed_kill", unit, message)
-				end
-				-- Update scoreboard
-				mod:update_stat(material, account_id, count)
-
-			elseif type == "ammunition" then
-				-- Get pick up data
-				local ammo = mod.ammunition[self._override_contexts.ammunition.description]
-				-- Get components
-				local visual_loadout_extension = ScriptUnit.extension(unit, "visual_loadout_system")
-				local unit_data_extension = ScriptUnit.extension(unit, "unit_data_system")
-				local wieldable_component = unit_data_extension:read_component("slot_secondary")
-				-- Get ammo numbers
-				local ammo_clip = wieldable_component.current_ammunition_clip
-				local max_ammo_clip = wieldable_component.max_ammunition_clip
-				local max_ammo_reserve = wieldable_component.max_ammunition_reserve
-				local current_ammo_reserve = mod.current_ammo[unit]
-				local max_ammo = max_ammo_reserve + max_ammo_clip
-				local current_ammo = current_ammo_reserve + ammo_clip
-				local max_take = max_ammo - current_ammo
-				if ammo == "small_clip" or ammo == "large_clip" then
-					-- Calculate ammo
-					local pecentage = mod.ammunition_percentage[ammo] or 0
-					local amount = max_ammo_reserve * pecentage
-					local wasted = math.max(amount - max_take, 0)
-					local picked = math.min(amount, max_take)
+		if unit then
+			local weapon_extension = ScriptUnit.extension(unit, "weapon_system")
+			local player = mod:player_from_unit(unit)
+			local profile = player:profile()
+			if player then
+				local account_id = player:account_id() or player:name()
+				-- Check type
+				if type == "default" or type == "moveable_platform" or type == "scripted_scenario" or type == "luggable_socket" or (type == "door_control_panel" and self._override_contexts.door_control_panel.description ~= "loc_interactable_door") then
 					-- Message
-					if mod:get("message_ammo") then
-						local color = Color.gray(255, true)
-						local message = " picked up "..TextUtilities.apply_color_to_text(string.format("%.0f", picked).." ammo ", color).." wasted "..TextUtilities.apply_color_to_text(string.format("%.0f", wasted), color)
+					if mod:get("message_default") then
+						local color = Color.light_green(255, true)
+						local message = " operated "..TextUtilities.apply_color_to_text("Machinery", color)
 						Managers.event:trigger("event_combat_feed_kill", unit, message)
 					end
-					-- Update Scoreboard
-					mod:update_stat("ammo_picked_up", account_id, picked)
-					mod:update_stat("ammo_wasted", account_id, wasted)
-				elseif ammo == "crate" then
-					-- Calculate ammo
-					local picked = max_take
+					-- Update scoreboard
+					mod:update_stat("machinery_operated", account_id, 1)
+
+				elseif type == "pocketable" then
+					local name = self._override_contexts.pocketable.description
+					local pickup = mod.pickups[name] or name
+					local option = ""
+					local color = nil
+					-- Set carrying
+					mod.carrying[unit] = mod.carrying[unit] or {}
+					local num_carrying = #mod.carrying[unit]
+					mod.carrying[unit][pickup] = pickup
+					-- Check pickup
+					if pickup == "med_crate_pocketable" then
+						option = "ammo_health_pickup"
+						color = Color.light_blue(255, true)
+					elseif pickup == "ammo_cache_pocketable" then
+						option = "ammo_health_pickup"
+						color = Color.gray(255, true)
+					elseif pickup == "grimoire_pocketable" then
+						option = "scripture_grimoire_pickup"
+						color = Color.citadel_dawnstone(255, true)
+					elseif pickup == "scripture_pocketable" then
+						option = "scripture_grimoire_pickup"
+						color = Color.citadel_dawnstone(255, true)
+					end
 					-- Message
-					if mod:get("message_ammo") then
-						local color = Color.gray(255, true)
-						local message = " picked up "..TextUtilities.apply_color_to_text(string.format("%.0f", picked).." ammo ", color)
+					if mod:get(option) then
+						local text = Localize(name)
+						-- local character_name = player:name()
+						local message = " picked up "..TextUtilities.apply_color_to_text(text, color)
+						-- mod:echo(character_name..message)
 						Managers.event:trigger("event_combat_feed_kill", unit, message)
 					end
-					-- Update Scoreboard
-					mod:update_stat("ammo_picked_up", account_id, picked)
+					-- Update scoreboard
+					mod:update_stat("machinery_operated", account_id, 1)
+
+				elseif type == "health_station" then
+					-- Message
+					if mod:get("message_health_station") then
+						local color = Color.light_blue(255, true)
+						local message = " used "..TextUtilities.apply_color_to_text("Health Station", color)
+						Managers.event:trigger("event_combat_feed_kill", unit, message)
+					end
+					-- Update scoreboard
+					mod:update_stat("heal_station_used", account_id, 1)
+
+				elseif type == "servo_skull" or type == "servo_skull_activator" then
+					mod.interaction_units[self._unit] = unit
+					-- Message
+					if mod:get("message_decoded") then
+						local color = Color.light_green(255, true)
+						local message = " operated "..TextUtilities.apply_color_to_text("Servoskull", color)
+						Managers.event:trigger("event_combat_feed_kill", unit, message)
+					end
+					-- Update scoreboard
+					mod:update_stat("gadget_operated", account_id, 1)
+
+				elseif type == "decoding" or type == "setup_decoding" then
+					mod.interaction_units[self._unit] = unit
+
+				elseif type == "forge_material" then
+					local material = mod.forge_material[self._override_contexts.forge_material.description]
+					local count = mod.forge_material_count[material]
+					-- Message
+					if mod:get("message_forge_material") then
+						local color = Color.orange(255, true)
+						local text = Localize(self._override_contexts.forge_material.description)
+						local message = " picked up "..TextUtilities.apply_color_to_text(text.." ("..count..")", color)
+						Managers.event:trigger("event_combat_feed_kill", unit, message)
+					end
+					-- Update scoreboard
+					mod:update_stat(material, account_id, count)
+
+				elseif type == "ammunition" then
+					-- Get pick up data
+					local ammo = mod.ammunition[self._override_contexts.ammunition.description]
+					-- Get components
+					local visual_loadout_extension = ScriptUnit.extension(unit, "visual_loadout_system")
+					local unit_data_extension = ScriptUnit.extension(unit, "unit_data_system")
+					local wieldable_component = unit_data_extension:read_component("slot_secondary")
+					-- Get ammo numbers
+					local ammo_clip = wieldable_component.current_ammunition_clip
+					local max_ammo_clip = wieldable_component.max_ammunition_clip
+					local max_ammo_reserve = wieldable_component.max_ammunition_reserve
+					local current_ammo_reserve = mod.current_ammo[unit]
+					local max_ammo = max_ammo_reserve + max_ammo_clip
+					local current_ammo = current_ammo_reserve + ammo_clip
+					local max_take = max_ammo - current_ammo
+					if ammo == "small_clip" or ammo == "large_clip" then
+						-- Calculate ammo
+						local pecentage = mod.ammunition_percentage[ammo] or 0
+						local amount = max_ammo_reserve * pecentage
+						local wasted = math.max(amount - max_take, 0)
+						local picked = math.min(amount, max_take)
+						-- Message
+						if mod:get("message_ammo") then
+							local color = Color.gray(255, true)
+							local message = " picked up "..TextUtilities.apply_color_to_text(string.format("%.0f", picked).." ammo ", color).." wasted "..TextUtilities.apply_color_to_text(string.format("%.0f", wasted), color)
+							Managers.event:trigger("event_combat_feed_kill", unit, message)
+						end
+						-- Update Scoreboard
+						mod:update_stat("ammo_picked_up", account_id, picked)
+						mod:update_stat("ammo_wasted", account_id, wasted)
+					elseif ammo == "crate" then
+						-- Calculate ammo
+						local picked = max_take
+						-- Message
+						if mod:get("message_ammo") then
+							local color = Color.gray(255, true)
+							local message = " picked up "..TextUtilities.apply_color_to_text(string.format("%.0f", picked).." ammo ", color)
+							Managers.event:trigger("event_combat_feed_kill", unit, message)
+						end
+						-- Update Scoreboard
+						mod:update_stat("ammo_picked_up", account_id, picked)
+					end
+				else
+					mod.interaction_units[self._unit] = unit
+					-- mod:log_to_file(type, self)
+					if mod.debug_ then mod:echo("interact end "..type) end
 				end
-			else
-				mod.interaction_units[self._unit] = unit
-				-- mod:log_to_file(type, self)
-				if mod.debug_ then mod:echo("interact end "..type) end
 			end
 		end
 	end
 	func(self, result, ...)
 end)
 
-mod:hook(CLASS.InteracteeExtension, "started", function (func, self, interactor_unit, ...)
+mod:hook(CLASS.InteracteeExtension, "started", function(func, self, interactor_unit, ...)
 
 	mod.interaction_units[self._unit] = interactor_unit
 
@@ -1390,7 +1543,8 @@ end)
 -- ##### ├┴┐│  │ ││  ├┴┐├┤  ││  ├─┤ │  │ ├─┤│  ├┴┐└─┐ #################################################################
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴└─┘─┴┘  ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴└─┘ #################################################################
 
-mod:hook(CLASS.WeaponSystem, "rpc_player_blocked_attack", function (func, self, channel_id, unit_id, attacking_unit_id, hit_world_position, block_broken, weapon_template_id, attack_type_id, ...)
+mod:hook(CLASS.WeaponSystem, "rpc_player_blocked_attack",
+function(func, self, channel_id, unit_id, attacking_unit_id, hit_world_position, block_broken, weapon_template_id, attack_type_id, ...)
 	local player_unit = Managers.state.unit_spawner:unit(unit_id)
 	local player = mod:player_from_unit(player_unit)
 	if player then
@@ -1405,7 +1559,9 @@ end)
 -- #####  ││├─┤│││├─┤│ ┬├┤   ├─┤│││ ││  ├┴┐││  │  └─┐ #################################################################
 -- ##### ─┴┘┴ ┴┴ ┴┴ ┴└─┘└─┘  ┴ ┴┘└┘─┴┘  ┴ ┴┴┴─┘┴─┘└─┘ #################################################################
 
-mod:hook(CLASS.AttackReportManager, "add_attack_result", function (func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
+mod:hook(CLASS.AttackReportManager, "add_attack_result",
+function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage,
+	attack_result, attack_type, damage_efficiency, ...)
 	local player = mod:player_from_unit(attacking_unit)
 	if player then
 		local account_id = player:account_id() or player:name()
@@ -1484,7 +1640,8 @@ mod:hook(CLASS.AttackReportManager, "add_attack_result", function (func, self, d
 	return func(self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
 end)
 
-mod:hook(CLASS.HuskHealthExtension, "init", function (func, self, extension_init_context, unit, extension_init_data, game_session, game_object_id, owner_id, ...)
+mod:hook(CLASS.HuskHealthExtension, "init",
+function(func, self, extension_init_context, unit, extension_init_data, game_session, game_object_id, owner_id, ...)
 	-- Original function
 	func(self, extension_init_context, unit, extension_init_data, game_session, game_object_id, owner_id, ...)
 	-- Set health
@@ -1495,7 +1652,7 @@ end)
 -- ##### ├─┘│  ├─┤│  ├┤   └─┐├┤ ├┬┘└┐┌┘│ │└─┐├┴┐│ ││  │   #############################################################
 -- ##### ┴  ┴─┘┴ ┴└─┘└─┘  └─┘└─┘┴└─ └┘ └─┘└─┘┴ ┴└─┘┴─┘┴─┘ #############################################################
 
-mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_place_unit", function (func, self, channel_id, unit_id, ...)
+mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_place_unit", function(func, self, channel_id, unit_id, ...)
 	local unit = Managers.state.unit_spawner:unit(unit_id, true)
 	local player_unit = mod.interaction_units[unit]
 	local player = mod:player_from_unit(player_unit)
@@ -1516,7 +1673,7 @@ end)
 -- #####  ││├┤ │  │ │ │││││││ ┬ #######################################################################################
 -- ##### ─┴┘└─┘└─┘└─┘─┴┘┴┘└┘└─┘ #######################################################################################
 	
-mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_finished", function (func, self, channel_id, unit_id, ...)
+mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_finished", function(func, self, channel_id, unit_id, ...)
 	local unit = Managers.state.unit_spawner:unit(unit_id, true)
 	local player_unit = mod.interaction_units[unit]
 	local player = mod:player_from_unit(player_unit)
@@ -1535,7 +1692,7 @@ mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_finished", function (fun
 	func(self, channel_id, unit_id, ...)
 end)
 
-mod:hook(CLASS.MinigameSystem, "rpc_minigame_sync_completed", function (func, self, channel_id, unit_id, is_level_unit, ...)
+mod:hook(CLASS.MinigameSystem, "rpc_minigame_sync_completed", function(func, self, channel_id, unit_id, is_level_unit, ...)
 	local unit = Managers.state.unit_spawner:unit(unit_id, is_level_unit)
 	local player_unit = mod.interaction_units[unit]
 	local player = mod:player_from_unit(player_unit)
@@ -1559,7 +1716,7 @@ end)
 -- #####  ││├─┤│││├─┤│ ┬├┤    │ ├─┤├┴┐├┤ │││ ##########################################################################
 -- ##### ─┴┘┴ ┴┴ ┴┴ ┴└─┘└─┘   ┴ ┴ ┴┴ ┴└─┘┘└┘ ##########################################################################
 
-mod:hook(CLASS.PlayerHuskHealthExtension, "fixed_update", function (func, self, unit, dt, t, ...)
+mod:hook(CLASS.PlayerHuskHealthExtension, "fixed_update", function(func, self, unit, dt, t, ...)
 	if unit then
 		local player = mod:player_from_unit(unit)
 		if player and self._damage and self._damage > 0 then
@@ -1574,7 +1731,7 @@ end)
 -- ##### │  │ │└─┐ │ │ ││││  ├┴┐││  │    ├┤ ├┤ ├┤  ││ #################################################################
 -- ##### └─┘└─┘└─┘ ┴ └─┘┴ ┴  ┴ ┴┴┴─┘┴─┘  └  └─┘└─┘─┴┘ #################################################################
 
-mod:hook(CLASS.HudElementCombatFeed, "event_combat_feed_kill", function (func, self, attacking_unit, attacked_unit, ...)
+mod:hook(CLASS.HudElementCombatFeed, "event_combat_feed_kill", function(func, self, attacking_unit, attacked_unit, ...)
 	if type(attacked_unit) == "string" then
 		local message = attacked_unit
 		local color_name = self:_get_unit_presentation_name(attacking_unit) or "NONE"
@@ -1590,7 +1747,7 @@ end)
 -- #####    ██║   ██╔══╝  ╚════██║   ██║    ###########################################################################
 -- #####    ██║   ███████╗███████║   ██║    ###########################################################################
 -- #####    ╚═╝   ╚══════╝╚══════╝   ╚═╝    ###########################################################################
-mod:hook(CLASS.ScanningEventSystem, "rpc_scanning_device_finished", function (func, self, channel_id, unit_id, ...)
+mod:hook(CLASS.ScanningEventSystem, "rpc_scanning_device_finished", function(func, self, channel_id, unit_id, ...)
 	local unit = Managers.state.unit_spawner:unit(unit_id, true)
 	local player_unit = mod.interaction_units[unit]
 	local player = mod:player_from_unit(player_unit)
@@ -1603,7 +1760,7 @@ mod:hook(CLASS.ScanningEventSystem, "rpc_scanning_device_finished", function (fu
 	func(self, channel_id, unit_id, ...)
 end)
 -- ScanningDeviceExtension.finished_event = function (self)
-mod:hook(CLASS.ScanningDeviceExtension, "finished_event", function (func, self, ...)
+mod:hook(CLASS.ScanningDeviceExtension, "finished_event", function(func, self, ...)
 	-- local unit = Managers.state.unit_spawner:unit(unit_id, true)
 	local player_unit = mod.interaction_units[self._unit]
 	local player = mod:player_from_unit(player_unit)

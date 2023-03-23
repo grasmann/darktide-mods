@@ -8,9 +8,6 @@ local mod = get_mod("graphics_options")
 -- #####  ╚═════╝ ╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ ###########################################################
 
 mod:add_global_localize_strings({
-	gm_framerate_cap_144 = {
-		en = "144",
-	},
 	gm_sun_shadow = {
 		en = "Dynamic Sun Shadows",
 		de = "Dynamische Sonnenschatten",

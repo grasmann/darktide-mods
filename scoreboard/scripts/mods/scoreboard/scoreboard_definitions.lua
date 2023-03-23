@@ -1,3 +1,8 @@
+local mod = get_mod("scoreboard")
+
+local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
+local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
+
 local iteration_types = {
     ADD = {
         value = function(add_value, old_value)
@@ -82,7 +87,14 @@ local scenegraphs = {
             horizontal_alignment = "center",
             size = {settings.width, settings.height},
             position = {0, 0, 101}
-        }
+        },
+        -- save_button = {
+        --     vertical_alignment = "right",
+        --     parent = "screen",
+        --     horizontal_alignment = "bottom",
+        --     size = {500, 64},
+        --     position = {0, 0, 0}
+        -- },
     },
     end_player_view = {
         card_carousel = {
@@ -174,6 +186,28 @@ local widgets = {
             }
         },
     },
+    -- save_button = UIWidget.create_definition({
+	-- 	size = {500, 100},
+	-- 	pass_template = ButtonPassTemplates.settings_button(500, 100, 500, true),
+	-- 	init = function (parent, widget, entry, callback_name)
+	-- 		local content = widget.content
+
+	-- 		content.hotspot.pressed_callback = function ()
+	-- 			local is_disabled = entry.disabled or false
+
+	-- 			if is_disabled then
+	-- 				return
+	-- 			end
+
+	-- 			callback(parent, callback_name, widget, entry)()
+	-- 		end
+
+	-- 		local display_name = entry.display_name
+	-- 		content.text = Managers.localization:localize(display_name)
+	-- 		content.button_text = Localize("loc_settings_change")
+	-- 		content.entry = entry
+	-- 	end
+	-- }, "save_button", nil, {500, 100}),
 }
 local alternate_row_style = {
     value = "",
