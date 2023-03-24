@@ -6,14 +6,14 @@ return {
 	allow_rehooking = true,
 	options = {
 		widgets = {
-			{
-				["setting_id"] = "open_scoreboard_history",
-				["type"] = "keybind",
-				["default_value"] = {"f5"},
-				["keybind_trigger"] = "pressed",
-				["keybind_type"] = "view_toggle",
-				["view_name"] = "scoreboard_history_view"
-			},
+			-- {
+			-- 	["setting_id"] = "open_scoreboard_history",
+			-- 	["type"] = "keybind",
+			-- 	["default_value"] = {"f5"},
+			-- 	["keybind_trigger"] = "pressed",
+			-- 	["keybind_type"] = "view_toggle",
+			-- 	["view_name"] = "scoreboard_history_view"
+			-- },
 			{
 				["setting_id"] = "message_ammo",
 				["type"] = "checkbox",
