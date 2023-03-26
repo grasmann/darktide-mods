@@ -1,4 +1,5 @@
 local mod = get_mod("scoreboard")
+local DMF = get_mod("DMF")
 mod.debug_ = false
 mod.text = "scoreboard"
 
@@ -9,14 +10,14 @@ mod.text = "scoreboard"
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
-local InteractionSettings = Mods.original_require("scripts/settings/interaction/interaction_settings")
+local InteractionSettings = mod:original_require("scripts/settings/interaction/interaction_settings")
 local interaction_results = InteractionSettings.results
-local DamageProfileTemplates = Mods.original_require("scripts/settings/damage/damage_profile_templates")
+local DamageProfileTemplates = mod:original_require("scripts/settings/damage/damage_profile_templates")
 
-local ScoreboardDefinitions = Mods.file.exec_with_return("scoreboard/scripts/mods/scoreboard/scoreboard_definitions")
-local TextUtilities = Mods.original_require("scripts/utilities/ui/text")
-local Breed = Mods.original_require("scripts/utilities/breed")
-local WalletSettings = Mods.original_require("scripts/settings/wallet_settings")
+local ScoreboardDefinitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_definitions")
+local TextUtilities = mod:original_require("scripts/utilities/ui/text")
+local Breed = mod:original_require("scripts/utilities/breed")
+local WalletSettings = mod:original_require("scripts/settings/wallet_settings")
 -- local AnimationEvents = Mods.AnimationEvents
 -- local Options = Mods.Options
 
@@ -35,7 +36,7 @@ mod.pickups_text = {
 
 mod.crates_equiped = {}
 
-mod.carrying = {}
+-- mod.carrying = {}
 
 mod.forge_material = {
 	loc_pickup_small_metal = "small_metal",
@@ -71,11 +72,11 @@ mod.bosses = {
 	"renegade_captain",
 }
 
+-- mod.coherency_timer = 10
+
 mod.current_health = {}
 
 mod.last_enemy_interaction = {}
-
-mod.coherency_timer = 10
 
 mod.micro_row = {height = 5, font = 5}
 mod.small_row = {height = 14, font = 11}
@@ -996,10 +997,7 @@ mod.scoreboard = {
 	-- Options = Mods.Options
 -- end
 
-mod.update = function(main_dt)
-	mod:update_coherency(main_dt)
-	mod:update_carrying(main_dt)
-end
+
 
 -- #####  █████╗ ███╗   ██╗██╗███╗   ███╗    ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #####################
 -- ##### ██╔══██╗████╗  ██║██║████╗ ████║    ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #####################
@@ -1217,73 +1215,11 @@ mod.file_name = function(self, url)
 	return result
 end
 
--- ##### ┌─┐┌─┐┬ ┬┌─┐┬─┐┌─┐┌┐┌┌─┐┬ ┬ ##################################################################################
--- ##### │  │ │├─┤├┤ ├┬┘├┤ ││││  └┬┘ ##################################################################################
--- ##### └─┘└─┘┴ ┴└─┘┴└─└─┘┘└┘└─┘ ┴  ##################################################################################
-
-mod.update_coherency = function(self, dt)
-	if Managers and Managers.player then
-		if mod.coherency_timer then
-			if mod.coherency_timer <= 0 then
-				local player_manager = Managers.player
-				local players = player_manager:players()
-				for _, player in pairs(players) do
-					local unit = player.player_unit
-					if unit then
-						local coherency_extension = ScriptUnit.has_extension(unit, "coherency_system")
-						if coherency_extension then
-							local num_units_in_coherency = coherency_extension:num_units_in_coherency()
-							local account_id = player:account_id() or player:name()
-							mod:update_stat("coherency_efficiency", account_id, num_units_in_coherency)
-						end
-					end
-				end
-				mod.coherency_timer = 10
-			else
-				mod.coherency_timer = mod.coherency_timer - dt
-			end
-		end
-	end
-end
-
 -- ##### ┌─┐┌─┐┬─┐┬─┐┬ ┬┬┌┐┌┌─┐  ┌─┐┌┐  ┬┌─┐┌─┐┌┬┐┌─┐ #################################################################
 -- ##### │  ├─┤├┬┘├┬┘└┬┘│││││ ┬  │ │├┴┐ │├┤ │   │ └─┐ #################################################################
 -- ##### └─┘┴ ┴┴└─┴└─ ┴ ┴┘└┘└─┘  └─┘└─┘└┘└─┘└─┘ ┴ └─┘ #################################################################
 
-mod.carrying_units = function(self)
-	local num = 0
-	for unit, pickups in pairs(self.carrying) do
-		num = num + 1
-	end
-	return num
-end
 
-mod.update_carrying = function(self, dt)
-	if Managers and Managers.player then
-		local num_carrying = self:carrying_units()
-		if num_carrying > 0 then
-			for unit, pickups in pairs(self.carrying) do
-				for _, name in pairs(pickups) do
-					local carrying = nil
-					if name == "scripture_pocketable" then
-						carrying = "tomes"
-					elseif name == "grimoire_pocketable" then
-						carrying = "grims"
-					else
-						carrying = "other"
-					end
-					if carrying then
-						local player = self:player_from_unit(unit)
-						if player then
-							local account_id = player:account_id() or player:name()
-							mod:update_stat("carrying_"..carrying, account_id, dt)
-						end
-					end
-				end
-			end
-		end
-	end
-end
 
 -- ##### ┌─┐┌┐┌┌─┐┌┬┐┬ ┬  ┌─┐┌┬┐┌─┐┌─┐┌─┐┌─┐┬─┐ #######################################################################
 -- ##### ├┤ │││├┤ │││└┬┘  └─┐ │ ├─┤│ ┬│ ┬├┤ ├┬┘ #######################################################################
@@ -1772,3 +1708,7 @@ mod:hook(CLASS.ScanningDeviceExtension, "finished_event", function(func, self, .
 	end
 	func(self, ...)
 end)
+
+-- Load plugins
+mod:io_dofile("scoreboard/scripts/mods/scoreboard/plugins/coherency")
+mod:io_dofile("scoreboard/scripts/mods/scoreboard/plugins/carrying")

@@ -273,6 +273,12 @@ local legend_inputs = {
         display_name = "loc_settings_menu_close_menu",
         alignment = "left_alignment"
     },
+    {
+        input_action = "hotkey_menu_special_2",
+        on_pressed_callback = "cb_reload_cache_pressed",
+        display_name = "loc_scoreboard_scan",
+        alignment = "left_alignment"
+    },
     -- {
     --     input_action = "next",
     --     display_name = "loc_settings_menu_reset_to_default",

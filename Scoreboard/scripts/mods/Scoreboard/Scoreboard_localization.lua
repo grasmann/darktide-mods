@@ -12,6 +12,14 @@ mod:add_global_localize_strings({
 		en = "Scoreboard History",
 		de = "Scoreboard Historie",
 	},
+	loc_scoreboard_save = {
+		en = "Save Scoreboard",
+		de = "Scoreboard Speichern",
+	},
+	loc_scoreboard_scan = {
+		en = "Scan Directory for files",
+		de = "Ordner nach Dateien durchsuchen",
+	},
 })
 
 -- ##### ██╗      ██████╗  ██████╗ █████╗ ██╗      ####################################################################
@@ -26,6 +34,14 @@ return {
 		en = "Scoreboard",
 		["zh-cn"] = "记分板",
 	},
+	group_plugins = {
+		en = "Plugins",
+		de = "Plugins",
+	},
+	group_messages = {
+		en = "Messages",
+		de = "Nachrichten",
+	},
 	mod_description = {
 		en = "Adds a scoreboard with various individual stats at the end of missions.",
 		de = "Zeigt nach Missionsende ein Scoreboard mit individuellen Statistiken.",
@@ -38,6 +54,21 @@ return {
 	mod_save_scoreboard_to_history = {
 		en = "Save Scoreboard",
 		de = "Scoreboard Speichern",
+	},
+
+	open_scoreboard = {
+		en = "Open Scoreboard",
+		de = "Scoreboard öffnen",
+	},
+	open_scoreboard_history = {
+		en = "Open Scoreboard History",
+		de = "Scoreboard Historie öffnen",
+	},
+
+	-- Cohereny
+	plugin_coherency_efficiency = {
+		en = "Coherency Efficiency",
+		de = "Kohärenz Effizienz"
 	},
 	-- Ammo
 	message_ammo = {

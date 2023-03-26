@@ -1,4 +1,3 @@
-
 local mod = get_mod("scoreboard")
 
 local OptionsViewSettings = mod:original_require("scripts/ui/views/options_view/options_view_settings")

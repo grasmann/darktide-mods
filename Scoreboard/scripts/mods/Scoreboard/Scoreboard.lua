@@ -8,18 +8,14 @@ local DMF = get_mod("DMF")
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
+local ScoreboardData = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_data")
+
 -- mod.initialized = mod.initialized or false
 mod.debug_inventory = false
 mod.debug_value = false
 mod.initialized = false
 mod.move_time = 0.75
-
-local _io = DMF:persistent_table("_io")
-_io.initialized = _io.initialized or false
-if not _io.initialized then _io = DMF.deepcopy(Mods.lua.io) end
-local _os = DMF:persistent_table("_os")
-_os.initialized = _os.initialized or false
-if not _os.initialized then _os = DMF.deepcopy(Mods.lua.os) end
+mod.options = ScoreboardData.options
 
 -- ##### ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #########################################################
 -- ##### ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #########################################################
@@ -31,7 +27,6 @@ if not _os.initialized then _os = DMF.deepcopy(Mods.lua.os) end
 -- On gameplay enter
 function mod.on_game_state_changed(status, state_name)
 	if state_name == "StateGameplay" and status == "enter" then
-		-- Clear scores
 		mod:clear()
 	end
 end
@@ -40,6 +35,18 @@ end
 function mod.on_all_mods_loaded()
 	mod:load_package("packages/ui/views/end_player_view/end_player_view")
 	mod:load_package("packages/ui/views/store_item_detail_view/store_item_detail_view")
+	mod:collect_scoreboard_rows()
+end
+
+function mod.reload_mods()
+    mod:collect_scoreboard_rows()
+end
+
+function mod.update(main_dt)
+	-- mod:update_scoreboard_rows(main_dt)
+
+	mod:update_coherency(main_dt)
+	mod:update_carrying(main_dt)
 end
 
 -- ##### ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗ ###################################
@@ -52,12 +59,15 @@ end
 -- Initialize Mod
 mod.initialize = function(self)
 	if not self.initialized then
+		self.player_manager = Managers.player
+
 		self.text = "Scoreboard"
 		self.rows = {}
 		self.widgets = {}
 		self.widgets_by_name = {}
-		self.definitions = Mods.file.exec_with_return("scoreboard/scripts/mods/scoreboard", "scoreboard_definitions")
-		self.ui_font_settings = Mods.original_require("scripts/managers/ui/ui_font_settings")
+		-- self.definitions = Mods.file.exec_with_return("scoreboard/scripts/mods/scoreboard", "scoreboard_definitions")
+		self.definitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_definitions")
+		self.ui_font_settings = self:original_require("scripts/managers/ui/ui_font_settings")
 
 		-- Collect scoreboard entries
 		self:load_mod_scoreboards()
@@ -68,46 +78,6 @@ mod.initialize = function(self)
 		-- Create UI extension
 		self:create_ui_extension(widgets)
 	end
-
-	self:add_require_path("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view")
-	self:add_require_path("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view_definitions")
-	self:add_require_path("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view_settings")
-
-	self:register_view({
-		view_name = "scoreboard_history_view",
-		view_settings = {
-			init_view_function = function (ingame_ui_context)
-				return true
-			end,
-			class = "ScoreboardHistoryView",
-			disable_game_world = false,
-			display_name = "loc_scoreboard_history_view_display_name",
-			game_world_blur = 1.1,
-			load_always = true,
-			load_in_hub = true,
-			package = "packages/ui/views/options_view/options_view",
-			path = "scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view",
-			state_bound = true,
-			enter_sound_events = {
-				"wwise/events/ui/play_ui_enter_short"
-			},
-			exit_sound_events = {
-				"wwise/events/ui/play_ui_back_short"
-			},
-			wwise_states = {
-				options = "ingame_menu"
-			},
-		},
-		view_transitions = {},
-		view_options = {
-			close_all = false,
-			close_previous = false,
-			close_transition_time = nil,
-			transition_time = nil
-		}
-	})
-
-	self:io_dofile("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view")
 
 	self.initialized = true
 end
@@ -186,6 +156,17 @@ mod.create_ui_extension = function(self, widgets)
 				self:move_scoreboard(-300, 0)
 			end)
 		end
+		-- self.ui_injection.scoreboard_history_view = table.clone(self.ui_injection.end_view)
+		-- self.ui_injection.scoreboard_history_view.definitions = "scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view_definitions"
+		-- -- scripts/ui/views/scoreboard_history_view/scoreboard_history_view_definitions
+		-- self.ui_injection.scoreboard_history_view.on_widgets_loaded = function(widgets, widgets_by_name)
+		-- 	self.widgets = widgets
+		-- 	self.widgets_by_name = widgets_by_name
+		-- 	self:fill_values()
+		-- 	self:move_scoreboard(0, -300, function()
+		-- 		self:move_scoreboard(-300, 0)
+		-- 	end)
+		-- end
 	end
 end
 
@@ -967,207 +948,7 @@ mod.fill_values = function(self)
 	-- mod:get_scoreboard_history_entries()
 end
 
-mod.appdata_path = function(self)
-	local appdata = _os.getenv('APPDATA')
-	return appdata.."/Fatshark/Darktide/scoreboard_history/"
-end
 
-mod.create_scoreboard_history_directory = function(self)
-	_os.execute('mkdir '..self:appdata_path()) -- ?
-	_os.execute("mkdir '"..self:appdata_path().."'") -- ?
-	_os.execute('mkdir "'..self:appdata_path()..'"') -- Windows
-end
-
-mod.create_scoreboard_history_entry_path = function(self)
-	local date = _os.time(_os.date("!*t"))
-	return self:appdata_path()..tostring(date)..".lua"
-end
-
-mod.get_scoreboard_history_entries = function(self, callback)
-
-	-- Lua implementation of PHP scandir function
-	local function scandir(directory)
-		local i, t, popen = 0, {}, _io.popen
-		local pfile = popen('dir "'..directory..'" /b')
-		for filename in pfile:lines() do
-			i = i + 1
-			t[i] = filename
-		end
-		pfile:close()
-		return t
-	end
-
-	local entries = {}
-	local appdata = self:appdata_path()
-	local files = scandir(appdata)
-	for _, file in pairs(files) do
-		local file_path = appdata..file
-		local entry = self:load_scoreboard_history_entry(file_path, file, true)
-		entries[#entries+1] = entry
-	end
-
-	return entries
-end
-
-mod.update_scoreboard_history_entries = function(self)
-
-end
-
-mod.save_scoreboard_history_entry = function(self)
-	-- Create appdata folder
-	self:create_scoreboard_history_directory()
-
-
-	local path = self:create_scoreboard_history_entry_path()
-	-- Open file
-	local file = assert(_io.open(path, "w+"))
-	-- Players
-	local players = Managers.player:players()
-	if self.debug_value then
-		players = {
-			{
-				account_id = function()
-					return mod:me()
-				end,
-				name = function()
-					return "Rudge"
-				end,
-			},
-			{
-				account_id = function()
-					return "lol"
-				end,
-				name = function()
-					return "lol"
-				end,
-			},
-			{
-				account_id = function()
-					return "rofl"
-				end,
-				name = function()
-					return "rofl"
-				end,
-			},
-			{
-				account_id = function()
-					return "omg"
-				end,
-				name = function()
-					return "omg"
-				end,
-			},
-		}
-	end
-	local count = math.min(#players, 4)
-	file:write("#players;"..tostring(count).."\n")
-	for p = 1, 4, 1 do
-		local player = players[p]
-		if player then
-			local account_id = player:account_id() or player:name()
-			file:write(p..";"..player:account_id()..";"..player:name().."\n")
-		end
-	end
-	-- Rows
-	for _, row in pairs(self.rows) do
-		-- local id = _..row.name
-		-- local val_count = row.data and #row.data or 0
-		local val_count = 0
-		if row.data and type(row.data) == "table" then
-			for k,v in pairs(row.data) do
-				val_count = val_count + 1
-			end
-		end
-		file:write("#row;"..row.name..";".._..";"..val_count.."\n")
-		for account_id, data in pairs(row.data) do
-			file:write(account_id..";"..data.score..";"..(data.is_best and "1" or "0")..";"..(data.is_worst and "1" or "0").."\n")
-		end
-	end
-	-- Close file
-	file:close()
-end
-
-mod.load_scoreboard_history_entry = function(self, path, date, only_head)
-	local entry = {
-		date = nil,
-		players = {},
-		rows = {},
-	}
-
-	-- split("a,b,c", ",") => {"a", "b", "c"}
-	local function split(s, sep)
-		local fields = {}
-		local sep = sep or " "
-		local pattern = string.format("([^%s]+)", sep)
-		string.gsub(s, pattern, function(c) fields[#fields + 1] = c end)
-		return fields
-	end
-
-	local function entry_player_id(account_id)
-		for id, data in pairs(entry.players) do
-			if data.account_id == account_id then
-				return id
-			end
-		end
-	end
-
-	-- Open file
-	-- local file = assert(_io.open(path, "r"))
-	local reading = ""
-	local count = 0
-	local row_index = 0
-	for line in _io.lines(path) do
-		-- self:echo(line)
-		-- Players
-		local player_match = line:match("#players")
-		local row_match = line:match("#row")
-		if player_match or reading == "players" then
-			if player_match then
-				reading = "players"
-				count = tonumber(split(line, ";")[2])
-				entry.date = _os.date(_, tonumber(date))
-				-- self:echo(entry.date)
-			elseif reading == "players" and count > 0 then
-				local player_info = split(line, ";")
-				entry.players[player_info[1]] = {
-					account_id = player_info[2],
-					name = player_info[3],
-				}
-				count = count - 1
-				if count <= 0 then reading = "" end
-			end
-		elseif (row_match or reading == "row") and not only_head then
-			if row_match then
-				local info = split(line, ";")
-				reading = "row"
-				row_index = tonumber(info[3])
-				count = tonumber(info[4])
-				entry.rows[row_index] = {
-					name = info[2],
-					data = {},
-				}
-			elseif reading == "row" and count > 0 and row_index > 0 then
-				local val_info = split(line, ";")
-				local score = tonumber(val_info[2])
-				entry.rows[row_index].data[val_info[1]] = {
-					score = score,
-					value = score,
-					is_best = val_info[3] == "1" and true or false,
-					is_worst = val_info[4]  == "1" and true or false,
-				}
-				count = count - 1
-				if count <= 0 then
-					reading = ""
-					row_index = 0
-				end
-			end
-		end
-	end
-	-- Players
-
-	-- self:dtf(entry, "scoreboard_entry", 8)
-	return entry
-end
 
 -- mod.save_scoreboard_history_entry = function(self)
 	
@@ -1186,87 +967,87 @@ end
 -- end
 
 
-local count_time = 0.1
-local animating_row = nil
-mod.row_to_animate = function(self)
-	for row_index, data in pairs(self.rows) do
-		local row = self.widgets_by_name["scoreboard_row_"..(row_index + 1)]
-		if not data.was_animated and row and data.empty ~= true and data.visible ~= false then
-			-- animating_row = row_index
-			self.row_timer = count_time
-			local col = 0
-			-- for index, data in pairs(data.data) do
-			for _, player in pairs(self.players) do
-				col = col + 1
-				if col < 5 then
-					local account_id = player:account_id() or player:name()
-					if data.data[account_id] then
-						data.data[account_id].end_score = data.data[account_id].score
-						data.data[account_id].score = 0
-						row.content["text"..col] = data.data[account_id].score
-					end
-				end
-			end
-			data.was_animated = true
-			self:echo("animating row '"..row_index.."'")
-			return row_index
-		end
-	end
-end
+-- local count_time = 0.1
+-- local animating_row = nil
+-- mod.row_to_animate = function(self)
+-- 	for row_index, data in pairs(self.rows) do
+-- 		local row = self.widgets_by_name["scoreboard_row_"..(row_index + 1)]
+-- 		if not data.was_animated and row and data.empty ~= true and data.visible ~= false then
+-- 			-- animating_row = row_index
+-- 			self.row_timer = count_time
+-- 			local col = 0
+-- 			-- for index, data in pairs(data.data) do
+-- 			for _, player in pairs(self.players) do
+-- 				col = col + 1
+-- 				if col < 5 then
+-- 					local account_id = player:account_id() or player:name()
+-- 					if data.data[account_id] then
+-- 						data.data[account_id].end_score = data.data[account_id].score
+-- 						data.data[account_id].score = 0
+-- 						row.content["text"..col] = data.data[account_id].score
+-- 					end
+-- 				end
+-- 			end
+-- 			data.was_animated = true
+-- 			self:echo("animating row '"..row_index.."'")
+-- 			return row_index
+-- 		end
+-- 	end
+-- end
 
-mod.update_scoreboard_rows = function(self, dt)
-	-- self:echo("test")
-	if not animating_row then
-		animating_row = self:row_to_animate()
-	end
-	if animating_row then
-		local row = self.widgets_by_name["scoreboard_row_"..(animating_row + 1)]
-		if row then
-			local players = {}
-			for _, player in pairs(self.players) do
-				players[#players+1] = player
-			end
-			local data = self.rows[animating_row]
-			if self.row_timer <= 0 then
-				local decimals = data.decimals or 0
-				local col = 0
-				-- for index, data in pairs(data_row.data) do
-				for _, player in pairs(players) do
-					col = col + 1
-					if col < 5 then
-						local account_id = player:account_id() or player:name()
-						if data.data[account_id] then
-							data.data[account_id].score = data.data[account_id].end_score
-							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
-								mod:shorten_value(data.data[account_id].score, decimals)
-							row.content["text"..col] = text
-						end
-					end
-				end
-				-- data_row.was_animated = false
-				animating_row = nil
-			else
-				local percentage = self.row_timer / count_time
-				local decimals = data.decimals or 0
-				local col = 0
-				-- for index, data in pairs(data_row.data) do
-				for _, player in pairs(players) do
-					col = col + 1
-					if col < 5 then
-						local account_id = player:account_id() or player:name()
-						if data.data[account_id] then
-							data.data[account_id].score = data.data[account_id].end_score - data.data[account_id].end_score * percentage
-							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
-								mod:shorten_value(data.data[account_id].score, decimals)
-							row.content["text"..col] = text
-						end
-					end
-				end
-				self.row_timer = self.row_timer - dt
-			end
-		end
-	end
-end
+-- mod.update_scoreboard_rows = function(self, dt)
+-- 	-- self:echo("test")
+-- 	if not animating_row then
+-- 		animating_row = self:row_to_animate()
+-- 	end
+-- 	if animating_row then
+-- 		local row = self.widgets_by_name["scoreboard_row_"..(animating_row + 1)]
+-- 		if row then
+-- 			local players = {}
+-- 			for _, player in pairs(self.players) do
+-- 				players[#players+1] = player
+-- 			end
+-- 			local data = self.rows[animating_row]
+-- 			if self.row_timer <= 0 then
+-- 				local decimals = data.decimals or 0
+-- 				local col = 0
+-- 				-- for index, data in pairs(data_row.data) do
+-- 				for _, player in pairs(players) do
+-- 					col = col + 1
+-- 					if col < 5 then
+-- 						local account_id = player:account_id() or player:name()
+-- 						if data.data[account_id] then
+-- 							data.data[account_id].score = data.data[account_id].end_score
+-- 							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
+-- 								mod:shorten_value(data.data[account_id].score, decimals)
+-- 							row.content["text"..col] = text
+-- 						end
+-- 					end
+-- 				end
+-- 				-- data_row.was_animated = false
+-- 				animating_row = nil
+-- 			else
+-- 				local percentage = self.row_timer / count_time
+-- 				local decimals = data.decimals or 0
+-- 				local col = 0
+-- 				-- for index, data in pairs(data_row.data) do
+-- 				for _, player in pairs(players) do
+-- 					col = col + 1
+-- 					if col < 5 then
+-- 						local account_id = player:account_id() or player:name()
+-- 						if data.data[account_id] then
+-- 							data.data[account_id].score = data.data[account_id].end_score - data.data[account_id].end_score * percentage
+-- 							local text = data.is_time and mod:shorten_time(data.data[account_id].score, decimals) or 
+-- 								mod:shorten_value(data.data[account_id].score, decimals)
+-- 							row.content["text"..col] = text
+-- 						end
+-- 					end
+-- 				end
+-- 				self.row_timer = self.row_timer - dt
+-- 			end
+-- 		end
+-- 	end
+-- end
 
 -- ##### ██╗███╗   ██╗ ██████╗██╗     ██╗   ██╗██████╗ ███████╗███████╗ ###############################################
 -- ##### ██║████╗  ██║██╔════╝██║     ██║   ██║██╔══██╗██╔════╝██╔════╝ ###############################################
@@ -1275,7 +1056,88 @@ end
 -- ##### ██║██║ ╚████║╚██████╗███████╗╚██████╔╝██████╔╝███████╗███████║ ###############################################
 -- ##### ╚═╝╚═╝  ╚═══╝ ╚═════╝╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝╚══════╝ ###############################################
 
-Mods.file.dofile("scoreboard/scripts/mods/scoreboard/scoreboard_default_plugins")
+-- Load scoreboard view
+mod:add_require_path("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view")
+mod:add_require_path("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_definitions")
+mod:add_require_path("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
+mod:register_view({
+	view_name = "scoreboard_view",
+	view_settings = {
+		init_view_function = function (ingame_ui_context)
+			return true
+		end,
+		class = "ScoreboardView",
+		disable_game_world = false,
+		display_name = "loc_scoreboard_view_display_name",
+		game_world_blur = 0,
+		load_always = true,
+		load_in_hub = true,
+		package = "packages/ui/views/options_view/options_view",
+		path = "scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view",
+		state_bound = false,
+		enter_sound_events = {
+			"wwise/events/ui/play_ui_enter_short"
+		},
+		exit_sound_events = {
+			"wwise/events/ui/play_ui_back_short"
+		},
+		wwise_states = {
+			options = "ingame_menu"
+		},
+	},
+	view_transitions = {},
+	view_options = {
+		close_all = false,
+		close_previous = false,
+		close_transition_time = nil,
+		transition_time = nil
+	}
+})
+mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view")
+
+-- Load scoreboard history view
+mod:add_require_path("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view")
+mod:add_require_path("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view_definitions")
+mod:add_require_path("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view_settings")
+mod:register_view({
+	view_name = "scoreboard_history_view",
+	view_settings = {
+		init_view_function = function (ingame_ui_context)
+			return true
+		end,
+		class = "ScoreboardHistoryView",
+		disable_game_world = false,
+		display_name = "loc_scoreboard_history_view_display_name",
+		game_world_blur = 1.1,
+		load_always = true,
+		load_in_hub = true,
+		package = "packages/ui/views/options_view/options_view",
+		path = "scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view",
+		state_bound = true,
+		enter_sound_events = {
+			"wwise/events/ui/play_ui_enter_short"
+		},
+		exit_sound_events = {
+			"wwise/events/ui/play_ui_back_short"
+		},
+		wwise_states = {
+			options = "ingame_menu"
+		},
+	},
+	view_transitions = {},
+	view_options = {
+		close_all = false,
+		close_previous = false,
+		close_transition_time = nil,
+		transition_time = nil
+	}
+})
+mod:io_dofile("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view")
+
+-- Load scoreboard components
+mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_rows")
+mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_history")
+mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_default_plugins")
 
 -- ##### ██╗███╗   ██╗██╗████████╗ ####################################################################################
 -- ##### ██║████╗  ██║██║╚══██╔══╝ ####################################################################################
@@ -1285,4 +1147,5 @@ Mods.file.dofile("scoreboard/scripts/mods/scoreboard/scoreboard_default_plugins"
 -- ##### ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝    ####################################################################################
 
 mod:initialize()
-mod:fill_values()
+
+-- mod:fill_values()
