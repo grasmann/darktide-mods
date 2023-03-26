@@ -4,7 +4,7 @@ local DMF = get_mod("DMF")
 local ScoreboardDefinitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_definitions")
 local WalletSettings = mod:original_require("scripts/settings/wallet_settings")
 
-local DEBUG = true
+local DEBUG = false
 
 mod.registered_scoreboard_rows = {}
 mod.scoreboard_rows = {

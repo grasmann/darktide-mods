@@ -10,6 +10,7 @@ local UIWidgetGrid = mod:original_require("scripts/ui/widget_logic/ui_widget_gri
 local ViewElementInputLegend = mod:original_require("scripts/ui/view_elements/view_element_input_legend/view_element_input_legend")
 local CATEGORIES_GRID = 1
 local USE_EXAMPLE_DATA = true
+local DEBUG = false
 
 local ScoreboardView = class("ScoreboardView", "BaseView")
 
@@ -148,7 +149,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
             local s, e = string.find(this_text, this_row.text)
             if s then
                 local before = string.sub(this_text, 1, s-1)
-                mod:echo("start:'"..tostring(s).."' end:'"..tostring(e).."' before:'"..before.."'")
+                if DEBUG then mod:echo("start:'"..tostring(s).."' end:'"..tostring(e).."' before:'"..before.."'") end
 
                 -- Calculate parent text width
                 local font_style = parent.style.style_id_1
@@ -161,7 +162,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
 
                 pass_template[1].style.offset[1] = pass_template[1].style.offset[1] + text_width + 5
             else
-                mod:echo("'"..this_row.text.."' not found in '"..this_text.."'")
+                if DEBUG then mod:echo("'"..this_row.text.."' not found in '"..this_text.."'") end
             end
         end
     end
@@ -257,7 +258,7 @@ end
 ScoreboardView.cb_on_save_pressed = function(self)
     -- Remove legend
     self:remove_input_legend()
-    mod:echo("Scoreboard saved")
+    if DEBUG then mod:echo("Scoreboard saved") end
 end
 
 -- ####################################################################################################################
