@@ -126,7 +126,7 @@ return {
 		en = "Buttons Operated",
 		de = "Schalter betätigt",
 		["zh-cn"] = "操作按钮",
-		ru = "Кнопок нажато",
+		ru = "Кнопка нажата",
 	},
 	message_default_description = {
 		en = "Shows message when a player operates a normal button",
