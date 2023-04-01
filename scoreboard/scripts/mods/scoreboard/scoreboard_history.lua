@@ -275,6 +275,7 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 	file:close()
 	-- Add to cache
 	local cache = mod:get_scoreboard_history_entries_cache()
+	if not cache then cache = {} end
 	cache[#cache+1] = file_name
 	mod:set_scoreboard_history_entries_cache(cache)
 end
