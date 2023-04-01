@@ -133,8 +133,8 @@ mod.register_scoreboard_history_view = function(self)
 		},
 		view_transitions = {},
 		view_options = {
-			close_all = false,
-			close_previous = false,
+			close_all = true,
+			close_previous = true,
 			close_transition_time = nil,
 			transition_time = nil
 		}

@@ -9,6 +9,7 @@ local grid_width = grid_size[1]
 local settings_grid_width = 1000
 local settings_value_width = 500
 local settings_value_height = 64
+local base_z = 0
 
 local settings_ = {
     width = 1000,
@@ -17,8 +18,6 @@ local settings_ = {
     header_column = 300,
     column = 170,
 }
-
-local base_z = 0
 
 local blueprints = {
     scoreboard_row = {
@@ -165,7 +164,7 @@ local blueprints = {
                     default_color = Color.terminal_frame(200, true),
                     hover_color = Color.terminal_frame(200, true),
                     size = {settings_.width - 32, 0},
-                    offset = {16, 0, base_z - 40},
+                    offset = {16, 0, base_z},
                 }
             },
         }

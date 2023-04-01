@@ -14,9 +14,11 @@ local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local ViewElementInputLegend = mod:original_require("scripts/ui/view_elements/view_element_input_legend/view_element_input_legend")
 local USE_EXAMPLE_DATA = true
 local DEBUG = false
-local base_z = 40
+local base_z = 100
 
 local ScoreboardDefinitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_definitions")
+
+local ScoreboardView = class("ScoreboardView", "BaseView")
 
 -- ##### ██╗███╗   ██╗██╗████████╗ ####################################################################################
 -- ##### ██║████╗  ██║██║╚══██╔══╝ ####################################################################################
@@ -24,8 +26,6 @@ local ScoreboardDefinitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/
 -- ##### ██║██║╚██╗██║██║   ██║    ####################################################################################
 -- ##### ██║██║ ╚████║██║   ██║    ####################################################################################
 -- ##### ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝    ####################################################################################
-
-local ScoreboardView = class("ScoreboardView", "BaseView")
 
 ScoreboardView.init = function(self, settings, context)
     self._player_manager = Managers.player
@@ -100,19 +100,12 @@ ScoreboardView._setup_input_legend = function(self)
     end
 end
 
--- ####################################################################################################################
--- ##### ENTER ########################################################################################################
--- ####################################################################################################################
-
-ScoreboardView.row_example_data = function(self, row)
-    if row.example and type(row.example) == "table" then
-        return math.random(row.example[1], row.example[2])
-    elseif row.example and type(row.example) == "number" then
-        return row.example
-    else
-        return math.random(0, 10)
-    end
-end
+-- ##### ███████╗███╗   ██╗████████╗███████╗██████╗  ##################################################################
+-- ##### ██╔════╝████╗  ██║╚══██╔══╝██╔════╝██╔══██╗ ##################################################################
+-- ##### █████╗  ██╔██╗ ██║   ██║   █████╗  ██████╔╝ ##################################################################
+-- ##### ██╔══╝  ██║╚██╗██║   ██║   ██╔══╝  ██╔══██╗ ##################################################################
+-- ##### ███████╗██║ ╚████║   ██║   ███████╗██║  ██║ ##################################################################
+-- ##### ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝ ##################################################################
 
 ScoreboardView.delete_row_widgets = function(self)
     if self.row_widgets then
@@ -178,9 +171,13 @@ ScoreboardView.get_rows_in_groups = function(self)
                 this_group[#this_group+1] = row
                 rows[#rows+1] = row.name
             end
+
+            -- if row.score then
+            --     score_rows[#score_rows+1] = row
+            -- end
         end
         if group ~= "none" and group ~= "bottom" and #rows > 0 then
-            this_group[#this_group+1] = {
+            local new_row = {
                 mod = group_mods[group],
                 name = "row_"..group.."_score",
                 text = "row_"..group.."_score",
@@ -189,9 +186,11 @@ ScoreboardView.get_rows_in_groups = function(self)
                 summary = rows,
                 score = true,
             }
-            for _, row in pairs(rows) do
-                score_rows[#score_rows+1] = row
-            end
+            -- for _, row in pairs(rows) do
+            --     score_rows[#score_rows+1] = row
+            -- end
+            this_group[#this_group+1] = new_row
+            score_rows[#score_rows+1] = new_row.name
         end
     end
     sorted[#sorted+1] = {{
@@ -212,6 +211,13 @@ ScoreboardView.get_rows_in_groups = function(self)
     -- mod:dtf(sorted, "sorted", 5)
     return sorted
 end
+
+-- ##### ██████╗  ██████╗ ██╗    ██╗███████╗ ##########################################################################
+-- ##### ██╔══██╗██╔═══██╗██║    ██║██╔════╝ ##########################################################################
+-- ##### ██████╔╝██║   ██║██║ █╗ ██║███████╗ ##########################################################################
+-- ##### ██╔══██╗██║   ██║██║███╗██║╚════██║ ##########################################################################
+-- ##### ██║  ██║╚██████╔╝╚███╔███╔╝███████║ ##########################################################################
+-- ##### ╚═╝  ╚═╝ ╚═════╝  ╚══╝╚══╝ ╚══════╝ ##########################################################################
 
 ScoreboardView.create_row_widget = function(self, index, current_offset, visible_rows, this_row)
     local widget = nil
@@ -355,7 +361,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
             end
         end
     end
-
+    
     -- Normalize score row values
     if this_row.score then
         self:normalize_values(players, this_row)
@@ -370,6 +376,8 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         end
     end
 
+    local zero_setting = mod:get("zero_values")
+    local worst_setting = mod:get("worst_values")
     -- Set row texts
     if not header and #children == 0 then
         local player_num = 1
@@ -389,9 +397,31 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                 decimals = this_row.is_time and 1 or decimals
                 score = this_row.is_time and mod:shorten_time(score, decimals) or mod:shorten_value(score, decimals)
 
-                -- Best
-                if row_data and row_data.is_best then
-                    score = TextUtilities.apply_color_to_text(tostring(score), Color.ui_orange_light(255, true))
+                -- Colors
+                local color = nil
+                local num_score = score
+                num_score = string.gsub(num_score, "s", "")
+                -- num_score = string.gsub(num_score, "s", "")
+                num_score = tonumber(num_score)
+                if num_score and num_score == 0 and zero_setting > 1 then
+                    -- Zero values
+                    if zero_setting == 2 then
+                        pass_template[player_pass_map[player_num]].style.visible = false
+                    elseif zero_setting == 3 then
+                        color = Color.ui_grey_light(255, true)
+                    end
+                else
+                    if row_data and row_data.is_best then
+                        color = Color.ui_orange_light(255, true)
+                    elseif row_data and row_data.is_worst then
+                        if worst_setting == 2 then
+                            color = Color.ui_grey_light(255, true)
+                        end
+                    end
+                end
+
+                if color then
+                    score = TextUtilities.apply_color_to_text(tostring(score), color)
                     if mod:is_me(account_id) and this_row.parent then
                         -- Replace text with colored text in parent widget
                         local parent = self._widgets_by_name["scoreboard_row_"..this_row.parent]
@@ -399,13 +429,13 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                             local parent_text = parent.content.text
                             local s, e = string.find(parent_text, this_text)
                             if s then
-                                local colored = TextUtilities.apply_color_to_text(this_text, Color.ui_orange_light(255, true))
+                                local colored = TextUtilities.apply_color_to_text(this_text, color)
                                 parent.content.text = parent_text:gsub(this_text, colored)
                             end
                         end
                     elseif mod:is_me(account_id) then
                         -- Replace header text with colored text
-                        pass_template[1].value = TextUtilities.apply_color_to_text(tostring(pass_template[1].value), Color.ui_orange_light(255, true))
+                        pass_template[1].value = TextUtilities.apply_color_to_text(tostring(pass_template[1].value), color)
                     end
                 end
 
@@ -611,9 +641,12 @@ ScoreboardView.setup_row_widgets = function(self)
     -- end)
 end
 
--- ####################################################################################################################
--- ##### EXIT #########################################################################################################
--- ####################################################################################################################
+-- ##### ███████╗██╗  ██╗██╗████████╗ #################################################################################
+-- ##### ██╔════╝╚██╗██╔╝██║╚══██╔══╝ #################################################################################
+-- ##### █████╗   ╚███╔╝ ██║   ██║    #################################################################################
+-- ##### ██╔══╝   ██╔██╗ ██║   ██║    #################################################################################
+-- ##### ███████╗██╔╝ ██╗██║   ██║    #################################################################################
+-- ##### ╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    #################################################################################
 
 ScoreboardView.remove_input_legend = function(self)
     if self._input_legend_element then
@@ -628,9 +661,12 @@ ScoreboardView.on_exit = function(self)
     ScoreboardView.super.on_exit(self)
 end
 
--- ####################################################################################################################
--- ##### CALLBACKS ####################################################################################################
--- ####################################################################################################################
+-- #####  ██████╗ █████╗ ██╗     ██╗     ██████╗  █████╗  ██████╗██╗  ██╗███████╗ #####################################
+-- ##### ██╔════╝██╔══██╗██║     ██║     ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝ #####################################
+-- ##### ██║     ███████║██║     ██║     ██████╔╝███████║██║     █████╔╝ ███████╗ #####################################
+-- ##### ██║     ██╔══██║██║     ██║     ██╔══██╗██╔══██║██║     ██╔═██╗ ╚════██║ #####################################
+-- ##### ╚██████╗██║  ██║███████╗███████╗██████╔╝██║  ██║╚██████╗██║  ██╗███████║ #####################################
+-- #####  ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝ #####################################
 
 ScoreboardView.cb_on_save_pressed = function(self)
     -- Remove legend
@@ -640,9 +676,12 @@ ScoreboardView.cb_on_save_pressed = function(self)
     if DEBUG then mod:echo("Scoreboard saved") end
 end
 
--- ####################################################################################################################
--- ##### UPDATE #######################################################################################################
--- ####################################################################################################################
+-- ##### ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗ ###########################################################
+-- ##### ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝ ###########################################################
+-- ##### ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗   ###########################################################
+-- ##### ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝   ###########################################################
+-- ##### ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗ ###########################################################
+-- #####  ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝ ###########################################################
 
 ScoreboardView.update_scoreboard_offset = function(self)
     local widgets = self._widgets_by_name
@@ -747,9 +786,12 @@ ScoreboardView.animate_rows = function(self, dt)
     self._wait_timer = self._wait_timer + dt
 end
 
--- ####################################################################################################################
--- ##### DRAW #########################################################################################################
--- ####################################################################################################################
+-- ##### ██████╗ ██████╗  █████╗ ██╗    ██╗ ###########################################################################
+-- ##### ██╔══██╗██╔══██╗██╔══██╗██║    ██║ ###########################################################################
+-- ##### ██║  ██║██████╔╝███████║██║ █╗ ██║ ###########################################################################
+-- ##### ██║  ██║██╔══██╗██╔══██║██║███╗██║ ###########################################################################
+-- ##### ██████╔╝██║  ██║██║  ██║╚███╔███╔╝ ###########################################################################
+-- ##### ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝  ###########################################################################
 
 ScoreboardView.draw = function(self, dt, t, input_service, layer)
     self:_draw_elements(dt, t, self._ui_renderer, self._render_settings, input_service)

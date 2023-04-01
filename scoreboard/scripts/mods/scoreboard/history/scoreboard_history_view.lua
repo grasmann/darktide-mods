@@ -11,9 +11,12 @@ local CATEGORIES_GRID = 1
 
 local ScoreboardHistoryView = class("ScoreboardHistoryView", "BaseView")
 
--- ####################################################################################################################
--- ##### INIT #########################################################################################################
--- ####################################################################################################################
+-- ##### ██╗███╗   ██╗██╗████████╗ ####################################################################################
+-- ##### ██║████╗  ██║██║╚══██╔══╝ ####################################################################################
+-- ##### ██║██╔██╗ ██║██║   ██║    ####################################################################################
+-- ##### ██║██║╚██╗██║██║   ██║    ####################################################################################
+-- ##### ██║██║ ╚████║██║   ██║    ####################################################################################
+-- ##### ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝    ####################################################################################
 
 ScoreboardHistoryView.init = function(self, settings)
     self._definitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view_definitions")
@@ -42,9 +45,12 @@ ScoreboardHistoryView._setup_offscreen_gui = function(self)
     self._ui_offscreen_renderer = ui_manager:create_renderer(class_name .. "_ui_offscreen_renderer", self._offscreen_world)
 end
 
--- ####################################################################################################################
--- ##### ENTER ########################################################################################################
--- ####################################################################################################################
+-- ##### ███████╗███╗   ██╗████████╗███████╗██████╗  ##################################################################
+-- ##### ██╔════╝████╗  ██║╚══██╔══╝██╔════╝██╔══██╗ ##################################################################
+-- ##### █████╗  ██╔██╗ ██║   ██║   █████╗  ██████╔╝ ##################################################################
+-- ##### ██╔══╝  ██║╚██╗██║   ██║   ██╔══╝  ██╔══██╗ ##################################################################
+-- ##### ███████╗██║ ╚████║   ██║   ███████╗██║  ██║ ##################################################################
+-- ##### ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝ ##################################################################
 
 ScoreboardHistoryView.on_enter = function(self)
     -- if not self._scorebaord_history_entries then
@@ -63,6 +69,71 @@ ScoreboardHistoryView.on_enter = function(self)
     self:_setup_input_legend()
     self:_enable_settings_overlay(false)
     self:_update_grid_navigation_selection()
+end
+
+ScoreboardHistoryView._setup_input_legend = function(self)
+    self._input_legend_element = self:_add_element(ViewElementInputLegend, "input_legend", 10)
+    local legend_inputs = self._definitions.legend_inputs
+    for i = 1, #legend_inputs do
+        local legend_input = legend_inputs[i]
+        local on_pressed_callback = legend_input.on_pressed_callback and callback(self, legend_input.on_pressed_callback)
+        local visibility_function = legend_input.visibility_function
+        if legend_input.display_name == "loc_scoreboard_delete" then
+            visibility_function = function()
+                return self.entry
+            end
+        end
+        self._input_legend_element:add_entry(legend_input.display_name, legend_input.input_action, visibility_function, on_pressed_callback, legend_input.alignment)
+    end
+end
+
+ScoreboardHistoryView._enable_settings_overlay = function(self, enable)
+    local widgets_by_name = self._widgets_by_name
+    local settings_overlay_widget = widgets_by_name.settings_overlay
+    settings_overlay_widget.content.visible = enable
+end
+
+ScoreboardHistoryView.present_category_widgets = function(self, category)
+    if self.entry then
+        if self.ui_manager:view_active("scoreboard_view") and not self.ui_manager:is_view_closing("scoreboard_view") then
+            self.ui_manager:close_view("scoreboard_view", true)
+        end
+        local players = {}
+        for _, player_data in pairs(self.entry.players) do
+            players[#players+1] = {
+                account_id = function()
+                    return player_data.account_id
+                end,
+                name = function()
+                    return player_data.name
+                end,
+            }
+        end
+        self.ui_manager:open_view("scoreboard_view", nil, false, false, nil, {
+            scoreboard_history = true,
+            rows = self.entry.rows,
+            players = players,
+        }, {use_transition_ui = false})
+    end
+end
+
+-- #####  ██████╗ ██████╗ ██╗██████╗  #################################################################################
+-- ##### ██╔════╝ ██╔══██╗██║██╔══██╗ #################################################################################
+-- ##### ██║  ███╗██████╔╝██║██║  ██║ #################################################################################
+-- ##### ██║   ██║██╔══██╗██║██║  ██║ #################################################################################
+-- ##### ╚██████╔╝██║  ██║██║██████╔╝ #################################################################################
+-- #####  ╚═════╝ ╚═╝  ╚═╝╚═╝╚═════╝  #################################################################################
+
+ScoreboardHistoryView._setup_content_grid_scrollbar = function(self, grid, widget_id, grid_scenegraph_id, grid_pivot_scenegraph_id)
+    local widgets_by_name = self._widgets_by_name
+    local scrollbar_widget = widgets_by_name[widget_id]
+  
+    if DMF:get("dmf_options_scrolling_speed") and widgets_by_name and widgets_by_name["scrollbar"] then
+        widgets_by_name["scrollbar"].content.scroll_speed = DMF:get("dmf_options_scrolling_speed")
+    end
+  
+    grid:assign_scrollbar(scrollbar_widget, grid_pivot_scenegraph_id, grid_scenegraph_id)
+    grid:set_scrollbar_progress(0)
 end
 
 ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
@@ -169,76 +240,6 @@ ScoreboardHistoryView._setup_grid = function (self, widgets, alignment_list, gri
     return grid
 end
 
-ScoreboardHistoryView._setup_input_legend = function(self)
-    self._input_legend_element = self:_add_element(ViewElementInputLegend, "input_legend", 10)
-    local legend_inputs = self._definitions.legend_inputs
-    for i = 1, #legend_inputs do
-        local legend_input = legend_inputs[i]
-        local on_pressed_callback = legend_input.on_pressed_callback and callback(self, legend_input.on_pressed_callback)
-        local visibility_function = legend_input.visibility_function
-        if legend_input.display_name == "loc_scoreboard_delete" then
-            visibility_function = function()
-                return self.entry
-            end
-        end
-        self._input_legend_element:add_entry(legend_input.display_name, legend_input.input_action, visibility_function, on_pressed_callback, legend_input.alignment)
-    end
-end
-
-ScoreboardHistoryView._enable_settings_overlay = function(self, enable)
-    local widgets_by_name = self._widgets_by_name
-    local settings_overlay_widget = widgets_by_name.settings_overlay
-    settings_overlay_widget.content.visible = enable
-end
-
-ScoreboardHistoryView._setup_content_grid_scrollbar = function(self, grid, widget_id, grid_scenegraph_id, grid_pivot_scenegraph_id)
-    local widgets_by_name = self._widgets_by_name
-    local scrollbar_widget = widgets_by_name[widget_id]
-  
-    if DMF:get("dmf_options_scrolling_speed") and widgets_by_name and widgets_by_name["scrollbar"] then
-        widgets_by_name["scrollbar"].content.scroll_speed = DMF:get("dmf_options_scrolling_speed")
-    end
-  
-    grid:assign_scrollbar(scrollbar_widget, grid_pivot_scenegraph_id, grid_scenegraph_id)
-    grid:set_scrollbar_progress(0)
-end
-
-ScoreboardHistoryView.cb_on_category_pressed = function(self, widget, entry)
-    local pressed_function = entry.pressed_function
-  
-    -- local text = widget.file_path or ""
-    self.entry = mod:load_scoreboard_history_entry(widget.file_path, widget.file, false)
-    -- mod:dtf(self.entry, "self.entry", 5)
-
-    if pressed_function then
-        pressed_function(self, widget, entry)
-    end
-end
-
-ScoreboardHistoryView.present_category_widgets = function(self, category)
-    if self.entry then
-        if self.ui_manager:view_active("scoreboard_view") and not self.ui_manager:is_view_closing("scoreboard_view") then
-            self.ui_manager:close_view("scoreboard_view", true)
-        end
-        local players = {}
-        for _, player_data in pairs(self.entry.players) do
-            players[#players+1] = {
-                account_id = function()
-                    return player_data.account_id
-                end,
-                name = function()
-                    return player_data.name
-                end,
-            }
-        end
-        self.ui_manager:open_view("scoreboard_view", nil, false, false, nil, {
-            scoreboard_history = true,
-            rows = self.entry.rows,
-            players = players,
-        }, {use_transition_ui = false})
-    end
-end
-
 ScoreboardHistoryView._setup_content_widgets = function(self, content, scenegraph_id, callback_name)
     local definitions = self._definitions
     local widget_definitions = {}
@@ -246,7 +247,7 @@ ScoreboardHistoryView._setup_content_widgets = function(self, content, scenegrap
     local alignment_list = {}
     local amount = #content
 
-    for i = 1, amount do
+    for i = amount, 1, -1 do
         local entry = content[i]
         local verified = true
 
@@ -293,9 +294,120 @@ ScoreboardHistoryView._setup_content_widgets = function(self, content, scenegrap
     return widgets, alignment_list
 end
 
--- ####################################################################################################################
--- ##### EXIT #########################################################################################################
--- ####################################################################################################################
+ScoreboardHistoryView._update_grid_navigation_selection = function(self)
+    local selected_column_index = self._selected_navigation_column_index
+    local selected_row_index = self._selected_navigation_row_index
+  
+    if self._using_cursor_navigation then
+        if selected_row_index or selected_column_index then
+            self:_set_selected_navigation_widget(nil)
+        end
+    else
+        local navigation_widgets = self._navigation_widgets[selected_column_index]
+        local selected_widget = navigation_widgets and navigation_widgets[selected_row_index] or self._selected_settings_widget
+    
+        if selected_widget then
+            local selected_grid = self._navigation_grids[selected_column_index]
+    
+            if not selected_grid or not selected_grid:selected_grid_index() then
+            self:_set_selected_navigation_widget(selected_widget)
+            end
+        elseif navigation_widgets or self._settings_content_widgets then
+            self:_set_default_navigation_widget()
+        elseif self._default_category then
+            self:present_category_widgets(self._default_category)
+        end
+    end
+end
+
+ScoreboardHistoryView._change_navigation_column = function(self, column_index)
+    local navigation_widgets = self._navigation_widgets
+    local num_columns = #navigation_widgets
+    local success = false
+  
+    if column_index < 1 or num_columns < column_index or self._navigation_column_changed_this_frame then
+          return success
+    else
+        success = true
+        self._navigation_column_changed_this_frame = true
+    end
+  
+    local widgets = navigation_widgets[column_index]
+  
+    for i = 1, #widgets do
+        local widget = widgets[i]
+        local content = widget.content
+        local hotspot = content.hotspot or content.button_hotspot
+    
+        if hotspot and hotspot.is_selected then
+            self:_set_selected_navigation_widget(widget)
+            return success
+        end
+    end
+  
+    local navigation_grid = self._navigation_grids[column_index]
+    local scrollbar_progress = navigation_grid:scrollbar_progress()
+  
+    for i = 1, #widgets do
+        local widget = widgets[i]
+        local content = widget.content
+        local hotspot = content.hotspot or content.button_hotspot
+    
+        if hotspot then
+            local scroll_position = navigation_grid:get_scrollbar_percentage_by_index(i) or 0
+    
+            if scrollbar_progress <= scroll_position then
+                self:_set_selected_navigation_widget(widget)
+                return success
+            end
+        end
+    end
+end
+  
+ScoreboardHistoryView._set_default_navigation_widget = function(self)
+    local navigation_widgets = self._navigation_widgets
+    for i = 1, #navigation_widgets do
+        if self:_change_navigation_column(i) then
+            return
+        end
+    end
+end
+  
+ScoreboardHistoryView._set_selected_navigation_widget = function(self, widget)
+    local widget_name = widget and widget.name
+    local selected_row, selected_column = nil, nil
+    local navigation_widgets = self._navigation_widgets
+  
+    for column_index = 1, #navigation_widgets do
+        local widgets = navigation_widgets[column_index]
+        local _, focused_grid_index = self:_set_focused_grid_widget(widgets, widget_name)
+    
+        if focused_grid_index then
+            self:_set_selected_grid_widget(widgets, widget_name)
+    
+            selected_row = focused_grid_index
+            selected_column = column_index
+        end
+    end
+  
+    local navigation_grids = self._navigation_grids
+  
+    for column_index = 1, #navigation_grids do
+        local selected_grid = column_index == selected_column
+        local navigation_grid = navigation_grids[column_index]
+        navigation_grid:select_grid_index(selected_grid and selected_row or nil, nil, nil, column_index == CATEGORIES_GRID)
+    end
+  
+    self._selected_navigation_row_index = selected_row
+    self._selected_navigation_column_index = selected_column
+end
+
+-- ##### ███████╗██╗  ██╗██╗████████╗ #################################################################################
+-- ##### ██╔════╝╚██╗██╔╝██║╚══██╔══╝ #################################################################################
+-- ##### █████╗   ╚███╔╝ ██║   ██║    #################################################################################
+-- ##### ██╔══╝   ██╔██╗ ██║   ██║    #################################################################################
+-- ##### ███████╗██╔╝ ██╗██║   ██║    #################################################################################
+-- ##### ╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    #################################################################################
 
 ScoreboardHistoryView.on_exit = function(self)
     if self._input_legend_element then
@@ -330,9 +442,56 @@ ScoreboardHistoryView.on_exit = function(self)
     ScoreboardHistoryView.super.on_exit(self)
 end
 
--- ####################################################################################################################
--- ##### UPDATE #######################################################################################################
--- ####################################################################################################################
+-- #####  ██████╗ █████╗ ██╗     ██╗     ██████╗  █████╗  ██████╗██╗  ██╗███████╗ #####################################
+-- ##### ██╔════╝██╔══██╗██║     ██║     ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝ #####################################
+-- ##### ██║     ███████║██║     ██║     ██████╔╝███████║██║     █████╔╝ ███████╗ #####################################
+-- ##### ██║     ██╔══██║██║     ██║     ██╔══██╗██╔══██║██║     ██╔═██╗ ╚════██║ #####################################
+-- ##### ╚██████╗██║  ██║███████╗███████╗██████╔╝██║  ██║╚██████╗██║  ██╗███████║ #####################################
+-- #####  ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝ #####################################
+
+ScoreboardHistoryView.cb_on_category_pressed = function(self, widget, entry)
+    local pressed_function = entry.pressed_function
+  
+    -- local text = widget.file_path or ""
+    self.entry = mod:load_scoreboard_history_entry(widget.file_path, widget.file, false)
+    -- mod:dtf(self.entry, "self.entry", 5)
+
+    if pressed_function then
+        pressed_function(self, widget, entry)
+    end
+end
+
+ScoreboardHistoryView.cb_on_back_pressed = function(self)
+    self.ui_manager:close_view("scoreboard_history_view")
+end
+
+ScoreboardHistoryView.cb_delete_pressed = function(self)
+    if self.entry then
+        if mod:delete_scoreboard_history_entry(self.entry.name) then
+            mod:close_scoreboard_view()
+            self.entry = nil
+            self:_setup_category_config()
+        end
+    end
+end
+
+ScoreboardHistoryView.cb_reload_cache_pressed = function(self)
+    if self.ui_manager:view_active("scoreboard_view") and not self.ui_manager:is_view_closing("scoreboard_view") then
+        self.ui_manager:close_view("scoreboard_view", true)
+    end
+    self.entry = nil
+    self:_setup_category_config(true)
+end
+  
+ScoreboardHistoryView.cb_reset_category_to_default = function(self)	
+end
+
+-- ##### ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗ ###########################################################
+-- ##### ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝ ###########################################################
+-- ##### ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗   ###########################################################
+-- ##### ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝   ###########################################################
+-- ##### ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗ ###########################################################
+-- #####  ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝ ###########################################################
 
 ScoreboardHistoryView.update = function(self, dt, t, input_service, view_data)
     local drawing_view = view_data and view_data.drawing_view
@@ -460,142 +619,12 @@ ScoreboardHistoryView.close_keybind_popup = function(self, force_close)
     self._active_keybind_widget = nil
 end
 
-ScoreboardHistoryView._update_grid_navigation_selection = function(self)
-    local selected_column_index = self._selected_navigation_column_index
-    local selected_row_index = self._selected_navigation_row_index
-  
-    if self._using_cursor_navigation then
-        if selected_row_index or selected_column_index then
-            self:_set_selected_navigation_widget(nil)
-        end
-    else
-        local navigation_widgets = self._navigation_widgets[selected_column_index]
-        local selected_widget = navigation_widgets and navigation_widgets[selected_row_index] or self._selected_settings_widget
-    
-        if selected_widget then
-            local selected_grid = self._navigation_grids[selected_column_index]
-    
-            if not selected_grid or not selected_grid:selected_grid_index() then
-            self:_set_selected_navigation_widget(selected_widget)
-            end
-        elseif navigation_widgets or self._settings_content_widgets then
-            self:_set_default_navigation_widget()
-        elseif self._default_category then
-            self:present_category_widgets(self._default_category)
-        end
-    end
-end
-
-ScoreboardHistoryView._change_navigation_column = function(self, column_index)
-    local navigation_widgets = self._navigation_widgets
-    local num_columns = #navigation_widgets
-    local success = false
-  
-    if column_index < 1 or num_columns < column_index or self._navigation_column_changed_this_frame then
-          return success
-    else
-        success = true
-        self._navigation_column_changed_this_frame = true
-    end
-  
-    local widgets = navigation_widgets[column_index]
-  
-    for i = 1, #widgets do
-        local widget = widgets[i]
-        local content = widget.content
-        local hotspot = content.hotspot or content.button_hotspot
-    
-        if hotspot and hotspot.is_selected then
-            self:_set_selected_navigation_widget(widget)
-            return success
-        end
-    end
-  
-    local navigation_grid = self._navigation_grids[column_index]
-    local scrollbar_progress = navigation_grid:scrollbar_progress()
-  
-    for i = 1, #widgets do
-        local widget = widgets[i]
-        local content = widget.content
-        local hotspot = content.hotspot or content.button_hotspot
-    
-        if hotspot then
-            local scroll_position = navigation_grid:get_scrollbar_percentage_by_index(i) or 0
-    
-            if scrollbar_progress <= scroll_position then
-                self:_set_selected_navigation_widget(widget)
-                return success
-            end
-        end
-    end
-end
-  
-ScoreboardHistoryView._set_default_navigation_widget = function(self)
-    local navigation_widgets = self._navigation_widgets
-    for i = 1, #navigation_widgets do
-        if self:_change_navigation_column(i) then
-            return
-        end
-    end
-end
-  
-ScoreboardHistoryView._set_selected_navigation_widget = function(self, widget)
-    local widget_name = widget and widget.name
-    local selected_row, selected_column = nil, nil
-    local navigation_widgets = self._navigation_widgets
-  
-    for column_index = 1, #navigation_widgets do
-        local widgets = navigation_widgets[column_index]
-        local _, focused_grid_index = self:_set_focused_grid_widget(widgets, widget_name)
-    
-        if focused_grid_index then
-            self:_set_selected_grid_widget(widgets, widget_name)
-    
-            selected_row = focused_grid_index
-            selected_column = column_index
-        end
-    end
-  
-    local navigation_grids = self._navigation_grids
-  
-    for column_index = 1, #navigation_grids do
-        local selected_grid = column_index == selected_column
-        local navigation_grid = navigation_grids[column_index]
-        navigation_grid:select_grid_index(selected_grid and selected_row or nil, nil, nil, column_index == CATEGORIES_GRID)
-    end
-  
-    self._selected_navigation_row_index = selected_row
-    self._selected_navigation_column_index = selected_column
-end
-
-ScoreboardHistoryView.cb_on_back_pressed = function(self)
-    self.ui_manager:close_view("scoreboard_history_view")
-end
-
-ScoreboardHistoryView.cb_delete_pressed = function(self)
-    if self.entry then
-        if mod:delete_scoreboard_history_entry(self.entry.name) then
-            mod:close_scoreboard_view()
-            self.entry = nil
-            self:_setup_category_config()
-        end
-    end
-end
-
-ScoreboardHistoryView.cb_reload_cache_pressed = function(self)
-    if self.ui_manager:view_active("scoreboard_view") and not self.ui_manager:is_view_closing("scoreboard_view") then
-        self.ui_manager:close_view("scoreboard_view", true)
-    end
-    self.entry = nil
-    self:_setup_category_config(true)
-end
-  
-ScoreboardHistoryView.cb_reset_category_to_default = function(self)	
-end
-
--- ####################################################################################################################
--- ##### DRAW #########################################################################################################
--- ####################################################################################################################
+-- ##### ██████╗ ██████╗  █████╗ ██╗    ██╗ ###########################################################################
+-- ##### ██╔══██╗██╔══██╗██╔══██╗██║    ██║ ###########################################################################
+-- ##### ██║  ██║██████╔╝███████║██║ █╗ ██║ ###########################################################################
+-- ##### ██║  ██║██╔══██╗██╔══██║██║███╗██║ ###########################################################################
+-- ##### ██████╔╝██║  ██║██║  ██║╚███╔███╔╝ ###########################################################################
+-- ##### ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝  ###########################################################################
 
 ScoreboardHistoryView.draw = function(self, dt, t, input_service, layer)
     self:_draw_elements(dt, t, self._ui_renderer, self._render_settings, input_service)

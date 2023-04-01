@@ -70,6 +70,34 @@ return {
 		en = "Scoreboard History Cached",
 		de = "Scoreboard History Zwischengespeichert",
 	},
+	zero_values = {
+		en = "Zero Values",
+		de = "Nullwerte",
+	},
+	zero_values_normal = {
+		en = "Normal",
+		de = "Normal",
+	},
+	zero_values_hide = {
+		en = "Hidden",
+		de = "Versteckt",
+	},
+	zero_values_dark = {
+		en = "Dark",
+		de = "Dunkel",
+	},
+	worst_values = {
+		en = "Worst Values",
+		de = "Schlechteste Werte",
+	},
+	worst_values_normal = {
+		en = "Normal",
+		de = "Normal",
+	},
+	worst_values_dark = {
+		en = "Dark",
+		de = "Dunkel",
+	},
 	-- Groups
 	group_plugins = {
 		en = "Plugins",
