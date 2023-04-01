@@ -1,5 +1,6 @@
 local mod = get_mod("scoreboard")
 
+local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local ScrollbarPassTemplates = mod:original_require("scripts/ui/pass_templates/scrollbar_pass_templates")
 local UIWorkspaceSettings = mod:original_require("scripts/settings/ui/ui_workspace_settings")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
@@ -113,48 +114,6 @@ local scenegraph_definition = {
         size = {500, 50},
         position = {0, -35, 1}
     },
-    settings_grid_background = {
-        vertical_alignment = "top",
-        parent = "screen",
-        horizontal_alignment = "right",
-        size = {1000, settings_grid_height},
-        position = {-180, 130, 1}
-    },
-    settings_grid_start = {
-        vertical_alignment = "top",
-        parent = "settings_grid_background",
-        horizontal_alignment = "left",
-        size = {0, 0},
-        position = {0, 0, 0}
-    },
-    settings_grid_content_pivot = {
-        vertical_alignment = "top",
-        parent = "settings_grid_start",
-        horizontal_alignment = "left",
-        size = {0, 0},
-        position = {0, 0, 1}
-    },
-    settings_scrollbar = {
-        vertical_alignment = "top",
-        parent = "settings_grid_background",
-        horizontal_alignment = "right",
-        size = {scrollbar_width, grid_height - 26},
-        position = {50, 45, 1}
-    },
-    settings_grid_mask = {
-        vertical_alignment = "top",
-        parent = "settings_grid_background",
-        horizontal_alignment = "center",
-        size = settings_mask_size,
-        position = {0, mask_offset_y, 0}
-    },
-    settings_grid_interaction = {
-        vertical_alignment = "top",
-        parent = "settings_grid_background",
-        horizontal_alignment = "left",
-        size = {1000 + scrollbar_width * 2, mask_size[2]},
-        position = {0, 0, 0}
-    }
 }
 
 local widget_definitions = {
@@ -248,22 +207,6 @@ local widget_definitions = {
             content_id = "hotspot"
         }
     }, "grid_interaction"),
-    settings_scrollbar = UIWidget.create_definition(ScrollbarPassTemplates.default_scrollbar, "settings_scrollbar"),
-    settings_grid_mask = UIWidget.create_definition({
-        {
-            value = "content/ui/materials/offscreen_masks/ui_overlay_offscreen_vertical_blur",
-            pass_type = "texture",
-            style = {
-                color = {255, 255, 255, 255}
-            }
-        }
-    }, "settings_grid_mask"),
-    settings_grid_interaction = UIWidget.create_definition({
-        {
-            pass_type = "hotspot",
-            content_id = "hotspot"
-        }
-    }, "settings_grid_interaction")
 }
 
 local legend_inputs = {
@@ -274,19 +217,18 @@ local legend_inputs = {
         alignment = "left_alignment"
     },
     {
-        input_action = "hotkey_menu_special_2",
+        input_action = "hotkey_item_sort",
         on_pressed_callback = "cb_reload_cache_pressed",
         display_name = "loc_scoreboard_scan",
         alignment = "left_alignment"
     },
-    -- {
-    --     input_action = "next",
-    --     display_name = "loc_settings_menu_reset_to_default",
-    --     on_pressed_callback = "cb_reset_category_to_default",
-    --     visibility_function = function (parent)
-    --         return not not parent._selected_category and parent._categories_by_display_name[parent._selected_category].can_be_reset
-    --     end
-    -- }
+    {
+        input_action = "hotkey_character_delete",
+        on_pressed_callback = "cb_delete_pressed",
+        display_name = "loc_scoreboard_delete",
+        alignment = "right_alignment",
+        on_hover_sound = UISoundEvents.social_menu_block_player,
+    },
 }
 
 local ScoreboardHistoryViewDefinitions = {

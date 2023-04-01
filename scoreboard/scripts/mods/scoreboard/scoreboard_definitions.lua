@@ -65,168 +65,141 @@ local validation_types = {
         end,
     },
 }
-local settings = {
-    width = 1000,
-    height = 580,
-    header_row = 50,
-    header_column = 300,
-    column = 170,
-}
-local scenegraphs = {
-    end_view = {
-        scoreboard = {
-            vertical_alignment = "center",
-            parent = "screen",
-            horizontal_alignment = "center",
-            size = {settings.width, settings.height},
-            position = {0, -105, 100}
-        },
-        scoreboard_rows = {
-            vertical_alignment = "top",
-            parent = "scoreboard",
-            horizontal_alignment = "center",
-            size = {settings.width, settings.height},
-            position = {0, 0, 101}
-        },
-        -- save_button = {
-        --     vertical_alignment = "right",
-        --     parent = "screen",
-        --     horizontal_alignment = "bottom",
-        --     size = {500, 64},
-        --     position = {0, 0, 0}
-        -- },
-    },
-    end_player_view = {
-        card_carousel = {
-            horizontal_alignment = "right",
-            position = {
-                -130,
-                350,
-                0
-            }
-        },
-    },
-}
-local widgets = {
-    scoreboard = {
-        scenegraph_id = "scoreboard",
-        {
-            pass_type = "texture",
-            value = "content/ui/materials/frames/dropshadow_heavy",
-            style = {
-                vertical_alignment = "center",
-                scale_to_material = true,
-                horizontal_alignment = "center",
-                offset = {0, 0, 103},
-                size = {settings.width - 4, settings.height - 3},
-                color = Color.black(255, true),
-                disabled_color = Color.black(255, true),
-                default_color = Color.black(255, true),
-                hover_color = Color.black(255, true),
-            }
-        },
-        {
-            pass_type = "texture",
-            value = "content/ui/materials/frames/inner_shadow_medium",
-            style = {
-                vertical_alignment = "center",
-                scale_to_material = true,
-                horizontal_alignment = "center",
-                offset = {0, 0, 103},
-                size = {settings.width - 24, settings.height - 28},
-                color = Color.terminal_grid_background(255, true),
-                disabled_color = Color.terminal_grid_background(255, true),
-                default_color = Color.terminal_grid_background(255, true),
-                hover_color = Color.terminal_grid_background(255, true),
-            }
-        },
-        {
-            value = "content/ui/materials/backgrounds/terminal_basic",
-            pass_type = "texture",
-            style = {
-                vertical_alignment = "center",
-                scale_to_material = true,
-                horizontal_alignment = "center",
-                offset = {0, 0, 102},
-                color = Color.terminal_grid_background(255, true),
-                disabled_color = Color.terminal_grid_background(255, true),
-                default_color = Color.terminal_grid_background(255, true),
-                hover_color = Color.terminal_grid_background(255, true),
-                size = {settings.width - 4, settings.height},
-            }
-        },
-        {
-            pass_type = "texture",
-            value = "content/ui/materials/frames/premium_store/details_upper",
-            style = {
-                vertical_alignment = "center",
-                scale_to_material = true,
-                horizontal_alignment = "center",
-                offset = {0, -settings.height / 2, 104},
-                size = {settings.width, 80},
-                color = Color.gray(255, true),
-                disabled_color = Color.gray(255, true),
-                default_color = Color.gray(255, true),
-                hover_color = Color.gray(255, true),
-            }
-        },
-        {
-            pass_type = "texture",
-            value = "content/ui/materials/frames/premium_store/details_lower_basic",
-            style = {
-                vertical_alignment = "center",
-                scale_to_material = true,
-                horizontal_alignment = "center",
-                offset = {0, settings.height / 2 - 50, 104},
-                size = {settings.width + 50, 120},
-                color = Color.gray(255, true),
-                disabled_color = Color.gray(255, true),
-                default_color = Color.gray(255, true),
-                hover_color = Color.gray(255, true),
-            }
-        },
-    },
-    -- save_button = UIWidget.create_definition({
-	-- 	size = {500, 100},
-	-- 	pass_template = ButtonPassTemplates.settings_button(500, 100, 500, true),
-	-- 	init = function (parent, widget, entry, callback_name)
-	-- 		local content = widget.content
-
-	-- 		content.hotspot.pressed_callback = function ()
-	-- 			local is_disabled = entry.disabled or false
-
-	-- 			if is_disabled then
-	-- 				return
-	-- 			end
-
-	-- 			callback(parent, callback_name, widget, entry)()
-	-- 		end
-
-	-- 		local display_name = entry.display_name
-	-- 		content.text = Managers.localization:localize(display_name)
-	-- 		content.button_text = Localize("loc_settings_change")
-	-- 		content.entry = entry
-	-- 	end
-	-- }, "save_button", nil, {500, 100}),
-}
-local alternate_row_style = {
-    value = "",
-    pass_type = "texture",
-    style = {
-        horizontal_alignment = "left",
-        color = Color.terminal_frame(200, true),
-        disabled_color = Color.terminal_frame(200, true),
-        default_color = Color.terminal_frame(200, true),
-        hover_color = Color.terminal_frame(200, true),
-        size = {settings.width - 30, 0},
-        offset = {16, 0, 0},
-    }
-}
+if 1 == 2 then
+    -- local settings = {
+    --     width = 1000,
+    --     height = 580,
+    --     header_row = 50,
+    --     header_column = 300,
+    --     column = 170,
+    -- }
+    -- local scenegraphs = {
+    --     end_view = {
+    --         scoreboard = {
+    --             vertical_alignment = "center",
+    --             parent = "screen",
+    --             horizontal_alignment = "center",
+    --             size = {settings.width, settings.height},
+    --             position = {0, -105, 100}
+    --         },
+    --         scoreboard_rows = {
+    --             vertical_alignment = "top",
+    --             parent = "scoreboard",
+    --             horizontal_alignment = "center",
+    --             size = {settings.width, settings.height},
+    --             position = {0, 0, 101}
+    --         },
+    --     },
+    --     end_player_view = {
+    --         card_carousel = {
+    --             horizontal_alignment = "right",
+    --             position = {
+    --                 -130,
+    --                 350,
+    --                 0
+    --             }
+    --         },
+    --     },
+    -- }
+    -- local widgets = {
+    --     scoreboard = {
+    --         scenegraph_id = "scoreboard",
+    --         {
+    --             pass_type = "texture",
+    --             value = "content/ui/materials/frames/dropshadow_heavy",
+    --             style = {
+    --                 vertical_alignment = "center",
+    --                 scale_to_material = true,
+    --                 horizontal_alignment = "center",
+    --                 offset = {0, 0, 103},
+    --                 size = {settings.width - 4, settings.height - 3},
+    --                 color = Color.black(255, true),
+    --                 disabled_color = Color.black(255, true),
+    --                 default_color = Color.black(255, true),
+    --                 hover_color = Color.black(255, true),
+    --             }
+    --         },
+    --         {
+    --             pass_type = "texture",
+    --             value = "content/ui/materials/frames/inner_shadow_medium",
+    --             style = {
+    --                 vertical_alignment = "center",
+    --                 scale_to_material = true,
+    --                 horizontal_alignment = "center",
+    --                 offset = {0, 0, 103},
+    --                 size = {settings.width - 24, settings.height - 28},
+    --                 color = Color.terminal_grid_background(255, true),
+    --                 disabled_color = Color.terminal_grid_background(255, true),
+    --                 default_color = Color.terminal_grid_background(255, true),
+    --                 hover_color = Color.terminal_grid_background(255, true),
+    --             }
+    --         },
+    --         {
+    --             value = "content/ui/materials/backgrounds/terminal_basic",
+    --             pass_type = "texture",
+    --             style = {
+    --                 vertical_alignment = "center",
+    --                 scale_to_material = true,
+    --                 horizontal_alignment = "center",
+    --                 offset = {0, 0, 102},
+    --                 color = Color.terminal_grid_background(255, true),
+    --                 disabled_color = Color.terminal_grid_background(255, true),
+    --                 default_color = Color.terminal_grid_background(255, true),
+    --                 hover_color = Color.terminal_grid_background(255, true),
+    --                 size = {settings.width - 4, settings.height},
+    --             }
+    --         },
+    --         {
+    --             pass_type = "texture",
+    --             value = "content/ui/materials/frames/premium_store/details_upper",
+    --             style = {
+    --                 vertical_alignment = "center",
+    --                 scale_to_material = true,
+    --                 horizontal_alignment = "center",
+    --                 offset = {0, -settings.height / 2, 104},
+    --                 size = {settings.width, 80},
+    --                 color = Color.gray(255, true),
+    --                 disabled_color = Color.gray(255, true),
+    --                 default_color = Color.gray(255, true),
+    --                 hover_color = Color.gray(255, true),
+    --             }
+    --         },
+    --         {
+    --             pass_type = "texture",
+    --             value = "content/ui/materials/frames/premium_store/details_lower_basic",
+    --             style = {
+    --                 vertical_alignment = "center",
+    --                 scale_to_material = true,
+    --                 horizontal_alignment = "center",
+    --                 offset = {0, settings.height / 2 - 50, 104},
+    --                 size = {settings.width + 50, 120},
+    --                 color = Color.gray(255, true),
+    --                 disabled_color = Color.gray(255, true),
+    --                 default_color = Color.gray(255, true),
+    --                 hover_color = Color.gray(255, true),
+    --             }
+    --         },
+    --     },
+    -- }
+    -- local alternate_row_style = {
+    --     value = "",
+    --     pass_type = "texture",
+    --     style = {
+    --         horizontal_alignment = "left",
+    --         color = Color.terminal_frame(200, true),
+    --         disabled_color = Color.terminal_frame(200, true),
+    --         default_color = Color.terminal_frame(200, true),
+    --         hover_color = Color.terminal_frame(200, true),
+    --         size = {settings.width - 30, 0},
+    --         offset = {16, 0, 0},
+    --     }
+    -- }
+end
 return {
     validation_types = validation_types,
     iteration_types = iteration_types,
-    settings = settings,
-    scenegraphs = scenegraphs,
-    widgets = widgets,
-    alternate_row_style = alternate_row_style,
+    -- settings = settings,
+    -- scenegraphs = scenegraphs,
+    -- widgets = widgets,
+    -- alternate_row_style = alternate_row_style,
 }

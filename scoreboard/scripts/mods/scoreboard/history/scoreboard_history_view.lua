@@ -89,6 +89,19 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
             },
         })
         local category_display_name = "loc_scoreboard_history_view_entry_"..tostring(category_config.date)
+
+        local players = {}
+        if category_config.players then
+            for _, player in pairs(category_config.players) do
+                players[#players+1] = player.name
+            end
+        end
+        mod:add_global_localize_strings({
+            ["loc_scoreboard_history_view_entry_"..tostring(category_config.date).."_players"] = {
+                en = table.concat(players, ", "),
+            },
+        })
+        local category_display_name2 = "loc_scoreboard_history_view_entry_"..tostring(category_config.date).."_players"
     --   local category_reset_function = category_config.reset_function
     --   local valid = self._validation_mapping[category_display_name].validation_result
   
@@ -96,7 +109,10 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
         local entry = {
             widget_type = "settings_button",
             display_name = category_display_name,
-            can_be_reset = category_config.can_be_reset,
+            display_name2 = category_display_name2,
+            -- can_be_reset = category_config.can_be_reset,
+            file = category_config.file,
+            file_path = category_config.file_path,
             pressed_function = function (parent, widget, entry)
                 self._category_content_grid:select_widget(widget)
     
@@ -120,7 +136,7 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
         -- end
     end
   
-    self._default_category = config_categories[1].display_name or config_categories[1].name
+    self._default_category = config_categories[1] and (config_categories[1].display_name or config_categories[1].name) or nil
     local scenegraph_id = "grid_content_pivot"
     local callback_name = "cb_on_category_pressed"
     self._category_content_widgets, self._category_alignment_list = self:_setup_content_widgets(entries, scenegraph_id, callback_name)
@@ -159,9 +175,13 @@ ScoreboardHistoryView._setup_input_legend = function(self)
     for i = 1, #legend_inputs do
         local legend_input = legend_inputs[i]
         local on_pressed_callback = legend_input.on_pressed_callback and callback(self, legend_input.on_pressed_callback)
-    
-        self._input_legend_element:add_entry(legend_input.display_name, legend_input.input_action, 
-            legend_input.visibility_function, on_pressed_callback, legend_input.alignment)
+        local visibility_function = legend_input.visibility_function
+        if legend_input.display_name == "loc_scoreboard_delete" then
+            visibility_function = function()
+                return self.entry
+            end
+        end
+        self._input_legend_element:add_entry(legend_input.display_name, legend_input.input_action, visibility_function, on_pressed_callback, legend_input.alignment)
     end
 end
 
@@ -170,8 +190,6 @@ ScoreboardHistoryView._enable_settings_overlay = function(self, enable)
     local settings_overlay_widget = widgets_by_name.settings_overlay
     settings_overlay_widget.content.visible = enable
 end
-
-
 
 ScoreboardHistoryView._setup_content_grid_scrollbar = function(self, grid, widget_id, grid_scenegraph_id, grid_pivot_scenegraph_id)
     local widgets_by_name = self._widgets_by_name
@@ -188,16 +206,37 @@ end
 ScoreboardHistoryView.cb_on_category_pressed = function(self, widget, entry)
     local pressed_function = entry.pressed_function
   
+    -- local text = widget.file_path or ""
+    self.entry = mod:load_scoreboard_history_entry(widget.file_path, widget.file, false)
+    -- mod:dtf(self.entry, "self.entry", 5)
+
     if pressed_function then
         pressed_function(self, widget, entry)
     end
 end
 
 ScoreboardHistoryView.present_category_widgets = function(self, category)
-    if self.ui_manager:view_active("scoreboard_view") and not self.ui_manager:is_view_closing("scoreboard_view") then
-        self.ui_manager:close_view("scoreboard_view", true)
+    if self.entry then
+        if self.ui_manager:view_active("scoreboard_view") and not self.ui_manager:is_view_closing("scoreboard_view") then
+            self.ui_manager:close_view("scoreboard_view", true)
+        end
+        local players = {}
+        for _, player_data in pairs(self.entry.players) do
+            players[#players+1] = {
+                account_id = function()
+                    return player_data.account_id
+                end,
+                name = function()
+                    return player_data.name
+                end,
+            }
+        end
+        self.ui_manager:open_view("scoreboard_view", nil, false, false, nil, {
+            scoreboard_history = true,
+            rows = self.entry.rows,
+            players = players,
+        }, {use_transition_ui = false})
     end
-    self.ui_manager:open_view("scoreboard_view", nil, false, false, nil, {scoreboard_history = true}, {use_transition_ui = false})
 end
 
 ScoreboardHistoryView._setup_content_widgets = function(self, content, scenegraph_id, callback_name)
@@ -228,6 +267,8 @@ ScoreboardHistoryView._setup_content_widgets = function(self, content, scenegrap
             if widget_definition then
                 local name = scenegraph_id .. "_widget_" .. i
                 widget = self:_create_widget(name, widget_definition)
+                widget.file = entry.file
+                widget.file_path = entry.file_path
                 local init = template.init
 
                 if init then
@@ -531,10 +572,21 @@ ScoreboardHistoryView.cb_on_back_pressed = function(self)
     self.ui_manager:close_view("scoreboard_history_view")
 end
 
+ScoreboardHistoryView.cb_delete_pressed = function(self)
+    if self.entry then
+        if mod:delete_scoreboard_history_entry(self.entry.name) then
+            mod:close_scoreboard_view()
+            self.entry = nil
+            self:_setup_category_config()
+        end
+    end
+end
+
 ScoreboardHistoryView.cb_reload_cache_pressed = function(self)
     if self.ui_manager:view_active("scoreboard_view") and not self.ui_manager:is_view_closing("scoreboard_view") then
         self.ui_manager:close_view("scoreboard_view", true)
     end
+    self.entry = nil
     self:_setup_category_config(true)
 end
   
@@ -547,21 +599,54 @@ end
 
 ScoreboardHistoryView.draw = function(self, dt, t, input_service, layer)
     self:_draw_elements(dt, t, self._ui_renderer, self._render_settings, input_service)
-    self:_draw_widgets(dt, input_service)
+    -- self:_draw_widgets(dt, t, input_service)
+    local ui_renderer = self._ui_offscreen_renderer
+    local widgets_by_name = self._widgets_by_name
+    local grid_interaction_widget = widgets_by_name.grid_interaction
+    self:_draw_grid(self._category_content_grid, self._category_content_widgets, grid_interaction_widget, dt, t, input_service)
+    ScoreboardHistoryView.super.draw(self, dt, t, input_service, layer)
 end
 
 ScoreboardHistoryView._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
     ScoreboardHistoryView.super._draw_elements(self, dt, t, ui_renderer, render_settings, input_service)
 end
 
-ScoreboardHistoryView._draw_widgets = function(self, dt, input_service)
-    UIRenderer.begin_pass(self._ui_renderer, self._ui_scenegraph, input_service, dt, self._render_settings)
-    for name, widget in pairs(self._widgets_by_name) do
-        UIWidget.draw(widget, self._ui_renderer)
-    end
-    UIRenderer.end_pass(self._ui_renderer)
-end
+ScoreboardHistoryView._draw_grid = function (self, grid, widgets, interaction_widget, dt, t, input_service)
+    local is_grid_hovered = not self._using_cursor_navigation or interaction_widget.content.hotspot.is_hover or false
+    local null_input_service = input_service:null_service()
+    local render_settings = self._render_settings
+    local ui_renderer = self._ui_offscreen_renderer
+    local ui_scenegraph = self._ui_scenegraph
 
--- mod:io_dofile("scoreboard/scripts/mods/scoreboard/history/scoreboard_history_view_setup")
+    UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, render_settings)
+
+    for j = 1, #widgets do
+        local widget = widgets[j]
+        local draw = widget ~= self._selected_settings_widget
+
+        if draw then
+            if self._selected_settings_widget then
+                ui_renderer.input_service = null_input_service
+            end
+
+            if grid:is_widget_visible(widget) then
+                local hotspot = widget.content.hotspot
+
+                if hotspot then
+                    hotspot.force_disabled = not is_grid_hovered
+                    local is_active = hotspot.is_focused or hotspot.is_hover
+
+                    if is_active and widget.content.entry and (widget.content.entry.tooltip_text or widget.content.entry.disabled_by and not table.is_empty(widget.content.entry.disabled_by)) then
+                        self:_set_tooltip_data(widget)
+                    end
+                end
+
+                UIWidget.draw(widget, ui_renderer)
+            end
+        end
+    end
+
+    UIRenderer.end_pass(ui_renderer)
+end
 
 return ScoreboardHistoryView

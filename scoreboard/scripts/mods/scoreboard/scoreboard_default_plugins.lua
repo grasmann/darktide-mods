@@ -1,7 +1,4 @@
 local mod = get_mod("scoreboard")
-local DMF = get_mod("DMF")
-mod.debug_ = false
-mod.text = "scoreboard"
 
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
 -- ##### ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗ ############################################################################
@@ -13,991 +10,9 @@ mod.text = "scoreboard"
 local InteractionSettings = mod:original_require("scripts/settings/interaction/interaction_settings")
 local interaction_results = InteractionSettings.results
 local DamageProfileTemplates = mod:original_require("scripts/settings/damage/damage_profile_templates")
-
-local ScoreboardDefinitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_definitions")
 local TextUtilities = mod:original_require("scripts/utilities/ui/text")
 local Breed = mod:original_require("scripts/utilities/breed")
 local WalletSettings = mod:original_require("scripts/settings/wallet_settings")
--- local AnimationEvents = Mods.AnimationEvents
--- local Options = Mods.Options
-
-mod.pickups = {
-	loc_pickup_pocketable_medical_crate_01 = "med_crate_pocketable",
-	loc_pickup_pocketable_ammo_crate_01 = "ammo_cache_pocketable",
-	loc_pickup_side_mission_pocketable_01 = "grimoire_pocketable",
-	loc_pickup_side_mission_pocketable_02 = "scripture_pocketable",
-}
-mod.pickups_text = {
-	med_crate_pocketable = "loc_pickup_pocketable_medical_crate_01",
-	ammo_cache_pocketable = "loc_pickup_pocketable_ammo_crate_01",
-	grimoire_pocketable = "loc_pickup_side_mission_pocketable_01",
-	scripture_pocketable = "loc_pickup_side_mission_pocketable_02",
-}
-
-mod.crates_equiped = {}
-
--- mod.carrying = {}
-
-mod.forge_material = {
-	loc_pickup_small_metal = "small_metal",
-	loc_pickup_large_metal = "large_metal",
-	loc_pickup_small_platinum = "small_platinum",
-	loc_pickup_large_platinum = "large_platinum",
-}
-mod.forge_material_count = {
-	small_metal = 10,
-	large_metal = 25,
-	small_platinum = 10,
-	large_platinum = 25,
-}
-
-mod.ammunition = {
-	loc_pickup_consumable_small_clip_01 = "small_clip",
-	loc_pickup_consumable_large_clip_01 = "large_clip",
-	loc_pickup_deployable_ammo_crate_01 = "crate",
-}
-mod.ammunition_percentage = {
-	small_clip = 0.15,
-	large_clip = 0.5,
-}
-mod.current_ammo = {}
-
-mod.interaction_units = {}
-
-mod.bosses = {
-	"chaos_beast_of_nurgle",
-	"chaos_daemonhost",
-	"chaos_plague_ogryn",
-	"chaos_plague_ogryn_sprayer",
-	"renegade_captain",
-}
-
--- mod.coherency_timer = 10
-
-mod.current_health = {}
-
-mod.last_enemy_interaction = {}
-
-mod.micro_row = {height = 5, font = 5}
-mod.small_row = {height = 14, font = 11}
-mod.medium_row = {height = 16, font = 12}
-mod.big_row = {height = 28, font = 22}
-mod.base_indentation = 0
-
-mod.scoreboard = {
-	-- Divider
-	{
-		name = "empty_row", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 1, font_size = 1,
-		empty = true,
-	},
-	{
-		name = "empty_row", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 1, font_size = 1,
-		empty = true,
-	},
-	-- Team score
-	-- Materials
-	{
-		name = "forge_material", text = "Materials Collected",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.big_row.height, font_size = mod.big_row.font,
-		score_multiplier = true,
-		score_summary = {
-			"metal",
-			"platinum",
-		},
-		empty = true,
-	},
-	{
-		name = "metal", text = "",
-		icon = WalletSettings.plasteel.icon_texture_big,
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.big_row.height, font_size = mod.big_row.font,
-		offset = {-30, -mod.big_row.height},
-		score_summary = {
-			"small_metal",
-			"large_metal",
-		},
-	},
-	{
-		name = "small_metal", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false, empty = true,
-	},
-	{
-		name = "large_metal", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false, empty = true,
-	},
-	{
-		name = "platinum", text = "",
-		icon = WalletSettings.diamantine.icon_texture_big,
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.big_row.height, font_size = mod.big_row.font,
-		offset = {40, -mod.big_row.height},
-		score_summary = {
-			"small_platinum",
-			"large_platinum",
-		},
-	},
-	{
-		name = "small_platinum", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false, empty = true,
-	},
-	{
-		name = "large_platinum", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false, empty = true,
-	},
-	{
-		name = "empty_row", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.micro_row.height, font_size = mod.micro_row.font,
-		empty = true,
-	},
-	-- Teamplay
-	{
-		name = "operated", text = "Machinery / Gadget Operated", value = "/",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		score_multiplier = true,
-		indentation = 15 + mod.base_indentation,
-		score_summary = {
-			"machinery_operated",
-			"gadget_operated",
-			-- "servo_skull_operated",
-		},
-		empty = true,
-	},
-	{
-		name = "machinery_operated", text = "Machinery",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {-20, -mod.medium_row.height, 3},
-		indentation = 35 + mod.base_indentation,
-		-- multiplier = 50,
-	},
-	{
-		name = "gadget_operated", text = "Gadget",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {20, -mod.medium_row.height, 3},
-		indentation = 62 + mod.base_indentation,
-		multiplier = 100,
-	},
-	{
-		name = "ammo", text = "Ammo Picked Up / Wasted", value = "/",
-		validation = ScoreboardDefinitions.validation_types.DESC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height,
-		font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		score_multiplier = true,
-		score_summary = {
-			"ammo_picked_up",
-			"ammo_wasted",
-		},
-		empty = true,
-	},
-	{
-		name = "ammo_picked_up", text = "Picked Up",
-		validation = ScoreboardDefinitions.validation_types.DESC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {-20, -mod.medium_row.height, 3},
-		indentation = 73 + mod.base_indentation,
-	},
-	{
-		name = "ammo_wasted", text = "Wasted",
-		validation = ScoreboardDefinitions.validation_types.DESC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {20, -mod.medium_row.height, 3},
-		indentation = 98 + mod.base_indentation,
-		multiplier = 10,
-	},
-	{
-		name = "health_ammo_placed", text = "Medipacks / Ammocaches deployed", value = "/",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		-- score_multiplier = true,
-		score_summary = {
-			"health_placed",
-			"ammo_placed",
-		},
-		empty = true,
-	},
-	{
-		name = "health_placed", text = "Medipacks",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {-20, -mod.medium_row.height, 3},
-		indentation = 35 + mod.base_indentation,
-		multiplier = 100,
-	},
-	{
-		name = "ammo_placed", text = "Ammocaches",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {20, -mod.medium_row.height, 3},
-		indentation = 63 + mod.base_indentation,
-		multiplier = 100,
-	},
-	{
-		name = "carrying", text = "Carried Scripture / Grimoire / Other", value = "/          /",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		-- score_multiplier = true,
-		score_summary = {
-			"carrying_tomes",
-			"carrying_grims",
-			"carrying_other",
-		},
-		empty = true,
-	},
-	{
-		name = "carrying_tomes", text = "Scripture",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {-40, -mod.medium_row.height, 3},
-		indentation = 98 + mod.base_indentation,
-		divider = 5,
-		decimals = 1,
-		score_addition = "s",
-		is_time = true,
-	},
-	{
-		name = "carrying_grims", text = "Grimoire",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {0, -mod.medium_row.height, 3},
-		indentation = 118 + mod.base_indentation,
-		divider = 5,
-		decimals = 1,
-		score_addition = "s",
-		is_time = true,
-	},
-	{
-		name = "carrying_other", text = "Other",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {40, -mod.medium_row.height, 3},
-		indentation = 135 + mod.base_indentation,
-		divider = 5,
-		decimals = 1,
-		score_addition = "s",
-		is_time = true,
-	},
-	{
-		name = "revived_rescued", text = "Revived / Rescued Operatives", value = "/",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		score_multiplier = true,
-		indentation = 15 + mod.base_indentation,
-		score_summary = {
-			"revived_operative",
-			"rescued_operative",
-			-- "servo_skull_operated",
-		},
-		empty = true,
-	},
-	{
-		name = "revived_operative", text = "Revived",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {-20, -mod.medium_row.height, 2},
-		indentation = 35 + mod.base_indentation,
-		multiplier = 100,
-	},
-	{
-		name = "rescued_operative", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {20, -mod.medium_row.height, 2},
-		indentation = 74 + mod.base_indentation,
-		multiplier = 100,
-	},
-	-- Score
-	{
-		name = "team_score", text = "Teamwork Score",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.big_row.height, font_size = mod.big_row.font,
-		score_row = true,
-		score_multiplier = true,
-		score_summary = {
-			"machinery_operated",
-			"gadget_operated",
-			"ammo_picked_up",
-			"ammo_wasted",
-			"health_placed",
-			"ammo_placed",
-			"carrying_tomes",
-			"carrying_grims",
-			"carrying_other",
-		},
-	},
-
-
-
-	-- Divider
-	{
-		name = "empty_row", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.small_row.height, font_size = mod.small_row.font,
-		empty = true,
-	},
-
-
-
-	-- Defensive score
-	{
-		name = "damage_taken", text = "Damage Taken",
-		validation = ScoreboardDefinitions.validation_types.DESC,
-		iteration = ScoreboardDefinitions.iteration_types.DIFF,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		score_multiplier = true,
-	},
-	{
-		name = "heal_station_used", text = "Health Station Used",
-		validation = ScoreboardDefinitions.validation_types.DESC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		score_multiplier = true,
-		multiplier = 100,
-	},
-	{
-		name = "enemies_staggerd", text = "Enemies Staggered",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		score_multiplier = true,
-	},
-	{
-		name = "attacks_blocked", text = "Attacks blocked",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		score_multiplier = true,
-	},
-	{
-		name = "coherency_efficiency", text = "Coherency Efficiency",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		score_multiplier = true,
-		score_row = true,
-	},
-	-- Score
-	{
-		name = "defense_score", text = "Defense Score",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.DIFF,
-		row_height = mod.big_row.height, font_size = mod.big_row.font,
-		score_row = true,
-		score_multiplier = true,
-		score_summary = {
-			"damage_taken",
-			"heal_station_used",
-			"enemies_staggerd",
-			"attacks_blocked",
-			"coherency_efficiency",
-		},
-	},
-
-
-
-	-- Divider
-	{
-		name = "empty_row", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.small_row.height, font_size = mod.small_row.font,
-		empty = true,
-	},
-
-
-
-	-- Damage dealt
-	{
-		name = "damage_dealt", text = "Actual / Overkill Damage Dealt", value = "/",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		score_multiplier = true,
-		score_summary = {
-			"actual_damage_dealt",
-			"overkill_damage_dealt",
-		},
-		empty = true,
-	},
-	{
-		name = "actual_damage_dealt", text = "Actual",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {-30, -mod.medium_row.height, 3},
-		indentation = 45 + mod.base_indentation,
-	},
-	{
-		name = "overkill_damage_dealt", text = "Overkill",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {30, -mod.medium_row.height, 3},
-		indentation = 29 + mod.base_indentation,
-	},
-	{
-		name = "boss_damage_dealt", text = "Boss Damage Dealt",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		score_multiplier = true,
-	},
-	-- Special hits
-	{
-		name = "special_hits", text = "Weakspot / Critical Hits Dealt", value = "/",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		-- score_multiplier = true,
-		score_summary = {
-			"weakspot_hits",
-			"critical_hits",
-		},
-		empty = true,
-	},
-	{
-		name = "weakspot_hits", text = "Weakspot",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {-30, -mod.medium_row.height, 3},
-		indentation = 45 + mod.base_indentation,
-		-- score_multiplier = true,
-	},
-	{
-		name = "critical_hits", text = "Critical",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		offset = {30, -mod.medium_row.height, 3},
-		indentation = 48 + mod.base_indentation,
-		-- score_multiplier = true,
-	},
-	-- Lesser enemies
-	{
-		name = "chaos_newly_infected", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "cultist_assault", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "cultist_melee", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_assault", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_melee", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_rifleman", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	-- Lesser enemies
-	{
-		name = "lesser_enemies", text = "Lesser Enemies Killed",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		indentation = 15 + mod.base_indentation,
-		multiplier = 10,
-		score_summary = {
-			"chaos_newly_infected",
-			"cultist_assault",
-			"cultist_melee",
-			"renegade_assault",
-			"renegade_melee",
-			"renegade_rifleman",
-		},
-	},
-	-- Melee threats
-	{
-		name = "melee_ranged_threats", text = "Melee / Ranged Elites Killed", value = "/",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		-- multiplier = 1000,
-		score_summary = {
-			"cultist_berzerker",
-			"renegade_berzerker",
-			"renegade_executor",
-			"chaos_ogryn_bulwark",
-			"chaos_ogryn_executor",
-			"cultist_gunner",
-			"renegade_gunner",
-			"cultist_shocktrooper",
-			"renegade_shocktrooper",
-			"chaos_ogryn_gunner",
-		},
-		indentation = 15 + mod.base_indentation,
-		-- score_multiplier = true,
-	},
-	{
-		name = "melee_threats", text = "Melee",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		multiplier = 1000,
-		offset = {-20, -mod.medium_row.height, 3},
-		score_summary = {
-			"cultist_berzerker",
-			"renegade_berzerker",
-			"renegade_executor",
-			"chaos_ogryn_bulwark",
-			"chaos_ogryn_executor",
-		},
-		indentation = 35 + mod.base_indentation,
-		-- score_multiplier = true,
-	},
-	{
-		name = "cultist_berzerker", text = "Dreg Rager",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_berzerker", text = "Scab Rager",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_executor", text = "Scab Mauler",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "chaos_ogryn_bulwark", text = "Bulwark",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "chaos_ogryn_executor", text = "Crusher",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	-- Gunners
-	{
-		name = "ranged_threats", text = "Ranged",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		multiplier = 1000,
-		offset = {20, -mod.medium_row.height, 3},
-		score_summary = {
-			"cultist_gunner",
-			"renegade_gunner",
-			"cultist_shocktrooper",
-			"renegade_shocktrooper",
-			"chaos_ogryn_gunner",
-		},
-		indentation = 38 + mod.base_indentation,
-		-- score_multiplier = true,
-	},
-	{
-		name = "cultist_gunner", text = "Dreg Gunner",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_gunner", text = "Scab Gunner",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "cultist_shocktrooper", text = "Dreg Shotgunner",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_shocktrooper", text = "Scab Shotgunner",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "chaos_ogryn_gunner", text = "Reaper",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	-- Disablers
-	{
-		name = "disabler_threats", text = "Disablers Killed",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		multiplier = 1000,
-		score_summary = {
-			"chaos_hound",
-			"cultist_mutant",
-			"renegade_netgunner",
-		},
-		indentation = 20 + mod.base_indentation,
-		-- score_multiplier = true,
-	},
-	{
-		name = "chaos_hound", text = "Pox Hound",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		indentation = 25 + mod.base_indentation,
-		visible = false,
-	},
-	{
-		name = "cultist_mutant", text = "Mutant",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		indentation = 25 + mod.base_indentation,
-		visible = false,
-	},
-	{
-		name = "renegade_netgunner", text = "Scab Trapper",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		indentation = 25 + mod.base_indentation,
-		visible = false,
-	},
-	-- Special
-	{
-		name = "special_threats", text = "Specials Killed",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.medium_row.height, font_size = mod.medium_row.font,
-		multiplier = 1000,
-		score_summary = {
-			"chaos_poxwalker_bomber",
-			"renegade_grenadier",
-			"cultist_grenadier",
-			"renegade_sniper",
-			"renegade_flamer",
-			"cultist_flamer",
-		},
-		indentation = 25 + mod.base_indentation,
-		-- score_multiplier = true,
-	},
-	{
-		name = "chaos_poxwalker_bomber", text = "Pox Burster",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		indentation = 25 + mod.base_indentation,
-		visible = false,
-	},
-	{
-		name = "renegade_grenadier", text = "Scab Bomber",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "cultist_grenadier", text = "Dreg Bomber",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_sniper", text = "Scab Sniper",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		indentation = 25 + mod.base_indentation,
-		visible = false,
-	},
-	{
-		name = "renegade_flamer", text = "Scab Flamer",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "cultist_flamer", text = "Dreg Tox Flamer",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	-- Bosses
-	{
-		name = "boss_threats", text = "Bosses",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		multiplier = 1000,
-		score_summary = {
-			"chaos_beast_of_nurgle",
-			"chaos_daemonhost",
-			"chaos_plague_ogryn",
-			"chaos_plague_ogryn_sprayer",
-			"renegade_captain",
-		},
-		indentation = 15 + mod.base_indentation,
-		-- score_multiplier = true,
-	},
-	{
-		name = "chaos_beast_of_nurgle", text = "Beast of Nurgle",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "chaos_daemonhost", text = "Daemonhost",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "chaos_plague_ogryn", text = "Plague Ogryn",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "chaos_plague_ogryn_sprayer", text = "Plague Ogryn Sprayer",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	{
-		name = "renegade_captain", text = "Captain",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 0, font_size = 0,
-		visible = false,
-	},
-	-- Total
-	{
-		name = "offensive_score", text = "Offensive Score",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.big_row.height, font_size = mod.big_row.font,
-		indentation = 15,
-		score_row = true,
-		score_multiplier = true,
-		score_summary = {
-			"chaos_newly_infected",
-			"cultist_assault",
-			"cultist_melee",
-			"renegade_assault",
-			"renegade_melee",
-			"renegade_rifleman",
-			"damage_dealt",
-			"boss_damage_dealt",
-			"cultist_berzerker",
-			"renegade_berzerker",
-			"renegade_executor",
-			"chaos_ogryn_bulwark",
-			"chaos_ogryn_executor",
-			"cultist_gunner",
-			"renegade_gunner",
-			"cultist_shocktrooper",
-			"renegade_shocktrooper",
-			"chaos_ogryn_gunner",
-			"chaos_hound",
-			"cultist_mutant",
-			"renegade_netgunner",
-			"chaos_poxwalker_bomber",
-			"renegade_grenadier",
-			"cultist_grenadier",
-			"renegade_sniper",
-			"renegade_flamer",
-			"cultist_flamer",
-			"chaos_beast_of_nurgle",
-			"chaos_daemonhost",
-			"chaos_plague_ogryn",
-			"chaos_plague_ogryn_sprayer",
-			"renegade_captain",
-		},
-	},
-	-- Divider
-	{
-		name = "empty_row", text = "",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = mod.micro_row.height, font_size = mod.micro_row.font,
-		empty = true,
-	},
-	-- Total score
-	{
-		name = "score", text = "Total Score",
-		validation = ScoreboardDefinitions.validation_types.ASC,
-		iteration = ScoreboardDefinitions.iteration_types.ADD,
-		row_height = 50, font_size = 30,
-		score_row = true,
-		score_multiplier = true,
-		indentation = 35,
-		score_summary = {
-			"forge_material",
-
-			"machinery_operated",
-			"gadget_operated",
-			"ammo_picked_up",
-			"ammo_wasted",
-			"health_placed",
-			"ammo_placed",
-			"carrying_tomes",
-			"carrying_grims",
-			"carrying_other",
-			
-			"damage_taken",
-			"heal_station_used",
-			"enemies_staggerd",
-			"attacks_blocked",
-			"coherency_efficiency",
-
-			"chaos_newly_infected",
-			"cultist_assault",
-			"cultist_melee",
-			"renegade_assault",
-			"renegade_melee",
-			"renegade_rifleman",
-			"damage_dealt",
-			"boss_damage_dealt",
-			"cultist_berzerker",
-			"renegade_berzerker",
-			"renegade_executor",
-			"chaos_ogryn_bulwark",
-			"chaos_ogryn_executor",
-			"cultist_gunner",
-			"renegade_gunner",
-			"cultist_shocktrooper",
-			"renegade_shocktrooper",
-			"chaos_ogryn_gunner",
-			"chaos_hound",
-			"cultist_mutant",
-			"renegade_netgunner",
-			"chaos_poxwalker_bomber",
-			"renegade_grenadier",
-			"cultist_grenadier",
-			"renegade_sniper",
-			"renegade_flamer",
-			"cultist_flamer",
-			"chaos_beast_of_nurgle",
-			"chaos_daemonhost",
-			"chaos_plague_ogryn",
-			"chaos_plague_ogryn_sprayer",
-			"renegade_captain",
-		},
-	},
-}
-
--- ##### ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #########################################################
--- ##### ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #########################################################
--- ##### █████╗  ██║   ██║█████╗  ██╔██╗ ██║   ██║   ███████╗ #########################################################
--- ##### ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║   ██║   ╚════██║ #########################################################
--- ##### ███████╗ ╚████╔╝ ███████╗██║ ╚████║   ██║   ███████║ #########################################################
--- ##### ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ #########################################################
-
--- mod.on_all_mods_loaded = function()
-	-- Scoreboard = Mods.Scoreboard
-	-- AnimationEvents = Mods.AnimationEvents
-	-- UserSettings = Mods.UserSettings
-	-- Options = Mods.Options
--- end
-
-
 
 -- #####  █████╗ ███╗   ██╗██╗███╗   ███╗    ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #####################
 -- ##### ██╔══██╗████╗  ██║██║████╗ ████║    ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #####################
@@ -1215,11 +230,75 @@ mod.file_name = function(self, url)
 	return result
 end
 
+-- ##### ┌─┐┌─┐┬ ┬┌─┐┬─┐┌─┐┌┐┌┌─┐┬ ┬ ##################################################################################
+-- ##### │  │ │├─┤├┤ ├┬┘├┤ ││││  └┬┘ ##################################################################################
+-- ##### └─┘└─┘┴ ┴└─┘┴└─└─┘┘└┘└─┘ ┴  ##################################################################################
+
+mod.coherency_frequency = 10
+mod.coherency_timer = mod.coherency_frequency
+
+mod.update_coherency = function(self, dt)
+	if self.player_manager and self.coherency_timer then
+        if self.coherency_timer <= 0 then
+            local players = self.player_manager:players()
+            for _, player in pairs(players) do
+                local unit = player.player_unit
+                if unit then
+                    local coherency_extension = ScriptUnit.has_extension(unit, "coherency_system")
+                    if coherency_extension then
+                        local num_units_in_coherency = coherency_extension:num_units_in_coherency()
+                        local account_id = player:account_id() or player:name()
+                        self:update_stat("coherency_efficiency", account_id, num_units_in_coherency)
+                    end
+                end
+            end
+            self.coherency_timer = self.coherency_frequency
+        else
+            self.coherency_timer = self.coherency_timer - dt
+        end
+	end
+end
+
 -- ##### ┌─┐┌─┐┬─┐┬─┐┬ ┬┬┌┐┌┌─┐  ┌─┐┌┐  ┬┌─┐┌─┐┌┬┐┌─┐ #################################################################
 -- ##### │  ├─┤├┬┘├┬┘└┬┘│││││ ┬  │ │├┴┐ │├┤ │   │ └─┐ #################################################################
 -- ##### └─┘┴ ┴┴└─┴└─ ┴ ┴┘└┘└─┘  └─┘└─┘└┘└─┘└─┘ ┴ └─┘ #################################################################
 
+mod.carrying = {}
 
+mod.carrying_units = function(self)
+	local num = 0
+	for unit, pickups in pairs(self.carrying) do
+		num = num + 1
+	end
+	return num
+end
+
+mod.update_carrying = function(self, dt)
+	if Managers and Managers.player then
+		local num_carrying = self:carrying_units()
+		if num_carrying > 0 then
+			for unit, pickups in pairs(self.carrying) do
+				for _, name in pairs(pickups) do
+					local carrying = nil
+					if name == "scripture_pocketable" then
+						carrying = "tomes"
+					elseif name == "grimoire_pocketable" then
+						carrying = "grims"
+					else
+						carrying = "other"
+					end
+					if carrying then
+						local player = self:player_from_unit(unit)
+						if player then
+							local account_id = player:account_id() or player:name()
+							mod:update_stat("carrying_"..carrying, account_id, dt)
+						end
+					end
+				end
+			end
+		end
+	end
+end
 
 -- ##### ┌─┐┌┐┌┌─┐┌┬┐┬ ┬  ┌─┐┌┬┐┌─┐┌─┐┌─┐┌─┐┬─┐ #######################################################################
 -- ##### ├┤ │││├┤ │││└┬┘  └─┐ │ ├─┤│ ┬│ ┬├┤ ├┬┘ #######################################################################
@@ -1252,6 +331,8 @@ end
 -- ##### ┌─┐┌─┐ ┬ ┬┬┌─┐  ┌─┐┌┐┌┌┬┐  ┌┬┐┬─┐┌─┐┌─┐  ┌─┐┬─┐┌─┐┌┬┐┌─┐ #####################################################
 -- ##### ├┤ │─┼┐│ ││├─┘  ├─┤│││ ││   ││├┬┘│ │├─┘  │  ├┬┘├─┤ │ ├┤  #####################################################
 -- ##### └─┘└─┘└└─┘┴┴    ┴ ┴┘└┘─┴┘  ─┴┘┴└─└─┘┴    └─┘┴└─┴ ┴ ┴ └─┘ #####################################################
+
+mod.crates_equiped = {}
 
 mod.equip_crate = function(self, event_name, event_index, unit, first_person, context)
 	local player = mod:player_from_unit(unit)
@@ -1316,6 +397,42 @@ end
 -- ##### ┌┐ ┌─┐┌─┐┬┌─┐  ┬┌┐┌┌┬┐┌─┐┬─┐┌─┐┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ##############################################################
 -- ##### ├┴┐├─┤└─┐││    ││││ │ ├┤ ├┬┘├─┤│   │ ││ ││││└─┐ ##############################################################
 -- ##### └─┘┴ ┴└─┘┴└─┘  ┴┘└┘ ┴ └─┘┴└─┴ ┴└─┘ ┴ ┴└─┘┘└┘└─┘ ##############################################################
+
+mod.pickups = {
+	loc_pickup_pocketable_medical_crate_01 = "med_crate_pocketable",
+	loc_pickup_pocketable_ammo_crate_01 = "ammo_cache_pocketable",
+	loc_pickup_side_mission_pocketable_01 = "grimoire_pocketable",
+	loc_pickup_side_mission_pocketable_02 = "scripture_pocketable",
+}
+mod.pickups_text = {
+	med_crate_pocketable = "loc_pickup_pocketable_medical_crate_01",
+	ammo_cache_pocketable = "loc_pickup_pocketable_ammo_crate_01",
+	grimoire_pocketable = "loc_pickup_side_mission_pocketable_01",
+	scripture_pocketable = "loc_pickup_side_mission_pocketable_02",
+}
+mod.forge_material = {
+	loc_pickup_small_metal = "small_metal",
+	loc_pickup_large_metal = "large_metal",
+	loc_pickup_small_platinum = "small_platinum",
+	loc_pickup_large_platinum = "large_platinum",
+}
+mod.forge_material_count = {
+	small_metal = 10,
+	large_metal = 25,
+	small_platinum = 10,
+	large_platinum = 25,
+}
+mod.ammunition = {
+	loc_pickup_consumable_small_clip_01 = "small_clip",
+	loc_pickup_consumable_large_clip_01 = "large_clip",
+	loc_pickup_deployable_ammo_crate_01 = "crate",
+}
+mod.ammunition_percentage = {
+	small_clip = 0.15,
+	large_clip = 0.5,
+}
+mod.current_ammo = {}
+mod.interaction_units = {}
 
 mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 	-- Check if interactiong successful
@@ -1455,7 +572,7 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 				else
 					mod.interaction_units[self._unit] = unit
 					-- mod:log_to_file(type, self)
-					if mod.debug_ then mod:echo("interact end "..type) end
+					-- if mod.debug_ then mod:echo("interact end "..type) end
 				end
 			end
 		end
@@ -1494,6 +611,16 @@ end)
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌─┐  ┌─┐┌┐┌┌┬┐  ┬┌─┬┬  ┬  ┌─┐ #################################################################
 -- #####  ││├─┤│││├─┤│ ┬├┤   ├─┤│││ ││  ├┴┐││  │  └─┐ #################################################################
 -- ##### ─┴┘┴ ┴┴ ┴┴ ┴└─┘└─┘  ┴ ┴┘└┘─┴┘  ┴ ┴┴┴─┘┴─┘└─┘ #################################################################
+
+mod.bosses = {
+	"chaos_beast_of_nurgle",
+	"chaos_daemonhost",
+	"chaos_plague_ogryn",
+	"chaos_plague_ogryn_sprayer",
+	"renegade_captain",
+}
+mod.current_health = {}
+mod.last_enemy_interaction = {}
 
 mod:hook(CLASS.AttackReportManager, "add_attack_result",
 function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage,
@@ -1623,7 +750,7 @@ mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_finished", function(func
 		-- Update scoreboard
 		mod:update_stat("gadget_operated", account_id, 1)
 	else
-		mod:echo("Someone used Scanner")
+		-- mod:echo("Someone used Scanner")
 	end
 	func(self, channel_id, unit_id, ...)
 end)
@@ -1643,7 +770,7 @@ mod:hook(CLASS.MinigameSystem, "rpc_minigame_sync_completed", function(func, sel
 		-- Update scoreboard
 		mod:update_stat("gadget_operated", account_id, 1)
 	else
-		mod:echo("Someone minigame complete")
+		-- mod:echo("Someone minigame complete")
 	end
 	func(self, channel_id, unit_id, is_level_unit, ...)
 end)
@@ -1689,9 +816,9 @@ mod:hook(CLASS.ScanningEventSystem, "rpc_scanning_device_finished", function(fun
 	local player = mod:player_from_unit(player_unit)
 	if player then
 		local character_name = player:name()
-		mod:echo(character_name.." scanned")
+		-- mod:echo(character_name.." scanned")
 	else
-		mod:echo("Someone scanned")
+		-- mod:echo("Someone scanned")
 	end
 	func(self, channel_id, unit_id, ...)
 end)
@@ -1702,13 +829,9 @@ mod:hook(CLASS.ScanningDeviceExtension, "finished_event", function(func, self, .
 	local player = mod:player_from_unit(player_unit)
 	if player then
 		local character_name = player:name()
-		mod:echo(character_name.." scanned")
+		-- mod:echo(character_name.." scanned")
 	else
-		mod:echo("Someone scanned")
+		-- mod:echo("Someone scanned")
 	end
 	func(self, ...)
 end)
-
--- Load plugins
-mod:io_dofile("scoreboard/scripts/mods/scoreboard/plugins/coherency")
-mod:io_dofile("scoreboard/scripts/mods/scoreboard/plugins/carrying")

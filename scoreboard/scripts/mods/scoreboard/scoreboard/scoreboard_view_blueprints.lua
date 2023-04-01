@@ -18,6 +18,8 @@ local settings_ = {
     column = 170,
 }
 
+local base_z = 0
+
 local blueprints = {
     scoreboard_row = {
         size = {
@@ -31,7 +33,7 @@ local blueprints = {
                 value = "text",
                 pass_type = "text",
                 style = {
-		            offset = {30, 0, 1},
+		            offset = {30, 0, base_z + 1},
 		            size = {ScoreboardViewSettings.scoreboard_column_header_width - 30, ScoreboardViewSettings.scoreboard_row_height},
 		            font_size = 16,
 		            text_horizontal_alignment = "left",
@@ -58,7 +60,7 @@ local blueprints = {
                 value = "text1",
                 pass_type = "text",
                 style = {
-		            offset = {ScoreboardViewSettings.scoreboard_column_header_width, 0, 1},
+		            offset = {ScoreboardViewSettings.scoreboard_column_header_width, 0, base_z + 1},
 		            size = {ScoreboardViewSettings.scoreboard_column_width, ScoreboardViewSettings.scoreboard_row_height},
 		            font_size = 16,
 		            text_horizontal_alignment = "center",
@@ -85,7 +87,7 @@ local blueprints = {
                 value = "text2",
                 pass_type = "text",
                 style = {
-		            offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width, 0, 1},
+		            offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width, 0, base_z + 1},
 		            size = {ScoreboardViewSettings.scoreboard_column_width, ScoreboardViewSettings.scoreboard_row_height},
 		            font_size = 16,
 		            text_horizontal_alignment = "center",
@@ -112,7 +114,7 @@ local blueprints = {
                 value = "text3",
                 pass_type = "text",
                 style = {
-		            offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width*2, 0, 1},
+		            offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width*2, 0, base_z + 1},
 		            size = {ScoreboardViewSettings.scoreboard_column_width, ScoreboardViewSettings.scoreboard_row_height},
 		            font_size = 16,
 		            text_horizontal_alignment = "center",
@@ -139,7 +141,7 @@ local blueprints = {
                 value = "text4",
                 pass_type = "text",
                 style = {
-		            offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width*3, 0, 1},
+		            offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width*3, 0, base_z + 1},
 		            size = {ScoreboardViewSettings.scoreboard_column_width, ScoreboardViewSettings.scoreboard_row_height},
 		            font_size = 16,
 		            text_horizontal_alignment = "center",
@@ -162,8 +164,8 @@ local blueprints = {
                     disabled_color = Color.terminal_frame(200, true),
                     default_color = Color.terminal_frame(200, true),
                     hover_color = Color.terminal_frame(200, true),
-                    size = {settings_.width - 30, 0},
-                    offset = {16, 0, 0},
+                    size = {settings_.width - 32, 0},
+                    offset = {16, 0, base_z - 40},
                 }
             },
         }

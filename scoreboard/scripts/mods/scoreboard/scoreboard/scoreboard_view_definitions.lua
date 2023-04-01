@@ -3,14 +3,7 @@ local mod = get_mod("scoreboard")
 local UIWorkspaceSettings = mod:original_require("scripts/settings/ui/ui_workspace_settings")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local ScoreboardViewSettings = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
-
--- local settings_ = {
---     width = 1000,
---     height = 580,
---     header_row = 50,
---     header_column = 300,
---     column = 170,
--- }
+local base_z = 40
 
 local scenegraph_definition = {
     screen = UIWorkspaceSettings.screen,
@@ -19,14 +12,14 @@ local scenegraph_definition = {
         parent = "screen",
         horizontal_alignment = "center",
         size = {ScoreboardViewSettings.scoreboard_size[1], ScoreboardViewSettings.scoreboard_size[2]},
-        position = {0, -105, 0}
+        position = {0, -105, base_z}
     },
     scoreboard_rows = {
         vertical_alignment = "top",
         parent = "scoreboard",
         horizontal_alignment = "center",
         size = {ScoreboardViewSettings.scoreboard_size[1], ScoreboardViewSettings.scoreboard_size[2] - 100},
-        position = {0, 150, 1}
+        position = {0, 150, base_z + 1}
     },
 }
 
@@ -39,7 +32,7 @@ local widget_definitions = {
                 vertical_alignment = "center",
                 scale_to_material = true,
                 horizontal_alignment = "center",
-                offset = {0, 0, 1},
+                offset = {0, 0, base_z + 2},
                 size = {ScoreboardViewSettings.scoreboard_size[1] - 4, ScoreboardViewSettings.scoreboard_size[2] - 3},
                 color = Color.black(255, true),
                 disabled_color = Color.black(255, true),
@@ -54,7 +47,7 @@ local widget_definitions = {
                 vertical_alignment = "center",
                 scale_to_material = true,
                 horizontal_alignment = "center",
-                offset = {0, 0, 1},
+                offset = {0, 0, base_z + 1},
                 size = {ScoreboardViewSettings.scoreboard_size[1] - 24, ScoreboardViewSettings.scoreboard_size[2] - 28},
                 color = Color.terminal_grid_background(255, true),
                 disabled_color = Color.terminal_grid_background(255, true),
@@ -69,7 +62,7 @@ local widget_definitions = {
                 vertical_alignment = "center",
                 scale_to_material = true,
                 horizontal_alignment = "center",
-                offset = {0, 0, 0},
+                offset = {0, 0, base_z},
                 size = {ScoreboardViewSettings.scoreboard_size[1] - 4, ScoreboardViewSettings.scoreboard_size[2]},
                 color = Color.terminal_grid_background(255, true),
                 disabled_color = Color.terminal_grid_background(255, true),
@@ -84,7 +77,7 @@ local widget_definitions = {
                 vertical_alignment = "center",
                 scale_to_material = true,
                 horizontal_alignment = "center",
-                offset = {0, -ScoreboardViewSettings.scoreboard_size[2] / 2, 2},
+                offset = {0, -ScoreboardViewSettings.scoreboard_size[2] / 2, base_z + 2},
                 size = {ScoreboardViewSettings.scoreboard_size[1], 80},
                 color = Color.gray(255, true),
                 disabled_color = Color.gray(255, true),
@@ -99,7 +92,7 @@ local widget_definitions = {
                 vertical_alignment = "center",
                 scale_to_material = true,
                 horizontal_alignment = "center",
-                offset = {0, ScoreboardViewSettings.scoreboard_size[2] / 2 - 50, 2},
+                offset = {0, ScoreboardViewSettings.scoreboard_size[2] / 2 - 50, base_z + 2},
                 size = {ScoreboardViewSettings.scoreboard_size[1] + 50, 120},
                 color = Color.gray(255, true),
                 disabled_color = Color.gray(255, true),
