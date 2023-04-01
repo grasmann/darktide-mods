@@ -95,8 +95,11 @@ mod.get_scoreboard_history_entries = function(self, scan_dir)
 	local entries = {}
 	local appdata = self:appdata_path()
     local cache = self:get_scoreboard_history_entries_cache()
-	local files = scan_dir and scandir(appdata) or cache
-    if scan_dir then self:set_scoreboard_history_entries_cache(files) end
+	local files = cache
+	if scan_dir or not cache then
+		files = scandir(appdata)
+		self:set_scoreboard_history_entries_cache(files)
+	end
 	local missing_file = false
 	for _, file in pairs(files) do
 		local file_path = appdata..file

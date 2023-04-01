@@ -165,7 +165,7 @@ return {
 					},
 					{["setting_id"] = "scripture_grimoire_pickup",
 						["type"] = "checkbox",
-						["default_value"] = true
+						["default_value"] = false
 					},
 				},
 			},
