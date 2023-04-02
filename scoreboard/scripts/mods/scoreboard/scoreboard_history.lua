@@ -212,7 +212,7 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 		num_players = num_players + 1
 		if num_players < 5 then
 			local account_id = player:account_id() or player:name()
-			file:write(num_players..";"..player:account_id()..";"..player:name().."\n")
+			file:write(num_players..";"..account_id..";"..player:name().."\n")
 		end
 	end
 	-- Rows

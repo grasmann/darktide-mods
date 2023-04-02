@@ -33,6 +33,7 @@ ScoreboardView.init = function(self, settings, context)
     self._blueprints = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_blueprints")
     self._settings = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
     -- self._context = context
+    self.end_view = context and context.end_view
     self.is_history = context and context.scoreboard_history or false
     self.rows = context and context.rows or {}
     self.loaded_players = context and context.players or nil
@@ -68,6 +69,8 @@ ScoreboardView.on_enter = function(self)
     self.scoreboard_widget.alpha_multiplier = 0
     if self.is_history then
         self.scoreboard_widget.offset = {300, 0, base_z}
+    elseif not self.end_view then
+        self.scoreboard_widget.offset = {0, 0, base_z}
     else
         self.scoreboard_widget.offset = {0, -100, base_z}
     end
@@ -81,7 +84,7 @@ ScoreboardView.on_enter = function(self)
     -- self:_enable_settings_overlay(false)
     -- self:_update_grid_navigation_selection()
     
-    if not self.is_history and mod:get("save_all_scoreboards") then
+    if self.end_view and mod:get("save_all_scoreboards") then
         local sorted_rows = self.sorted_rows or {}
         mod:save_scoreboard_history_entry(sorted_rows)
         if DEBUG then mod:echo("Scoreboard saved") end
@@ -465,6 +468,8 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         -- widget.offset = {self.is_history and 300 or 0, current_offset, 0}
         if self.is_history then
             widget.offset = {300, current_offset, base_z + 1}
+        elseif not self.end_view then
+            widget.offset = {0, current_offset, base_z + 1}
         else
             local offset_y = current_offset - 100
             -- widget.offset = {-300, current_offset - y, 0}

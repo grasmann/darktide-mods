@@ -13,13 +13,19 @@ return {
 				["keybind_type"] = "view_toggle",
 				["view_name"] = "scoreboard_history_view"
 			},
-			-- {["setting_id"] = "open_scoreboard",
-			-- 	["type"] = "keybind",
-			-- 	["default_value"] = {"f6"},
-			-- 	["keybind_trigger"] = "pressed",
-			-- 	["keybind_type"] = "view_toggle",
-			-- 	["view_name"] = "scoreboard_view"
-			-- },
+			{["setting_id"] = "test_scoreboard",
+				["type"] = "checkbox",
+				["default_value"] = false,
+				["sub_widgets"] = {
+					{["setting_id"] = "open_scoreboard",
+						["type"] = "keybind",
+						["default_value"] = {"f6"},
+						["keybind_trigger"] = "pressed",
+						["keybind_type"] = "view_toggle",
+						["view_name"] = "scoreboard_view"
+					},
+				},
+			},
 			{["setting_id"] = "save_all_scoreboards",
 				["type"] = "checkbox",
 				["default_value"] = true,

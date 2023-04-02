@@ -1,0 +1,7 @@
+
+*.vortex_backup
+scoreboard/__folder_managed_by_vortex
+scoreboard/scripts/__folder_managed_by_vortex
+scoreboard/scripts/mods/__folder_managed_by_vortex
+scoreboard/scripts/mods/scoreboard/__folder_managed_by_vortex
+scoreboard/scripts/mods/scoreboard/plugins/__folder_managed_by_vortex
