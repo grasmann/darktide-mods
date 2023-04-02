@@ -7,7 +7,8 @@ mod:hook(CLASS.PlayerCharacterStateJumping, "on_enter", function(func, self, uni
     if scoreboard then
         local player = scoreboard:player_from_unit(unit)
         if player then
-            scoreboard:update_stat("scoreboard_example", player:account_id(), 1)
+            local account_id = player:account_id() or player:name()
+            scoreboard:update_stat("scoreboard_example", account_id, 1)
         end
     end
 end)
