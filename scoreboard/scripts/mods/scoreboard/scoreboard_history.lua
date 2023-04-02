@@ -154,6 +154,7 @@ mod.delete_scoreboard_history_entry = function(self, file_name)
 end
 
 mod.save_scoreboard_history_entry = function(self, sorted_rows)
+	
 	-- Create appdata folder
 	self:create_scoreboard_history_directory()
 

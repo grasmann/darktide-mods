@@ -210,7 +210,7 @@ end
 
 mod:hook(CLASS.EndView, "on_enter", function(func, self, ...)
 	func(self, ...)
-	mod:show_scoreboard_view()
+	mod:show_scoreboard_view({end_view = true})
 end)
 
 mod:hook(CLASS.EndView, "on_exit", function(func, self, ...)

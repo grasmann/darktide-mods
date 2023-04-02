@@ -227,6 +227,7 @@ local legend_inputs = {
         on_pressed_callback = "cb_delete_pressed",
         display_name = "loc_scoreboard_delete",
         alignment = "right_alignment",
+        on_hover_sound = UISoundEvents.social_menu_block_player,
     },
 }
 
