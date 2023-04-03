@@ -208,10 +208,11 @@ ScoreboardView.get_rows_in_groups = function(self)
             score = true,
             summary = score_rows,
         }}
-    end
-    local last_group = sorted[#sorted]
-    if last_group[#last_group].score then
-        last_group[#last_group] = nil
+    elseif generate_scores == 2 then
+        local last_group = sorted[#sorted]
+        if last_group[#last_group].score then
+            last_group[#last_group] = nil
+        end
     end
     -- mod:echo("bla")
     local this_group = sorted[1]
