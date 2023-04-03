@@ -12,21 +12,25 @@ mod:add_global_localize_strings({
 		en = "Scoreboard History",
 		de = "Scoreboard Historie",
 		ru = "Scoreboard История",
+		["zh-cn"] = "记分板历史记录",
 	},
 	loc_scoreboard_save = {
 		en = "Save Scoreboard",
 		de = "Scoreboard Speichern",
 		ru = "Сохранить Scoreboard",
+		["zh-cn"] = "保存记分板",
 	},
 	loc_scoreboard_scan = {
 		en = "Scan Directory for files",
 		de = "Ordner nach Dateien durchsuchen",
 		ru = "Поиск файлов",
+		["zh-cn"] = "扫描目录中的文件",
 	},
 	loc_scoreboard_delete = {
 		en = "Delete Scoreboard",
 		de = "Scoreboard löschen",
 		ru = "Удалить Scoreboard",
+		["zh-cn"] = "删除记分板",
 	},
 })
 
@@ -55,94 +59,113 @@ return {
 		en = "Scoreboard History",
 		de = "Scoreboard Historie",
 		ru = "Scoreboard История",
+		["zh-cn"] = "记分板历史记录",
 	},
 	mod_save_scoreboard_to_history = {
 		en = "Save Scoreboard",
 		de = "Scoreboard Speichern",
 		ru = "Сохранить Scoreboard",
+		["zh-cn"] = "保存记分板",
 	},
 	-- Options
 	open_scoreboard = {
 		en = "Open Scoreboard",
 		de = "Scoreboard öffnen",
 		ru = "Открыть Scoreboard",
+		["zh-cn"] = "打开记分板",
 	},
 	open_scoreboard_history = {
 		en = "Open Scoreboard History",
 		de = "Scoreboard Historie öffnen",
 		ru = "Открыть историю Scoreboard",
+		["zh-cn"] = "打开记分板历史记录",
 	},
 	save_all_scoreboards = {
 		en = "Save all Scoreboards",
 		de = "Alle Scoreboards speichern",
 		ru = "Сохранить все Scoreboards",
+		["zh-cn"] = "保存所有记分板",
 	},
 	scoreboard_history_cached = {
 		en = "Scoreboard History Cached",
 		de = "Scoreboard History Zwischengespeichert",
 		ru = "Кэшировать историю Scoreboard",
+		["zh-cn"] = "记分板历史记录已缓存",
 	},
 	zero_values = {
 		en = "Zero Values",
 		de = "Nullwerte",
 		ru = "Нулевые значения",
+		["zh-cn"] = "零值",
 	},
 	zero_values_normal = {
 		en = "Normal",
 		de = "Normal",
 		ru = "Нормальный",
+		["zh-cn"] = "常规",
 	},
 	zero_values_hide = {
 		en = "Hidden",
 		de = "Versteckt",
 		ru = "Скрытый",
+		["zh-cn"] = "隐藏",
 	},
 	zero_values_dark = {
 		en = "Dark",
 		de = "Dunkel",
 		ru = "Темный",
+		["zh-cn"] = "深色",
 	},
 	worst_values = {
 		en = "Worst Values",
 		de = "Schlechteste Werte",
 		ru = "Худшие значения",
+		["zh-cn"] = "最差值",
 	},
 	worst_values_normal = {
 		en = "Normal",
 		de = "Normal",
 		ru = "Нормальный",
+		["zh-cn"] = "常规",
 	},
 	worst_values_dark = {
 		en = "Dark",
 		de = "Dunkel",
 		ru = "Темный",
+		["zh-cn"] = "深色",
 	},
 	generate_scores = {
 		en = "Generate Scores",
 		de = "Punkte generieren",
+		["zh-cn"] = "生成分数",
 	},
 	generate_scores_on = {
 		en = "On",
 		de = "An",
+		["zh-cn"] = "开",
 	},
 	generate_scores_space = {
 		en = "Empty Row",
 		de = "Leere Zeile",
+		["zh-cn"] = "空行",
 	},
 	generate_scores_off = {
 		en = "Off",
 		de = "Aus",
+		["zh-cn"] = "关",
 	},
 	-- Groups
 	group_plugins = {
 		en = "Plugins",
 		de = "Plugins",
 		ru = "Плагины",
+		["zh-cn"] = "插件",
 	},
 	group_messages = {
 		en = "Messages",
 		de = "Nachrichten",
 		ru = "Сообщения",
+		["zh-cn"] = "消息",
 	},
 	-- Forge material
 	message_forge_material = {
@@ -155,6 +178,7 @@ return {
 		en = " picked up :subject:",
 		de = " hat :subject: aufgesammelt",
 		ru = " подбирает :subject:",
+		["zh-cn"] = " 拾取了:subject:",
 	},
 	message_forge_material_description = {
 		en = "Shows message when a player picks up plasteel or diamantine",
@@ -166,42 +190,50 @@ return {
 		en = "Forge Materials",
 		de = "Schmiedematerial",
 		ru = "Ресурсы",
+		["zh-cn"] = "锻造材料",
 	},
 	row_forge_material = {
 		en = "Metal / Diamantine collected",
 		de = "Metall / Diamantin gesammelt",
 		ru = "Пластиль / Диамантин",
+		["zh-cn"] = "收集塑钢 / 金刚铁",
 	},
 	row_forge_material_metal = {
 		en = "Metal",
 		de = "Metall",
 		ru = "Пластиль",
+		["zh-cn"] = "塑钢",
 	},
 	row_forge_material_platinum = {
 		en = "Diamantine",
 		de = "Diamantin",
 		ru = "Диамантин",
+		["zh-cn"] = "金刚铁",
 	},
 	-- Operated
 	plugin_machinery_gadget_operated = {
 		en = "Machinery / Gadget operated",
 		de = "Maschine / Gadget bedient",
 		ru = "Механизмы / Ауспекс - Использовано",
+		["zh-cn"] = "操作机器 / 装置",
 	},
 	row_operated = {
 		en = "Machinery / Gadget operated",
 		de = "Maschine / Gadget bedient",
 		ru = "Механизмы / Ауспекс - Использовано",
+		["zh-cn"] = "操作机器 / 装置",
 	},
 	row_machinery_operated = {
 		en = "Machinery",
 		de = "Maschine",
 		ru = "Механизмы",
+		["zh-cn"] = "机器",
 	},
 	row_gadget_operated = {
 		en = "Gadget",
 		de = "Gadget",
 		ru = "Ауспекс",
+		["zh-cn"] = "装置",
 	},
 	-- Buttons etc
 	message_default = {
@@ -214,11 +246,13 @@ return {
 		en = " operated :subject:",
 		de = " hat :subject: betätigt",
 		ru = " управляет :subject:",
+		["zh-cn"] = " 操作了:subject:",
 	},
 	message_default_machinery = {
 		en = "Machinery",
 		de = "Maschinerie",
 		ru = "Механизмом",
+		["zh-cn"] = "机器",
 	},
 	message_default_description = {
 		en = "Shows message when a player operates a normal button",
@@ -237,16 +271,19 @@ return {
 		en = " operated :subject:",
 		de = " hat :subject: betätig",
 		ru = " управляет :subject:",
+		["zh-cn"] = " 操作了:subject:",
 	},
 	message_decoded_skull = {
 		en = "Servoskull",
 		de = "Servoskull",
 		ru = "Сервочерепом",
+		["zh-cn"] = "伺服颅骨",
 	},
 	message_decoded_scanner = {
 		en = "Scanner",
 		de = "Scanner",
 		ru = "Ауспекс",
+		["zh-cn"] = "鸟卜仪",
 	},
 	message_decoded_description = {
 		en = "Shows message when a player decodes data at a terminal",
@@ -259,120 +296,143 @@ return {
 		en = "Ammo",
 		de = "Munition",
 		ru = "Патроны",
+		["zh-cn"] = "弹药",
 	},
 	plugin_ammo_on = {
 		en = "On",
 		de = "An",
 		ru = "Включить",
+		["zh-cn"] = "开",
 	},
 	plugin_ammo_simple = {
 		en = "Simple",
 		de = "Einfach",
 		ru = "Обычный",
+		["zh-cn"] = "简洁",
 	},
 	plugin_ammo_off = {
 		en = "Off",
 		de = "Aus",
 		ru = "Отключить",
+		["zh-cn"] = "关",
 	},
 	row_ammo_1 = {
 		en = "Ammo Picked Up / Wasted",
 		de = "Munition Genommen / Verschwendet",
 		ru = "Патронов Взято / Лишние",
+		["zh-cn"] = "拾取 / 浪费弹药",
 	},
 	row_ammo_2 = {
 		en = "Ammo Picked Up",
 		de = "Munition Genommen",
 		ru = "Патронов Взято",
+		["zh-cn"] = "拾取弹药",
 	},
 	row_ammo_picked_up = {
 		en = "Picked Up",
 		de = "Genommen",
 		ru = "Взято",
+		["zh-cn"] = "拾取",
 	},
 	row_ammo_wasted = {
 		en = "Wasted",
 		de = "Verschwendet",
 		ru = "Лишние",
+		["zh-cn"] = "浪费",
 	},
 	-- Carrying
 	plugin_carrying = {
 		en = "Carrying Supplies",
 		de = "Resourcen getragen",
 		ru = "Доставка припасов",
+		["zh-cn"] = "携带补给",
 	},
 	row_carrying = {
 		en = "Carried Scripture / Grimoire / Other",
 		de = "Carried Scripture / Grimoire / Sonst.",
 		ru = "Доставлено: Писание / Гримуар / Другое",
+		["zh-cn"] = "携带圣经 / 魔法书 / 其他",
 	},
 	row_carrying_scripture = {
 		en = "Scripture",
 		de = "Scripture",
 		ru = "Писание",
+		["zh-cn"] = "圣经",
 	},
 	row_carrying_grimoire = {
 		en = "Grimoire",
 		de = "Grimoire",
 		ru = "Гримуар",
+		["zh-cn"] = "魔法书",
 	},
 	row_carrying_other = {
 		en = "Other",
 		de = "Sonst.",
 		ru = "Другое",
+		["zh-cn"] = "其他",
 	},
 	-- Cohereny
 	plugin_coherency_efficiency = {
 		en = "Coherency Efficiency",
 		de = "Kohärenz Effizienz",
 		ru = "Согласованная Эффективность",
+		["zh-cn"] = "连携效率",
 	},
 	row_coherency_efficiency = {
 		en = "Coherency Efficiency",
 		de = "Kohärenz Effizienz",
 		ru = "Согласованная Эффективность",
+		["zh-cn"] = "连携效率",
 	},
 	-- Revive / Rescue
 	plugin_revived_rescued = {
 		en = "Revived / Rescued Operatives",
 		de = "Operator Wiederbelebt / Gerettet",
 		ru = "Оперативников Оживлено / Спасено",
+		["zh-cn"] = "复活 / 救助特工",
 	},
 	row_revived_rescued = {
 		en = "Revived / Rescued Operatives",
 		de = "Operator Wiederbelebt / Gerettet",
 		ru = "Оперативников Оживлено / Спасено",
+		["zh-cn"] = "复活 / 救助特工",
 	},
 	row_revived_operative = {
 		en = "Revived",
 		de = "Wiederbelebt",
 		ru = "Оживлено",
+		["zh-cn"] = "复活",
 	},
 	row_rescued_operative = {
 		en = "Rescued",
 		de = "Gerettet",
 		ru = "Спасено",
+		["zh-cn"] = "救助",
 	},
 	-- Damage taken / Health station
 	plugin_damage_taken_heal_station_used = {
 		en = "Damage Taken / Health Station Used",
 		de = "Genommener Schaden / Heilstation benutzt",
 		ru = "Урона пол-но / Мед.Станций исп-но",
+		["zh-cn"] = "受到伤害 / 使用医疗站",
 	},
 	row_damage_taken_heal_station_used = {
 		en = "Damage Taken / Health Station Used",
 		de = "Genommener Schaden / Heilstation benutzt",
 		ru = "Урона пол-но / Мед.Станций исп-но",
+		["zh-cn"] = "受到伤害 / 使用医疗站",
 	},
 	row_damage_taken = {
 		en = "Damage Taken",
 		de = "Genommener Schaden",
 		ru = "Урона пол-но",
+		["zh-cn"] = "受到伤害",
 	},
 	row_heal_station_used = {
 		en = "Health Station Used",
 		de = "Heilstation benutzt",
 		ru = "Мед.Станций исп-но",
+		["zh-cn"] = "使用医疗站",
 	},
 	message_health_station = {
 		en = "Health Station",
@@ -384,11 +444,13 @@ return {
 		en = " used :subject:",
 		de = " hat :subject: benutzt",
 		ru = " использует :subject:",
+		["zh-cn"] = " 使用了:subject:",
 	},
 	message_health_station_health_station = {
 		en = "Health Station",
 		de = "Heilstation",
 		ru = "Мед.Станцию",
+		["zh-cn"] = "医疗站",
 	},
 	message_health_station_description = {
 		en = "Shows message when a player uses a health station",
@@ -401,165 +463,196 @@ return {
 		en = "Damage Dealt",
 		de = "Verursachter Schaden",
 		ru = "Урона нанесено",
+		["zh-cn"] = "输出伤害",
 	},
 	plugin_damage_dealt_on = {
 		en = "On",
 		de = "An",
 		ru = "Включить",
+		["zh-cn"] = "开",
 	},
 	plugin_damage_dealt_simple = {
 		en = "Simple",
 		de = "Einfach",
 		ru = "Обычный",
+		["zh-cn"] = "简洁",
 	},
 	plugin_damage_dealt_off = {
 		en = "Off",
 		de = "Aus",
 		ru = "Отключить",
+		["zh-cn"] = "关",
 	},
 	row_damage_dealt_1 = {
 		en = "Actual / Overkill Damage Dealt",
 		de = "Verursachter / Overkill Schaden",
 		ru = "Фактический / Излишний На-ный Урон",
+		["zh-cn"] = "实际 / 溢出伤害",
 	},
 	row_damage_dealt_2 = {
 		en = "Damage Dealt",
 		de = "Verursachter Schaden",
 		ru = "На-ный Урон",
+		["zh-cn"] = "输出伤害",
 	},
 	row_actual_damage_dealt_1 = {
 		en = "Actual",
 		de = "Verursachter",
 		ru = "Фактический",
+		["zh-cn"] = "实际",
 	},
 	row_actual_damage_dealt_2 = {
 		en = "Damage",
 		de = "Verursachter",
 		ru = "Урон",
+		["zh-cn"] = "伤害",
 	},
 	row_overkill_damage_dealt = {
 		en = "Overkill",
 		de = "Overkill",
 		ru = "Излишний",
+		["zh-cn"] = "溢出",
 	},
 	-- Lesser enemies
 	plugin_lesser_enemies = {
 		en = "Lesser Enemies Killed",
 		de = "Schwache Gegner Getötet",
 		ru = "Обычных врагов убито",
+		["zh-cn"] = "普通敌人击杀",
 	},
 	row_lesser_enemies = {
 		en = "Lesser Enemies Killed",
 		de = "Schwache Gegner Getötet",
 		ru = "Обычных врагов убито",
+		["zh-cn"] = "普通敌人击杀",
 	},
 	-- Boss damage
 	plugin_boss_damage_dealt = {
 		en = "Boss Damage Dealt",
 		de = "Schaden an Bossen",
 		ru = "Нанесено урона Боссу",
+		["zh-cn"] = "Boss 伤害",
 	},
 	row_boss_damage_dealt = {
 		en = "Boss Damage Dealt",
 		de = "Schaden an Bossen",
 		ru = "Нанесено урона Боссу",
+		["zh-cn"] = "Boss 伤害",
 	},
 	-- Enemies staggered
 	plugin_enemies_staggerd = {
 		en = "Enemies Staggered",
 		de = "Gegner gestaggered",
 		ru = "Врагов ошеломленно",
+		["zh-cn"] = "踉跄敌人",
 	},
 	row_enemies_staggerd = {
 		en = "Enemies Staggered",
 		de = "Gegner gestaggered",
 		ru = "Врагов ошеломленно",
+		["zh-cn"] = "踉跄敌人",
 	},
 	-- Attacks blocked
 	plugin_attacks_blocked = {
 		en = "Attacks blocked",
 		de = "Attacken geblockt",
 		ru = "Атак заблокировано",
+		["zh-cn"] = "格挡攻击",
 	},
 	row_attacks_blocked = {
 		en = "Attacks blocked",
 		de = "Attacken geblockt",
 		ru = "Атак заблокировано",
+		["zh-cn"] = "格挡攻击",
 	},
 	-- Special hits
 	plugin_special_hits = {
 		en = "Weakspot / Critical Hits Dealt",
 		de = "Schwachpunkt- / Kritische Treffer",
 		ru = "Слабое место / Криты",
+		["zh-cn"] = "弱点 / 暴击命中",
 	},
 	row_special_hits = {
 		en = "Weakspot / Critical Hits Dealt",
 		de = "Schwachpunkt- / Kritische Treffer",
 		ru = "Слабое место / Криты",
+		["zh-cn"] = "弱点 / 暴击命中",
 	},
 	row_weakspot_hits = {
 		en = "Weakspot",
 		de = "Schwachpunkt",
 		ru = "Слабое место",
+		["zh-cn"] = "弱点",
 	},
 	row_critical_hits = {
 		en = "Critical",
 		de = "Kritische",
 		ru = "Криты",
+		["zh-cn"] = "暴击",
 	},
 	-- Melee / Ranged Threats
 	plugin_melee_ranged_threats = {
 		en = "Melee / Ranged Elites Killed",
 		de = "Nah- / Fernkampf Elite getötet",
 		ru = "Милишников / Стрелков - Элитников Убито",
+		["zh-cn"] = "近战 / 远程精英击杀",
 	},
 	row_melee_ranged_threats = {
 		en = "Melee / Ranged Elites Killed",
 		de = "Nah- / Fernkampf Elite getötet",
 		ru = "Милишник / Стрелок - Эл. Убито",
+		["zh-cn"] = "近战 / 远程精英击杀",
 	},
 	row_melee_threats = {
 		en = "Melee",
 		de = "Nah-",
 		ru = "Милишник",
+		["zh-cn"] = "近战",
 	},
 	row_ranged_threats = {
 		en = "Ranged",
 		de = "Fernkampf",
 		ru = "Стрелок",
+		["zh-cn"] = "远程",
 	},
 	-- Special Threats
 	plugin_special_threats = {
 		en = "Specials Killed",
 		de = "Spezialeinheiten Getötet",
 		ru = "Камик-зе/Бомбардир/Огневик/Снайпер",
+		["zh-cn"] = "专家击杀",
 	},
 	row_special_threats = {
 		en = "Specials Killed",
 		de = "Spezialeinheiten Getötet",
 		ru = "Камик-зе/Бомбардир/Огневик/Снайпер",
+		["zh-cn"] = "专家击杀",
 	},
 	-- Boss Threats
 	plugin_boss_threats = {
 		en = "Bosses Killed",
 		de = "Bosse Getötet",
 		ru = "Боссов Убито",
+		["zh-cn"] = "Boss 击杀",
 	},
 	row_boss_threats = {
 		en = "Bosses Killed",
 		de = "Bosse Getötet",
 		ru = "Боссов Убито",
+		["zh-cn"] = "Boss 击杀",
 	},
 	-- Disabler
 	plugin_disabler_threats = {
 		en = "Disablers Killed",
 		de = "Ausschalter Getötet",
 		ru = "Убито Гончая/Мутант/Ловушечник",
+		["zh-cn"] = "控制类击杀",
 	},
 	row_disabler_threats = {
 		en = "Disablers Killed",
 		de = "Ausschalter Getötet",
 		ru = "Убито Гончая/Мутант/Ловушечник",
+		["zh-cn"] = "控制类击杀",
 	},
 	-- Ammo
 	message_ammo = {
@@ -572,16 +665,19 @@ return {
 		en = " picked up :count: :subject: wasted :count2:",
 		de = " hat :count: :subject: aufgesammelt :count2: verschwendet",
 		ru = " подбирает :count: :subject: теряет :count2:",
+		["zh-cn"] = " 拾取了 :count: :subject: 浪费 :count2:",
 	},
 	message_ammo_crate_text = {
 		en = " picked up :count: :subject:",
 		de = " hat :count: :subject: aufgesammelt",
 		ru = " подбирает :count: :subject:",
+		["zh-cn"] = " 拾取了 :count: :subject:",
 	},
 	message_ammo_ammo = {
 		en = "Ammo",
 		de = "Munition",
 		ru = "патроны",
+		["zh-cn"] = "弹药",
 	},
 	message_ammo_description = {
 		en = "Shows message when a player picks up ammo",
@@ -594,21 +690,25 @@ return {
 		en = "Medipacks / Ammocaches deployed",
 		de = "Medipack / Munition aufgestellt",
 		ru = "Аптечек / Боеприпасов размещено",
+		["zh-cn"] = "部署医疗箱 / 弹药箱",
 	},
 	row_health_ammo_placed = {
 		en = "Medipacks / Ammocaches deployed",
 		de = "Medipack / Munition aufgestellt",
 		ru = "Аптечек / Боеприпасов размещено",
+		["zh-cn"] = "部署医疗箱 / 弹药箱",
 	},
 	row_health_placed = {
 		en = "Medipacks",
 		de = "Medipack",
 		ru = "Аптечек",
+		["zh-cn"] = "医疗箱",
 	},
 	row_ammo_placed = {
 		en = "Ammocaches",
 		de = "Munition",
 		ru = "Боеприпасов",
+		["zh-cn"] = "弹药箱",
 	},
 	-- Deploy medipack
 	message_health_placed = {
@@ -621,6 +721,7 @@ return {
 		en = " deployed :subject:",
 		de = " hat :subject: platziert",
 		ru = " развёртывает :subject:",
+		["zh-cn"] = " 部署了:subject:",
 	},
 	message_health_placed_description = {
 		en = "Shows message when a player deployes medipack",
@@ -633,31 +734,32 @@ return {
 		en = "Ammocache deployed",
 		de = "Munitionskiste",
 		ru = "Боеприпасы размещены",
-		["zh-cn"] = "部署弹药罐",
+		["zh-cn"] = "部署弹药箱",
 	},
 	message_ammo_placed_description = {
 		en = "Shows message when a player deployes ammocache",
 		de = "Zeigt eine Nachricht wenn ein Spieler eine Munitionskiste platziert",
 		ru = "Показывает сообщение когда игрок размещает боеприпасы",
-		["zh-cn"] = "玩家部署弹药罐时显示消息",
+		["zh-cn"] = "玩家部署弹药箱时显示消息",
 	},
 	-- Pick up ammocache / medipack
 	ammo_health_pickup = {
 		en = "Medipack / Ammocache picked up",
 		de = "Medipack / Munitionskiste",
 		ru = "Аптечка / Боеприпасы взяты",
-		["zh-cn"] = "拾取医疗箱 / 弹药罐",
+		["zh-cn"] = "拾取医疗箱 / 弹药箱",
 	},
 	ammo_health_pickup_text = {
 		en = " picked up :subject:",
 		de = " hat :subject: genommen",
 		ru = " подбирает :subject:",
+		["zh-cn"] = " 拾取了:subject:",
 	},
 	ammo_health_pickup_description = {
 		en = "Shows message when a player picks up medipack or ammocache",
 		de = "Zeigt eine Nachricht wenn ein Spieler Medipack oder Munitionskiste einsammelt",
 		ru = "Показывает сообщение когда игрок подбирает аптечку или боеприпасы",
-		["zh-cn"] = "玩家拾取医疗箱或弹药罐时显示消息",
+		["zh-cn"] = "玩家拾取医疗箱或弹药箱时显示消息",
 	},
 	-- Pick up scripture / grimoire
 	scripture_grimoire_pickup = {
@@ -676,20 +778,24 @@ return {
 		en = "Team Score",
 		de = "Team Punkte",
 		ru = "Командные очки",
+		["zh-cn"] = "团队分数",
 	},
 	row_defense_score = {
 		en = "Defense Score",
 		de = "Verteidigung Punkte",
 		ru = "Очки за оборону",
+		["zh-cn"] = "防御分数",
 	},
 	row_offense_score = {
 		en = "Offense Score",
 		de = "Verteidigung Punkte",
 		ru = "Очки за нападение",
+		["zh-cn"] = "进攻分数",
 	},
 	row_score = {
 		en = "Total Score",
 		de = "Gesamtpunktzahl",
 		ru = "Общий счет",
+		["zh-cn"] = "总分数",
 	},
 }
