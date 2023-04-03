@@ -117,6 +117,22 @@ return {
 		de = "Dunkel",
 		ru = "Темный",
 	},
+	generate_scores = {
+		en = "Generate Scores",
+		de = "Punkte generieren",
+	},
+	generate_scores_on = {
+		en = "On",
+		de = "An",
+	},
+	generate_scores_space = {
+		en = "Empty Row",
+		de = "Leere Zeile",
+	},
+	generate_scores_off = {
+		en = "Off",
+		de = "Aus",
+	},
 	-- Groups
 	group_plugins = {
 		en = "Plugins",

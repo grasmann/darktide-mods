@@ -137,6 +137,7 @@ end
 
 ScoreboardView.get_rows_in_groups = function(self)
     --self.loaded_rows
+    local generate_scores = mod:get("generate_scores")
     local groups, group_mods = self:get_scoreboard_groups()
     local sorted = {}
     local score_rows = {}
@@ -179,7 +180,7 @@ ScoreboardView.get_rows_in_groups = function(self)
             --     score_rows[#score_rows+1] = row
             -- end
         end
-        if group ~= "none" and group ~= "bottom" and #rows > 0 then
+        if group ~= "none" and group ~= "bottom" and #rows > 0 and generate_scores < 3 then
             local new_row = {
                 mod = group_mods[group],
                 name = "row_"..group.."_score",
@@ -196,16 +197,22 @@ ScoreboardView.get_rows_in_groups = function(self)
             score_rows[#score_rows+1] = new_row.name
         end
     end
-    sorted[#sorted+1] = {{
-        mod = mod,
-        name = "score",
-        text = "row_score",
-        validation = ScoreboardDefinitions.validation_types.ASC,
-        validation_type = "ASC",
-        big = true,
-        score = true,
-        summary = score_rows,
-    }}
+    if generate_scores == 1 then
+        sorted[#sorted+1] = {{
+            mod = mod,
+            name = "score",
+            text = "row_score",
+            validation = ScoreboardDefinitions.validation_types.ASC,
+            validation_type = "ASC",
+            big = true,
+            score = true,
+            summary = score_rows,
+        }}
+    end
+    local last_group = sorted[#sorted]
+    if last_group[#last_group].score then
+        last_group[#last_group] = nil
+    end
     -- mod:echo("bla")
     local this_group = sorted[1]
     for _, row in pairs(self.loaded_rows) do
@@ -223,6 +230,7 @@ end
 -- ##### ╚═╝  ╚═╝ ╚═════╝  ╚══╝╚══╝ ╚══════╝ ##########################################################################
 
 ScoreboardView.create_row_widget = function(self, index, current_offset, visible_rows, this_row)
+    local generate_scores = mod:get("generate_scores")
     local widget = nil
     local template = table.clone(self._blueprints["scoreboard_row"])
     local size = template.size
@@ -326,6 +334,9 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         pass_template[1].value = ""
     elseif index > 1 then
         pass_template[1].value = this_text
+        if this_row.score and generate_scores > 1 then
+            pass_template[1].value = ""
+        end
     end
 
     -- Calculate row values
@@ -440,6 +451,10 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                         -- Replace header text with colored text
                         pass_template[1].value = TextUtilities.apply_color_to_text(tostring(pass_template[1].value), color)
                     end
+                end
+
+                if this_row.score and generate_scores > 1 then
+                    score = ""
                 end
 
                 -- Set score text

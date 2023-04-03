@@ -776,7 +776,7 @@ mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_finished", function(func
 			local color = Color.light_green(255, true)
 			-- local message = " used "..TextUtilities.apply_color_to_text("Scanner", color)
 			local message = mod:localize("message_decoded_text")
-			local subject = mod:localize("message_decoded_skull")
+			local subject = mod:localize("message_decoded_scanner")
 			message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
 			Managers.event:trigger("event_combat_feed_kill", player_unit, message)
 		end
