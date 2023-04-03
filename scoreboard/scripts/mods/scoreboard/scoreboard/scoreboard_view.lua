@@ -247,7 +247,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         or header and 20
         or this_row.score and 24
         or 16
-
+    
     -- Vertical offset
     if this_row.parent then
         local parent = self._widgets_by_name["scoreboard_row_"..this_row.parent]
@@ -259,6 +259,25 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
 
     local player_pass_map = {3, 5, 7, 9}
     local players = self.loaded_players or self._player_manager:players()
+
+    -- Fill rows
+    local player_num = 1
+    for _, player in pairs(players) do
+        if player_num < 5 then
+            local account_id = player:account_id() or player:name()
+            for _, group in pairs(self.sorted_rows) do
+                for _, row in pairs(group) do
+                    if row.data then
+                        if not row.data[account_id] then
+                            row.data[account_id] = {
+                                score = 0
+                            }
+                        end
+                    end
+                end
+            end
+        end
+    end
 
     -- Header
     if header then
@@ -341,6 +360,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     end
 
     -- Calculate row values
+    local validation = this_row.validation
     if not header then
         for i = 1, 2, 1 do
             local player_num = 1
@@ -362,8 +382,21 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
 
                     local score = 0
                     for _, row in pairs(rows) do
-                        local row_data = row.data and row.data[account_id]
-                        score = score + (row_data and row_data.score or 0)
+                        local add_score = 0
+                        if row.data then
+                            local normalized_data = row.data
+                            if this_row.score then
+                                normalized_data = self:normalize_values(players, row)
+                            end
+                            if this_row.score then
+                                local validation = row.validation
+                                add_score = validation:score(normalized_data, account_id)
+                            else
+                                local row_data = normalized_data[account_id]
+                                add_score = row_data and row_data.score or 0
+                            end
+                        end
+                        score = score + add_score
                     end
                     -- score = score == 0 and math.random(1, 100) or score
 
@@ -379,7 +412,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     
     -- Normalize score row values
     if this_row.score then
-        self:normalize_values(players, this_row)
+        this_row.data = self:normalize_values(players, this_row)
     end
 
     -- Best / worst
@@ -562,17 +595,18 @@ ScoreboardView.normalize_values = function(self, players, this_row)
 	-- for row_index, data in pairs(self.rows) do
 	-- 	if data.score_row then
     if this_row.data then
-        local av = average(this_row.data, players)
+        local data = table.clone(this_row.data)
+        local av = average(data, players)
         if av ~= 0 then
             if av > target_average then
                 local start_av = av
                 local safety = 10000
                 while av > target_average and safety > 0 do
-                    for account_id, values in pairs(this_row.data) do
+                    for account_id, values in pairs(data) do
                         values.score = values.score * 0.9
                         -- values.end_score = values.score
                     end
-                    av = average(this_row.data, players)
+                    av = average(data, players)
                     safety = safety - 1
                 end
                 -- mod:echo(this_row.name.." - "..start_av.." > "..av.." - "..(10000 - safety).." rounds")
@@ -580,19 +614,21 @@ ScoreboardView.normalize_values = function(self, players, this_row)
                 local start_av = av
                 local safety = 10000
                 while av < target_average and safety > 0 do
-                    for account_id, values in pairs(this_row.data) do
+                    for account_id, values in pairs(data) do
                         values.score = values.score * 1.1
                         -- values.end_score = values.score
                     end
-                    av = average(this_row.data, players)
+                    av = average(data, players)
                     safety = safety - 1
                 end
                 -- mod:echo(this_row.name.." - "..start_av.." > "..av.." - "..(10000 - safety).." rounds")
             end
         end
+        return data
         -- 	end
         -- end
     end
+    return this_row.data
 end
 
 ScoreboardView.get_row_children = function(self, parent, row_name)
