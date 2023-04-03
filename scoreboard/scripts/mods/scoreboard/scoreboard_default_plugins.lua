@@ -358,7 +358,9 @@ mod.drop_crate = function(self, event_name, event_index, unit, first_person, con
 				-- Message
 				if mod:get("message_health_placed") then
 					local color = Color.light_blue(255, true)
-					local message = " deployed "..TextUtilities.apply_color_to_text(text, color)
+					-- local message = " deployed "..TextUtilities.apply_color_to_text(text, color)
+					local message = mod:localize("message_health_placed_text")
+					message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(text, color))
 					-- local character_name = player:name()
 					-- mod:echo(character_name..message)
 					Managers.event:trigger("event_combat_feed_kill", unit, message)
@@ -370,7 +372,9 @@ mod.drop_crate = function(self, event_name, event_index, unit, first_person, con
 				-- Message
 				if mod:get("message_ammo_placed") then
 					local color = Color.gray(255, true)
-					local message = " deployed "..TextUtilities.apply_color_to_text(text, color)
+					-- local message = " deployed "..TextUtilities.apply_color_to_text(text, color)
+					local message = mod:localize("message_health_placed_text")
+					message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(text, color))
 					-- local character_name = player:name()
 					-- mod:echo(character_name..message)
 					Managers.event:trigger("event_combat_feed_kill", unit, message)
@@ -450,7 +454,10 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 					-- Message
 					if mod:get("message_default") then
 						local color = Color.light_green(255, true)
-						local message = " operated "..TextUtilities.apply_color_to_text("Machinery", color)
+						-- local message = " operated "..TextUtilities.apply_color_to_text("Machinery", color)
+						local message = mod:localize("message_default_text")
+						local subject = mod:localize("message_default_machinery")
+						message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
 						Managers.event:trigger("event_combat_feed_kill", unit, message)
 					end
 					-- Update scoreboard
@@ -483,7 +490,10 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 					if mod:get(option) then
 						local text = Localize(name)
 						-- local character_name = player:name()
-						local message = " picked up "..TextUtilities.apply_color_to_text(text, color)
+						-- local message = " picked up "..TextUtilities.apply_color_to_text(text, color)
+						local message = mod:localize("ammo_health_pickup_text")
+						-- local subject = mod:localize("message_default_machinery")
+						message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(text, color))
 						-- mod:echo(character_name..message)
 						Managers.event:trigger("event_combat_feed_kill", unit, message)
 					end
@@ -494,7 +504,10 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 					-- Message
 					if mod:get("message_health_station") then
 						local color = Color.light_blue(255, true)
-						local message = " used "..TextUtilities.apply_color_to_text("Health Station", color)
+						-- local message = " used "..TextUtilities.apply_color_to_text("Health Station", color)
+						local message = mod:localize("message_health_station_text")
+						local subject = mod:localize("message_health_station_health_station")
+						message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
 						Managers.event:trigger("event_combat_feed_kill", unit, message)
 					end
 					-- Update scoreboard
@@ -505,7 +518,10 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 					-- Message
 					if mod:get("message_decoded") then
 						local color = Color.light_green(255, true)
-						local message = " operated "..TextUtilities.apply_color_to_text("Servoskull", color)
+						-- local message = " operated "..TextUtilities.apply_color_to_text("Servoskull", color)
+						local message = mod:localize("message_decoded_text")
+						local subject = mod:localize("message_decoded_skull")
+						message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
 						Managers.event:trigger("event_combat_feed_kill", unit, message)
 					end
 					-- Update scoreboard
@@ -521,7 +537,9 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 					if mod:get("message_forge_material") then
 						local color = Color.orange(255, true)
 						local text = Localize(self._override_contexts.forge_material.description)
-						local message = " picked up "..TextUtilities.apply_color_to_text(text.." ("..count..")", color)
+						local message = mod:localize("message_forge_material_text")
+						message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(text.." ("..count..")", color))
+						-- local message = " picked up "..TextUtilities.apply_color_to_text(text.." ("..count..")", color)
 						Managers.event:trigger("event_combat_feed_kill", unit, message)
 					end
 					-- Update scoreboard
@@ -551,7 +569,12 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 						-- Message
 						if mod:get("message_ammo") then
 							local color = Color.gray(255, true)
-							local message = " picked up "..TextUtilities.apply_color_to_text(string.format("%.0f", picked).." ammo ", color).." wasted "..TextUtilities.apply_color_to_text(string.format("%.0f", wasted), color)
+							-- local message = " picked up "..TextUtilities.apply_color_to_text(string.format("%.0f", picked).." ammo ", color).." wasted "..TextUtilities.apply_color_to_text(string.format("%.0f", wasted), color)
+							local message = mod:localize("message_ammo_text")
+							local subject = mod:localize("message_ammo_ammo")
+							message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
+							message = string.gsub(message, ":count:", TextUtilities.apply_color_to_text(string.format("%.0f", picked), color))
+							message = string.gsub(message, ":count2:", TextUtilities.apply_color_to_text(string.format("%.0f", wasted), color))
 							Managers.event:trigger("event_combat_feed_kill", unit, message)
 						end
 						-- Update Scoreboard
@@ -563,7 +586,11 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 						-- Message
 						if mod:get("message_ammo") then
 							local color = Color.gray(255, true)
-							local message = " picked up "..TextUtilities.apply_color_to_text(string.format("%.0f", picked).." ammo ", color)
+							-- local message = " picked up "..TextUtilities.apply_color_to_text(string.format("%.0f", picked).." ammo ", color)
+							local message = mod:localize("message_ammo_crate_text")
+							local subject = mod:localize("message_ammo_ammo")
+							message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
+							message = string.gsub(message, ":count:", TextUtilities.apply_color_to_text(string.format("%.0f", picked), color))
 							Managers.event:trigger("event_combat_feed_kill", unit, message)
 						end
 						-- Update Scoreboard
@@ -723,7 +750,10 @@ mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_place_unit", function(fu
 		local account_id = player:account_id() or player:name()
 		if mod:get("message_decoded") then
 			local color = Color.light_green(255, true)
-			local message = " operated "..TextUtilities.apply_color_to_text("Servoskull", color)
+			-- local message = " operated "..TextUtilities.apply_color_to_text("Servoskull", color)
+			local message = mod:localize("message_decoded_text")
+			local subject = mod:localize("message_decoded_skull")
+			message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
 			Managers.event:trigger("event_combat_feed_kill", player_unit, message)
 		end
 		-- Update scoreboard
@@ -744,7 +774,10 @@ mod:hook(CLASS.DecoderDeviceSystem, "rpc_decoder_device_finished", function(func
 		local account_id = player:account_id() or player:name()
 		if mod:get("message_decoded") then
 			local color = Color.light_green(255, true)
-			local message = " used "..TextUtilities.apply_color_to_text("Scanner", color)
+			-- local message = " used "..TextUtilities.apply_color_to_text("Scanner", color)
+			local message = mod:localize("message_decoded_text")
+			local subject = mod:localize("message_decoded_skull")
+			message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
 			Managers.event:trigger("event_combat_feed_kill", player_unit, message)
 		end
 		-- Update scoreboard
@@ -764,7 +797,10 @@ mod:hook(CLASS.MinigameSystem, "rpc_minigame_sync_completed", function(func, sel
 		-- Message
 		if mod:get("message_decoded") then
 			local color = Color.light_green(255, true)
-			local message = " used "..TextUtilities.apply_color_to_text("Scanner", color)
+			-- local message = " used "..TextUtilities.apply_color_to_text("Scanner", color)
+			local message = mod:localize("message_decoded_text")
+			local subject = mod:localize("message_decoded_scanner")
+			message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(subject, color))
 			Managers.event:trigger("event_combat_feed_kill", player_unit, message)
 		end
 		-- Update scoreboard
