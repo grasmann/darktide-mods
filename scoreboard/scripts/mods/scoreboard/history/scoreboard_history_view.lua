@@ -113,6 +113,7 @@ ScoreboardHistoryView.present_category_widgets = function(self, category)
             scoreboard_history = true,
             rows = self.entry.rows,
             players = players,
+            groups = self.groups or {},
         }, {use_transition_ui = false})
     end
 end
@@ -453,7 +454,7 @@ ScoreboardHistoryView.cb_on_category_pressed = function(self, widget, entry)
     local pressed_function = entry.pressed_function
   
     -- local text = widget.file_path or ""
-    self.entry = mod:load_scoreboard_history_entry(widget.file_path, widget.file, false)
+    self.entry, self.groups = mod:load_scoreboard_history_entry(widget.file_path, widget.file, false)
     -- mod:dtf(self.entry, "self.entry", 5)
 
     if pressed_function then

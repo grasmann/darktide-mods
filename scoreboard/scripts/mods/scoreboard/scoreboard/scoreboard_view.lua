@@ -36,6 +36,7 @@ ScoreboardView.init = function(self, settings, context)
     self.end_view = context and context.end_view
     self.is_history = context and context.scoreboard_history or false
     self.rows = context and context.rows or {}
+    self.groups = context and context.groups or {}
     self.loaded_players = context and context.players or nil
     self.loaded_rows = context and context.rows and mod:collect_scoreboard_rows(context.rows) or mod.registered_scoreboard_rows
     -- mod:dtf(self.loaded_players, "self.loaded_players", 5)
@@ -85,6 +86,7 @@ ScoreboardView.on_enter = function(self)
     -- self:_update_grid_navigation_selection()
     
     if self.end_view and mod:get("save_all_scoreboards") then
+    -- if not self.is_history and mod:get("save_all_scoreboards") then
         local sorted_rows = self.sorted_rows or {}
         mod:save_scoreboard_history_entry(sorted_rows)
         if DEBUG then mod:echo("Scoreboard saved") end
@@ -299,6 +301,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
 
     -- Localize row name
     local this_text = this_row.mod:localize(this_row.text) or this_row.text
+    if self.groups[this_row.text] then this_text = self.groups[this_row.text] end
     if self.is_history and not this_row.score then
         this_text = this_row.text
     end

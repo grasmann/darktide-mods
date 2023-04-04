@@ -269,6 +269,9 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 				end
 				index = index + 1
 				-- end
+			elseif this_row.score then
+				local text = this_row.mod:localize(this_row.text) or this_row.text
+				file:write("#group;"..this_row.text..";"..text.."\n")
 			end
 		end
 	end
@@ -319,11 +322,13 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 	local reading = ""
 	local count = 0
 	local row_index = {}
+	local groups = {}
 	for line in _io.lines(path) do
 		-- self:echo(line)
 		-- Players
 		local player_match = line:match("#players")
 		local row_match = line:match("#row")
+		local group_match = line:match("#group")
 		if player_match or reading == "players" then
 			if player_match then
 				reading = "players"
@@ -420,12 +425,21 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 					row_index = 0
 				end
 			end
+		elseif (group_match) and not only_head then
+			local info = split(line, ";")
+			local name = info[2]
+			local text = info[3]
+			groups[name] = text
+			-- local localizations = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_localization")
+			-- localizations[name] = {en = text}
+			-- DMF:initialize_mod_localization(mod, localizations)
+
 		end
 	end
 	-- Players
 
 	-- self:dtf(entry, "scoreboard_entry", 8)
-	return entry
+	return entry, groups
 end
 
 -- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################
