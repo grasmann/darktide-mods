@@ -108,7 +108,7 @@ mod.get_scoreboard_history_entries = function(self, scan_dir)
 			entry.file = file
 			entry.file_path = file_path
 			local date_str = string.sub(file, 1, string.len(file) - 4)
-			entry.date = _os.date("%c", tonumber(date_str))
+			entry.date = _os.date("%Y-%m-%d %H:%M:%S", tonumber(date_str))
 			entries[#entries+1] = entry
 		else
 			missing_file = true
