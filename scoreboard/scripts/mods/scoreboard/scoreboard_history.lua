@@ -433,5 +433,5 @@ end
 -- ##### ┴ ┴└─┘┴─┘┴   #################################################################################################
 
 mod.current_date = function(self)
-    return _os.time(_os.date("!*t"))
+    return _os.time(_os.date("*t"))
 end
