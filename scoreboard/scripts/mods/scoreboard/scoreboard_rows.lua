@@ -730,8 +730,15 @@ mod.collect_scoreboard_rows = function(self, loaded_rows)
 	if not loaded_rows then
 		self.registered_scoreboard_rows = {}
 		local DMF = get_mod("DMF")
+		-- Scoreboards own rows
+		for _, template in pairs(mod.scoreboard_rows) do
+			local entry = self:register_scoreboard_row(mod, template)
+			local index = #self.registered_scoreboard_rows + 1
+			table.insert(self.registered_scoreboard_rows, index, entry)
+		end
+		-- Add rows from other mods
 		for _, this_mod in pairs(DMF.mods) do
-			if type(this_mod) == "table" and this_mod.scoreboard_rows then
+			if type(this_mod) == "table" and this_mod.scoreboard_rows and this_mod.name ~= "scoreboard" then
 				for _, template in pairs(this_mod.scoreboard_rows) do
 					local entry = self:register_scoreboard_row(this_mod, template)
 					local index = #self.registered_scoreboard_rows + 1
