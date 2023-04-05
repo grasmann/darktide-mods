@@ -24,7 +24,7 @@ local list_button_icon_size = {
 	50
 }
 local list_button_with_icon_text_style = table.clone(UIFontSettings.list_button)
-list_button_with_icon_text_style.offset[1] = 64
+list_button_with_icon_text_style.offset[1] = 10
 list_button_with_icon_text_style.offset[2] = -10
 local list_button_with_icon_icon_style = {
 	vertical_alignment = "center",
@@ -36,6 +36,7 @@ local list_button_with_icon_icon_style = {
 	offset = {9, 0, 3},
 }
 local list_button_with_icon_text_style2 = table.clone(UIFontSettings.list_button_second_row)
+list_button_with_icon_text_style2.offset[1] = 10
 
 local blueprints = {
 	settings_button = {

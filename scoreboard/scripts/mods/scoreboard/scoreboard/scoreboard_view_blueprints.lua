@@ -75,11 +75,16 @@ local blueprints = {
             },
             {
                 value = "",
-				pass_type = "text",
-				style = {
-					visible = false,
-				},
-				custom = true,
+                pass_type = "texture",
+                style = {
+                    horizontal_alignment = "left",
+                    color = Color.terminal_frame(100, true),
+                    disabled_color = Color.terminal_frame(100, true),
+                    default_color = Color.terminal_frame(100, true),
+                    hover_color = Color.terminal_frame(100, true),
+                    offset = {ScoreboardViewSettings.scoreboard_column_header_width, 0, base_z},
+		            size = {ScoreboardViewSettings.scoreboard_column_width, ScoreboardViewSettings.scoreboard_row_height},
+                }
             },
             {
                 value_id = "text2",
@@ -129,11 +134,16 @@ local blueprints = {
             },
             {
                 value = "",
-				pass_type = "text",
-				style = {
-					visible = false,
-				},
-				custom = true,
+                pass_type = "texture",
+                style = {
+                    horizontal_alignment = "left",
+                    color = Color.terminal_frame(100, true),
+                    disabled_color = Color.terminal_frame(100, true),
+                    default_color = Color.terminal_frame(100, true),
+                    hover_color = Color.terminal_frame(100, true),
+                    offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width*2, 0, base_z},
+		            size = {ScoreboardViewSettings.scoreboard_column_width, ScoreboardViewSettings.scoreboard_row_height},
+                }
             },
             {
                 value_id = "text4",

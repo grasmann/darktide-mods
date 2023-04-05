@@ -260,6 +260,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     end
 
     local player_pass_map = {3, 5, 7, 9}
+    local background_pass_map = {["3"] = 4, ["7"] = 8}
     local players = self.loaded_players or self._player_manager:players()
 
     -- Fill rows
@@ -293,7 +294,12 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
             num_players = num_players + 1
             if num_players <= 4 then
                 if player.name then
-                    pass_template[player_pass_map[num_players]].value = player:name()
+                    local name = player:name()
+                    local account_id = player:account_id() or player:name()
+                    if mod:is_me(account_id) then
+                        name = TextUtilities.apply_color_to_text(name, Color.ui_orange_light(255, true))
+                    end
+                    pass_template[player_pass_map[num_players]].value = name
                 end
             end
         end
@@ -351,6 +357,13 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                 local offset = this_size[1] * (val_index - 1)
                 pass_template[i].style.offset[1] = pass_template[i].style.offset[1] + offset
                 pass_template[i].style.size[1] = this_size[1]
+                local background = background_pass_map[tostring(i)]
+                if background then
+                    pass_template[background].style.visible = false
+                end
+                -- for _, j in pairs(background_pass_map) do
+                --     pass_template[i].style.visible = false
+                -- end
             end
         end
 
@@ -365,56 +378,56 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     -- Calculate row values
     local validation = this_row.validation
     if not header then
-        for i = 1, 2, 1 do
-            local player_num = 1
-            for _, player in pairs(players) do
-                if player_num < 5 then
-                    local account_id = player:account_id() or player:name()
-                    local rows = {}
-                    if this_row.summary then
-                        for _, group in pairs(self.sorted_rows) do
-                            for _, row in pairs(group) do
-                                if table.contains(this_row.summary, row.name) then
-                                    rows[#rows+1] = row
-                                end
+        -- for i = 1, 2, 1 do
+        local player_num = 1
+        for _, player in pairs(players) do
+            if player_num < 5 then
+                local account_id = player:account_id() or player:name()
+                local rows = {}
+                if this_row.summary then
+                    for _, group in pairs(self.sorted_rows) do
+                        for _, row in pairs(group) do
+                            if table.contains(this_row.summary, row.name) then
+                                rows[#rows+1] = row
                             end
                         end
-                    else
-                        rows[#rows+1] = this_row
                     end
-
-                    local score = 0
-                    for _, row in pairs(rows) do
-                        local add_score = 0
-                        if row.data then
-                            local normalized_data = row.data
-                            if this_row.score then
-                                normalized_data = self:normalize_values(players, row)
-                            end
-                            if this_row.score then
-                                local validation = row.validation
-                                add_score = validation:score(normalized_data, account_id)
-                            else
-                                local row_data = normalized_data[account_id]
-                                add_score = row_data and row_data.score or 0
-                            end
-                        end
-                        score = score + add_score
-                    end
-                    -- score = score == 0 and math.random(1, 100) or score
-
-                    this_row.data = this_row.data or {}
-                    this_row.data[account_id] = this_row.data[account_id] or {}
-                    -- mod:echo(score)
-                    this_row.data[account_id].score = score --/ #rows
+                else
+                    rows[#rows+1] = this_row
                 end
-                player_num = player_num + 1
+
+                local score = 0
+                for _, row in pairs(rows) do
+                    local add_score = 0
+                    if row.data then
+                        local normalized_data = row.data
+                        if this_row.score then
+                            normalized_data = self:normalize_values(players, row)
+                        end
+                        if this_row.score then
+                            local validation = row.validation
+                            add_score = validation:score(normalized_data, account_id)
+                        else
+                            local row_data = normalized_data[account_id]
+                            add_score = row_data and row_data.score or 0
+                        end
+                    end
+                    score = score + add_score
+                end
+                -- score = score == 0 and math.random(1, 100) or score
+
+                this_row.data = this_row.data or {}
+                this_row.data[account_id] = this_row.data[account_id] or {}
+                -- mod:echo(score)
+                this_row.data[account_id].score = score --/ #rows
             end
+            player_num = player_num + 1
         end
+        -- end
     end
     
     -- Normalize score row values
-    if this_row.score then
+    if this_row.score or this_row.normalize then
         this_row.data = self:normalize_values(players, this_row)
     end
 
@@ -504,9 +517,17 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     -- Alternate row
     local alternate_row = visible_rows % 2 == 0
     if alternate_row and not this_row.parent then
+        for _, i in pairs(background_pass_map) do
+            pass_template[i].style.visible = false
+        end
         pass_template[#pass_template].style.size[2] = row_height
+    elseif not this_row.parent then
+        for _, i in pairs(background_pass_map) do
+            pass_template[i].style.size[2] = row_height
+        end
+        pass_template[#pass_template].style.visible = false
     else
-        pass_template[#pass_template] = nil
+        pass_template[#pass_template].style.visible = false
     end
 
     -- Create widget

@@ -200,10 +200,11 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 			},
 		}
 	end
+	-- Mission
+	file:write("#mission;"..tostring(self.mission_name).."\n")
+	-- Players
 	local count = 0
-	for _, player in pairs(players) do
-		count = count + 1
-	end
+	for _, player in pairs(players) do count = count + 1 end
 	count = math.min(count, 4)
 	file:write("#players;"..tostring(count).."\n")
 	local num_players = 0
@@ -260,8 +261,9 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 				local setting = tostring(this_row.setting) --~= "" and this_row.setting or "none"
 				local parent = tostring(this_row.parent) --~= "" and this_row.parent or "none"
 				local is_time = tostring(this_row.is_time) --== true and "1" or "0"
-				local summary = this_row.summary and table.concat(this_row.summary, ":") or ""
-				file:write("#row;"..name..";"..index..";"..val_count..";"..text..";"..validation..";"..iteration..";"..visible..";"..group..";"..setting..";"..parent..";"..is_time..";"..summary.."\n")
+				local summary = this_row.summary and table.concat(this_row.summary, ":") or "nil"
+				local normalize = tostring(this_row.normalize)
+				file:write("#row;"..name..";"..index..";"..val_count..";"..text..";"..validation..";"..iteration..";"..visible..";"..group..";"..setting..";"..parent..";"..is_time..";"..summary..";"..normalize.."\n")
 				if this_row.data and type(this_row.data) == "table" then
 					for account_id, data in pairs(this_row.data) do
 						file:write(account_id..";"..data.score..";"..(data.is_best and "1" or "0")..";"..(data.is_worst and "1" or "0").."\n")
@@ -279,7 +281,7 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 	file:close()
 	-- Add to cache
 	local cache = mod:get_scoreboard_history_entries_cache()
-	if not cache then cache = {} end
+	if not cache or type(cache) ~= "table" then cache = {} end
 	cache[#cache+1] = file_name
 	mod:set_scoreboard_history_entries_cache(cache)
 end
@@ -326,10 +328,15 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 	for line in _io.lines(path) do
 		-- self:echo(line)
 		-- Players
+		local mission_match = line:match("#mission")
 		local player_match = line:match("#players")
 		local row_match = line:match("#row")
 		local group_match = line:match("#group")
-		if player_match or reading == "players" then
+		if mission_match then
+			local info = split(line, ";")
+			local name = info[2]
+			entry.mission_name = name
+		elseif player_match or reading == "players" then
 			if player_match then
 				reading = "players"
 				count = tonumber(split(line, ";")[2])
@@ -386,7 +393,13 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 				if tostring(info[12]) == "nil" then is_time = nil end
 				-- mod:echo("is_time '"..tostring(is_time).."'")
 				local summary = info[13] and split(info[13], ":") or nil
-				-- mod:echo("is_time '"..tostring(is_time).."'")
+				if tostring(info[13]) == "nil" then summary = nil end
+				-- mod:echo("summary '"..tostring(summary).."'")
+				local normalize = nil
+				if info[14] then
+					if tostring(info[14]) == "true" then normalize = true end
+					if tostring(info[14]) == "nil" then normalize = nil end
+				end
 
 				reading = "row"
 				row_index = #entry.rows + 1
@@ -402,12 +415,14 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 					iteration_type = iteration,
 					group = group,
 					-- setting = setting,
+					normalize = normalize,
 					parent = parent,
 					is_time = is_time,
 					summary = summary,
+					visible = visible,
 					data = {},
 				}
-				if visible ~= nil then new_row.visible = visible end
+				-- if visible ~= nil then new_row.visible = visible end
 				entry.rows[row_index] = new_row
 			elseif reading == "row" and count > 0 and row_index > 0 then
 				local val_info = split(line, ";")

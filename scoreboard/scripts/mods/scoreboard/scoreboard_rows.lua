@@ -130,6 +130,7 @@ mod.scoreboard_rows = {
 		update = mod.update_coherency,
 		group = "defense",
 		setting = "plugin_coherency_efficiency",
+		normalize = true,
 	},
 	-- Carrying
 	{name = "carrying",
@@ -786,6 +787,7 @@ mod.register_scoreboard_row = function(self, this_mod, template)
 		is_time = template.is_time,
 		update = template.update,
 		visible = template.visible,
+		normalize = template.normalize,
 		big = template.big,
 		data = template.data,
 	}

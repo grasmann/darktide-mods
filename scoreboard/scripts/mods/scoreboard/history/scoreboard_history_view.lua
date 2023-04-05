@@ -1,6 +1,7 @@
 local mod = get_mod("scoreboard")
 local DMF = get_mod("DMF")
 
+local Missions = mod:original_require("scripts/settings/mission/mission_templates")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 local InputUtils = mod:original_require("scripts/managers/input/input_utils")
 local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
@@ -155,9 +156,17 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
     for i = 1, #config_categories do
         local category_config = config_categories[i]
         -- local category_display_name = category_config.display_name or category_config.name
+        local mission_name = ""
+        if category_config.mission_name then
+            local mission_settings = Missions[category_config.mission_name]
+            if mission_settings then
+                mission_name = " | "..Localize(mission_settings.mission_name)
+            end
+        end
+
         mod:add_global_localize_strings({
             ["loc_scoreboard_history_view_entry_"..tostring(category_config.date)] = {
-                en = tostring(category_config.date),
+                en = tostring(category_config.date)..mission_name,
             },
         })
         local category_display_name = "loc_scoreboard_history_view_entry_"..tostring(category_config.date)

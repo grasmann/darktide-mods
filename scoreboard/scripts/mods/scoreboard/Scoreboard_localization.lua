@@ -11,13 +11,13 @@ mod:add_global_localize_strings({
 	loc_scoreboard_history_view_display_name = {
 		en = "Scoreboard History",
 		de = "Scoreboard Historie",
-		ru = "Scoreboard История",
+		ru = "История таблицы результатов",
 		["zh-cn"] = "记分板历史记录",
 	},
 	loc_scoreboard_save = {
 		en = "Save Scoreboard",
 		de = "Scoreboard Speichern",
-		ru = "Сохранить Scoreboard",
+		ru = "Сохранить таблицу результатов",
 		["zh-cn"] = "保存记分板",
 	},
 	loc_scoreboard_scan = {
@@ -29,7 +29,7 @@ mod:add_global_localize_strings({
 	loc_scoreboard_delete = {
 		en = "Delete Scoreboard",
 		de = "Scoreboard löschen",
-		ru = "Удалить Scoreboard",
+		ru = "Удалить таблицу результатов",
 		["zh-cn"] = "删除记分板",
 	},
 })
@@ -51,45 +51,45 @@ return {
 	mod_description = {
 		en = "Adds a scoreboard with various individual stats at the end of missions.",
 		de = "Zeigt nach Missionsende ein Scoreboard mit individuellen Statistiken.",
-		ru = "Добавляет табло с различной индивидуальной статистикой в ​​конце миссий.",
+		ru = "Добавляет таблицу результатов с различной индивидуальной статистикой в конце миссий.",
 		["zh-cn"] = "任务结束时添加显示各种统计数据的记分板。",
 	},
 	-- Buttons
 	mod_history_view_title = {
 		en = "Scoreboard History",
 		de = "Scoreboard Historie",
-		ru = "Scoreboard История",
+		ru = "История таблицы результатов",
 		["zh-cn"] = "记分板历史记录",
 	},
 	mod_save_scoreboard_to_history = {
 		en = "Save Scoreboard",
 		de = "Scoreboard Speichern",
-		ru = "Сохранить Scoreboard",
+		ru = "Сохранить таблицу результатов",
 		["zh-cn"] = "保存记分板",
 	},
 	-- Options
 	open_scoreboard = {
 		en = "Open Scoreboard",
 		de = "Scoreboard öffnen",
-		ru = "Открыть Scoreboard",
+		ru = "Открыть таблицу результатов",
 		["zh-cn"] = "打开记分板",
 	},
 	open_scoreboard_history = {
 		en = "Open Scoreboard History",
 		de = "Scoreboard Historie öffnen",
-		ru = "Открыть историю Scoreboard",
+		ru = "Открыть историю таблицы результатов",
 		["zh-cn"] = "打开记分板历史记录",
 	},
 	save_all_scoreboards = {
 		en = "Save all Scoreboards",
 		de = "Alle Scoreboards speichern",
-		ru = "Сохранить все Scoreboards",
+		ru = "Сохранить все таблицы результатов",
 		["zh-cn"] = "保存所有记分板",
 	},
 	scoreboard_history_cached = {
 		en = "Scoreboard History Cached",
 		de = "Scoreboard History Zwischengespeichert",
-		ru = "Кэшировать историю Scoreboard",
+		ru = "История таблицы результатов кэширована",
 		["zh-cn"] = "记分板历史记录已缓存",
 	},
 	zero_values = {
@@ -137,21 +137,25 @@ return {
 	generate_scores = {
 		en = "Generate Scores",
 		de = "Punkte generieren",
+		ru = "Генератор очков и счета",
 		["zh-cn"] = "生成分数",
 	},
 	generate_scores_on = {
 		en = "On",
 		de = "An",
+		ru = "Отображать",
 		["zh-cn"] = "开",
 	},
 	generate_scores_space = {
 		en = "Empty Row",
 		de = "Leere Zeile",
+		ru = "Пустое поле",
 		["zh-cn"] = "空行",
 	},
 	generate_scores_off = {
 		en = "Off",
 		de = "Aus",
+		ru = "Отключить",
 		["zh-cn"] = "关",
 	},
 	-- Groups
@@ -195,44 +199,44 @@ return {
 	row_forge_material = {
 		en = "Metal / Diamantine collected",
 		de = "Metall / Diamantin gesammelt",
-		ru = "Пластиль / Диамантин",
+		ru = "Собрано Пластали/Диамантина",
 		["zh-cn"] = "收集塑钢 / 金刚铁",
 	},
 	row_forge_material_metal = {
 		en = "Metal",
 		de = "Metall",
-		ru = "Пластиль",
+		ru = "Пластали",
 		["zh-cn"] = "塑钢",
 	},
 	row_forge_material_platinum = {
 		en = "Diamantine",
 		de = "Diamantin",
-		ru = "Диамантин",
+		ru = "Диамантина",
 		["zh-cn"] = "金刚铁",
 	},
 	-- Operated
 	plugin_machinery_gadget_operated = {
 		en = "Machinery / Gadget operated",
 		de = "Maschine / Gadget bedient",
-		ru = "Механизмы / Ауспекс - Использовано",
+		ru = "Использовано Механизмов/Гаджетов",
 		["zh-cn"] = "操作机器 / 装置",
 	},
 	row_operated = {
 		en = "Machinery / Gadget operated",
 		de = "Maschine / Gadget bedient",
-		ru = "Механизмы / Ауспекс - Использовано",
+		ru = "Использовано Механизмов/Гаджетов",
 		["zh-cn"] = "操作机器 / 装置",
 	},
 	row_machinery_operated = {
 		en = "Machinery",
 		de = "Maschine",
-		ru = "Механизмы",
+		ru = "Механизмов",
 		["zh-cn"] = "机器",
 	},
 	row_gadget_operated = {
 		en = "Gadget",
 		de = "Gadget",
-		ru = "Ауспекс",
+		ru = "Гаджетов",
 		["zh-cn"] = "装置",
 	},
 	-- Buttons etc
@@ -264,7 +268,7 @@ return {
 	message_decoded = {
 		en = "Data decoded",
 		de = "Daten dekodiert",
-		ru = "Декодирование данных",
+		ru = "Расшифровка данных",
 		["zh-cn"] = "解码数据",
 	},
 	message_decoded_text = {
@@ -288,7 +292,7 @@ return {
 	message_decoded_description = {
 		en = "Shows message when a player decodes data at a terminal",
 		de = "Zeigt eine Nachricht wenn ein Spieler Daten dekodiert",
-		ru = "Показывает сообщение, когда игрок декодирует данные на терминале",
+		ru = "Показывает сообщение, когда игрок расшифровывает данные на терминале",
 		["zh-cn"] = "玩家在终端机解码数据时显示消息",
 	},
 	-- Ammo
@@ -301,13 +305,13 @@ return {
 	plugin_ammo_on = {
 		en = "On",
 		de = "An",
-		ru = "Включить",
+		ru = "Взято+Лишние",
 		["zh-cn"] = "开",
 	},
 	plugin_ammo_simple = {
 		en = "Simple",
 		de = "Einfach",
-		ru = "Обычный",
+		ru = "Простой",
 		["zh-cn"] = "简洁",
 	},
 	plugin_ammo_off = {
@@ -344,13 +348,13 @@ return {
 	plugin_carrying = {
 		en = "Carrying Supplies",
 		de = "Resourcen getragen",
-		ru = "Доставка припасов",
+		ru = "Переноска припасов",
 		["zh-cn"] = "携带补给",
 	},
 	row_carrying = {
 		en = "Carried Scripture / Grimoire / Other",
 		de = "Carried Scripture / Grimoire / Sonst.",
-		ru = "Доставлено: Писание / Гримуар / Другое",
+		ru = "Переносил: Писание/Гримуар/Другое",
 		["zh-cn"] = "携带圣经 / 魔法书 / 其他",
 	},
 	row_carrying_scripture = {
@@ -375,32 +379,32 @@ return {
 	plugin_coherency_efficiency = {
 		en = "Coherency Efficiency",
 		de = "Kohärenz Effizienz",
-		ru = "Согласованная Эффективность",
+		ru = "Эффективность Сплочённости",
 		["zh-cn"] = "连携效率",
 	},
 	row_coherency_efficiency = {
 		en = "Coherency Efficiency",
 		de = "Kohärenz Effizienz",
-		ru = "Согласованная Эффективность",
+		ru = "Эффективность Сплочённости",
 		["zh-cn"] = "连携效率",
 	},
 	-- Revive / Rescue
 	plugin_revived_rescued = {
 		en = "Revived / Rescued Operatives",
 		de = "Operator Wiederbelebt / Gerettet",
-		ru = "Оперативников Оживлено / Спасено",
+		ru = "Оперативников Возрождено/Спасено",
 		["zh-cn"] = "复活 / 救助特工",
 	},
 	row_revived_rescued = {
 		en = "Revived / Rescued Operatives",
 		de = "Operator Wiederbelebt / Gerettet",
-		ru = "Оперативников Оживлено / Спасено",
+		ru = "Оперативников Возрождено/Спасено",
 		["zh-cn"] = "复活 / 救助特工",
 	},
 	row_revived_operative = {
 		en = "Revived",
 		de = "Wiederbelebt",
-		ru = "Оживлено",
+		ru = "Возрождено",
 		["zh-cn"] = "复活",
 	},
 	row_rescued_operative = {
@@ -413,25 +417,25 @@ return {
 	plugin_damage_taken_heal_station_used = {
 		en = "Damage Taken / Health Station Used",
 		de = "Genommener Schaden / Heilstation benutzt",
-		ru = "Урона пол-но / Мед.Станций исп-но",
+		ru = "Урона получено / Мед.Станций исп.",
 		["zh-cn"] = "受到伤害 / 使用医疗站",
 	},
 	row_damage_taken_heal_station_used = {
 		en = "Damage Taken / Health Station Used",
 		de = "Genommener Schaden / Heilstation benutzt",
-		ru = "Урона пол-но / Мед.Станций исп-но",
+		ru = "Урона получено / Мед.Станций исп.",
 		["zh-cn"] = "受到伤害 / 使用医疗站",
 	},
 	row_damage_taken = {
 		en = "Damage Taken",
 		de = "Genommener Schaden",
-		ru = "Урона пол-но",
+		ru = "Урона получено",
 		["zh-cn"] = "受到伤害",
 	},
 	row_heal_station_used = {
 		en = "Health Station Used",
 		de = "Heilstation benutzt",
-		ru = "Мед.Станций исп-но",
+		ru = "Мед.Станций исп.",
 		["zh-cn"] = "使用医疗站",
 	},
 	message_health_station = {
@@ -468,13 +472,13 @@ return {
 	plugin_damage_dealt_on = {
 		en = "On",
 		de = "An",
-		ru = "Включить",
+		ru = "Фактический+Избыточный",
 		["zh-cn"] = "开",
 	},
 	plugin_damage_dealt_simple = {
 		en = "Simple",
 		de = "Einfach",
-		ru = "Обычный",
+		ru = "Простой",
 		["zh-cn"] = "简洁",
 	},
 	plugin_damage_dealt_off = {
@@ -486,31 +490,31 @@ return {
 	row_damage_dealt_1 = {
 		en = "Actual / Overkill Damage Dealt",
 		de = "Verursachter / Overkill Schaden",
-		ru = "Фактический / Излишний На-ный Урон",
+		ru = "Урона нанесено Фактически/Избыточно",
 		["zh-cn"] = "实际 / 溢出伤害",
 	},
 	row_damage_dealt_2 = {
 		en = "Damage Dealt",
 		de = "Verursachter Schaden",
-		ru = "На-ный Урон",
+		ru = "Урона нанесено",
 		["zh-cn"] = "输出伤害",
 	},
 	row_actual_damage_dealt_1 = {
 		en = "Actual",
 		de = "Verursachter",
-		ru = "Фактический",
+		ru = "Фактически",
 		["zh-cn"] = "实际",
 	},
 	row_actual_damage_dealt_2 = {
 		en = "Damage",
 		de = "Verursachter",
-		ru = "Урон",
+		ru = "Урона",
 		["zh-cn"] = "伤害",
 	},
 	row_overkill_damage_dealt = {
 		en = "Overkill",
 		de = "Overkill",
-		ru = "Излишний",
+		ru = "Избыточно",
 		["zh-cn"] = "溢出",
 	},
 	-- Lesser enemies
@@ -530,26 +534,26 @@ return {
 	plugin_boss_damage_dealt = {
 		en = "Boss Damage Dealt",
 		de = "Schaden an Bossen",
-		ru = "Нанесено урона Боссу",
+		ru = "Урона нанесено Боссу",
 		["zh-cn"] = "Boss 伤害",
 	},
 	row_boss_damage_dealt = {
 		en = "Boss Damage Dealt",
 		de = "Schaden an Bossen",
-		ru = "Нанесено урона Боссу",
+		ru = "Урона нанесено Боссу",
 		["zh-cn"] = "Boss 伤害",
 	},
 	-- Enemies staggered
 	plugin_enemies_staggerd = {
 		en = "Enemies Staggered",
 		de = "Gegner gestaggered",
-		ru = "Врагов ошеломленно",
+		ru = "Врагов ошеломлено",
 		["zh-cn"] = "踉跄敌人",
 	},
 	row_enemies_staggerd = {
 		en = "Enemies Staggered",
 		de = "Gegner gestaggered",
-		ru = "Врагов ошеломленно",
+		ru = "Врагов ошеломлено",
 		["zh-cn"] = "踉跄敌人",
 	},
 	-- Attacks blocked
@@ -569,13 +573,13 @@ return {
 	plugin_special_hits = {
 		en = "Weakspot / Critical Hits Dealt",
 		de = "Schwachpunkt- / Kritische Treffer",
-		ru = "Слабое место / Криты",
+		ru = "Попаданий: Слабое место/Криты",
 		["zh-cn"] = "弱点 / 暴击命中",
 	},
 	row_special_hits = {
 		en = "Weakspot / Critical Hits Dealt",
 		de = "Schwachpunkt- / Kritische Treffer",
-		ru = "Слабое место / Криты",
+		ru = "Попаданий: Слабое место/Криты",
 		["zh-cn"] = "弱点 / 暴击命中",
 	},
 	row_weakspot_hits = {
@@ -594,51 +598,51 @@ return {
 	plugin_melee_ranged_threats = {
 		en = "Melee / Ranged Elites Killed",
 		de = "Nah- / Fernkampf Elite getötet",
-		ru = "Милишников / Стрелков - Элитников Убито",
+		ru = "Убито элитных Милишников/Стрелков",
 		["zh-cn"] = "近战 / 远程精英击杀",
 	},
 	row_melee_ranged_threats = {
 		en = "Melee / Ranged Elites Killed",
 		de = "Nah- / Fernkampf Elite getötet",
-		ru = "Милишник / Стрелок - Эл. Убито",
+		ru = "Убито элитных Милишников/Стрелков",
 		["zh-cn"] = "近战 / 远程精英击杀",
 	},
 	row_melee_threats = {
 		en = "Melee",
 		de = "Nah-",
-		ru = "Милишник",
+		ru = "Милишников",
 		["zh-cn"] = "近战",
 	},
 	row_ranged_threats = {
 		en = "Ranged",
 		de = "Fernkampf",
-		ru = "Стрелок",
+		ru = "Стрелков",
 		["zh-cn"] = "远程",
 	},
 	-- Special Threats
 	plugin_special_threats = {
 		en = "Specials Killed",
 		de = "Spezialeinheiten Getötet",
-		ru = "Камик-зе/Бомбардир/Огневик/Снайпер",
+		ru = "Взрывун/Бомбардир/Огневик/Снайпер",
 		["zh-cn"] = "专家击杀",
 	},
 	row_special_threats = {
 		en = "Specials Killed",
 		de = "Spezialeinheiten Getötet",
-		ru = "Камик-зе/Бомбардир/Огневик/Снайпер",
+		ru = "Взрывун/Бомбардир/Огневик/Снайпер",
 		["zh-cn"] = "专家击杀",
 	},
 	-- Boss Threats
 	plugin_boss_threats = {
 		en = "Bosses Killed",
 		de = "Bosse Getötet",
-		ru = "Боссов Убито",
+		ru = "Убито Боссов",
 		["zh-cn"] = "Boss 击杀",
 	},
 	row_boss_threats = {
 		en = "Bosses Killed",
 		de = "Bosse Getötet",
-		ru = "Боссов Убито",
+		ru = "Убито Боссов",
 		["zh-cn"] = "Boss 击杀",
 	},
 	-- Disabler
@@ -676,7 +680,7 @@ return {
 	message_ammo_ammo = {
 		en = "Ammo",
 		de = "Munition",
-		ru = "патроны",
+		ru = "патрона(ов)",
 		["zh-cn"] = "弹药",
 	},
 	message_ammo_description = {
@@ -689,13 +693,13 @@ return {
 	plugin_health_ammo_placed = {
 		en = "Medipacks / Ammocaches deployed",
 		de = "Medipack / Munition aufgestellt",
-		ru = "Аптечек / Боеприпасов размещено",
+		ru = "Размещено Аптечек/Боеприпасов",
 		["zh-cn"] = "部署医疗箱 / 弹药箱",
 	},
 	row_health_ammo_placed = {
 		en = "Medipacks / Ammocaches deployed",
 		de = "Medipack / Munition aufgestellt",
-		ru = "Аптечек / Боеприпасов размещено",
+		ru = "Размещено Аптечек/Боеприпасов",
 		["zh-cn"] = "部署医疗箱 / 弹药箱",
 	},
 	row_health_placed = {
