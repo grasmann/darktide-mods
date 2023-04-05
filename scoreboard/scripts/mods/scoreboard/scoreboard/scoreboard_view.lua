@@ -85,7 +85,7 @@ ScoreboardView.on_enter = function(self)
     -- self:_enable_settings_overlay(false)
     -- self:_update_grid_navigation_selection()
     
-    if self.end_view and mod:get("save_all_scoreboards") then
+    if (self.end_view or not self.is_history) and mod:get("save_all_scoreboards") then
     -- if not self.is_history and mod:get("save_all_scoreboards") then
         local sorted_rows = self.sorted_rows or {}
         mod:save_scoreboard_history_entry(sorted_rows)

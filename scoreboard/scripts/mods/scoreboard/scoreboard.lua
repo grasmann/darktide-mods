@@ -9,7 +9,6 @@ mod.name = "scoreboard"
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
 local ScoreboardData = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_data")
-local Missions = mod:original_require("scripts/settings/mission/mission_templates")
 
 -- ##### ███████╗██╗   ██╗███████╗███╗   ██╗████████╗███████╗ #########################################################
 -- ##### ██╔════╝██║   ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝ #########################################################

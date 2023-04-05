@@ -160,8 +160,10 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 
 
 	local path, file_name = self:create_scoreboard_history_entry_path()
+
 	-- Open file
 	local file = assert(_io.open(path, "w+"))
+
 	-- Players
 	local players = self.player_manager:players()
 	if self.debug_value then
@@ -200,8 +202,10 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 			},
 		}
 	end
+
 	-- Mission
 	file:write("#mission;"..tostring(self.mission_name).."\n")
+
 	-- Players
 	local count = 0
 	for _, player in pairs(players) do count = count + 1 end
@@ -217,6 +221,7 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 			file:write(num_players..";"..account_id..";"..player:name().."\n")
 		end
 	end
+
 	-- Rows
 	local index = 1
 	for g = 1, #sorted_rows, 1 do
@@ -277,8 +282,10 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 			end
 		end
 	end
+
 	-- Close file
 	file:close()
+
 	-- Add to cache
 	local cache = mod:get_scoreboard_history_entries_cache()
 	if not cache or type(cache) ~= "table" then cache = {} end
@@ -289,9 +296,7 @@ end
 mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 	local entry = {
 		name = date,
-		-- date = nil,
-		-- players = {},
-		-- rows = {},
+		date = _os.date(_, tonumber(date))
 	}
 
 	-- split("a,b,c", ",") => {"a", "b", "c"}
@@ -319,29 +324,28 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 		end
 	end
 
-	-- Open file
-	-- local file = assert(_io.open(path, "r"))
 	local reading = ""
 	local count = 0
 	local row_index = {}
 	local groups = {}
 	for line in _io.lines(path) do
-		-- self:echo(line)
-		-- Players
+		local info = split(line, ";")
+		-- Get matches
 		local mission_match = line:match("#mission")
 		local player_match = line:match("#players")
 		local row_match = line:match("#row")
 		local group_match = line:match("#group")
+		-- Matches
 		if mission_match then
-			local info = split(line, ";")
+			-- Read mission info
 			local name = info[2]
 			entry.mission_name = name
+
 		elseif player_match or reading == "players" then
+			-- Read players
 			if player_match then
 				reading = "players"
 				count = tonumber(split(line, ";")[2])
-				entry.date = _os.date(_, tonumber(date))
-				-- self:echo(entry.date)
 			elseif reading == "players" and count > 0 then
 				local player_info = split(line, ";")
                 entry.players = entry.players or {}
@@ -352,49 +356,31 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 				count = count - 1
 				if count <= 0 then reading = "" end
 			end
+
 		elseif (row_match or reading == "row") and not only_head then
+			-- Read row
 			if row_match then
                 entry.rows = entry.rows or {}
-				local info = split(line, ";")
-
 				local name = info[2]
-				-- mod:echo("name '"..tostring(name).."'")
 				local index = info[3]
-				-- mod:echo("index '"..tostring(index).."'")
 				local val_count = info[4]
-				-- mod:echo("valcount '"..tostring(val_count).."'")
-
 				local text = tostring(info[5])
-				-- if tostring(info[5]) == "" or tostring(info[5]) == "nil" then text = name end
-				-- mod:echo("text '"..tostring(text).."'")
 				local validation = info[6]
-				-- mod:echo("validation '"..tostring(validation).."'")
 				local iteration = info[7]
-				-- mod:echo("iteration '"..tostring(iteration).."'")
-
 				local visible = nil 
 				if tostring(info[8]) == "false" then visible = false end
 				if tostring(info[8]) == "nil" then visible = nil end
-				-- mod:echo("visible '"..tostring(visible).."' '"..info[8].."'")
-				-- if info[8] == "false" then visible = false end
-				-- visible = info[8] == "1" and nil or visible
 				local group = tostring(info[9])
 				if tostring(info[9]) == "nil" then group = nil end
-				-- mod:echo("group '"..tostring(group).."'")
 				local setting = tostring(info[10]) ~= "nil" and info[10] or nil
 				if tostring(info[10]) == "nil" then setting = nil end
-				-- mod:echo("setting '"..tostring(setting).."'")
-
 				local parent = tostring(info[11])
 				if tostring(info[11]) == "nil" then parent = nil end
-				-- mod:echo("parent '"..tostring(parent).."'")
 				local is_time = nil
 				if tostring(info[12]) == "true" then is_time = true end
 				if tostring(info[12]) == "nil" then is_time = nil end
-				-- mod:echo("is_time '"..tostring(is_time).."'")
 				local summary = info[13] and split(info[13], ":") or nil
 				if tostring(info[13]) == "nil" then summary = nil end
-				-- mod:echo("summary '"..tostring(summary).."'")
 				local normalize = nil
 				if info[14] then
 					if tostring(info[14]) == "true" then normalize = true end
@@ -408,13 +394,10 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 					name = name,
 					text = text,
 					validation = validation,
-					-- validation = ScoreboardDefinitions.validation_types[validation],
 					validation_type = validation,
 					iteration = iteration,
-					-- iteration = ScoreboardDefinitions.iteration_types[iteration],
 					iteration_type = iteration,
 					group = group,
-					-- setting = setting,
 					normalize = normalize,
 					parent = parent,
 					is_time = is_time,
@@ -422,17 +405,13 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 					visible = visible,
 					data = {},
 				}
-				-- if visible ~= nil then new_row.visible = visible end
 				entry.rows[row_index] = new_row
 			elseif reading == "row" and count > 0 and row_index > 0 then
 				local val_info = split(line, ";")
 				local score = tostring(val_info[2])
-				-- if score ~= "0" then mod:echo("score '"..score.."'") end
 				entry.rows[row_index].data[val_info[1]] = {
 					score = tonumber(score),
 					value = tonumber(score),
-					-- is_best = val_info[3] == "1" and true or false,
-					-- is_worst = val_info[4]  == "1" and true or false,
 				}
 				count = count - 1
 				if count <= 0 then
@@ -440,20 +419,15 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 					row_index = 0
 				end
 			end
+
 		elseif (group_match) and not only_head then
-			local info = split(line, ";")
+			-- Read group
 			local name = info[2]
 			local text = info[3]
 			groups[name] = text
-			-- local localizations = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_localization")
-			-- localizations[name] = {en = text}
-			-- DMF:initialize_mod_localization(mod, localizations)
-
 		end
 	end
-	-- Players
 
-	-- self:dtf(entry, "scoreboard_entry", 8)
 	return entry, groups
 end
 
