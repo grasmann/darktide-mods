@@ -19,10 +19,7 @@ local ScoreboardData = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scorebo
 
 function mod.on_game_state_changed(status, state_name)
 	-- Clear row values on game state enter
-	if state_name == "StateGameplay" and status == "enter" then
-		mod:clear()
-		mod:set_mission_name()
-	end
+	if state_name == "StateGameplay" and status == "enter" then mod:clear() end
 end
 
 function mod.on_all_mods_loaded()
@@ -36,7 +33,6 @@ end
 function mod.reload_mods()
 	-- Collect scoreboard rows from mods
     mod:collect_scoreboard_rows()
-	mod:set_mission_name()
 end
 
 function mod.update(main_dt)
@@ -62,14 +58,12 @@ mod.initialize = function(self)
 		self.ui_manager = Managers.ui
 		self.player_manager = Managers.player
 		self.package_manager = Managers.package
-		self.mission_state_manager = Managers.state.mission
-		self:set_mission_name()
 	end
 	self.initialized = true
 end
 
-mod.set_mission_name = function(self)
-	self.mission_name = self.mission_state_manager and self.mission_state_manager:mission_name()
+mod.set_mission_name = function(self, mission_name)
+	self.mission_name = mission_name
 end
 
 mod.load_package = function(self, package_name)
@@ -218,6 +212,12 @@ end
 -- ##### ██╔══██║██║   ██║██║   ██║██╔═██╗ ╚════██║ ###################################################################
 -- ##### ██║  ██║╚██████╔╝╚██████╔╝██║  ██╗███████║ ###################################################################
 -- ##### ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝ ###################################################################
+
+-- Get mission name
+mod:hook(CLASS.StateGameplay, "on_enter", function(func, self, parent, params, creation_context, ...)
+	func(self, parent, params, creation_context, ...)
+	mod:set_mission_name(params.mission_name)
+end)
 
 mod:hook(CLASS.EndView, "on_enter", function(func, self, ...)
 	func(self, ...)

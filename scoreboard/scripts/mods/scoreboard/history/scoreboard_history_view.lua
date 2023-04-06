@@ -138,6 +138,23 @@ ScoreboardHistoryView._setup_content_grid_scrollbar = function(self, grid, widge
     grid:set_scrollbar_progress(0)
 end
 
+-- ScoreboardHistoryView._setup_filter = function(self)
+--     local DMFContentBlueprints = mod:io_dofile("dmf/scripts/mods/dmf/modules/ui/options/dmf_options_view_content_blueprints")
+--     local template = DMFContentBlueprints.dropdown
+--     local pass_template = template.pass_template
+--     local widget_definition = UIWidget.create_definition(pass_template, "filter")
+
+--     if widget_definition then
+--         -- local name = scenegraph_id .. "_widget_" .. i
+--         local widget = self:_create_widget("filter", widget_definition)
+--         local init = template.init
+
+--         if init then
+--           init(self, widget, entry, callback_name)
+--         end
+--     end
+-- end
+
 ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
     if self._category_content_widgets then
         for i = 1, #self._category_content_widgets do
@@ -658,6 +675,8 @@ ScoreboardHistoryView._draw_grid = function (self, grid, widgets, interaction_wi
     local ui_scenegraph = self._ui_scenegraph
 
     UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, render_settings)
+
+
 
     for j = 1, #widgets do
         local widget = widgets[j]

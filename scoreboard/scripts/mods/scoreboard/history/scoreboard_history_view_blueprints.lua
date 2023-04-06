@@ -26,6 +26,7 @@ local list_button_icon_size = {
 local list_button_with_icon_text_style = table.clone(UIFontSettings.list_button)
 list_button_with_icon_text_style.offset[1] = 10
 list_button_with_icon_text_style.offset[2] = -10
+list_button_with_icon_text_style.font_size = 20
 local list_button_with_icon_icon_style = {
 	vertical_alignment = "center",
 	color = list_button_with_icon_text_style.text_color,
