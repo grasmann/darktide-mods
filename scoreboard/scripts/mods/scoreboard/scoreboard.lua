@@ -24,8 +24,8 @@ end
 
 function mod.on_all_mods_loaded()
 	-- Load packages
-	mod:load_package("packages/ui/views/end_player_view/end_player_view")
-	mod:load_package("packages/ui/views/store_item_detail_view/store_item_detail_view")
+	-- mod:load_package("packages/ui/views/end_player_view/end_player_view")
+	-- mod:load_package("packages/ui/views/store_item_detail_view/store_item_detail_view")
 	-- Collect scoreboard rows from mods
 	mod:collect_scoreboard_rows()
 end
@@ -69,8 +69,13 @@ end
 mod.load_package = function(self, package_name)
 	local package_manager = self.package_manager
 	if not package_manager:is_loading(package_name) and not package_manager:has_loaded(package_name) then
-		package_manager:load(package_name, "scoreboard", nil, true)
+		return package_manager:load(package_name, "scoreboard", nil, true)
 	end
+end
+
+mod.release_package = function(self, package_id)
+	local package_manager = self.package_manager
+	package_manager:release(package_id)
 end
 
 mod.register_scoreboard_view = function(self)
