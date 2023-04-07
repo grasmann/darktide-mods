@@ -170,7 +170,7 @@ return {
 						["type"] = "checkbox",
 						["default_value"] = true
 					},
-					{["setting_id"] = "ammo_health_pickup",
+					{["setting_id"] = "message_ammo_health_pickup",
 						["type"] = "checkbox",
 						["default_value"] = true
 					},

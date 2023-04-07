@@ -1,5 +1,6 @@
 local mod = get_mod("scoreboard")
 
+local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local OptionsViewSettings = mod:original_require("scripts/ui/views/options_view/options_view_settings")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local ScoreboardViewSettings = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
@@ -19,6 +20,15 @@ local settings_ = {
     column = 170,
 }
 
+local list_button_hotspot_default_style = {
+	anim_hover_speed = 8,
+	anim_input_speed = 8,
+	anim_select_speed = 8,
+	anim_focus_speed = 8,
+	on_hover_sound = UISoundEvents.default_mouse_hover,
+	on_pressed_sound = UISoundEvents.default_click
+}
+
 local blueprints = {
     scoreboard_row = {
         size = {
@@ -27,8 +37,7 @@ local blueprints = {
 		},
 		pass_template = {
             -- scenegraph_id = "scoreboard_rows",
-            {
-                value_id = "text",
+            {value_id = "text", -- 1 = Row text
                 value = "text",
                 pass_type = "text",
                 style = {
@@ -46,16 +55,17 @@ local blueprints = {
                 },
                 custom = true,
             },
-            {
-                value = "",
-				pass_type = "text",
+            {value_id = "icon_1", -- 2 = Icon 1
+				value = "content/ui/materials/icons/currencies/marks_big",
+				style_id = "texture",
+				pass_type = "texture",
 				style = {
+					offset = {ScoreboardViewSettings.scoreboard_column_header_width, 2, base_z + 1},
+					size = {ScoreboardViewSettings.scoreboard_row_height, ScoreboardViewSettings.scoreboard_row_height - 4},
 					visible = false,
 				},
-				custom = true,
-            },
-            {
-                value_id = "text1",
+			},
+            {value_id = "text1", -- 3 = Text 1
                 value = "text1",
                 pass_type = "text",
                 style = {
@@ -73,7 +83,7 @@ local blueprints = {
                 },
                 custom = true,
             },
-            {
+            {value_id = "bg1", -- 4 = Column background 1
                 value = "",
                 pass_type = "texture",
                 style = {
@@ -86,8 +96,17 @@ local blueprints = {
 		            size = {ScoreboardViewSettings.scoreboard_column_width, ScoreboardViewSettings.scoreboard_row_height},
                 }
             },
-            {
-                value_id = "text2",
+			{value_id = "icon_2", -- 5 = Icon 2
+				value = "content/ui/materials/icons/currencies/marks_big",
+				style_id = "icon_2",
+				pass_type = "texture",
+				style = {
+					offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width, 2, base_z + 1},
+					size = {ScoreboardViewSettings.scoreboard_row_height, ScoreboardViewSettings.scoreboard_row_height - 4},
+					visible = false,
+				},
+			},
+            {value_id = "text2", -- 6 = Text 2
                 value = "text2",
                 pass_type = "text",
                 style = {
@@ -105,16 +124,17 @@ local blueprints = {
                 },
                 custom = true,
             },
-            {
-                value = "",
-				pass_type = "text",
+            {value_id = "icon_3", -- 7 = Icon 3
+				value = "content/ui/materials/icons/currencies/marks_big",
+				style_id = "icon_3",
+				pass_type = "texture",
 				style = {
+					offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width*2, 2, base_z + 1},
+					size = {ScoreboardViewSettings.scoreboard_row_height, ScoreboardViewSettings.scoreboard_row_height - 4},
 					visible = false,
 				},
-				custom = true,
-            },
-            {
-                value_id = "text3",
+			},
+            {value_id = "text3", -- 8 = Text 3
                 value = "text3",
                 pass_type = "text",
                 style = {
@@ -132,7 +152,7 @@ local blueprints = {
                 },
                 custom = true,
             },
-            {
+            {value_id = "bg3", -- 9 = Column background 3
                 value = "",
                 pass_type = "texture",
                 style = {
@@ -145,8 +165,17 @@ local blueprints = {
 		            size = {ScoreboardViewSettings.scoreboard_column_width, ScoreboardViewSettings.scoreboard_row_height},
                 }
             },
-            {
-                value_id = "text4",
+			{value_id = "icon_4", -- 10 = Icon 3
+				value = "content/ui/materials/icons/currencies/marks_big",
+				style_id = "icon_4",
+				pass_type = "texture",
+				style = {
+					offset = {ScoreboardViewSettings.scoreboard_column_header_width + ScoreboardViewSettings.scoreboard_column_width*3, 2, base_z + 1},
+					size = {ScoreboardViewSettings.scoreboard_row_height, ScoreboardViewSettings.scoreboard_row_height - 4},
+					visible = false,
+				},
+			},
+            {value_id = "text4", -- 11 = Text 4
                 value = "text4",
                 pass_type = "text",
                 style = {
@@ -164,7 +193,7 @@ local blueprints = {
                 },
                 custom = true,
             },
-            {
+            {value_id = "bg", -- 12 = Row background
                 value = "",
                 pass_type = "texture",
                 style = {

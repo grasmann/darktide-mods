@@ -474,10 +474,10 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 					mod.carrying[unit][pickup] = pickup
 					-- Check pickup
 					if pickup == "med_crate_pocketable" then
-						option = "ammo_health_pickup"
+						option = "message_ammo_health_pickup"
 						color = Color.light_blue(255, true)
 					elseif pickup == "ammo_cache_pocketable" then
-						option = "ammo_health_pickup"
+						option = "message_ammo_health_pickup"
 						color = Color.gray(255, true)
 					elseif pickup == "grimoire_pocketable" then
 						option = "scripture_grimoire_pickup"
@@ -491,7 +491,7 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 						local text = Localize(name)
 						-- local character_name = player:name()
 						-- local message = " picked up "..TextUtilities.apply_color_to_text(text, color)
-						local message = mod:localize("ammo_health_pickup_text")
+						local message = mod:localize("message_ammo_health_pickup_text")
 						-- local subject = mod:localize("message_default_machinery")
 						message = string.gsub(message, ":subject:", TextUtilities.apply_color_to_text(text, color))
 						-- mod:echo(character_name..message)

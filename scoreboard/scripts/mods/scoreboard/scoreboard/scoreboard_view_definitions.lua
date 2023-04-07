@@ -4,6 +4,7 @@ local UIWorkspaceSettings = mod:original_require("scripts/settings/ui/ui_workspa
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local ScoreboardViewSettings = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
 local base_z = 100
+local scrollbar_width = 5
 
 local scenegraph_definition = {
     screen = UIWorkspaceSettings.screen,
@@ -13,6 +14,13 @@ local scenegraph_definition = {
         horizontal_alignment = "center",
         size = {ScoreboardViewSettings.scoreboard_size[1], ScoreboardViewSettings.scoreboard_size[2]},
         position = {0, -105, base_z}
+    },
+    scrollbar = {
+        vertical_alignment = "center",
+        parent = "scoreboard",
+        horizontal_alignment = "right",
+        size = {scrollbar_width, ScoreboardViewSettings.scoreboard_size[2]},
+        position = {50, 0, 1}
     },
     scoreboard_rows = {
         vertical_alignment = "top",

@@ -747,19 +747,19 @@ return {
 		["zh-cn"] = "玩家部署弹药箱时显示消息",
 	},
 	-- Pick up ammocache / medipack
-	ammo_health_pickup = {
+	message_ammo_health_pickup = {
 		en = "Medipack / Ammocache picked up",
 		de = "Medipack / Munitionskiste",
 		ru = "Аптечка / Боеприпасы взяты",
 		["zh-cn"] = "拾取医疗箱 / 弹药箱",
 	},
-	ammo_health_pickup_text = {
+	message_ammo_health_pickup_text = {
 		en = " picked up :subject:",
 		de = " hat :subject: genommen",
 		ru = " подбирает :subject:",
 		["zh-cn"] = " 拾取了:subject:",
 	},
-	ammo_health_pickup_description = {
+	message_ammo_health_pickup_description = {
 		en = "Shows message when a player picks up medipack or ammocache",
 		de = "Zeigt eine Nachricht wenn ein Spieler Medipack oder Munitionskiste einsammelt",
 		ru = "Показывает сообщение когда игрок подбирает аптечку или боеприпасы",

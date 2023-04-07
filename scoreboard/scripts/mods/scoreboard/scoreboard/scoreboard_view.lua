@@ -1,4 +1,5 @@
 local mod = get_mod("scoreboard")
+local DMF = get_mod("DMF")
 
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
 -- ##### ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗ ############################################################################
@@ -35,6 +36,22 @@ ScoreboardView.init = function(self, settings, context)
     -- self._context = context
     self.end_view = context and context.end_view
     self.is_history = context and context.scoreboard_history or false
+    -- if self.is_history then
+    --     -- mod:dtf(self.scoreboard_widget, "self.scoreboard_widget", 5)
+    --     local scoreboard = self._definitions.widget_definitions.scoreboard
+    --     local height = 900
+    --     scoreboard.style.style_id_1.size[2] = height - 3
+    --     scoreboard.style.style_id_2.size[2] = height - 28
+    --     scoreboard.style.style_id_3.size[2] = height - 3
+    --     scoreboard.style.style_id_4.offset[2] = -height / 2
+    --     scoreboard.style.style_id_5.offset[2] = height / 2 - 50
+    --     local scoreboard_graph = self._definitions.scenegraph_definition.scoreboard
+    --     scoreboard_graph.size[2] = height
+    --     local scoreboard_graph = self._definitions.scenegraph_definition.scrollbar
+    --     scoreboard_graph.size[2] = height
+    --     local scoreboard_rows_graph = self._definitions.scenegraph_definition.scoreboard_rows
+    --     scoreboard_rows_graph.size[2] = height - 100
+    -- end
     self.rows = context and context.rows or {}
     self.groups = context and context.groups or {}
     self.loaded_players = context and context.players or nil
@@ -85,6 +102,13 @@ ScoreboardView.on_enter = function(self)
     -- self:_enable_settings_overlay(false)
     -- self:_update_grid_navigation_selection()
     
+    -- local scrollbar_widget_id = "scrollbar"
+    -- local grid_scenegraph_id = "scoreboard"
+    -- local grid_pivot_scenegraph_id = "scoreboard_rows"
+    -- self:_setup_content_grid_scrollbar(self.scoreboard_widget, scrollbar_widget_id, grid_scenegraph_id, grid_pivot_scenegraph_id)
+
+
+    -- if self.end_view and mod:get("save_all_scoreboards") then
     if (self.end_view or not self.is_history) and mod:get("save_all_scoreboards") then
     -- if not self.is_history and mod:get("save_all_scoreboards") then
         local sorted_rows = self.sorted_rows or {}
@@ -225,6 +249,18 @@ ScoreboardView.get_rows_in_groups = function(self)
     return sorted
 end
 
+-- ScoreboardView._setup_content_grid_scrollbar = function(self, grid, widget_id, grid_scenegraph_id, grid_pivot_scenegraph_id)
+--     local widgets_by_name = self._widgets_by_name
+--     local scrollbar_widget = widgets_by_name[widget_id]
+  
+--     if DMF:get("dmf_options_scrolling_speed") and widgets_by_name and widgets_by_name["scrollbar"] then
+--         widgets_by_name["scrollbar"].content.scroll_speed = DMF:get("dmf_options_scrolling_speed")
+--     end
+  
+--     grid:assign_scrollbar(scrollbar_widget, grid_pivot_scenegraph_id, grid_scenegraph_id)
+--     grid:set_scrollbar_progress(0)
+-- end
+
 -- ##### ██████╗  ██████╗ ██╗    ██╗███████╗ ##########################################################################
 -- ##### ██╔══██╗██╔═══██╗██║    ██║██╔════╝ ##########################################################################
 -- ##### ██████╔╝██║   ██║██║ █╗ ██║███████╗ ##########################################################################
@@ -249,6 +285,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         or header and 20
         or this_row.score and 24
         or 16
+    local height = self.scoreboard_widget.style.style_id_3.size[2]
     
     -- Vertical offset
     if this_row.parent then
@@ -259,8 +296,9 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         end
     end
 
-    local player_pass_map = {3, 5, 7, 9}
-    local background_pass_map = {["3"] = 4, ["7"] = 8}
+    local player_pass_map = {3, 6, 8, 11}
+    local icon_pass_map = {["3"] = 2, ["6"] = 5, ["8"] = 7, ["11"] = 10}
+    local background_pass_map = {["3"] = 4, ["8"] = 9}
     local players = self.loaded_players or self._player_manager:players()
 
     -- Fill rows
@@ -299,6 +337,10 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                     if mod:is_me(account_id) then
                         name = TextUtilities.apply_color_to_text(name, Color.ui_orange_light(255, true))
                     end
+                    local symbol = player.string_symbol or player._profile and player._profile.archetype.string_symbol
+                    if symbol then
+                        name = symbol.." "..name
+                    end
                     pass_template[player_pass_map[num_players]].value = name
                 end
             end
@@ -333,9 +375,9 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         pass_template[i].style.font_size = font_size
         pass_template[i].style.size[2] = row_height
     end
-    if current_offset > 450 then
+    if current_offset > height - 125 then
         pass_template[1].style.offset[1] = pass_template[1].style.offset[1] + 30
-    elseif current_offset > 420 then
+    elseif current_offset > height - 150 then
         pass_template[1].style.offset[1] = pass_template[1].style.offset[1] + 10
     end
 
@@ -344,6 +386,13 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     if #children > 0 then
         for _, i in pairs(player_pass_map) do
             pass_template[i].value = ""
+        end
+    end
+
+    if this_row.icon then
+        for _, i in pairs(icon_pass_map) do
+            local width = this_row.icon_width or pass_template[i].style.size[1]
+            pass_template[i].style.size[1] = width
         end
     end
 
@@ -361,6 +410,15 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                 if background then
                     pass_template[background].style.visible = false
                 end
+                local icon = icon_pass_map[tostring(i)]
+                if icon and this_row.icon then
+                    pass_template[i].style.size[1] = this_size[1] / 2
+                    pass_template[i].style.offset[1] = pass_template[i].style.offset[1] + this_size[1] / 2
+                    pass_template[i].style.text_horizontal_alignment = "left"
+                    -- pass_template[i].style.offset[1] = pass_template[i].style.offset[1] + pass_template[icon].style.size[1]
+                    pass_template[icon].style.offset[1] = pass_template[icon].style.offset[1] + offset + (this_size[1] / 2 - pass_template[icon].style.size[1])
+                end
+
                 -- for _, j in pairs(background_pass_map) do
                 --     pass_template[i].style.visible = false
                 -- end
@@ -369,11 +427,28 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
 
         pass_template[1].value = ""
     elseif index > 1 then
+
+        -- Icon
+        if this_row.icon then
+            for _, i in pairs(player_pass_map) do
+                -- local this_size = {self._settings.scoreboard_column_width, pass_template[i].style.size[2]}
+                -- local offset = this_size[1]
+                local icon = icon_pass_map[tostring(i)]
+                if icon then
+                    pass_template[i].style.text_horizontal_alignment = "left"
+                    pass_template[i].style.offset[1] = pass_template[i].style.offset[1] + pass_template[icon].style.size[1]
+                    -- pass_template[icon].style.offset[1] = pass_template[icon].style.offset[1] + self._settings.scoreboard_row_height
+                end
+            end
+        end
+
         pass_template[1].value = this_text
         if this_row.score and generate_scores > 1 then
             pass_template[1].value = ""
         end
     end
+
+    
 
     -- Calculate row values
     local validation = this_row.validation
@@ -448,6 +523,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         for i = 1, 4, 1 do
             local pass_index = player_pass_map[i]
             pass_template[pass_index].value = ""
+            pass_template[icon_pass_map[tostring(pass_index)]].style.visible = false
         end
         for _, player in pairs(players) do
             if player_num < 5 then
@@ -470,11 +546,15 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                 if num_score and num_score == 0 and zero_setting > 1 then
                     -- Zero values
                     if zero_setting == 2 then
-                        pass_template[player_pass_map[player_num]].style.visible = false
+                        pass_template[pass_index].style.visible = false
                     elseif zero_setting == 3 then
                         color = Color.ui_grey_light(255, true)
+                        pass_template[icon_pass_map[tostring(pass_index)]].style.visible = true
                     end
                 else
+                    if this_row.icon then
+                        pass_template[icon_pass_map[tostring(pass_index)]].style.visible = true
+                    end
                     if row_data and row_data.is_best then
                         color = Color.ui_orange_light(255, true)
                     elseif row_data and row_data.is_worst then
@@ -506,6 +586,19 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                 if this_row.score and generate_scores > 1 then
                     score = ""
                 end
+
+                if this_row.icon then
+                    pass_template[icon_pass_map[tostring(pass_index)]].value = this_row.icon
+                else
+                    pass_template[icon_pass_map[tostring(pass_index)]].style.visible = false
+                end
+
+                -- if this_row.icon then
+                --     for _, i in pairs(icon_pass_map) do
+                --         pass_template[i].value = this_row.icon
+                --         pass_template[i].style.visible = true
+                --     end
+                -- end
 
                 -- Set score text
                 pass_template[pass_index].value = score
@@ -563,10 +656,10 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
             for _, player in pairs(players) do
                 num_players = num_players + 1
                 if num_players <= 4 then
-                    if player.name then
-                        local name = player:name()
-                        -- pass_template[player_pass_map[num_players]].value = name
-                        widget.content["text_"..tostring(player_pass_map[num_players])] = name
+                    -- if player.name then
+                        -- local name = player:name()
+                        -- -- pass_template[player_pass_map[num_players]].value = name
+                        -- widget.content["text_"..tostring(player_pass_map[num_players])] = name
 
                         local width = self._settings.scoreboard_column_width + 10
                         local fsize = font_size + 1
@@ -582,9 +675,9 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                             local scale = self._ui_renderer.scale or 1
                             local scaled_font_size = UIFonts.scaled_size(fsize, scale)
                             local sender_font_options = UIFonts.get_font_options_by_style(font_style)
-                            width = UIRenderer.text_size(self._ui_renderer, name, font_type, scaled_font_size)
+                            width = UIRenderer.text_size(self._ui_renderer, name, font_type, scaled_font_size, sender_font_options)
                         end
-                    end
+                    -- end
                 end
             end
         end

@@ -43,7 +43,9 @@ mod.scoreboard_rows = {
 	},
 	{name = "metal",
 		text = "row_forge_material_metal",
-		icon = WalletSettings.plasteel.icon_texture_big,
+		icon = WalletSettings.plasteel.icon_texture_small,
+		icon_package = "packages/ui/views/store_item_detail_view/store_item_detail_view",
+		icon_width = 20,
 		validation = "ASC",
 		iteration = "ADD",
 		summary = {
@@ -72,7 +74,9 @@ mod.scoreboard_rows = {
 	},
 	{name = "platinum",
 		text = "row_forge_material_platinum",
-		icon = WalletSettings.diamantine.icon_texture_big,
+		icon = WalletSettings.diamantine.icon_texture_small,
+		icon_package = "packages/ui/views/store_item_detail_view/store_item_detail_view",
+		icon_width = 20,
 		validation = "ASC",
 		iteration = "ADD",
 		summary = {
@@ -789,6 +793,9 @@ mod.register_scoreboard_row = function(self, this_mod, template)
 		visible = template.visible,
 		normalize = template.normalize,
 		big = template.big,
+		icon = template.icon,
+		icon_package = template.icon_package,
+		icon_width = template.icon_width,
 		data = template.data,
 	}
 end

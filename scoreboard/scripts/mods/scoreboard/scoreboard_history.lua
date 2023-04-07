@@ -218,7 +218,8 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 		num_players = num_players + 1
 		if num_players < 5 then
 			local account_id = player:account_id() or player:name()
-			file:write(num_players..";"..account_id..";"..player:name().."\n")
+			local symbol = player._profile.archetype.string_symbol
+			file:write(num_players..";"..account_id..";"..player:name()..";"..symbol.."\n")
 		end
 	end
 
@@ -268,7 +269,10 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 				local is_time = tostring(this_row.is_time) --== true and "1" or "0"
 				local summary = this_row.summary and table.concat(this_row.summary, ":") or "nil"
 				local normalize = tostring(this_row.normalize)
-				file:write("#row;"..name..";"..index..";"..val_count..";"..text..";"..validation..";"..iteration..";"..visible..";"..group..";"..setting..";"..parent..";"..is_time..";"..summary..";"..normalize.."\n")
+				local icon = tostring(this_row.icon)
+				local icon_package = tostring(this_row.icon_package)
+				local icon_width = tostring(this_row.icon_width)
+				file:write("#row;"..name..";"..index..";"..val_count..";"..text..";"..validation..";"..iteration..";"..visible..";"..group..";"..setting..";"..parent..";"..is_time..";"..summary..";"..normalize..";"..icon..";"..icon_package..";"..icon_width.."\n")
 				if this_row.data and type(this_row.data) == "table" then
 					for account_id, data in pairs(this_row.data) do
 						file:write(account_id..";"..data.score..";"..(data.is_best and "1" or "0")..";"..(data.is_worst and "1" or "0").."\n")
@@ -352,6 +356,7 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 				entry.players[player_info[1]] = {
 					account_id = player_info[2],
 					name = player_info[3],
+					string_symbol = player_info[4],
 				}
 				count = count - 1
 				if count <= 0 then reading = "" end
@@ -386,6 +391,18 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 					if tostring(info[14]) == "true" then normalize = true end
 					if tostring(info[14]) == "nil" then normalize = nil end
 				end
+				local icon = info[15]
+				if info[15] then
+					if tostring(info[15]) == "nil" then icon = nil end
+				end
+				local icon_package = info[16]
+				if info[16] then
+					if tostring(info[16]) == "nil" then icon_package = nil end
+				end
+				local icon_width = info[17]
+				if info[17] then
+					if tostring(info[17]) == "nil" then icon_width = nil end
+				end
 
 				reading = "row"
 				row_index = #entry.rows + 1
@@ -403,6 +420,9 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 					is_time = is_time,
 					summary = summary,
 					visible = visible,
+					icon = icon,
+					icon_package = icon_package,
+					icon_width = icon_width,
 					data = {},
 				}
 				entry.rows[row_index] = new_row

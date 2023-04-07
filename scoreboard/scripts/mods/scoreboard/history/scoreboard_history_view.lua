@@ -108,6 +108,7 @@ ScoreboardHistoryView.present_category_widgets = function(self, category)
                 name = function()
                     return player_data.name
                 end,
+                string_symbol = player_data.string_symbol,
             }
         end
         self.ui_manager:open_view("scoreboard_view", nil, false, false, nil, {
