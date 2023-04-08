@@ -17,9 +17,8 @@ local graphics_options_settings = mod:io_dofile("graphics_options/scripts/mods/g
 --#####  ╚═════╝ ╚═╝        ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ######################################################
 
 mod.settings_extension_add_options = {
-	{
+	{id = "sun_shadows",
 		type = "checkbox",
-		id = "sun_shadows",
 		after = "light_quality",
 		tooltip_text = "gm_sun_shadow_mo",
 		display_name = "gm_sun_shadow",
@@ -50,9 +49,8 @@ mod.settings_extension_add_options = {
 			return Application.user_setting("render_settings", "sun_shadows")
 		end,
 	},
-	{
+	{id = "sun_shadow_map_quality",
 		type = "dropdown",
-		id = "sun_shadow_map_quality",
 		after = "light_quality",
 		tooltip_text = "gm_sun_shadow_map_mo",
 		display_name = "gm_sun_shadow_map",
@@ -191,9 +189,8 @@ mod.settings_extension_add_options = {
 			return Application.user_setting("render_settings", "sun_shadow_map_quality")
 		end,
 	},
-	{
+	{id = "local_lights_shadows_enabled",
 		type = "checkbox",
-		id = "local_lights_shadows_enabled",
 		after = "light_quality",
 		tooltip_text = "gm_local_lights_shadow_mo",
 		display_name = "gm_local_lights_shadow",
@@ -225,9 +222,8 @@ mod.settings_extension_add_options = {
 			return Application.user_setting("render_settings", "local_lights_shadows_enabled")
 		end,
 	},
-	{
+	{id = "local_light_shadow_map_quality",
 		type = "dropdown",
-		id = "local_light_shadow_map_quality",
 		after = "light_quality",
 		tooltip_text = "gm_local_light_shadow_map_mo",
 		display_name = "gm_local_light_shadow_map",
@@ -343,9 +339,8 @@ mod.settings_extension_add_options = {
 			return Application.user_setting("render_settings", "local_light_shadow_map_quality")
 		end,
 	},
-	{
+	{id = "volumetric_reprojection_amount",
 		type = "value_slider",
-		id = "volumetric_reprojection_amount",
 		after = "volumetric_fog_quality",
 		display_name = "gm_fog_quality",
 		tooltip_text = "gm_fog_quality_mo",
@@ -385,9 +380,8 @@ mod.settings_extension_add_options = {
 			return value
 		end,
 	},
-	{
+	{id = "volumetric_lighting_local_lights",
 		type = "checkbox",
-		id = "volumetric_lighting_local_lights",
 		after = "volumetric_fog_quality",
 		tooltip_text = "gm_fog_local_light_mo",
 		display_name = "gm_fog_local_light",
@@ -419,9 +413,8 @@ mod.settings_extension_add_options = {
 			return Application.user_setting("render_settings", "volumetric_lighting_local_lights")
 		end,
 	},
-	{
+	{id = "light_shafts_enabled",
 		type = "checkbox",
-		id = "light_shafts_enabled",
 		after = "volumetric_fog_quality",
 		tooltip_text = "gm_fog_light_shafts_mo",
 		display_name = "gm_fog_light_shafts",
@@ -453,9 +446,8 @@ mod.settings_extension_add_options = {
 			return Application.user_setting("render_settings", "light_shafts_enabled")
 		end,
 	},
-	{
+	{id = "volumetric_extrapolation_high_quality",
 		type = "checkbox",
-		id = "volumetric_extrapolation_high_quality",
 		after = "volumetric_fog_quality",
 		tooltip_text = "gm_fog_high_quality_mo",
 		display_name = "gm_fog_high_quality",
@@ -487,9 +479,8 @@ mod.settings_extension_add_options = {
 			return Application.user_setting("render_settings", "volumetric_extrapolation_high_quality")
 		end,
 	},
-	{
+	{id = "volumetric_extrapolation_volumetric_shadows",
 		type = "checkbox",
-		id = "volumetric_extrapolation_volumetric_shadows",
 		after = "volumetric_fog_quality",
 		tooltip_text = "gm_fog_volumetric_shadows_mo",
 		display_name = "gm_fog_volumetric_shadows",
