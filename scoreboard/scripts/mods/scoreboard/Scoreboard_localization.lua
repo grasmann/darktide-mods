@@ -41,6 +41,7 @@ mod:add_global_localize_strings({
 		en = "Training Grounds",
 		de = "Training Grounds",
 		fr = "Terrain d'Entrainement",
+		["zh-cn"] = "训练场",
 	},
 })
 
