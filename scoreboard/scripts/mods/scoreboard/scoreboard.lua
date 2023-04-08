@@ -24,8 +24,8 @@ end
 
 function mod.on_all_mods_loaded()
 	-- Load packages
-	-- mod:load_package("packages/ui/views/end_player_view/end_player_view")
-	-- mod:load_package("packages/ui/views/store_item_detail_view/store_item_detail_view")
+	mod:load_package("packages/ui/views/end_player_view/end_player_view")
+	mod:load_package("packages/ui/views/store_item_detail_view/store_item_detail_view")
 	-- Collect scoreboard rows from mods
 	mod:collect_scoreboard_rows()
 end

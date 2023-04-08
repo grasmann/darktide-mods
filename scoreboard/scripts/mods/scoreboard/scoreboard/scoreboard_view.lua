@@ -789,12 +789,12 @@ ScoreboardView.setup_row_widgets = function(self)
         -- mod:echo("group")
         for i = 1, #rows, 1 do
             local this_row = rows[i]
-            if this_row.icon_package then
-                local package_id = mod:load_package(this_row.icon_package)
-                if package_id then
-                    self._packages[#self._packages+1] = package_id
-                end
-            end
+            -- if this_row.icon_package then
+            --     local package_id = mod:load_package(this_row.icon_package)
+            --     if package_id then
+            --         self._packages[#self._packages+1] = package_id
+            --     end
+            -- end
             if this_row.visible ~= false then
                 local name = "scoreboard_row_"..this_row.name
                 if not this_row.parent then
@@ -840,10 +840,10 @@ ScoreboardView.on_exit = function(self)
     self:remove_input_legend()
     ScoreboardView.super.on_exit(self)
 
-    for _, package_id in pairs(self._packages) do
-        mod:echo(package_id)
-        mod:release_package(package_id)
-    end
+    -- for _, package_id in pairs(self._packages) do
+    --     mod:echo(package_id)
+    --     mod:release_package(package_id)
+    -- end
 end
 
 -- #####  ██████╗ █████╗ ██╗     ██╗     ██████╗  █████╗  ██████╗██╗  ██╗███████╗ #####################################
