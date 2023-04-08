@@ -5,6 +5,7 @@ local Missions = mod:original_require("scripts/settings/mission/mission_template
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 local InputUtils = mod:original_require("scripts/managers/input/input_utils")
 local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
+local UIFonts = mod:original_require("scripts/managers/ui/ui_fonts")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIWidgetGrid = mod:original_require("scripts/ui/widget_logic/ui_widget_grid")
 local ViewElementInputLegend = mod:original_require("scripts/ui/view_elements/view_element_input_legend/view_element_input_legend")
@@ -192,7 +193,12 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
         local players = {}
         if category_config.players then
             for _, player in pairs(category_config.players) do
-                players[#players+1] = player.name
+                local player_name = player.name
+                local symbol = player.string_symbol or player._profile and player._profile.archetype.string_symbol
+                if symbol then
+                    player_name = symbol.." "..player_name
+                end
+                players[#players+1] = player_name
             end
         end
         mod:add_global_localize_strings({

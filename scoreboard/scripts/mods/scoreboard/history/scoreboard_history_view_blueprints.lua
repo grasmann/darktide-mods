@@ -125,6 +125,9 @@ local blueprints = {
 			local display_name2 = entry.display_name2
 			content.text = Managers.localization:localize(display_name)
 			content.text2 = Managers.localization:localize(display_name2)
+			mod:shrink_text(content.text, widget.style.text, settings_value_width, parent._ui_renderer)
+			mod:shrink_text(content.text2, widget.style.text2, settings_value_width, parent._ui_renderer)
+
 			content.icon = entry.icon
 			content.entry = entry
 		end

@@ -13,21 +13,21 @@ local scenegraph_definition = {
         parent = "screen",
         horizontal_alignment = "center",
         size = {ScoreboardViewSettings.scoreboard_size[1], ScoreboardViewSettings.scoreboard_size[2]},
-        position = {0, -105, base_z}
+        position = {0, 0, base_z}
     },
-    scrollbar = {
-        vertical_alignment = "center",
-        parent = "scoreboard",
-        horizontal_alignment = "right",
-        size = {scrollbar_width, ScoreboardViewSettings.scoreboard_size[2]},
-        position = {50, 0, 1}
-    },
+    -- scrollbar = {
+    --     vertical_alignment = "center",
+    --     parent = "scoreboard",
+    --     horizontal_alignment = "right",
+    --     size = {scrollbar_width, ScoreboardViewSettings.scoreboard_size[2]},
+    --     position = {50, 0, 1}
+    -- },
     scoreboard_rows = {
         vertical_alignment = "top",
         parent = "scoreboard",
         horizontal_alignment = "center",
         size = {ScoreboardViewSettings.scoreboard_size[1], ScoreboardViewSettings.scoreboard_size[2] - 100},
-        position = {0, 150, base_z + 1}
+        position = {0, 40, base_z + 1}
     },
 }
 
@@ -108,7 +108,7 @@ local widget_definitions = {
                 hover_color = Color.gray(255, true),
             }
         },
-    }, "screen"),
+    }, "scoreboard"),
 }
 
 local legend_inputs = {

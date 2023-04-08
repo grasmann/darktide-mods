@@ -276,6 +276,7 @@ mod:register_scoreboard_history_view()
 mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_rows")
 mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_history")
 mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_default_plugins")
+mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_hud")
 
 -- ##### ██╗███╗   ██╗██╗████████╗ ####################################################################################
 -- ##### ██║████╗  ██║██║╚══██╔══╝ ####################################################################################

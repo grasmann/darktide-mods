@@ -32,6 +32,11 @@ mod:add_global_localize_strings({
 		ru = "Удалить таблицу результатов",
 		["zh-cn"] = "删除记分板",
 	},
+	-- Fix unlocalized vanilla training grounds name
+	loc_sg_enter_sg = {
+		en = "Training Grounds",
+		de = "Training Grounds",
+	},
 })
 
 -- ##### ██╗      ██████╗  ██████╗ █████╗ ██╗      ####################################################################

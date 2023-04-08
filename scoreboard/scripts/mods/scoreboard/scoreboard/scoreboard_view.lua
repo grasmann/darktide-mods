@@ -61,9 +61,9 @@ ScoreboardView.init = function(self, settings, context)
     ScoreboardView.super.init(self, self._definitions, settings)
     self._pass_draw = true
     self._pass_input = true
-    self._widget_timers = {}
-    self._widget_times = {}
-    self._wait_timer = 0
+    mod._widget_timers = {}
+    mod._widget_times = {}
+    mod._wait_timer = 0
     -- self:_setup_offscreen_gui()
 end
 
@@ -71,7 +71,7 @@ ScoreboardView.on_enter = function(self)
     self._definitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_definitions")
     self._blueprints = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_blueprints")
     self._settings = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
-    self._wait_timer = 0
+    mod._wait_timer = 0
     -- if not self._scorebaord_history_entries then
     -- 	self._scorebaord_history_entries = {
     -- 	  data = {},
@@ -92,7 +92,7 @@ ScoreboardView.on_enter = function(self)
     else
         self.scoreboard_widget.offset = {0, -100, base_z}
     end
-    self._widget_times["scoreboard"] = 0
+    mod._widget_times["scoreboard"] = 0
 
     -- self:_setup_category_config()
     self:setup_row_widgets()
@@ -108,8 +108,8 @@ ScoreboardView.on_enter = function(self)
     -- self:_setup_content_grid_scrollbar(self.scoreboard_widget, scrollbar_widget_id, grid_scenegraph_id, grid_pivot_scenegraph_id)
 
 
-    -- if self.end_view and mod:get("save_all_scoreboards") then
-    if (self.end_view or not self.is_history) and mod:get("save_all_scoreboards") then
+    if self.end_view and mod:get("save_all_scoreboards") then
+    -- if (self.end_view or not self.is_history) and mod:get("save_all_scoreboards") then
     -- if not self.is_history and mod:get("save_all_scoreboards") then
         local sorted_rows = self.sorted_rows or {}
         mod:save_scoreboard_history_entry(sorted_rows)
@@ -147,24 +147,27 @@ ScoreboardView.delete_row_widgets = function(self)
     end
 end
 
-ScoreboardView.get_scoreboard_groups = function(self)
+mod.get_scoreboard_groups = function(self, loaded_rows)
     local groups = {}
     local group_mods = {}
     groups[#groups+1] = "none"
-    for _, row in pairs(self.loaded_rows) do
+    for _, row in pairs(loaded_rows) do
         if row.group and not table.contains(groups, row.group) then
             groups[#groups+1] = row.group
             group_mods[row.group] = row.mod
         end
     end
-    -- mod:dtf(groups, "groups", 5)
     return groups, group_mods
 end
 
-ScoreboardView.get_rows_in_groups = function(self)
+ScoreboardView.get_scoreboard_groups = function(self)
+    return mod:get_scoreboard_groups(self.loaded_rows)
+end
+
+mod.get_rows_in_groups = function(self, loaded_rows)
     --self.loaded_rows
     local generate_scores = mod:get("generate_scores")
-    local groups, group_mods = self:get_scoreboard_groups()
+    local groups, group_mods = self:get_scoreboard_groups(loaded_rows)
     local sorted = {}
     local score_rows = {}
     sorted[#sorted+1] = {{
@@ -178,7 +181,7 @@ ScoreboardView.get_rows_in_groups = function(self)
         sorted[#sorted+1] = {}
         local this_group = sorted[#sorted]
         local rows = {}
-        for _, row in pairs(self.loaded_rows) do
+        for _, row in pairs(loaded_rows) do
             local valid = true
             if row.setting then
                 local str = string.split(row.setting, " ")
@@ -242,11 +245,15 @@ ScoreboardView.get_rows_in_groups = function(self)
     end
     -- mod:echo("bla")
     local this_group = sorted[1]
-    for _, row in pairs(self.loaded_rows) do
+    for _, row in pairs(loaded_rows) do
         if not row.group then this_group[#this_group+1] = row end
     end
     -- mod:dtf(sorted, "sorted", 5)
     return sorted
+end
+
+ScoreboardView.get_rows_in_groups = function(self)
+    return mod:get_rows_in_groups(self.loaded_rows)
 end
 
 -- ScoreboardView._setup_content_grid_scrollbar = function(self, grid, widget_id, grid_scenegraph_id, grid_pivot_scenegraph_id)
@@ -268,28 +275,104 @@ end
 -- ##### ██║  ██║╚██████╔╝╚███╔███╔╝███████║ ##########################################################################
 -- ##### ╚═╝  ╚═╝ ╚═════╝  ╚══╝╚══╝ ╚══════╝ ##########################################################################
 
-ScoreboardView.create_row_widget = function(self, index, current_offset, visible_rows, this_row)
+mod.update_row_values = function(self, this_row, sorted_rows, loaded_players)
+    local header = this_row.name == "header"
+    local player_manager = Managers.player
+    local players = loaded_players or player_manager:players()
+    -- Calculate row values
+    local validation = this_row.validation
+    if not header then
+        -- for i = 1, 2, 1 do
+        local player_num = 1
+        for _, player in pairs(players) do
+            if player_num < 5 then
+                local account_id = player:account_id() or player:name()
+                local rows = {}
+                if this_row.summary then
+                    for _, group in pairs(sorted_rows) do
+                        for _, row in pairs(group) do
+                            if table.contains(this_row.summary, row.name) then
+                                rows[#rows+1] = row
+                            end
+                        end
+                    end
+                else
+                    rows[#rows+1] = this_row
+                end
+
+                local score = 0
+                for _, row in pairs(rows) do
+                    local add_score = 0
+                    if row.data then
+                        local normalized_data = row.data
+                        if this_row.score then
+                            normalized_data = mod:normalize_values(players, row)
+                        end
+                        if this_row.score then
+                            local validation = row.validation
+                            add_score = validation:score(normalized_data, account_id)
+                        else
+                            local row_data = normalized_data[account_id]
+                            add_score = row_data and row_data.score or 0
+                        end
+                    end
+                    score = score + add_score
+                end
+                -- score = score == 0 and math.random(1, 100) or score
+
+                this_row.data = this_row.data or {}
+                this_row.data[account_id] = this_row.data[account_id] or {}
+                -- mod:echo(score)
+                this_row.data[account_id].score = score --/ #rows
+            end
+            player_num = player_num + 1
+        end
+        -- end
+    end
+
+    -- Normalize score row values
+    if this_row.score or this_row.normalize then
+        this_row.data = mod:normalize_values(players, this_row)
+    end
+
+    -- Best / worst
+    local validation = this_row.validation
+    if this_row.data and validation then
+        for account_id, row_data in pairs(this_row.data) do
+            row_data.is_best = validation.is_best(this_row.data, account_id)
+            row_data.is_worst = validation.is_worst(this_row.data, account_id)
+        end
+    end
+end
+
+mod.create_row_widget = function(self, index, current_offset, visible_rows, this_row, sorted_rows, groups, widgets_by_name, loaded_players, is_history, end_view, _obj, _create_widget_callback, ui_renderer)
+    local _definitions = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_definitions")
+    local _blueprints = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_blueprints")
+    local _settings = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
+    local scoreboard_widget = widgets_by_name["scoreboard"]
+    local player_manager = Managers.player
+
     local generate_scores = mod:get("generate_scores")
     local widget = nil
-    local template = table.clone(self._blueprints["scoreboard_row"])
+    local template = table.clone(_blueprints["scoreboard_row"])
     local size = template.size
     local pass_template = template.pass_template
     local name = "scoreboard_row_"..this_row.name
     local header = this_row.name == "header"
-    local header_height = self._settings.scoreboard_row_header_height
+    local header_height = _settings.scoreboard_row_header_height
     local row_height = this_row.name == "score" and 35
         or header and header_height
-        or this_row.score and self._settings.scoreboard_row_big_height
+        or this_row.score and _settings.scoreboard_row_big_height
         or 18
     local font_size = this_row.big and 30
         or header and 20
         or this_row.score and 24
         or 16
-    local height = self.scoreboard_widget.style.style_id_3.size[2]
+    local height = scoreboard_widget.style.style_id_3.size[2]
     
     -- Vertical offset
     if this_row.parent then
-        local parent = self._widgets_by_name["scoreboard_row_"..this_row.parent]
+        local parent = widgets_by_name["scoreboard_row_"..this_row.parent]
         if parent then
             current_offset = parent.offset[2]
             row_height = parent.style.style_id_1.size[2]
@@ -299,14 +382,14 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     local player_pass_map = {3, 6, 8, 11}
     local icon_pass_map = {["3"] = 2, ["6"] = 5, ["8"] = 7, ["11"] = 10}
     local background_pass_map = {["3"] = 4, ["8"] = 9}
-    local players = self.loaded_players or self._player_manager:players()
+    local players = loaded_players or player_manager:players()
 
     -- Fill rows
     local player_num = 1
     for _, player in pairs(players) do
         if player_num < 5 then
             local account_id = player:account_id() or player:name()
-            for _, group in pairs(self.sorted_rows) do
+            for _, group in pairs(sorted_rows) do
                 for _, row in pairs(group) do
                     if row.data then
                         if not row.data[account_id] then
@@ -349,8 +432,8 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
 
     -- Localize row name
     local this_text = this_row.mod:localize(this_row.text) or this_row.text
-    if self.groups[this_row.text] then this_text = self.groups[this_row.text] end
-    if self.is_history and not this_row.score then
+    if groups[this_row.text] then this_text = groups[this_row.text] end
+    if is_history and not this_row.score then
         this_text = this_row.text
     end
     local this_setting = this_row.setting
@@ -382,7 +465,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     end
 
     -- Unset child row headers
-    local children = self:get_row_children(this_row.name)
+    local children = mod:get_row_children(this_row.name, nil, sorted_rows)
     if #children > 0 then
         for _, i in pairs(player_pass_map) do
             pass_template[i].value = ""
@@ -399,10 +482,10 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     -- Set offsets / sizes / header text
     if this_row.parent then
 
-        local children, val_index = self:get_row_children(this_row.parent, this_row.name)
+        local children, val_index = mod:get_row_children(this_row.parent, this_row.name, sorted_rows)
         if #children > 1 then
             for _, i in pairs(player_pass_map) do
-                local this_size = {self._settings.scoreboard_column_width / #children, pass_template[i].style.size[2]}
+                local this_size = {_settings.scoreboard_column_width / #children, pass_template[i].style.size[2]}
                 local offset = this_size[1] * (val_index - 1)
                 pass_template[i].style.offset[1] = pass_template[i].style.offset[1] + offset
                 pass_template[i].style.size[1] = this_size[1]
@@ -431,13 +514,13 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         -- Icon
         if this_row.icon then
             for _, i in pairs(player_pass_map) do
-                -- local this_size = {self._settings.scoreboard_column_width, pass_template[i].style.size[2]}
+                -- local this_size = {_settings.scoreboard_column_width, pass_template[i].style.size[2]}
                 -- local offset = this_size[1]
                 local icon = icon_pass_map[tostring(i)]
                 if icon then
                     pass_template[i].style.text_horizontal_alignment = "left"
                     pass_template[i].style.offset[1] = pass_template[i].style.offset[1] + pass_template[icon].style.size[1]
-                    -- pass_template[icon].style.offset[1] = pass_template[icon].style.offset[1] + self._settings.scoreboard_row_height
+                    -- pass_template[icon].style.offset[1] = pass_template[icon].style.offset[1] + _settings.scoreboard_row_height
                 end
             end
         end
@@ -447,8 +530,6 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
             pass_template[1].value = ""
         end
     end
-
-    
 
     -- Calculate row values
     local validation = this_row.validation
@@ -460,7 +541,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                 local account_id = player:account_id() or player:name()
                 local rows = {}
                 if this_row.summary then
-                    for _, group in pairs(self.sorted_rows) do
+                    for _, group in pairs(sorted_rows) do
                         for _, row in pairs(group) do
                             if table.contains(this_row.summary, row.name) then
                                 rows[#rows+1] = row
@@ -477,7 +558,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                     if row.data then
                         local normalized_data = row.data
                         if this_row.score then
-                            normalized_data = self:normalize_values(players, row)
+                            normalized_data = mod:normalize_values(players, row)
                         end
                         if this_row.score then
                             local validation = row.validation
@@ -503,7 +584,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     
     -- Normalize score row values
     if this_row.score or this_row.normalize then
-        this_row.data = self:normalize_values(players, this_row)
+        this_row.data = mod:normalize_values(players, this_row)
     end
 
     -- Best / worst
@@ -568,7 +649,7 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
                     score = TextUtilities.apply_color_to_text(tostring(score), color)
                     if mod:is_me(account_id) and this_row.parent then
                         -- Replace text with colored text in parent widget
-                        local parent = self._widgets_by_name["scoreboard_row_"..this_row.parent]
+                        local parent = widgets_by_name["scoreboard_row_"..this_row.parent]
                         if parent then
                             local parent_text = parent.content.text
                             local s, e = string.find(parent_text, this_text)
@@ -627,21 +708,20 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
     local widget_definition = UIWidget.create_definition(pass_template, "scoreboard_rows", nil, size)
 
     if widget_definition then
-        widget = self:_create_widget(name, widget_definition)
+        widget = _obj[_create_widget_callback](_obj, name, widget_definition)
 
         widget.alpha_multiplier = 0
         
-        -- widget.offset = {self.is_history and 300 or 0, current_offset, 0}
-        if self.is_history then
+        if is_history then
             widget.offset = {300, current_offset, base_z + 1}
-        elseif not self.end_view then
+        elseif not end_view then
             widget.offset = {0, current_offset, base_z + 1}
         else
             local offset_y = current_offset - 100
             -- widget.offset = {-300, current_offset - y, 0}
             -- Vertical offset
             if this_row.parent then
-                local parent = self._widgets_by_name["scoreboard_row_"..this_row.parent]
+                local parent = widgets_by_name["scoreboard_row_"..this_row.parent]
                 if parent then offset_y = parent.offset[2] end
             end
             widget.offset = {0, offset_y, base_z + 1}
@@ -651,33 +731,17 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
         if header then
             widget.content.text = ""
             widget.style.style_id_1.font_size = font_size
-            -- local players = self._player_manager:players()
+            -- local players = player_manager:players()
             local num_players = 0
             for _, player in pairs(players) do
                 num_players = num_players + 1
-                if num_players <= 4 then
-                    -- if player.name then
-                        -- local name = player:name()
-                        -- -- pass_template[player_pass_map[num_players]].value = name
-                        -- widget.content["text_"..tostring(player_pass_map[num_players])] = name
-
-                        local width = self._settings.scoreboard_column_width + 10
-                        local fsize = font_size + 1
-                        while width > self._settings.scoreboard_column_width - 10 do
-                            fsize = fsize - 1
-                            -- pass_template[player_pass_map[num_players]].style.font_size = fsize
-                            widget.style["style_id_"..player_pass_map[num_players]].font_size = fsize
-                            -- Calculate parent text width
-                            -- local font_style = pass_template[player_pass_map[num_players]].style
-                            local font_style = widget.style["style_id_"..player_pass_map[num_players]]
-                            local font_type = font_style.font_type
-                            -- local font_size = font_style.font_size
-                            local scale = self._ui_renderer.scale or 1
-                            local scaled_font_size = UIFonts.scaled_size(fsize, scale)
-                            local sender_font_options = UIFonts.get_font_options_by_style(font_style)
-                            width = UIRenderer.text_size(self._ui_renderer, name, font_type, scaled_font_size, sender_font_options)
-                        end
-                    -- end
+                if num_players <= 4 and ui_renderer then
+                    local player_name = player:name()
+                    local symbol = player.string_symbol or player._profile and player._profile.archetype.string_symbol
+                    if symbol then
+                        player_name = symbol.." "..player_name
+                    end
+                    mod:shrink_text(player_name, widget.style["style_id_"..player_pass_map[num_players]], _settings.scoreboard_column_width, ui_renderer)
                 end
             end
         end
@@ -686,6 +750,25 @@ ScoreboardView.create_row_widget = function(self, index, current_offset, visible
 
         return widget, row_height
     end
+end
+
+mod.shrink_text = function(self, text, style, max_width, ui_renderer)
+    if ui_renderer then
+        local width = max_width + 10
+        local fsize = (style.font_size or 20) + 1
+        while width > max_width - 20 do
+            fsize = fsize - 1
+            style.font_size = fsize
+            local font_type = style.font_type
+            local scale = ui_renderer.scale or 1
+            local scaled_font_size = UIFonts.scaled_size(fsize, scale)
+            width = UIRenderer.text_size(ui_renderer, text, font_type, scaled_font_size)
+        end
+    end
+end
+
+ScoreboardView.create_row_widget = function(self, index, current_offset, visible_rows, this_row)
+    return mod:create_row_widget(index, current_offset, visible_rows, this_row, self.sorted_rows, self.groups, self._widgets_by_name, self.loaded_players, self.is_history, self.end_view, self, "_create_widget", self._ui_renderer)
 end
 
 local average = function(data, players)
@@ -706,7 +789,7 @@ local average = function(data, players)
     return average / num
 end
 
-ScoreboardView.normalize_values = function(self, players, this_row)
+mod.normalize_values = function(self, players, this_row)
     -- Adjust values
 	local target_average = 100
 	-- for row_index, data in pairs(self.rows) do
@@ -748,12 +831,12 @@ ScoreboardView.normalize_values = function(self, players, this_row)
     return this_row.data
 end
 
-ScoreboardView.get_row_children = function(self, parent, row_name)
+mod.get_row_children = function(self, parent, row_name, sorted_rows)
     local children = {}
     local index = 0
     local this_index = 0
     -- mod:echo("searching children for "..parent)
-    for _, group in pairs(self.sorted_rows) do
+    for _, group in pairs(sorted_rows) do
         for _, row in pairs(group) do
             if row.parent then
                 -- mod:echo("check "..parent.." = "..tostring(row.parent))
@@ -770,22 +853,20 @@ ScoreboardView.get_row_children = function(self, parent, row_name)
     return children, this_index
 end
 
-ScoreboardView.setup_row_widgets = function(self)
-    self:delete_row_widgets()
+mod.setup_row_widgets = function(self, loaded_rows, groups, row_widgets, widgets_by_name, loaded_players, is_history, end_view, _obj, _create_widget_callback, ui_renderer)
+    -- self:delete_row_widgets()
 
-    self._widget_times = self._widget_times or {}
-    self._packages = {}
-
-    local widget_definitions = {}
+    -- local widget_times = {}
+    -- local packages = {}
     local current_offset = 0
     local visible_rows = 0
 
-    self.sorted_rows = self:get_rows_in_groups()
+    local sorted_rows = self:get_rows_in_groups(loaded_rows)
     -- mod:echo(#self.sorted_rows)
     -- for group, rows in pairs(self.sorted_rows) do
     local index = 1
-    for g = 1, #self.sorted_rows, 1 do
-        local rows = self.sorted_rows[g]
+    for g = 1, #sorted_rows, 1 do
+        local rows = sorted_rows[g]
         -- mod:echo("group")
         for i = 1, #rows, 1 do
             local this_row = rows[i]
@@ -800,13 +881,13 @@ ScoreboardView.setup_row_widgets = function(self)
                 if not this_row.parent then
                     visible_rows = visible_rows + 1
                 end
-                local widget, row_height = self:create_row_widget(index, current_offset, visible_rows, this_row)
+                local widget, row_height = self:create_row_widget(index, current_offset, visible_rows, this_row, sorted_rows, groups, widgets_by_name, loaded_players, is_history, end_view, _obj, _create_widget_callback, ui_renderer)
 
                 if widget then
-                    self.row_widgets = self.row_widgets or {}
-                    self.row_widgets[#self.row_widgets+1] = widget
-                    self._widgets_by_name = self._widgets_by_name or {}
-                    self._widgets_by_name[name] = widget
+                    row_widgets = row_widgets or {}
+                    row_widgets[#row_widgets+1] = widget
+                    widgets_by_name = widgets_by_name or {}
+                    widgets_by_name[name] = widget
                     if not this_row.parent then
                         current_offset = current_offset + row_height
                     end
@@ -816,9 +897,12 @@ ScoreboardView.setup_row_widgets = function(self)
         end
     end
 
-    -- self:move_scoreboard(0, -300, function()
-    --     self:move_scoreboard(-300, 0)
-    -- end)
+    return sorted_rows
+end
+
+ScoreboardView.setup_row_widgets = function(self)
+    self:delete_row_widgets()
+    self.sorted_rows = mod:setup_row_widgets(self.loaded_rows, self.groups, self.row_widgets, self._widgets_by_name, self.loaded_players, self.is_history, self.end_view, self, "_create_widget", self._ui_renderer)
 end
 
 -- ##### ███████╗██╗  ██╗██╗████████╗ #################################################################################
@@ -942,22 +1026,24 @@ ScoreboardView.update = function(self, dt, t, input_service, view_data)
     return ScoreboardView.super.update(self, dt, t, input_service)
 end
 
-ScoreboardView.animate_rows = function(self, dt)
+mod.animate_rows = function(self, dt, widgets_by_name)
+    local _settings = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
+
     self._widget_timers = self._widget_timers or {}
     self._wait_timer = self._wait_timer or 0
     -- Iterate through all rows
-    for name, widget in pairs(self._widgets_by_name) do
+    for name, widget in pairs(widgets_by_name) do
         -- Check state
         if widget.alpha_multiplier == 0 and not self._widget_timers[widget.name] then
             -- Alpha = 0 and timer not yet started
             if self._wait_timer and self._wait_timer >= self._widget_times[widget.name] then
                 -- Start timer
-                self._widget_timers[widget.name] = self._settings.scoreboard_fade_length
+                self._widget_timers[widget.name] = _settings.scoreboard_fade_length
             end
 
         elseif self._widget_timers[widget.name] and self._widget_timers[widget.name] > 0 then
             -- Timer was started; Calculate alpha
-            local percentage = self._widget_timers[widget.name] / self._settings.scoreboard_fade_length
+            local percentage = self._widget_timers[widget.name] / _settings.scoreboard_fade_length
             widget.alpha_multiplier = 1 - percentage
             self._widget_timers[widget.name] = self._widget_timers[widget.name] - dt
 
@@ -969,6 +1055,39 @@ ScoreboardView.animate_rows = function(self, dt)
         end
     end
     self._wait_timer = self._wait_timer + dt
+end
+
+ScoreboardView.animate_rows = function(self, dt)
+    mod:animate_rows(dt, self._widgets_by_name)
+
+    if 1 == 2 then
+        self._widget_timers = self._widget_timers or {}
+        self._wait_timer = self._wait_timer or 0
+        -- Iterate through all rows
+        for name, widget in pairs(self._widgets_by_name) do
+            -- Check state
+            if widget.alpha_multiplier == 0 and not self._widget_timers[widget.name] then
+                -- Alpha = 0 and timer not yet started
+                if self._wait_timer and self._wait_timer >= self._widget_times[widget.name] then
+                    -- Start timer
+                    self._widget_timers[widget.name] = self._settings.scoreboard_fade_length
+                end
+
+            elseif self._widget_timers[widget.name] and self._widget_timers[widget.name] > 0 then
+                -- Timer was started; Calculate alpha
+                local percentage = self._widget_timers[widget.name] / self._settings.scoreboard_fade_length
+                widget.alpha_multiplier = 1 - percentage
+                self._widget_timers[widget.name] = self._widget_timers[widget.name] - dt
+
+            elseif self._widget_timers[widget.name] and self._widget_timers[widget.name] <= 0 then
+                -- Timer finished; Set alpha = 1
+                widget.alpha_multiplier = 1
+                self._widget_timers[widget.name] = nil
+
+            end
+        end
+        self._wait_timer = self._wait_timer + dt
+    end
 end
 
 -- ##### ██████╗ ██████╗  █████╗ ██╗    ██╗ ###########################################################################
