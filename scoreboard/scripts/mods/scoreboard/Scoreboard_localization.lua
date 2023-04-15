@@ -83,6 +83,10 @@ return {
 		["zh-cn"] = "保存记分板",
 	},
 	-- Options
+	dev_mode = {
+		en = "Developer Mode",
+		de = "Entwicklermodus",
+	},
 	open_scoreboard = {
 		en = "Open Scoreboard",
 		de = "Scoreboard öffnen",

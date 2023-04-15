@@ -310,7 +310,7 @@ mod.scoreboard_rows = {
 	},
 	{name = "overkill_damage_dealt",
 		text = "row_overkill_damage_dealt",
-		validation = "ASC",
+		validation = "DESC",
 		iteration = "ADD",
 		group = "offense",
 		parent = "damage_dealt",

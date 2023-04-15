@@ -41,6 +41,91 @@ function mod.update(main_dt)
 	mod:update_carrying(main_dt)
 end
 
+function mod.on_setting_changed(setting_id)
+	mod.update_option(setting_id)
+end
+
+-- #####  ██████╗ ██████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗ #####################################################
+-- ##### ██╔═══██╗██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝ #####################################################
+-- ##### ██║   ██║██████╔╝   ██║   ██║██║   ██║██╔██╗ ██║███████╗ #####################################################
+-- ##### ██║   ██║██╔═══╝    ██║   ██║██║   ██║██║╚██╗██║╚════██║ #####################################################
+-- ##### ╚██████╔╝██║        ██║   ██║╚██████╔╝██║ ╚████║███████║ #####################################################
+-- #####  ╚═════╝ ╚═╝        ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ #####################################################
+
+function mod.find_option_in_data(obj, setting_id)
+	for _, option in pairs(obj) do
+		if option.setting_id == setting_id then
+			return option
+		elseif option.sub_widgets and #option.sub_widgets > 0 then
+			local sub = mod.find_option_in_data(option.sub_widgets, setting_id)
+			if sub then return sub end
+		end
+	end
+end
+
+function mod.fetch_option_from_data(setting_id)
+	local option = mod.find_option_in_data(ScoreboardData.options.widgets, setting_id)
+	return option
+end
+
+function mod.fetch_option_from_view(setting_id)
+	local options_view = mod.ui_manager:view_instance("dmf_options_view")
+	if options_view then
+		for mod_name, mod_group in pairs(options_view._settings_category_widgets) do
+
+			for index, widget_data in pairs(mod_group) do
+
+				if widget_data.widget and widget_data.widget.content and widget_data.widget.content.entry then
+					if widget_data.widget.content.entry.display_name == mod:localize(setting_id) then
+						-- mod:dtf(widget_data, "widget_data", 5)
+						return widget_data
+					end
+				end
+
+			end
+
+		end
+	end
+end
+
+function mod.update_option(setting_id)
+	local options_view = mod.ui_manager:view_instance("dmf_options_view")
+	if options_view then
+		local data_option = mod.fetch_option_from_data(setting_id)
+		if data_option.type == "checkbox" then
+			local visible = mod:get(setting_id)
+			if data_option.sub_widgets and #data_option.sub_widgets > 0 then
+				for _, sub_widget in pairs(data_option.sub_widgets) do
+					local option = mod.fetch_option_from_view(sub_widget.setting_id)
+					option.widget.content.disabled = visible == false
+					option.widget.content.hotspot.disabled = visible == false
+				end
+			end
+		end
+	end
+end
+
+function mod.update_options()
+	for _, option in pairs(ScoreboardData.options.widgets) do
+		mod.update_option(option.setting_id)
+	end
+end
+
+function mod.open_scoreboard()
+	if mod:scoreboard_opened() then
+		mod:close_scoreboard_view()
+	else
+		if mod:get("dev_mode") then mod:show_scoreboard_view() end
+	end
+end
+
+mod:hook(CLASS.BaseView, "_on_view_load_complete", function(func, self, loaded, ...)
+	func(self, loaded, ...)
+	if self.view_name == "dmf_options_view" then
+		mod.update_options()
+	end
+end)
+
 -- ##### ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗ ###################################
 -- ##### ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝ ###################################
 -- ##### █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗ ###################################
@@ -165,6 +250,10 @@ end
 mod.show_scoreboard_view = function(self, context)
 	self:close_scoreboard_view()
     self.ui_manager:open_view("scoreboard_view", nil, false, false, nil, context or {}, {use_transition_ui = false})
+end
+
+mod.scoreboard_opened = function(self)
+	return self.ui_manager:view_active("scoreboard_view") and not self.ui_manager:is_view_closing("scoreboard_view")
 end
 
 mod.close_scoreboard_view = function(self)

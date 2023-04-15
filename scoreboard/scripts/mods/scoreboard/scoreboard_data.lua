@@ -13,15 +13,6 @@ return {
 				["keybind_type"] = "view_toggle",
 				["view_name"] = "scoreboard_history_view"
 			},
-			--[[
-			{["setting_id"] = "open_scoreboard",
-				["type"] = "keybind",
-				["default_value"] = {"f6"},
-				["keybind_trigger"] = "pressed",
-				["keybind_type"] = "view_toggle",
-				["view_name"] = "scoreboard_view"
-			},
-			--]]
 			{["setting_id"] = "save_all_scoreboards",
 				["type"] = "checkbox",
 				["default_value"] = true,
@@ -50,6 +41,21 @@ return {
 				["options"] = {
 					{["text"] = "worst_values_normal", ["value"] = 1, ["show_widgets"] = {}},
 					{["text"] = "worst_values_dark", ["value"] = 2, ["show_widgets"] = {}},
+				},
+			},
+			{["setting_id"] = "dev_mode",
+				["type"] = "checkbox",
+				["default_value"] = false,
+				["sub_widgets"] = {
+					{["setting_id"] = "open_scoreboard",
+						["type"] = "keybind",
+						["default_value"] = {"f6"},
+						["keybind_trigger"] = "pressed",
+						["keybind_type"] = "function_call",
+						["function_name"] = "open_scoreboard",
+						-- ["keybind_type"] = "view_toggle",
+						-- ["view_name"] = "scoreboard_view"
+					},
 				},
 			},
 			{["setting_id"] = "group_plugins",
