@@ -87,6 +87,10 @@ return {
 		en = "Developer Mode",
 		de = "Entwicklermodus",
 	},
+	tactical_overview = {
+		en = "Tactical Overview [TAB]",
+		de = "Taktische Übersicht [TAB]",
+	},
 	open_scoreboard = {
 		en = "Open Scoreboard",
 		de = "Scoreboard öffnen",

@@ -43,6 +43,7 @@ end
 
 function mod.on_setting_changed(setting_id)
 	mod.update_option(setting_id)
+	mod.tactical_overview = mod:get("tactical_overview")
 end
 
 -- #####  ██████╗ ██████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗ #####################################################
@@ -72,18 +73,14 @@ function mod.fetch_option_from_view(setting_id)
 	local options_view = mod.ui_manager:view_instance("dmf_options_view")
 	if options_view then
 		for mod_name, mod_group in pairs(options_view._settings_category_widgets) do
-
 			for index, widget_data in pairs(mod_group) do
-
 				if widget_data.widget and widget_data.widget.content and widget_data.widget.content.entry then
 					if widget_data.widget.content.entry.display_name == mod:localize(setting_id) then
 						-- mod:dtf(widget_data, "widget_data", 5)
 						return widget_data
 					end
 				end
-
 			end
-
 		end
 	end
 end

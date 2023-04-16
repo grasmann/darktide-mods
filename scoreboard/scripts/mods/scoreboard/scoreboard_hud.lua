@@ -6,6 +6,8 @@ local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
 local base_z = 100
 local base_x = 135
 
+mod.tactical_overview = mod:get("tactical_overview")
+
 -- Make tactical overlay available in meat grinder
 mod:hook_require("scripts/ui/hud/hud_elements_player_onboarding", function(instance)
     local found = false
@@ -126,21 +128,29 @@ end)
 
 
 mod:hook(CLASS.HudElementTacticalOverlay, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
-    UIRenderer.begin_pass(ui_renderer, self._ui_scenegraph, input_service, dt, render_settings)
+    -- UIRenderer.begin_pass(ui_renderer, self._ui_scenegraph, input_service, dt, render_settings)
 
     func(self, dt, t, input_service, ui_renderer, render_settings, ...)
 
     local scoreboard_widget = self._widgets_by_name["scoreboard"]
-    scoreboard_widget.alpha_multiplier = self._alpha_multiplier
+    if mod.tactical_overview then
+        scoreboard_widget.alpha_multiplier = self._alpha_multiplier
+    else
+        scoreboard_widget.alpha_multiplier = 0
+    end
 
     if self.row_widgets then
         for _, widget in pairs(self.row_widgets) do
-            widget.alpha_multiplier = self._alpha_multiplier
+            if mod.tactical_overview then
+                widget.alpha_multiplier = self._alpha_multiplier
+            else
+                widget.alpha_multiplier = 0
+            end
             UIWidget.draw(widget, ui_renderer)
         end
     end
 
-    UIRenderer.end_pass(ui_renderer)
+    -- UIRenderer.end_pass(ui_renderer)
 end)
 
 --HudElementTacticalOverlay.update = function (self, dt, t, ui_renderer, render_settings, input_service)
