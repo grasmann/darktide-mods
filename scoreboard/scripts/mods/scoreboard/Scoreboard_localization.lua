@@ -86,10 +86,12 @@ return {
 	dev_mode = {
 		en = "Developer Mode",
 		de = "Entwicklermodus",
+		["zh-cn"] = "开发者模式",
 	},
 	tactical_overview = {
 		en = "Tactical Overview [TAB]",
 		de = "Taktische Übersicht [TAB]",
+		["zh-cn"] = "战术覆盖 [TAB]",
 	},
 	open_scoreboard = {
 		en = "Open Scoreboard",
