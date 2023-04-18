@@ -789,6 +789,7 @@ mod.register_scoreboard_row = function(self, this_mod, template)
 		summary = template.summary,
 		setting = template.setting,
 		is_time = template.is_time,
+		is_text = template.is_text,
 		update = template.update,
 		visible = template.visible,
 		normalize = template.normalize,
@@ -813,26 +814,46 @@ mod.update_scoreboard_rows = function(self, dt)
 end
 
 mod.update_row_value = function(self, row_name, account_id, value)
-	-- Normalize value
-	local value = value and math.max(0, value) or 0
-	-- Get row
-	local row = self:get_scoreboard_row(row_name)
-	if row then
-		row.data = row.data or {}
-		local character_data = row.data[account_id]
-		-- Iteration
-		local iteration = row.iteration
-		local old_value = character_data and character_data.value or 0
-		local new_value, add_score = iteration.value(value, old_value)
-		-- New score
-		local old_score = character_data and character_data.score or 0
-		local new_score = old_score + add_score
-		-- Update row
-		local validation = row.validation
-		row.data[account_id] = {
-			value = value,
-			score = new_score,
-		}
+	if self:is_numeric(value) then
+		-- Normalize value
+		local value = value and math.max(0, value) or 0
+		-- Get row
+		local row = self:get_scoreboard_row(row_name)
+		if row then
+			row.data = row.data or {}
+			local character_data = row.data[account_id]
+			-- Iteration
+			local iteration = row.iteration
+			local old_value = character_data and character_data.value or 0
+			local new_value, add_score = iteration.value(value, old_value)
+			-- New score
+			local old_score = character_data and character_data.score or 0
+			local new_score = old_score + add_score
+			-- Update row
+			local validation = row.validation
+			-- local char_data = row.data[account_id] or {}
+			row.data[account_id] = row.data[account_id] or {}
+			row.data[account_id].value = value
+			row.data[account_id].score = new_score
+			row.data[account_id].text = nil
+			-- row.data[account_id] = {
+			-- 	value = value,
+			-- 	score = new_score,
+			-- }
+		end
+	else
+		local row = self:get_scoreboard_row(row_name)
+		-- mod:echo("search row "..row_name)
+		if row then
+			row.data = row.data or {}
+			row.data[account_id] = row.data[account_id] or {}
+			-- mod:echo("text = "..value)
+			row.data[account_id].text = value
+			row.data[account_id].value = 0
+			row.data[account_id].score = 0
+		else
+			-- mod:echo("not found")
+		end
 	end
 end
 

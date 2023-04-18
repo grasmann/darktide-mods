@@ -116,6 +116,12 @@ function mod.open_scoreboard()
 	end
 end
 
+--BaseView.on_enter = function (self)
+-- mod:hook(CLASS.BaseView, "on_enter", function(func, self, ...)
+-- 	func(self, ...)
+-- 	mod:echo(self.view_name)
+-- end)
+
 mod:hook(CLASS.BaseView, "_on_view_load_complete", function(func, self, loaded, ...)
 	func(self, loaded, ...)
 	if self.view_name == "dmf_options_view" then
@@ -295,6 +301,13 @@ end
 
 mod.is_me = function(self, account_id)
 	return account_id == mod:me()
+end
+
+mod.is_numeric = function(self, x)
+    if tonumber(x) ~= nil then
+        return true
+    end
+    return false
 end
 
 -- ##### ██╗  ██╗ ██████╗  ██████╗ ██╗  ██╗███████╗ ###################################################################

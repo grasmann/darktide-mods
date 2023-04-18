@@ -360,7 +360,7 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
     local name = "scoreboard_row_"..this_row.name
     local header = this_row.name == "header"
     local header_height = _settings.scoreboard_row_header_height
-    local row_height = this_row.name == "score" and 35
+    local row_height = (this_row.name == "score" or this_row.big) and 35
         or header and header_height
         or this_row.score and _settings.scoreboard_row_big_height
         or 18
@@ -476,6 +476,7 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
         for _, i in pairs(icon_pass_map) do
             local width = this_row.icon_width or pass_template[i].style.size[1]
             pass_template[i].style.size[1] = width
+            pass_template[i].style.size[2] = row_height
         end
     end
 
@@ -614,53 +615,57 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
                 -- Prepare score text
                 local row_data = this_row.data and this_row.data[account_id]
                 local score = row_data and row_data.score or 0
-                local decimals = this_row.decimals or 0
-                decimals = this_row.is_time and 1 or decimals
-                score = this_row.is_time and mod:shorten_time(score, decimals) or mod:shorten_value(score, decimals)
+                if this_row.is_text then score = row_data and row_data.text or 0 end
+                if not this_row.is_text then
+                    -- if row_data.text then mod:echo(row_data.text) end
+                    local decimals = this_row.decimals or 0
+                    decimals = this_row.is_time and 1 or decimals
+                    score = this_row.is_time and mod:shorten_time(score, decimals) or mod:shorten_value(score, decimals)
 
-                -- Colors
-                local color = nil
-                local num_score = score
-                num_score = string.gsub(num_score, "s", "")
-                -- num_score = string.gsub(num_score, "s", "")
-                num_score = tonumber(num_score)
-                if num_score and num_score == 0 and zero_setting > 1 then
-                    -- Zero values
-                    if zero_setting == 2 then
-                        pass_template[pass_index].style.visible = false
-                    elseif zero_setting == 3 then
-                        color = Color.ui_grey_light(255, true)
-                        pass_template[icon_pass_map[tostring(pass_index)]].style.visible = true
-                    end
-                else
-                    if this_row.icon then
-                        pass_template[icon_pass_map[tostring(pass_index)]].style.visible = true
-                    end
-                    if row_data and row_data.is_best then
-                        color = Color.ui_orange_light(255, true)
-                    elseif row_data and row_data.is_worst then
-                        if worst_setting == 2 then
+                    -- Colors
+                    local color = nil
+                    local num_score = score
+                    num_score = string.gsub(num_score, "s", "")
+                    -- num_score = string.gsub(num_score, "s", "")
+                    num_score = tonumber(num_score)
+                    if num_score and num_score == 0 and zero_setting > 1 then
+                        -- Zero values
+                        if zero_setting == 2 then
+                            pass_template[pass_index].style.visible = false
+                        elseif zero_setting == 3 then
                             color = Color.ui_grey_light(255, true)
+                            pass_template[icon_pass_map[tostring(pass_index)]].style.visible = true
                         end
-                    end
-                end
-
-                if color then
-                    score = TextUtilities.apply_color_to_text(tostring(score), color)
-                    if mod:is_me(account_id) and this_row.parent then
-                        -- Replace text with colored text in parent widget
-                        local parent = widgets_by_name["scoreboard_row_"..this_row.parent]
-                        if parent then
-                            local parent_text = parent.content.text
-                            local s, e = string.find(parent_text, this_text)
-                            if s then
-                                local colored = TextUtilities.apply_color_to_text(this_text, color)
-                                parent.content.text = parent_text:gsub(this_text, colored)
+                    else
+                        if this_row.icon then
+                            pass_template[icon_pass_map[tostring(pass_index)]].style.visible = true
+                        end
+                        if row_data and row_data.is_best then
+                            color = Color.ui_orange_light(255, true)
+                        elseif row_data and row_data.is_worst then
+                            if worst_setting == 2 then
+                                color = Color.ui_grey_light(255, true)
                             end
                         end
-                    elseif mod:is_me(account_id) then
-                        -- Replace header text with colored text
-                        pass_template[1].value = TextUtilities.apply_color_to_text(tostring(pass_template[1].value), color)
+                    end
+
+                    if color then
+                        score = TextUtilities.apply_color_to_text(tostring(score), color)
+                        if mod:is_me(account_id) and this_row.parent then
+                            -- Replace text with colored text in parent widget
+                            local parent = widgets_by_name["scoreboard_row_"..this_row.parent]
+                            if parent then
+                                local parent_text = parent.content.text
+                                local s, e = string.find(parent_text, this_text)
+                                if s then
+                                    local colored = TextUtilities.apply_color_to_text(this_text, color)
+                                    parent.content.text = parent_text:gsub(this_text, colored)
+                                end
+                            end
+                        elseif mod:is_me(account_id) then
+                            -- Replace header text with colored text
+                            pass_template[1].value = TextUtilities.apply_color_to_text(tostring(pass_template[1].value), color)
+                        end
                     end
                 end
 
@@ -729,7 +734,7 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
 
         -- Header; Attempt to lower font size of long names
         if header then
-            widget.content.text = ""
+            if header then widget.content.text = "" end
             widget.style.style_id_1.font_size = font_size
             -- local players = player_manager:players()
             local num_players = 0
@@ -742,6 +747,16 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
                         player_name = symbol.." "..player_name
                     end
                     mod:shrink_text(player_name, widget.style["style_id_"..player_pass_map[num_players]], _settings.scoreboard_column_width, ui_renderer)
+                end
+            end
+        elseif this_row.is_text then
+            local num_players = 0
+            for _, player in pairs(players) do
+                num_players = num_players + 1
+                if num_players <= 4 and ui_renderer then
+                    local account_id = player:account_id() or player:name()
+                    local score = this_row.data[account_id].text
+                    mod:shrink_text(score, widget.style["style_id_"..player_pass_map[num_players]], _settings.scoreboard_column_width, ui_renderer)
                 end
             end
         end
@@ -862,6 +877,7 @@ mod.setup_row_widgets = function(self, loaded_rows, groups, row_widgets, widgets
     local visible_rows = 0
 
     local sorted_rows = self:get_rows_in_groups(loaded_rows)
+    mod:dtf(sorted_rows, "sorted_rows", 5)
     -- mod:echo(#self.sorted_rows)
     -- for group, rows in pairs(self.sorted_rows) do
     local index = 1
