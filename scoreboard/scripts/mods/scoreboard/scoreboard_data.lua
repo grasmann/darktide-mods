@@ -6,6 +6,11 @@ return {
 	allow_rehooking = true,
 	options = {
 		widgets = {
+			{["setting_id"] = "scoreboard_panel_height",
+				["type"] = "numeric",
+				["default_value"] = 580,
+				["range"] = {300, 1000},
+			},
 			{["setting_id"] = "open_scoreboard_history",
 				["type"] = "keybind",
 				["default_value"] = {"f5"},

@@ -1,6 +1,8 @@
+local mod = get_mod("scoreboard")
+
 local scoreboard_view_settings = {
     shading_environment = "content/shading_environments/ui/system_menu",
-    scoreboard_size = {1000, 580},
+    scoreboard_size = {1000, mod:get("scoreboard_panel_height")},
     scoreboard_row_height = 20,
     scoreboard_row_header_height = 30,
     scoreboard_row_big_height = 36,
