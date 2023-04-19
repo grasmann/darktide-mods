@@ -186,7 +186,7 @@ mod.get_rows_in_groups = function(self, loaded_rows)
             if row.setting then
                 local str = string.split(row.setting, " ")
                 if str and #str > 1 then
-                    local val = row.mod:get(str[1])
+                    local val = row.mod:get(str[1]) or 1
                     local num = tonumber(str[3])
                     if str[2] == "=" then
                         valid = val == num
@@ -755,8 +755,10 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
                 num_players = num_players + 1
                 if num_players <= 4 and ui_renderer then
                     local account_id = player:account_id() or player:name()
-                    local score = this_row.data[account_id].text
-                    mod:shrink_text(score, widget.style["style_id_"..player_pass_map[num_players]], _settings.scoreboard_column_width, ui_renderer)
+                    local score = this_row.data[account_id].text or "lol"
+                    if score then
+                        mod:shrink_text(score, widget.style["style_id_"..player_pass_map[num_players]], _settings.scoreboard_column_width, ui_renderer)
+                    end
                 end
             end
         end
