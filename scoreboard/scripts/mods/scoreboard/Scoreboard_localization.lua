@@ -945,4 +945,8 @@ return {
 		ru = "Общий счет",
 		["zh-cn"] = "总分数",
 	},
+	scoreboard_panel_height = {
+		en = "Scoreboard Panel Height",
+		["zh-cn"] = "记分板面板大小",
+	},
 }
