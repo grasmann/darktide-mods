@@ -950,4 +950,20 @@ return {
 		ru = "Общий счет",
 		["zh-cn"] = "总分数",
 	},
+	row_ammo_clip_crate_picked_up = {
+		en = "Ammo Small / Large / Crate Picked Up",
+		["zh-cn"] = "弹药 小 / 大 / 箱 拾取",
+	},
+	row_ammo_small_picked_up = {
+		en = "Small",
+		["zh-cn"] = "小",
+	},
+	row_ammo_large_picked_up = {
+		en = "Large",
+		["zh-cn"] = "大",
+	},
+	row_ammo_crate_picked_up = {
+		en = "Crate",
+		["zh-cn"] = "箱",
+	},
 }

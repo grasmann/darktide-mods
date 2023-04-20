@@ -560,6 +560,13 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 					local max_ammo = max_ammo_reserve + max_ammo_clip
 					local current_ammo = current_ammo_reserve + ammo_clip
 					local max_take = max_ammo - current_ammo
+					if ammo == "small_clip" then
+						mod:update_stat("ammo_small_picked_up", account_id, 1)
+					elseif ammo == "large_clip" then
+						mod:update_stat("ammo_large_picked_up", account_id, 1)
+					elseif ammo == "crate" then
+						mod:update_stat("ammo_crate_picked_up", account_id, 1)
+					end
 					if ammo == "small_clip" or ammo == "large_clip" then
 						-- Calculate ammo
 						local pecentage = mod.ammunition_percentage[ammo] or 0
