@@ -84,7 +84,7 @@ return {
 					},
 					{["setting_id"] = "plugin_ammo",
 						["type"] = "dropdown",
-						["default_value"] = 1,
+						["default_value"] = 2,
 						["options"] = {
 							{["text"] = "plugin_ammo_on", ["value"] = 1, ["show_widgets"] = {}},
 							{["text"] = "plugin_ammo_simple", ["value"] = 2, ["show_widgets"] = {}},

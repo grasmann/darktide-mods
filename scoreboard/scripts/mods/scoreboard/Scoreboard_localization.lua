@@ -41,6 +41,7 @@ mod:add_global_localize_strings({
 		en = "Training Grounds",
 		de = "Training Grounds",
 		fr = "Terrain d'Entrainement",
+		ru = "Тренировочные площадки", -- ?
 		["zh-cn"] = "训练场",
 	},
 })
@@ -58,6 +59,7 @@ return {
 		en = "Scoreboard",
 		de = "Scoreboard",
 		fr = "Tableau des scores",
+		ru = "таблицу", -- ?
 		["zh-cn"] = "记分板",
 	},
 	mod_description = {
@@ -86,16 +88,22 @@ return {
 	dev_mode = {
 		en = "Developer Mode",
 		de = "Entwicklermodus",
+		fr = "Mode développeur", -- ?
+		ru = "Режим разработчика", -- ?
 		["zh-cn"] = "开发者模式",
 	},
 	scoreboard_panel_height = {
 		en = "Maximum Scoreboard Height",
-		de = "Maximal Scoreboardgröße",
-		-- ["zh-cn"] = "记分板面板大小",
+		de = "Maximale Scoreboardgröße",
+		fr = "Taille maximale du tableau de bord", -- ?
+		ru = "Максимальный размер таблицу", -- ?
+		["zh-cn"] = "最大记分牌大小", -- ?
 	},
 	tactical_overview = {
 		en = "Tactical Overview [TAB]",
 		de = "Taktische Übersicht [TAB]",
+		fr = "Vue d'ensemble tactique [TAB]", -- ?
+		ru = "Тактический обзор [TAB]", -- ?
 		["zh-cn"] = "战术覆盖 [TAB]",
 	},
 	open_scoreboard = {
@@ -371,18 +379,18 @@ return {
 		["zh-cn"] = "弹药",
 	},
 	plugin_ammo_on = {
-		en = "On",
-		de = "An",
-		fr = "Activé",
-		ru = "Взято+Лишние",
-		["zh-cn"] = "开",
+		en = "Bullet Amount",
+		de = "Patronenanzahl",
+		fr = "Montant de la puce", -- ?
+		ru = "Количество пули", -- ?
+		["zh-cn"] = "子弹数量", -- ?
 	},
 	plugin_ammo_simple = {
-		en = "Simple",
-		de = "Einfach",
-		fr = "Simple",
-		ru = "Простой",
-		["zh-cn"] = "简洁",
+		en = "Ammo Packs",
+		de = "Munitionspakete",
+		fr = "Packs de munitions", -- ?
+		ru = "Боеприпасы", -- ?
+		["zh-cn"] = "弹药包", -- ?
 	},
 	plugin_ammo_off = {
 		en = "Off",
@@ -952,18 +960,30 @@ return {
 	},
 	row_ammo_clip_crate_picked_up = {
 		en = "Ammo Small / Large / Crate Picked Up",
+		de = "Munition Klein / Groß / Cache Picked Up",
+		fr = "Munitions petites / grandes / caisses ramassées", -- ?
+		ru = "Боеприпасы маленькие / большие / ящики подобраны", -- ?
 		["zh-cn"] = "弹药 小 / 大 / 箱 拾取",
 	},
 	row_ammo_small_picked_up = {
 		en = "Small",
+		de = "Klein",
+		fr = "petites", -- ?
+		ru = "маленькие", -- ?
 		["zh-cn"] = "小",
 	},
 	row_ammo_large_picked_up = {
 		en = "Large",
+		de = "Groß",
+		fr = "grandes", -- ?
+		ru = "большие", -- ?
 		["zh-cn"] = "大",
 	},
 	row_ammo_crate_picked_up = {
 		en = "Crate",
+		de = "Cache",
+		fr = "caisses", -- ?
+		ru = "ящики", -- ?
 		["zh-cn"] = "箱",
 	},
 }
