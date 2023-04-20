@@ -88,6 +88,11 @@ return {
 		de = "Entwicklermodus",
 		["zh-cn"] = "开发者模式",
 	},
+	scoreboard_panel_height = {
+		en = "Maximum Scoreboard Height",
+		de = "Maximal Scoreboardgröße",
+		-- ["zh-cn"] = "记分板面板大小",
+	},
 	tactical_overview = {
 		en = "Tactical Overview [TAB]",
 		de = "Taktische Übersicht [TAB]",
@@ -926,27 +931,23 @@ return {
 	},
 	row_defense_score = {
 		en = "Defense Score",
-		de = "Verteidigung Punkte",
+		de = "Abwehr Punkte",
 		fr = "Score de défense",
 		ru = "Очки за оборону",
 		["zh-cn"] = "防御分数",
 	},
 	row_offense_score = {
 		en = "Offense Score",
-		de = "Verteidigung Punkte",
+		de = "Angriff Punkte",
 		fr = "Score d'attaque",
 		ru = "Очки за нападение",
 		["zh-cn"] = "进攻分数",
 	},
 	row_score = {
 		en = "Total Score",
-		de = "Gesamtpunktzahl",
+		de = "Gesamt Punkte",
 		fr = "Score total",
 		ru = "Общий счет",
 		["zh-cn"] = "总分数",
-	},
-	scoreboard_panel_height = {
-		en = "Scoreboard Panel Height",
-		["zh-cn"] = "记分板面板大小",
 	},
 }
