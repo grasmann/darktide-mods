@@ -879,7 +879,7 @@ mod.setup_row_widgets = function(self, loaded_rows, groups, row_widgets, widgets
     local visible_rows = 0
 
     local sorted_rows = self:get_rows_in_groups(loaded_rows)
-    mod:dtf(sorted_rows, "sorted_rows", 5)
+    -- mod:dtf(sorted_rows, "sorted_rows", 5)
     -- mod:echo(#self.sorted_rows)
     -- for group, rows in pairs(self.sorted_rows) do
     local index = 1
