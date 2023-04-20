@@ -184,7 +184,36 @@ mod:hook(CLASS.HudElementTacticalOverlay, "update", function(func, self, dt, t, 
         mod._wait_timer = 0
         local groups = mod:get_scoreboard_groups(mod.registered_scoreboard_rows)
         local players = Managers.player:players()
-        mod:setup_row_widgets(mod.registered_scoreboard_rows, {}, self.row_widgets, self._widgets_by_name, nil, false, false, self, "_create_widget", ui_renderer)
+        local row_widgets, total_height = mod:setup_row_widgets(mod.registered_scoreboard_rows, {}, self.row_widgets, self._widgets_by_name, nil, false, false, self, "_create_widget", ui_renderer)
+
+        local scoreboard_widget = self._widgets_by_name["scoreboard"]
+        mod:adjust_size(total_height, scoreboard_widget, self._ui_scenegraph, self.row_widgets)
+
+        -- local scoreboard_widget = self._widgets_by_name["scoreboard"]
+        -- if scoreboard_widget then
+        --     local height = total_height + 75
+        --     height = math.min(height, mod:get("scoreboard_panel_height"))
+        --     scoreboard_widget.style.style_id_1.size[2] = height - 3
+        --     scoreboard_widget.style.style_id_2.size[2] = height - 28
+        --     scoreboard_widget.style.style_id_3.size[2] = height - 3
+        --     scoreboard_widget.style.style_id_4.offset[2] = -height / 2
+        --     scoreboard_widget.style.style_id_5.offset[2] = height / 2 - 50
+
+        --     local scoreboard_graph = self._ui_scenegraph.scoreboard
+        --     scoreboard_graph.size[2] = height
+
+        --     for _, row_widget in pairs(self.row_widgets) do
+                
+        --         if row_widget.offset[2] > total_height - 100 then
+        --             local diff = math.abs((total_height - 100) - row_widget.offset[2]) / 2
+        --             -- row_widget.content.text = tostring(diff)
+        --             local offset_x = row_widget.style.style_id_1.offset[1]
+        --             row_widget.style.style_id_1.offset[1] = offset_x + diff
+        --         end
+
+        --     end
+        -- end
+
     end
 
     --mod.animate_rows = function(self, dt, widgets_by_name, widget_times)
