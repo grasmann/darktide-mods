@@ -97,7 +97,7 @@ return {
 		de = "Maximale Scoreboardgröße",
 		fr = "Taille maximale du tableau de bord", -- ?
 		ru = "Максимальный размер таблицу", -- ?
-		["zh-cn"] = "最大记分牌大小", -- ?
+		["zh-cn"] = "最大记分板高度",
 	},
 	tactical_overview = {
 		en = "Tactical Overview [TAB]",
@@ -383,14 +383,14 @@ return {
 		de = "Patronenanzahl",
 		fr = "Montant de la puce", -- ?
 		ru = "Количество пули", -- ?
-		["zh-cn"] = "子弹数量", -- ?
+		["zh-cn"] = "弹药数量",
 	},
 	plugin_ammo_simple = {
 		en = "Ammo Packs",
 		de = "Munitionspakete",
 		fr = "Packs de munitions", -- ?
 		ru = "Боеприпасы", -- ?
-		["zh-cn"] = "弹药包", -- ?
+		["zh-cn"] = "弹药补给",
 	},
 	plugin_ammo_off = {
 		en = "Off",
@@ -833,21 +833,21 @@ return {
 		de = "Medipack / Munition aufgestellt",
 		fr = "Caisses de soin / munitions déployés",
 		ru = "Размещено Аптечек/Боеприпасов",
-		["zh-cn"] = "部署医疗箱 / 弹药箱",
+		["zh-cn"] = "部署医疗包 / 弹药箱",
 	},
 	row_health_ammo_placed = {
 		en = "Medipacks / Ammocaches deployed",
 		de = "Medipack / Munition aufgestellt",
 		fr = "Caisses de soin / munitions déployés",
 		ru = "Размещено Аптечек/Боеприпасов",
-		["zh-cn"] = "部署医疗箱 / 弹药箱",
+		["zh-cn"] = "部署医疗包 / 弹药箱",
 	},
 	row_health_placed = {
 		en = "Medipacks",
 		de = "Medipack",
 		fr = "Caisses de soin",
 		ru = "Аптечек",
-		["zh-cn"] = "医疗箱",
+		["zh-cn"] = "医疗包",
 	},
 	row_ammo_placed = {
 		en = "Ammocaches",
@@ -862,7 +862,7 @@ return {
 		de = "Medipack platziert",
 		fr = "Caisse de soin déployée",
 		ru = "Аптечка размещена",
-		["zh-cn"] = "部署医疗箱",
+		["zh-cn"] = "部署医疗包",
 	},
 	message_health_placed_text = {
 		en = " deployed :subject:",
@@ -876,7 +876,7 @@ return {
 		de = "Zeigt eine Nachicht wenn ein Spieler ein Medipack platziert",
 		fr = "Affiche un message lorsqu'un joueur déploie une caisse de soin",
 		ru = "Показывает сообщение когда игрок размещает аптечку",
-		["zh-cn"] = "玩家部署医疗箱时显示消息",
+		["zh-cn"] = "玩家部署医疗包时显示消息",
 	},
 	-- Deploy ammocache
 	message_ammo_placed = {
@@ -899,7 +899,7 @@ return {
 		de = "Medipack / Munitionskiste",
 		fr = "Caisse de soin / munitions récupérées",
 		ru = "Аптечка / Боеприпасы взяты",
-		["zh-cn"] = "拾取医疗箱 / 弹药箱",
+		["zh-cn"] = "拾取医疗包 / 弹药箱",
 	},
 	message_ammo_health_pickup_text = {
 		en = " picked up :subject:",
@@ -913,7 +913,7 @@ return {
 		de = "Zeigt eine Nachricht wenn ein Spieler Medipack oder Munitionskiste einsammelt",
 		fr = "Affiche un message lorsqu'un joueur ramasse une caisse de soin ou une caisse de munitions",
 		ru = "Показывает сообщение когда игрок подбирает аптечку или боеприпасы",
-		["zh-cn"] = "玩家拾取医疗箱或弹药箱时显示消息",
+		["zh-cn"] = "玩家拾取医疗包或弹药箱时显示消息",
 	},
 	-- Pick up scripture / grimoire
 	scripture_grimoire_pickup = {
@@ -963,27 +963,27 @@ return {
 		de = "Munition Klein / Groß / Cache Picked Up",
 		fr = "Munitions petites / grandes / caisses ramassées", -- ?
 		ru = "Боеприпасы маленькие / большие / ящики подобраны", -- ?
-		["zh-cn"] = "弹药 小 / 大 / 箱 拾取",
+		["zh-cn"] = "拾取小弹药罐 / 大弹药包 / 弹药箱",
 	},
 	row_ammo_small_picked_up = {
 		en = "Small",
 		de = "Klein",
 		fr = "petites", -- ?
 		ru = "маленькие", -- ?
-		["zh-cn"] = "小",
+		["zh-cn"] = "小弹药罐",
 	},
 	row_ammo_large_picked_up = {
 		en = "Large",
 		de = "Groß",
 		fr = "grandes", -- ?
 		ru = "большие", -- ?
-		["zh-cn"] = "大",
+		["zh-cn"] = "大弹药包",
 	},
 	row_ammo_crate_picked_up = {
 		en = "Crate",
 		de = "Cache",
 		fr = "caisses", -- ?
 		ru = "ящики", -- ?
-		["zh-cn"] = "箱",
+		["zh-cn"] = "弹药箱",
 	},
 }
