@@ -484,28 +484,28 @@ return {
 		de = "Operator Wiederbelebt / Gerettet",
 		fr = "Opérateur Réanimés / Secourus",
 		ru = "Оперативников Возрождено/Спасено",
-		["zh-cn"] = "复活 / 救助特工",
+		["zh-cn"] = "复苏 / 营救特工",
 	},
 	row_revived_rescued = {
 		en = "Revived / Rescued Operatives",
 		de = "Operator Wiederbelebt / Gerettet",
 		fr = "Opérateurs Réanimés / Secourus",
 		ru = "Оперативников Возрождено/Спасено",
-		["zh-cn"] = "复活 / 救助特工",
+		["zh-cn"] = "复苏 / 营救特工",
 	},
 	row_revived_operative = {
 		en = "Revived",
 		de = "Wiederbelebt",
 		fr = "Réanimés",
 		ru = "Возрождено",
-		["zh-cn"] = "复活",
+		["zh-cn"] = "复苏",
 	},
 	row_rescued_operative = {
 		en = "Rescued",
 		de = "Gerettet",
 		fr = "Secourus",
 		ru = "Спасено",
-		["zh-cn"] = "救助",
+		["zh-cn"] = "营救",
 	},
 	-- Damage taken / Health station
 	plugin_damage_taken_heal_station_used = {
