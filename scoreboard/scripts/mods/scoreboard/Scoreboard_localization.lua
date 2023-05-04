@@ -239,7 +239,7 @@ return {
 		de = " hat :subject: aufgesammelt",
 		fr = " a rammassé :subject:",
 		ru = " подбирает :subject:",
-		["zh-cn"] = " 拾取了:subject:",
+		["zh-cn"] = "拾取了:subject:",
 	},
 	message_forge_material_description = {
 		en = "Shows message when a player picks up plasteel or diamantine",
@@ -318,7 +318,7 @@ return {
 		de = " hat :subject: betätigt",
 		fr = " a actionné :subject:",
 		ru = " управляет :subject:",
-		["zh-cn"] = " 操作了:subject:",
+		["zh-cn"] = "操作了:subject:",
 	},
 	message_default_machinery = {
 		en = "Machinery",
@@ -347,7 +347,7 @@ return {
 		de = " hat :subject: betätig",
 		fr = " a actionné :subject:",
 		ru = " управляет :subject:",
-		["zh-cn"] = " 操作了:subject:",
+		["zh-cn"] = "操作了:subject:",
 	},
 	message_decoded_skull = {
 		en = "Servoskull",
@@ -548,7 +548,7 @@ return {
 		de = " hat :subject: benutzt",
 		fr = " a utilisé :subject:",
 		ru = " использует :subject:",
-		["zh-cn"] = " 使用了:subject:",
+		["zh-cn"] = "使用了:subject:",
 	},
 	message_health_station_health_station = {
 		en = "Health Station",
@@ -804,14 +804,14 @@ return {
 		de = " hat :count: :subject: aufgesammelt :count2: verschwendet",
 		fr = " a rammassé :count: :subject: et gaspillé :count2:",
 		ru = " подбирает :count: :subject: теряет :count2:",
-		["zh-cn"] = " 拾取了 :count: :subject: 浪费 :count2:",
+		["zh-cn"] = "拾取了 :count: :subject: 浪费 :count2:",
 	},
 	message_ammo_crate_text = {
 		en = " picked up :count: :subject:",
 		de = " hat :count: :subject: aufgesammelt",
 		fr = " a rammassé :count: :subject:",
 		ru = " подбирает :count: :subject:",
-		["zh-cn"] = " 拾取了 :count: :subject:",
+		["zh-cn"] = "拾取了 :count: :subject:",
 	},
 	message_ammo_ammo = {
 		en = "Ammo",
@@ -869,7 +869,7 @@ return {
 		de = " hat :subject: platziert",
 		fr = " a déployé :subject:",
 		ru = " развёртывает :subject:",
-		["zh-cn"] = " 部署了:subject:",
+		["zh-cn"] = "部署了:subject:",
 	},
 	message_health_placed_description = {
 		en = "Shows message when a player deployes medipack",
@@ -906,7 +906,7 @@ return {
 		de = " hat :subject: genommen",
 		fr = " a rammassé :subject:",
 		ru = " подбирает :subject:",
-		["zh-cn"] = " 拾取了:subject:",
+		["zh-cn"] = "拾取了:subject:",
 	},
 	message_ammo_health_pickup_description = {
 		en = "Shows message when a player picks up medipack or ammocache",
