@@ -104,10 +104,10 @@ mod.get_scoreboard_history_entries = function(self, scan_dir)
 	for _, file in pairs(files) do
 		local file_path = appdata..file
 		if file_exists(file_path) then
-			local entry = self:load_scoreboard_history_entry(file_path, file, true)
+			local date_str = string.sub(file, 1, string.len(file) - 4)
+			local entry = self:load_scoreboard_history_entry(file_path, date_str, true)
 			entry.file = file
 			entry.file_path = file_path
-			local date_str = string.sub(file, 1, string.len(file) - 4)
 			entry.date = _os.date("%Y-%m-%d %H:%M:%S", tonumber(date_str))
 			entries[#entries+1] = entry
 		else
@@ -300,7 +300,7 @@ end
 mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 	local entry = {
 		name = date,
-		date = _os.date(_, tonumber(date))
+		date = _os.date(nil, tonumber(date))
 	}
 
 	-- split("a,b,c", ",") => {"a", "b", "c"}

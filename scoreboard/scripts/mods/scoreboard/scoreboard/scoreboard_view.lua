@@ -85,17 +85,20 @@ ScoreboardView.on_enter = function(self)
     -- self._default_category = nil
     -- self._using_cursor_navigation = Managers.ui:using_cursor_navigation()
     self.scoreboard_widget = self._widgets_by_name["scoreboard"]
+    -- self.scoreboard_rows_widget = self._widgets_by_name["scoreboard_rows"]
     self.scoreboard_widget.alpha_multiplier = 0
     if self.is_history then
         self.scoreboard_widget.offset = {300, 0, base_z}
     elseif not self.end_view then
         self.scoreboard_widget.offset = {0, 0, base_z}
+        -- self.scoreboard_rows_widget.offset[2] = -300
     else
         self.scoreboard_widget.offset = {0, -100, base_z}
     end
     mod._widget_times["scoreboard"] = 0
 
     -- self:_setup_category_config()
+    self.row_widgets = {}
     self:setup_row_widgets()
     if not self.is_history then
         self:_setup_input_legend()
@@ -938,10 +941,11 @@ mod.adjust_size = function(self, total_height, scoreboard_widget, scenegraph, ro
 
     local scoreboard_graph = scenegraph.scoreboard
     scoreboard_graph.size[2] = height
+    local break_point = height - 175 + scoreboard_widget.offset[2]
 
     for _, row_widget in pairs(row_widgets) do
-        if row_widget.offset[2] > total_height - 100 then
-            local diff = math.abs((total_height - 100) - row_widget.offset[2]) / 2
+        if row_widget.offset[2] > break_point then
+            local diff = math.abs((break_point) - row_widget.offset[2]) / 2
             local offset_x = row_widget.style.style_id_1.offset[1]
             row_widget.style.style_id_1.offset[1] = offset_x + diff
         end
@@ -951,71 +955,8 @@ end
 ScoreboardView.setup_row_widgets = function(self)
     self:delete_row_widgets()
     local total_height = 0
-    self.row_widgets = {}
     self.sorted_rows, total_height = mod:setup_row_widgets(self.loaded_rows, self.groups, self.row_widgets, self._widgets_by_name, self.loaded_players, self.is_history, self.end_view, self, "_create_widget", self._ui_renderer)
-
     mod:adjust_size(total_height, self.scoreboard_widget, self._ui_scenegraph, self.row_widgets)
-
-    -- mod:echo("totel height = '"..tostring(total_height).."'")
-
-    -- if self.scoreboard_widget then
-    --     local height = total_height + 75
-    --     height = math.min(height, mod:get("scoreboard_panel_height"))
-    --     self.scoreboard_widget.style.style_id_1.size[2] = height - 3
-    --     self.scoreboard_widget.style.style_id_2.size[2] = height - 28
-    --     self.scoreboard_widget.style.style_id_3.size[2] = height - 3
-    --     self.scoreboard_widget.style.style_id_4.offset[2] = -height / 2
-    --     self.scoreboard_widget.style.style_id_5.offset[2] = height / 2 - 50
-
-    --     -- mod:dtf(self, "ScoreboardView", 5)
-
-    --     local scoreboard_graph = self._ui_scenegraph.scoreboard
-    --     scoreboard_graph.size[2] = height
-
-    --     -- local scoreboard_rows_graph = self._ui_scenegraph.scoreboard_rows
-    --     -- scoreboard_rows_graph.size[2] = height - 100
-    --     -- scoreboard_rows_graph.position[2] = -height / 2
-
-    --     -- mod:dtf(self.row_widgets, "self.row_widgets", 6)
-
-    --     for _, row_widget in pairs(self.row_widgets) do
-            
-    --         if row_widget.offset[2] > total_height - 100 then
-    --             local diff = math.abs((total_height - 100) - row_widget.offset[2]) / 2
-    --             -- row_widget.content.text = tostring(diff)
-    --             local offset_x = row_widget.style.style_id_1.offset[1]
-    --             row_widget.style.style_id_1.offset[1] = offset_x + diff
-    --         end
-
-    --     end
-
-    --     -- local scoreboard_graph = self._definitions.scenegraph_definition.scoreboard
-    --     -- scoreboard_graph.size[2] = height
-    --     -- local scoreboard_rows_graph = self._definitions.scenegraph_definition.scoreboard_rows
-    --     -- scoreboard_rows_graph.size[2] = height - 100
-    --     -- scoreboard_rows_graph.offset[2] = -height / 2
-    --     -- local scoreboard_rows = self._widgets_by_name["scoreboard_rows"]
-    --     -- if scoreboard_rows then
-    --     --     mod:dtf(scoreboard_rows, "scoreboard_rows", 5)
-    --     -- end
-    --     -- scoreboard_rows_graph.size[2] = height - 100
-    -- end
-
-    -- local scoreboard = self._definitions.widget_definitions.scoreboard
-    -- local height = total_height
-    -- scoreboard.style.style_id_1.size[2] = height - 3
-    -- scoreboard.style.style_id_2.size[2] = height - 28
-    -- scoreboard.style.style_id_3.size[2] = height - 3
-    -- scoreboard.style.style_id_4.offset[2] = -height / 2
-    -- scoreboard.style.style_id_5.offset[2] = height / 2 - 50
-    -- local scoreboard_graph = self._definitions.scenegraph_definition.scoreboard
-    -- scoreboard_graph.size[2] = height
-    -- -- local scoreboard_graph = self._definitions.scenegraph_definition.scrollbar
-    -- -- scoreboard_graph.size[2] = height
-    -- local scoreboard_rows_graph = self._definitions.scenegraph_definition.scoreboard_rows
-    -- scoreboard_rows_graph.size[2] = height - 100
-
-    -- self.scoreboard_widget = self._widgets_by_name["scoreboard"]
 end
 
 -- ##### ███████╗██╗  ██╗██╗████████╗ #################################################################################
