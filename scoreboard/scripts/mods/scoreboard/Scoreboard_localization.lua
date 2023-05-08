@@ -97,7 +97,7 @@ return {
 		de = "Maximale Scoreboardgröße",
 		fr = "Taille maximale du tableau de bord", -- ?
 		ru = "Максимальный размер таблицу", -- ?
-		["zh-cn"] = "最大记分牌大小", -- ?
+		["zh-cn"] = "最大记分板高度",
 	},
 	tactical_overview = {
 		en = "Tactical Overview [TAB]",
@@ -239,7 +239,7 @@ return {
 		de = " hat :subject: aufgesammelt",
 		fr = " a rammassé :subject:",
 		ru = " подбирает :subject:",
-		["zh-cn"] = " 拾取了:subject:",
+		["zh-cn"] = "拾取了:subject:",
 	},
 	message_forge_material_description = {
 		en = "Shows message when a player picks up plasteel or diamantine",
@@ -318,7 +318,7 @@ return {
 		de = " hat :subject: betätigt",
 		fr = " a actionné :subject:",
 		ru = " управляет :subject:",
-		["zh-cn"] = " 操作了:subject:",
+		["zh-cn"] = "操作了:subject:",
 	},
 	message_default_machinery = {
 		en = "Machinery",
@@ -347,7 +347,7 @@ return {
 		de = " hat :subject: betätig",
 		fr = " a actionné :subject:",
 		ru = " управляет :subject:",
-		["zh-cn"] = " 操作了:subject:",
+		["zh-cn"] = "操作了:subject:",
 	},
 	message_decoded_skull = {
 		en = "Servoskull",
@@ -383,14 +383,14 @@ return {
 		de = "Patronenanzahl",
 		fr = "Montant de la puce", -- ?
 		ru = "Количество пули", -- ?
-		["zh-cn"] = "子弹数量", -- ?
+		["zh-cn"] = "弹药数量",
 	},
 	plugin_ammo_simple = {
 		en = "Ammo Packs",
 		de = "Munitionspakete",
 		fr = "Packs de munitions", -- ?
 		ru = "Боеприпасы", -- ?
-		["zh-cn"] = "弹药包", -- ?
+		["zh-cn"] = "弹药补给",
 	},
 	plugin_ammo_off = {
 		en = "Off",
@@ -484,28 +484,28 @@ return {
 		de = "Operator Wiederbelebt / Gerettet",
 		fr = "Opérateur Réanimés / Secourus",
 		ru = "Оперативников Возрождено/Спасено",
-		["zh-cn"] = "复活 / 救助特工",
+		["zh-cn"] = "复苏 / 营救特工",
 	},
 	row_revived_rescued = {
 		en = "Revived / Rescued Operatives",
 		de = "Operator Wiederbelebt / Gerettet",
 		fr = "Opérateurs Réanimés / Secourus",
 		ru = "Оперативников Возрождено/Спасено",
-		["zh-cn"] = "复活 / 救助特工",
+		["zh-cn"] = "复苏 / 营救特工",
 	},
 	row_revived_operative = {
 		en = "Revived",
 		de = "Wiederbelebt",
 		fr = "Réanimés",
 		ru = "Возрождено",
-		["zh-cn"] = "复活",
+		["zh-cn"] = "复苏",
 	},
 	row_rescued_operative = {
 		en = "Rescued",
 		de = "Gerettet",
 		fr = "Secourus",
 		ru = "Спасено",
-		["zh-cn"] = "救助",
+		["zh-cn"] = "营救",
 	},
 	-- Damage taken / Health station
 	plugin_damage_taken_heal_station_used = {
@@ -548,7 +548,7 @@ return {
 		de = " hat :subject: benutzt",
 		fr = " a utilisé :subject:",
 		ru = " использует :subject:",
-		["zh-cn"] = " 使用了:subject:",
+		["zh-cn"] = "使用了:subject:",
 	},
 	message_health_station_health_station = {
 		en = "Health Station",
@@ -804,14 +804,14 @@ return {
 		de = " hat :count: :subject: aufgesammelt :count2: verschwendet",
 		fr = " a rammassé :count: :subject: et gaspillé :count2:",
 		ru = " подбирает :count: :subject: теряет :count2:",
-		["zh-cn"] = " 拾取了 :count: :subject: 浪费 :count2:",
+		["zh-cn"] = "拾取了 :count: :subject: 浪费 :count2:",
 	},
 	message_ammo_crate_text = {
 		en = " picked up :count: :subject:",
 		de = " hat :count: :subject: aufgesammelt",
 		fr = " a rammassé :count: :subject:",
 		ru = " подбирает :count: :subject:",
-		["zh-cn"] = " 拾取了 :count: :subject:",
+		["zh-cn"] = "拾取了 :count: :subject:",
 	},
 	message_ammo_ammo = {
 		en = "Ammo",
@@ -833,21 +833,21 @@ return {
 		de = "Medipack / Munition aufgestellt",
 		fr = "Caisses de soin / munitions déployés",
 		ru = "Размещено Аптечек/Боеприпасов",
-		["zh-cn"] = "部署医疗箱 / 弹药箱",
+		["zh-cn"] = "部署医疗包 / 弹药箱",
 	},
 	row_health_ammo_placed = {
 		en = "Medipacks / Ammocaches deployed",
 		de = "Medipack / Munition aufgestellt",
 		fr = "Caisses de soin / munitions déployés",
 		ru = "Размещено Аптечек/Боеприпасов",
-		["zh-cn"] = "部署医疗箱 / 弹药箱",
+		["zh-cn"] = "部署医疗包 / 弹药箱",
 	},
 	row_health_placed = {
 		en = "Medipacks",
 		de = "Medipack",
 		fr = "Caisses de soin",
 		ru = "Аптечек",
-		["zh-cn"] = "医疗箱",
+		["zh-cn"] = "医疗包",
 	},
 	row_ammo_placed = {
 		en = "Ammocaches",
@@ -862,21 +862,21 @@ return {
 		de = "Medipack platziert",
 		fr = "Caisse de soin déployée",
 		ru = "Аптечка размещена",
-		["zh-cn"] = "部署医疗箱",
+		["zh-cn"] = "部署医疗包",
 	},
 	message_health_placed_text = {
 		en = " deployed :subject:",
 		de = " hat :subject: platziert",
 		fr = " a déployé :subject:",
 		ru = " развёртывает :subject:",
-		["zh-cn"] = " 部署了:subject:",
+		["zh-cn"] = "部署了:subject:",
 	},
 	message_health_placed_description = {
 		en = "Shows message when a player deployes medipack",
 		de = "Zeigt eine Nachicht wenn ein Spieler ein Medipack platziert",
 		fr = "Affiche un message lorsqu'un joueur déploie une caisse de soin",
 		ru = "Показывает сообщение когда игрок размещает аптечку",
-		["zh-cn"] = "玩家部署医疗箱时显示消息",
+		["zh-cn"] = "玩家部署医疗包时显示消息",
 	},
 	-- Deploy ammocache
 	message_ammo_placed = {
@@ -899,21 +899,21 @@ return {
 		de = "Medipack / Munitionskiste",
 		fr = "Caisse de soin / munitions récupérées",
 		ru = "Аптечка / Боеприпасы взяты",
-		["zh-cn"] = "拾取医疗箱 / 弹药箱",
+		["zh-cn"] = "拾取医疗包 / 弹药箱",
 	},
 	message_ammo_health_pickup_text = {
 		en = " picked up :subject:",
 		de = " hat :subject: genommen",
 		fr = " a rammassé :subject:",
 		ru = " подбирает :subject:",
-		["zh-cn"] = " 拾取了:subject:",
+		["zh-cn"] = "拾取了:subject:",
 	},
 	message_ammo_health_pickup_description = {
 		en = "Shows message when a player picks up medipack or ammocache",
 		de = "Zeigt eine Nachricht wenn ein Spieler Medipack oder Munitionskiste einsammelt",
 		fr = "Affiche un message lorsqu'un joueur ramasse une caisse de soin ou une caisse de munitions",
 		ru = "Показывает сообщение когда игрок подбирает аптечку или боеприпасы",
-		["zh-cn"] = "玩家拾取医疗箱或弹药箱时显示消息",
+		["zh-cn"] = "玩家拾取医疗包或弹药箱时显示消息",
 	},
 	-- Pick up scripture / grimoire
 	scripture_grimoire_pickup = {
@@ -963,27 +963,27 @@ return {
 		de = "Munition Klein / Groß / Cache Picked Up",
 		fr = "Munitions petites / grandes / caisses ramassées", -- ?
 		ru = "Боеприпасы маленькие / большие / ящики подобраны", -- ?
-		["zh-cn"] = "弹药 小 / 大 / 箱 拾取",
+		["zh-cn"] = "拾取小弹药罐 / 大弹药包 / 弹药箱",
 	},
 	row_ammo_small_picked_up = {
 		en = "Small",
 		de = "Klein",
 		fr = "petites", -- ?
 		ru = "маленькие", -- ?
-		["zh-cn"] = "小",
+		["zh-cn"] = "小弹药罐",
 	},
 	row_ammo_large_picked_up = {
 		en = "Large",
 		de = "Groß",
 		fr = "grandes", -- ?
 		ru = "большие", -- ?
-		["zh-cn"] = "大",
+		["zh-cn"] = "大弹药包",
 	},
 	row_ammo_crate_picked_up = {
 		en = "Crate",
 		de = "Cache",
 		fr = "caisses", -- ?
 		ru = "ящики", -- ?
-		["zh-cn"] = "箱",
+		["zh-cn"] = "弹药箱",
 	},
 }
