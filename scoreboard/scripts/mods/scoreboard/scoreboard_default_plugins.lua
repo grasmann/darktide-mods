@@ -11,6 +11,7 @@ local InteractionSettings = mod:original_require("scripts/settings/interaction/i
 local interaction_results = InteractionSettings.results
 local DamageProfileTemplates = mod:original_require("scripts/settings/damage/damage_profile_templates")
 local TextUtilities = mod:original_require("scripts/utilities/ui/text")
+local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
 local Breed = mod:original_require("scripts/utilities/breed")
 local WalletSettings = mod:original_require("scripts/settings/wallet_settings")
 
@@ -438,6 +439,62 @@ mod.ammunition_percentage = {
 mod.current_ammo = {}
 mod.interaction_units = {}
 
+mod._get_player_presentation_name = function (self, unit)
+	local player_default_color = Color.ui_hud_green_light(255, true)
+	local player_unit_spawn_manager = Managers.state.player_unit_spawn
+	local player = unit and player_unit_spawn_manager:owner(unit)
+
+	if player then
+		local player_name = player:name()
+		local player_slot = player:slot()
+		local player_slot_color = UISettings.player_slot_colors[player_slot] or player_default_color
+
+		return TextUtilities.apply_color_to_text(player_name, player_slot_color)
+	end
+end
+
+mod:hook(CLASS.PlayerInteracteeExtension, "stopped", function(func, self, result, ...)
+	if result == interaction_results.success then
+		local unit = self._interactor_unit
+		if unit then
+			local player = mod:player_from_unit(unit)
+			if player then
+				local account_id = player:account_id() or player:name()
+				if type == "pull_up" or type == "rescue" or type == "remove_net" then
+					-- Message
+					if mod:get("message_revived_rescued") then
+						local color = Color.orange(255, true)
+						-- local text = Localize(self._override_contexts.forge_material.description)
+						local message = mod:localize("message_rescued_text")
+
+						local color_name = mod:_get_player_presentation_name(self._unit)
+						message = string.gsub(message, ":subject:", color_name)
+						
+						Managers.event:trigger("event_combat_feed_kill", unit, message)
+					end
+					-- Update scoreboard
+					mod:update_stat("rescued_operative", account_id, 1)
+				elseif type == "revive" then
+					-- Message
+					if mod:get("message_revived_rescued") then
+						local color = Color.orange(255, true)
+						-- local text = Localize(self._override_contexts.forge_material.description)
+						local message = mod:localize("message_revived_text")
+
+						local color_name = mod:_get_player_presentation_name(self._unit)
+						message = string.gsub(message, ":subject:", color_name)
+						
+						Managers.event:trigger("event_combat_feed_kill", unit, message)
+					end
+					-- Update scoreboard
+					mod:update_stat("revived_operative", account_id, 1)
+				end
+			end
+		end
+	end
+	func(self, result, ...)
+end)
+
 mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 	-- Check if interactiong successful
 	if result == interaction_results.success then
@@ -649,6 +706,7 @@ end)
 mod.bosses = {
 	"chaos_beast_of_nurgle",
 	"chaos_daemonhost",
+	"chaos_spawn",
 	"chaos_plague_ogryn",
 	"chaos_plague_ogryn_sprayer",
 	"renegade_captain",
@@ -843,6 +901,10 @@ mod:hook(CLASS.HudElementCombatFeed, "event_combat_feed_kill", function(func, se
 		local color_name = self:_get_unit_presentation_name(attacking_unit) or "NONE"
 		self:_add_combat_feed_message(color_name..message)
 		return
+	end
+	local player = mod:player_from_unit(attacked_unit)
+	if player then
+
 	end
 	return func(self, attacking_unit, attacked_unit, ...)
 end)

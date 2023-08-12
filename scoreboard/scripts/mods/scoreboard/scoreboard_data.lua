@@ -181,6 +181,10 @@ return {
 						["type"] = "checkbox",
 						["default_value"] = true
 					},
+					{["setting_id"] = "message_revived_rescued",
+						["type"] = "checkbox",
+						["default_value"] = true
+					},
 					{["setting_id"] = "message_decoded",
 						["type"] = "checkbox",
 						["default_value"] = true
