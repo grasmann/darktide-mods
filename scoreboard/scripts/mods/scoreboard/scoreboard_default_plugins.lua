@@ -907,10 +907,6 @@ mod:hook(CLASS.HudElementCombatFeed, "event_combat_feed_kill", function(func, se
 		self:_add_combat_feed_message(color_name..message)
 		return
 	end
-	local player = mod:player_from_unit(attacked_unit)
-	if player then
-
-	end
 	return func(self, attacking_unit, attacked_unit, ...)
 end)
 

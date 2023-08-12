@@ -84,6 +84,7 @@ ScoreboardView.on_enter = function(self)
 
     -- self._default_category = nil
     -- self._using_cursor_navigation = Managers.ui:using_cursor_navigation()
+    -- self._is_visible = not _is_in_hub() and not _is_in_prologue_hub()
     self.scoreboard_widget = self._widgets_by_name["scoreboard"]
     -- self.scoreboard_rows_widget = self._widgets_by_name["scoreboard_rows"]
     self.scoreboard_widget.alpha_multiplier = 0

@@ -24,8 +24,6 @@ mod:hook_require("scripts/ui/hud/hud_elements_player_onboarding", function(insta
             filename = "scripts/ui/hud/elements/tactical_overlay/hud_element_tactical_overlay",
             visibility_groups = {
                 "tactical_overlay",
-                "alive",
-                "communication_wheel"
             }
         }
     end
@@ -153,11 +151,26 @@ mod:hook(CLASS.HudElementTacticalOverlay, "_draw_widgets", function(func, self, 
     -- UIRenderer.end_pass(ui_renderer)
 end)
 
+local function _is_in_hub()
+	local game_mode_name = Managers.state.game_mode:game_mode_name()
+	local is_in_hub = game_mode_name == "hub"
+
+	return is_in_hub
+end
+
+local function _is_in_prologue_hub()
+	local game_mode_name = Managers.state.game_mode:game_mode_name()
+	local is_in_hub = game_mode_name == "prologue_hub"
+
+	return is_in_hub
+end
+
 --HudElementTacticalOverlay.update = function (self, dt, t, ui_renderer, render_settings, input_service)
 mod:hook(CLASS.HudElementTacticalOverlay, "update", function(func, self, dt, t, ui_renderer, render_settings, input_service, ...)
     func(self, dt, t, ui_renderer, render_settings, input_service, ...)
 
     self.row_widgets = self.row_widgets or {}
+    local scoreboard_widget = self._widgets_by_name["scoreboard"]
 
     local delete = false
     if self._active and not mod.hud_active then
@@ -185,8 +198,7 @@ mod:hook(CLASS.HudElementTacticalOverlay, "update", function(func, self, dt, t, 
         local groups = mod:get_scoreboard_groups(mod.registered_scoreboard_rows)
         local players = Managers.player:players()
         local row_widgets, total_height = mod:setup_row_widgets(mod.registered_scoreboard_rows, {}, self.row_widgets, self._widgets_by_name, nil, false, false, self, "_create_widget", ui_renderer)
-
-        local scoreboard_widget = self._widgets_by_name["scoreboard"]
+        
         mod:adjust_size(total_height, scoreboard_widget, self._ui_scenegraph, self.row_widgets)
 
         -- local scoreboard_widget = self._widgets_by_name["scoreboard"]
@@ -214,6 +226,14 @@ mod:hook(CLASS.HudElementTacticalOverlay, "update", function(func, self, dt, t, 
         --     end
         -- end
 
+    end
+
+    local in_hub = _is_in_hub()
+    local in_prologue_hub = _is_in_prologue_hub()
+    scoreboard_widget.visible = not in_hub and not in_prologue_hub
+    for i = 1, #self.row_widgets do
+        local widget = self.row_widgets[i]
+        widget.visible = not in_hub and not in_prologue_hub
     end
 
     --mod.animate_rows = function(self, dt, widgets_by_name, widget_times)
