@@ -44,22 +44,24 @@ mod.set_flashlight = function(self, state)
 	self:init_context()
 	if mod.initialized then
 		local item = self.visual_loadout_extension:item_from_slot(self.inventory_component.wielded_slot)
-		local flashlight_on = mod:get(item.__gear_id)
-		if flashlight_on then
-			if state then
-				Light.set_correlated_color_temperature(self.flashlight, 7000)
-				Light.set_intensity(self.flashlight, 40)
-				Light.set_volumetric_intensity(self.flashlight, 0.3)
-				Light.set_casts_shadows(self.flashlight, true)
-				Light.set_falloff_end(self.flashlight, 45)
-				self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
-			else
-				Light.set_correlated_color_temperature(self.flashlight, 8000)
-				Light.set_intensity(self.flashlight, 1)
-				Light.set_volumetric_intensity(self.flashlight, 0.1)
-				Light.set_casts_shadows(self.flashlight, false)
-				Light.set_falloff_end(self.flashlight, 10)
-				self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
+		if item then
+			local flashlight_on = mod:get(item.__gear_id)
+			if flashlight_on then
+				if state then
+					Light.set_correlated_color_temperature(self.flashlight, 7000)
+					Light.set_intensity(self.flashlight, 40)
+					Light.set_volumetric_intensity(self.flashlight, 0.3)
+					Light.set_casts_shadows(self.flashlight, true)
+					Light.set_falloff_end(self.flashlight, 45)
+					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
+				else
+					Light.set_correlated_color_temperature(self.flashlight, 8000)
+					Light.set_intensity(self.flashlight, 1)
+					Light.set_volumetric_intensity(self.flashlight, 0.1)
+					Light.set_casts_shadows(self.flashlight, false)
+					Light.set_falloff_end(self.flashlight, 10)
+					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
+				end
 			end
 		end
 	end
@@ -78,9 +80,11 @@ mod:hook(CLASS.InputService, "get", function(func, self, action_name, ...)
 		mod:init_context()
 		if mod.initialized then
 			local item = mod.visual_loadout_extension:item_from_slot(mod.inventory_component.wielded_slot)
-			local flashlight_on = mod:get(item.__gear_id)
-			if action_name == "weapon_extra_pressed" and flashlight_on then
-				return self:get_default(action_name)
+			if item then
+				local flashlight_on = mod:get(item.__gear_id)
+				if action_name == "weapon_extra_pressed" and flashlight_on then
+					return self:get_default(action_name)
+				end
 			end
 		end
 	end
@@ -130,11 +134,13 @@ end)
 InventoryWeaponsView.cb_on_switch_torch_pressed = function(self, widget)
 	local id = self._previewed_item.__gear_id
 	local item = self._previewed_item
-	local state = mod:get(id)
-	mod:set(id, not state)
-	self:_play_sound(UISoundEvents.apparel_equip_frame)
-	self:_stop_previewing()
-	self:_preview_item(item)
+	if item then
+		local state = mod:get(id)
+		mod:set(id, not state)
+		self:_play_sound(UISoundEvents.apparel_equip_frame)
+		self:_stop_previewing()
+		self:_preview_item(item)
+	end
 end
 
 mod:hook_require("scripts/ui/views/inventory_weapons_view/inventory_weapons_view_definitions", function(instance)
@@ -153,15 +159,16 @@ mod:hook_require("scripts/ui/views/inventory_weapons_view/inventory_weapons_view
 			visibility_function = function (parent)
 				local is_previewing_item = parent:is_previewing_item()
 				if is_previewing_item then
-					local is_previewing_item = parent:is_previewing_item()
 					local previewed_item = parent:previewed_item()
-					local item_type = previewed_item.item_type
-					local ITEM_TYPES = UISettings.ITEM_TYPES
-					if item_type == ITEM_TYPES.WEAPON_RANGED then
-						local weapon_template = mod:weapon_template_from_item(previewed_item)
-						if weapon_template.displayed_attacks and weapon_template.displayed_attacks.special then
-							if table.contains(mod.special_types, weapon_template.displayed_attacks.special.type) then
-								return true
+					if previewed_item then
+						local item_type = previewed_item.item_type
+						local ITEM_TYPES = UISettings.ITEM_TYPES
+						if item_type == ITEM_TYPES.WEAPON_RANGED then
+							local weapon_template = mod:weapon_template_from_item(previewed_item)
+							if weapon_template.displayed_attacks and weapon_template.displayed_attacks.special then
+								if table.contains(mod.special_types, weapon_template.displayed_attacks.special.type) then
+									return true
+								end
 							end
 						end
 					end
