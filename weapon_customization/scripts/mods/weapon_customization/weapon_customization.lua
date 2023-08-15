@@ -10,20 +10,31 @@ function mod.on_game_state_changed(status, state_name)
 end
 
 mod.init_context = function(self)
+	if not self.visual_loadout_extension then
+		self.initialized = false
+	end
 	if not self.initialized then
 		self.player_manager = Managers.player
 		local player = self.player_manager:local_player(1)
 		if player then
 			self.player_unit = player.player_unit
-			self.fx_extension = ScriptUnit.extension(self.player_unit, "fx_system")
-			local unit_data = ScriptUnit.extension(self.player_unit, "unit_data_system")
-			if unit_data then
-				self.inventory_component = unit_data:read_component("inventory")
-				self.visual_loadout_extension = ScriptUnit.extension(self.player_unit, "visual_loadout_system")
-				self.first_person_extension = ScriptUnit.extension(self.player_unit, "first_person_system")
-				self.first_person_unit = self.first_person_extension:first_person_unit()
-				self.flashlight = Unit.light(self.first_person_unit, 1)
-				self.initialized = true
+			if self.player_unit then
+				self.fx_extension = ScriptUnit.extension(self.player_unit, "fx_system")
+				local unit_data = ScriptUnit.extension(self.player_unit, "unit_data_system")
+				if unit_data then
+					self.inventory_component = unit_data:read_component("inventory")
+					self.visual_loadout_extension = ScriptUnit.extension(self.player_unit, "visual_loadout_system")
+					if self.visual_loadout_extension then
+						self.first_person_extension = ScriptUnit.extension(self.player_unit, "first_person_system")
+						if self.first_person_extension then
+							self.first_person_unit = self.first_person_extension:first_person_unit()
+							if self.first_person_unit then
+								self.flashlight = Unit.light(self.first_person_unit, 1)
+								self.initialized = true
+							end
+						end
+					end
+				end
 			end
 		end
 	end
@@ -31,26 +42,36 @@ end
 
 mod.set_flashlight = function(self, state)
 	self:init_context()
-	local item = self.visual_loadout_extension:item_from_slot(self.inventory_component.wielded_slot)
-	local flashlight_on = mod:get(item.__gear_id)
-	if flashlight_on then
-		if state then
-			Light.set_correlated_color_temperature(self.flashlight, 7000)
-			Light.set_intensity(self.flashlight, 40)
-			Light.set_volumetric_intensity(self.flashlight, 0.3)
-			Light.set_casts_shadows(self.flashlight, true)
-			Light.set_falloff_end(self.flashlight, 45)
-			self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
-		else
-			Light.set_correlated_color_temperature(self.flashlight, 8000)
-			Light.set_intensity(self.flashlight, 1)
-			Light.set_volumetric_intensity(self.flashlight, 0.1)
-			Light.set_casts_shadows(self.flashlight, false)
-			Light.set_falloff_end(self.flashlight, 10)
-			self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
+	if mod.initialized then
+		local item = self.visual_loadout_extension:item_from_slot(self.inventory_component.wielded_slot)
+		local flashlight_on = mod:get(item.__gear_id)
+		if flashlight_on then
+			if state then
+				Light.set_correlated_color_temperature(self.flashlight, 7000)
+				Light.set_intensity(self.flashlight, 40)
+				Light.set_volumetric_intensity(self.flashlight, 0.3)
+				Light.set_casts_shadows(self.flashlight, true)
+				Light.set_falloff_end(self.flashlight, 45)
+				self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
+			else
+				Light.set_correlated_color_temperature(self.flashlight, 8000)
+				Light.set_intensity(self.flashlight, 1)
+				Light.set_volumetric_intensity(self.flashlight, 0.1)
+				Light.set_casts_shadows(self.flashlight, false)
+				Light.set_falloff_end(self.flashlight, 10)
+				self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
+			end
 		end
 	end
 end
+
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
+	mod.visual_loadout_extension = nil
+	mod.initialized = false
+	return func(self, ...)
+end)
+
+--PlayerUnitVisualLoadoutExtension.extensions_ready = function (self, world, unit)
 
 mod:hook(CLASS.InputService, "get", function(func, self, action_name, ...)
 	if Managers and Managers.player._game_state ~= nil then
