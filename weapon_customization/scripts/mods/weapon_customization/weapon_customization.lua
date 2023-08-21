@@ -8,120 +8,25 @@ function mod.on_game_state_changed(status, state_name)
 	mod.initialized = false
 end
 
-mod:hook(CLASS.UnitSpawnerManager, "spawn_unit", function(func, self, unit_name, ...)
-	-- mod:echo(unit_name)
-	return func(self, unit_name, ...)
-end)
+-- mod:hook(CLASS.UnitSpawnerManager, "spawn_unit", function(func, self, unit_name, ...)
+-- 	-- mod:echo(unit_name)
+-- 	return func(self, unit_name, ...)
+-- end)
 
-mod:hook(CLASS.PackageManager, "load", function(func, self, package_name, reference_name, callback, prioritize, ...)
-	-- if string.find(package_name, "attachments") then
-	-- 	mod:echo("package:"..package_name)
-	-- end
-	return func(self, package_name, reference_name, callback, prioritize, ...)
-end)
-
--- local test = {"barrel", "main", "j_barrel", "barrel_01", "barrel_02", "barrel_03"}
--- local player_unit = Managers.player:local_player(1).player_unit
--- local weapon_extension = ScriptUnit.extension(player_unit, "weapon_system")
--- if weapon_extension._weapons then
--- 	for slot_name, weapon in pairs(weapon_extension._weapons) do
--- 		-- if weapon.item.__gear_id == gear_id then
--- 			mod:echo(slot_name)
--- 			if weapon.weapon_unit and slot_name == "slot_secondary" then
--- 				-- local data = Unit.get_data(weapon.weapon_unit, "attached_items")
--- 				-- if data then
--- 				-- 	mod:dtf(data, "data_"..tostring(weapon.item.__gear_id))
--- 				-- else
--- 				-- 	mod:echo("nope")
--- 				-- end
--- 				-- local num_actors = Unit.num_actors(weapon.weapon_unit)
--- 				-- mod:echo("actors:"..tostring(num_actors))
--- 				-- mod:dtf(Unit, "Unit", 5)
--- 				-- local bones = Unit.bones(weapon.weapon_unit)
--- 				-- for _, bone in pairs(bones) do
--- 				-- 	mod:echo(bone)
--- 				-- end
-
--- 				local main_children = Unit.get_child_units(weapon.weapon_unit)
--- 				local j = 3
--- 				if main_children and #main_children >= j then
--- 					local child = main_children[j]
--- 					Unit.set_unit_visibility(child, false)
--- 					-- mod:echo(Unit.debug_name(child))
--- 					mod:dtf({Unit.debug_name(child)}, "receiver", 5)
--- 					-- local childs_ = Unit.get_child_units(child)
--- 					-- local i = 3
--- 					-- -- 1 grip
--- 					-- -- 2 magazin
--- 					-- -- 3 barrel
--- 					-- if childs_ and #childs_ >= i then
--- 					-- 	local child_ = childs_[i]
--- 					-- 	Unit.set_unit_visibility(child_, false)
--- 					-- -- 	-- mod:dtf(childs_, "childs_", 5)
-						
--- 					-- -- 	mod:echo("yes")
--- 					-- -- else
--- 					-- -- 	mod:echo("nope")
--- 					-- end
--- 					-- if childs_ then
--- 					-- 	for _, child_ in pairs(childs_) do
--- 					-- 		-- mod:echo(Unit.debug_name(child_))
--- 					-- 		Unit.set_unit_visibility(child_, false)
--- 					-- 	end
--- 					-- end
--- 				end
-
--- 				-- local childs = Unit.get_child_units(weapon.weapon_unit)
--- 				-- if childs then
--- 				-- 	-- mod:dtf(childs, "childs", 5)
--- 				-- 	for _, child in pairs(childs) do
--- 				-- 		mod:echo(Unit.debug_name(child))
--- 				-- 		Unit.set_unit_visibility(child, false)
--- 				-- 		local childs_ = Unit.get_child_units(child)
--- 				-- 		if childs_ then
--- 				-- 			for _, child_ in pairs(childs_) do
--- 				-- 				mod:echo(Unit.debug_name(child_))
--- 				-- 				Unit.set_unit_visibility(child_, false)
--- 				-- 			end
--- 				-- 		end
--- 				-- 	end
--- 				-- end
--- 				-- for _, node_name in pairs(test) do
--- 				-- 	if Unit.has_visibility_group(weapon.weapon_unit, node_name) then
--- 				-- 		Unit.set_visibility(weapon.weapon_unit, node_name, false)
--- 				-- 		mod:echo("found:"..node_name)
--- 				-- 	else
--- 				-- 		mod:echo("NOOO:"..node_name)
--- 				-- 	end
--- 				-- 	-- end
--- 				-- 	-- if Unit.has_node(weapon.weapon_unit, node_name) then
--- 				-- 	-- 	-- local node = Unit.node(weapon.weapon_unit, node_name)
--- 				-- 	-- 	mod:echo("found:"..node_name)
--- 				-- 	-- else
--- 				-- 	-- 	mod:echo("NOOO:"..node_name)
--- 				-- 	-- end
--- 				-- end
--- 			end
--- 		-- end
--- 	end
--- end
+-- mod:hook(CLASS.PackageManager, "load", function(func, self, package_name, reference_name, callback, prioritize, ...)
+-- 	-- if string.find(package_name, "attachments") then
+-- 	-- 	mod:echo("package:"..package_name)
+-- 	-- end
+-- 	return func(self, package_name, reference_name, callback, prioritize, ...)
+-- end)
 
 mod.hide_attachments = function(self, gear_id_or_nil, reference, attachment_name_or_nil, hide)
 	if gear_id_or_nil and mod.weapon_attachments[gear_id_or_nil] and mod.weapon_attachments[gear_id_or_nil][reference] then
-		-- for this_reference, reference_attachment in pairs(mod.weapon_attachments[gear_id]) do
-			for index, attachment in pairs(mod.weapon_attachments[gear_id_or_nil][reference]) do
-				if not attachment_name_or_nil or (attachment and attachment.attachment_name == attachment_name_or_nil) then
-					mod:hide_attachment(attachment, hide)
-				end
-				-- if Unit.alive(attachment.attachment_unit) then
-				-- 	Unit.set_unit_visibility(attachment.attachment_unit, not hide)
-				-- 	-- mod:echo(t..":"..reference)
-				-- 	-- for i = 1, Unit.num_meshes(attachment.attachment_unit), 1 do
-				-- 	-- 	Unit.set_mesh_visibility(attachment.attachment_unit, i, not hide)
-				-- 	-- end
-				-- end
+		for index, attachment in pairs(mod.weapon_attachments[gear_id_or_nil][reference]) do
+			if not attachment_name_or_nil or (attachment and attachment.attachment_name == attachment_name_or_nil) then
+				mod:hide_attachment(attachment, hide)
 			end
-		-- end
+		end
 	elseif not gear_id_or_nil then
 		for _, gear_attachment in pairs(mod.weapon_attachments) do
 			for this_reference, reference_attachment in pairs(gear_attachment) do
@@ -130,35 +35,16 @@ mod.hide_attachments = function(self, gear_id_or_nil, reference, attachment_name
 						if not attachment_name_or_nil or (attachment and attachment.attachment_name == attachment_name_or_nil) then
 							mod:hide_attachment(attachment, hide)
 						end
-						-- if Unit.alive(attachment.attachment_unit) then
-						-- 	Unit.set_unit_visibility(attachment.attachment_unit, not hide)
-						-- end
 					end
 				end
 			end
 		end
-	-- 	for _, gear_attachment in pairs(mod.weapon_attachments) do
-	-- 		for this_reference, reference_attachment in pairs(gear_attachment) do
-	-- 			for index, attachment in pairs(reference_attachment) do
-	-- 				if Unit.alive(attachment.attachment_unit) then
-	-- 					Unit.set_unit_visibility(attachment.attachment_unit, not hide)
-	-- 					-- local t = hide and "hide" or "show"
-	-- 					-- mod:echo(t..":"..reference)
-	-- 					-- for i = 1, Unit.num_meshes(attachment.attachment_unit), 1 do
-	-- 					-- 	Unit.set_mesh_visibility(attachment.attachment_unit, i, not hide)
-	-- 					-- end
-	-- 				end
-	-- 			end
-	-- 		end
-	-- 	end
 	end
 end
 
 mod.hide_attachment = function(self, attachment, hide)
 	if attachment and Unit.alive(attachment.attachment_unit) then
 		Unit.set_unit_visibility(attachment.attachment_unit, not hide)
-		local t = hide and "hide" or "show"
-		-- mod:echo(t..":"..tostring(attachment.gear_id).." "..attachment.reference.." "..attachment.attachment_name)
 	end
 end
 
@@ -196,7 +82,7 @@ mod.redo_weapon_attachments = function(self, gear_id, world)
 end
 
 mod.load_weapon_customization = function(self, item, weapon_unit, third_person, world, reference, allow_several)
-	local gear_id, original_gear_id = mod:get_gear_id(item) --item.__is_preview_item and item.__original_gear_id or item.__gear_id
+	local gear_id, original_gear_id = mod:get_gear_id(item)
 	original_gear_id = original_gear_id or gear_id
 	allow_several = false
 	if gear_id then
@@ -231,14 +117,6 @@ mod.spawn_attachment = function(self, item, weapon_unit, attachment_name, attach
 			local rotation = Quaternion.from_euler_angles_xyz(rotation_euler[1], rotation_euler[2], rotation_euler[3])
 			local scale = Vector3Box.unbox(anchor.scale)
 			local hide = anchor.hide
-			-- local scale0 = Vector3(0, 0, 0)
-			-- position0[3] = position0[3] - 1000
-			-- Unit.set_local_position(weapon_unit, 3, position0)
-			-- Unit.set_local_scale(weapon_unit, 43, scale0)
-			-- if Unit.has_visibility_group(weapon_unit, anchor.hide) then
-			-- 	Unit.set_visibility(weapon_unit, anchor.hide, false)
-			-- end
-			
 			self:_spawn_attachment(item, weapon_unit, attachment_name, attachment_type, position, rotation, scale, hide, world, reference, allow_several)
 		end
 	end
