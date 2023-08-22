@@ -1,6 +1,8 @@
 local mod = get_mod("weapon_customization")
 
-local PlayerUnitVisualLoadout = mod:original_require("scripts/extension_systems/visual_loadout/utilities/player_unit_visual_loadout")
+-- ##### ┬┌┐┌┬  ┬┌─┐┌┐┌┌┬┐┌─┐┬─┐┬ ┬ ###################################################################################
+-- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
+-- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
 
 mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
     func(self, dt, t, input_service, ...)
@@ -9,6 +11,95 @@ mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, in
         mod.weapon_changed = nil
     end
 end)
+
+-- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ###########################################################
+-- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┘├─┤ │ │  ├─┤ ###########################################################
+-- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ###########################################################
+
+mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
+
+    instance._recursive_set_attachment = function(attachments, attachment_type, model)
+        for attachment_name, attachment_data in pairs(attachments) do
+            if attachment_name == attachment_type then
+                attachment_data.item = model
+            else
+                if attachment_data.children then
+                    instance._recursive_set_attachment(attachment_data.children, attachment_type, model)
+                end
+            end
+        end
+    end
+
+    instance._recursive_find_attachment = function(attachments, attachment_type)
+        local val = nil
+        if attachments then
+            for attachment_name, attachment_data in pairs(attachments) do
+                if attachment_name == attachment_type then
+                    val = true
+                else
+                    if attachment_data.children then
+                        val = instance._recursive_find_attachment(attachment_data.children, attachment_type)
+                    end
+                end
+                if val then break end
+            end
+        end
+        return val
+    end
+
+    if not instance.__resolve_item_packages_recursive then instance.__resolve_item_packages_recursive = instance._resolve_item_packages_recursive end
+    instance._resolve_item_packages_recursive = function(attachments, items_dictionary, result)
+        local something_changed = false
+        local item_name = nil
+        if instance.processing_item then
+            item_name = mod:item_name_from_content_string(instance.processing_item.name) 
+            local gear_id, original_gear_id = mod:get_gear_id(instance.processing_item)
+            original_gear_id = original_gear_id or gear_id
+
+            -- Add flashlight slot
+            if instance.processing_item.__gear.slots[1] == "slot_secondary" then
+                if not instance._recursive_find_attachment(attachments, "flashlight") then
+                    attachments.flashlight = {
+                        children = {},
+                        item = "",
+                    }
+                end
+            end
+
+            for _, attachment_slot in pairs(mod.attachment_slots) do
+                local attachment = mod:get_gear_setting(original_gear_id, attachment_slot)
+                -- local item_name = mod:item_name_from_content_string(instance.processing_item.name)
+                if attachment and mod.attachment_models[item_name][attachment] then
+                    local model = mod.attachment_models[item_name][attachment].model
+                    local attachment_type = mod.attachment_models[item_name][attachment].type
+
+                    instance._recursive_set_attachment(attachments, attachment_type, model)
+
+                    something_changed = true
+                end
+            end
+
+            instance.processing_item = nil
+        end
+
+        instance.__resolve_item_packages_recursive(attachments, items_dictionary, result)
+    end
+
+    if not instance._compile_item_instance_dependencies then instance._compile_item_instance_dependencies = instance.compile_item_instance_dependencies end
+    instance.compile_item_instance_dependencies = function(item, items_dictionary, out_result, optional_mission_template)
+
+        if item and item.__master_item and item.__master_item.weapon_template then
+            instance.processing_item = item
+        end
+
+        return instance._compile_item_instance_dependencies(item, items_dictionary, out_result, optional_mission_template)
+    end
+
+end)
+
+-- ##### ┬  ┬┬┌─┐┬ ┬┌─┐┬    ┬  ┌─┐┌─┐┌┬┐┌─┐┬ ┬┌┬┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ####################################################
+-- ##### └┐┌┘│└─┐│ │├─┤│    │  │ │├─┤ │││ ││ │ │   ├─┘├─┤ │ │  ├─┤ ####################################################
+ -- ##### └┘ ┴└─┘└─┘┴ ┴┴─┘  ┴─┘└─┘┴ ┴─┴┘└─┘└─┘ ┴   ┴  ┴ ┴ ┴ └─┘┴ ┴ ####################################################
 
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
@@ -61,7 +152,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 for _, attachment_slot in pairs(mod.attachment_slots) do
-                    local attachment = mod:get(tostring(original_gear_id).."_"..attachment_slot)
+                    local attachment = mod:get_gear_setting(original_gear_id, attachment_slot)
                     local item_name = mod:item_name_from_content_string(item_data.name)
                     if attachment and mod.attachment_models[item_name][attachment] then
                         local model = mod.attachment_models[item_name][attachment].model
@@ -115,7 +206,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             original_gear_id = original_gear_id or gear_id
             if original_gear_id then
                 for _, attachment_slot in pairs(mod.attachment_slots) do
-                    local attachment = mod:get(tostring(original_gear_id).."_"..attachment_slot)
+                    local attachment = mod:get_gear_setting(original_gear_id, attachment_slot)
                     local item_name = mod:item_name_from_content_string(item_data.name)
                     if attachment and mod.attachment_models[item_name][attachment] then
                         local model = mod.attachment_models[item_name][attachment].model
@@ -132,16 +223,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 end)
 
-mod:hook(CLASS.PlayerUnitWeaponExtension, "extensions_ready", function(func, self, world, unit, ...)
-    func(self, world, unit, ...)
-    mod:init_context()
-end)
-
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
-	mod.visual_loadout_extension = nil
-	mod.initialized = false
-	return func(self, ...)
-end)
+-- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┬─┐┌─┐┬  ┬┬┌─┐┬ ┬┌─┐ ##########################################################################
+-- ##### │ │ ├┤ │││  ├─┘├┬┘├┤ └┐┌┘│├┤ │││└─┐ ##########################################################################
+-- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘└─┘ ##########################################################################
 
 mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, is_equipped, on_present_callback, ...)
     mod.previewed_weapon_flashlight = mod:has_flashlight_attachment(item)
@@ -172,6 +256,10 @@ mod:hook(CLASS.ViewElementWeaponActionsExtended, "present_item", function(func, 
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
 end)
+
+-- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐┌─┐ ##############################################################
+-- ##### │││├┤ ├─┤├─┘│ ││││   │ ├┤ │││├─┘│  ├─┤ │ ├┤ └─┐ ##############################################################
+-- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘└─┘ ##############################################################
 
 mod.weapon_templates = {}
 mod.special_types = {
@@ -215,22 +303,20 @@ mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
 	end
 end)
 
+-- ##### ┬┌┐┌┌─┐┬ ┬┌┬┐ ################################################################################################
+-- ##### ││││├─┘│ │ │  ################################################################################################
+-- ##### ┴┘└┘┴  └─┘ ┴  ################################################################################################
+
 mod:hook(CLASS.InputService, "get", function(func, self, action_name, ...)
 	local pressed = func(self, action_name, ...)
-	if Managers and Managers.player._game_state ~= nil then
-		mod:init_context()
-		if mod.initialized then
-			local item = mod.visual_loadout_extension:item_from_slot(mod.inventory_component.wielded_slot)
-			if item then
-                if action_name == "weapon_extra_pressed" and mod:has_flashlight_attachment(item) then
-                    if pressed then
-                        mod:init_context()
-                        mod:toggle_flashlight()
-                    end
-                    return self:get_default(action_name)
-                end
-			end
-		end
+    if mod.initialized then
+        if action_name == "weapon_extra_pressed" and mod:has_flashlight_attachment() then
+            if pressed then
+                -- mod:init_context()
+                mod:toggle_flashlight()
+            end
+            return self:get_default(action_name)
+        end
 	end
 	return pressed
 end)

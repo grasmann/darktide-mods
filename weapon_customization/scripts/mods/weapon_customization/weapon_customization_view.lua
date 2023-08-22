@@ -4,64 +4,14 @@ local inventory_weapon_cosmetics_view_definitions = mod:original_require("script
 local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
-local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
-local MasterItems = mod:original_require("scripts/backend/master_items")
 
 local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
 local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
 local grid_width = grid_size[1] + edge_padding
 local button_width = grid_width * 0.3
 
--- mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
--- 	func(self, ...)
--- 	mod.selected_cosmetics_item = self._selected_item
--- 	-- if self._selected_item then
--- 	-- 	mod:load_weapon_customization(self._selected_item, self._selected_item.weapon_unit, true, self._world, "InventoryWeaponCosmeticsView")
--- 	-- end
--- end)
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, self, item, ...)
-    if self._presentation_item and not self._initial_attachment_spawned then
-        local gear_id = mod:get_gear_id(self._presentation_item)
-        -- local reference = self._weapon_preview and self._weapon_preview._reference_name
-        -- mod:destroy_attachments(gear_id, "InventoryWeaponCosmeticsView")
-        -- mod:destroy_attachments(gear_id, self._world, "Player")
-	-- elseif not self._initial_attachment_spawn then
-		-- -- local gear_id = mod:get_gear_id(self._presentation_item, true)
-		-- mod:dtf(self._presentation_item, "self._presentation_item", 3)
-		-- local weapon_unit = self._weapon_preview._ui_weapon_spawner
-		-- mod:load_weapon_customization(self._presentation_item, self._presentation_item.weapon_unit, true, self._world, "InventoryWeaponCosmeticsView")
-		-- self._initial_attachment_spawn = true
-    end
-	self._initial_attachment_spawned = true
-    func(self, item, ...)
-	-- if self._level_spawned then
-	-- 	mod:hide_parts()
-	-- end
-	-- mod:hide_parts()
-end)
-
--- mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, self, element, ...)
--- 	func(self, element, ...)
--- 	mod:hide_parts()
--- end)
-
-mod:hook(CLASS.ViewElementInventoryWeaponPreview, "present_item", function(func, self, item, disable_auto_spin, ...)
-	func(self, item, disable_auto_spin, ...)
-	-- mod:hide_parts()
-	-- if self._level_spawned then
-	-- 	mod:hide_parts()
-	-- end
-end)
-
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
     func(self, dt, t, input_service, ...)
-    -- if self._presentation_item then
-    --     -- local item = self._presentation_item
-    --     -- local gear_id = mod:get_gear_id(item) --item.__is_preview_item and item.__original_gear_id or item.__gear_id
-    --     -- mod:hide_attachments(gear_id, false)
-    --     mod:hide_parts()
-    -- end
     mod:update_custom_widgets(self, input_service)
 end)
 
@@ -75,34 +25,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
 		icon = "content/ui/materials/icons/system/settings/category_gameplay",
 		filter_on_weapon_template = true,
 		apply_on_preview = function (real_item, presentation_item)
-            -- mod:destroy_all_attachments()
-			-- if presentation_item.__master_item then
-			-- 	presentation_item.__master_item.slot_weapon_skin = nil
-			-- end
-            -- mod:echo("apply_on_preview")
-			-- presentation_item.slot_weapon_skin = real_item
-			-- self._selected_weapon_skin = real_item
-			-- self._selected_weapon_skin_name = real_item and real_item.gear.masterDataInstance.id
-            -- local level_world = Managers.world:world("level_world")
             self:_preview_item(presentation_item)
-
-			-- if self._previewed_element then
-			-- 	self:_preview_element(self._previewed_element)
-			-- else
-			-- 	self:_preview_item(presentation_item)
-			-- end
-
-			-- if self._previewed_element then
-			-- 	InventoryWeaponCosmeticsView:_preview_element(self._previewed_element)
-			-- else
-			-- 	InventoryWeaponCosmeticsView:_preview_item(self._selected_item)
-			-- end
 			mod.weapon_changed = true
-			-- mod:hide_parts()
-			-- mod:hide_parts()
-			-- mod:hide_parts()
-            -- mod:load_weapon_customization(real_item, real_item.weapon_unit, false, level_world, "Player")
-            -- local gear_id = presentation_item.__is_preview_item and presentation_item.__original_gear_id or presentation_item.__gear_id
 		end
     }
     func(self, content, ...)
@@ -121,12 +45,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
         mod:hide_custom_widgets(self, true)
     end
     func(self, index, ...)
-	-- if self._previewed_element then
-	-- 	self:_preview_element(self._previewed_element)
-	-- else
-	-- 	self:_preview_item(self._presentation_item)
-	-- end
-	-- mod:hide_parts()
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_select_starting_item_by_slot_name", function(func, self, slot_name, optional_start_index, ...)
@@ -137,7 +55,6 @@ end)
 
 mod:hook(CLASS.ItemGridViewBase, "_sort_grid_layout", function(func, self, sort_function, ...)
 	func(self, sort_function, ...)
-	-- self:_update_weapon_preview_viewport()
 	self:present_grid_layout({})
 end)
 
@@ -155,9 +72,7 @@ end
 
 mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph, attachment_slot, item)
 
-    -- local widget = InventoryWeaponCosmeticsView._widgets_by_name[attachment_slot.."_custom"]
-
-    local gear_id, original_gear_id = mod:get_gear_id(item) --item.__is_preview_item and item.__original_gear_id or item.__gear_id
+    local gear_id, original_gear_id = mod:get_gear_id(item)
 
     local weapon_name = mod:item_name_from_content_string(item.name)
     local options = {}
@@ -175,47 +90,21 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
     local template = DropdownPassTemplates.settings_dropdown(size[1], size[2], size[1], num_visible_options, true)
 	template[7].pass_type = "texture"
 	template[7].value = "content/ui/materials/backgrounds/terminal_basic"
-	-- template[7].style.scale_to_material = true
-	-- template[7].style.size_addition = {10, 50}
-	-- template[7].style.size[2] = template[7].style.size[2] + 50
-	-- template[7].style.offset[3] = 300
-	-- template[7].style.color = Color.terminal_grid_background(255, true)
-	-- template[7].style.color[1] = 220
 	template[7].style.horizontal_alignment = "center"
-	-- template[7].style.vertical_alignment = "center"
-	-- if not mod.test then
-	-- 	mod:dtf(template, "template", 10)
-	-- 	mod.test = true
-	-- end
     local definition = UIWidget.create_definition(template, scenegraph, nil, size)
     local widget_name = attachment_slot.."_custom"
     local widget = InventoryWeaponCosmeticsView:_create_widget(widget_name, definition)
-    -- widget.name = widget_name
     InventoryWeaponCosmeticsView._widgets_by_name[widget_name] = widget
     InventoryWeaponCosmeticsView._widgets[#InventoryWeaponCosmeticsView._widgets+1] = widget
 
-    -- local options = {
-    --     mod:dropdown_option("test1", "test1"),
-    --     mod:dropdown_option("test2", "test2"),
-    --     mod:dropdown_option("test3", "test3"),
-    -- }
-
     local content = widget.content
-    -- content.text = "test1"
     content.entry = {
         options = options,
         widget_type = "dropdown",
         on_activated = function(new_value, entry)
-            -- mod:echo(new_value)
             mod:set(tostring(original_gear_id).."_"..attachment_slot, new_value)
 			mod.flashlight_attached[original_gear_id] = nil
 
-			-- local gear = result.item
-			-- local gear_id = selected_item.gear_id
-			-- local item = MasterItems.get_item_instance(InventoryWeaponCosmeticsView._selected_item, original_gear_id)
-			
-
-            -- self._previewed_element.real_item
 			if InventoryWeaponCosmeticsView._previewed_element then
 				InventoryWeaponCosmeticsView:_preview_element(InventoryWeaponCosmeticsView._previewed_element)
 			else
@@ -226,12 +115,8 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 			Managers.event:trigger("event_item_icon_updated", InventoryWeaponCosmeticsView._selected_item)
 			Managers.event:trigger("event_replace_list_item", InventoryWeaponCosmeticsView._selected_item)
 
-			-- mod:dtf(InventoryWeaponCosmeticsView._selected_item, "item", 5)
-
             mod:redo_weapon_attachments(original_gear_id)
-			-- InventoryWeaponCosmeticsView:_play_sound(UISoundEvents.apparel_equip_small)
-			-- mod:dtf(entry, "entry", 4)
-			-- mod:echo(new_value)
+
 			for _, option in pairs(entry.options) do
 				if option.id == new_value then
 					if option.sounds then
@@ -241,24 +126,11 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 					end
 				end
 			end
-
-			
-
-			-- apparel_equip_frame medium
-			-- weapons_equip_weapon
-			-- weapons_equip_gadget
-            -- mod:reload_weapon_icons()
-            -- if Managers.ui._back_buffer_render_handlers then
-            --     -- local item = InventoryWeaponCosmeticsView._previewed_element.real_item
-            --     Managers.ui._back_buffer_render_handlers.weapons:update_all()
-            -- end
-            -- mod:delete_weapon_icons(gear_id)
         end,
         get_function = function()
-            return mod:get(tostring(original_gear_id).."_"..attachment_slot)
+            return mod:get_gear_setting(original_gear_id, attachment_slot)
         end,
     }
-    -- local options = content.entry.options
     local options_by_id = {}
     for index, option in pairs(options) do
         options_by_id[option.id] = option
@@ -304,9 +176,6 @@ end
 
 
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions", function(instance)
-    
-    -- special_custom_template[21].style.offset = {}
-    -- mod:dtf(special_custom_template, "special_custom_template", 5)
 
 	local top = 150
     local edge = edge_padding * 0.5
@@ -508,7 +377,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		position = {edge, top - edge + 1350, z}
 	}
 
-
 	mod.added_cosmetics_scenegraphs = {
 		"special_text_pivot",
 		"special_pivot",
@@ -552,12 +420,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.widget_definitions.blade_custom_text = mod:label_template("loc_weapon_cosmetics_customization_blade", "blade_text_pivot")
 	instance.widget_definitions.shaft_custom_text = mod:label_template("loc_weapon_cosmetics_customization_shaft", "shaft_text_pivot")
 
-    -- local size = {grid_size[1], 50}
-    -- local max_visible_options = 5
-    -- local num_options = 3
-    -- local num_visible_options = math.min(num_options, max_visible_options)
-    -- local special_custom_template = DropdownPassTemplates.settings_dropdown(size[1], size[2], size[1], num_visible_options, true)
-    -- instance.widget_definitions.special_custom = UIWidget.create_definition(special_custom_template, "special_pivot", nil, size)
 end)
 
 mod.hide_custom_widgets = function(self, InventoryWeaponCosmeticsView, hide)
@@ -580,7 +442,6 @@ mod.update_custom_widgets = function(self, InventoryWeaponCosmeticsView, input_s
             end
         end
     end
-    -- mod.widget_update_functions["dropdown"](self, self._widgets_by_name.barrel_custom, input_service)
 end
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_set_weapon_zoom", function(func, self, fraction, ...)
@@ -597,41 +458,41 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, sel
 	end
 end)
 
+mod.add_custom_widget = function(self, widget, InventoryWeaponCosmeticsView)
+	InventoryWeaponCosmeticsView._custom_widgets[#InventoryWeaponCosmeticsView._custom_widgets+1] = widget
+end
+
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
     func(self, ...)
 
-	-- mod.selected_cosmetics_item = self._selected_item
-
     if self._presentation_item then
         self._custom_widgets = {}
-        -- local previewed_item = self._presentation_item
-        -- local gear_id = previewed_item.__is_preview_item and previewed_item.__original_gear_id or previewed_item.__gear_id
-        self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "special_pivot", "special", self._presentation_item)
-        self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "barrel_pivot", "barrel", self._presentation_item)
-        self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "receiver_pivot", "receiver", self._presentation_item)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "magazine_pivot", "magazine", self._presentation_item)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "grip_pivot", "grip", self._presentation_item)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "bayonet_pivot", "bayonet", self._presentation_item)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "handle_pivot", "handle", self._presentation_item, false)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "sight_pivot", "sight", self._presentation_item, false)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "body_pivot", "body", self._presentation_item, false)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "pommel_pivot", "pommel", self._presentation_item, false)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "head_pivot", "head", self._presentation_item, false)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "blade_pivot", "blade", self._presentation_item, false)
-		self._custom_widgets[#self._custom_widgets+1] = mod:generate_dropdown(self, "shaft_pivot", "shaft", self._presentation_item, false)
-        self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.special_custom_text
-        self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.barrel_custom_text
-        self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.receiver_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.magazine_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.grip_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.bayonet_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.handle_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.sight_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.body_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.pommel_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.head_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.blade_custom_text
-		self._custom_widgets[#self._custom_widgets+1] = self._widgets_by_name.shaft_custom_text
+        mod:add_custom_widget(mod:generate_dropdown(self, "special_pivot", "special", self._presentation_item), self)
+        mod:add_custom_widget(mod:generate_dropdown(self, "barrel_pivot", "barrel", self._presentation_item), self)
+        mod:add_custom_widget(mod:generate_dropdown(self, "receiver_pivot", "receiver", self._presentation_item), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "magazine_pivot", "magazine", self._presentation_item), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "grip_pivot", "grip", self._presentation_item), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "bayonet_pivot", "bayonet", self._presentation_item), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "handle_pivot", "handle", self._presentation_item, false), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "sight_pivot", "sight", self._presentation_item, false), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "body_pivot", "body", self._presentation_item, false), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "pommel_pivot", "pommel", self._presentation_item, false), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "head_pivot", "head", self._presentation_item, false), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "blade_pivot", "blade", self._presentation_item, false), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "shaft_pivot", "shaft", self._presentation_item, false), self)
+        mod:add_custom_widget(self._widgets_by_name.special_custom_text, self)
+        mod:add_custom_widget(self._widgets_by_name.barrel_custom_text, self)
+        mod:add_custom_widget(self._widgets_by_name.receiver_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.magazine_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.grip_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.bayonet_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.handle_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.sight_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.body_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.pommel_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.head_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.blade_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.shaft_custom_text, self)
 
 		local not_applicable = {}
 
@@ -645,12 +506,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 			end
 		end
 
-		-- mod:dtf(self._ui_scenegraph, "self._ui_scenegraph", 5)
-
 		local move = 0
 		for _, scenegraph_entry in pairs(mod.added_cosmetics_scenegraphs) do
 			if table.contains(not_applicable, scenegraph_entry) then
-				-- mod:echo(scenegraph_entry)
 				move = move + 50
 			end
 			if self._ui_scenegraph[scenegraph_entry] then
@@ -661,57 +519,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
     mod:hide_custom_widgets(self, true)
 
-    -- options = {
-    --     mod:dropdown_option("test1", "test1"),
-    --     mod:dropdown_option("test2", "test2"),
-    --     mod:dropdown_option("test3", "test3"),
-    -- }
-
-    -- local options_by_id = {}
-    -- for index, option in pairs(options) do
-    --     options_by_id[option.id] = option
-    -- end
-
-    -- local special_custom = self._widgets_by_name.special_custom
-
-    -- local content = special_custom.content
-    -- content.text = "test1"
-    -- content.entry = mod:generate_dropdown_entry(options)
-    -- local options = content.entry.options
-    -- local options_by_id = {}
-    -- for index, option in pairs(options) do
-    --     options_by_id[option.id] = option
-    -- end
-    -- content.options_by_id = options_by_id
-	-- content.options = options
-    -- local max_visible_options = 5
-    -- local num_options = 3
-    -- local num_visible_options = math.min(num_options, max_visible_options)
-    -- content.num_visible_options = num_visible_options
-
-    -- content.hotspot.pressed_callback = function ()
-    --     local selected_widget = nil
-    --     local selected = true
-    --     content.exclusive_focus = selected
-    --     local hotspot = content.hotspot or content.button_hotspot
-    --     if hotspot then
-    --         hotspot.is_selected = selected
-    --     end
-    -- end
-
-    -- local size = {grid_size[1], 50}
-    -- content.area_length = size[2] * num_visible_options
-    -- local scroll_length = math.max(size[2] * num_options - content.area_length, 0)
-    -- content.scroll_length = scroll_length
-    -- local spacing = 0
-    -- local scroll_amount = scroll_length > 0 and (size[2] + spacing) / scroll_length or 0
-    -- content.scroll_amount = scroll_amount
 end)
-
--- mod:hook(CLASS.ViewElemenMissionBoardOptions, "present", function(func, self, presentation_data, ...)
---     -- mod:dtf(presentation_data, "presentation_data", 5)
---     func(self, presentation_data, ...)
--- end)
 
 mod.widget_update_functions = {
 	dropdown = function (self, widget, input_service, grow_downwards)
@@ -899,7 +707,3 @@ mod.widget_update_functions = {
 		end
 	end,
 }
-
--- mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
---     func(self, dt, t, input_service, ...)
--- end)

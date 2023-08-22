@@ -20,6 +20,22 @@ return {
 		en = "Extends weapon customizations",
 		de = "Erweitert Waffenanpassungen",
 	},
+	mod_option_debug = {
+		en = "Debug",
+		de = "Debug",
+	},
+	mod_option_flashlight_shadows = {
+		en = "Flashlight Shadows",
+		de = "Taschenlampenschatten",
+	},
+	mod_option_flashlight_flicker = {
+		en = "Flashlight Flicker",
+		de = "Taschenlampenflimmern",
+	},
+	mod_option_flashlight_flicker_start = {
+		en = "Flicker on Activate",
+		de = "Filmmern beim Einschalten",
+	},
 	loc_weapon_cosmetics_customization_special = {
 		en = "Special",
 		de = "Spezial",
