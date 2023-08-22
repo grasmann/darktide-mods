@@ -1,11 +1,6 @@
 local mod = get_mod("weapon_customization")
 
-local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
 local PlayerUnitVisualLoadout = mod:original_require("scripts/extension_systems/visual_loadout/utilities/player_unit_visual_loadout")
-local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
-local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
-local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
-local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 
 mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
     func(self, dt, t, input_service, ...)

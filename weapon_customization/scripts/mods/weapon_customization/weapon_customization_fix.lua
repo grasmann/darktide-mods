@@ -1,5 +1,7 @@
 local mod = get_mod("weapon_customization")
 
+local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
+
 mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
     if self._loaded_packages then
         local mission = self._mission

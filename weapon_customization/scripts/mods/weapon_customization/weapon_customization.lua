@@ -1,7 +1,7 @@
 local mod = get_mod("weapon_customization")
 
-local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
-mod._flicker_settings = FlashlightTemplates.default.flicker
+-- local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
+-- mod._flicker_settings = FlashlightTemplates.default.flicker
 
 function mod.on_game_state_changed(status, state_name)
 	mod:load_packages()
