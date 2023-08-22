@@ -83,14 +83,14 @@ mod.reposition_attachments = function(self)
 			position[2] = position[2] + mod.reposition[2]
 			position[3] = position[3] + mod.reposition[3]
 			Unit.set_local_position(attachment.attachment_unit, 1, position)
-			mod:echo("position:"..tostring(position))
+			-- mod:echo("position:"..tostring(position))
 			local rotation_euler = Vector3Box.unbox(anchor.third_person.rotation)
 			rotation_euler[1] = rotation_euler[1] + mod.rerotate[1]
 			rotation_euler[2] = rotation_euler[2] + mod.rerotate[2]
 			rotation_euler[3] = rotation_euler[3] + mod.rerotate[3]
 			local rotation = Quaternion.from_euler_angles_xyz(rotation_euler[1], rotation_euler[2], rotation_euler[3])
 			Unit.set_local_rotation(attachment.attachment_unit, 1, rotation)
-			mod:echo("rotation:"..tostring(rotation_euler))
+			-- mod:echo("rotation:"..tostring(rotation_euler))
 		end
 	end
 	-- 	end

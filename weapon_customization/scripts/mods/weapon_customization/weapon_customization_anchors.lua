@@ -16,223 +16,96 @@ end
 
 mod.anchors = {
     ogryn_heavystubber_p1_m1 = {
-        ["content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01"] = {
-            position = Vector3Box(.12, .64, .18),
+        ["flashlight_01"] = {
+            position = Vector3Box(.09, .9, .13),
+            rotation = Vector3Box(0, 311, 0),
+            scale = Vector3Box(2, 2, 2),
+        },
+        ["flashlight_02"] = {
+            position = Vector3Box(.09, .9, .13),
+            rotation = Vector3Box(0, 311, 0),
+            scale = Vector3Box(2, 2, 2),
+        },
+        ["flashlight_03"] = {
+            position = Vector3Box(.09, .9, .13),
+            rotation = Vector3Box(0, 311, 0),
+            scale = Vector3Box(2, 2, 2),
+        },
+        ["flashlight_04"] = {
+            position = Vector3Box(.15, .86, .21),
             rotation = Vector3Box(0, 128, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .9, .13),
-                rotation = Vector3Box(0, 311, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["blade_01"] = {
+            position = Vector3Box(0, 1.04, -0.39),
+            rotation = Vector3Box(-90, 0, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .9, .13),
-                rotation = Vector3Box(0, 311, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
-        },
-        ["content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
-            scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .9, .13),
-                rotation = Vector3Box(0, 311, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
-        },
-        ["content/weapons/player/attachments/flashlights/flashlight_04/flashlight_04"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
-            scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .9, .13),
-                rotation = Vector3Box(0, 311, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
-        },
-        ["content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
-            scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.15, .86, .21),
-                rotation = Vector3Box(0, 128, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
-        },
-        ["content/weapons/player/melee/combat_sword/attachments/blade_01/blade_01"] = {
-            position = Vector3Box(0, 0, 0),
-            rotation = Vector3Box(0, 0, 0),
-            scale = Vector3Box(1, 1, 1),
-            -- hide = "#ID[76eb4b354a5433d7]",
-            third_person = {
-                position = Vector3Box(0, 1.04, -0.39),
-                rotation = Vector3Box(-90, 0, 0),
-                scale = Vector3Box(2, 2, 2),
-                -- hide = "#ID[76eb4b354a5433d7]",
-            },
         },
     },
     ogryn_rippergun_p1_m1 = {
-        ["content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_01"] = {
+            position = Vector3Box(.09, .76, .35),
+            rotation = Vector3Box(0, 311, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .76, .35),
-                rotation = Vector3Box(0, 311, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_02"] = {
+            position = Vector3Box(.09, .76, .35),
+            rotation = Vector3Box(0, 311, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .76, .35),
-                rotation = Vector3Box(0, 311, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_03"] = {
+            position = Vector3Box(.09, .76, .35),
+            rotation = Vector3Box(0, 311, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .76, .35),
-                rotation = Vector3Box(0, 311, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_04/flashlight_04"] = {
-            position = Vector3Box(.12, .64, .18),
+        ["flashlight_04"] = {
+            position = Vector3Box(.16, .76, .41),
             rotation = Vector3Box(0, 128, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .76, .35),
-                rotation = Vector3Box(0, 311, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
-        },
-        ["content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
-            scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.09, .76, .35),
-                rotation = Vector3Box(0, 128, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
     },
     ogryn_thumper_p1_m1 = {
-        ["content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_01"] = {
+            position = Vector3Box(.12, .33, .11),
+            rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.12, .33, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_02"] = {
+            position = Vector3Box(.12, .33, .11),
+            rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.12, .33, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_03"] = {
+            position = Vector3Box(.12, .33, .11),
+            rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.12, .33, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_04/flashlight_04"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_04"] = {
+            position = Vector3Box(.12, .33, .11),
+            rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.12, .33, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
-        },
-        ["content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
-            scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.12, .33, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
     },
     ogryn_gauntlet_p1_m1 = {
-        ["content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_01"] = {
+            position = Vector3Box(.2, .18, .11),
+            rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.2, .18, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_02"] = {
+            position = Vector3Box(.2, .18, .11),
+            rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.2, .18, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_03"] = {
+            position = Vector3Box(.2, .18, .11),
+            rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.2, .18, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
-        ["content/weapons/player/attachments/flashlights/flashlight_04/flashlight_04"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
+        ["flashlight_04"] = {
+            position = Vector3Box(.2, .18, .11),
+            rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.2, .18, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
-        },
-        ["content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05"] = {
-            position = Vector3Box(.12, .64, .18),
-            rotation = Vector3Box(0, 128, 0),
-            scale = Vector3Box(2, 2, 2),
-            third_person = {
-                position = Vector3Box(.2, .18, .11),
-                rotation = Vector3Box(0, 360, 0),
-                scale = Vector3Box(2, 2, 2),
-            },
         },
     },
 }
@@ -244,14 +117,13 @@ mod.anchors.ogryn_thumper_p1_m2 = mod.anchors.ogryn_thumper_p1_m1
 
 mod.attachment = {
     ogryn_heavystubber_p1_m1 = {
-        special = {
-            {id = "default", name = "Default"},
-            {id = "blade_01", name = "Blade"},
+        special = { --end_screen_summary_currency_icon_out
+            {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}, --end_screen_summary_diamantine_zero end_screen_summary_plasteel_zero end_screen_summary_credits_zero
+            {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
             {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "flashlight_05", name = "Flashlight 5", sounds = {UISoundEvents.apparel_equip_small}},
         },
         barrel = {
             {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -276,13 +148,11 @@ mod.attachment = {
     },
     ogryn_rippergun_p1_m1 = {
         special = {
-            {id = "default", name = "Default"},
-            -- {id = "blade_01", name = "Blade"},
+            {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "flashlight_05", name = "Flashlight 5", sounds = {UISoundEvents.apparel_equip_small}},
         },
         barrel = {
             {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -328,7 +198,6 @@ mod.attachment = {
             {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "flashlight_05", name = "Flashlight 5", sounds = {UISoundEvents.apparel_equip_small}},
         },
         sight = {
             {id = "sight_01", name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
@@ -358,7 +227,6 @@ mod.attachment = {
             {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "flashlight_05", name = "Flashlight 5", sounds = {UISoundEvents.apparel_equip_small}},
         },
         barrel = {
             {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -470,6 +338,23 @@ mod.attachment.ogryn_powermaul_slabshield_p1_m1 = mod.attachment.ogryn_powermaul
 mod.attachment.ogryn_club_p2_m2 = mod.attachment.ogryn_club_p2_m1
 mod.attachment.ogryn_club_p2_m3 = mod.attachment.ogryn_club_p2_m1
 
+mod.flashlight_attached = {}
+mod.attached_flashlights = {}
+
+mod.flashlights = {
+    "flashlight_01",
+    "flashlight_02",
+    "flashlight_03",
+    "flashlight_04",
+}
+
+mod.attachment_units = {
+    ["#ID[c54f4d16d170cfdb]"] = "flashlight_01",
+    ["#ID[28ae77de0a24aba6]"] = "flashlight_02",
+    ["#ID[93567d1eb8abad0b]"] = "flashlight_03",
+    ["#ID[1db94ec130a99e51]"] = "flashlight_04",
+    ["#ID[9ed2469305ba9eb7]"] = "blade_01",
+}
 
 mod.attachment_slots = {
     "special",
@@ -489,12 +374,12 @@ mod.attachment_slots = {
 
 mod.attachment_models = {
     ogryn_heavystubber_p1_m1 = {
-        blade_01 = {model = "content/weapons/player/melee/combat_sword/attachments/blade_01/blade_01", type = "blade"},
-        flashlight_01 = {model = "content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01", type = "flashlight"},
-        flashlight_02 = {model = "content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02", type = "flashlight"},
-        flashlight_03 = {model = "content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03", type = "flashlight"},
-        flashlight_04 = {model = "content/weapons/player/attachments/flashlights/flashlight_04/flashlight_04", type = "flashlight"},
-        flashlight_05 = {model = "content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05", type = "flashlight"},
+        default = {model = "", type = "flashlight"},
+        blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "flashlight"},
+        flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},
+        flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight"},
+        flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight"},
+        flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight"},
         barrel_01 = {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_01", type = "barrel"},
         barrel_02 = {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_02", type = "barrel"},
         barrel_03 = {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_03", type = "barrel"},
@@ -509,11 +394,11 @@ mod.attachment_models = {
         grip_03 = {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_03", type = "grip"},
     },
     ogryn_rippergun_p1_m1 = {
-        flashlight_01 = {model = "content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01", type = "flashlight"},
-        flashlight_02 = {model = "content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02", type = "flashlight"},
-        flashlight_03 = {model = "content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03", type = "flashlight"},
-        flashlight_04 = {model = "content/weapons/player/attachments/flashlights/flashlight_04/flashlight_04", type = "flashlight"},
-        flashlight_05 = {model = "content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05", type = "flashlight"},
+        default = {model = "", type = "flashlight"},
+        flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},
+        flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight"},
+        flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight"},
+        flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight"},
         barrel_01 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_01", type = "barrel"},
         barrel_02 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_02", type = "barrel"},
         barrel_03 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_03", type = "barrel"},
@@ -541,11 +426,11 @@ mod.attachment_models = {
         handle_04 = {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_04", type = "handle"},
     },
     ogryn_thumper_p1_m1 = {
-        flashlight_01 = {model = "content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01", type = "flashlight"},
-        flashlight_02 = {model = "content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02", type = "flashlight"},
-        flashlight_03 = {model = "content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03", type = "flashlight"},
-        flashlight_04 = {model = "content/weapons/player/attachments/flashlights/flashlight_04/flashlight_04", type = "flashlight"},
-        flashlight_05 = {model = "content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05", type = "flashlight"},
+        default = {model = "", type = "flashlight"},
+        flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},
+        flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight"},
+        flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight"},
+        flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight"},
         sight_01 = {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_01", type = "sight"},
         sight_03 = {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_03", type = "sight"},
         sight_04 = {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_04", type = "sight"},
@@ -561,11 +446,11 @@ mod.attachment_models = {
         body_05 = {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_05", type = "body"},
     },
     ogryn_gauntlet_p1_m1 = {
-        flashlight_01 = {model = "content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01", type = "flashlight"},
-        flashlight_02 = {model = "content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02", type = "flashlight"},
-        flashlight_03 = {model = "content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03", type = "flashlight"},
-        flashlight_04 = {model = "content/weapons/player/attachments/flashlights/flashlight_04/flashlight_04", type = "flashlight"},
-        flashlight_05 = {model = "content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05", type = "flashlight"},
+        default = {model = "", type = "flashlight"},
+        flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},
+        flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight"},
+        flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight"},
+        flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight"},
         barrel_01 = {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_01", type = "barrel"},
         barrel_02 = {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_02", type = "barrel"},
         barrel_03 = {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_03", type = "barrel"},
