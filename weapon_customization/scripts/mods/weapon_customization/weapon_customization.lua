@@ -67,33 +67,20 @@ end
 
 mod.redo_weapon_attachments = function(self, gear_id)
 	local player_unit = Managers.player:local_player(1).player_unit
-	-- self:destroy_attachments(gear_id, world, world)
-	-- local level_world = Managers.world:world("level_world")
-	-- self:destroy_attachments(gear_id, "Player")
-	-- self:destroy_attachments(gear_id, "InventoryBackgroundView")
-	-- self:destroy_attachments(gear_id, "VisualLoadoutCustomization")
 	local weapon_extension = ScriptUnit.extension(player_unit, "weapon_system")
-	if weapon_extension._weapons then
+	if weapon_extension and weapon_extension._weapons then
 		for slot_name, weapon in pairs(weapon_extension._weapons) do
 			if weapon.item.__gear_id == gear_id then
 				if weapon.weapon_unit then
-					-- mod:dtf(weapon, "weapon", 5)
 					local visual_loadout_extension = ScriptUnit.extension(player_unit, "visual_loadout_system")
 					local slot_name = weapon.item.__gear.slots[1]
-					-- local unit_data_extension = ScriptUnit.extension(player_unit, "unit_data_system")
-					-- local fixed_frame = unit_data_extension:last_received_fixed_frame()
-					-- local mispredicted_frame = fixed_frame - 1
-					-- local mispredicted_frame_t = mispredicted_frame * GameParameters.fixed_time_step
 					local fixed_time_step = GameParameters.fixed_time_step
 					local gameplay_time = Managers.time:time("gameplay")
 					local latest_frame = math.floor(gameplay_time / fixed_time_step)
 					visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
-					-- self:load_weapon_customization(weapon.item, weapon.weapon_unit)
 					local time_manager = Managers.time
 					local t = time_manager:time("gameplay")
 					visual_loadout_extension:equip_item_to_slot(weapon.item, slot_name, weapon.weapon_unit, gameplay_time)
-
-					-- mod:echo("dsjghkjfdhgkj")
 				end
 			end
 		end
@@ -120,7 +107,6 @@ mod.init_context = function(self)
 						if self.first_person_extension then
 							self.first_person_unit = self.first_person_extension:first_person_unit()
 							if self.first_person_unit then
-								-- self.flashlight = Unit.light(self.first_person_unit, 1)
 								self.initialized = true
 							end
 						end
