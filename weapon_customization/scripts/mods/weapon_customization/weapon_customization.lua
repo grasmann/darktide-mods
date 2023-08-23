@@ -32,7 +32,8 @@ function mod.update(main_dt)
 end
 
 mod.get_gear_id = function(self, item, original)
-    return not original and item.__gear_id or item.__original_gear_id or item.gear_id, item.__original_gear_id or item.gear_id
+    -- return not original and item.__gear_id or item.__original_gear_id or item.gear_id, item.__original_gear_id or item.gear_id
+	return item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id
 end
 
 mod.get_gear_setting = function(self, gear_id, setting)
@@ -61,15 +62,16 @@ end
 mod.get_flashlight_unit = function(self)
 	local weapon = self:get_wielded_weapon()
 	if weapon and mod:has_flashlight_attachment() then
+		local gear_id = mod:get_gear_id(weapon.item)
 		-- Check if unit set but not alive
-		if self.attached_flashlights[weapon.item.__gear_id] then
-			if not Unit.alive(self.attached_flashlights[weapon.item.__gear_id]) then
-				self.attached_flashlights[weapon.item.__gear_id] = nil
+		if self.attached_flashlights[gear_id] then
+			if not Unit.alive(self.attached_flashlights[gear_id]) then
+				self.attached_flashlights[gear_id] = nil
 				self:print("get_flashlight_unit - flashlight unit destroyed")
 			end
 		end
 		-- Search for flashlight unit
-		if not self.attached_flashlights[weapon.item.__gear_id] then
+		if not self.attached_flashlights[gear_id] then
 			self:print("get_flashlight_unit - searching flashlight unit")
 			local main_childs = Unit.get_child_units(weapon.weapon_unit)
 			if main_childs then
@@ -77,7 +79,7 @@ mod.get_flashlight_unit = function(self)
 					local unit_name = Unit.debug_name(main_child)
 					if self.attachment_units[unit_name] then
 						if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-							self.attached_flashlights[weapon.item.__gear_id] = main_child
+							self.attached_flashlights[gear_id] = main_child
 							self:set_flashlight_template(main_child)
 						end
 					end
@@ -87,7 +89,7 @@ mod.get_flashlight_unit = function(self)
 					-- 		local unit_name = Unit.debug_name(weapon_part)
 					-- 		if self.attachment_units[unit_name] then
 					-- 			if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-					-- 				self.attached_flashlights[weapon.item.__gear_id] = weapon_part
+					-- 				self.attached_flashlights[gear_id] = weapon_part
 					-- 				self:set_flashlight_template(weapon_part)
 					-- 			end
 					-- 		end
@@ -97,8 +99,8 @@ mod.get_flashlight_unit = function(self)
 			else self:print("get_flashlight_unit - main_childs is nil") end
 		end
 		-- Return cached unit
-		if Unit.alive(self.attached_flashlights[weapon.item.__gear_id]) then
-			return self.attached_flashlights[weapon.item.__gear_id]
+		if Unit.alive(self.attached_flashlights[gear_id]) then
+			return self.attached_flashlights[gear_id]
 		end
 	else self:print("get_flashlight_unit - weapon is nil") end
 end
@@ -106,10 +108,11 @@ end
 mod.redo_weapon_attachments = function(self, gear_id)
 	local slot_name, weapon = self:get_weapon_from_gear_id(gear_id)
 	if weapon then
+		local gear_id = mod:get_gear_id(weapon.item)
 		local fixed_time_step = GameParameters.fixed_time_step
 		local gameplay_time = self.time_manager:time("gameplay")
 		local latest_frame = math.floor(gameplay_time / fixed_time_step)
-		self.attached_flashlights[weapon.item.__gear_id] = nil
+		self.attached_flashlights[gear_id] = nil
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		local t = self.time_manager:time("gameplay")
 		self.visual_loadout_extension:equip_item_to_slot(weapon.item, slot_name, nil, gameplay_time)
@@ -131,10 +134,11 @@ mod.get_wielded_weapon = function(self)
 	return self.weapon_extension:_wielded_weapon(inventory_component, weapons)
 end
 
-mod.get_weapon_from_gear_id = function(self, gear_id)
+mod.get_weapon_from_gear_id = function(self, from_gear_id)
 	if self.weapon_extension and self.weapon_extension._weapons then
 		for slot_name, weapon in pairs(self.weapon_extension._weapons) do
-			if weapon.item.__gear_id == gear_id then
+			local gear_id = mod:get_gear_id(weapon.item)
+			if from_gear_id == gear_id then
 				if weapon.weapon_unit then
 					return slot_name, weapon
 				end
@@ -257,6 +261,7 @@ end
 mod.init = function(self)
 	self.ui_manager = Managers.ui
 	self.player_manager = Managers.player
+	self.package_manager = Managers.package
 	self.player = self.player_manager:local_player(1)
 	self.player_unit = self.player.player_unit
 	self.fx_extension = ScriptUnit.extension(self.player_unit, "fx_system")
@@ -289,3 +294,29 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_cus
 if Managers and Managers.player._game_state ~= nil then
 	mod:init()
 end
+
+-- mod:attachment_package_snapshot(nil, {
+-- 	["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/grip_02/grip_02"] = true,
+--     ["content/characters/empty_item/empty_item"] = true,
+--     ["content/weapons/player/attachments/emblems/emblem_05/emblem_05"] = true,
+--     ["content/textures/camo_patterns/camo_default"] = true,
+--     ["content/weapons/player/attachments/trinket_hooks/trinket_hook_empty"] = true,
+--     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/magazine_02/magazine_02"] = true,
+--     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/barrel_03/barrel_03"] = true,
+--     ["content/weapons/player/attachments/trinkets/trinket_5c/trinket_5c"] = true,
+--     ["content/textures/colors/3_colour_navy_01"] = true,
+--     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/receiver_02/receiver_02"] = true
+-- })
+
+-- mod:attachment_package_snapshot(nil, {
+-- 	["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/grip_02/grip_02"] = true,
+--     ["content/characters/empty_item/empty_item"] = true,
+--     ["content/weapons/player/attachments/emblems/emblem_05/emblem_05"] = true,
+--     ["content/textures/camo_patterns/camo_default"] = true,
+--     ["content/weapons/player/attachments/trinket_hooks/trinket_hook_empty"] = true,
+--     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/magazine_02/magazine_02"] = true,
+--     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/barrel_01/barrel_01"] = true,
+--     ["content/weapons/player/attachments/trinkets/trinket_5c/trinket_5c"] = true,
+--     ["content/textures/colors/3_colour_navy_01"] = true,
+--     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/receiver_02/receiver_02"] = true
+-- })

@@ -49,9 +49,8 @@ mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item,
 
     local attachments = item.__master_item and item.__master_item.attachments
     if item and attachments and item.__master_item and item.__master_item.weapon_template then
-        local gear_id, original_gear_id = mod:get_gear_id(item)
-        original_gear_id = original_gear_id or gear_id
-        if original_gear_id then
+        local gear_id = mod:get_gear_id(item)
+        if gear_id then
 
             -- Add flashlight slot
             if item.__gear.slots[1] == "slot_secondary" then
@@ -64,7 +63,7 @@ mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item,
             end
 
             for _, attachment_slot in pairs(mod.attachment_slots) do
-                local attachment = mod:get_gear_setting(original_gear_id, attachment_slot)
+                local attachment = mod:get_gear_setting(gear_id, attachment_slot)
                 local item_name = mod:item_name_from_content_string(item.name)
                 if attachment and mod.attachment_models[item_name][attachment] then
                     local model = mod.attachment_models[item_name][attachment].model
@@ -88,29 +87,30 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
         local item_name = nil
         if instance.processing_item then
             item_name = mod:item_name_from_content_string(instance.processing_item.name) 
-            local gear_id, original_gear_id = mod:get_gear_id(instance.processing_item)
-            original_gear_id = original_gear_id or gear_id
+            local gear_id = mod:get_gear_id(instance.processing_item)
+            if gear_id then
 
-            -- Add flashlight slot
-            if instance.processing_item.__gear.slots[1] == "slot_secondary" then
-                if not mod._recursive_find_attachment(attachments, "flashlight") then
-                    attachments.flashlight = {
-                        children = {},
-                        item = "",
-                    }
+                -- Add flashlight slot
+                if instance.processing_item.__gear.slots[1] == "slot_secondary" then
+                    if not mod._recursive_find_attachment(attachments, "flashlight") then
+                        attachments.flashlight = {
+                            children = {},
+                            item = "",
+                        }
+                    end
                 end
-            end
 
-            for _, attachment_slot in pairs(mod.attachment_slots) do
-                local attachment = mod:get_gear_setting(original_gear_id, attachment_slot)
-                -- local item_name = mod:item_name_from_content_string(instance.processing_item.name)
-                if attachment and mod.attachment_models[item_name][attachment] then
-                    local model = mod.attachment_models[item_name][attachment].model
-                    local attachment_type = mod.attachment_models[item_name][attachment].type
+                for _, attachment_slot in pairs(mod.attachment_slots) do
+                    local attachment = mod:get_gear_setting(gear_id, attachment_slot)
+                    -- local item_name = mod:item_name_from_content_string(instance.processing_item.name)
+                    if attachment and mod.attachment_models[item_name][attachment] then
+                        local model = mod.attachment_models[item_name][attachment].model
+                        local attachment_type = mod.attachment_models[item_name][attachment].type
 
-                    mod._recursive_set_attachment(attachments, attachment_type, model)
+                        mod._recursive_set_attachment(attachments, attachment_type, model)
 
-                    something_changed = true
+                        something_changed = true
+                    end
                 end
             end
 
@@ -143,9 +143,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
         local attachments = item_data.attachments
         if item_unit and attachments and item_data.__master_item and item_data.__master_item.weapon_template then
-            local gear_id, original_gear_id = mod:get_gear_id(item_data)
-            original_gear_id = original_gear_id or gear_id
-            if original_gear_id then
+            local gear_id = mod:get_gear_id(item_data)
+            if gear_id then
 
                 -- Add flashlight slot
                 if item_data.__gear.slots[1] == "slot_secondary" then
@@ -158,7 +157,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 for _, attachment_slot in pairs(mod.attachment_slots) do
-                    local attachment = mod:get_gear_setting(original_gear_id, attachment_slot)
+                    local attachment = mod:get_gear_setting(gear_id, attachment_slot)
                     local item_name = mod:item_name_from_content_string(item_data.name)
                     if attachment and mod.attachment_models[item_name][attachment] then
                         local model = mod.attachment_models[item_name][attachment].model
@@ -204,15 +203,17 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         return attachment_units, attachment_units_bind_poses
     end
 
-    if not instance._generate_attachment_overrides_lookup then instance._generate_attachment_overrides_lookup = instance.generate_attachment_overrides_lookup end
+    if not instance._generate_attachment_overrides_lookup then
+        instance._generate_attachment_overrides_lookup = instance.generate_attachment_overrides_lookup
+    end
     instance.generate_attachment_overrides_lookup = function(item_data, override_item_data)
         if override_item_data then
             local attachments = override_item_data.attachments
-            local gear_id, original_gear_id = mod:get_gear_id(item_data)
-            original_gear_id = original_gear_id or gear_id
-            if original_gear_id then
+            local gear_id = mod:get_gear_id(item_data)
+            if gear_id then
+
                 for _, attachment_slot in pairs(mod.attachment_slots) do
-                    local attachment = mod:get_gear_setting(original_gear_id, attachment_slot)
+                    local attachment = mod:get_gear_setting(gear_id, attachment_slot)
                     local item_name = mod:item_name_from_content_string(item_data.name)
                     if attachment and mod.attachment_models[item_name][attachment] then
                         local model = mod.attachment_models[item_name][attachment].model
@@ -234,31 +235,31 @@ end)
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘└─┘ ##########################################################################
 
 mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, is_equipped, on_present_callback, ...)
-    mod.previewed_weapon_flashlight = mod:has_flashlight_attachment(item)
+    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
 	func(self, item, is_equipped, on_present_callback, ...)
 	mod.previewed_weapon_flashlight = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponActions, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:has_flashlight_attachment(item)
+    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponInfo, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:has_flashlight_attachment(item)
+    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponPatterns, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:has_flashlight_attachment(item)
+    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponActionsExtended, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:has_flashlight_attachment(item)
+    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
 end)
