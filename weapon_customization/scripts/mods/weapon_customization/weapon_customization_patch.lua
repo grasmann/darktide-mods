@@ -16,36 +16,71 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┘├─┤ │ │  ├─┤ ###########################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ###########################################################
 
-mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
+mod._recursive_set_attachment = function(attachments, attachment_type, model)
+    for attachment_name, attachment_data in pairs(attachments) do
+        if attachment_name == attachment_type then
+            attachment_data.item = model
+        else
+            if attachment_data.children then
+                mod._recursive_set_attachment(attachment_data.children, attachment_type, model)
+            end
+        end
+    end
+end
 
-    instance._recursive_set_attachment = function(attachments, attachment_type, model)
+mod._recursive_find_attachment = function(attachments, attachment_type)
+    local val = nil
+    if attachments then
         for attachment_name, attachment_data in pairs(attachments) do
             if attachment_name == attachment_type then
-                attachment_data.item = model
+                val = true
             else
                 if attachment_data.children then
-                    instance._recursive_set_attachment(attachment_data.children, attachment_type, model)
+                    val = mod._recursive_find_attachment(attachment_data.children, attachment_type)
+                end
+            end
+            if val then break end
+        end
+    end
+    return val
+end
+
+mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
+
+    local attachments = item.__master_item and item.__master_item.attachments
+    if item and attachments and item.__master_item and item.__master_item.weapon_template then
+        local gear_id, original_gear_id = mod:get_gear_id(item)
+        original_gear_id = original_gear_id or gear_id
+        if original_gear_id then
+
+            -- Add flashlight slot
+            if item.__gear.slots[1] == "slot_secondary" then
+                if not mod._recursive_find_attachment(attachments, "flashlight") then
+                    attachments.flashlight = {
+                        children = {},
+                        item = "",
+                    }
+                end
+            end
+
+            for _, attachment_slot in pairs(mod.attachment_slots) do
+                local attachment = mod:get_gear_setting(original_gear_id, attachment_slot)
+                local item_name = mod:item_name_from_content_string(item.name)
+                if attachment and mod.attachment_models[item_name][attachment] then
+                    local model = mod.attachment_models[item_name][attachment].model
+                    local attachment_type = mod.attachment_models[item_name][attachment].type
+
+                    mod._recursive_set_attachment(attachments, attachment_type, model)
                 end
             end
         end
     end
 
-    instance._recursive_find_attachment = function(attachments, attachment_type)
-        local val = nil
-        if attachments then
-            for attachment_name, attachment_data in pairs(attachments) do
-                if attachment_name == attachment_type then
-                    val = true
-                else
-                    if attachment_data.children then
-                        val = instance._recursive_find_attachment(attachment_data.children, attachment_type)
-                    end
-                end
-                if val then break end
-            end
-        end
-        return val
-    end
+    func(self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
+
+end)
+
+mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
 
     if not instance.__resolve_item_packages_recursive then instance.__resolve_item_packages_recursive = instance._resolve_item_packages_recursive end
     instance._resolve_item_packages_recursive = function(attachments, items_dictionary, result)
@@ -58,7 +93,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
             -- Add flashlight slot
             if instance.processing_item.__gear.slots[1] == "slot_secondary" then
-                if not instance._recursive_find_attachment(attachments, "flashlight") then
+                if not mod._recursive_find_attachment(attachments, "flashlight") then
                     attachments.flashlight = {
                         children = {},
                         item = "",
@@ -73,7 +108,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
                     local model = mod.attachment_models[item_name][attachment].model
                     local attachment_type = mod.attachment_models[item_name][attachment].type
 
-                    instance._recursive_set_attachment(attachments, attachment_type, model)
+                    mod._recursive_set_attachment(attachments, attachment_type, model)
 
                     something_changed = true
                 end
@@ -103,35 +138,6 @@ end)
 
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
-    instance._recursive_set_attachment = function(attachments, attachment_type, model)
-        for attachment_name, attachment_data in pairs(attachments) do
-            if attachment_name == attachment_type then
-                attachment_data.item = model
-            else
-                if attachment_data.children then
-                    instance._recursive_set_attachment(attachment_data.children, attachment_type, model)
-                end
-            end
-        end
-    end
-
-    instance._recursive_find_attachment = function(attachments, attachment_type)
-        local val = nil
-        if attachments then
-            for attachment_name, attachment_data in pairs(attachments) do
-                if attachment_name == attachment_type then
-                    val = true
-                else
-                    if attachment_data.children then
-                        val = instance._recursive_find_attachment(attachment_data.children, attachment_type)
-                    end
-                end
-                if val then break end
-            end
-        end
-        return val
-    end
-
     if not instance._spawn_item_attachments then instance._spawn_item_attachments = instance.spawn_item_attachments end
     instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 
@@ -143,7 +149,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                 -- Add flashlight slot
                 if item_data.__gear.slots[1] == "slot_secondary" then
-                    if not instance._recursive_find_attachment(attachments, "flashlight") then
+                    if not mod._recursive_find_attachment(attachments, "flashlight") then
                         attachments.flashlight = {
                             children = {},
                             item = "",
@@ -158,7 +164,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                         local model = mod.attachment_models[item_name][attachment].model
                         local attachment_type = mod.attachment_models[item_name][attachment].type
 
-                        instance._recursive_set_attachment(attachments, attachment_type, model)
+                        mod._recursive_set_attachment(attachments, attachment_type, model)
                     end
                 end
             end
@@ -212,7 +218,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                         local model = mod.attachment_models[item_name][attachment].model
                         local attachment_type = mod.attachment_models[item_name][attachment].type
 
-                        instance._recursive_set_attachment(attachments, attachment_type, model)
+                        mod._recursive_set_attachment(attachments, attachment_type, model)
                     end
                 end
             end

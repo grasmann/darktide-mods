@@ -2,6 +2,10 @@ local mod = get_mod("weapon_customization")
 
 mod._debug = false
 
+mod:persistent_table("weapon_customization", {
+	flashlight_on = false,
+})
+
 mod.print = function(self, message)
 	if self._debug then self:echo(message) end
 end
@@ -11,6 +15,10 @@ local PerlinNoise = mod:original_require("scripts/utilities/perlin_noise")
 
 mod._flicker_settings = FlashlightTemplates.assault.flicker
 mod._flashlight_template = FlashlightTemplates.assault.light.first_person
+
+function mod.on_game_state_changed(status, state_name)
+	mod:persistent_table("weapon_customization").flashlight_on = false
+end
 
 function mod.on_setting_changed(setting_id)
 	mod.update_option(setting_id)
@@ -62,29 +70,32 @@ mod.get_flashlight_unit = function(self)
 		end
 		-- Search for flashlight unit
 		if not self.attached_flashlights[weapon.item.__gear_id] then
+			self:print("get_flashlight_unit - searching flashlight unit")
 			local main_childs = Unit.get_child_units(weapon.weapon_unit)
-			for _, main_child in pairs(main_childs) do
-				local unit_name = Unit.debug_name(main_child)
-				if self.attachment_units[unit_name] then
-					if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-						self.attached_flashlights[weapon.item.__gear_id] = main_child
-						self:set_flashlight_template(main_child)
-					end
-				end
-				local weapon_parts = Unit.get_child_units(main_child)
-				if weapon_parts then
-					for _, weapon_part in pairs(weapon_parts) do
-						local unit_name = Unit.debug_name(weapon_part)
-						if self.attachment_units[unit_name] then
-							if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-								self.attached_flashlights[weapon.item.__gear_id] = weapon_part
-								self:set_flashlight_template(weapon_part)
-							end
+			if main_childs then
+				for _, main_child in pairs(main_childs) do
+					local unit_name = Unit.debug_name(main_child)
+					if self.attachment_units[unit_name] then
+						if table.contains(self.flashlights, self.attachment_units[unit_name]) then
+							self.attached_flashlights[weapon.item.__gear_id] = main_child
+							self:set_flashlight_template(main_child)
 						end
 					end
+					-- local weapon_parts = Unit.get_child_units(main_child)
+					-- if weapon_parts then
+					-- 	for _, weapon_part in pairs(weapon_parts) do
+					-- 		local unit_name = Unit.debug_name(weapon_part)
+					-- 		if self.attachment_units[unit_name] then
+					-- 			if table.contains(self.flashlights, self.attachment_units[unit_name]) then
+					-- 				self.attached_flashlights[weapon.item.__gear_id] = weapon_part
+					-- 				self:set_flashlight_template(weapon_part)
+					-- 			end
+					-- 		end
+					-- 	end
+					-- else self:print("get_flashlight_unit - weapon_parts is nil") end
 				end
-			end
-		else self:print("get_flashlight_unit - searching flashlight unit") end
+			else self:print("get_flashlight_unit - main_childs is nil") end
+		end
 		-- Return cached unit
 		if Unit.alive(self.attached_flashlights[weapon.item.__gear_id]) then
 			return self.attached_flashlights[weapon.item.__gear_id]
@@ -98,11 +109,21 @@ mod.redo_weapon_attachments = function(self, gear_id)
 		local fixed_time_step = GameParameters.fixed_time_step
 		local gameplay_time = self.time_manager:time("gameplay")
 		local latest_frame = math.floor(gameplay_time / fixed_time_step)
+		self.attached_flashlights[weapon.item.__gear_id] = nil
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		local t = self.time_manager:time("gameplay")
-		self.visual_loadout_extension:equip_item_to_slot(weapon.item, slot_name, weapon.weapon_unit, gameplay_time)
-	end
+		self.visual_loadout_extension:equip_item_to_slot(weapon.item, slot_name, nil, gameplay_time)
+		self:print("redo_weapon_attachments - done")
+		self.update_flashlight = true
+	else self:print("redo_weapon_attachments - weapon is nil") end
 end
+
+mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
+	func(self, ...)
+	if mod.update_flashlight then
+		mod:toggle_flashlight(true)
+	end
+end)
 
 mod.get_wielded_weapon = function(self)
 	local inventory_component = self.weapon_extension._inventory_component
@@ -125,7 +146,7 @@ end
 mod.update_flicker = function(self)
 	if self:has_flashlight_attachment() and mod:get("mod_option_flashlight_flicker") then
 		local flashlight_unit = self:get_flashlight_unit()
-		if flashlight_unit and self.flashlight_on then
+		if flashlight_unit and mod:persistent_table("weapon_customization").flashlight_on then
 			local t = self.time_manager:time("gameplay")
 			local settings = self._flicker_settings
 
@@ -213,13 +234,16 @@ mod.toggle_flashlight = function(self, retain)
 	if self.initialized then
 		local flashlight_unit = self:get_flashlight_unit()
 		if flashlight_unit then
-			self.flashlight_on = not self.flashlight_on
-			if retain then self.flashlight_on = not self.flashlight_on end
+			if not retain then
+				mod:persistent_table("weapon_customization").flashlight_on = 
+					not mod:persistent_table("weapon_customization").flashlight_on
+			end
+			-- if retain then mod:persistent_table("weapon_customization").flashlight_on = not mod:persistent_table("weapon_customization").flashlight_on end
 			local light = Unit.light(flashlight_unit, 1)
 			if light then
-				Light.set_enabled(light, self.flashlight_on)
+				Light.set_enabled(light, mod:persistent_table("weapon_customization").flashlight_on)
 				Light.set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
-				if self.flashlight_on then
+				if mod:persistent_table("weapon_customization").flashlight_on then
 					if mod:get("mod_option_flashlight_flicker_start") then self.start_flicker_now = true end
 					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
 				else

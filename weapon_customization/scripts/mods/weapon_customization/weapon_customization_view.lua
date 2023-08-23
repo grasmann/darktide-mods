@@ -4,6 +4,7 @@ local inventory_weapon_cosmetics_view_definitions = mod:original_require("script
 local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
+local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 
 local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
 local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
@@ -55,7 +56,7 @@ end)
 
 mod:hook(CLASS.ItemGridViewBase, "_sort_grid_layout", function(func, self, sort_function, ...)
 	func(self, sort_function, ...)
-	self:present_grid_layout({})
+	-- self:present_grid_layout({})
 end)
 
 mod.label_template = function(self, text, scenegraph_id)
@@ -115,7 +116,9 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 			Managers.event:trigger("event_item_icon_updated", InventoryWeaponCosmeticsView._selected_item)
 			Managers.event:trigger("event_replace_list_item", InventoryWeaponCosmeticsView._selected_item)
 
-            mod:redo_weapon_attachments(original_gear_id)
+			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
+			package_synchronizer_client:reevaluate_all_profiles_packages()
+			mod:redo_weapon_attachments(original_gear_id)
 
 			for _, option in pairs(entry.options) do
 				if option.id == new_value then
