@@ -5,24 +5,6 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 local WeaponCustomizationData = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_data")
 
 mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
-    -- if self._loaded_packages then
-    --     local mission = self._mission
-    --     local dependencies = ItemPackage.compile_item_instance_dependencies(item, self._item_definitions, nil, mission)
-
-    --     for package_name, _ in pairs(dependencies) do
-    --         if self._loaded_packages[package_name] then
-    --             local loaded_packages = self._loaded_packages[package_name]
-    --             if not table.contains(mod.packages, package_name) then
-    --                 local load_id = table.remove(loaded_packages, #loaded_packages)
-
-    --                 Managers.package:release(load_id)
-    --             end
-    --             if table.is_empty(loaded_packages) then
-    --                 self._loaded_packages[package_name] = nil
-    --             end
-    --         end
-    --     end
-    -- end
 end)
 
 mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)
@@ -37,30 +19,6 @@ mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)
 	self._pending_unloads = nil
 	self._loaded_packages = nil
 end)
-
--- mod:hook(CLASS.UICharacterProfilePackageLoader, "_unload_slot", function(func, self, slot_id, ...)
--- 	local package_manager = Managers.package
--- 	local packages = self._slots_package_ids[slot_id]
-
--- 	if packages then
--- 		for i = 1, #packages do
---             if not package_manager:all_reference_count()
--- 			package_manager:release(packages[i])
--- 		end
--- 	end
-
--- 	self._slots_item_loaded[slot_id] = nil
--- 	self._slots_loading_data[slot_id] = nil
--- 	self._slots_package_ids[slot_id] = nil
--- end)
-
--- mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
---     local load_call_item = self._load_call_data[id]
--- 	local package_name = load_call_item.package_name
---     if self:can_unload(package_name) then
---         func(self, id, ...)
---     end
--- end)
 
 mod.attachment_package_snapshot = function(self, item, test_data)
     local packages = test_data or {}
@@ -84,17 +42,11 @@ mod.attachment_package_resolve = function(self)
                 old_packages[#old_packages+1] = name
             end
         end
-        for _, old in pairs(old_packages) do
-            mod:echo("old: "..old)
-        end
         local new_packages = {}
         for name, _ in pairs(self.new_package_snapshot) do
             if not self.old_package_snapshot[name] then
                 new_packages[#new_packages+1] = name
             end
-        end
-        for _, new in pairs(new_packages) do
-            mod:echo("new: "..new)
         end
         self.old_package_snapshot = nil
         self.new_package_snapshot = nil
@@ -118,7 +70,7 @@ function mod.fetch_option_from_data(setting_id)
 end
 
 function mod.fetch_option_from_view(setting_id)
-	local options_view = mod.ui_manager:view_instance("dmf_options_view")
+	local options_view = Managers.ui:view_instance("dmf_options_view")
 	if options_view then
 		for mod_name, mod_group in pairs(options_view._settings_category_widgets) do
 			for index, widget_data in pairs(mod_group) do
@@ -133,7 +85,7 @@ function mod.fetch_option_from_view(setting_id)
 end
 
 function mod.update_option(setting_id)
-	local options_view = mod.ui_manager:view_instance("dmf_options_view")
+	local options_view = Managers.ui:view_instance("dmf_options_view")
 	if options_view then
 		local data_option = mod.fetch_option_from_data(setting_id)
 		if data_option.type == "checkbox" then

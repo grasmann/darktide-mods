@@ -4,8 +4,7 @@ local inventory_weapon_cosmetics_view_definitions = mod:original_require("script
 local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
--- local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
--- local MasterItems = mod:original_require("scripts/backend/master_items")
+local MasterItems = mod:original_require("scripts/backend/master_items")
 
 local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
 local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
@@ -61,13 +60,15 @@ mod:hook(CLASS.ItemGridViewBase, "_sort_grid_layout", function(func, self, sort_
 end)
 
 mod.label_template = function(self, text, scenegraph_id)
+	local style = table.clone(UIFontSettings.grid_title)
+	style.offset = {0, 15, 1}
     return UIWidget.create_definition({
         {
             value_id = "text",
             style_id = "text",
             pass_type = "text",
             value = mod:localize(text),
-            style = table.clone(UIFontSettings.item_info_big)
+            style = style,
         }
     }, scenegraph_id)
 end
@@ -93,9 +94,11 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 	template[7].pass_type = "texture"
 	template[7].value = "content/ui/materials/backgrounds/terminal_basic"
 	template[7].style.horizontal_alignment = "center"
+	-- template[8].value = "Default"
     local definition = UIWidget.create_definition(template, scenegraph, nil, size)
     local widget_name = attachment_slot.."_custom"
     local widget = InventoryWeaponCosmeticsView:_create_widget(widget_name, definition)
+
     InventoryWeaponCosmeticsView._widgets_by_name[widget_name] = widget
     InventoryWeaponCosmeticsView._widgets[#InventoryWeaponCosmeticsView._widgets+1] = widget
 
@@ -105,17 +108,20 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
         widget_type = "dropdown",
         on_activated = function(new_value, entry)
 
-			-- local item_definitions = MasterItems.get_cached()
-
-			-- local old_packages = {}
-			-- local old_attachments = InventoryWeaponCosmeticsView._presentation_item.__master_item.attachments
-			-- ItemPackage._resolve_item_packages_recursive(old_attachments, item_definitions, old_packages)
-			-- mod:dtf(old_packages, "old_packages", 5)
-
 			mod:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
 
-            mod:set(tostring(gear_id).."_"..attachment_slot, new_value)
-			-- mod:echo(tostring(gear_id).."_"..attachment_slot.." = "..new_value)
+			local item_name = mod:item_name_from_content_string(InventoryWeaponCosmeticsView._presentation_item.name)
+			local weapon_attachments = mod.attachment_models[item_name]
+			local attachment = weapon_attachments[new_value]
+			if attachment and attachment.model == "" then
+				mod:set(tostring(gear_id).."_"..attachment_slot, nil)
+			else
+				mod:set(tostring(gear_id).."_"..attachment_slot, new_value)
+			end
+
+			-- InventoryWeaponCosmeticsView._selected_item = MasterItems.get_item_instance(gear, gear_id)
+			InventoryWeaponCosmeticsView._presentation_item = MasterItems.create_preview_item_instance(InventoryWeaponCosmeticsView._selected_item)
+
 			mod.flashlight_attached[gear_id] = nil
 
 			if InventoryWeaponCosmeticsView._previewed_element then
@@ -133,19 +139,15 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 				end
 			end
 
-			-- local new_packages = {}
-			-- local new_attachments = InventoryWeaponCosmeticsView._presentation_item.__master_item.attachments
-			-- ItemPackage._resolve_item_packages_recursive(new_attachments, item_definitions, new_packages)
-			-- mod:dtf(new_packages, "new_packages", 5)
-
+			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
+			if package_synchronizer_client then
+				package_synchronizer_client:reevaluate_all_profiles_packages()
+			end
+			mod:redo_weapon_attachments(gear_id)
 
 			Managers.ui:item_icon_updated(InventoryWeaponCosmeticsView._selected_item)
 			Managers.event:trigger("event_item_icon_updated", InventoryWeaponCosmeticsView._selected_item)
 			Managers.event:trigger("event_replace_list_item", InventoryWeaponCosmeticsView._selected_item)
-
-			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
-			package_synchronizer_client:reevaluate_all_profiles_packages()
-			mod:redo_weapon_attachments(gear_id)
 
 			for _, option in pairs(entry.options) do
 				if option.id == new_value then
@@ -182,7 +184,7 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 		end
     end
 
-    local size = {grid_size[1], 50}
+    -- local size = {grid_size[1], 35}
     content.area_length = size[2] * num_visible_options
     local scroll_length = math.max(size[2] * num_options - content.area_length, 0)
     content.scroll_length = scroll_length
@@ -207,209 +209,237 @@ end
 
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions", function(instance)
 
-	local top = 150
+	local top = 100
     local edge = edge_padding * 0.5
 	local z = 1
-    instance.scenegraph_definition.special_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge, z}
-	}
-    instance.scenegraph_definition.special_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 50, z}
-	}
-    instance.scenegraph_definition.barrel_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 100, z}
-	}
-    instance.scenegraph_definition.barrel_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 150, z}
-	}
-    instance.scenegraph_definition.receiver_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 200, z}
-	}
-    instance.scenegraph_definition.receiver_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 250, z}
-	}
-	instance.scenegraph_definition.magazine_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 300, z}
-	}
-    instance.scenegraph_definition.magazine_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 350, z}
-	}
-	instance.scenegraph_definition.grip_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 400, z}
-	}
-    instance.scenegraph_definition.grip_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 450, z}
-	}
-	instance.scenegraph_definition.bayonet_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 500, z}
-	}
-    instance.scenegraph_definition.bayonet_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 550, z}
-	}
-	instance.scenegraph_definition.handle_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 600, z}
-	}
-    instance.scenegraph_definition.handle_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 650, z}
-	}
-	instance.scenegraph_definition.sight_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 700, z}
-	}
-    instance.scenegraph_definition.sight_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 750, z}
-	}
-	instance.scenegraph_definition.body_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 800, z}
-	}
-    instance.scenegraph_definition.body_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 850, z}
-	}
-	instance.scenegraph_definition.pommel_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 900, z}
-	}
-    instance.scenegraph_definition.pommel_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 950, z}
-	}
-	instance.scenegraph_definition.head_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 1000, z}
-	}
-    instance.scenegraph_definition.head_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 1050, z}
-	}
-	instance.scenegraph_definition.blade_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 1100, z}
-	}
-    instance.scenegraph_definition.blade_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 1150, z}
-	}
-	instance.scenegraph_definition.shaft_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 1200, z}
-	}
-    instance.scenegraph_definition.shaft_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 1250, z}
-	}
-	instance.scenegraph_definition.left_text_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 1300, z}
-	}
-    instance.scenegraph_definition.left_pivot = {
-		vertical_alignment = "top",
-		parent = "grid_tab_panel",
-		horizontal_alignment = "left",
-		size = {grid_size[1], 50},
-		position = {edge, top - edge + 1350, z}
-	}
+    -- instance.scenegraph_definition.flashlight_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge, z}
+	-- }
+    -- instance.scenegraph_definition.flashlight_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 50, z}
+	-- }
+    -- instance.scenegraph_definition.barrel_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 100, z}
+	-- }
+    -- instance.scenegraph_definition.barrel_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 150, z}
+	-- }
+    -- instance.scenegraph_definition.receiver_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 200, z}
+	-- }
+    -- instance.scenegraph_definition.receiver_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 250, z}
+	-- }
+	-- instance.scenegraph_definition.magazine_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 300, z}
+	-- }
+    -- instance.scenegraph_definition.magazine_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 350, z}
+	-- }
+	-- instance.scenegraph_definition.grip_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 400, z}
+	-- }
+    -- instance.scenegraph_definition.grip_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 450, z}
+	-- }
+	-- instance.scenegraph_definition.bayonet_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 500, z}
+	-- }
+    -- instance.scenegraph_definition.bayonet_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 550, z}
+	-- }
+	-- instance.scenegraph_definition.handle_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 600, z}
+	-- }
+    -- instance.scenegraph_definition.handle_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 650, z}
+	-- }
+	-- instance.scenegraph_definition.sight_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 700, z}
+	-- }
+    -- instance.scenegraph_definition.sight_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 750, z}
+	-- }
+	-- instance.scenegraph_definition.body_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 800, z}
+	-- }
+    -- instance.scenegraph_definition.body_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 850, z}
+	-- }
+	-- instance.scenegraph_definition.pommel_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 900, z}
+	-- }
+    -- instance.scenegraph_definition.pommel_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 950, z}
+	-- }
+	-- instance.scenegraph_definition.head_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1000, z}
+	-- }
+    -- instance.scenegraph_definition.head_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1050, z}
+	-- }
+	-- instance.scenegraph_definition.blade_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1100, z}
+	-- }
+    -- instance.scenegraph_definition.blade_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1150, z}
+	-- }
+	-- instance.scenegraph_definition.shaft_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1200, z}
+	-- }
+    -- instance.scenegraph_definition.shaft_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1250, z}
+	-- }
+	-- instance.scenegraph_definition.left_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1300, z}
+	-- }
+    -- instance.scenegraph_definition.left_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1350, z}
+	-- }
+	-- instance.scenegraph_definition.emblem_right_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "emblem_right",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1400, z}
+	-- }
+    -- instance.scenegraph_definition.emblem_right_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "emblem_right",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1450, z}
+	-- }
+	-- instance.scenegraph_definition.emblem_left_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "emblem_left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1500, z}
+	-- }
+    -- instance.scenegraph_definition.emblem_left_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "grid_tab_panel",
+	-- 	horizontal_alignment = "emblem_left",
+	-- 	size = {grid_size[1], 50},
+	-- 	position = {edge, top - edge + 1550, z}
+	-- }
 
 	mod.added_cosmetics_scenegraphs = {
-		"special_text_pivot",
-		"special_pivot",
+		"flashlight_text_pivot",
+		"flashlight_pivot",
 		"barrel_text_pivot",
 		"barrel_pivot",
 		"receiver_text_pivot",
@@ -434,9 +464,31 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		"blade_pivot",
 		"shaft_text_pivot",
 		"shaft_pivot",
+		"left_text_pivot",
+		"left_pivot",
+		"emblem_right_text_pivot",
+		"emblem_right_pivot",
+		"emblem_left_text_pivot",
+		"emblem_left_pivot",
 	}
 
-    instance.widget_definitions.special_custom_text = mod:label_template("loc_weapon_cosmetics_customization_special", "special_text_pivot")
+	local y = top - edge
+	for _, scenegraph_id in pairs(mod.added_cosmetics_scenegraphs) do
+		if string.find(scenegraph_id, "text_pivot") then
+			y = y + 35
+		else
+			y = y + 50
+		end
+		instance.scenegraph_definition[scenegraph_id] = {
+			vertical_alignment = "top",
+			parent = "grid_tab_panel",
+			horizontal_alignment = "left",
+			size = {grid_size[1], 35},
+			position = {edge, y, z}
+		}
+	end
+
+    instance.widget_definitions.flashlight_custom_text = mod:label_template("loc_weapon_cosmetics_customization_flashlight", "flashlight_text_pivot")
     instance.widget_definitions.barrel_custom_text = mod:label_template("loc_weapon_cosmetics_customization_barrel", "barrel_text_pivot")
     instance.widget_definitions.receiver_custom_text = mod:label_template("loc_weapon_cosmetics_customization_receiver", "receiver_text_pivot")
 	instance.widget_definitions.magazine_custom_text = mod:label_template("loc_weapon_cosmetics_customization_magazine", "magazine_text_pivot")
@@ -449,6 +501,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.widget_definitions.head_custom_text = mod:label_template("loc_weapon_cosmetics_customization_head", "head_text_pivot")
 	instance.widget_definitions.blade_custom_text = mod:label_template("loc_weapon_cosmetics_customization_blade", "blade_text_pivot")
 	instance.widget_definitions.shaft_custom_text = mod:label_template("loc_weapon_cosmetics_customization_shaft", "shaft_text_pivot")
+	instance.widget_definitions.left_custom_text = mod:label_template("loc_weapon_cosmetics_customization_left", "left_text_pivot")
+	instance.widget_definitions.emblem_right_custom_text = mod:label_template("loc_weapon_cosmetics_customization_emblem_right", "emblem_right_text_pivot")
+	instance.widget_definitions.emblem_left_custom_text = mod:label_template("loc_weapon_cosmetics_customization_emblem_left", "emblem_left_text_pivot")
 
 end)
 
@@ -495,13 +550,9 @@ end
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
     func(self, ...)
 
-	-- if self._selected_item then
-	-- 	mod:dtf(self._selected_item, "self._selected_item", 5)
-	-- end
-
     if self._selected_item then
         self._custom_widgets = {}
-        mod:add_custom_widget(mod:generate_dropdown(self, "special_pivot", "special", self._selected_item), self)
+        mod:add_custom_widget(mod:generate_dropdown(self, "flashlight_pivot", "flashlight", self._selected_item), self)
         mod:add_custom_widget(mod:generate_dropdown(self, "barrel_pivot", "barrel", self._selected_item), self)
         mod:add_custom_widget(mod:generate_dropdown(self, "receiver_pivot", "receiver", self._selected_item), self)
 		mod:add_custom_widget(mod:generate_dropdown(self, "magazine_pivot", "magazine", self._selected_item), self)
@@ -514,7 +565,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 		mod:add_custom_widget(mod:generate_dropdown(self, "head_pivot", "head", self._selected_item, false), self)
 		mod:add_custom_widget(mod:generate_dropdown(self, "blade_pivot", "blade", self._selected_item, false), self)
 		mod:add_custom_widget(mod:generate_dropdown(self, "shaft_pivot", "shaft", self._selected_item, false), self)
-        mod:add_custom_widget(self._widgets_by_name.special_custom_text, self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "left_pivot", "left", self._selected_item, false), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "emblem_right_pivot", "emblem_right", self._selected_item, false), self)
+		mod:add_custom_widget(mod:generate_dropdown(self, "emblem_left_pivot", "emblem_left", self._selected_item, false), self)
+        mod:add_custom_widget(self._widgets_by_name.flashlight_custom_text, self)
         mod:add_custom_widget(self._widgets_by_name.barrel_custom_text, self)
         mod:add_custom_widget(self._widgets_by_name.receiver_custom_text, self)
 		mod:add_custom_widget(self._widgets_by_name.magazine_custom_text, self)
@@ -527,6 +581,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 		mod:add_custom_widget(self._widgets_by_name.head_custom_text, self)
 		mod:add_custom_widget(self._widgets_by_name.blade_custom_text, self)
 		mod:add_custom_widget(self._widgets_by_name.shaft_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.left_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.emblem_right_custom_text, self)
+		mod:add_custom_widget(self._widgets_by_name.emblem_left_custom_text, self)
 
 		local not_applicable = {}
 
@@ -543,17 +600,18 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 		local move = 0
 		for _, scenegraph_entry in pairs(mod.added_cosmetics_scenegraphs) do
 			if table.contains(not_applicable, scenegraph_entry) then
-				move = move + 50
+				-- move = move + 35
+				if string.find(scenegraph_entry, "text_pivot") then
+					move = move + 35
+				else
+					move = move + 50
+				end
 			end
 			if self._ui_scenegraph[scenegraph_entry] then
 				self._ui_scenegraph[scenegraph_entry].local_position[2] = self._ui_scenegraph[scenegraph_entry].local_position[2] - move
 			end
 		end
     end
-
-	-- local weapon_loader = self._weapon_preview._ui_weapon_spawner
-	-- local reference_name = weapon_loader._reference_name .. "_weapon_item_loader_" .. tostring(weapon_loader._weapon_loader_index)
-	-- mod:echo("weapon_loader: "..reference_name)
 
     mod:hide_custom_widgets(self, true)
 

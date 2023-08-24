@@ -1,5 +1,11 @@
 local mod = get_mod("weapon_customization")
 
+local MasterItems = mod:original_require("scripts/backend/master_items")
+local ExtensionManager = mod:original_require("scripts/foundation/managers/extension/extension_manager")
+local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
+local VOSourcesCache = mod:original_require("scripts/extension_systems/dialogue/vo_sources_cache")
+local NetworkEventDelegate = mod:original_require("scripts/managers/multiplayer/network_event_delegate")
+
 -- ##### ┬┌┐┌┬  ┬┌─┐┌┐┌┌┬┐┌─┐┬─┐┬ ┬ ###################################################################################
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
 -- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
@@ -33,7 +39,7 @@ mod._recursive_find_attachment = function(attachments, attachment_type)
     if attachments then
         for attachment_name, attachment_data in pairs(attachments) do
             if attachment_name == attachment_type then
-                val = true
+                val = attachment_data
             else
                 if attachment_data.children then
                     val = mod._recursive_find_attachment(attachment_data.children, attachment_type)
@@ -48,17 +54,22 @@ end
 mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
 
     local attachments = item.__master_item and item.__master_item.attachments
-    if item and attachments and item.__master_item and item.__master_item.weapon_template then
+    if item and attachments then
         local gear_id = mod:get_gear_id(item)
         if gear_id then
 
             -- Add flashlight slot
-            if item.__gear.slots[1] == "slot_secondary" then
-                if not mod._recursive_find_attachment(attachments, "flashlight") then
-                    attachments.flashlight = {
-                        children = {},
-                        item = "",
-                    }
+            local slot = item.__gear and item.__gear.slots and item.__gear.slots[1]
+            if slot == "slot_secondary" then
+                local special = mod:get_gear_setting(gear_id, "flashlight")
+                local flashlight = table.contains(mod.flashlights, special)
+                if flashlight then
+                    if not mod._recursive_find_attachment(attachments, "flashlight") then
+                        attachments.flashlight = {
+                            children = {},
+                            item = "",
+                        }
+                    end
                 end
             end
 
@@ -68,8 +79,14 @@ mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item,
                 if attachment and mod.attachment_models[item_name][attachment] then
                     local model = mod.attachment_models[item_name][attachment].model
                     local attachment_type = mod.attachment_models[item_name][attachment].type
-
                     mod._recursive_set_attachment(attachments, attachment_type, model)
+                else
+                    local MasterItemsCached = MasterItems.get_cached()
+                    local master_item = MasterItemsCached[item.name]
+                    local attachment = mod._recursive_find_attachment(master_item.attachments, attachment_slot)
+                    if attachment then
+                        mod._recursive_set_attachment(attachments, attachment_slot, attachment.item)
+                    end
                 end
             end
         end
@@ -83,33 +100,39 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
     if not instance.__resolve_item_packages_recursive then instance.__resolve_item_packages_recursive = instance._resolve_item_packages_recursive end
     instance._resolve_item_packages_recursive = function(attachments, items_dictionary, result)
-        local something_changed = false
-        local item_name = nil
         if instance.processing_item then
-            item_name = mod:item_name_from_content_string(instance.processing_item.name) 
             local gear_id = mod:get_gear_id(instance.processing_item)
             if gear_id then
 
                 -- Add flashlight slot
-                if instance.processing_item.__gear.slots[1] == "slot_secondary" then
-                    if not mod._recursive_find_attachment(attachments, "flashlight") then
-                        attachments.flashlight = {
-                            children = {},
-                            item = "",
-                        }
+                local slot = instance.processing_item.__gear and instance.processing_item.__gear.slots and instance.processing_item.__gear.slots[1]
+                if slot == "slot_secondary" then
+                    local special = mod:get_gear_setting(gear_id, "flashlight")
+                    local flashlight = table.contains(mod.flashlights, special)
+                    if flashlight then
+                        if not mod._recursive_find_attachment(attachments, "flashlight") then
+                            attachments.flashlight = {
+                                children = {},
+                                item = "",
+                            }
+                        end
                     end
                 end
 
                 for _, attachment_slot in pairs(mod.attachment_slots) do
                     local attachment = mod:get_gear_setting(gear_id, attachment_slot)
-                    -- local item_name = mod:item_name_from_content_string(instance.processing_item.name)
+                    local item_name = mod:item_name_from_content_string(instance.processing_item.name)
                     if attachment and mod.attachment_models[item_name][attachment] then
                         local model = mod.attachment_models[item_name][attachment].model
                         local attachment_type = mod.attachment_models[item_name][attachment].type
-
                         mod._recursive_set_attachment(attachments, attachment_type, model)
-
-                        something_changed = true
+                    else
+                        local MasterItemsCached = MasterItems.get_cached()
+                        local master_item = MasterItemsCached[instance.processing_item.name]
+                        local attachment = mod._recursive_find_attachment(master_item.attachments, attachment_slot)
+                        if attachment then
+                            mod._recursive_set_attachment(attachments, attachment_slot, attachment.item)
+                        end
                     end
                 end
             end
@@ -123,7 +146,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
     if not instance._compile_item_instance_dependencies then instance._compile_item_instance_dependencies = instance.compile_item_instance_dependencies end
     instance.compile_item_instance_dependencies = function(item, items_dictionary, out_result, optional_mission_template)
 
-        if item and item.__master_item and item.__master_item.weapon_template then
+        if item and item.__master_item then
             instance.processing_item = item
         end
 
@@ -134,7 +157,7 @@ end)
 
 -- ##### ┬  ┬┬┌─┐┬ ┬┌─┐┬    ┬  ┌─┐┌─┐┌┬┐┌─┐┬ ┬┌┬┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ####################################################
 -- ##### └┐┌┘│└─┐│ │├─┤│    │  │ │├─┤ │││ ││ │ │   ├─┘├─┤ │ │  ├─┤ ####################################################
- -- ##### └┘ ┴└─┘└─┘┴ ┴┴─┘  ┴─┘└─┘┴ ┴─┴┘└─┘└─┘ ┴   ┴  ┴ ┴ ┴ └─┘┴ ┴ ####################################################
+-- #####  └┘ ┴└─┘└─┘┴ ┴┴─┘  ┴─┘└─┘┴ ┴─┴┘└─┘└─┘ ┴   ┴  ┴ ┴ ┴ └─┘┴ ┴ ####################################################
 
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
@@ -142,17 +165,22 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
     instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 
         local attachments = item_data.attachments
-        if item_unit and attachments and item_data.__master_item and item_data.__master_item.weapon_template then
+        if item_unit and attachments then --and item_data.__master_item and item_data.__master_item.weapon_template then
             local gear_id = mod:get_gear_id(item_data)
             if gear_id then
 
                 -- Add flashlight slot
-                if item_data.__gear.slots[1] == "slot_secondary" then
-                    if not mod._recursive_find_attachment(attachments, "flashlight") then
-                        attachments.flashlight = {
-                            children = {},
-                            item = "",
-                        }
+                local slot = item_data.__gear and item_data.__gear.slots and item_data.__gear.slots[1]
+                if slot == "slot_secondary" then
+                    local special = mod:get_gear_setting(gear_id, "flashlight")
+                    local flashlight = table.contains(mod.flashlights, special)
+                    if flashlight then
+                        if not mod._recursive_find_attachment(attachments, "flashlight") then
+                            attachments.flashlight = {
+                                children = {},
+                                item = "",
+                            }
+                        end
                     end
                 end
 
@@ -162,12 +190,20 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     if attachment and mod.attachment_models[item_name][attachment] then
                         local model = mod.attachment_models[item_name][attachment].model
                         local attachment_type = mod.attachment_models[item_name][attachment].type
-
                         mod._recursive_set_attachment(attachments, attachment_type, model)
+                    else
+                        local MasterItemsCached = MasterItems.get_cached()
+                        local master_item = MasterItemsCached[item_data.name]
+                        local attachment = mod._recursive_find_attachment(master_item.attachments, attachment_slot)
+                        if attachment then
+                            mod._recursive_set_attachment(attachments, attachment_slot, attachment.item)
+                        end
                     end
                 end
             end
         end
+
+        -- mod:dabug_attachments(item_data, attachments, "ogryn_heavystubber_p1_m2")
 
         local attachment_units, attachment_units_bind_poses = instance._spawn_item_attachments(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 
@@ -180,11 +216,132 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     World.unlink_unit(attach_settings.world, unit)
                     World.link_unit(attach_settings.world, unit, 1, item_unit, 1)
 
+                    -- if CLASSES["OutlineSystem"] then
+                    --     if not mod.extension_manager then
+                    --         local world = attach_settings.world
+                    --         local physics_world = World.physics_world(world)
+                    --         local wwise_world = Managers.world:wwise_world(world)
+                    --         local level_name = ScriptWorld.name(world) --self._level_name
+                    --         local is_server = nil
+                    --         local unit_templates = require("scripts/extension_systems/unit_templates")
+                    --         local circumstance_name = "default"
+                    --         local use_time_slice = false
+                    --         local system_config = {
+                    --             {
+                    --                 "component_system",
+                    --                 "ComponentSystem",
+                    --                 false,
+                    --                 false,
+                    --                 false,
+                    --                 true,
+                    --                 false,
+                    --                 {
+                    --                     "ComponentExtension"
+                    --                 }
+                    --             },
+                    --             {
+                    --                 "dialogue_system",
+                    --                 "DialogueSystem",
+                    --                 false,
+                    --                 false,
+                    --                 true,
+                    --                 true,
+                    --                 false
+                    --             },
+                    --             {
+                    --                 "dialogue_context_system",
+                    --                 "DialogueContextSystem",
+                    --                 false,
+                    --                 false,
+                    --                 false,
+                    --                 true,
+                    --                 false
+                    --             },
+                    --             {
+                    --                 "cutscene_character_system",
+                    --                 "CutsceneCharacterSystem",
+                    --                 false,
+                    --                 false,
+                    --                 false,
+                    --                 false,
+                    --                 false,
+                    --                 {
+                    --                     "CutsceneCharacterExtension"
+                    --                 }
+                    --             },
+                    --             {
+                    --                 "cinematic_scene_system",
+                    --                 "CinematicSceneSystem",
+                    --                 false,
+                    --                 false,
+                    --                 false,
+                    --                 true,
+                    --                 false,
+                    --                 {
+                    --                     "CinematicSceneExtension"
+                    --                 }
+                    --             },
+                    --             {
+                    --                 "light_controller_system",
+                    --                 "LightControllerSystem",
+                    --                 false,
+                    --                 false,
+                    --                 false,
+                    --                 true,
+                    --                 false,
+                    --                 {
+                    --                     "LightControllerExtension"
+                    --                 }
+                    --             }
+                    --         }
+                    --         local vo_sources_cache = VOSourcesCache:new()
+                    --         local system_init_data = {
+                    --             dialogue_context_system = {},
+                    --             dialogue_system = {
+                    --                 is_rule_db_enabled = false,
+                    --                 vo_sources_cache = vo_sources_cache
+                    --             },
+                    --             cinematic_scene_system = {
+                    --                 mission = {}
+                    --             },
+                    --             light_controller_system = {
+                    --                 mission = {}
+                    --             }
+                    --         }
+                    --         local unit_categories = {
+                    --             "flow_spawned",
+                    --             "level_spawned",
+                    --             "cinematic"
+                    --         }
+                    --         mod.extension_manager = ExtensionManager:new(world, physics_world, wwise_world, nil, nil, level_name, circumstance_name, is_server, unit_templates, system_config, system_init_data, unit_categories, nil, nil, nil, {}, use_time_slice)
+                    --         mod.event_delegate = NetworkEventDelegate:new()
+                    --         mod.extension_system_creation_context = {
+                    --             is_server = is_server,
+                    --             world = world,
+                    --             wwise_world = wwise_world,
+                    --             physics_world = physics_world,
+                    --             extension_manager = mod.extension_manager,
+                    --             has_navmesh = false,
+                    --             network_event_delegate = mod.event_delegate,
+                    --         }
+                    --     end
+                    --     local extension = ScriptUnit.add_extension(mod.extension_system_creation_context, unit, "OutlineSystem", "test_outline", {})
+                    --     local ext = extension:on_add_extension(attach_settings.world, unit, "PropOutlineExtension", {})
+                    --     extension:add_outline(unit, "special_target")
+                    --     extension:_show_outline(unit, ext)
+                    -- end
+
+                    -- local has_outline_system = Managers.state.extension:has_system("outline_system")
+                    -- if has_outline_system then
+                    --     local outline_system = Managers.state.extension:system("outline_system")
+                    --     outline_system:add_outline(unit, "special_target")
+                    -- end
+
                     local attachment = mod.attachment_units[unit_name]
-                    if attachment and item_data.__master_item and item_data.__master_item.weapon_template then
-                        local template = item_data.__master_item.weapon_template
-                        if mod.anchors[template] and mod.anchors[template][attachment] then
-                            local anchor = mod.anchors[template][attachment]
+                    if attachment then
+                        local item_name = mod:item_name_from_content_string(item_data.name)
+                        if mod.anchors[item_name] and mod.anchors[item_name][attachment] then
+                            local anchor = mod.anchors[item_name][attachment]
 
                             local position = Vector3Box.unbox(anchor.position)
                             local rotation_euler = Vector3Box.unbox(anchor.rotation)
@@ -212,14 +369,35 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             local gear_id = mod:get_gear_id(item_data)
             if gear_id then
 
+                -- Add flashlight slot
+                local slot = item_data.__gear and item_data.__gear.slots and item_data.__gear.slots[1]
+                if slot == "slot_secondary" then
+                    local special = mod:get_gear_setting(gear_id, "flashlight")
+                    local flashlight = table.contains(mod.flashlights, special)
+                    if flashlight then
+                        if not mod._recursive_find_attachment(attachments, "flashlight") then
+                            attachments.flashlight = {
+                                children = {},
+                                item = "",
+                            }
+                        end
+                    end
+                end
+
                 for _, attachment_slot in pairs(mod.attachment_slots) do
-                    local attachment = mod:get_gear_setting(gear_id, attachment_slot)
                     local item_name = mod:item_name_from_content_string(item_data.name)
+                    local attachment = mod:get_gear_setting(gear_id, attachment_slot)
                     if attachment and mod.attachment_models[item_name][attachment] then
                         local model = mod.attachment_models[item_name][attachment].model
                         local attachment_type = mod.attachment_models[item_name][attachment].type
-
                         mod._recursive_set_attachment(attachments, attachment_type, model)
+                    else
+                        local MasterItemsCached = MasterItems.get_cached()
+                        local master_item = MasterItemsCached[item_data.name]
+                        local attachment = mod._recursive_find_attachment(master_item.attachments, attachment_slot)
+                        if attachment then
+                            mod._recursive_set_attachment(attachments, attachment_slot, attachment.item)
+                        end
                     end
                 end
             end

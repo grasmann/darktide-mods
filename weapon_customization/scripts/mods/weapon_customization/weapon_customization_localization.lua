@@ -36,7 +36,7 @@ return {
 		en = "Flicker on Activate",
 		de = "Filmmern beim Einschalten",
 	},
-	loc_weapon_cosmetics_customization_special = {
+	loc_weapon_cosmetics_customization_flashlight = {
 		en = "Special",
 		de = "Spezial",
 	},
@@ -87,5 +87,17 @@ return {
 	loc_weapon_cosmetics_customization_shaft = {
 		en = "Shaft",
 		de = "Schaft",
+	},
+	loc_weapon_cosmetics_customization_left = {
+		en = "Shield",
+		de = "Schild",
+	},
+	loc_weapon_cosmetics_customization_emblem_right = {
+		en = "Emblem Right",
+		de = "Wappen Rechts",
+	},
+	loc_weapon_cosmetics_customization_emblem_left = {
+		en = "Emblem Left",
+		de = "Wappen Links",
 	},
 }

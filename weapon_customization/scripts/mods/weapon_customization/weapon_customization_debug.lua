@@ -4,6 +4,9 @@ mod.current_attachment = nil
 mod.reposition = {0, 0, 0}
 mod.rerotate = {0, 0, 0}
 
+mod.debug_select = "emblem_left"
+mod.debug_selected_unit = nil
+
 mod.reposition_x_neg = function()
 	mod.reposition[1] = mod.reposition[1] - 0.01
 	mod:reposition_attachments()
@@ -95,4 +98,13 @@ mod.reposition_attachments = function(self)
 	end
 	-- 	end
 	-- end
+end
+
+mod.dabug_attachments = function(self, item_data, attachments, weapon_name)
+    if item_data then
+        local item_name = mod:item_name_from_content_string(item_data.name)
+        if item_name == weapon_name then
+            mod:dtf(attachments, "attachments_"..item_name, 10)
+        end
+    end
 end

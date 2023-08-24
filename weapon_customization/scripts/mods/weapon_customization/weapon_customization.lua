@@ -1,13 +1,14 @@
 local mod = get_mod("weapon_customization")
 
 mod._debug = false
+mod._debug_skip_some = true
 
 mod:persistent_table("weapon_customization", {
 	flashlight_on = false,
 })
 
-mod.print = function(self, message)
-	if self._debug then self:echo(message) end
+mod.print = function(self, message, skip)
+	if self._debug and not skip then self:echo(message) end
 end
 
 local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
@@ -32,7 +33,6 @@ function mod.update(main_dt)
 end
 
 mod.get_gear_id = function(self, item, original)
-    -- return not original and item.__gear_id or item.__original_gear_id or item.gear_id, item.__original_gear_id or item.gear_id
 	return item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id
 end
 
@@ -54,12 +54,12 @@ end
 mod._has_flashlight_attachment = function(self, item)
 	local gear_id = self:get_gear_id(item)
 	if gear_id and not self.flashlight_attached[gear_id] then
-		self.flashlight_attached[gear_id] = table.contains(self.flashlights, self:get_gear_setting(gear_id, "special"))
+		self.flashlight_attached[gear_id] = table.contains(self.flashlights, self:get_gear_setting(gear_id, "flashlight"))
 	end
 	return self.flashlight_attached[gear_id]
 end
 
-mod.get_flashlight_unit = function(self)
+mod.get_flashlight_unit = function(self, optional_weapon_unit)
 	local weapon = self:get_wielded_weapon()
 	if weapon and mod:has_flashlight_attachment() then
 		local gear_id = mod:get_gear_id(weapon.item)
@@ -67,42 +67,48 @@ mod.get_flashlight_unit = function(self)
 		if self.attached_flashlights[gear_id] then
 			if not Unit.alive(self.attached_flashlights[gear_id]) then
 				self.attached_flashlights[gear_id] = nil
-				self:print("get_flashlight_unit - flashlight unit destroyed")
+				self:print("get_flashlight_unit - flashlight unit destroyed", mod._debug_skip_some)
 			end
 		end
 		-- Search for flashlight unit
 		if not self.attached_flashlights[gear_id] then
-			self:print("get_flashlight_unit - searching flashlight unit")
-			local main_childs = Unit.get_child_units(weapon.weapon_unit)
-			if main_childs then
-				for _, main_child in pairs(main_childs) do
-					local unit_name = Unit.debug_name(main_child)
-					if self.attachment_units[unit_name] then
-						if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-							self.attached_flashlights[gear_id] = main_child
-							self:set_flashlight_template(main_child)
-						end
-					end
-					-- local weapon_parts = Unit.get_child_units(main_child)
-					-- if weapon_parts then
-					-- 	for _, weapon_part in pairs(weapon_parts) do
-					-- 		local unit_name = Unit.debug_name(weapon_part)
-					-- 		if self.attachment_units[unit_name] then
-					-- 			if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-					-- 				self.attached_flashlights[gear_id] = weapon_part
-					-- 				self:set_flashlight_template(weapon_part)
-					-- 			end
-					-- 		end
-					-- 	end
-					-- else self:print("get_flashlight_unit - weapon_parts is nil") end
-				end
-			else self:print("get_flashlight_unit - main_childs is nil") end
+			self.attached_flashlights[gear_id] = self:_get_flashlight_unit(weapon.weapon_unit)
+			self:set_flashlight_template(self.attached_flashlights[gear_id])
 		end
 		-- Return cached unit
 		if Unit.alive(self.attached_flashlights[gear_id]) then
 			return self.attached_flashlights[gear_id]
 		end
-	else self:print("get_flashlight_unit - weapon is nil") end
+	else self:print("get_flashlight_unit - weapon is nil", mod._debug_skip_some) end
+end
+
+mod._get_flashlight_unit = function(self, weapon_unit)
+	self:print("get_flashlight_unit - searching flashlight unit", mod._debug_skip_some)
+	local main_childs = Unit.get_child_units(weapon_unit)
+	if main_childs then
+		for _, main_child in pairs(main_childs) do
+			local unit_name = Unit.debug_name(main_child)
+			if self.attachment_units[unit_name] then
+				if table.contains(self.flashlights, self.attachment_units[unit_name]) then
+					-- self.attached_flashlights[gear_id] = main_child
+					-- self:set_flashlight_template(main_child)
+					return main_child
+				end
+			end
+			-- local weapon_parts = Unit.get_child_units(main_child)
+			-- if weapon_parts then
+			-- 	for _, weapon_part in pairs(weapon_parts) do
+			-- 		local unit_name = Unit.debug_name(weapon_part)
+			-- 		if self.attachment_units[unit_name] then
+			-- 			if table.contains(self.flashlights, self.attachment_units[unit_name]) then
+			-- 				self.attached_flashlights[gear_id] = weapon_part
+			-- 				self:set_flashlight_template(weapon_part)
+			-- 			end
+			-- 		end
+			-- 	end
+			-- else self:print("get_flashlight_unit - weapon_parts is nil") end
+		end
+	else self:print("get_flashlight_unit - main_childs is nil", mod._debug_skip_some) end
 end
 
 mod.redo_weapon_attachments = function(self, gear_id)
@@ -118,6 +124,7 @@ mod.redo_weapon_attachments = function(self, gear_id)
 		self.visual_loadout_extension:equip_item_to_slot(weapon.item, slot_name, nil, gameplay_time)
 		self:print("redo_weapon_attachments - done")
 		self.update_flashlight = true
+		return weapon.item
 	else self:print("redo_weapon_attachments - weapon is nil") end
 end
 
@@ -253,9 +260,9 @@ mod.toggle_flashlight = function(self, retain)
 				else
 					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
 				end
-			else self:print("toggle_flashlight - light not found") end
-		else self:print("toggle_flashlight - flashlight_unit not found") end
-	else self:print("toggle_flashlight - mod not initialized") end
+			else self:print("toggle_flashlight - light not found", mod._debug_skip_some) end
+		else self:print("toggle_flashlight - flashlight_unit not found", mod._debug_skip_some) end
+	else self:print("toggle_flashlight - mod not initialized", mod._debug_skip_some) end
 end
 
 mod.init = function(self)
@@ -295,28 +302,4 @@ if Managers and Managers.player._game_state ~= nil then
 	mod:init()
 end
 
--- mod:attachment_package_snapshot(nil, {
--- 	["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/grip_02/grip_02"] = true,
---     ["content/characters/empty_item/empty_item"] = true,
---     ["content/weapons/player/attachments/emblems/emblem_05/emblem_05"] = true,
---     ["content/textures/camo_patterns/camo_default"] = true,
---     ["content/weapons/player/attachments/trinket_hooks/trinket_hook_empty"] = true,
---     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/magazine_02/magazine_02"] = true,
---     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/barrel_03/barrel_03"] = true,
---     ["content/weapons/player/attachments/trinkets/trinket_5c/trinket_5c"] = true,
---     ["content/textures/colors/3_colour_navy_01"] = true,
---     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/receiver_02/receiver_02"] = true
--- })
-
--- mod:attachment_package_snapshot(nil, {
--- 	["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/grip_02/grip_02"] = true,
---     ["content/characters/empty_item/empty_item"] = true,
---     ["content/weapons/player/attachments/emblems/emblem_05/emblem_05"] = true,
---     ["content/textures/camo_patterns/camo_default"] = true,
---     ["content/weapons/player/attachments/trinket_hooks/trinket_hook_empty"] = true,
---     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/magazine_02/magazine_02"] = true,
---     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/barrel_01/barrel_01"] = true,
---     ["content/weapons/player/attachments/trinkets/trinket_5c/trinket_5c"] = true,
---     ["content/textures/colors/3_colour_navy_01"] = true,
---     ["content/weapons/player/ranged/stubgun_heavy_ogryn/attachments/receiver_02/receiver_02"] = true
--- })
+-- mod:dtf(CLASSES, "CLASSES", 5)
