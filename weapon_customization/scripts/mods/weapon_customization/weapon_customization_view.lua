@@ -523,6 +523,17 @@ mod.update_custom_widgets = function(self, InventoryWeaponCosmeticsView, input_s
     if InventoryWeaponCosmeticsView._custom_widgets then
         for _, widget in pairs(InventoryWeaponCosmeticsView._custom_widgets) do
             if widget.content and widget.content.entry and widget.content.entry.widget_type == "dropdown" then
+				local pivot_name = widget.name.."_pivot"
+				pivot_name = string.gsub(pivot_name, "_custom", "")
+				local scenegraph_entry = InventoryWeaponCosmeticsView._ui_scenegraph[pivot_name]
+				if scenegraph_entry and scenegraph_entry.position then
+					-- mod:echo(widget.name.." - "..scenegraph_entry.position[2])
+					if scenegraph_entry.position[2] > 580 then
+						widget.content.grow_downwards = false
+					else
+						widget.content.grow_downwards = true
+					end
+				end
                 self.widget_update_functions["dropdown"](self, widget, input_service)
             end
         end
@@ -618,7 +629,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 end)
 
 mod.widget_update_functions = {
-	dropdown = function (self, widget, input_service, grow_downwards)
+	dropdown = function (self, widget, input_service)
 		local content = widget.content
 		local entry = content.entry
 
@@ -680,9 +691,9 @@ mod.widget_update_functions = {
 		local ignore_localization = preview_option and preview_option.ignore_localization
 		content.value_text = ignore_localization and preview_value or localization_manager:localize(preview_value)
 		local always_keep_order = true
-		-- local grow_downwards = true
-		grow_downwards = grow_downwards or true
-		content.grow_downwards = grow_downwards
+		local grow_downwards = content.grow_downwards
+		-- grow_downwards = grow_downwards or true
+		-- content.grow_downwards = grow_downwards
 		local new_selection_index = nil
 
 		if not selected_index or not focused then
