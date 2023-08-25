@@ -5,11 +5,57 @@ local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dr
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
 local MasterItems = mod:original_require("scripts/backend/master_items")
+local ExtensionConfig = mod:original_require("scripts/foundation/managers/extension/extension_config")
 
 local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
 local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
 local grid_width = grid_size[1] + edge_padding
 local button_width = grid_width * 0.3
+
+mod.added_cosmetics_scenegraphs = {
+	"flashlight_text_pivot",
+	"flashlight_pivot",
+	"barrel_text_pivot",
+	"barrel_pivot",
+	"underbarrel_text_pivot",
+	"underbarrel_pivot",
+	"muzzle_text_pivot",
+	"muzzle_pivot",
+	"receiver_text_pivot",
+	"receiver_pivot",
+	"magazine_text_pivot",
+	"magazine_pivot",
+	"grip_text_pivot",
+	"grip_pivot",
+	"bayonet_text_pivot",
+	"bayonet_pivot",
+	"handle_text_pivot",
+	"handle_pivot",
+	"stock_text_pivot",
+	"stock_pivot",
+	"stock_2_text_pivot",
+	"stock_2_pivot",
+	"sight_text_pivot",
+	"sight_pivot",
+	"body_text_pivot",
+	"body_pivot",
+	"rail_text_pivot",
+	"rail_pivot",
+	"pommel_text_pivot",
+	"pommel_pivot",
+	"head_text_pivot",
+	"head_pivot",
+	"blade_text_pivot",
+	"blade_pivot",
+	"shaft_text_pivot",
+	"shaft_pivot",
+	"left_text_pivot",
+	"left_pivot",
+	"emblem_right_text_pivot",
+	"emblem_right_pivot",
+	"emblem_left_text_pivot",
+	"emblem_left_pivot",
+}
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
     func(self, dt, t, input_service, ...)
@@ -54,11 +100,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_select_starting_item_by_slot_name
 	end
 end)
 
-mod:hook(CLASS.ItemGridViewBase, "_sort_grid_layout", function(func, self, sort_function, ...)
-	func(self, sort_function, ...)
-	-- self:present_grid_layout({})
-end)
-
 mod.label_template = function(self, text, scenegraph_id)
 	local style = table.clone(UIFontSettings.grid_title)
 	style.offset = {0, 15, 1}
@@ -71,6 +112,36 @@ mod.label_template = function(self, text, scenegraph_id)
             style = style,
         }
     }, scenegraph_id)
+end
+
+mod.generate_label = function(self, InventoryWeaponCosmeticsView, scenegraph, attachment_slot, item)
+
+	local weapon_name = self:item_name_from_content_string(item.name)
+	local style = table.clone(UIFontSettings.grid_title)
+	style.offset = {0, 15, 1}
+	local text = "loc_weapon_cosmetics_customization_"..attachment_slot
+
+	if self.text_overwrite[weapon_name] then
+		text = self.text_overwrite[weapon_name][text] or text
+	end
+
+    local definition = UIWidget.create_definition({
+        {
+            value_id = "text",
+            style_id = "text",
+            pass_type = "text",
+            value = self:localize(text),
+            style = style,
+        }
+    }, scenegraph, nil)
+
+	local widget_name = attachment_slot.."_custom_text"
+	local widget = InventoryWeaponCosmeticsView:_create_widget(widget_name, definition)
+
+	InventoryWeaponCosmeticsView._widgets_by_name[widget_name] = widget
+    InventoryWeaponCosmeticsView._widgets[#InventoryWeaponCosmeticsView._widgets+1] = widget
+
+	return widget
 end
 
 mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph, attachment_slot, item)
@@ -94,7 +165,6 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 	template[7].pass_type = "texture"
 	template[7].value = "content/ui/materials/backgrounds/terminal_basic"
 	template[7].style.horizontal_alignment = "center"
-	-- template[8].value = "Default"
     local definition = UIWidget.create_definition(template, scenegraph, nil, size)
     local widget_name = attachment_slot.."_custom"
     local widget = InventoryWeaponCosmeticsView:_create_widget(widget_name, definition)
@@ -113,13 +183,12 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 			local item_name = mod:item_name_from_content_string(InventoryWeaponCosmeticsView._presentation_item.name)
 			local weapon_attachments = mod.attachment_models[item_name]
 			local attachment = weapon_attachments[new_value]
-			if attachment and attachment.model == "" then
+			if attachment and string.find(new_value, "default") then
 				mod:set(tostring(gear_id).."_"..attachment_slot, nil)
 			else
 				mod:set(tostring(gear_id).."_"..attachment_slot, new_value)
 			end
 
-			-- InventoryWeaponCosmeticsView._selected_item = MasterItems.get_item_instance(gear, gear_id)
 			InventoryWeaponCosmeticsView._presentation_item = MasterItems.create_preview_item_instance(InventoryWeaponCosmeticsView._selected_item)
 
 			mod.flashlight_attached[gear_id] = nil
@@ -158,6 +227,10 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 					end
 				end
 			end
+
+			InventoryWeaponCosmeticsView._weapon_preview._ui_weapon_spawner._rotation_angle = mod._last_rotation_angle or 0
+			InventoryWeaponCosmeticsView._weapon_preview._ui_weapon_spawner._default_rotation_angle = attachment.angle or 0
+			mod._last_rotation_angle = InventoryWeaponCosmeticsView._weapon_preview._ui_weapon_spawner._default_rotation_angle
         end,
         get_function = function()
             return mod:get_gear_setting(gear_id, attachment_slot)
@@ -184,7 +257,6 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 		end
     end
 
-    -- local size = {grid_size[1], 35}
     content.area_length = size[2] * num_visible_options
     local scroll_length = math.max(size[2] * num_options - content.area_length, 0)
     content.scroll_length = scroll_length
@@ -194,6 +266,77 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 
     return widget
 end
+
+mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
+	func(self, reference_name, world, camera, unit_spawner, ...)
+	if reference_name ~= "WeaponIconUI" then
+		self._rotation_angle = mod._last_rotation_angle or 0
+		self._default_rotation_angle = self._rotation_angle
+	end
+end)
+
+mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
+	func(self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
+	local weapon_spawn_data = self._weapon_spawn_data
+	if weapon_spawn_data then
+		local link_unit = weapon_spawn_data.link_unit
+
+		local t = Managers.time:time("main")
+		local start_seed = self._auto_spin_random_seed
+		if not start_seed then
+			return 0, 0
+		end
+		local progress_speed = 0.3
+		local progress_range = 0.3
+		local progress = math.sin((start_seed + t) * progress_speed) * progress_range
+		local auto_tilt_angle = -(progress * 0.5)
+		local auto_turn_angle = -(progress * math.pi * 0.25)
+
+		local start_angle = self._rotation_angle or 0
+		local rotation = Quaternion.axis_angle(Vector3(0, auto_tilt_angle, 1), -(auto_turn_angle + start_angle))
+		if link_unit then
+			local initial_rotation = weapon_spawn_data.rotation and QuaternionBox.unbox(weapon_spawn_data.rotation)
+
+			if initial_rotation then
+				rotation = Quaternion.multiply(rotation, initial_rotation)
+			end
+
+			Unit.set_local_rotation(link_unit, 1, rotation)
+		end
+
+		-- local unit = weapon_spawn_data.item_unit_3p
+		-- local temp_units = {unit}
+		-- if Managers.state.extension then
+		-- 	local extension_manager = Managers.state.extension
+		-- 	local OutlineSystem = extension_manager:system("outline_system")
+		-- 	if OutlineSystem then
+		-- 		local extension_config = ExtensionConfig:new()
+		-- 		extension_config:add("PropOutlineExtension", {})
+		-- 		extension_manager:add_unit_extensions(self._world, unit, extension_config)
+		-- 		extension_manager:register_units_extensions(temp_units, 1)
+		-- 		OutlineSystem:add_outline(unit, "scanning")
+		-- 		OutlineSystem._disabled = false
+		-- 		OutlineSystem._visible = true
+		-- 		local extension = ScriptUnit.extension(unit, "outline_system")
+		-- 		OutlineSystem:_show_outline(unit, extension)
+		-- 	end
+		-- end
+	end
+	
+end)
+
+mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
+	-- local weapon_spawn_data = self._weapon_spawn_data
+	-- if weapon_spawn_data then
+	-- 	local unit = weapon_spawn_data.item_unit_3p
+	-- 	local temp_units = {unit}
+	-- 	if Managers.state.extension then
+	-- 		local extension_manager = Managers.state.extension
+	-- 		extension_manager:unregister_units(temp_units, 1)
+	-- 	end
+	-- end
+	func(self, ...)
+end)
 
 mod.dropdown_option = function(self, id, display_name, sounds)
     return {
@@ -205,48 +348,11 @@ mod.dropdown_option = function(self, id, display_name, sounds)
     }
 end
 
-
-
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions", function(instance)
 
-	local top = 100
+	local top = 85
     local edge = edge_padding * 0.5
 	local z = 1
-
-	mod.added_cosmetics_scenegraphs = {
-		"flashlight_text_pivot",
-		"flashlight_pivot",
-		"barrel_text_pivot",
-		"barrel_pivot",
-		"receiver_text_pivot",
-		"receiver_pivot",
-		"magazine_text_pivot",
-		"magazine_pivot",
-		"grip_text_pivot",
-		"grip_pivot",
-		"bayonet_text_pivot",
-		"bayonet_pivot",
-		"handle_text_pivot",
-		"handle_pivot",
-		"sight_text_pivot",
-		"sight_pivot",
-		"body_text_pivot",
-		"body_pivot",
-		"pommel_text_pivot",
-		"pommel_pivot",
-		"head_text_pivot",
-		"head_pivot",
-		"blade_text_pivot",
-		"blade_pivot",
-		"shaft_text_pivot",
-		"shaft_pivot",
-		"left_text_pivot",
-		"left_pivot",
-		"emblem_right_text_pivot",
-		"emblem_right_pivot",
-		"emblem_left_text_pivot",
-		"emblem_left_pivot",
-	}
 
 	local y = top - edge
 	for _, scenegraph_id in pairs(mod.added_cosmetics_scenegraphs) do
@@ -264,22 +370,44 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		}
 	end
 
-    instance.widget_definitions.flashlight_custom_text = mod:label_template("loc_weapon_cosmetics_customization_flashlight", "flashlight_text_pivot")
-    instance.widget_definitions.barrel_custom_text = mod:label_template("loc_weapon_cosmetics_customization_barrel", "barrel_text_pivot")
-    instance.widget_definitions.receiver_custom_text = mod:label_template("loc_weapon_cosmetics_customization_receiver", "receiver_text_pivot")
-	instance.widget_definitions.magazine_custom_text = mod:label_template("loc_weapon_cosmetics_customization_magazine", "magazine_text_pivot")
-	instance.widget_definitions.grip_custom_text = mod:label_template("loc_weapon_cosmetics_customization_grip", "grip_text_pivot")
-	instance.widget_definitions.bayonet_custom_text = mod:label_template("loc_weapon_cosmetics_customization_bayonet", "bayonet_text_pivot")
-	instance.widget_definitions.handle_custom_text = mod:label_template("loc_weapon_cosmetics_customization_handle", "handle_text_pivot")
-	instance.widget_definitions.sight_custom_text = mod:label_template("loc_weapon_cosmetics_customization_sight", "sight_text_pivot")
-	instance.widget_definitions.body_custom_text = mod:label_template("loc_weapon_cosmetics_customization_body", "body_text_pivot")
-	instance.widget_definitions.pommel_custom_text = mod:label_template("loc_weapon_cosmetics_customization_pommel", "pommel_text_pivot")
-	instance.widget_definitions.head_custom_text = mod:label_template("loc_weapon_cosmetics_customization_head", "head_text_pivot")
-	instance.widget_definitions.blade_custom_text = mod:label_template("loc_weapon_cosmetics_customization_blade", "blade_text_pivot")
-	instance.widget_definitions.shaft_custom_text = mod:label_template("loc_weapon_cosmetics_customization_shaft", "shaft_text_pivot")
-	instance.widget_definitions.left_custom_text = mod:label_template("loc_weapon_cosmetics_customization_left", "left_text_pivot")
-	instance.widget_definitions.emblem_right_custom_text = mod:label_template("loc_weapon_cosmetics_customization_emblem_right", "emblem_right_text_pivot")
-	instance.widget_definitions.emblem_left_custom_text = mod:label_template("loc_weapon_cosmetics_customization_emblem_left", "emblem_left_text_pivot")
+	instance.scenegraph_definition.panel_extension_pivot = {
+		vertical_alignment = "top",
+		parent = "grid_tab_panel",
+		horizontal_alignment = "left",
+		size = {grid_width + edge, 170 + edge * 2},
+		position = {grid_width - 10, grid_size[2] - 255, z}
+	}
+
+	instance.widget_definitions.panel_extension = UIWidget.create_definition({
+		{
+			value = "content/ui/materials/backgrounds/terminal_basic",
+			style_id = "background",
+			pass_type = "texture",
+			style = {
+				vertical_alignment = "bottom",
+				scale_to_material = true,
+				horizontal_alignment = "left",
+				offset = {0, 0, 0},
+				size_addition = {0, -1},
+				color = Color.terminal_grid_background(255, true),
+			}
+		},
+		{
+			value = "content/ui/materials/frames/dropshadow_medium",
+			style_id = "input_progress_frame",
+			pass_type = "texture",
+			style = {
+				vertical_alignment = "bottom",
+				scale_to_material = true,
+				horizontal_alignment = "right",
+				offset = {10, 10, 4},
+				default_offset = {10, 0, 4},
+				size = {0, 10},
+				color = {255, 226, 199, 126},
+				-- size_addition = {20, 20}
+			}
+		}
+	}, "panel_extension_pivot")
 
 end)
 
@@ -292,6 +420,11 @@ mod.hide_custom_widgets = function(self, InventoryWeaponCosmeticsView, hide)
 				widget.visible = false
 			end
         end
+		if InventoryWeaponCosmeticsView._custom_widgets_overlapping then
+			InventoryWeaponCosmeticsView._widgets_by_name.panel_extension.visible = not hide
+		else
+			InventoryWeaponCosmeticsView._widgets_by_name.panel_extension.visible = false
+		end
     end
 end
 
@@ -303,7 +436,6 @@ mod.update_custom_widgets = function(self, InventoryWeaponCosmeticsView, input_s
 				pivot_name = string.gsub(pivot_name, "_custom", "")
 				local scenegraph_entry = InventoryWeaponCosmeticsView._ui_scenegraph[pivot_name]
 				if scenegraph_entry and scenegraph_entry.position then
-					-- mod:echo(widget.name.." - "..scenegraph_entry.position[2])
 					if scenegraph_entry.position[2] > 580 then
 						widget.content.grow_downwards = false
 					else
@@ -339,38 +471,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
     if self._selected_item then
         self._custom_widgets = {}
-        mod:add_custom_widget(mod:generate_dropdown(self, "flashlight_pivot", "flashlight", self._selected_item), self)
-        mod:add_custom_widget(mod:generate_dropdown(self, "barrel_pivot", "barrel", self._selected_item), self)
-        mod:add_custom_widget(mod:generate_dropdown(self, "receiver_pivot", "receiver", self._selected_item), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "magazine_pivot", "magazine", self._selected_item), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "grip_pivot", "grip", self._selected_item), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "bayonet_pivot", "bayonet", self._selected_item), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "handle_pivot", "handle", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "sight_pivot", "sight", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "body_pivot", "body", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "pommel_pivot", "pommel", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "head_pivot", "head", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "blade_pivot", "blade", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "shaft_pivot", "shaft", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "left_pivot", "left", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "emblem_right_pivot", "emblem_right", self._selected_item, false), self)
-		mod:add_custom_widget(mod:generate_dropdown(self, "emblem_left_pivot", "emblem_left", self._selected_item, false), self)
-        mod:add_custom_widget(self._widgets_by_name.flashlight_custom_text, self)
-        mod:add_custom_widget(self._widgets_by_name.barrel_custom_text, self)
-        mod:add_custom_widget(self._widgets_by_name.receiver_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.magazine_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.grip_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.bayonet_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.handle_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.sight_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.body_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.pommel_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.head_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.blade_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.shaft_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.left_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.emblem_right_custom_text, self)
-		mod:add_custom_widget(self._widgets_by_name.emblem_left_custom_text, self)
+
+		for _, added_scenegraph in pairs(mod.added_cosmetics_scenegraphs) do
+			if string.find(added_scenegraph, "text_pivot") then
+				local slot = string.gsub(added_scenegraph, "_text_pivot", "")
+				mod:add_custom_widget(mod:generate_label(self, added_scenegraph, slot, self._selected_item), self)
+			else
+				local slot = string.gsub(added_scenegraph, "_pivot", "")
+				mod:add_custom_widget(mod:generate_dropdown(self, added_scenegraph, slot, self._selected_item), self)
+			end
+		end
 
 		local not_applicable = {}
 
@@ -396,6 +506,23 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 			end
 			if self._ui_scenegraph[scenegraph_entry] then
 				self._ui_scenegraph[scenegraph_entry].local_position[2] = self._ui_scenegraph[scenegraph_entry].local_position[2] - move
+			end
+		end
+		move = 0
+		self._custom_widgets_overlapping = false
+		for _, scenegraph_entry in pairs(mod.added_cosmetics_scenegraphs) do
+			if not table.contains(not_applicable, scenegraph_entry) then
+				-- move = move + 35
+				if string.find(scenegraph_entry, "text_pivot") then
+					move = move + 35
+				else
+					move = move + 50
+				end
+			end
+			if self._ui_scenegraph[scenegraph_entry].local_position[2] > grid_size[2] then
+				self._custom_widgets_overlapping = true
+				self._ui_scenegraph[scenegraph_entry].local_position[1] = self._ui_scenegraph[scenegraph_entry].local_position[1] + grid_width
+				self._ui_scenegraph[scenegraph_entry].local_position[2] = self._ui_scenegraph[scenegraph_entry].local_position[2] - 255
 			end
 		end
     end
@@ -468,8 +595,6 @@ mod.widget_update_functions = {
 		content.value_text = ignore_localization and preview_value or localization_manager:localize(preview_value)
 		local always_keep_order = true
 		local grow_downwards = content.grow_downwards
-		-- grow_downwards = grow_downwards or true
-		-- content.grow_downwards = grow_downwards
 		local new_selection_index = nil
 
 		if not selected_index or not focused then

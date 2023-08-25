@@ -44,6 +44,14 @@ return {
 		en = "Barrel",
 		de = "Lauf",
 	},
+	loc_weapon_cosmetics_customization_underbarrel = {
+		en = "Underbarrel",
+		de = "Unterlauf",
+	},
+	loc_weapon_cosmetics_customization_muzzle = {
+		en = "Muzzle",
+		de = "Mündung",
+	},
 	loc_weapon_cosmetics_customization_receiver = {
 		en = "Receiver",
 		de = "Gehäuse",
@@ -64,6 +72,18 @@ return {
 		en = "Handle",
 		de = "Handgriff",
 	},
+	loc_weapon_cosmetics_customization_stock = {
+		en = "Stock",
+		de = "Schaft",
+	},
+	loc_weapon_cosmetics_customization_ventilation = {
+		en = "Ventilation",
+		de = "Ventilation",
+	},
+	loc_weapon_cosmetics_customization_stock_2 = {
+		en = "Stock",
+		de = "Schaft",
+	},
 	loc_weapon_cosmetics_customization_sight = {
 		en = "Sight",
 		de = "Visier",
@@ -71,6 +91,10 @@ return {
 	loc_weapon_cosmetics_customization_body = {
 		en = "Body",
 		de = "Aufbau",
+	},
+	loc_weapon_cosmetics_customization_rail = {
+		en = "Rail",
+		de = "Schiene",
 	},
 	loc_weapon_cosmetics_customization_pommel = {
 		en = "Pommel",

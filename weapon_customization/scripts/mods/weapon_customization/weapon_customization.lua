@@ -13,6 +13,7 @@ end
 
 local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
 local PerlinNoise = mod:original_require("scripts/utilities/perlin_noise")
+local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
 
 mod._flicker_settings = FlashlightTemplates.assault.flicker
 mod._flashlight_template = FlashlightTemplates.assault.light.first_person
@@ -41,12 +42,16 @@ mod.get_gear_setting = function(self, gear_id, setting)
 end
 
 mod.item_name_from_content_string = function(self, content_string)
-	return content_string:gsub('.*[%/%\\]', '')
+	return string.gsub(content_string, '.*[%/%\\]', '')
 end
 
+local test = false
 mod.has_flashlight_attachment = function(self)
 	if self.initialized then
 		local item = self.visual_loadout_extension:item_from_slot(self.inventory_component.wielded_slot)
+		if item.__master_item then
+			if WeaponTemplate.weapon_template(item.__master_item.weapon_template).flashlight_template then return false end
+		end
 		if item then return mod:_has_flashlight_attachment(item) end
 	end
 end
@@ -90,23 +95,20 @@ mod._get_flashlight_unit = function(self, weapon_unit)
 			local unit_name = Unit.debug_name(main_child)
 			if self.attachment_units[unit_name] then
 				if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-					-- self.attached_flashlights[gear_id] = main_child
-					-- self:set_flashlight_template(main_child)
 					return main_child
 				end
 			end
-			-- local weapon_parts = Unit.get_child_units(main_child)
-			-- if weapon_parts then
-			-- 	for _, weapon_part in pairs(weapon_parts) do
-			-- 		local unit_name = Unit.debug_name(weapon_part)
-			-- 		if self.attachment_units[unit_name] then
-			-- 			if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-			-- 				self.attached_flashlights[gear_id] = weapon_part
-			-- 				self:set_flashlight_template(weapon_part)
-			-- 			end
-			-- 		end
-			-- 	end
-			-- else self:print("get_flashlight_unit - weapon_parts is nil") end
+			local weapon_parts = Unit.get_child_units(main_child)
+			if weapon_parts then
+				for _, weapon_part in pairs(weapon_parts) do
+					local unit_name_2 = Unit.debug_name(weapon_part)
+					if self.attachment_units[unit_name_2] then
+						if table.contains(self.flashlights, self.attachment_units[unit_name_2]) then
+							return weapon_part
+						end
+					end
+				end
+			else self:print("get_flashlight_unit - weapon_parts is nil") end
 		end
 	else self:print("get_flashlight_unit - main_childs is nil", mod._debug_skip_some) end
 end
@@ -249,7 +251,6 @@ mod.toggle_flashlight = function(self, retain)
 				mod:persistent_table("weapon_customization").flashlight_on = 
 					not mod:persistent_table("weapon_customization").flashlight_on
 			end
-			-- if retain then mod:persistent_table("weapon_customization").flashlight_on = not mod:persistent_table("weapon_customization").flashlight_on end
 			local light = Unit.light(flashlight_unit, 1)
 			if light then
 				Light.set_enabled(light, mod:persistent_table("weapon_customization").flashlight_on)
@@ -297,9 +298,8 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_cus
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_mod_options")
 
 if Managers and Managers.player._game_state ~= nil then
 	mod:init()
 end
-
--- mod:dtf(CLASSES, "CLASSES", 5)
