@@ -5,6 +5,7 @@ mod._debug_skip_some = true
 
 mod:persistent_table("weapon_customization", {
 	flashlight_on = false,
+	item_definitions = nil,
 })
 
 mod.print = function(self, message, skip)
@@ -136,6 +137,10 @@ mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
 		mod:toggle_flashlight(true)
 	end
 end)
+
+mod.get_equipped_weapon_from_slot = function(self, slot_name)
+	return self.weapon_extension._weapons[slot_name]
+end
 
 mod.get_wielded_weapon = function(self)
 	local inventory_component = self.weapon_extension._inventory_component

@@ -3,6 +3,8 @@ local mod = get_mod("weapon_customization")
 local MasterItems = mod:original_require("scripts/backend/master_items")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 
+local next = next
+
 mod.add_custom_attachments = {
     flashlight = "flashlights",
     bayonet = "bayonets",
@@ -41,30 +43,63 @@ mod.randomize_weapon = function(self, item)
     return random_attachments
 end
 
+mod:hook(CLASS.EquipmentComponent, "_spawn_item_units", function(func, self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, ...)
+    local gear_id = mod:get_gear_id(slot.item)
+    if mod:persistent_table("weapon_customization").item_definitions == nil then
+        mod:echo("persistent_table")
+        mod:persistent_table("weapon_customization").item_definitions = table.clone_instance(attach_settings.item_definitions)
+    end
+    if gear_id and mod:get_gear_setting(gear_id, "left") == "bulwark_shield_01" then
+        mod.modded_item_definitions = table.clone_instance(mod:persistent_table("weapon_customization").item_definitions)
+        mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] =
+            mod:persistent_table("weapon_customization").item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+        mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit =
+            "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+        attach_settings.item_definitions = mod.modded_item_definitions
+    else
+        attach_settings.item_definitions = mod:persistent_table("weapon_customization").item_definitions
+    end
+    func(self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, ...)
+end)
+
+local test = false
+mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
+    local gear_id = mod:get_gear_id(item)
+    if mod:persistent_table("weapon_customization").item_definitions == nil then
+        mod:echo("persistent_table")
+        mod:persistent_table("weapon_customization").item_definitions = table.clone_instance(self._item_definitions)
+    end
+    if gear_id and mod:get_gear_setting(gear_id, "left") == "bulwark_shield_01" then
+        mod.modded_item_definitions = table.clone_instance(mod:persistent_table("weapon_customization").item_definitions)
+        mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] =
+            mod:persistent_table("weapon_customization").item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+        mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit =
+            "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+        self._item_definitions = mod.modded_item_definitions
+    else
+        self._item_definitions = mod:persistent_table("weapon_customization").item_definitions
+    end
+    func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
+end)
+
 mod:hook(CLASS.EquipmentComponent, "init", function(func, self, world, item_definitions, unit_spawner, unit_3p, optional_extension_manager, optional_item_streaming_settings, optional_force_highest_lod_step, ...)
     func(self, world, item_definitions, unit_spawner, unit_3p, optional_extension_manager, optional_item_streaming_settings, optional_force_highest_lod_step, ...)
-    if not mod.modded_item_definitions then
-        mod.modded_item_definitions = table.clone_instance(self._item_definitions)
-        mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] =
-            self._item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
-        mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit =
-        "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
-    end
-    self._item_definitions = mod.modded_item_definitions
+
+    
 end)
 
 -- local test = false
 -- mod:hook(CLASS.EquipmentComponent, "_attach_settings", function(func, self, ...)
 --     -- local attach_settings = func(self, ...)
 
---     -- if not mod.modded_item_definitions then
---     --     mod.modded_item_definitions = table.clone_instance(self._item_definitions)
---     --     mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] =
+--     -- if not mod.mod.modded_item_definitions then
+--     --     mod.mod.modded_item_definitions = table.clone_instance(self._item_definitions)
+--     --     mod.mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] =
 --     --         self._item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
---     --     mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit =
+--     --     mod.mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit =
 --     --     "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
 --     -- end
---     -- self._item_definitions = mod.modded_item_definitions
+--     -- self._item_definitions = mod.mod.modded_item_definitions
 
 --     return func(self, ...)
 -- end)
@@ -74,11 +109,17 @@ end)
 -- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
 
 mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
-    func(self, dt, t, input_service, ...)
+    local pass_input, pass_draw = func(self, dt, t, input_service, ...)
     if mod.weapon_changed then
         self:_spawn_profile(self._presentation_profile)
+        local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
+        if package_synchronizer_client then
+            package_synchronizer_client:reevaluate_all_profiles_packages()
+        end
+        mod:redo_weapon_attachments(mod.weapon_changed)
         mod.weapon_changed = nil
     end
+    return pass_input, pass_draw
 end)
 
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ###########################################################
@@ -447,6 +488,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             local attachments = override_item_data.attachments
             local gear_id = mod:get_gear_id(item_data)
             if gear_id then
+
+                local item_name = mod:item_name_from_content_string(item_data.name)
+                if item_name == "bulwark_shield_01" then
+                    mod:dtf(override_item_data, "override_item_data", 5)
+                end
 
                 -- Add flashlight slot
                 mod:_add_custom_attachments(gear_id, attachments)

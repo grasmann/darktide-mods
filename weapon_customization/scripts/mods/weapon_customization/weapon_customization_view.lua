@@ -256,7 +256,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 			Managers.event:trigger("event_item_icon_updated", self._selected_item)
 			Managers.event:trigger("event_replace_list_item", self._selected_item)
 
-			mod.weapon_changed = true
+			mod.weapon_changed = gear_id
 		end
 	end
 	mod:get_changed_weapon_settings(self)
