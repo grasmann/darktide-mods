@@ -36,10 +36,25 @@ mod.anchors = {
             rotation = Vector3Box(0, 128, 0),
             scale = Vector3Box(2, 2, 2),
         },
-        ["blade_01"] = {
+        ["bayonet_blade_01"] = {
             position = Vector3Box(0, 1.04, -0.39),
             rotation = Vector3Box(-90, 0, 0),
             scale = Vector3Box(2, 2, 2),
+        },
+        ["bayonet_01"] = {
+            position = Vector3Box(0, 1.08, -0.36),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
+        },
+        ["bayonet_02"] = {
+            position = Vector3Box(0, 1.08, -0.36),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
+        },
+        ["bayonet_03"] = {
+            position = Vector3Box(0, 1.08, -0.36),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
         },
     },
     ogryn_rippergun_p1_m1 = {
@@ -61,6 +76,11 @@ mod.anchors = {
         ["flashlight_04"] = {
             position = Vector3Box(.16, .76, .41),
             rotation = Vector3Box(0, 128, 0),
+            scale = Vector3Box(2, 2, 2),
+        },
+        ["blade_01"] = {
+            position = Vector3Box(0, .65, 0),
+            rotation = Vector3Box(-90, 0, 0),
             scale = Vector3Box(2, 2, 2),
         },
     },
@@ -85,11 +105,26 @@ mod.anchors = {
             rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
         },
-        -- ["blade_01"] = {
-        --     position = Vector3Box(0, 1.04, -0.39),
-        --     rotation = Vector3Box(-90, 0, 0),
-        --     scale = Vector3Box(2, 2, 2),
-        -- },
+        ["bayonet_blade_01"] = {
+            position = Vector3Box(0, .8, 0.065),
+            rotation = Vector3Box(-90, 0, 0),
+            scale = Vector3Box(2, 2, 2),
+        },
+        ["bayonet_01"] = {
+            position = Vector3Box(0, .9, 0.07),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
+        },
+        ["bayonet_02"] = {
+            position = Vector3Box(0, .9, 0.07),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
+        },
+        ["bayonet_03"] = {
+            position = Vector3Box(0, .9, 0.07),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
+        },
     },
     ogryn_gauntlet_p1_m1 = {
         ["flashlight_01"] = {
@@ -112,10 +147,25 @@ mod.anchors = {
             rotation = Vector3Box(0, 360, 0),
             scale = Vector3Box(2, 2, 2),
         },
-        ["blade_01"] = {
-            position = Vector3Box(0, 1.04, -0.39),
+        ["bayonet_blade_01"] = {
+            position = Vector3Box(0, .75, -0.52),
             rotation = Vector3Box(-90, 0, 0),
             scale = Vector3Box(2, 2, 2),
+        },
+        ["bayonet_01"] = {
+            position = Vector3Box(0, .65, -0.52),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
+        },
+        ["bayonet_02"] = {
+            position = Vector3Box(0, .65, -0.52),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
+        },
+        ["bayonet_03"] = {
+            position = Vector3Box(0, .65, -0.52),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
         },
     },
 
@@ -734,11 +784,17 @@ mod.attachment = {
     ogryn_heavystubber_p1_m1 = {
         flashlight = {
             {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
             {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+        bayonet = {
+            {id = "bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "bayonet_blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
         },
         barrel = {
             {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
@@ -851,7 +907,7 @@ mod.attachment = {
             {id = "bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
             {id = "bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
             {id = "bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-            -- {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
         },
         emblem_right = {
             {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
@@ -896,11 +952,17 @@ mod.attachment = {
     ogryn_thumper_p1_m1 = {
         flashlight = {
             {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            -- {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
             {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+        bayonet = {
+            {id = "bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "bayonet_blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
         },
         sight = {
             {id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
@@ -967,11 +1029,17 @@ mod.attachment = {
     ogryn_gauntlet_p1_m1 = {
         flashlight = {
             {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
             {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+        bayonet = {
+            {id = "bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "bayonet_blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
         },
         barrel = {
             {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
@@ -1622,10 +1690,10 @@ mod.attachment = {
         },
     },
     plasmagun_p1_m1 = {
-        receiver = {
-            {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        },
+        -- receiver = {
+        --     {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+        --     {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        -- },
         magazine = {
             {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
@@ -1650,7 +1718,7 @@ mod.attachment = {
             {id = "plasma_rifle_stock_03", name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
         },
         stock_2 = {
-            {id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "stock_2_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "autogun_rifle_stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
             {id = "autogun_rifle_stock_02", name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
             {id = "autogun_rifle_stock_03", name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -2066,6 +2134,43 @@ mod.attachment = {
             {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
         },
     },
+
+    forcestaff_p4_m1 = {
+        shaft_lower = {
+            {id = "shaft_lower_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "shaft_lower_01", name = "Lower Shaft 1", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "shaft_lower_02", name = "Lower Shaft 2", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "shaft_lower_03", name = "Lower Shaft 3", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "shaft_lower_04", name = "Lower Shaft 4", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "shaft_lower_05", name = "Lower Shaft 5", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+        shaft_upper = {
+            {id = "shaft_upper_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "shaft_upper_01", name = "Upper Shaft 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "shaft_upper_02", name = "Upper Shaft 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "shaft_upper_03", name = "Upper Shaft 3", sounds = {UISoundEvents.weapons_swap}},
+            {id = "shaft_upper_04", name = "Upper Shaft 4", sounds = {UISoundEvents.weapons_swap}},
+            {id = "shaft_upper_05", name = "Upper Shaft 5", sounds = {UISoundEvents.weapons_swap}},
+        },
+        body = {
+            {id = "body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "body_01", name = "Body 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "body_02", name = "Body 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "body_03", name = "Body 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "body_04", name = "Body 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "body_05", name = "Body 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+        },
+        head = {
+            {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "head_01", name = "Head 1", sounds = {UISoundEvents.apparel_equip}},
+            {id = "head_02", name = "Head 2", sounds = {UISoundEvents.apparel_equip}},
+            {id = "head_03", name = "Head 3", sounds = {UISoundEvents.apparel_equip}},
+            {id = "head_04", name = "Head 4", sounds = {UISoundEvents.apparel_equip}},
+            {id = "head_05", name = "Head 5", sounds = {UISoundEvents.apparel_equip}},
+            {id = "head_06", name = "Head 6", sounds = {UISoundEvents.apparel_equip}},
+            {id = "head_07", name = "Head 7", sounds = {UISoundEvents.apparel_equip}},
+        },
+    },
 }
 mod.attachment.ogryn_heavystubber_p1_m2 = mod.attachment.ogryn_heavystubber_p1_m1
 mod.attachment.ogryn_heavystubber_p1_m3 = mod.attachment.ogryn_heavystubber_p1_m1
@@ -2119,6 +2224,13 @@ mod.flashlights = {
     "flashlight_04",
 }
 
+mod.bayonets = {
+    "bayonet_blade_01",
+    "bayonet_01",
+    "bayonet_02",
+    "bayonet_03",
+}
+
 mod.stocks = {
     "autogun_rifle_stock_01",
     "autogun_rifle_stock_02",
@@ -2136,7 +2248,10 @@ mod.attachment_units = {
     ["#ID[28ae77de0a24aba6]"] = "flashlight_02",
     ["#ID[93567d1eb8abad0b]"] = "flashlight_03",
     ["#ID[1db94ec130a99e51]"] = "flashlight_04",
-    ["#ID[9ed2469305ba9eb7]"] = "blade_01",
+    ["#ID[9ed2469305ba9eb7]"] = "bayonet_blade_01",
+    ["#ID[fb7d93784a24faa0]"] = "bayonet_01",
+    ["#ID[a1a6d59dcc2d6f56]"] = "bayonet_02",
+    ["#ID[c42336380c6bc902]"] = "bayonet_03",
     ["#ID[3a32b0205efe4d98]"] = "autogun_rifle_stock_01",
     ["#ID[93d6f1e2cc3f6623]"] = "autogun_rifle_stock_02",
     ["#ID[dd28bd8305193b80]"] = "autogun_rifle_stock_03",
@@ -2173,16 +2288,22 @@ mod.attachment_slots = {
     "left",
     "emblem_right",
     "emblem_left",
+    "shaft_lower",
+    "shaft_upper",
 }
 
 mod.attachment_models = {
     ogryn_heavystubber_p1_m1 = {
         default = {model = "", type = "flashlight"},
-        blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "flashlight"},
         flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},
         flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight"},
         flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight"},
         flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight"},
+        bayonet_default = {model = "", type = "bayonet"},
+        bayonet_blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
+        bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet"},
+        bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet"},
+        bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet"},
         barrel_default = {model = "", type = "barrel"},
         barrel_01 = {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_01", type = "barrel"},
         barrel_02 = {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_02", type = "barrel"},
@@ -2252,7 +2373,7 @@ mod.attachment_models = {
         bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet"},
         bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet"},
         bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet"},
-        -- blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
+        blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
         receiver_default = {model = "", type = "receiver"},
         receiver_01 = {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_01", type = "receiver"},
         receiver_02 = {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_02", type = "receiver"},
@@ -2310,11 +2431,15 @@ mod.attachment_models = {
     },
     ogryn_thumper_p1_m1 = {
         default = {model = "", type = "flashlight"},
-        -- blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "flashlight"},
         flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},
         flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight"},
         flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight"},
         flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight"},
+        bayonet_default = {model = "", type = "bayonet"},
+        bayonet_blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
+        bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet"},
+        bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet"},
+        bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet"},
         sight_default = {model = "", type = "sight"},
         sight_01 = {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_01", type = "sight"},
         sight_03 = {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_03", type = "sight"},
@@ -2369,11 +2494,15 @@ mod.attachment_models = {
     },
     ogryn_gauntlet_p1_m1 = {
         default = {model = "", type = "flashlight"},
-        blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "flashlight"},
         flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},
         flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight"},
         flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight"},
         flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight"},
+        bayonet_default = {model = "", type = "bayonet"},
+        bayonet_blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
+        bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet"},
+        bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet"},
+        bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet"},
         barrel_default = {model = "", type = "barrel"},
         barrel_01 = {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_01", type = "barrel"},
         barrel_02 = {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_02", type = "barrel"},
@@ -2384,8 +2513,8 @@ mod.attachment_models = {
         body_02 = {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_02", type = "body"},
         body_03 = {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_03", type = "body"},
         body_04 = {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_04", type = "body"},
-        -- magazine_01 = {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_01", type = "magazine"},
-        -- magazine_02 = {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_02", type = "magazine"},
+        magazine_01 = {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_01", type = "magazine"},
+        magazine_02 = {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_02", type = "magazine"},
         emblem_right_default = {model = "", type = "emblem_right"},
         emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right"},
         emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right"},
@@ -2905,8 +3034,8 @@ mod.attachment_models = {
         emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
     },
     plasmagun_p1_m1 = {
-        -- receiver_default = {model = "", type = "receiver"},
-        -- receiver_01 = {model = "content/items/weapons/player/ranged/recievers/plasma_rifle_receiver_01", type = "receiver"},
+        receiver_default = {model = "", type = "receiver"},
+        receiver_01 = {model = "content/items/weapons/player/ranged/recievers/plasma_rifle_receiver_01", type = "receiver"},
         magazine_default = {model = "", type = "magazine"},
         magazine_01 = {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_01", type = "magazine"},
         magazine_02 = {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_02", type = "magazine"},
@@ -2974,11 +3103,11 @@ mod.attachment_models = {
         flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", angle = -2.5},
         flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", angle = -2.5},
         flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", angle = -2.5},
-        -- receiver_default = {model = "", type = "receiver"},
-        -- receiver_01 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver"},
-        -- receiver_02 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_02", type = "receiver"},
-        -- receiver_03 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03", type = "receiver"},
-        -- receiver_04 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_04", type = "receiver"},
+        receiver_default = {model = "", type = "receiver"},
+        receiver_01 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver"},
+        receiver_02 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_02", type = "receiver"},
+        receiver_03 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03", type = "receiver"},
+        receiver_04 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_04", type = "receiver"},
         magazine_default = {model = "", type = "magazine"},
         magazine_01 = {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine"},
         magazine_02 = {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_02", type = "magazine"},
@@ -3256,6 +3385,36 @@ mod.attachment_models = {
         emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
         emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
         emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
+    },
+
+    forcestaff_p4_m1 = {
+        customization_default_position = Vector3Box(0, 8, .75),
+        shaft_lower_default = {model = "", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+        shaft_lower_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_01", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+        shaft_lower_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_02", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+        shaft_lower_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_03", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+        shaft_lower_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_04", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+        shaft_lower_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_05", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+        shaft_upper_default = {model = "", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+        shaft_upper_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_01", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+        shaft_upper_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_02", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+        shaft_upper_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_03", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+        shaft_upper_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_04", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+        shaft_upper_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_05", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+        body_default = {model = "", type = "body", move = Vector3Box(.1, -7, -.65)},
+        body_01 = {model = "content/items/weapons/player/melee/full/force_staff_full_01", type = "body", move = Vector3Box(.1, -7, -.65)},
+        body_02 = {model = "content/items/weapons/player/melee/full/force_staff_full_02", type = "body", move = Vector3Box(.1, -7, -.65)},
+        body_03 = {model = "content/items/weapons/player/melee/full/force_staff_full_03", type = "body", move = Vector3Box(.1, -7, -.65)},
+        body_04 = {model = "content/items/weapons/player/melee/full/force_staff_full_04", type = "body", move = Vector3Box(.1, -7, -.65)},
+        body_05 = {model = "content/items/weapons/player/melee/full/force_staff_full_05", type = "body", move = Vector3Box(.1, -7, -.65)},
+        head_default = {model = "", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+        head_01 = {model = "content/items/weapons/player/melee/heads/force_staff_head_01", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+        head_02 = {model = "content/items/weapons/player/melee/heads/force_staff_head_02", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+        head_03 = {model = "content/items/weapons/player/melee/heads/force_staff_head_03", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+        head_04 = {model = "content/items/weapons/player/melee/heads/force_staff_head_04", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+        head_05 = {model = "content/items/weapons/player/melee/heads/force_staff_head_05", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+        head_06 = {model = "content/items/weapons/player/melee/heads/force_staff_head_06", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+        head_07 = {model = "content/items/weapons/player/melee/heads/force_staff_head_07", type = "head", move = Vector3Box(.15, -8.5, -.8)},
     },
 }
 

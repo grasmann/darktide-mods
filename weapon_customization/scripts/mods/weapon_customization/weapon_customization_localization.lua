@@ -36,6 +36,18 @@ return {
 		en = "Flicker on Activate",
 		de = "Filmmern beim Einschalten",
 	},
+	loc_weapon_inventory_reset_button = {
+		en = "Reset All",
+		de = "Alles Zurücksetzen",
+	},
+	loc_weapon_inventory_no_reset_button = {
+		en = "No Changes",
+		de = "Keine Änderungen",
+	},
+	loc_weapon_inventory_randomize_button = {
+		en = "Randomize",
+		de = "Zufällig",
+	},
 	loc_weapon_cosmetics_customization_flashlight = {
 		en = "Special",
 		de = "Spezial",
@@ -123,5 +135,13 @@ return {
 	loc_weapon_cosmetics_customization_emblem_left = {
 		en = "Emblem Left",
 		de = "Wappen Links",
+	},
+	loc_weapon_cosmetics_customization_shaft_lower = {
+		en = "Lower Shaft",
+		de = "Unterer Schaft",
+	},
+	loc_weapon_cosmetics_customization_shaft_upper = {
+		en = "Upper Shaft",
+		de = "Oberer Schaft",
 	},
 }

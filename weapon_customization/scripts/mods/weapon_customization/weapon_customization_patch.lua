@@ -4,9 +4,41 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 
 mod.add_custom_attachments = {
     flashlight = "flashlights",
+    bayonet = "bayonets",
     stock = "stocks",
     stock_2 = "stocks",
 }
+
+mod.get_item_attachment_slots = function(self, item)
+	local item_name = mod:item_name_from_content_string(item.name)
+	local attachment_slots = {}
+    if item_name and mod.attachment[item_name] then
+        for attachment_slot, _ in pairs(mod.attachment[item_name]) do
+            attachment_slots[#attachment_slots+1] = attachment_slot
+        end
+    end
+	return attachment_slots
+end
+
+mod.randomize_weapon = function(self, item)
+    local random_attachments = {}
+    local item_name = mod:item_name_from_content_string(item.name)
+    local attachment_slots = mod:get_item_attachment_slots(item)
+    for _, attachment_slot in pairs(attachment_slots) do
+        local attachments = {}
+        for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
+            if not string.find(data.id, "default") then
+                attachments[#attachments+1] = data.id
+            end
+        end
+        -- local random_attachment_index = math.random_range(1, #attachments)
+        -- mod:echo(tostring(random_attachment_index))
+        local random_attachment = math.random_array_entry(attachments)
+        random_attachments[attachment_slot] = random_attachment
+    end
+    -- mod:dtf(random_attachments, "random_attachments", 5)
+    return random_attachments
+end
 
 -- ##### ┬┌┐┌┬  ┬┌─┐┌┐┌┌┬┐┌─┐┬─┐┬ ┬ ###################################################################################
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
@@ -238,7 +270,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         end
 
         if mod._debug then
-            mod:dabug_attachments(item_data, attachments, {"lasgun_p1_m1", "lasgun_p1_m2", "lasgun_p1_m3"})
+            -- mod:dabug_attachments(item_data, attachments, {"forcestaff_p1_m1", "forcestaff_p2_m1", "forcestaff_p3_m1", "forcestaff_p4_m1"})
         end
 
         local attachment_units, attachment_units_bind_poses = instance._spawn_item_attachments(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)

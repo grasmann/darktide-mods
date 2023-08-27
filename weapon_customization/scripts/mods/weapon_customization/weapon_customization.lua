@@ -1,6 +1,6 @@
 local mod = get_mod("weapon_customization")
 
-mod._debug = false
+mod._debug = mod:get("mod_option_debug")
 mod._debug_skip_some = true
 
 mod:persistent_table("weapon_customization", {

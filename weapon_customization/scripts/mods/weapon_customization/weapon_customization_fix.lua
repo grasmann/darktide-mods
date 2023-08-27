@@ -3,6 +3,32 @@ local mod = get_mod("weapon_customization")
 local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 local MasterItems = mod:original_require("scripts/backend/master_items")
 
+mod:hook(CLASS.UIWorldSpawner, "_create_world", function(func, self, world_name, layer, timer_name, optional_view_name, optional_flags, ...)
+    optional_flags = {
+		Application.ENABLE_VOLUMETRICS,
+        Application.ENABLE_RAY_TRACING,
+    }
+    return func(self, world_name, layer, timer_name, optional_view_name, optional_flags, ...)
+end)
+
+mod:hook(CLASS.UIWorldSpawner, "spawn_level", function(func, self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
+    func(self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
+    if string.find(self._world_name, "ViewElementInventoryWeaponPreview") then
+        local level_units = Level.units(self._level, true)
+        if level_units then
+            local move_units = {
+                "#ID[7fb88579bf209537]",
+                "#ID[7c763e4de74815e3]",
+            }
+            for _, unit in pairs(level_units) do
+                if table.contains(move_units, Unit.debug_name(unit)) then
+                    Unit.set_local_position(unit, 1, Unit.local_position(unit, 1) + Vector3(0, 6, 0))
+                end
+            end
+        end
+    end
+end)
+
 mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
 end)
 
