@@ -13,9 +13,16 @@ local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid
 local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
 local grid_width = grid_size[1] + edge_padding
 local button_width = grid_width * 0.3
+local edge = edge_padding * 0.5
 
+mod.added_cosmetics_scenegraphs = {}
 mod.original_weapon_settings = {}
 mod.changed_weapon_settings = {}
+mod.move_duration_out = 2
+mod.move_duration_in = 4
+mod.reset_wait_time = 15
+mod.weapon_changed = nil
+mod.sound_duration = 1
 
 mod.get_changed_weapon_settings = function(self, InventoryWeaponCosmeticsView)
 	local gear_id = self:get_gear_id(InventoryWeaponCosmeticsView._selected_item)
@@ -27,7 +34,6 @@ mod.get_changed_weapon_settings = function(self, InventoryWeaponCosmeticsView)
 	end
 end
 
-mod.added_cosmetics_scenegraphs = {}
 for _, attachment_slot in pairs(mod.attachment_slots) do
 	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
 	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
@@ -253,27 +259,29 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 			mod.weapon_changed = true
 		end
 	end
+	mod:get_changed_weapon_settings(self)
 end)
 
-mod.weapon_changed = nil
-
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, self, content, ...)
-    content[3] = {
-        display_name = "loc_weapon_cosmetics_customization",
-		slot_name = "slot_weapon_skin",
-		item_type = "WEAPON_SKIN",
-		icon = "content/ui/materials/icons/system/settings/category_gameplay",
-		filter_on_weapon_template = true,
-		apply_on_preview = function (real_item, presentation_item)
-            self:_preview_item(presentation_item)
-			-- mod.weapon_changed = true
-		end
-    }
-    func(self, content, ...)
-    
-    self._tab_menu_element._widgets_by_name.entry_0.content.size[1] = button_width
-    self._tab_menu_element._widgets_by_name.entry_1.content.size[1] = button_width
-    self._tab_menu_element._widgets_by_name.entry_2.content.size[1] = button_width
+	local item_name = mod:item_name_from_content_string(self._selected_item.name)
+	if item_name and mod.attachment[item_name] then
+		content[3] = {
+			display_name = "loc_weapon_cosmetics_customization",
+			slot_name = "slot_weapon_skin",
+			item_type = "WEAPON_SKIN",
+			icon = "content/ui/materials/icons/system/settings/category_gameplay",
+			filter_on_weapon_template = true,
+			apply_on_preview = function (real_item, presentation_item)
+				self:_preview_item(presentation_item)
+			end
+		}
+	end
+	func(self, content, ...)
+	if item_name and mod.attachment[item_name] then
+		self._tab_menu_element._widgets_by_name.entry_0.content.size[1] = button_width
+		self._tab_menu_element._widgets_by_name.entry_1.content.size[1] = button_width
+		self._tab_menu_element._widgets_by_name.entry_2.content.size[1] = button_width
+	end
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, self, index, ...)
@@ -492,11 +500,6 @@ mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, wor
 	end
 end)
 
-mod.move_duration_in = 4
-mod.move_duration_out = 2
-mod.reset_wait_time = 15
-mod.sound_duration = 1
-
 mod.start_weapon_move = function(self, position)
 	if position then
 		self.move_position = position
@@ -568,6 +571,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				if mod.current_move_duration == mod.move_duration_in then
 					mod.reset_start = t + mod.reset_wait_time
 				end
+				mod.reset_start = t + mod.reset_wait_time
 			end
 
 			if mod.reset_start and t >= mod.reset_start then
@@ -626,7 +630,7 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 					mod:echo("bla")
 				end
 				
-				if mod.attachment_models[item_name].customization_default_position then
+				if mod.attachment_models[item_name] and mod.attachment_models[item_name].customization_default_position then
 					local position = Vector3Box.unbox(mod.attachment_models[item_name].customization_default_position)
 					Unit.set_local_position(link_unit, 1, Unit.local_position(link_unit, 1) + position)
 				else
@@ -664,7 +668,6 @@ end
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions", function(instance)
 
 	local top = 85
-    local edge = edge_padding * 0.5
 	local z = 1
 
 	local y = top - edge
@@ -687,8 +690,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		vertical_alignment = "top",
 		parent = "grid_tab_panel",
 		horizontal_alignment = "left",
-		size = {grid_width + edge, 170 + edge * 2},
-		position = {grid_width - 10, grid_size[2] - 255, z}
+		size = {grid_width + edge, 340 + edge * 2},
+		position = {grid_width - 10, grid_size[2] - 425, z}
 	}
 
 	local equip_button_size = {374, 76}
@@ -766,62 +769,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 end)
 
-
--- mod:hook(CLASS.InventoryWeaponCosmeticsView, "_draw_elements", function(func, self, dt, t, ui_renderer, render_settings, input_service, ...)
--- 	func(self, dt, t, ui_renderer, render_settings, input_service, ...)
-
--- 	local old_alpha_multiplier = render_settings and render_settings.alpha_multiplier or 1
--- 	local alpha_multiplier = self._alpha_multiplier or 1
--- 	local elements_array = self._elements_array
-
--- 	if not test then
--- 		mod:echo("lol")
--- 		test = true
--- 	end
-
--- 	for i = 1, #elements_array do
--- 		local element = elements_array[i]
-
--- 		if element then
--- 			local element_name = element.__class_name
-
--- 			if element_name ~= "ViewElementInputLegend" then
--- 				ui_renderer = self._ui_default_renderer or ui_renderer
--- 			end
-
--- 			render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
-
--- 			element:draw(dt, t, ui_renderer, render_settings, input_service)
--- 		end
--- 	end
-
--- 	render_settings.alpha_multiplier = old_alpha_multiplier
--- end)
-
--- InventoryWeaponDetailsView._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
--- 	local old_alpha_multiplier = render_settings.alpha_multiplier or 1
--- 	local alpha_multiplier = self._alpha_multiplier or 1
--- 	local elements_array = self._elements_array
-
--- 	for i = 1, #elements_array do
--- 		local element = elements_array[i]
-
--- 		if element then
--- 			local element_name = element.__class_name
-
--- 			if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
--- 				ui_renderer = self._ui_default_renderer or ui_renderer
--- 			end
-
--- 			render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
-
--- 			element:draw(dt, t, ui_renderer, render_settings, input_service)
--- 		end
--- 	end
-
--- 	render_settings.alpha_multiplier = old_alpha_multiplier
--- end
-
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
 	local always_visible_widget_names = self._always_visible_widget_names
 	local alpha_multiplier = self._render_settings and self._render_settings.alpha_multiplier or 1
@@ -856,7 +803,7 @@ mod.hide_custom_widgets = function(self, InventoryWeaponCosmeticsView, hide)
 				widget.visible = false
 			end
         end
-		if InventoryWeaponCosmeticsView._custom_widgets_overlapping then
+		if InventoryWeaponCosmeticsView._custom_widgets_overlapping > 0 then
 			InventoryWeaponCosmeticsView._widgets_by_name.panel_extension.visible = not hide
 		else
 			InventoryWeaponCosmeticsView._widgets_by_name.panel_extension.visible = false
@@ -981,7 +928,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 			end
 		end
 		move = 0
-		self._custom_widgets_overlapping = false
+		self._custom_widgets_overlapping = 0
+		local overlapping = {}
 		for _, scenegraph_entry in pairs(mod.added_cosmetics_scenegraphs) do
 			if not table.contains(not_applicable, scenegraph_entry) then
 				-- move = move + 35
@@ -992,21 +940,31 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 				end
 			end
 			if self._ui_scenegraph[scenegraph_entry].local_position[2] > grid_size[2] then
-				self._custom_widgets_overlapping = true
-				self._ui_scenegraph[scenegraph_entry].local_position[1] = self._ui_scenegraph[scenegraph_entry].local_position[1] + grid_width
-				self._ui_scenegraph[scenegraph_entry].local_position[2] = self._ui_scenegraph[scenegraph_entry].local_position[2] - 255
+				if not table.contains(not_applicable, scenegraph_entry) and not string.find(scenegraph_entry, "text_pivot") then
+					self._custom_widgets_overlapping = self._custom_widgets_overlapping + 1
+				end
+				overlapping[#overlapping+1] = scenegraph_entry
 			end
 		end
-
-		if mod.attachment_models[item_name].customization_min_zoom then
-			local min_zoom = mod.attachment_models[item_name].customization_min_zoom
-			self._min_zoom = min_zoom
-		else
-			self._min_zoom = -2
+		local extension_panel_pivot = self._ui_scenegraph.panel_extension_pivot
+		extension_panel_pivot.size[2] = (85 * self._custom_widgets_overlapping) + (edge * 2)
+		extension_panel_pivot.local_position[2] = grid_size[2] - 85 * (self._custom_widgets_overlapping + 1)
+		for _, scenegraph_entry in pairs(overlapping) do
+			self._ui_scenegraph[scenegraph_entry].local_position[1] = self._ui_scenegraph[scenegraph_entry].local_position[1] + grid_width
+			self._ui_scenegraph[scenegraph_entry].local_position[2] = self._ui_scenegraph[scenegraph_entry].local_position[2] - 85 * (self._custom_widgets_overlapping + 1)
 		end
-		self._weapon_zoom_target = self._min_zoom
-		self._weapon_zoom_fraction = self._min_zoom
-		self:_set_weapon_zoom(self._min_zoom)
+
+		if mod.attachment_models[item_name] then
+			if mod.attachment_models[item_name].customization_min_zoom then
+				local min_zoom = mod.attachment_models[item_name].customization_min_zoom
+				self._min_zoom = min_zoom
+			else
+				self._min_zoom = -2
+			end
+			self._weapon_zoom_target = self._min_zoom
+			self._weapon_zoom_fraction = self._min_zoom
+			self:_set_weapon_zoom(self._min_zoom)
+		end
     end
 
 	mod.original_weapon_settings = {}

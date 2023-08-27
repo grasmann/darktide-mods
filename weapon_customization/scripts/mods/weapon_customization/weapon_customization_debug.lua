@@ -103,7 +103,7 @@ mod.reposition_attachments = function(self)
 	end
 end
 
-mod.dabug_attachments = function(self, item_data, attachments, weapon_name_or_table)
+mod.debug_attachments = function(self, item_data, attachments, weapon_name_or_table)
     if item_data then
         local item_name = mod:item_name_from_content_string(item_data.name)
 		if type(weapon_name_or_table) == "string" then

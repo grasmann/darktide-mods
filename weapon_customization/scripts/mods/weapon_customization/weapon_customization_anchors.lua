@@ -78,8 +78,8 @@ mod.anchors = {
             rotation = Vector3Box(0, 128, 0),
             scale = Vector3Box(2, 2, 2),
         },
-        ["blade_01"] = {
-            position = Vector3Box(0, .65, 0),
+        ["bayonet_blade_01"] = {
+            position = Vector3Box(0, .45, 0.025),
             rotation = Vector3Box(-90, 0, 0),
             scale = Vector3Box(2, 2, 2),
         },
@@ -148,7 +148,7 @@ mod.anchors = {
             scale = Vector3Box(2, 2, 2),
         },
         ["bayonet_blade_01"] = {
-            position = Vector3Box(0, .75, -0.52),
+            position = Vector3Box(0, .65, -0.52),
             rotation = Vector3Box(-90, 0, 0),
             scale = Vector3Box(2, 2, 2),
         },
@@ -166,6 +166,14 @@ mod.anchors = {
             position = Vector3Box(0, .65, -0.52),
             rotation = Vector3Box(0, 0, 0),
             scale = Vector3Box(1, 1, 1),
+        },
+    },
+    ogryn_powermaul_slabshield_p1_m1 = {
+        ["bulwark_shield_01"] = {
+            position = Vector3Box(0, 0, 0),
+            rotation = Vector3Box(0, 0, 0),
+            scale = Vector3Box(1, 1, 1),
+            preview_only = true,
         },
     },
 
@@ -1054,10 +1062,10 @@ mod.attachment = {
             {id = "body_03", name = "Body 3", sounds = {UISoundEvents.weapons_equip_weapon}},
             {id = "body_04", name = "Body 4", sounds = {UISoundEvents.weapons_equip_weapon}},
         },
-        -- magazine = {
-        --     {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.weapons_swap}},
-        --     {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.weapons_swap}},
-        -- },
+        magazine = {
+            {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.weapons_swap}},
+        },
         emblem_right = {
             {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
@@ -1296,6 +1304,76 @@ mod.attachment = {
             {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
         },
     },
+    ogryn_powermaul_slabshield_p1_m1 = {
+        shaft = {
+            {id = "shaft_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "shaft_01", name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "shaft_02", name = "Shaft 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "shaft_03", name = "Shaft 3", sounds = {UISoundEvents.weapons_swap}},
+            {id = "shaft_04", name = "Shaft 4", sounds = {UISoundEvents.weapons_swap}},
+            {id = "shaft_05", name = "Shaft 5", sounds = {UISoundEvents.weapons_swap}},
+        },
+        head = {
+            {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "head_01", name = "Head 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "head_02", name = "Head 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "head_03", name = "Head 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "head_04", name = "Head 4", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "head_05", name = "Head 5", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+        },
+        pommel = {
+            {id = "pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "pommel_01", name = "Pommel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "pommel_02", name = "Pommel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "pommel_03", name = "Pommel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "pommel_04", name = "Pommel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "pommel_05", name = "Pommel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+        },
+        left = {
+            {id = "left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "left_01", name = "Shield 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "bulwark_shield_01", name = "Shield 2", sounds = {UISoundEvents.weapons_swap}},
+        },
+        emblem_right = {
+            {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+        emblem_left = {
+            {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+    },
     ogryn_club_p2_m1 = {
         body = {
             {id = "body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
@@ -1376,10 +1454,10 @@ mod.attachment = {
             {id = "barrel_04", name = "Barrel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
             {id = "barrel_05", name = "Barrel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
         },
-        -- magazine = {
-        --     {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
-        -- },
+        magazine = {
+            {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
+        },
         muzzle = {
             {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "muzzle_01", name = "Muzzle 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -1388,10 +1466,10 @@ mod.attachment = {
             {id = "muzzle_04", name = "Muzzle 4", sounds = {UISoundEvents.weapons_equip_gadget}},
             {id = "muzzle_05", name = "Muzzle 5", sounds = {UISoundEvents.weapons_equip_gadget}},
         },
-        -- sight = {
-        --     {id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "sight_01", name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
-        -- },
+        sight = {
+            {id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "sight_01", name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
+        },
         stock = {
             {id = "autogun_rifle_stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "autogun_rifle_stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -1459,10 +1537,10 @@ mod.attachment = {
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
         },
-        -- receiver = {
-        --     {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        -- },
+        receiver = {
+            {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
         stock = {
             {id = "shotgun_rifle_stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "shotgun_rifle_stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -1548,10 +1626,10 @@ mod.attachment = {
             {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
             {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.apparel_equip}},
         },
-        -- barrel = {
-        --     {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-        -- },
+        barrel = {
+            {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+        },
         underbarrel = {
             {id = "underbarrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "underbarrel_01", name = "Underbarrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -1629,20 +1707,20 @@ mod.attachment = {
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
         },
-        -- body = {
-        --     {id = "body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "body_01", name = "Body 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        -- },
+        body = {
+            {id = "body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "body_01", name = "Body 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
         barrel = {
             {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
             {id = "barrel_02", name = "Barrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
             {id = "barrel_03", name = "Barrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
         },
-        -- rail = {
-        --     {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        -- },
+        rail = {
+            {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
         stock = {
             {id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "autogun_rifle_stock_02", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -1690,10 +1768,10 @@ mod.attachment = {
         },
     },
     plasmagun_p1_m1 = {
-        -- receiver = {
-        --     {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        -- },
+        receiver = {
+            {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
         magazine = {
             {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
@@ -1777,18 +1855,18 @@ mod.attachment = {
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
         },
-        -- receiver = {
-        --     {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        --     {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-        --     {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
-        --     {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
-        -- },
-        -- magazine = {
-        --     {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
-        --     {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.apparel_equip}},
-        -- },
+        receiver = {
+            {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
+        magazine = {
+            {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
+            -- {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.apparel_equip}},
+        },
         barrel = {
             {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -1805,10 +1883,10 @@ mod.attachment = {
             {id = "muzzle_03", name = "Muzzle 3", sounds = {UISoundEvents.weapons_equip_gadget}},
             {id = "muzzle_04", name = "Muzzle 4", sounds = {UISoundEvents.weapons_equip_gadget}},
         },
-        -- rail = {
-        --     {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        -- },
+        rail = {
+            {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
         grip = {
             {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -1833,13 +1911,12 @@ mod.attachment = {
             {id = "sight_02", name = "Sight 2", sounds = {UISoundEvents.weapons_swap}},
             {id = "sight_03", name = "Sight 3", sounds = {UISoundEvents.weapons_swap}},
         },
-        -- bayonet = {
-        --     {id = "autogun_bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "autogun_bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-        --     {id = "autogun_bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-        --     {id = "autogun_bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-        --     -- {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-        -- },
+        bayonet = {
+            {id = "autogun_bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "autogun_bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "autogun_bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "autogun_bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+        },
         emblem_right = {
             {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
@@ -2017,14 +2094,14 @@ mod.attachment = {
             {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
             {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
         },
-        -- receiver = {
-        --     {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        -- },
-        -- rail = {
-        --     {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        -- },
+        receiver = {
+            {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
+        rail = {
+            {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
         grip = {
             {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -2043,10 +2120,10 @@ mod.attachment = {
             {id = "stock_05", name = "Stock 5", sounds = {UISoundEvents.weapons_equip_gadget}},
             {id = "stock_06", name = "Stock 6", sounds = {UISoundEvents.weapons_equip_gadget}},
         },
-        -- magazine = {
-        --     {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-        --     {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
-        -- },
+        magazine = {
+            {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
+        },
         barrel = {
             {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -2135,7 +2212,7 @@ mod.attachment = {
         },
     },
 
-    forcestaff_p4_m1 = {
+    forcestaff_p1_m1 = {
         shaft_lower = {
             {id = "shaft_lower_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             {id = "shaft_lower_01", name = "Lower Shaft 1", sounds = {UISoundEvents.apparel_equip_small}},
@@ -2179,7 +2256,7 @@ mod.attachment.ogryn_rippergun_p1_m3 = mod.attachment.ogryn_rippergun_p1_m1
 mod.attachment.ogryn_thumper_p1_m2 = mod.attachment.ogryn_thumper_p1_m1
 mod.attachment.ogryn_combatblade_p1_m2 = mod.attachment.ogryn_combatblade_p1_m1
 mod.attachment.ogryn_combatblade_p1_m3 = mod.attachment.ogryn_combatblade_p1_m1
-mod.attachment.ogryn_powermaul_slabshield_p1_m1 = mod.attachment.ogryn_powermaul_p1_m1
+-- mod.attachment.ogryn_powermaul_slabshield_p1_m1 = mod.attachment.ogryn_powermaul_p1_m1
 mod.attachment.ogryn_club_p2_m2 = mod.attachment.ogryn_club_p2_m1
 mod.attachment.ogryn_club_p2_m3 = mod.attachment.ogryn_club_p2_m1
 mod.attachment.shotgun_p1_m2 = mod.attachment.shotgun_p1_m1
@@ -2198,6 +2275,9 @@ mod.attachment.autogun_p3_m2 = mod.attachment.autogun_p1_m1
 mod.attachment.autogun_p3_m3 = mod.attachment.autogun_p1_m1
 mod.attachment.lasgun_p1_m2 = mod.attachment.lasgun_p1_m1
 mod.attachment.lasgun_p1_m3 = mod.attachment.lasgun_p1_m1
+mod.attachment.forcestaff_p2_m1 = mod.attachment.forcestaff_p1_m1
+mod.attachment.forcestaff_p3_m1 = mod.attachment.forcestaff_p1_m1
+mod.attachment.forcestaff_p4_m1 = mod.attachment.forcestaff_p1_m1
 
 mod.text_overwrite = {
     plasmagun_p1_m1 = {
@@ -2264,6 +2344,7 @@ mod.attachment_units = {
     ["#ID[55a01ebb60937e94]"] = "stock_03",
     ["#ID[d607b405027432d9]"] = "stock_04",
     ["#ID[891692deb6c77ef1]"] = "stock_05",
+    ["#ID[bc25db1df0670d2a]"] = "bulwark_shield_01",
 }
 
 mod.attachment_slots = {
@@ -2719,6 +2800,64 @@ mod.attachment_models = {
         emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
         emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
     },
+    ogryn_powermaul_slabshield_p1_m1 = {
+        left_default = {model = "", type = "left"},
+        left_01 = {model = "content/items/weapons/player/melee/ogryn_slabshield_p1_m1", type = "left"},
+        bulwark_shield_01 = {model = "content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01", type = "left"},
+        shaft_default = {model = "", type = "shaft"},
+        shaft_01 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_01", type = "shaft"},
+        shaft_02 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_02", type = "shaft"},
+        shaft_03 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_03", type = "shaft"},
+        shaft_04 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_04", type = "shaft"},
+        shaft_05 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_05", type = "shaft"},
+        head_default = {model = "", type = "head"},
+        head_01 = {model = "content/items/weapons/player/melee/heads/power_maul_head_01", type = "head"},
+        head_02 = {model = "content/items/weapons/player/melee/heads/power_maul_head_02", type = "head"},
+        head_03 = {model = "content/items/weapons/player/melee/heads/power_maul_head_03", type = "head"},
+        head_04 = {model = "content/items/weapons/player/melee/heads/power_maul_head_04", type = "head"},
+        head_05 = {model = "content/items/weapons/player/melee/heads/power_maul_head_05", type = "head"},
+        pommel_default = {model = "", type = "pommel"},
+        pommel_01 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_01", type = "pommel"},
+        pommel_02 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_02", type = "pommel"},
+        pommel_03 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_03", type = "pommel"},
+        pommel_04 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_04", type = "pommel"},
+        pommel_05 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_05", type = "pommel"},
+        emblem_right_default = {model = "", type = "emblem_right"},
+        emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right"},
+        emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right"},
+        emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right"},
+        emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right"},
+        emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right"},
+        emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right"},
+        emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right"},
+        emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right"},
+        emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right"},
+        emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right"},
+        emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right"},
+        emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right"},
+        emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right"},
+        emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right"},
+        emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right"},
+        emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right"},
+        emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right"},
+        emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right"},
+        emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right"},
+        emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right"},
+        emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right"},
+        emblem_left_default = {model = "", type = "emblem_left"},
+        emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
+        emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
+        emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
+        emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
+        emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
+        emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
+        emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
+        emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
+        emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
+        emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
+        emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
+        emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
+    },
     ogryn_club_p2_m1 = {
         body_default = {model = "", type = "body"},
         body_01 = {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_01", type = "body"},
@@ -3110,7 +3249,7 @@ mod.attachment_models = {
         receiver_04 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_04", type = "receiver"},
         magazine_default = {model = "", type = "magazine"},
         magazine_01 = {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine"},
-        magazine_02 = {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_02", type = "magazine"},
+        -- magazine_02 = {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_02", type = "magazine"},
         barrel_default = {model = "", type = "barrel"},
         barrel_01 = {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01", type = "barrel"},
         barrel_02 = {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02", type = "barrel"},
@@ -3387,7 +3526,7 @@ mod.attachment_models = {
         emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
     },
 
-    forcestaff_p4_m1 = {
+    forcestaff_p1_m1 = {
         customization_default_position = Vector3Box(0, 8, .75),
         shaft_lower_default = {model = "", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
         shaft_lower_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_01", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
@@ -3425,7 +3564,7 @@ mod.attachment_models.ogryn_rippergun_p1_m3 = mod.attachment_models.ogryn_ripper
 mod.attachment_models.ogryn_thumper_p1_m2 = mod.attachment_models.ogryn_thumper_p1_m1
 mod.attachment_models.ogryn_combatblade_p1_m2 = mod.attachment_models.ogryn_combatblade_p1_m1
 mod.attachment_models.ogryn_combatblade_p1_m3 = mod.attachment_models.ogryn_combatblade_p1_m1
-mod.attachment_models.ogryn_powermaul_slabshield_p1_m1 = mod.attachment_models.ogryn_powermaul_p1_m1
+-- mod.attachment_models.ogryn_powermaul_slabshield_p1_m1 = mod.attachment_models.ogryn_powermaul_p1_m1
 mod.attachment_models.ogryn_club_p2_m2 = mod.attachment_models.ogryn_club_p2_m1
 mod.attachment_models.ogryn_club_p2_m3 = mod.attachment_models.ogryn_club_p2_m1
 mod.attachment_models.shotgun_p1_m2 = mod.attachment_models.shotgun_p1_m1
@@ -3444,3 +3583,6 @@ mod.attachment_models.autogun_p3_m2 = mod.attachment_models.autogun_p1_m1
 mod.attachment_models.autogun_p3_m3 = mod.attachment_models.autogun_p1_m1
 mod.attachment_models.lasgun_p1_m2 = mod.attachment_models.lasgun_p1_m1
 mod.attachment_models.lasgun_p1_m3 = mod.attachment_models.lasgun_p1_m1
+mod.attachment_models.forcestaff_p2_m1 = mod.attachment_models.forcestaff_p1_m1
+mod.attachment_models.forcestaff_p3_m1 = mod.attachment_models.forcestaff_p1_m1
+mod.attachment_models.forcestaff_p4_m1 = mod.attachment_models.forcestaff_p1_m1

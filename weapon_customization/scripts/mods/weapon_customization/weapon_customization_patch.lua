@@ -1,6 +1,7 @@
 local mod = get_mod("weapon_customization")
 
 local MasterItems = mod:original_require("scripts/backend/master_items")
+local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 
 mod.add_custom_attachments = {
     flashlight = "flashlights",
@@ -39,6 +40,34 @@ mod.randomize_weapon = function(self, item)
     -- mod:dtf(random_attachments, "random_attachments", 5)
     return random_attachments
 end
+
+mod:hook(CLASS.EquipmentComponent, "init", function(func, self, world, item_definitions, unit_spawner, unit_3p, optional_extension_manager, optional_item_streaming_settings, optional_force_highest_lod_step, ...)
+    func(self, world, item_definitions, unit_spawner, unit_3p, optional_extension_manager, optional_item_streaming_settings, optional_force_highest_lod_step, ...)
+    if not mod.modded_item_definitions then
+        mod.modded_item_definitions = table.clone_instance(self._item_definitions)
+        mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] =
+            self._item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+        mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit =
+        "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+    end
+    self._item_definitions = mod.modded_item_definitions
+end)
+
+-- local test = false
+-- mod:hook(CLASS.EquipmentComponent, "_attach_settings", function(func, self, ...)
+--     -- local attach_settings = func(self, ...)
+
+--     -- if not mod.modded_item_definitions then
+--     --     mod.modded_item_definitions = table.clone_instance(self._item_definitions)
+--     --     mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] =
+--     --         self._item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+--     --     mod.modded_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit =
+--     --     "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+--     -- end
+--     -- self._item_definitions = mod.modded_item_definitions
+
+--     return func(self, ...)
+-- end)
 
 -- ##### ┬┌┐┌┬  ┬┌─┐┌┐┌┌┬┐┌─┐┬─┐┬ ┬ ###################################################################################
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
@@ -270,7 +299,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         end
 
         if mod._debug then
-            -- mod:dabug_attachments(item_data, attachments, {"forcestaff_p1_m1", "forcestaff_p2_m1", "forcestaff_p3_m1", "forcestaff_p4_m1"})
+            -- mod:debug_attachments(item_data, attachments, {"ogryn_powermaul_slabshield_p1_m1"})
         end
 
         local attachment_units, attachment_units_bind_poses = instance._spawn_item_attachments(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
@@ -287,9 +316,20 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     if attachment then
                         if mod.anchors[item_name] and mod.anchors[item_name][attachment] then
                             anchor = mod.anchors[item_name][attachment]
+                            if anchor.preview_only and optional_mission_template or
+                                ScriptWorld.name(attach_settings.world) == "ui_inventory" then anchor = nil end
                         end
 
                     end
+                end
+
+                if unit_name == "#ID[bc25db1df0670d2a]" then
+                    Unit.set_local_position(unit, 1, Unit.local_position(unit, 1) + Vector3(0, 0, -.065))
+                    local x, y, z = Quaternion.to_euler_angles_xyz(Unit.local_rotation(unit, 1))
+                    local rotation = Vector3(x, y, z) + Vector3(-10, 5, 5)
+                    local rotate_quaternion = Quaternion.from_euler_angles_xyz(rotation[1], rotation[2], rotation[3])
+                    Unit.set_local_rotation(unit, 1, rotate_quaternion)
+                    Unit.set_local_scale(unit, 1, Vector3(1, 1, 0.9))
                 end
 
                 -- Fixes
