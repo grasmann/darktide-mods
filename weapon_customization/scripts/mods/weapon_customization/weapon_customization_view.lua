@@ -627,7 +627,6 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 					mod.do_move = nil
 					mod.last_move_position = nil
 					mod.move_position = nil
-					mod:echo("bla")
 				end
 				
 				if mod.attachment_models[item_name] and mod.attachment_models[item_name].customization_default_position then
