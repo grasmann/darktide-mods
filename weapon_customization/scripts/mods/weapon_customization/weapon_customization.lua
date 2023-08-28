@@ -50,19 +50,15 @@ local test = false
 mod.has_flashlight_attachment = function(self)
 	if self.initialized then
 		local item = self.visual_loadout_extension:item_from_slot(self.inventory_component.wielded_slot)
-		if item.__master_item then
-			if WeaponTemplate.weapon_template(item.__master_item.weapon_template).flashlight_template then return false end
-		end
-		if item then return mod:_has_flashlight_attachment(item) end
+		return self:_has_flashlight_attachment(item)
 	end
 end
 
 mod._has_flashlight_attachment = function(self, item)
-	local gear_id = self:get_gear_id(item)
-	if gear_id and not self.flashlight_attached[gear_id] then
-		self.flashlight_attached[gear_id] = table.contains(self.flashlights, self:get_gear_setting(gear_id, "flashlight"))
+	if item.__master_item and item.__master_item.attachments then
+		local flashlight = mod:_recursive_find_attachment(item.__master_item.attachments, "flashlight")
+		return flashlight and flashlight.item ~= ""
 	end
-	return self.flashlight_attached[gear_id]
 end
 
 mod.get_flashlight_unit = function(self, optional_weapon_unit)
@@ -90,28 +86,20 @@ end
 
 mod._get_flashlight_unit = function(self, weapon_unit)
 	self:print("get_flashlight_unit - searching flashlight unit", mod._debug_skip_some)
-	local main_childs = Unit.get_child_units(weapon_unit)
-	if main_childs then
-		for _, main_child in pairs(main_childs) do
-			local unit_name = Unit.debug_name(main_child)
-			if self.attachment_units[unit_name] then
-				if table.contains(self.flashlights, self.attachment_units[unit_name]) then
-					return main_child
-				end
+	local flashlight = nil
+	local children = Unit.get_child_units(weapon_unit)
+	if children then
+		for _, child in pairs(children) do
+			local unit_name = Unit.debug_name(child)
+			if self.attachment_units[unit_name] and table.contains(self.flashlights, self.attachment_units[unit_name]) then
+				flashlight = child
+			else
+				flashlight = self:_get_flashlight_unit(child)
 			end
-			local weapon_parts = Unit.get_child_units(main_child)
-			if weapon_parts then
-				for _, weapon_part in pairs(weapon_parts) do
-					local unit_name_2 = Unit.debug_name(weapon_part)
-					if self.attachment_units[unit_name_2] then
-						if table.contains(self.flashlights, self.attachment_units[unit_name_2]) then
-							return weapon_part
-						end
-					end
-				end
-			else self:print("get_flashlight_unit - weapon_parts is nil") end
+			if flashlight then break end
 		end
 	else self:print("get_flashlight_unit - main_childs is nil", mod._debug_skip_some) end
+	return flashlight
 end
 
 mod.redo_weapon_attachments = function(self, gear_id)

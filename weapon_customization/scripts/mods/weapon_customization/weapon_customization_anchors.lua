@@ -770,6 +770,9 @@ mod.anchors = {
                 },
             }
         }
+    },
+    lasgun_p2_m1 = {
+        ["scope_offset"] = Vector3Box(0, 0, .0275),
     }
 }
 mod.anchors.ogryn_heavystubber_p1_m2 = mod.anchors.ogryn_heavystubber_p1_m1
@@ -787,6 +790,8 @@ mod.anchors.autogun_p3_m2 = mod.anchors.autogun_p3_m1
 mod.anchors.autogun_p3_m3 = mod.anchors.autogun_p3_m1
 mod.anchors.lasgun_p1_m2 = mod.anchors.lasgun_p1_m1
 mod.anchors.lasgun_p1_m3 = mod.anchors.lasgun_p1_m1
+mod.anchors.lasgun_p2_m2 = mod.anchors.lasgun_p2_m1
+mod.anchors.lasgun_p2_m3 = mod.anchors.lasgun_p2_m1
 
 mod.attachment = {
     ogryn_heavystubber_p1_m1 = {
@@ -2211,6 +2216,121 @@ mod.attachment = {
             {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
         },
     },
+    lasgun_p2_m1 = {
+        flashlight = {
+            {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+        receiver = {
+            {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
+        bayonet = {
+            {id = "autogun_bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "autogun_bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "autogun_bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            {id = "autogun_bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            -- {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+        },
+        rail = {
+            {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+        },
+        stock = {
+            {id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "stock_02", name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "stock_03", name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+        },
+        magazine = {
+            {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
+        },
+        barrel = {
+            {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_02", name = "Barrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_03", name = "Barrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_04", name = "Barrel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_05", name = "Barrel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_06", name = "Barrel 6", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_07", name = "Barrel 7", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_08", name = "Barrel 8", sounds = {UISoundEvents.weapons_equip_gadget}},
+
+            {id = "barrel_09", name = "Barrel 9", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_10", name = "Barrel 10", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_11", name = "Barrel 11", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_12", name = "Barrel 12", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_13", name = "Barrel 13", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_14", name = "Barrel 14", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_15", name = "Barrel 15", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_16", name = "Barrel 16", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_17", name = "Barrel 17", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "barrel_18", name = "Barrel 18", sounds = {UISoundEvents.weapons_equip_gadget}},
+        },
+        muzzle = {
+            {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "muzzle_01", name = "Muzzle 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "muzzle_02", name = "Muzzle 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "muzzle_03", name = "Muzzle 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "muzzle_04", name = "Muzzle 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "muzzle_05", name = "Muzzle 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "muzzle_06", name = "Muzzle 6", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "muzzle_07", name = "Muzzle 7", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "muzzle_08", name = "Muzzle 8", sounds = {UISoundEvents.weapons_equip_gadget}},
+            {id = "muzzle_09", name = "Muzzle 9", sounds = {UISoundEvents.weapons_equip_gadget}},
+        },
+        sight = {
+            {id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "sight_01", name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "sight_02", name = "Sight 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "sight_03", name = "Sight 3", sounds = {UISoundEvents.weapons_swap}},
+        },
+        emblem_right = {
+            {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+        emblem_left = {
+            {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
+            {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
+        },
+    },
 
     forcestaff_p1_m1 = {
         shaft_lower = {
@@ -2278,6 +2398,8 @@ mod.attachment.lasgun_p1_m3 = mod.attachment.lasgun_p1_m1
 mod.attachment.forcestaff_p2_m1 = mod.attachment.forcestaff_p1_m1
 mod.attachment.forcestaff_p3_m1 = mod.attachment.forcestaff_p1_m1
 mod.attachment.forcestaff_p4_m1 = mod.attachment.forcestaff_p1_m1
+mod.attachment.lasgun_p2_m2 = mod.attachment.lasgun_p2_m1
+mod.attachment.lasgun_p2_m3 = mod.attachment.lasgun_p2_m1
 
 mod.text_overwrite = {
     plasmagun_p1_m1 = {
@@ -3525,6 +3647,97 @@ mod.attachment_models = {
         emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
         emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
     },
+    lasgun_p2_m1 = {
+        default = {model = "", type = "flashlight", angle = -2.5},
+        flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", angle = -2.5},
+        flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", angle = -2.5},
+        flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", angle = -2.5},
+        flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", angle = -2.5},
+        receiver_default = {model = "", type = "receiver"},
+        receiver_01 = {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_01", type = "receiver"},
+        receiver_02 = {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_02", type = "receiver"},
+        receiver_03 = {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_04", type = "receiver"},
+        rail_default = {model = "", type = "rail"},
+        rail_01 = {model = "content/items/weapons/player/ranged/rails/lasgun_rifle_rail_01", type = "rail"},
+        stock_default = {model = "", type = "stock", angle = .5},
+        stock_01 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_01", type = "stock", angle = .5},
+        stock_02 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_02", type = "stock", angle = .5},
+        stock_03 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_04", type = "stock", angle = .5},
+        autogun_bayonet_default = {model = "", type = "bayonet"},
+        autogun_bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_01", type = "bayonet"},
+        autogun_bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_02", type = "bayonet"},
+        autogun_bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_03", type = "bayonet"},
+        magazine_default = {model = "", type = "magazine"},
+        magazine_01 = {model = "content/items/weapons/player/ranged/magazines/lasgun_rifle_magazine_01", type = "magazine"},
+        barrel_default = {model = "", type = "barrel"},
+        barrel_01 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_01", type = "barrel"},
+        barrel_02 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_02", type = "barrel"},
+        barrel_03 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_03", type = "barrel"},
+        barrel_04 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_04", type = "barrel"},
+        barrel_05 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_05", type = "barrel"},
+        barrel_06 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_06", type = "barrel"},
+        barrel_07 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_07", type = "barrel"},
+        barrel_08 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_08", type = "barrel"},
+        barrel_09 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_01", type = "barrel"},
+        barrel_10 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_02", type = "barrel"},
+        barrel_11 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_04", type = "barrel"},
+        barrel_12 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_05", type = "barrel"},
+        barrel_13 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_06", type = "barrel"},
+        barrel_14 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_01", type = "barrel"},
+        barrel_15 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_02", type = "barrel"},
+        barrel_16 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_03", type = "barrel"},
+        barrel_17 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_04", type = "barrel"},
+        barrel_18 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_05", type = "barrel"},
+        muzzle_default = {model = "", type = "muzzle"},
+        muzzle_01 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_01", type = "muzzle"},
+        muzzle_02 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_02", type = "muzzle"},
+        muzzle_03 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_03", type = "muzzle"},
+        muzzle_04 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_01", type = "muzzle"},
+        muzzle_05 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_02", type = "muzzle"},
+        muzzle_06 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_03", type = "muzzle"},
+        muzzle_07 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_02", type = "muzzle"},
+        muzzle_08 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_04", type = "muzzle"},
+        muzzle_09 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_05", type = "muzzle"},
+        sight_default = {model = "", type = "sight", angle = -.6},
+        sight_01 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_01", type = "sight", angle = -.6},
+        sight_02 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_02", type = "sight", angle = -.6},
+        sight_03 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_03", type = "sight", angle = -.6},
+        emblem_right_default = {model = "", type = "emblem_right", angle = -3},
+        emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right", angle = -3},
+        emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right", angle = -3},
+        emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right", angle = -3},
+        emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right", angle = -3},
+        emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right", angle = -3},
+        emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right", angle = -3},
+        emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right", angle = -3},
+        emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right", angle = -3},
+        emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right", angle = -3},
+        emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right", angle = -3},
+        emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right", angle = -3},
+        emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right", angle = -3},
+        emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right", angle = -3},
+        emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right", angle = -3},
+        emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right", angle = -3},
+        emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right", angle = -3},
+        emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right", angle = -3},
+        emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right", angle = -3},
+        emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right", angle = -3},
+        emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right", angle = -3},
+        emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right", angle = -3},
+        emblem_left_default = {model = "", type = "emblem_left"},
+        emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
+        emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
+        emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
+        emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
+        emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
+        emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
+        emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
+        emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
+        emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
+        emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
+        emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
+        emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
+    },
 
     forcestaff_p1_m1 = {
         customization_default_position = Vector3Box(0, 8, .75),
@@ -3586,3 +3799,5 @@ mod.attachment_models.lasgun_p1_m3 = mod.attachment_models.lasgun_p1_m1
 mod.attachment_models.forcestaff_p2_m1 = mod.attachment_models.forcestaff_p1_m1
 mod.attachment_models.forcestaff_p3_m1 = mod.attachment_models.forcestaff_p1_m1
 mod.attachment_models.forcestaff_p4_m1 = mod.attachment_models.forcestaff_p1_m1
+mod.attachment_models.lasgun_p2_m2 = mod.attachment_models.lasgun_p2_m1
+mod.attachment_models.lasgun_p2_m3 = mod.attachment_models.lasgun_p2_m1

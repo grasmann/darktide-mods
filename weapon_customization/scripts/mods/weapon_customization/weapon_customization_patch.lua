@@ -2,6 +2,7 @@ local mod = get_mod("weapon_customization")
 
 local MasterItems = mod:original_require("scripts/backend/master_items")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
+local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 
 local next = next
 
@@ -296,9 +297,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             end
         end
 
-        if mod._debug then
-            -- mod:debug_attachments(item_data, attachments, {"ogryn_powermaul_slabshield_p1_m1"})
-        end
+        -- if mod._debug then
+        -- local item_name = mod:item_name_from_content_string(item_data.name)
+        -- mod:echo(item_name)
+        -- mod:debug_attachments(item_data, attachments, {"lasgun_p2_m1", "lasgun_p2_m2", "lasgun_p2_m3"})
+        -- end
 
         local attachment_units, attachment_units_bind_poses = instance._spawn_item_attachments(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 
@@ -460,6 +463,78 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 end)
 
+-- ##### ┌─┐┌─┐┌─┐┌─┐┌─┐  ┌─┐┬┌┬┐┬┌┐┌┌─┐ ##############################################################################
+-- ##### └─┐│  │ │├─┘├┤   ├─┤│││││││││ ┬ ##############################################################################
+-- ##### └─┘└─┘└─┘┴  └─┘  ┴ ┴┴┴ ┴┴┘└┘└─┘ ##############################################################################
+
+mod:hook(CLASS.ActionAim, "start", function(func, self, action_settings, t, ...)
+    if self._is_local_unit then
+        local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight")
+        self._has_scope = sight and sight.item ~= ""
+        local anchor = mod.anchors[self._weapon_template.name]
+        self._scope_offset = anchor and anchor["scope_offset"] or Vector3Box(0, 0, 0)
+        self.finish = function (self, reason, data, t, time_in_action)
+            if self._is_local_unit and self._has_scope then
+                mod.camera_position = self._scope_offset
+            end
+        end
+    end
+    func(self, action_settings, t, ...)
+end)
+
+mod:hook(CLASS.ActionAim, "running_action_state", function(func, self, t, time_in_action, ...)
+    func(self, t, time_in_action, ...)
+    if self._is_local_unit and self._has_scope then
+        local progress = time_in_action / self._action_settings.total_time
+        local position = Vector3Box.unbox(self._scope_offset) * progress
+        mod.camera_position = Vector3Box(position)
+    end
+end)
+
+mod:hook(CLASS.ActionUnaim, "start", function(func, self, action_settings, t, ...)
+    if self._is_local_unit then
+        local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight")
+        self._has_scope = sight and sight.item ~= ""
+        local anchor = mod.anchors[self._weapon_template.name]
+        self._scope_offset = anchor and anchor["scope_offset"] or Vector3Box(0, 0, 0)
+    end
+    self.running_action_state = function(self, t, time_in_action, ...)
+        if self._is_local_unit and self._has_scope then
+            local progress = time_in_action / self._action_settings.total_time
+            local position = Vector3Box.unbox(self._scope_offset) * (1 - progress)
+            mod.camera_position = Vector3Box(position)
+        end
+    end
+    func(self, action_settings, t, ...)
+end)
+
+mod:hook(CLASS.ActionUnaim, "finish", function(func, self, reason, data, t, time_in_action, ...)
+    func(self, reason, data, t, time_in_action, ...)
+    if self._is_local_unit and self._has_scope then
+        mod.camera_position = nil
+    end
+end)
+
+mod:hook(CLASS.CameraManager, "_update_camera_properties", function(func, self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
+    func(self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
+    if viewport_name == "player1" and mod.camera_position then
+        local position = Camera.local_position(camera) + Vector3Box.unbox(mod.camera_position)
+        ScriptCamera.set_local_position(camera, position)
+    end
+end)
+
+-- mod:hook(CLASS.UIHud, "player_camera", function(func, self, ...)
+-- 	-- if not self._camera then
+-- 	-- 	local camera_manager = Managers.state.camera
+-- 	-- 	local camera = camera_manager:camera(self._world_viewport_name)
+-- 	-- 	self._camera = camera
+-- 	-- end
+
+-- 	-- return self._camera
+--     mod:echo(self._world_viewport_name)
+--     return func(self, ...)
+-- end)
+
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┬─┐┌─┐┬  ┬┬┌─┐┬ ┬┌─┐ ##########################################################################
 -- ##### │ │ ├┤ │││  ├─┘├┬┘├┤ └┐┌┘│├┤ │││└─┐ ##########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘└─┘ ##########################################################################
@@ -502,6 +577,7 @@ mod.weapon_templates = {}
 mod.special_types = {
 	"special_bullet",
 	"melee",
+    "knife",
 }
 
 mod.template_add_torch = function(self, orig_weapon_template)
@@ -552,13 +628,22 @@ end)
 -- ##### ││││├─┘│ │ │  ################################################################################################
 -- ##### ┴┘└┘┴  └─┘ ┴  ################################################################################################
 
+local table_contains = table.contains
+
+mod.special_actions = {
+    "weapon_extra_pressed",
+}
+
 mod:hook(CLASS.InputService, "get", function(func, self, action_name, ...)
 	local pressed = func(self, action_name, ...)
     if mod.initialized then
-        if action_name == "weapon_extra_pressed" and mod:has_flashlight_attachment() then
+        if table_contains(mod.special_actions, action_name) and mod:has_flashlight_attachment() then
             if pressed then
                 mod:toggle_flashlight()
             end
+            return self:get_default(action_name)
+        end
+        if action_name == "weapon_extra_hold" and mod:has_flashlight_attachment() then
             return self:get_default(action_name)
         end
 	end

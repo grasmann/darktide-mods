@@ -1,10 +1,6 @@
 local mod = get_mod("weapon_customization")
 
 mod:add_global_localize_strings({
-	loc_weapon_inventory_switch_torch_button = {
-		en = "Switch torch / stab",
-		de = "Wechsel Lampe / Stich",
-	},
 	loc_weapon_cosmetics_customization = {
 		en = "Customization",
 		de = "Anpassung",
