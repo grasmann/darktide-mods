@@ -3,14 +3,14 @@ local mod = get_mod("weapon_customization")
 local MasterItems = mod:original_require("scripts/backend/master_items")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
-
-local next = next
+local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 
 mod.add_custom_attachments = {
     flashlight = "flashlights",
     bayonet = "bayonets",
     stock = "stocks",
     stock_2 = "stocks",
+    rail = "rails",
 }
 
 mod.get_item_attachment_slots = function(self, item)
@@ -74,13 +74,15 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┘├─┤ │ │  ├─┤ ###########################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ###########################################################
 
-mod._recursive_set_attachment = function(self, attachments, attachment_type, model)
-    for attachment_name, attachment_data in pairs(attachments) do
-        if attachment_name == attachment_type then
-            attachment_data.item = model
-        else
-            if attachment_data.children then
-                self:_recursive_set_attachment(attachment_data.children, attachment_type, model)
+mod._recursive_set_attachment = function(self, attachments, attachment_type, model, auto)
+    if not table.contains(mod.automatic_slots, attachment_type) or auto then
+        for attachment_slot, attachment_data in pairs(attachments) do
+            if attachment_slot == attachment_type then
+                attachment_data.item = model
+            else
+                if attachment_data.children then
+                    self:_recursive_set_attachment(attachment_data.children, attachment_type, model, auto)
+                end
             end
         end
     end
@@ -101,6 +103,46 @@ mod._recursive_find_attachment = function(self, attachments, attachment_type)
         end
     end
     return val
+end
+
+mod.filter_attachments = {
+    -- "zzz_shared_material_overrides",
+    -- "slot_body_skin_color",
+    -- "magazine2",
+}
+
+mod._recursive_get_attachments = function(self, attachments, out_found_attachments)
+    out_found_attachments = out_found_attachments or {}
+    for attachment_slot, attachment_data in pairs(attachments) do
+        if type(attachment_data.item) == "string" and attachment_data.item ~= "" then
+            out_found_attachments[#out_found_attachments+1] = {
+                slot = attachment_slot,
+                item = attachment_data.item,
+            }
+        end
+        if attachment_data.children then
+            self:_recursive_get_attachments(attachment_data.children, out_found_attachments)
+        end
+    end
+end
+
+mod._get_attachment_slot_to_unit = function(self, attachments, attachment_units, item_name)
+    local attachment_slot_to_unit = {}
+    local units_to_attachment_slots = {}
+    local found_attachments = {}
+    self:_recursive_get_attachments(attachments, found_attachments)
+    local num_units = #attachment_units
+    local num_attachments = #found_attachments
+    for i = 1, num_attachments, 1 do
+        if type(found_attachments[i].item) == "string" then
+            local definition = mod:persistent_table("weapon_customization").item_definitions[found_attachments[i].item]
+            if definition and definition.base_unit and definition.base_unit ~= "" and num_units >= i then
+                attachment_slot_to_unit[found_attachments[i]] = attachment_units[i]
+                units_to_attachment_slots[attachment_units[i]] = found_attachments[i].item
+            end
+        end
+    end
+    return attachment_slot_to_unit, units_to_attachment_slots
 end
 
 mod._recursive_find_attachment_item_string = function(self, attachments, item_string)
@@ -145,8 +187,8 @@ end
 
 mod._add_custom_attachments = function(self, gear_id, attachments)
     for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
-        local special = self:get_gear_setting(gear_id, attachment_slot)
-        local attachment = table.contains(self[attachment_table], special)
+        local attachment_setting = self:get_gear_setting(gear_id, attachment_slot)
+        local attachment = table.contains(self[attachment_table], attachment_setting)
         if attachment then
             if not self:_recursive_find_attachment(attachments, attachment_slot) then
                 attachments[attachment_slot] = {
@@ -191,6 +233,14 @@ mod._overwrite_attachments = function(self, item_data, attachments)
             local model = mod.attachment_models[item_name][attachment].model
             local attachment_type = mod.attachment_models[item_name][attachment].type
             mod:_recursive_set_attachment(attachments, attachment_type, model)
+            -- Automatic
+            local automatic_equip = mod.attachment_models[item_name][attachment].automatic_equip
+            if automatic_equip then
+                for auto_type, auto_attachment in pairs(automatic_equip) do
+                    local auto_model = mod.attachment_models[item_name][auto_attachment].model
+                    mod:_recursive_set_attachment(attachments, auto_type, auto_model, true)
+                end
+            end
         else
             -- Default overwrite
             if mod.default_overwrite[item_name] and mod.default_overwrite[item_name][attachment_slot] then
@@ -279,6 +329,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
     if not instance._spawn_item_attachments then instance._spawn_item_attachments = instance.spawn_item_attachments end
     instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 
+        local item_name = mod:item_name_from_content_string(item_data.name)
+        -- override_lookup = {}
         local attachments = item_data.attachments
         if item_unit and attachments then --and item_data.__master_item and item_data.__master_item.weapon_template then
             local gear_id = mod:get_gear_id(item_data)
@@ -297,19 +349,19 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             end
         end
 
-        -- if mod._debug then
-        -- local item_name = mod:item_name_from_content_string(item_data.name)
-        -- mod:echo(item_name)
-        -- mod:debug_attachments(item_data, attachments, {"lasgun_p2_m1", "lasgun_p2_m2", "lasgun_p2_m3"})
-        -- end
+        -- mod:debug_attachments(item_data, attachments, {"lasgun_p3_m1", "lasgun_p3_m2", "lasgun_p3_m3"})
 
         local attachment_units, attachment_units_bind_poses = instance._spawn_item_attachments(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 
-        local attachment_index = 1
+        -- local attachment_slots_to_units = {}
+        -- local units_to_attachment_slots = {}
+        -- if item_unit and attachments and attachment_units then
+        --     attachment_slots_to_units, units_to_attachment_slots = mod:_get_attachment_slot_to_unit(attachments, attachment_units, item_name)
+        -- end
+
         if attachment_units and item_data then
             for _, unit in pairs(attachment_units) do
                 local unit_name = Unit.debug_name(unit)
-                local item_name = mod:item_name_from_content_string(item_data.name)
                 local anchor = nil
 
                 if mod.attachment_units[unit_name] then
@@ -317,10 +369,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     if attachment then
                         if mod.anchors[item_name] and mod.anchors[item_name][attachment] then
                             anchor = mod.anchors[item_name][attachment]
-                            if anchor.preview_only and optional_mission_template or
-                                ScriptWorld.name(attach_settings.world) == "ui_inventory" then anchor = nil end
+                            if anchor.preview_only and optional_mission_template or ScriptWorld.name(attach_settings.world) == "ui_inventory" then anchor = nil end
                         end
-
                     end
                 end
 
@@ -333,44 +383,28 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     Unit.set_local_scale(unit, 1, Vector3(1, 1, 0.9))
                 end
 
-                -- Fixes
-                if not anchor and mod.anchors[item_name] and mod.anchors[item_name]["fixes"] then
-                    local fixes = mod.anchors[item_name]["fixes"]
-                    if fixes[tostring(attachment_index)] then
-                    -- if attachment_index == mod.test_index then
-                    --     local fix_entry = fixes["8"]
-                        local fix_entries = fixes[tostring(attachment_index)]
-                        for dependency, fix_entry in pairs(fix_entries) do
-                            if mod.attachment_models[item_name] and mod.attachment_models[item_name][dependency] then
-                                local model_string = mod.attachment_models[item_name][dependency].model
-                                if model_string then
-                                    -- local has_dependency = mod:_recursive_find_attachment_item_name(attachments, dependency)
-                                    local has_dependency = mod:_recursive_find_attachment_item_string(attachments, model_string)
-                                    if has_dependency then
-                                        -- Iterate fixes
-                                        for attachment_name, fix in pairs(fix_entry) do
-                                            -- Check fix dependency
-                                            if mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name] then
-                                                -- Get item string for fix dependency
-                                                local model_string_2 = mod.attachment_models[item_name][attachment_name].model
-                                                if model_string_2 then
-                                                    -- Search for dependency value
-                                                    local other_attachment = mod:_recursive_find_attachment_item_string(attachments, model_string_2)
-                                                    if other_attachment then
-                                                        -- Set anchor to fix
-                                                        anchor = fix
-                                                        break
-                                                    end
-                                                end
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                        
-                    end
-                end
+                -- -- Fixes
+                -- if not anchor and mod.anchors[item_name] and mod.anchors[item_name]["fixes"] then
+                --     for fix_attachment, fix_data in pairs(mod.anchors[item_name]["fixes"]) do
+                --         if mod.attachment_models[item_name] and mod.attachment_models[item_name][fix_attachment] then
+                --             local model_string = mod.attachment_models[item_name][fix_attachment].model
+                --             local has_fix_attachment = mod:_recursive_find_attachment_item_string(attachments, model_string)
+                --             if has_fix_attachment then
+                --                 local fix_attachment_slot = mod.attachment_models[item_name][fix_attachment].type
+                --                 for dependency_attachment, fix in pairs(fix_data) do
+                --                     if mod.attachment_models[item_name] and mod.attachment_models[item_name][dependency_attachment] then
+                --                         local model_string = mod.attachment_models[item_name][dependency_attachment].model
+                --                         local has_dependency = mod:_recursive_find_attachment_item_string(attachments, model_string)
+                --                         if has_dependency and fix_attachment_slot and unit == attachment_slots_to_units[fix_attachment_slot] then
+                --                             anchor = fix
+                --                             break
+                --                         end
+                --                     end
+                --                 end
+                --             end
+                --         end
+                --     end
+                -- end
 
                 if anchor then
                     World.unlink_unit(attach_settings.world, unit)
@@ -385,8 +419,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     Unit.set_local_rotation(unit, 1, rotation)
                     Unit.set_local_scale(unit, 1, scale)
                 end
-
-                attachment_index = attachment_index + 1
             end
         end
 
@@ -410,7 +442,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                     if #new_unit_names > 0 then
                         for _, unit_name in pairs(new_unit_names) do
-                            -- mod:echo(unit_name)
+                            mod:echo(unit_name)
                         end
                     end
 
@@ -468,14 +500,21 @@ end)
 -- ##### └─┘└─┘└─┘┴  └─┘  ┴ ┴┴┴ ┴┴┘└┘└─┘ ##############################################################################
 
 mod:hook(CLASS.ActionAim, "start", function(func, self, action_settings, t, ...)
-    if self._is_local_unit then
+    if self._is_local_unit and self._weapon and self._weapon.item and self._weapon.item.__master_item then
         local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight")
-        self._has_scope = sight and sight.item ~= ""
-        local anchor = mod.anchors[self._weapon_template.name]
-        self._scope_offset = anchor and anchor["scope_offset"] or Vector3Box(0, 0, 0)
-        self.finish = function (self, reason, data, t, time_in_action)
-            if self._is_local_unit and self._has_scope then
-                mod.camera_position = self._scope_offset
+        if sight and sight.item and sight.item ~= "" then
+            local item_name = mod:item_name_from_content_string(sight.item)
+            self._has_scope = table.contains(mod.reflex_sights, item_name)
+            self._has_sight = table.contains(mod.sights, item_name)
+            local anchor = mod.anchors[self._weapon_template.name]
+            self._scope_offset = anchor and anchor["scope_offset"] or Vector3Box(0, 0, 0)
+            self._sight_offset = anchor and anchor["no_scope_offset"] or Vector3Box(0, 0, 0)
+            self.finish = function (self, reason, data, t, time_in_action)
+                if self._is_local_unit and self._has_scope then
+                    mod.camera_position = self._scope_offset
+                elseif self._is_local_unit and self._has_sight then
+                    mod.camera_position = self._sight_offset
+                end
             end
         end
     end
@@ -488,21 +527,34 @@ mod:hook(CLASS.ActionAim, "running_action_state", function(func, self, t, time_i
         local progress = time_in_action / self._action_settings.total_time
         local position = Vector3Box.unbox(self._scope_offset) * progress
         mod.camera_position = Vector3Box(position)
+    elseif self._is_local_unit and self._has_sight then
+        local progress = time_in_action / self._action_settings.total_time
+        local position = Vector3Box.unbox(self._sight_offset) * progress
+        mod.camera_position = Vector3Box(position)
     end
 end)
 
 mod:hook(CLASS.ActionUnaim, "start", function(func, self, action_settings, t, ...)
-    if self._is_local_unit then
+    if self._is_local_unit and self._weapon and self._weapon.item and self._weapon.item.__master_item then
         local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight")
-        self._has_scope = sight and sight.item ~= ""
-        local anchor = mod.anchors[self._weapon_template.name]
-        self._scope_offset = anchor and anchor["scope_offset"] or Vector3Box(0, 0, 0)
-    end
-    self.running_action_state = function(self, t, time_in_action, ...)
-        if self._is_local_unit and self._has_scope then
-            local progress = time_in_action / self._action_settings.total_time
-            local position = Vector3Box.unbox(self._scope_offset) * (1 - progress)
-            mod.camera_position = Vector3Box(position)
+        if sight and sight.item and sight.item ~= "" then
+            local item_name = mod:item_name_from_content_string(sight.item)
+            self._has_scope = table.contains(mod.reflex_sights, item_name)
+            self._has_sight = table.contains(mod.sights, item_name)
+            local anchor = mod.anchors[self._weapon_template.name]
+            self._scope_offset = anchor and anchor["scope_offset"] or Vector3Box(0, 0, 0)
+            self._sight_offset = anchor and anchor["no_scope_offset"] or Vector3Box(0, 0, 0)
+            self.running_action_state = function(self, t, time_in_action, ...)
+                if self._is_local_unit and self._has_scope then
+                    local progress = time_in_action / self._action_settings.total_time
+                    local position = Vector3Box.unbox(self._scope_offset) * (1 - progress)
+                    mod.camera_position = Vector3Box(position)
+                elseif self._is_local_unit and self._has_sight then
+                    local progress = time_in_action / self._action_settings.total_time
+                    local position = Vector3Box.unbox(self._sight_offset) * (1 - progress)
+                    mod.camera_position = Vector3Box(position)
+                end
+            end
         end
     end
     func(self, action_settings, t, ...)
@@ -511,6 +563,8 @@ end)
 mod:hook(CLASS.ActionUnaim, "finish", function(func, self, reason, data, t, time_in_action, ...)
     func(self, reason, data, t, time_in_action, ...)
     if self._is_local_unit and self._has_scope then
+        mod.camera_position = nil
+    elseif self._is_local_unit and self._has_sight then
         mod.camera_position = nil
     end
 end)
@@ -522,18 +576,6 @@ mod:hook(CLASS.CameraManager, "_update_camera_properties", function(func, self, 
         ScriptCamera.set_local_position(camera, position)
     end
 end)
-
--- mod:hook(CLASS.UIHud, "player_camera", function(func, self, ...)
--- 	-- if not self._camera then
--- 	-- 	local camera_manager = Managers.state.camera
--- 	-- 	local camera = camera_manager:camera(self._world_viewport_name)
--- 	-- 	self._camera = camera
--- 	-- end
-
--- 	-- return self._camera
---     mod:echo(self._world_viewport_name)
---     return func(self, ...)
--- end)
 
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┬─┐┌─┐┬  ┬┬┌─┐┬ ┬┌─┐ ##########################################################################
 -- ##### │ │ ├┤ │││  ├─┘├┬┘├┤ └┐┌┘│├┤ │││└─┐ ##########################################################################

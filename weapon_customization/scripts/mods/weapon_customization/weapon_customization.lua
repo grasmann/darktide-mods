@@ -46,7 +46,6 @@ mod.item_name_from_content_string = function(self, content_string)
 	return string.gsub(content_string, '.*[%/%\\]', '')
 end
 
-local test = false
 mod.has_flashlight_attachment = function(self)
 	if self.initialized then
 		local item = self.visual_loadout_extension:item_from_slot(self.inventory_component.wielded_slot)

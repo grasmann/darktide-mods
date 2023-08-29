@@ -883,6 +883,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
+	mod.debug_weapon_stuff = nil
+	
     func(self, ...)
 
     if self._selected_item then
