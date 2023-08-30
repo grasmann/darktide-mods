@@ -44,6 +44,10 @@ return {
 		en = "Randomize",
 		de = "Zufällig",
 	},
+	loc_weapon_inventory_demo_button = {
+		en = "Demo",
+		de = "Demo",
+	},
 	loc_weapon_cosmetics_customization_flashlight = {
 		en = "Special",
 		de = "Spezial",
@@ -139,5 +143,9 @@ return {
 	loc_weapon_cosmetics_customization_shaft_upper = {
 		en = "Upper Shaft",
 		de = "Oberer Schaft",
+	},
+	loc_weapon_cosmetics_customization_trinket_hook = {
+		en = "Trinket Hook",
+		de = "Trinket Haken",
 	},
 }

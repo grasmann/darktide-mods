@@ -115,7 +115,18 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", funct
 	reset_button.content.hotspot.pressed_callback = callback(mod, "cb_on_reset_pressed")
 	local randomize_button = widgets_by_name.randomize_button
 	randomize_button.content.hotspot.pressed_callback = callback(mod, "cb_on_randomize_pressed")
+	local demo_button = widgets_by_name.demo_button
+	demo_button.content.hotspot.pressed_callback = callback(mod, "cb_on_demo_pressed")
 end)
+
+mod.cb_on_demo_pressed = function(self)
+	self.demo = not self.demo
+	self.demo_time = 1
+	self.demo_timer = 0
+	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
+	InventoryWeaponCosmeticsView:_cb_on_ui_visibility_toggled("entry_" .. 3)
+	self:start_weapon_move(Vector3Box(Vector3(-.25, -3, 0)), true)
+end
 
 mod.cb_on_randomize_pressed = function(self)
 	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
@@ -225,6 +236,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
     mod:update_custom_widgets(self, input_service)
 	mod:update_equip_button(self)
 	mod:update_reset_button(self)
+	if mod.demo then
+		local rotation_angle = (mod._last_rotation_angle or 0) + dt
+		self._weapon_preview._ui_weapon_spawner._rotation_angle = rotation_angle
+		self._weapon_preview._ui_weapon_spawner._default_rotation_angle = rotation_angle
+		mod._last_rotation_angle = self._weapon_preview._ui_weapon_spawner._default_rotation_angle
+		if mod.demo_timer < t then
+			mod:cb_on_randomize_pressed()
+			mod.demo_timer = t + mod.demo_time
+		end
+	end
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
@@ -500,10 +521,11 @@ mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, wor
 	end
 end)
 
-mod.start_weapon_move = function(self, position)
+mod.start_weapon_move = function(self, position, no_reset)
 	if position then
 		self.move_position = position
 		self.do_move = true
+		self.no_reset = no_reset
 	elseif self.link_unit_position then
 		self.move_position = Vector3Box(Vector3.zero())
 		self.do_move = true
@@ -568,10 +590,10 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			elseif mod.move_end ~= nil and t > mod.move_end then
 				mod.move_end = nil
 				mod.link_unit_position = Vector3Box(Unit.local_position(link_unit, 1))
-				if mod.current_move_duration == mod.move_duration_in then
+				if mod.current_move_duration == mod.move_duration_in and not mod.no_reset then
 					mod.reset_start = t + mod.reset_wait_time
 				end
-				mod.reset_start = t + mod.reset_wait_time
+				-- mod.reset_start = t + mod.reset_wait_time
 			end
 
 			if mod.reset_start and t >= mod.reset_start then
@@ -724,6 +746,21 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		}
 	})
 
+	instance.scenegraph_definition.demo_button = {
+		vertical_alignment = "bottom",
+		parent = "equip_button",
+		horizontal_alignment = "right",
+		size = equip_button_size,
+		position = {0, -equip_button_size[2] * 3 - 15 * 3, 1}
+	}
+	instance.widget_definitions.demo_button = UIWidget.create_definition(table.clone(ButtonPassTemplates.default_button), "demo_button", {
+		gamepad_action = "confirm_pressed",
+		text = Utf8.upper(mod:localize("loc_weapon_inventory_demo_button")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.weapons_skin_confirm
+		}
+	})
+
 	instance.widget_definitions.panel_extension = UIWidget.create_definition({
 		{
 			value = "content/ui/materials/backgrounds/terminal_basic",
@@ -809,6 +846,7 @@ mod.hide_custom_widgets = function(self, InventoryWeaponCosmeticsView, hide)
 		end
 		InventoryWeaponCosmeticsView._widgets_by_name.reset_button.visible = not hide
 		InventoryWeaponCosmeticsView._widgets_by_name.randomize_button.visible = not hide
+		InventoryWeaponCosmeticsView._widgets_by_name.demo_button.visible = not hide
     end
 end
 
@@ -851,6 +889,7 @@ mod.add_custom_widget = function(self, widget, InventoryWeaponCosmeticsView)
 end
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...)
+	mod.demo = nil
 	mod:check_unsaved_changes(self)
 	func(self, ...)
 end)
@@ -884,7 +923,7 @@ end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
 	mod.debug_weapon_stuff = nil
-	
+
     func(self, ...)
 
     if self._selected_item then
@@ -906,7 +945,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
 		for index, slot in pairs(mod.attachment_slots) do
 			
-			if mod.attachment[item_name] and not mod.attachment[item_name][slot] then
+			if mod.attachment[item_name] and (not mod.attachment[item_name][slot] or #mod.attachment[item_name][slot] <= 2) then
 				self._widgets_by_name[slot.."_custom"].not_applicable = true
 				self._widgets_by_name[slot.."_custom_text"].not_applicable = true
 				not_applicable[#not_applicable+1] = slot.."_pivot"

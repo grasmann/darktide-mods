@@ -349,7 +349,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             end
         end
 
-        -- mod:debug_attachments(item_data, attachments, {"lasgun_p3_m1", "lasgun_p3_m2", "lasgun_p3_m3"})
+        -- mod:debug_attachments(item_data, attachments, {"combataxe_p2_m1", "combataxe_p2_m2", "combataxe_p2_m3"})
 
         local attachment_units, attachment_units_bind_poses = instance._spawn_item_attachments(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 

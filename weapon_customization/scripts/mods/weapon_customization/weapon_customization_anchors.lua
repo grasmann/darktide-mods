@@ -377,9 +377,9 @@ local _stock_attachments = function()
         {id = "autogun_rifle_stock_07", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
         {id = "autogun_rifle_stock_08", name = "Headhunter Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
         {id = "autogun_rifle_stock_09", name = "Headhunter Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-        {id = "lasgun_stock_01", name = "Recon Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-        {id = "lasgun_stock_02", name = "Recon Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-        {id = "lasgun_stock_03", name = "Recon Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+        {id = "lasgun_stock_01", name = "Infantry Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+        {id = "lasgun_stock_02", name = "Infantry Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+        {id = "lasgun_stock_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
     }
 end
 
@@ -525,6 +525,66 @@ local _autogun_magazine_models = function()
         magazine_02 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_02", type = "magazine"},
         magazine_03 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_03", type = "magazine"},
         magazine_04 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_ak_magazine_01", type = "magazine"},
+    }
+end
+
+local _trinket_hook_attachments = function()
+    return {
+        {id = "trinket_hook_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+        {id = "trinket_hook_empty", name = "No Trinket Hook", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_01", name = "Trinket Hook 1", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_01_v", name = "Trinket Hook 1 V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_02", name = "Trinket Hook 2", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_02_45", name = "Trinket Hook 2 45", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_02_90", name = "Trinket Hook 2 90", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_03", name = "Trinket Hook 3", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_03_v", name = "Trinket Hook 3 V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_04_steel", name = "Trinket Hook 4 Steel", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_04_steel_v", name = "Trinket Hook 4 Steel V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_04_coated", name = "Trinket Hook 4 Coated", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_04_coated_v", name = "Trinket Hook 4 Coated V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_04_carbon", name = "Trinket Hook 4 Carbon", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_04_carbon_v", name = "Trinket Hook 4 Carbon V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_04_gold", name = "Trinket Hook 4 Gold", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_04_gold_v", name = "Trinket Hook 4 Gold V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_05_steel", name = "Trinket Hook 5 Steel", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_05_steel_v", name = "Trinket Hook 5 Steel V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_05_coated", name = "Trinket Hook 5 Coated", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_05_coated_v", name = "Trinket Hook 5 Coated V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_05_carbon", name = "Trinket Hook 5 Carbon", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_05_carbon_v", name = "Trinket Hook 5 Carbon V", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_05_gold", name = "Trinket Hook 5 Gold", sounds = {UISoundEvents.apparel_equip}},
+        {id = "trinket_hook_05_gold_v", name = "Trinket Hook 5 Gold V", sounds = {UISoundEvents.apparel_equip}},
+    }
+end
+
+local _trinket_hook_models = function()
+    return {
+        trinket_hook_default = {model = "", type = "trinket_hook"},
+        trinket_hook_02_90 = {model = "content/items/weapons/player/trinkets/trinket_hook_02_90", type = "trinket_hook"},
+        trinket_hook_01_v = {model = "content/items/weapons/player/trinkets/trinket_hook_01_v", type = "trinket_hook"},
+        trinket_hook_04_gold_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold_v", type = "trinket_hook"},
+        trinket_hook_02 = {model = "content/items/weapons/player/trinkets/trinket_hook_02", type = "trinket_hook"},
+        trinket_hook_03 = {model = "content/items/weapons/player/trinkets/trinket_hook_03", type = "trinket_hook"},
+        trinket_hook_04_steel_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel_v", type = "trinket_hook"},
+        trinket_hook_04_carbon = {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon", type = "trinket_hook"},
+        trinket_hook_04_gold = {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold", type = "trinket_hook"},
+        trinket_hook_04_carbon_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon_v", type = "trinket_hook"},
+        trinket_hook_04_coated = {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated", type = "trinket_hook"},
+        trinket_hook_01 = {model = "content/items/weapons/player/trinkets/trinket_hook_01", type = "trinket_hook"},
+        trinket_hook_04_steel = {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel", type = "trinket_hook"},
+        trinket_hook_02_45 = {model = "content/items/weapons/player/trinkets/trinket_hook_02_45", type = "trinket_hook"},
+        trinket_hook_empty = {model = "content/items/weapons/player/trinkets/trinket_hook_empty", type = "trinket_hook"},
+        trinket_hook_05_gold = {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold", type = "trinket_hook"},
+        trinket_hook_05_carbon = {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon", type = "trinket_hook"},
+        trinket_hook_05_coated_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated_v", type = "trinket_hook"},
+        trinket_hook_05_gold_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold_v", type = "trinket_hook"},
+        trinket_hook_05_steel_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel_v", type = "trinket_hook"},
+        trinket_hook_05_coated = {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated", type = "trinket_hook"},
+        trinket_hook_05_carbon_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon_v", type = "trinket_hook"},
+        trinket_hook_03_v = {model = "content/items/weapons/player/trinkets/trinket_hook_03_v", type = "trinket_hook"},
+        trinket_hook_05_steel = {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel", type = "trinket_hook"},
+        trinket_hook_04_coated_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated_v", type = "trinket_hook"},
     }
 end
 
@@ -1354,6 +1414,9 @@ mod.anchors = {
             },
         }
     },
+    combataxe_p1_m1 = {
+
+    },
 }
 mod.anchors.ogryn_heavystubber_p1_m2 = mod.anchors.ogryn_heavystubber_p1_m1
 mod.anchors.ogryn_heavystubber_p1_m3 = mod.anchors.ogryn_heavystubber_p1_m1
@@ -1374,6 +1437,8 @@ mod.anchors.lasgun_p2_m2 = mod.anchors.lasgun_p2_m1
 mod.anchors.lasgun_p2_m3 = mod.anchors.lasgun_p2_m1
 mod.anchors.lasgun_p3_m2 = mod.anchors.lasgun_p3_m1
 mod.anchors.lasgun_p3_m3 = mod.anchors.lasgun_p3_m1
+mod.anchors.combataxe_p1_m2 = mod.anchors.combataxe_p1_m1
+mod.anchors.combataxe_p1_m3 = mod.anchors.combataxe_p1_m1
 
 mod.attachment = {
     ogryn_heavystubber_p1_m1 = {
@@ -2550,8 +2615,8 @@ mod.attachment = {
         grip = _grip_attachments(),
         receiver = {
             {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-            {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_02", name = "Headhunter Autogun 2", sounds = {UISoundEvents.weapons_equip_weapon}},
             -- {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
         },
         stock = table.icombine(
@@ -2583,7 +2648,7 @@ mod.attachment = {
             {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             -- {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
             -- {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-            {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_03", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_weapon}},
         },
         stock = table.icombine(
             {{id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
@@ -2612,8 +2677,8 @@ mod.attachment = {
         grip = _grip_attachments(),
         receiver = {
             {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-            {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+            {id = "receiver_02", name = "Headhunter Autogun 2", sounds = {UISoundEvents.weapons_equip_weapon}},
             -- {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
         },
         stock = table.icombine(
@@ -2729,6 +2794,66 @@ mod.attachment = {
         },
     },
 
+    combataxe_p1_m1 = {
+        grip = {
+            {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "axe_grip_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_grip_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_grip_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_grip_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_grip_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_grip_06", name = "Combat Axe 6", sounds = {UISoundEvents.weapons_swap}},
+        },
+        head = {
+            {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "axe_head_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_head_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_head_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_head_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_head_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
+        },
+        pommel = {
+            {id = "pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "axe_pommel_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_pommel_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_pommel_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_pommel_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
+            {id = "axe_pommel_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
+        },
+        emblem_right = _emblem_right_attachments(),
+        emblem_left = _emblem_left_attachments(),
+    },
+
+    combataxe_p2_m1 = {
+        trinket_hook = _trinket_hook_attachments(),
+        emblem_right = _emblem_right_attachments(),
+        emblem_left = _emblem_left_attachments(),
+        grip = {
+            {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "hatchet_grip_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_grip_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_grip_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_grip_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_grip_05", name = "Tactical Axe 5", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_grip_06", name = "Tactical Axe 6", sounds = {UISoundEvents.weapons_swap}},
+        },
+        head = {
+            {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "hatchet_head_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_head_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_head_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_head_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_head_05", name = "Tactical Axe 5", sounds = {UISoundEvents.weapons_swap}},
+        },
+        pommel = {
+            {id = "pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            {id = "hatchet_pommel_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_pommel_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_pommel_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
+            {id = "hatchet_pommel_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
+        },
+    },
+
     forcestaff_p1_m1 = {
         shaft_lower = {
             {id = "shaft_lower_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
@@ -2799,6 +2924,10 @@ mod.attachment.lasgun_p2_m2 = mod.attachment.lasgun_p2_m1
 mod.attachment.lasgun_p2_m3 = mod.attachment.lasgun_p2_m1
 mod.attachment.lasgun_p3_m2 = mod.attachment.lasgun_p3_m1
 mod.attachment.lasgun_p3_m3 = mod.attachment.lasgun_p3_m1
+mod.attachment.combataxe_p1_m2 = mod.attachment.combataxe_p1_m1
+mod.attachment.combataxe_p1_m3 = mod.attachment.combataxe_p1_m1
+mod.attachment.combataxe_p2_m2 = mod.attachment.combataxe_p2_m1
+mod.attachment.combataxe_p2_m3 = mod.attachment.combataxe_p2_m1
 
 mod.text_overwrite = {
     plasmagun_p1_m1 = {
@@ -2912,6 +3041,7 @@ mod.attachment_slots = {
     "emblem_left",
     "shaft_lower",
     "shaft_upper",
+    "trinket_hook",
 }
 
 mod.attachment_models = {
@@ -3871,7 +4001,7 @@ mod.attachment_models = {
         _sights_models(),
         _stock_models(),
         _autogun_barrel_models(),
-        _autogun_braced_barrel_models(),
+        -- _autogun_braced_barrel_models(),
         _autogun_headhunter_barrel_models(),
         _lasgun_rail_models(),
         _autogun_muzzle_models(),
@@ -3892,7 +4022,9 @@ mod.attachment_models = {
         _reflex_sights_models(),
         _sights_models(),
         _stock_models(),
-        _autogun_barrel_models(),
+        -- _autogun_barrel_models(),
+        _autogun_braced_barrel_models(),
+        -- _autogun_headhunter_barrel_models(),
         _lasgun_rail_models(),
         _autogun_muzzle_models(),
         _autogun_magazine_models(),
@@ -3913,6 +4045,7 @@ mod.attachment_models = {
         _sights_models(),
         _stock_models(),
         _autogun_barrel_models(),
+        _autogun_headhunter_barrel_models(),
         _lasgun_rail_models(),
         _autogun_muzzle_models(),
         _autogun_magazine_models(),
@@ -3994,6 +4127,57 @@ mod.attachment_models = {
         }
     ),
 
+    combataxe_p1_m1 = table.combine(
+        _emblem_right_models(),
+        _emblem_left_models(),
+        {
+            grip_default = {model = "", type = "grip"},
+            axe_grip_01 = {model = "content/items/weapons/player/melee/grips/axe_grip_01", type = "grip"},
+            axe_grip_02 = {model = "content/items/weapons/player/melee/grips/axe_grip_02", type = "grip"},
+            axe_grip_03 = {model = "content/items/weapons/player/melee/grips/axe_grip_03", type = "grip"},
+            axe_grip_04 = {model = "content/items/weapons/player/melee/grips/axe_grip_04", type = "grip"},
+            axe_grip_05 = {model = "content/items/weapons/player/melee/grips/axe_grip_05", type = "grip"},
+            axe_grip_06 = {model = "content/items/weapons/player/melee/grips/axe_grip_06", type = "grip"},
+            head_default = {model = "", type = "head"},
+            axe_head_01 = {model = "content/items/weapons/player/melee/heads/axe_head_01", type = "head"},
+            axe_head_02 = {model = "content/items/weapons/player/melee/heads/axe_head_02", type = "head"},
+            axe_head_03 = {model = "content/items/weapons/player/melee/heads/axe_head_03", type = "head"},
+            axe_head_04 = {model = "content/items/weapons/player/melee/heads/axe_head_04", type = "head"},
+            axe_head_05 = {model = "content/items/weapons/player/melee/heads/axe_head_05", type = "head"},
+            pommel_default = {model = "", type = "pommel"},
+            axe_pommel_01 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_01", type = "pommel"},
+            axe_pommel_02 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_02", type = "pommel"},
+            axe_pommel_03 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_03", type = "pommel"},
+            axe_pommel_04 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_04", type = "pommel"},
+            axe_pommel_05 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_05", type = "pommel"},
+        }
+    ),
+    combataxe_p2_m1 = table.combine(
+        _emblem_right_models(),
+        _emblem_left_models(),
+        _trinket_hook_models(),
+        {
+            grip_default = {model = "", type = "grip"},
+            hatchet_grip_01 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_01", type = "grip"},
+            hatchet_grip_02 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_02", type = "grip"},
+            hatchet_grip_03 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_03", type = "grip"},
+            hatchet_grip_04 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_04", type = "grip"},
+            hatchet_grip_05 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_05", type = "grip"},
+            hatchet_grip_06 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_06", type = "grip"},
+            head_default = {model = "", type = "head"},
+            hatchet_head_01 = {model = "content/items/weapons/player/melee/heads/hatchet_head_01", type = "head"},
+            hatchet_head_02 = {model = "content/items/weapons/player/melee/heads/hatchet_head_02", type = "head"},
+            hatchet_head_03 = {model = "content/items/weapons/player/melee/heads/hatchet_head_03", type = "head"},
+            hatchet_head_04 = {model = "content/items/weapons/player/melee/heads/hatchet_head_04", type = "head"},
+            hatchet_head_05 = {model = "content/items/weapons/player/melee/heads/hatchet_head_05", type = "head"},
+            pommel_default = {model = "", type = "pommel"},
+            hatchet_pommel_01 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_01", type = "pommel"},
+            hatchet_pommel_02 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_02", type = "pommel"},
+            hatchet_pommel_03 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_03", type = "pommel"},
+            hatchet_pommel_04 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_04", type = "pommel"},
+        }
+    ),
+
     forcestaff_p1_m1 = {
         customization_default_position = Vector3Box(0, 8, .75),
         shaft_lower_default = {model = "", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
@@ -4058,3 +4242,7 @@ mod.attachment_models.lasgun_p2_m2 = mod.attachment_models.lasgun_p2_m1
 mod.attachment_models.lasgun_p2_m3 = mod.attachment_models.lasgun_p2_m1
 mod.attachment_models.lasgun_p3_m2 = mod.attachment_models.lasgun_p3_m1
 mod.attachment_models.lasgun_p3_m3 = mod.attachment_models.lasgun_p3_m1
+mod.attachment_models.combataxe_p1_m2 = mod.attachment_models.combataxe_p1_m1
+mod.attachment_models.combataxe_p1_m3 = mod.attachment_models.combataxe_p1_m1
+mod.attachment_models.combataxe_p2_m2 = mod.attachment_models.combataxe_p1_m1
+mod.attachment_models.combataxe_p2_m3 = mod.attachment_models.combataxe_p1_m1
