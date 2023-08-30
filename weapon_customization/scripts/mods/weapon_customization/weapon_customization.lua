@@ -285,6 +285,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
 	return func(self, ...)
 end)
 
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_fix")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")

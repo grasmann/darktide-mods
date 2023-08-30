@@ -120,9 +120,21 @@ return {
 		en = "Blade",
 		de = "Klinge",
 	},
+	loc_weapon_cosmetics_customization_teeth = {
+		en = "Teeth",
+		de = "Zähne",
+	},
+	loc_weapon_cosmetics_customization_chain = {
+		en = "Chain",
+		de = "Kette",
+	},
 	loc_weapon_cosmetics_customization_shaft = {
 		en = "Shaft",
 		de = "Schaft",
+	},
+	loc_weapon_cosmetics_customization_connector = {
+		en = "Connector",
+		de = "Verbindung",
 	},
 	loc_weapon_cosmetics_customization_left = {
 		en = "Shield",

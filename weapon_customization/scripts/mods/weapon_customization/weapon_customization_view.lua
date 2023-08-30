@@ -369,15 +369,50 @@ mod.generate_label = function(self, InventoryWeaponCosmeticsView, scenegraph, at
 	return widget
 end
 
+mod._recursive_get_weapon_units = function(self, current_unit, weapon_units)
+	local children = Unit.get_child_units(current_unit)
+	if children then
+		for _, unit in pairs(children) do
+			weapon_units[#weapon_units+1] = unit
+			mod:_recursive_get_weapon_units(unit, weapon_units)
+		end
+	end
+end
+
+mod.validate_item_model = function(self, model)
+	mod:setup_item_definitions()
+	if model ~= "" then
+		local definition = mod:persistent_table("weapon_customization").item_definitions[model]
+		if definition then
+			if definition.workflow_state ~= "RELEASABLE" then
+				return false
+			end
+			if table.find(definition.feature_flags, "FEATURE_unreleased_premium_cosmetics") then
+				return false
+			end
+			if table.find(definition.feature_flags, "FEATURE_premium_store") and 
+					not table.find(definition.feature_flags, "FEATURE_item_retained") then
+				return false
+			end
+			if not table.find(definition.feature_flags, "FEATURE_item_retained") then
+				return false
+			end
+		end
+	end
+	return true
+end
+
 mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph, attachment_slot, item)
 
     local gear_id = mod:get_gear_id(item)
-
     local weapon_name = mod:item_name_from_content_string(item.name)
     local options = {}
     if mod.attachment[weapon_name] and mod.attachment[weapon_name][attachment_slot] then
         for _, data in pairs(mod.attachment[weapon_name][attachment_slot]) do
-            options[#options+1] = mod:dropdown_option(data.id, data.name, data.sounds)
+			local model = mod.attachment_models[weapon_name][data.id] and mod.attachment_models[weapon_name][data.id].model
+			if model and mod:validate_item_model(model) then
+            	options[#options+1] = mod:dropdown_option(data.id, data.name, data.sounds)
+			end
         end
     end
 
@@ -673,7 +708,6 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 			end
 		end
 	end
-	
 end)
 
 mod.dropdown_option = function(self, id, display_name, sounds)
@@ -888,8 +922,31 @@ mod.add_custom_widget = function(self, widget, InventoryWeaponCosmeticsView)
 	InventoryWeaponCosmeticsView._custom_widgets[#InventoryWeaponCosmeticsView._custom_widgets+1] = widget
 end
 
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_cb_on_close_pressed", function(func, self, ...)
+	
+	func(self, ...)
+	
+end)
+
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...)
 	mod.demo = nil
+	mod.move_position = nil
+	mod.new_position = nil
+	mod.last_move_position = nil
+	mod.link_unit_position = nil
+	mod.do_move = nil
+	mod.move_end = nil
+	mod.reset_start = nil
+	mod._last_rotation_angle = 0
+	local weapon_spawner = self._weapon_preview._ui_weapon_spawner
+	local default_position = weapon_spawner._link_unit_base_position
+	weapon_spawner._link_unit_position = default_position
+	weapon_spawner._rotation_angle = 0
+	weapon_spawner._default_rotation_angle = 0
+	if weapon_spawner._weapon_spawn_data then
+		local link_unit = weapon_spawner._weapon_spawn_data.link_unit
+		Unit.set_local_position(link_unit, 1, Vector3Box.unbox(default_position))
+	end
 	mod:check_unsaved_changes(self)
 	func(self, ...)
 end)
