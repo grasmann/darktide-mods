@@ -112,6 +112,10 @@ return {
 		en = "Pommel",
 		de = "Knauf",
 	},
+	loc_weapon_cosmetics_customization_hilt = {
+		en = "Hilt",
+		de = "Heft",
+	},
 	loc_weapon_cosmetics_customization_head = {
 		en = "Head",
 		de = "Kopf",

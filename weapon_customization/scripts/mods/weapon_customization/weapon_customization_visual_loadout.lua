@@ -34,7 +34,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         local attachment_slot_info = {}
 
         -- mod:echo(item_name)
-        -- mod:debug_attachments(item_data, attachments, {"combatsword_p2_m1","combatsword_p2_m2","combatsword_p2_m3"})
+        -- mod:debug_attachments(item_data, attachments, {"combatsword_p3_m1", "combatsword_p3_m2", "combatsword_p3_m3"})
 
         -- ############################################################################################################
 
@@ -162,7 +162,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                     if #new_unit_names > 0 then
                         for _, unit_name in pairs(new_unit_names) do
-                            mod:echo(unit_name)
+                            -- mod:echo(unit_name)
                         end
                     end
 

@@ -121,11 +121,12 @@ end)
 
 mod.cb_on_demo_pressed = function(self)
 	self.demo = not self.demo
-	self.demo_time = 1
+	self.demo_time = .3
 	self.demo_timer = 0
 	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
-	InventoryWeaponCosmeticsView:_cb_on_ui_visibility_toggled("entry_" .. 3)
-	self:start_weapon_move(Vector3Box(Vector3(-.25, -3, 0)), true)
+	InventoryWeaponCosmeticsView:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
+	-- self:start_weapon_move(Vector3Box(Vector3(-.15, -2.5, 0)), true)
+	self:start_weapon_move(Vector3Box(Vector3(-.15, -1, 0)), true)
 end
 
 mod.cb_on_randomize_pressed = function(self)
@@ -512,6 +513,8 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
 				mod:start_weapon_move()
 			end
 
+
+
         end,
         get_function = function()
             return mod:get_gear_setting(gear_id, attachment_slot)
@@ -646,6 +649,8 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 	func(self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
 	local weapon_spawn_data = self._weapon_spawn_data
 	if weapon_spawn_data then
+		Unit.set_unit_visibility(weapon_spawn_data.item_unit_3p, true, true)
+
 		local link_unit = weapon_spawn_data.link_unit
 
 		local t = Managers.time:time("main")
@@ -706,6 +711,8 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 				self._last_item_name = item_name
 				
 			end
+
+			
 		end
 	end
 end)
@@ -929,6 +936,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_cb_on_close_pressed", function(fu
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...)
+	mod.cosmetics_view_open = nil
 	mod.demo = nil
 	mod.move_position = nil
 	mod.new_position = nil
@@ -980,6 +988,7 @@ end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
 	mod.debug_weapon_stuff = nil
+	mod.cosmetics_view_open = true
 
     func(self, ...)
 

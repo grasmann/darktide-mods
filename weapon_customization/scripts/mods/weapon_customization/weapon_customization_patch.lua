@@ -26,19 +26,27 @@ mod.get_item_attachment_slots = function(self, item)
 	return attachment_slots
 end
 
+mod.skip_randomize = {
+    -- "bayonet",
+    "emblem_left",
+    "emblem_right",
+}
+
 mod.randomize_weapon = function(self, item)
     local random_attachments = {}
     local item_name = mod:item_name_from_content_string(item.name)
     local attachment_slots = mod:get_item_attachment_slots(item)
     for _, attachment_slot in pairs(attachment_slots) do
-        local attachments = {}
-        for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
-            if not string.find(data.id, "default") then
-                attachments[#attachments+1] = data.id
+        if not table.contains(mod.skip_randomize, attachment_slot) then
+            local attachments = {}
+            for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
+                if not string.find(data.id, "default") then
+                    attachments[#attachments+1] = data.id
+                end
             end
+            local random_attachment = math.random_array_entry(attachments)
+            random_attachments[attachment_slot] = random_attachment
         end
-        local random_attachment = math.random_array_entry(attachments)
-        random_attachments[attachment_slot] = random_attachment
     end
     return random_attachments
 end

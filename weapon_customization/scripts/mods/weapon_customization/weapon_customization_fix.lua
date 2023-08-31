@@ -33,6 +33,9 @@ mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func,
 end)
 
 mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)
+    if mod.cosmetics_view_open then
+        return
+    end
 	for fixed_frame, items in pairs(self._pending_unloads) do
 		for i = 1, #items do
 			local item = items[i]
@@ -44,6 +47,13 @@ mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)
 	self._pending_unloads = nil
 	self._loaded_packages = nil
 end)
+
+-- mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
+--     if mod.cosmetics_view_open then
+--         return
+--     end
+--     func(self, id, ...)
+-- end)
 
 mod.attachment_package_snapshot = function(self, item, test_data)
     local packages = test_data or {}
