@@ -393,13 +393,13 @@ mod.validate_item_model = function(self, model)
 			if table.find(definition.feature_flags, "FEATURE_unreleased_premium_cosmetics") then
 				return false
 			end
-			if table.find(definition.feature_flags, "FEATURE_premium_store") and 
-					not table.find(definition.feature_flags, "FEATURE_item_retained") then
-				return false
-			end
-			if not table.find(definition.feature_flags, "FEATURE_item_retained") then
-				return false
-			end
+			-- if table.find(definition.feature_flags, "FEATURE_premium_store") and 
+			-- 		not table.find(definition.feature_flags, "FEATURE_item_retained") then
+			-- 	return false
+			-- end
+			-- if not table.find(definition.feature_flags, "FEATURE_item_retained") then
+			-- 	return false
+			-- end
 		end
 	end
 	return true
