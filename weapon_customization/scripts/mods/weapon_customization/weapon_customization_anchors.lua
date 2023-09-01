@@ -25,7 +25,6 @@ end
         end
         return combined
     end
-
     table.icombine = function(...)
         local arg = {...}
         local combined = {}
@@ -36,685 +35,671 @@ end
         end
         return combined
     end
-
-    local _flashlights_attachments = function()
-        return {
-            {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
-        }
-    end
-
-    local _flashlight_models = function()
-        return {
-            default = {model = "", type = "flashlight", angle = -2.5},
-            flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", angle = -2.5},
-            flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", angle = -2.5},
-            flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", angle = -2.5},
-            flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", angle = -2.5},
-        } 
-    end
-
-    local _emblem_right_attachments = function()
-        return {
-            {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
-        }
-    end
-
-    local _emblem_right_models = function()
-        return {
-            emblem_right_default = {model = "", type = "emblem_right", angle = -3},
-            emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right", angle = -3},
-            emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right", angle = -3},
-            emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right", angle = -3},
-            emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right", angle = -3},
-            emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right", angle = -3},
-            emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right", angle = -3},
-            emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right", angle = -3},
-            emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right", angle = -3},
-            emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right", angle = -3},
-            emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right", angle = -3},
-            emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right", angle = -3},
-            emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right", angle = -3},
-            emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right", angle = -3},
-            emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right", angle = -3},
-            emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right", angle = -3},
-            emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right", angle = -3},
-            emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right", angle = -3},
-            emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right", angle = -3},
-            emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right", angle = -3},
-            emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right", angle = -3},
-            emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right", angle = -3},
-        }
-    end
-
-    local _emblem_left_attachments = function()
-        return {
-            {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-            {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-        }
-    end
-
-    local _emblem_left_models = function()
-        return {
-            emblem_left_default = {model = "", type = "emblem_left"},
-            emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
-            emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
-            emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
-            emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
-            emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
-            emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
-            emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
-            emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
-            emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
-            emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
-            emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
-            emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
-        }
-    end
-
-    local _grip_attachments = function()
-        return {
-            {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_06", name = "Autogun 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_07", name = "Autogun 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_08", name = "Autogun 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_09", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_10", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_11", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_12", name = "Headhunter Autogun", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_13", name = "Boltgun 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_14", name = "Boltgun 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_15", name = "Boltgun 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_19", name = "Laspistol 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_20", name = "Laspistol 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_21", name = "Laspistol 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_22", name = "Lasgun 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_23", name = "Lasgun 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_24", name = "Lasgun 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_25", name = "Lasgun 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "grip_26", name = "Lasgun 5", sounds = {UISoundEvents.weapons_swap}},
-        }
-    end
-
-    local _grip_models = function()
-        return {
-            grip_default = {model = "", type = "grip"},
-            grip_01 = {model = "content/items/weapons/player/ranged/grips/grip_01", type = "grip"},
-            grip_02 = {model = "content/items/weapons/player/ranged/grips/grip_02", type = "grip"},
-            grip_03 = {model = "content/items/weapons/player/ranged/grips/grip_03", type = "grip"},
-            grip_04 = {model = "content/items/weapons/player/ranged/grips/grip_04", type = "grip"},
-            grip_05 = {model = "content/items/weapons/player/ranged/grips/grip_05", type = "grip"},
-            grip_06 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_01", type = "grip"},
-            grip_07 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_02", type = "grip"},
-            grip_08 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_03", type = "grip"},
-            grip_09 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_01", type = "grip"},
-            grip_10 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_02", type = "grip"},
-            grip_11 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_03", type = "grip"},
-            grip_12 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_killshot_01", type = "grip"},
-            grip_13 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_01", type = "grip"},
-            grip_14 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_02", type = "grip"},
-            grip_15 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_03", type = "grip"},
-            grip_19 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_01", type = "grip"},
-            grip_20 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_02", type = "grip"},
-            grip_21 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_03", type = "grip"},
-            grip_22 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_01", type = "grip"},
-            grip_23 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_02", type = "grip"},
-            grip_24 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_03", type = "grip"},
-            grip_25 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_elysian_grip_02", type = "grip"},
-            grip_26 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_elysian_grip_03", type = "grip"},
-        }
-    end
-
-    local _bayonet_attachments = function(blades)
-        local bayonets = {
-            {id = "autogun_bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "autogun_bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-            {id = "autogun_bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-            {id = "autogun_bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-        }
-        if blades then
-            bayonets = table.append(bayonets, {
-                {id = "bayonet_blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-            })
+    --#region Common
+        local _flashlights_attachments = function()
+            return {
+                {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
+            }
         end
-        return bayonets
-    end
-
-    local _bayonet_models = function(blades)
-        local bayonets = {
-            autogun_bayonet_default = {model = "", type = "bayonet"},
-            autogun_bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_01", type = "bayonet"},
-            autogun_bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_02", type = "bayonet"},
-            autogun_bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_03", type = "bayonet"},
-        }
-        if blades then
-            bayonets = table.combine(bayonets, {
-                bayonet_blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
-            })
+        local _flashlight_models = function()
+            return {
+                default = {model = "", type = "flashlight", angle = 0},
+                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", angle = -2.5},
+                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", angle = -2.5},
+                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", angle = -2.5},
+                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", angle = -2.5},
+            } 
         end
-        return bayonets
-    end
-
-    local _lasgun_barrel_attachments = function()
-        return {
-            {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "barrel_01", name = "Infantry Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_02", name = "Infantry Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_04", name = "Infantry Lasgun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_05", name = "Infantry Lasgun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_06", name = "Infantry Lasgun 6", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_07", name = "Infantry Lasgun 7", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_08", name = "Infantry Lasgun 8", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_09", name = "Helbore Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_10", name = "Helbore Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_11", name = "Helbore Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_12", name = "Helbore Lasgun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_13", name = "Helbore Lasgun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_14", name = "Recon Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_15", name = "Recon Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_16", name = "Recon Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_17", name = "Recon Lasgun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_18", name = "Recon Lasgun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-        }
-    end
-
-    local _lasgun_barrel_models = function()
-        return {
-            barrel_default = {model = "", type = "barrel"},
-            barrel_01 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_01", type = "barrel"},
-            barrel_02 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_02", type = "barrel"},
-            barrel_03 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_03", type = "barrel"},
-            barrel_04 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_04", type = "barrel"},
-            barrel_05 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_05", type = "barrel"},
-            barrel_06 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_06", type = "barrel"},
-            barrel_07 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_07", type = "barrel"},
-            barrel_08 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_08", type = "barrel"},
-            barrel_09 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_01", type = "barrel"},
-            barrel_10 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_02", type = "barrel"},
-            barrel_11 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_04", type = "barrel"},
-            barrel_12 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_05", type = "barrel"},
-            barrel_13 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_06", type = "barrel"},
-            barrel_14 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_01", type = "barrel"},
-            barrel_15 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_02", type = "barrel"},
-            barrel_16 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_03", type = "barrel"},
-            barrel_17 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_04", type = "barrel"},
-            barrel_18 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_05", type = "barrel"},
-        }
-    end
-
-    local _lasgun_muzzle_attachments = function()
-        return {
-            {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "muzzle_01", name = "Infantry Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_02", name = "Infantry Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_04", name = "Helbore Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_05", name = "Helbore Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_06", name = "Helbore Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_07", name = "Recon Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_08", name = "Recon Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_09", name = "Recon Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-        }
-    end
-
-    local _lasgun_muzzle_models = function()
-        return {
-            muzzle_default = {model = "", type = "muzzle"},
-            muzzle_01 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_01", type = "muzzle"},
-            muzzle_02 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_02", type = "muzzle"},
-            muzzle_03 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_03", type = "muzzle"},
-            muzzle_04 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_02", type = "muzzle"},
-            muzzle_05 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_04", type = "muzzle"},
-            muzzle_06 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_05", type = "muzzle"},
-            muzzle_07 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_01", type = "muzzle"},
-            muzzle_08 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_02", type = "muzzle"},
-            muzzle_09 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_03", type = "muzzle"},
-        }
-    end
-
-    local _lasgun_rail_attachments = function()
-        return {
-            {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-        }
-    end
-
-    local _lasgun_rail_models = function()
-        return {
-            rail_default = {model = "", type = "rail"},
-            rail_01 = {model = "content/items/weapons/player/ranged/rails/lasgun_rifle_rail_01", type = "rail"},
-        }
-    end
-
-    local _reflex_sights_attachments = function()
-        return {
-            {id = "reflex_sight_01", name = "Reflex Sight 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "reflex_sight_02", name = "Reflex Sight 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "reflex_sight_03", name = "Reflex Sight 3", sounds = {UISoundEvents.weapons_swap}},
-        }
-    end
-
-    local _reflex_sights_models = function()
-        return {
-            sight_default = {model = "", type = "sight", angle = -.6},
-            reflex_sight_01 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
-            reflex_sight_02 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_02", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
-            reflex_sight_03 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_03", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
-        }
-    end
-
-    local _sights_attachments = function()
-        return {
-            {id = "autogun_rifle_sight_01", name = "Autogun", sounds = {UISoundEvents.weapons_swap}},
-            {id = "autogun_rifle_ak_sight_01", name = "Braced Autogun", sounds = {UISoundEvents.weapons_swap}},
-            {id = "headhunter_autogun_sight_01", name = "Headhunter Autogun", sounds = {UISoundEvents.weapons_swap}},
-            {id = "lasgun_sight_01", name = "Lasgun", sounds = {UISoundEvents.weapons_swap}},
-        }
-    end
-
-    local _sights_models = function()
-        return {
-            sight_default = {model = "", type = "sight", angle = -.6},
-            autogun_rifle_ak_sight_01 = {model = "content/items/weapons/player/ranged/sights/autogun_rifle_ak_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_default"}},
-            autogun_rifle_sight_01 = {model = "content/items/weapons/player/ranged/sights/autogun_rifle_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_default"}},
-            headhunter_autogun_sight_01 = {model = "content/items/weapons/player/ranged/sights/autogun_rifle_killshot_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_default"}},
-            lasgun_sight_01 = {model = "content/items/weapons/player/ranged/sights/lasgun_rifle_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_default"}},
-        }
-    end
-
-    local _stock_attachments = function()
-        return {
-            {id = "no_stock", name = "No Stock", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "stock_02", name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "stock_03", name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "stock_04", name = "Stock 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "stock_05", name = "Stock 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_02", name = "Infantry Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_03", name = "Infantry Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_04", name = "Infantry Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_05", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_06", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_07", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_08", name = "Headhunter Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "autogun_rifle_stock_09", name = "Headhunter Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "lasgun_stock_01", name = "Infantry Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "lasgun_stock_02", name = "Infantry Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "lasgun_stock_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-        }
-    end
-
-    local _stock_models = function()
-        return {
-            stock_default = {model = "", type = "stock", angle = .5},
-            no_stock = {model = "", type = "stock", angle = .5},
-            stock_01 = {model = "content/items/weapons/player/ranged/stocks/stock_01", type = "stock", angle = .5},
-            stock_02 = {model = "content/items/weapons/player/ranged/stocks/stock_02", type = "stock", angle = .5},
-            stock_03 = {model = "content/items/weapons/player/ranged/stocks/stock_03", type = "stock", angle = .5},
-            stock_04 = {model = "content/items/weapons/player/ranged/stocks/stock_04", type = "stock", angle = .5},
-            stock_05 = {model = "content/items/weapons/player/ranged/stocks/stock_05", type = "stock", angle = .5},
-            autogun_rifle_stock_01 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_01", type = "stock", angle = .5},
-            autogun_rifle_stock_02 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02", type = "stock", angle = .5},
-            autogun_rifle_stock_03 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_03", type = "stock", angle = .5},
-            autogun_rifle_stock_04 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04", type = "stock", angle = .5},
-            autogun_rifle_stock_05 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_01", type = "stock", angle = .5},
-            autogun_rifle_stock_06 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_02", type = "stock", angle = .5},
-            autogun_rifle_stock_07 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_03", type = "stock", angle = .5},
-            autogun_rifle_stock_08 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_killshot_stock_01", type = "stock", angle = .5},
-            autogun_rifle_stock_09 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_killshot_stock_02", type = "stock", angle = .5},
-            lasgun_stock_01 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_01", type = "stock", angle = .5},
-            lasgun_stock_02 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_02", type = "stock", angle = .5},
-            lasgun_stock_03 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_03", type = "stock", angle = .5},
-        }
-    end
-
-    local _autogun_braced_barrel_attachments = function()
-        return {
-            {id = "barrel_07", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_08", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_09", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_10", name = "Braced Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-        }
-    end
-
-    local _autogun_braced_barrel_models = function()
-        return {
-            barrel_default = {model = "", type = "barrel"},
-            barrel_07 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_01", type = "barrel"},
-            barrel_08 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_02", type = "barrel"},
-            barrel_09 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_03", type = "barrel"},
-            barrel_10 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_04", type = "barrel"},
-        }
-    end
-
-    local _autogun_headhunter_barrel_attachments = function()
-        return {
-            {id = "barrel_11", name = "Headhunter Autogun 11", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_12", name = "Headhunter Autogun 12", sounds = {UISoundEvents.weapons_equip_gadget}},
-        }
-    end
-
-    local _autogun_headhunter_barrel_models = function()
-        return {
-            barrel_default = {model = "", type = "barrel"},
-            barrel_11 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_01", type = "barrel"},
-            barrel_12 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_03", type = "barrel"},
-        }
-    end
-
-    local _autogun_barrel_attachments = function()
-        return {
-            {id = "barrel_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_02", name = "Infantry Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_03", name = "Infantry Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_04", name = "Infantry Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_05", name = "Infantry Autogun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "barrel_06", name = "Infantry Autogun 6", sounds = {UISoundEvents.weapons_equip_gadget}},
-            -- {id = "barrel_07", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            -- {id = "barrel_08", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            -- {id = "barrel_09", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            -- {id = "barrel_10", name = "Braced Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            -- {id = "barrel_11", name = "Headhunter Autogun 11", sounds = {UISoundEvents.weapons_equip_gadget}},
-            -- {id = "barrel_12", name = "Headhunter Autogun 12", sounds = {UISoundEvents.weapons_equip_gadget}},
-        }
-    end
-
-    local _autogun_barrel_models = function()
-        return {
-            barrel_default = {model = "", type = "barrel"},
-            barrel_01 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_01", type = "barrel"},
-            barrel_02 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_02", type = "barrel"},
-            barrel_03 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_03", type = "barrel"},
-            barrel_04 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_04", type = "barrel"},
-            barrel_05 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_05", type = "barrel"},
-            barrel_06 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_06", type = "barrel"},
-            -- barrel_07 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_01", type = "barrel"},
-            -- barrel_08 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_02", type = "barrel"},
-            -- barrel_09 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_03", type = "barrel"},
-            -- barrel_10 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_04", type = "barrel"},
-            -- barrel_11 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_01", type = "barrel"},
-            -- barrel_12 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_03", type = "barrel"},
-        }
-    end
-
-    local _autogun_muzzle_attachments = function()
-        return {
-            {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "muzzle_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_02", name = "Infantry Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_03", name = "Infantry Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_04", name = "Infantry Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_05", name = "Infantry Autogun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_06", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_07", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_08", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_09", name = "Headhunter Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-            {id = "muzzle_10", name = "Headhunter Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-        }
-    end
-
-    local _autogun_muzzle_models = function()
-        return {
-            muzzle_default = {model = "", type = "muzzle"},
-            muzzle_01 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_01", type = "muzzle"},
-            muzzle_02 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_02", type = "muzzle"},
-            muzzle_03 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_03", type = "muzzle"},
-            muzzle_04 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_04", type = "muzzle"},
-            muzzle_05 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_05", type = "muzzle"},
-            muzzle_06 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_ak_muzzle_01", type = "muzzle"},
-            muzzle_07 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_ak_muzzle_02", type = "muzzle"},
-            muzzle_08 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_ak_muzzle_03", type = "muzzle"},
-            muzzle_09 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_killshot_muzzle_01", type = "muzzle"},
-            muzzle_10 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_killshot_muzzle_03", type = "muzzle"},
-        }
-    end
-
-    local _autogun_magazine_attachments = function()
-        return {
-            {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "magazine_01", name = "Autogun 1", sounds = {UISoundEvents.apparel_equip}},
-            {id = "magazine_02", name = "Autogun 2", sounds = {UISoundEvents.apparel_equip}},
-            {id = "magazine_03", name = "Autogun 3", sounds = {UISoundEvents.apparel_equip}},
-            {id = "magazine_04", name = "Braced Autogun 4", sounds = {UISoundEvents.apparel_equip}},
-        }
-    end
-
-    local _autogun_magazine_models = function()
-        return {
-            magazine_default = {model = "", type = "magazine"},
-            magazine_01 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_01", type = "magazine"},
-            magazine_02 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_02", type = "magazine"},
-            magazine_03 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_03", type = "magazine"},
-            magazine_04 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_ak_magazine_01", type = "magazine"},
-        }
-    end
-
-    local _trinket_hook_attachments = function()
-        return {
-            {id = "trinket_hook_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-            {id = "trinket_hook_empty", name = "No Trinket Hook", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_01", name = "Trinket Hook 1", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_01_v", name = "Trinket Hook 1 V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_02", name = "Trinket Hook 2", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_02_45", name = "Trinket Hook 2 45", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_02_90", name = "Trinket Hook 2 90", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_03", name = "Trinket Hook 3", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_03_v", name = "Trinket Hook 3 V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_04_steel", name = "Trinket Hook 4 Steel", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_04_steel_v", name = "Trinket Hook 4 Steel V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_04_coated", name = "Trinket Hook 4 Coated", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_04_coated_v", name = "Trinket Hook 4 Coated V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_04_carbon", name = "Trinket Hook 4 Carbon", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_04_carbon_v", name = "Trinket Hook 4 Carbon V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_04_gold", name = "Trinket Hook 4 Gold", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_04_gold_v", name = "Trinket Hook 4 Gold V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_05_steel", name = "Trinket Hook 5 Steel", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_05_steel_v", name = "Trinket Hook 5 Steel V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_05_coated", name = "Trinket Hook 5 Coated", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_05_coated_v", name = "Trinket Hook 5 Coated V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_05_carbon", name = "Trinket Hook 5 Carbon", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_05_carbon_v", name = "Trinket Hook 5 Carbon V", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_05_gold", name = "Trinket Hook 5 Gold", sounds = {UISoundEvents.apparel_equip}},
-            {id = "trinket_hook_05_gold_v", name = "Trinket Hook 5 Gold V", sounds = {UISoundEvents.apparel_equip}},
-        }
-    end
-
-    local _trinket_hook_models = function()
-        return {
-            trinket_hook_default = {model = "", type = "trinket_hook"},
-            trinket_hook_02_90 = {model = "content/items/weapons/player/trinkets/trinket_hook_02_90", type = "trinket_hook"},
-            trinket_hook_01_v = {model = "content/items/weapons/player/trinkets/trinket_hook_01_v", type = "trinket_hook"},
-            trinket_hook_04_gold_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold_v", type = "trinket_hook"},
-            trinket_hook_02 = {model = "content/items/weapons/player/trinkets/trinket_hook_02", type = "trinket_hook"},
-            trinket_hook_03 = {model = "content/items/weapons/player/trinkets/trinket_hook_03", type = "trinket_hook"},
-            trinket_hook_04_steel_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel_v", type = "trinket_hook"},
-            trinket_hook_04_carbon = {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon", type = "trinket_hook"},
-            trinket_hook_04_gold = {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold", type = "trinket_hook"},
-            trinket_hook_04_carbon_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon_v", type = "trinket_hook"},
-            trinket_hook_04_coated = {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated", type = "trinket_hook"},
-            trinket_hook_01 = {model = "content/items/weapons/player/trinkets/trinket_hook_01", type = "trinket_hook"},
-            trinket_hook_04_steel = {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel", type = "trinket_hook"},
-            trinket_hook_02_45 = {model = "content/items/weapons/player/trinkets/trinket_hook_02_45", type = "trinket_hook"},
-            trinket_hook_empty = {model = "content/items/weapons/player/trinkets/trinket_hook_empty", type = "trinket_hook"},
-            trinket_hook_05_gold = {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold", type = "trinket_hook"},
-            trinket_hook_05_carbon = {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon", type = "trinket_hook"},
-            trinket_hook_05_coated_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated_v", type = "trinket_hook"},
-            trinket_hook_05_gold_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold_v", type = "trinket_hook"},
-            trinket_hook_05_steel_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel_v", type = "trinket_hook"},
-            trinket_hook_05_coated = {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated", type = "trinket_hook"},
-            trinket_hook_05_carbon_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon_v", type = "trinket_hook"},
-            trinket_hook_03_v = {model = "content/items/weapons/player/trinkets/trinket_hook_03_v", type = "trinket_hook"},
-            trinket_hook_05_steel = {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel", type = "trinket_hook"},
-            trinket_hook_04_coated_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated_v", type = "trinket_hook"},
-        }
-    end
-
-    local _axe_grip_attachments = function()
-        return {
-            {id = "axe_grip_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_grip_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_grip_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_grip_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_grip_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_grip_06", name = "Combat Axe 6", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_grip_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_grip_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_grip_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_grip_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_grip_05", name = "Tactical Axe 5", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_grip_06", name = "Tactical Axe 6", sounds = {UISoundEvents.weapons_swap}},
-        }
-    end
-
-    local _axe_grip_models = function()
-        return {
-            grip_default = {model = "", type = "grip"},
-            axe_grip_01 = {model = "content/items/weapons/player/melee/grips/axe_grip_01", type = "grip"},
-            axe_grip_02 = {model = "content/items/weapons/player/melee/grips/axe_grip_02", type = "grip"},
-            axe_grip_03 = {model = "content/items/weapons/player/melee/grips/axe_grip_03", type = "grip"},
-            axe_grip_04 = {model = "content/items/weapons/player/melee/grips/axe_grip_04", type = "grip"},
-            axe_grip_05 = {model = "content/items/weapons/player/melee/grips/axe_grip_05", type = "grip"},
-            axe_grip_06 = {model = "content/items/weapons/player/melee/grips/axe_grip_06", type = "grip"},
-            hatchet_grip_01 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_01", type = "grip"},
-            hatchet_grip_02 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_02", type = "grip"},
-            hatchet_grip_03 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_03", type = "grip"},
-            hatchet_grip_04 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_04", type = "grip"},
-            hatchet_grip_05 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_05", type = "grip"},
-            hatchet_grip_06 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_06", type = "grip"},
-        }
-    end
-
-    local _axe_head_attachments = function()
-        return {
-            {id = "axe_head_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_head_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_head_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_head_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_head_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_head_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_head_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_head_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_head_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_head_05", name = "Tactical Axe 5", sounds = {UISoundEvents.weapons_swap}},
-        }
-    end
-
-    local _axe_head_models = function()
-        return {
-            head_default = {model = "", type = "head"},
-            axe_head_01 = {model = "content/items/weapons/player/melee/heads/axe_head_01", type = "head"},
-            axe_head_02 = {model = "content/items/weapons/player/melee/heads/axe_head_02", type = "head"},
-            axe_head_03 = {model = "content/items/weapons/player/melee/heads/axe_head_03", type = "head"},
-            axe_head_04 = {model = "content/items/weapons/player/melee/heads/axe_head_04", type = "head"},
-            axe_head_05 = {model = "content/items/weapons/player/melee/heads/axe_head_05", type = "head"},
-            hatchet_head_01 = {model = "content/items/weapons/player/melee/heads/hatchet_head_01", type = "head"},
-            hatchet_head_02 = {model = "content/items/weapons/player/melee/heads/hatchet_head_02", type = "head"},
-            hatchet_head_03 = {model = "content/items/weapons/player/melee/heads/hatchet_head_03", type = "head"},
-            hatchet_head_04 = {model = "content/items/weapons/player/melee/heads/hatchet_head_04", type = "head"},
-            hatchet_head_05 = {model = "content/items/weapons/player/melee/heads/hatchet_head_05", type = "head"},
-        }
-    end
-
-    local _ogryn_pommel_attachments = function()
-        return {
-            {id = "shovel_pommel_01", name = "Shovel 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "shovel_pommel_02", name = "Shovel 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "shovel_pommel_03", name = "Shovel 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "shovel_pommel_04", name = "Shovel 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "shovel_pommel_05", name = "Shovel 5", sounds = {UISoundEvents.weapons_swap}},
-            {id = "power_maul_pommel_01", name = "Power Maul 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "power_maul_pommel_02", name = "Power Maul 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "power_maul_pommel_03", name = "Power Maul 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "power_maul_pommel_04", name = "Power Maul 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "power_maul_pommel_05", name = "Power Maul 5", sounds = {UISoundEvents.weapons_swap}},
-        }
-    end
-
-    local _ogryn_pommel_models = function()
-        return {
-            shovel_pommel_01 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_01", type = "pommel"},
-            shovel_pommel_02 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_02", type = "pommel"},
-            shovel_pommel_03 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_03", type = "pommel"},
-            shovel_pommel_04 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_04", type = "pommel"},
-            shovel_pommel_05 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_05", type = "pommel"},
-            power_maul_pommel_01 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_01", type = "pommel"},
-            power_maul_pommel_02 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_02", type = "pommel"},
-            power_maul_pommel_03 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_03", type = "pommel"},
-            power_maul_pommel_04 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_04", type = "pommel"},
-            power_maul_pommel_05 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_05", type = "pommel"},
-        }
-    end
-
-    local _pommel_attachments = function()
-        return {
-            {id = "axe_pommel_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_pommel_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_pommel_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_pommel_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
-            {id = "axe_pommel_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_pommel_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_pommel_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_pommel_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
-            {id = "hatchet_pommel_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
-        }
-    end
-
-    local _pommel_models = function()
-        return {
-            pommel_default = {model = "", type = "pommel"},
-            axe_pommel_01 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_01", type = "pommel"},
-            axe_pommel_02 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_02", type = "pommel"},
-            axe_pommel_03 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_03", type = "pommel"},
-            axe_pommel_04 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_04", type = "pommel"},
-            axe_pommel_05 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_05", type = "pommel"},
-            hatchet_pommel_01 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_01", type = "pommel"},
-            hatchet_pommel_02 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_02", type = "pommel"},
-            hatchet_pommel_03 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_03", type = "pommel"},
-            hatchet_pommel_04 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_04", type = "pommel"},
-        }
-    end
+        local _emblem_right_attachments = function()
+            return {
+                {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
+            }
+        end
+        local _emblem_right_models = function()
+            return {
+                emblem_right_default = {model = "", type = "emblem_right", angle = -3},
+                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right", angle = -3},
+                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right", angle = -3},
+                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right", angle = -3},
+                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right", angle = -3},
+                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right", angle = -3},
+                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right", angle = -3},
+                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right", angle = -3},
+                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right", angle = -3},
+                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right", angle = -3},
+                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right", angle = -3},
+                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right", angle = -3},
+                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right", angle = -3},
+                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right", angle = -3},
+                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right", angle = -3},
+                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right", angle = -3},
+                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right", angle = -3},
+                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right", angle = -3},
+                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right", angle = -3},
+                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right", angle = -3},
+                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right", angle = -3},
+                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right", angle = -3},
+            }
+        end
+        local _emblem_left_attachments = function()
+            return {
+                {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
+                {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
+            }
+        end
+        local _emblem_left_models = function()
+            return {
+                emblem_left_default = {model = "", type = "emblem_left"},
+                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
+                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
+                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
+                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
+                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
+                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
+                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
+                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
+                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
+                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
+                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
+                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
+            }
+        end
+        local _grip_attachments = function()
+            return {
+                {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_06", name = "Autogun 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_07", name = "Autogun 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_08", name = "Autogun 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_09", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_10", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_11", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_12", name = "Headhunter Autogun", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_13", name = "Boltgun 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_14", name = "Boltgun 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_15", name = "Boltgun 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_19", name = "Laspistol 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_20", name = "Laspistol 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_21", name = "Laspistol 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_22", name = "Lasgun 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_23", name = "Lasgun 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_24", name = "Lasgun 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_25", name = "Lasgun 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_26", name = "Lasgun 5", sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _grip_models = function()
+            return {
+                grip_default = {model = "", type = "grip"},
+                grip_01 = {model = "content/items/weapons/player/ranged/grips/grip_01", type = "grip"},
+                grip_02 = {model = "content/items/weapons/player/ranged/grips/grip_02", type = "grip"},
+                grip_03 = {model = "content/items/weapons/player/ranged/grips/grip_03", type = "grip"},
+                grip_04 = {model = "content/items/weapons/player/ranged/grips/grip_04", type = "grip"},
+                grip_05 = {model = "content/items/weapons/player/ranged/grips/grip_05", type = "grip"},
+                grip_06 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_01", type = "grip"},
+                grip_07 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_02", type = "grip"},
+                grip_08 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_03", type = "grip"},
+                grip_09 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_01", type = "grip"},
+                grip_10 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_02", type = "grip"},
+                grip_11 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_03", type = "grip"},
+                grip_12 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_killshot_01", type = "grip"},
+                grip_13 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_01", type = "grip"},
+                grip_14 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_02", type = "grip"},
+                grip_15 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_03", type = "grip"},
+                grip_19 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_01", type = "grip"},
+                grip_20 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_02", type = "grip"},
+                grip_21 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_03", type = "grip"},
+                grip_22 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_01", type = "grip"},
+                grip_23 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_02", type = "grip"},
+                grip_24 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_03", type = "grip"},
+                grip_25 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_elysian_grip_02", type = "grip"},
+                grip_26 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_elysian_grip_03", type = "grip"},
+            }
+        end
+        local _bayonet_attachments = function(blades)
+            local bayonets = {
+                {id = "autogun_bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "autogun_bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "autogun_bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "autogun_bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            }
+            if blades then
+                bayonets = table.append(bayonets, {
+                    {id = "bayonet_blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                })
+            end
+            return bayonets
+        end
+        local _bayonet_models = function(blades)
+            local bayonets = {
+                autogun_bayonet_default = {model = "", type = "bayonet"},
+                autogun_bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_01", type = "bayonet"},
+                autogun_bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_02", type = "bayonet"},
+                autogun_bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_03", type = "bayonet"},
+            }
+            if blades then
+                bayonets = table.combine(bayonets, {
+                    bayonet_blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
+                })
+            end
+            return bayonets
+        end
+        local _reflex_sights_attachments = function()
+            return {
+                {id = "reflex_sight_01", name = "Reflex Sight 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "reflex_sight_02", name = "Reflex Sight 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "reflex_sight_03", name = "Reflex Sight 3", sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _reflex_sights_models = function()
+            return {
+                sight_default = {model = "", type = "sight", angle = -.6},
+                reflex_sight_01 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
+                reflex_sight_02 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_02", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
+                reflex_sight_03 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_03", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
+            }
+        end
+        local _sights_attachments = function()
+            return {
+                {id = "autogun_rifle_sight_01", name = "Autogun", sounds = {UISoundEvents.weapons_swap}},
+                {id = "autogun_rifle_ak_sight_01", name = "Braced Autogun", sounds = {UISoundEvents.weapons_swap}},
+                {id = "headhunter_autogun_sight_01", name = "Headhunter Autogun", sounds = {UISoundEvents.weapons_swap}},
+                {id = "lasgun_sight_01", name = "Lasgun", sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _sights_models = function()
+            return {
+                sight_default = {model = "", type = "sight", angle = -.6},
+                autogun_rifle_ak_sight_01 = {model = "content/items/weapons/player/ranged/sights/autogun_rifle_ak_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_default"}},
+                autogun_rifle_sight_01 = {model = "content/items/weapons/player/ranged/sights/autogun_rifle_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_default"}},
+                headhunter_autogun_sight_01 = {model = "content/items/weapons/player/ranged/sights/autogun_rifle_killshot_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_default"}},
+                lasgun_sight_01 = {model = "content/items/weapons/player/ranged/sights/lasgun_rifle_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_default"}},
+            }
+        end
+        local _stock_attachments = function()
+            return {
+                {id = "no_stock", name = "No Stock", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "stock_02", name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "stock_03", name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "stock_04", name = "Stock 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "stock_05", name = "Stock 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_02", name = "Infantry Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_03", name = "Infantry Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_04", name = "Infantry Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_05", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_06", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_07", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_08", name = "Headhunter Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "autogun_rifle_stock_09", name = "Headhunter Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "lasgun_stock_01", name = "Infantry Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "lasgun_stock_02", name = "Infantry Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "lasgun_stock_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _stock_models = function(move, remove)
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(-.3, 0, 0)
+            return {
+                stock_default =             {model = "",                                                                            type = "stock", angle = .5, move = move, remove = remove},
+                no_stock =                  {model = "",                                                                            type = "stock", angle = .5, move = move, remove = remove},
+                stock_01 =                  {model = "content/items/weapons/player/ranged/stocks/stock_01",                         type = "stock", angle = .5, move = move, remove = remove},
+                stock_02 =                  {model = "content/items/weapons/player/ranged/stocks/stock_02",                         type = "stock", angle = .5, move = move, remove = remove},
+                stock_03 =                  {model = "content/items/weapons/player/ranged/stocks/stock_03",                         type = "stock", angle = .5, move = move, remove = remove},
+                stock_04 =                  {model = "content/items/weapons/player/ranged/stocks/stock_04",                         type = "stock", angle = .5, move = move, remove = remove},
+                stock_05 =                  {model = "content/items/weapons/player/ranged/stocks/stock_05",                         type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_01 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_01",           type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_02 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",           type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_03 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_03",           type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_04 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",           type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_05 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_01",        type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_06 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_02",        type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_07 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_03",        type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_08 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_killshot_stock_01",  type = "stock", angle = .5, move = move, remove = remove},
+                autogun_rifle_stock_09 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_killshot_stock_02",  type = "stock", angle = .5, move = move, remove = remove},
+                lasgun_stock_01 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_01",            type = "stock", angle = .5, move = move, remove = remove},
+                lasgun_stock_02 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_02",            type = "stock", angle = .5, move = move, remove = remove},
+                lasgun_stock_03 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_03",            type = "stock", angle = .5, move = move, remove = remove},
+            }
+        end
+        local _trinket_hook_attachments = function()
+            return {
+                {id = "trinket_hook_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "trinket_hook_empty", name = "No Trinket Hook", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_01", name = "Trinket Hook 1", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_01_v", name = "Trinket Hook 1 V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_02", name = "Trinket Hook 2", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_02_45", name = "Trinket Hook 2 45", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_02_90", name = "Trinket Hook 2 90", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_03", name = "Trinket Hook 3", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_03_v", name = "Trinket Hook 3 V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_04_steel", name = "Trinket Hook 4 Steel", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_04_steel_v", name = "Trinket Hook 4 Steel V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_04_coated", name = "Trinket Hook 4 Coated", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_04_coated_v", name = "Trinket Hook 4 Coated V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_04_carbon", name = "Trinket Hook 4 Carbon", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_04_carbon_v", name = "Trinket Hook 4 Carbon V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_04_gold", name = "Trinket Hook 4 Gold", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_04_gold_v", name = "Trinket Hook 4 Gold V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_05_steel", name = "Trinket Hook 5 Steel", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_05_steel_v", name = "Trinket Hook 5 Steel V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_05_coated", name = "Trinket Hook 5 Coated", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_05_coated_v", name = "Trinket Hook 5 Coated V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_05_carbon", name = "Trinket Hook 5 Carbon", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_05_carbon_v", name = "Trinket Hook 5 Carbon V", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_05_gold", name = "Trinket Hook 5 Gold", sounds = {UISoundEvents.apparel_equip}},
+                {id = "trinket_hook_05_gold_v", name = "Trinket Hook 5 Gold V", sounds = {UISoundEvents.apparel_equip}},
+            }
+        end
+        local _trinket_hook_models = function()
+            return {
+                trinket_hook_default = {model = "", type = "trinket_hook"},
+                trinket_hook_02_90 = {model = "content/items/weapons/player/trinkets/trinket_hook_02_90", type = "trinket_hook"},
+                trinket_hook_01_v = {model = "content/items/weapons/player/trinkets/trinket_hook_01_v", type = "trinket_hook"},
+                trinket_hook_04_gold_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold_v", type = "trinket_hook"},
+                trinket_hook_02 = {model = "content/items/weapons/player/trinkets/trinket_hook_02", type = "trinket_hook"},
+                trinket_hook_03 = {model = "content/items/weapons/player/trinkets/trinket_hook_03", type = "trinket_hook"},
+                trinket_hook_04_steel_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel_v", type = "trinket_hook"},
+                trinket_hook_04_carbon = {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon", type = "trinket_hook"},
+                trinket_hook_04_gold = {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold", type = "trinket_hook"},
+                trinket_hook_04_carbon_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon_v", type = "trinket_hook"},
+                trinket_hook_04_coated = {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated", type = "trinket_hook"},
+                trinket_hook_01 = {model = "content/items/weapons/player/trinkets/trinket_hook_01", type = "trinket_hook"},
+                trinket_hook_04_steel = {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel", type = "trinket_hook"},
+                trinket_hook_02_45 = {model = "content/items/weapons/player/trinkets/trinket_hook_02_45", type = "trinket_hook"},
+                trinket_hook_empty = {model = "content/items/weapons/player/trinkets/trinket_hook_empty", type = "trinket_hook"},
+                trinket_hook_05_gold = {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold", type = "trinket_hook"},
+                trinket_hook_05_carbon = {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon", type = "trinket_hook"},
+                trinket_hook_05_coated_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated_v", type = "trinket_hook"},
+                trinket_hook_05_gold_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold_v", type = "trinket_hook"},
+                trinket_hook_05_steel_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel_v", type = "trinket_hook"},
+                trinket_hook_05_coated = {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated", type = "trinket_hook"},
+                trinket_hook_05_carbon_v = {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon_v", type = "trinket_hook"},
+                trinket_hook_03_v = {model = "content/items/weapons/player/trinkets/trinket_hook_03_v", type = "trinket_hook"},
+                trinket_hook_05_steel = {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel", type = "trinket_hook"},
+                trinket_hook_04_coated_v = {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated_v", type = "trinket_hook"},
+            }
+        end
+    --#endregion
+    --#region Lasguns
+        local _lasgun_barrel_attachments = function()
+            return {
+                {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "barrel_01", name = "Infantry Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_02", name = "Infantry Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_04", name = "Infantry Lasgun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_05", name = "Infantry Lasgun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_06", name = "Infantry Lasgun 6", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_07", name = "Infantry Lasgun 7", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_08", name = "Infantry Lasgun 8", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_09", name = "Helbore Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_10", name = "Helbore Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_11", name = "Helbore Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_12", name = "Helbore Lasgun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_13", name = "Helbore Lasgun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_14", name = "Recon Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_15", name = "Recon Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_16", name = "Recon Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_17", name = "Recon Lasgun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_18", name = "Recon Lasgun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _lasgun_barrel_models = function()
+            return {
+                barrel_default = {model = "", type = "barrel"},
+                barrel_01 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_01", type = "barrel"},
+                barrel_02 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_02", type = "barrel"},
+                barrel_03 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_03", type = "barrel"},
+                barrel_04 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_04", type = "barrel"},
+                barrel_05 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_05", type = "barrel"},
+                barrel_06 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_06", type = "barrel"},
+                barrel_07 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_07", type = "barrel"},
+                barrel_08 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_08", type = "barrel"},
+                barrel_09 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_01", type = "barrel"},
+                barrel_10 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_02", type = "barrel"},
+                barrel_11 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_04", type = "barrel"},
+                barrel_12 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_05", type = "barrel"},
+                barrel_13 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_krieg_barrel_06", type = "barrel"},
+                barrel_14 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_01", type = "barrel"},
+                barrel_15 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_02", type = "barrel"},
+                barrel_16 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_03", type = "barrel"},
+                barrel_17 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_04", type = "barrel"},
+                barrel_18 = {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_elysian_barrel_05", type = "barrel"},
+            }
+        end
+        local _lasgun_muzzle_attachments = function()
+            return {
+                {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "muzzle_01", name = "Infantry Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_02", name = "Infantry Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_04", name = "Helbore Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_05", name = "Helbore Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_06", name = "Helbore Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_07", name = "Recon Lasgun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_08", name = "Recon Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_09", name = "Recon Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _lasgun_muzzle_models = function()
+            return {
+                muzzle_default = {model = "", type = "muzzle"},
+                muzzle_01 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_01", type = "muzzle"},
+                muzzle_02 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_02", type = "muzzle"},
+                muzzle_03 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_03", type = "muzzle"},
+                muzzle_04 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_02", type = "muzzle"},
+                muzzle_05 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_04", type = "muzzle"},
+                muzzle_06 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_05", type = "muzzle"},
+                muzzle_07 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_01", type = "muzzle"},
+                muzzle_08 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_02", type = "muzzle"},
+                muzzle_09 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_elysian_muzzle_03", type = "muzzle"},
+            }
+        end
+        local _lasgun_rail_attachments = function()
+            return {
+                {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+            }
+        end
+        local _lasgun_rail_models = function()
+            return {
+                rail_default = {model = "", type = "rail"},
+                rail_01 = {model = "content/items/weapons/player/ranged/rails/lasgun_rifle_rail_01", type = "rail"},
+            }
+        end
+        local _laspistol_receiver_attachments = function()
+            return {
+                {id = "laspistol_receiver_default", name = "Default",               sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "laspistol_receiver_01",      name = "Laspistol Receiver 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "laspistol_receiver_02",      name = "Laspistol Receiver 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "laspistol_receiver_03",      name = "Laspistol Receiver 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "laspistol_receiver_04",      name = "Laspistol Receiver 4",  sounds = {UISoundEvents.weapons_equip_weapon}},
+            }
+        end
+        local _laspistol_receiver_models = function()
+            return {
+                laspistol_receiver_default =    {model = "",                                                                        type = "receiver"},
+                laspistol_receiver_01 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver"},
+                laspistol_receiver_02 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_02", type = "receiver"},
+                laspistol_receiver_03 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03", type = "receiver"},
+                -- laspistol_receiver_04 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_04", type = "receiver"},
+            }
+        end
+    --#endregion
+    --#region Autoguns
+        local _autogun_braced_barrel_attachments = function()
+            return {
+                {id = "barrel_07", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_08", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_09", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_10", name = "Braced Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _autogun_braced_barrel_models = function()
+            return {
+                barrel_default = {model = "", type = "barrel"},
+                barrel_07 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_01", type = "barrel"},
+                barrel_08 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_02", type = "barrel"},
+                barrel_09 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_03", type = "barrel"},
+                barrel_10 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_04", type = "barrel"},
+            }
+        end
+        local _autogun_headhunter_barrel_attachments = function()
+            return {
+                {id = "barrel_11", name = "Headhunter Autogun 11", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_12", name = "Headhunter Autogun 12", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _autogun_headhunter_barrel_models = function()
+            return {
+                barrel_default = {model = "", type = "barrel"},
+                barrel_11 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_01", type = "barrel"},
+                barrel_12 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_03", type = "barrel"},
+            }
+        end
+        local _autogun_barrel_attachments = function()
+            return {
+                {id = "barrel_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_02", name = "Infantry Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_03", name = "Infantry Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_04", name = "Infantry Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_05", name = "Infantry Autogun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_06", name = "Infantry Autogun 6", sounds = {UISoundEvents.weapons_equip_gadget}},
+                -- {id = "barrel_07", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                -- {id = "barrel_08", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                -- {id = "barrel_09", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                -- {id = "barrel_10", name = "Braced Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                -- {id = "barrel_11", name = "Headhunter Autogun 11", sounds = {UISoundEvents.weapons_equip_gadget}},
+                -- {id = "barrel_12", name = "Headhunter Autogun 12", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _autogun_barrel_models = function()
+            return {
+                barrel_default = {model = "", type = "barrel"},
+                barrel_01 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_01", type = "barrel"},
+                barrel_02 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_02", type = "barrel"},
+                barrel_03 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_03", type = "barrel"},
+                barrel_04 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_04", type = "barrel"},
+                barrel_05 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_05", type = "barrel"},
+                barrel_06 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_06", type = "barrel"},
+                -- barrel_07 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_01", type = "barrel"},
+                -- barrel_08 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_02", type = "barrel"},
+                -- barrel_09 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_03", type = "barrel"},
+                -- barrel_10 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_04", type = "barrel"},
+                -- barrel_11 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_01", type = "barrel"},
+                -- barrel_12 = {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_03", type = "barrel"},
+            }
+        end
+        local _autogun_muzzle_attachments = function()
+            return {
+                {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "muzzle_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_02", name = "Infantry Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_03", name = "Infantry Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_04", name = "Infantry Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_05", name = "Infantry Autogun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_06", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_07", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_08", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_09", name = "Headhunter Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_10", name = "Headhunter Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _autogun_muzzle_models = function()
+            return {
+                muzzle_default = {model = "", type = "muzzle"},
+                muzzle_01 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_01", type = "muzzle"},
+                muzzle_02 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_02", type = "muzzle"},
+                muzzle_03 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_03", type = "muzzle"},
+                muzzle_04 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_04", type = "muzzle"},
+                muzzle_05 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_05", type = "muzzle"},
+                muzzle_06 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_ak_muzzle_01", type = "muzzle"},
+                muzzle_07 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_ak_muzzle_02", type = "muzzle"},
+                muzzle_08 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_ak_muzzle_03", type = "muzzle"},
+                muzzle_09 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_killshot_muzzle_01", type = "muzzle"},
+                muzzle_10 = {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_killshot_muzzle_03", type = "muzzle"},
+            }
+        end
+        local _autogun_magazine_attachments = function()
+            return {
+                {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "magazine_01", name = "Autogun 1", sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_02", name = "Autogun 2", sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_03", name = "Autogun 3", sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_04", name = "Braced Autogun 4", sounds = {UISoundEvents.apparel_equip}},
+            }
+        end
+        local _autogun_magazine_models = function()
+            return {
+                magazine_default = {model = "", type = "magazine"},
+                magazine_01 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_01", type = "magazine"},
+                magazine_02 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_02", type = "magazine"},
+                magazine_03 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_03", type = "magazine"},
+                magazine_04 = {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_ak_magazine_01", type = "magazine"},
+            }
+        end
+    --#endregion
+    --#region Melee
+        local _axe_grip_attachments = function()
+            return {
+                {id = "axe_grip_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_grip_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_grip_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_grip_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_grip_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_grip_06", name = "Combat Axe 6", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_grip_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_grip_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_grip_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_grip_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_grip_05", name = "Tactical Axe 5", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_grip_06", name = "Tactical Axe 6", sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _axe_grip_models = function()
+            return {
+                grip_default = {model = "", type = "grip"},
+                axe_grip_01 = {model = "content/items/weapons/player/melee/grips/axe_grip_01", type = "grip"},
+                axe_grip_02 = {model = "content/items/weapons/player/melee/grips/axe_grip_02", type = "grip"},
+                axe_grip_03 = {model = "content/items/weapons/player/melee/grips/axe_grip_03", type = "grip"},
+                axe_grip_04 = {model = "content/items/weapons/player/melee/grips/axe_grip_04", type = "grip"},
+                axe_grip_05 = {model = "content/items/weapons/player/melee/grips/axe_grip_05", type = "grip"},
+                axe_grip_06 = {model = "content/items/weapons/player/melee/grips/axe_grip_06", type = "grip"},
+                hatchet_grip_01 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_01", type = "grip"},
+                hatchet_grip_02 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_02", type = "grip"},
+                hatchet_grip_03 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_03", type = "grip"},
+                hatchet_grip_04 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_04", type = "grip"},
+                hatchet_grip_05 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_05", type = "grip"},
+                hatchet_grip_06 = {model = "content/items/weapons/player/melee/grips/hatchet_grip_06", type = "grip"},
+            }
+        end
+        local _axe_head_attachments = function()
+            return {
+                {id = "axe_head_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_head_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_head_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_head_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_head_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_head_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_head_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_head_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_head_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_head_05", name = "Tactical Axe 5", sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _axe_head_models = function()
+            return {
+                head_default = {model = "", type = "head"},
+                axe_head_01 = {model = "content/items/weapons/player/melee/heads/axe_head_01", type = "head"},
+                axe_head_02 = {model = "content/items/weapons/player/melee/heads/axe_head_02", type = "head"},
+                axe_head_03 = {model = "content/items/weapons/player/melee/heads/axe_head_03", type = "head"},
+                axe_head_04 = {model = "content/items/weapons/player/melee/heads/axe_head_04", type = "head"},
+                axe_head_05 = {model = "content/items/weapons/player/melee/heads/axe_head_05", type = "head"},
+                hatchet_head_01 = {model = "content/items/weapons/player/melee/heads/hatchet_head_01", type = "head"},
+                hatchet_head_02 = {model = "content/items/weapons/player/melee/heads/hatchet_head_02", type = "head"},
+                hatchet_head_03 = {model = "content/items/weapons/player/melee/heads/hatchet_head_03", type = "head"},
+                hatchet_head_04 = {model = "content/items/weapons/player/melee/heads/hatchet_head_04", type = "head"},
+                hatchet_head_05 = {model = "content/items/weapons/player/melee/heads/hatchet_head_05", type = "head"},
+            }
+        end
+        local _ogryn_pommel_attachments = function()
+            return {
+                {id = "shovel_pommel_01", name = "Shovel 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "shovel_pommel_02", name = "Shovel 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "shovel_pommel_03", name = "Shovel 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "shovel_pommel_04", name = "Shovel 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "shovel_pommel_05", name = "Shovel 5", sounds = {UISoundEvents.weapons_swap}},
+                {id = "power_maul_pommel_01", name = "Power Maul 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "power_maul_pommel_02", name = "Power Maul 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "power_maul_pommel_03", name = "Power Maul 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "power_maul_pommel_04", name = "Power Maul 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "power_maul_pommel_05", name = "Power Maul 5", sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _ogryn_pommel_models = function()
+            return {
+                shovel_pommel_01 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_01", type = "pommel"},
+                shovel_pommel_02 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_02", type = "pommel"},
+                shovel_pommel_03 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_03", type = "pommel"},
+                shovel_pommel_04 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_04", type = "pommel"},
+                shovel_pommel_05 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_05", type = "pommel"},
+                power_maul_pommel_01 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_01", type = "pommel"},
+                power_maul_pommel_02 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_02", type = "pommel"},
+                power_maul_pommel_03 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_03", type = "pommel"},
+                power_maul_pommel_04 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_04", type = "pommel"},
+                power_maul_pommel_05 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_05", type = "pommel"},
+            }
+        end
+        local _pommel_attachments = function()
+            return {
+                {id = "axe_pommel_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_pommel_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_pommel_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_pommel_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_pommel_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_pommel_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_pommel_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_pommel_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "hatchet_pommel_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _pommel_models = function()
+            return {
+                pommel_default = {model = "", type = "pommel"},
+                axe_pommel_01 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_01", type = "pommel"},
+                axe_pommel_02 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_02", type = "pommel"},
+                axe_pommel_03 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_03", type = "pommel"},
+                axe_pommel_04 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_04", type = "pommel"},
+                axe_pommel_05 = {model = "content/items/weapons/player/melee/pommels/axe_pommel_05", type = "pommel"},
+                hatchet_pommel_01 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_01", type = "pommel"},
+                hatchet_pommel_02 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_02", type = "pommel"},
+                hatchet_pommel_03 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_03", type = "pommel"},
+                hatchet_pommel_04 = {model = "content/items/weapons/player/melee/pommels/hatchet_pommel_04", type = "pommel"},
+            }
+        end
+    --#endregion
 --#endregion
 
 --#region Anchors
@@ -1182,6 +1167,26 @@ end
                     rotation = Vector3Box(0, 90, 0),
                     scale = Vector3Box(1, 1, 1),
                 },
+                fixes = {
+                    {
+                        dependencies = {
+                            "laspistol_receiver_02",
+                            "!barrel_02",
+                        },
+                        emblem_left = {
+                            offset = true,
+                            position = Vector3Box(0, -.03, 0),
+                            rotation = Vector3Box(0, 0, 0),
+                            scale = Vector3Box(1, 1, 1),
+                        },
+                        emblem_right = {
+                            offset = true,
+                            position = Vector3Box(0, -.03, 0),
+                            rotation = Vector3Box(0, 0, 0),
+                            scale = Vector3Box(1, 1, 1),
+                        },
+                    }
+                },
             },
             autogun_p1_m1 = {
                 ["scope_offset"] = Vector3Box(0, 0, .0125),
@@ -1571,35 +1576,42 @@ end
                 },
             },
         --#endregion
-        combataxe_p1_m1 = {
-        },
-
-        combatknife_p1_m1 = {
-            
-        }
+        --#region Melee
+            combataxe_p1_m1 = {
+            },
+            combatknife_p1_m1 = {  
+            },
+        --#endregion
     }
-
-    mod.anchors.ogryn_heavystubber_p1_m2 = mod.anchors.ogryn_heavystubber_p1_m1
-    mod.anchors.ogryn_heavystubber_p1_m3 = mod.anchors.ogryn_heavystubber_p1_m1
-    mod.anchors.ogryn_rippergun_p1_m2 = mod.anchors.ogryn_rippergun_p1_m1
-    mod.anchors.ogryn_rippergun_p1_m3 = mod.anchors.ogryn_rippergun_p1_m1
-    mod.anchors.ogryn_thumper_p1_m2 = mod.anchors.ogryn_thumper_p1_m1
-    mod.anchors.shotgun_p1_m2 = mod.anchors.shotgun_p1_m1
-    mod.anchors.shotgun_p1_m3 = mod.anchors.shotgun_p1_m1
-    mod.anchors.autogun_p1_m2 = mod.anchors.autogun_p1_m1
-    mod.anchors.autogun_p1_m3 = mod.anchors.autogun_p1_m1
-    mod.anchors.autogun_p2_m2 = mod.anchors.autogun_p2_m1
-    mod.anchors.autogun_p2_m3 = mod.anchors.autogun_p2_m1
-    mod.anchors.autogun_p3_m2 = mod.anchors.autogun_p3_m1
-    mod.anchors.autogun_p3_m3 = mod.anchors.autogun_p3_m1
-    mod.anchors.lasgun_p1_m2 = mod.anchors.lasgun_p1_m1
-    mod.anchors.lasgun_p1_m3 = mod.anchors.lasgun_p1_m1
-    mod.anchors.lasgun_p2_m2 = mod.anchors.lasgun_p2_m1
-    mod.anchors.lasgun_p2_m3 = mod.anchors.lasgun_p2_m1
-    mod.anchors.lasgun_p3_m2 = mod.anchors.lasgun_p3_m1
-    mod.anchors.lasgun_p3_m3 = mod.anchors.lasgun_p3_m1
-    mod.anchors.combataxe_p1_m2 = mod.anchors.combataxe_p1_m1
-    mod.anchors.combataxe_p1_m3 = mod.anchors.combataxe_p1_m1
+    --#region Copies
+        --#region Ogryn Guns
+            mod.anchors.ogryn_heavystubber_p1_m2 = mod.anchors.ogryn_heavystubber_p1_m1
+            mod.anchors.ogryn_heavystubber_p1_m3 = mod.anchors.ogryn_heavystubber_p1_m1
+            mod.anchors.ogryn_rippergun_p1_m2 = mod.anchors.ogryn_rippergun_p1_m1
+            mod.anchors.ogryn_rippergun_p1_m3 = mod.anchors.ogryn_rippergun_p1_m1
+            mod.anchors.ogryn_thumper_p1_m2 = mod.anchors.ogryn_thumper_p1_m1
+        --#endregion
+        --#region Guns
+            mod.anchors.shotgun_p1_m2 = mod.anchors.shotgun_p1_m1
+            mod.anchors.shotgun_p1_m3 = mod.anchors.shotgun_p1_m1
+            mod.anchors.autogun_p1_m2 = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p1_m3 = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p2_m2 = mod.anchors.autogun_p2_m1
+            mod.anchors.autogun_p2_m3 = mod.anchors.autogun_p2_m1
+            mod.anchors.autogun_p3_m2 = mod.anchors.autogun_p3_m1
+            mod.anchors.autogun_p3_m3 = mod.anchors.autogun_p3_m1
+            mod.anchors.lasgun_p1_m2 = mod.anchors.lasgun_p1_m1
+            mod.anchors.lasgun_p1_m3 = mod.anchors.lasgun_p1_m1
+            mod.anchors.lasgun_p2_m2 = mod.anchors.lasgun_p2_m1
+            mod.anchors.lasgun_p2_m3 = mod.anchors.lasgun_p2_m1
+            mod.anchors.lasgun_p3_m2 = mod.anchors.lasgun_p3_m1
+            mod.anchors.lasgun_p3_m3 = mod.anchors.lasgun_p3_m1
+        --#endregion
+        --#region Melee
+            mod.anchors.combataxe_p1_m2 = mod.anchors.combataxe_p1_m1
+            mod.anchors.combataxe_p1_m3 = mod.anchors.combataxe_p1_m1
+        --#endregion
+    --#endregion
 --#endregion
 
 --#region Attachments
@@ -2244,26 +2256,20 @@ end
         --#endregion
         --#region Guns
             autopistol_p1_m1 = {
-                flashlight = {
-                    {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
-                },
+                flashlight = _flashlights_attachments(),
+                trinket_hook = _trinket_hook_attachments(),
+                grip = _grip_attachments(),
+                stock = _stock_attachments(),
+                bayonet = _bayonet_attachments(),
+                emblem_right = _emblem_right_attachments(),
+                emblem_left = _emblem_left_attachments(),
                 receiver = {
                     {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
                     {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
                     {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    -- {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
                     {id = "receiver_05", name = "Receiver 5", sounds = {UISoundEvents.weapons_equip_weapon}},
-                },
-                grip = {
-                    {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
                 },
                 barrel = {
                     {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
@@ -2288,64 +2294,6 @@ end
                 sight = {
                     {id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "sight_01", name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
-                },
-                stock = {
-                    {id = "autogun_rifle_stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "autogun_rifle_stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "autogun_rifle_stock_02", name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "autogun_rifle_stock_03", name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "autogun_rifle_stock_04", name = "Stock 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_01", name = "Stock 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_02", name = "Stock 6", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_03", name = "Stock 7", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_04", name = "Stock 8", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_05", name = "Stock 9", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                bayonet = {
-                    {id = "autogun_bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "autogun_bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "autogun_bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "autogun_bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    -- {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                },
-                emblem_right = {
-                    {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                emblem_left = {
-                    {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
                 },
             },
             shotgun_p1_m1 = {
@@ -2667,20 +2615,8 @@ end
                 },
             },
             laspistol_p1_m1 = {
-                flashlight = {
-                    {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                receiver = {
-                    {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
-                },
+                flashlight = _flashlights_attachments(),
+                receiver = _laspistol_receiver_attachments(),
                 magazine = {
                     {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
@@ -2706,12 +2642,7 @@ end
                     {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
                 },
-                grip = {
-                    {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                },
+                grip = _grip_attachments(),
                 stock = {
                     {id = "lasgun_pistol_stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "lasgun_pistol_stock_01", name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -2719,10 +2650,10 @@ end
                     {id = "lasgun_pistol_stock_03", name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
                 },
                 stock_2 = {
-                    {id = "stock_2_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "autogun_rifle_stock_02", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "autogun_rifle_stock_04", name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_05", name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "stock_2_default",        name = "Default",   sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "autogun_rifle_stock_02", name = "Stock 1",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "autogun_rifle_stock_04", name = "Stock 2",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "stock_05",               name = "Stock 3",   sounds = {UISoundEvents.weapons_equip_gadget}},
                 },
                 sight = {
                     {id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
@@ -2730,51 +2661,9 @@ end
                     {id = "sight_02", name = "Sight 2", sounds = {UISoundEvents.weapons_swap}},
                     {id = "sight_03", name = "Sight 3", sounds = {UISoundEvents.weapons_swap}},
                 },
-                bayonet = {
-                    {id = "autogun_bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "autogun_bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "autogun_bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "autogun_bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                },
-                emblem_right = {
-                    {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                emblem_left = {
-                    {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                },
+                bayonet = _bayonet_attachments(),
+                emblem_right = _emblem_right_attachments(),
+                emblem_left = _emblem_left_attachments(),
             },
             autogun_p1_m1 = {
                 flashlight = _flashlights_attachments(),
@@ -3001,6 +2890,42 @@ end
                         -- {id = "plasma_grip_03", name = "Plasma 3", sounds = {UISoundEvents.weapons_swap}},
                     }
                 ),
+            },
+            forcestaff_p1_m1 = {
+                shaft_lower = {
+                    {id = "shaft_lower_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "shaft_lower_01", name = "Lower Shaft 1", sounds = {UISoundEvents.apparel_equip_small}},
+                    {id = "shaft_lower_02", name = "Lower Shaft 2", sounds = {UISoundEvents.apparel_equip_small}},
+                    {id = "shaft_lower_03", name = "Lower Shaft 3", sounds = {UISoundEvents.apparel_equip_small}},
+                    {id = "shaft_lower_04", name = "Lower Shaft 4", sounds = {UISoundEvents.apparel_equip_small}},
+                    {id = "shaft_lower_05", name = "Lower Shaft 5", sounds = {UISoundEvents.apparel_equip_small}},
+                },
+                shaft_upper = {
+                    {id = "shaft_upper_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "shaft_upper_01", name = "Upper Shaft 1", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_upper_02", name = "Upper Shaft 2", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_upper_03", name = "Upper Shaft 3", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_upper_04", name = "Upper Shaft 4", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_upper_05", name = "Upper Shaft 5", sounds = {UISoundEvents.weapons_swap}},
+                },
+                body = {
+                    {id = "body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "body_01", name = "Body 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "body_02", name = "Body 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "body_03", name = "Body 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "body_04", name = "Body 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "body_05", name = "Body 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+                },
+                head = {
+                    {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "head_01", name = "Head 1", sounds = {UISoundEvents.apparel_equip}},
+                    {id = "head_02", name = "Head 2", sounds = {UISoundEvents.apparel_equip}},
+                    {id = "head_03", name = "Head 3", sounds = {UISoundEvents.apparel_equip}},
+                    {id = "head_04", name = "Head 4", sounds = {UISoundEvents.apparel_equip}},
+                    {id = "head_05", name = "Head 5", sounds = {UISoundEvents.apparel_equip}},
+                    {id = "head_06", name = "Head 6", sounds = {UISoundEvents.apparel_equip}},
+                    {id = "head_07", name = "Head 7", sounds = {UISoundEvents.apparel_equip}},
+                },
             },
         --#endregion
         --#region Melee
@@ -3371,43 +3296,6 @@ end
                 },
             },
         --#endregion
-
-        forcestaff_p1_m1 = {
-            shaft_lower = {
-                {id = "shaft_lower_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                {id = "shaft_lower_01", name = "Lower Shaft 1", sounds = {UISoundEvents.apparel_equip_small}},
-                {id = "shaft_lower_02", name = "Lower Shaft 2", sounds = {UISoundEvents.apparel_equip_small}},
-                {id = "shaft_lower_03", name = "Lower Shaft 3", sounds = {UISoundEvents.apparel_equip_small}},
-                {id = "shaft_lower_04", name = "Lower Shaft 4", sounds = {UISoundEvents.apparel_equip_small}},
-                {id = "shaft_lower_05", name = "Lower Shaft 5", sounds = {UISoundEvents.apparel_equip_small}},
-            },
-            shaft_upper = {
-                {id = "shaft_upper_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                {id = "shaft_upper_01", name = "Upper Shaft 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_upper_02", name = "Upper Shaft 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_upper_03", name = "Upper Shaft 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_upper_04", name = "Upper Shaft 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_upper_05", name = "Upper Shaft 5", sounds = {UISoundEvents.weapons_swap}},
-            },
-            body = {
-                {id = "body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                {id = "body_01", name = "Body 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "body_02", name = "Body 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "body_03", name = "Body 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "body_04", name = "Body 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "body_05", name = "Body 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-            },
-            head = {
-                {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                {id = "head_01", name = "Head 1", sounds = {UISoundEvents.apparel_equip}},
-                {id = "head_02", name = "Head 2", sounds = {UISoundEvents.apparel_equip}},
-                {id = "head_03", name = "Head 3", sounds = {UISoundEvents.apparel_equip}},
-                {id = "head_04", name = "Head 4", sounds = {UISoundEvents.apparel_equip}},
-                {id = "head_05", name = "Head 5", sounds = {UISoundEvents.apparel_equip}},
-                {id = "head_06", name = "Head 6", sounds = {UISoundEvents.apparel_equip}},
-                {id = "head_07", name = "Head 7", sounds = {UISoundEvents.apparel_equip}},
-            },
-        },
     }
 
     --#region Copies
@@ -3446,6 +3334,9 @@ end
             mod.attachment.lasgun_p2_m3 = mod.attachment.lasgun_p2_m1
             mod.attachment.lasgun_p3_m2 = mod.attachment.lasgun_p3_m1
             mod.attachment.lasgun_p3_m3 = mod.attachment.lasgun_p3_m1
+            mod.attachment.forcestaff_p2_m1 = mod.attachment.forcestaff_p1_m1
+            mod.attachment.forcestaff_p3_m1 = mod.attachment.forcestaff_p1_m1
+            mod.attachment.forcestaff_p4_m1 = mod.attachment.forcestaff_p1_m1
         --#endregion
         --#region Melee
             mod.attachment.combataxe_p1_m2 = mod.attachment.combataxe_p1_m1
@@ -3463,9 +3354,6 @@ end
             mod.attachment.combatsword_p3_m2 = mod.attachment.combatsword_p3_m1
             mod.attachment.combatsword_p3_m3 = mod.attachment.combatsword_p3_m1
         --#endregion
-        mod.attachment.forcestaff_p2_m1 = mod.attachment.forcestaff_p1_m1
-        mod.attachment.forcestaff_p3_m1 = mod.attachment.forcestaff_p1_m1
-        mod.attachment.forcestaff_p4_m1 = mod.attachment.forcestaff_p1_m1
     --#endregion
 --#endregion
 
@@ -4164,88 +4052,39 @@ end
             },
         --#endregion
         --#region Guns
-            autopistol_p1_m1 = {
-                default = {model = "", type = "flashlight", angle = -2.5},
-                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", angle = -2.5},
-                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", angle = -2.5},
-                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", angle = -2.5},
-                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", angle = -2.5},
-                receiver_default = {model = "", type = "receiver"},
-                receiver_01 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_01", type = "receiver"},
-                receiver_02 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_02", type = "receiver"},
-                receiver_03 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_03", type = "receiver"},
-                receiver_04 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_04", type = "receiver"},
-                receiver_05 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_05", type = "receiver"},
-                grip_default = {model = "", type = "grip"},
-                grip_01 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_01", type = "grip"},
-                grip_02 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_02", type = "grip"},
-                grip_03 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_03", type = "grip"},
-                barrel_default = {model = "", type = "barrel"},
-                barrel_01 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_01", type = "barrel"},
-                barrel_02 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_02", type = "barrel"},
-                barrel_03 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_03", type = "barrel"},
-                barrel_04 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_04", type = "barrel"},
-                barrel_05 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_05", type = "barrel"},
-                magazine_default = {model = "", type = "magazine"},
-                magazine_01 = {model = "content/items/weapons/player/ranged/magazines/autogun_pistol_magazine_01", type = "magazine"},
-                muzzle_default = {model = "", type = "muzzle"},
-                muzzle_01 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_01", type = "muzzle"},
-                muzzle_02 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_02", type = "muzzle"},
-                muzzle_03 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_03", type = "muzzle"},
-                muzzle_04 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_04", type = "muzzle"},
-                muzzle_05 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_05", type = "muzzle"},
-                sight_default = {model = "", type = "sight"},
-                sight_01 = {model = "content/items/weapons/player/ranged/sights/autogun_pistol_sight_01", type = "sight"},
-                autogun_rifle_stock_default = {model = "", type = "stock", angle = .5},
-                autogun_rifle_stock_01 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_01", type = "stock", angle = .5},
-                autogun_rifle_stock_02 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02", type = "stock", angle = .5},
-                autogun_rifle_stock_03 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_03", type = "stock", angle = .5},
-                autogun_rifle_stock_04 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04", type = "stock", angle = .5},
-                stock_01 = {model = "content/items/weapons/player/ranged/stocks/stock_01", type = "stock", angle = .5},
-                stock_02 = {model = "content/items/weapons/player/ranged/stocks/stock_02", type = "stock", angle = .5},
-                stock_03 = {model = "content/items/weapons/player/ranged/stocks/stock_03", type = "stock", angle = .5},
-                stock_04 = {model = "content/items/weapons/player/ranged/stocks/stock_04", type = "stock", angle = .5},
-                stock_05 = {model = "content/items/weapons/player/ranged/stocks/stock_05", type = "stock", angle = .5},
-                autogun_bayonet_default = {model = "", type = "bayonet"},
-                autogun_bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_01", type = "bayonet"},
-                autogun_bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_02", type = "bayonet"},
-                autogun_bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_03", type = "bayonet"},
-                emblem_right_default = {model = "", type = "emblem_right", angle = -3},
-                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right", angle = -3},
-                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right", angle = -3},
-                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right", angle = -3},
-                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right", angle = -3},
-                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right", angle = -3},
-                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right", angle = -3},
-                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right", angle = -3},
-                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right", angle = -3},
-                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right", angle = -3},
-                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right", angle = -3},
-                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right", angle = -3},
-                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right", angle = -3},
-                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right", angle = -3},
-                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right", angle = -3},
-                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right", angle = -3},
-                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right", angle = -3},
-                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right", angle = -3},
-                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right", angle = -3},
-                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right", angle = -3},
-                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right", angle = -3},
-                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right", angle = -3},
-                emblem_left_default = {model = "", type = "emblem_left"},
-                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
-                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
-                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
-                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
-                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
-                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
-                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
-                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
-                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
-                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
-                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
-                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
-            },
+            autopistol_p1_m1 = table.combine(
+                _flashlight_models(),
+                _grip_models(),
+                _stock_models(),
+                _bayonet_models(),
+                _emblem_right_models(),
+                _emblem_left_models(),
+                _trinket_hook_models(),
+                {
+                    receiver_default = {model = "", type = "receiver"},
+                    receiver_01 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_01", type = "receiver"},
+                    receiver_02 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_02", type = "receiver"},
+                    receiver_03 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_03", type = "receiver"},
+                    receiver_04 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_04", type = "receiver"},
+                    receiver_05 = {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_05", type = "receiver"},
+                    barrel_default = {model = "", type = "barrel"},
+                    barrel_01 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_01", type = "barrel"},
+                    barrel_02 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_02", type = "barrel"},
+                    barrel_03 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_03", type = "barrel"},
+                    barrel_04 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_04", type = "barrel"},
+                    barrel_05 = {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_05", type = "barrel"},
+                    magazine_default = {model = "", type = "magazine"},
+                    magazine_01 = {model = "content/items/weapons/player/ranged/magazines/autogun_pistol_magazine_01", type = "magazine"},
+                    muzzle_default = {model = "", type = "muzzle"},
+                    muzzle_01 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_01", type = "muzzle"},
+                    muzzle_02 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_02", type = "muzzle"},
+                    muzzle_03 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_03", type = "muzzle"},
+                    muzzle_04 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_04", type = "muzzle"},
+                    muzzle_05 = {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_05", type = "muzzle"},
+                    sight_default = {model = "", type = "sight"},
+                    sight_01 = {model = "content/items/weapons/player/ranged/sights/autogun_pistol_sight_01", type = "sight"},
+                }
+            ),
             shotgun_p1_m1 = {
                 default = {model = "", type = "flashlight", angle = -2.5},
                 flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", angle = -2.5},
@@ -4506,37 +4345,33 @@ end
                 _grip_models(),
                 _reflex_sights_models(),
                 _sights_models(),
+                _laspistol_receiver_models(),
                 {
-                    receiver_default = {model = "", type = "receiver"},
-                    receiver_01 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver"},
-                    receiver_02 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_02", type = "receiver"},
-                    receiver_03 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03", type = "receiver"},
-                    receiver_04 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_04", type = "receiver"},
-                    magazine_default = {model = "", type = "magazine"},
-                    magazine_01 = {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine"},
-                    -- magazine_02 = {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_02", type = "magazine"},
-                    barrel_default = {model = "", type = "barrel"},
-                    barrel_01 = {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01", type = "barrel"},
-                    barrel_02 = {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02", type = "barrel"},
-                    barrel_03 = {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03", type = "barrel"},
-                    barrel_04 = {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04", type = "barrel"},
-                    barrel_05 = {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05", type = "barrel"},
-                    barrel_06 = {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06", type = "barrel"},
-                    muzzle_default = {model = "", type = "muzzle"},
-                    muzzle_01 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01", type = "muzzle"},
-                    muzzle_02 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02", type = "muzzle"},
-                    muzzle_03 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03", type = "muzzle"},
-                    muzzle_04 = {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04", type = "muzzle"},
-                    rail_default = {model = "", type = "rail"},
-                    rail_01 = {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01", type = "rail"},
-                    lasgun_pistol_stock_default = {model = "", type = "stock", angle = 1},
-                    lasgun_pistol_stock_01 = {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01", type = "stock", angle = 1},
-                    lasgun_pistol_stock_02 = {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02", type = "stock", angle = 1},
-                    lasgun_pistol_stock_03 = {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03", type = "stock", angle = 1},
-                    stock_2_default = {model = "", type = "stock_2", angle = .5},
-                    autogun_rifle_stock_02 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02", type = "stock_2", angle = .5},
-                    autogun_rifle_stock_04 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04", type = "stock_2", angle = .5},
-                    stock_05 = {model = "content/items/weapons/player/ranged/stocks/stock_05", type = "stock_2", angle = .5},
+                    magazine_default =              {model = "",                                                                        type = "magazine"},
+                    magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine"},
+                    -- magazine_02 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_02", type = "magazine"},
+                    barrel_default =                {model = "",                                                                        type = "barrel",    angle = 0, move = Vector3Box(0, 0, 0)},
+                    barrel_01 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
+                    barrel_02 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
+                    barrel_03 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
+                    barrel_04 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
+                    barrel_05 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
+                    barrel_06 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
+                    muzzle_default =                {model = "",                                                                        type = "muzzle",    angle = 0, move = Vector3Box(0, 0, 0)},
+                    muzzle_01 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, -3, 0)},
+                    muzzle_02 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, -3, 0)},
+                    muzzle_03 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, -3, 0)},
+                    muzzle_04 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, -3, 0)},
+                    rail_default =                  {model = "",                                                                        type = "rail"},
+                    rail_01 =                       {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01",         type = "rail"},
+                    lasgun_pistol_stock_default =   {model = "",                                                                        type = "stock",     angle = 0, move = Vector3Box(0, 0, 0)},
+                    lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01",       type = "stock",     angle = 1, move = Vector3Box(-.2, -3, 0)},
+                    lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02",       type = "stock",     angle = 1, move = Vector3Box(-.2, -3, 0)},
+                    lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03",       type = "stock",     angle = 1, move = Vector3Box(-.2, -3, 0)},
+                    stock_2_default =               {model = "",                                                                        type = "stock_2",   parent = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(-.3, 0, 0)},
+                    autogun_rifle_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",       type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.4, -3, 0), remove = Vector3Box(-.3, 0, 0)},
+                    autogun_rifle_stock_04 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",       type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.4, -3, 0), remove = Vector3Box(-.3, 0, 0)},
+                    stock_05 =                      {model = "content/items/weapons/player/ranged/stocks/stock_05",                     type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.4, -3, 0), remove = Vector3Box(-.3, 0, 0)},
                 }
             ),
             autogun_p1_m1 = table.combine(
@@ -4708,6 +4543,35 @@ end
                     -- plasma_grip_03 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_03", type = "grip"},
                 }
             ),
+            forcestaff_p1_m1 = {
+                customization_default_position = Vector3Box(0, 8, .75),
+                shaft_lower_default = {model = "", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+                shaft_lower_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_01", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+                shaft_lower_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_02", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+                shaft_lower_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_03", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+                shaft_lower_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_04", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+                shaft_lower_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_05", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
+                shaft_upper_default = {model = "", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+                shaft_upper_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_01", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+                shaft_upper_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_02", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+                shaft_upper_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_03", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+                shaft_upper_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_04", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+                shaft_upper_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_05", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
+                body_default = {model = "", type = "body", move = Vector3Box(.1, -7, -.65)},
+                body_01 = {model = "content/items/weapons/player/melee/full/force_staff_full_01", type = "body", move = Vector3Box(.1, -7, -.65)},
+                body_02 = {model = "content/items/weapons/player/melee/full/force_staff_full_02", type = "body", move = Vector3Box(.1, -7, -.65)},
+                body_03 = {model = "content/items/weapons/player/melee/full/force_staff_full_03", type = "body", move = Vector3Box(.1, -7, -.65)},
+                body_04 = {model = "content/items/weapons/player/melee/full/force_staff_full_04", type = "body", move = Vector3Box(.1, -7, -.65)},
+                body_05 = {model = "content/items/weapons/player/melee/full/force_staff_full_05", type = "body", move = Vector3Box(.1, -7, -.65)},
+                head_default = {model = "", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+                head_01 = {model = "content/items/weapons/player/melee/heads/force_staff_head_01", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+                head_02 = {model = "content/items/weapons/player/melee/heads/force_staff_head_02", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+                head_03 = {model = "content/items/weapons/player/melee/heads/force_staff_head_03", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+                head_04 = {model = "content/items/weapons/player/melee/heads/force_staff_head_04", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+                head_05 = {model = "content/items/weapons/player/melee/heads/force_staff_head_05", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+                head_06 = {model = "content/items/weapons/player/melee/heads/force_staff_head_06", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+                head_07 = {model = "content/items/weapons/player/melee/heads/force_staff_head_07", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+            },
         --#endregion
         --#region Melee
             combataxe_p1_m1 = table.combine(
@@ -5016,36 +4880,6 @@ end
                 }
             ),
         --#endregion
-
-        forcestaff_p1_m1 = {
-            customization_default_position = Vector3Box(0, 8, .75),
-            shaft_lower_default = {model = "", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-            shaft_lower_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_01", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-            shaft_lower_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_02", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-            shaft_lower_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_03", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-            shaft_lower_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_04", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-            shaft_lower_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_05", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-            shaft_upper_default = {model = "", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-            shaft_upper_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_01", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-            shaft_upper_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_02", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-            shaft_upper_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_03", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-            shaft_upper_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_04", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-            shaft_upper_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_05", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-            body_default = {model = "", type = "body", move = Vector3Box(.1, -7, -.65)},
-            body_01 = {model = "content/items/weapons/player/melee/full/force_staff_full_01", type = "body", move = Vector3Box(.1, -7, -.65)},
-            body_02 = {model = "content/items/weapons/player/melee/full/force_staff_full_02", type = "body", move = Vector3Box(.1, -7, -.65)},
-            body_03 = {model = "content/items/weapons/player/melee/full/force_staff_full_03", type = "body", move = Vector3Box(.1, -7, -.65)},
-            body_04 = {model = "content/items/weapons/player/melee/full/force_staff_full_04", type = "body", move = Vector3Box(.1, -7, -.65)},
-            body_05 = {model = "content/items/weapons/player/melee/full/force_staff_full_05", type = "body", move = Vector3Box(.1, -7, -.65)},
-            head_default = {model = "", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-            head_01 = {model = "content/items/weapons/player/melee/heads/force_staff_head_01", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-            head_02 = {model = "content/items/weapons/player/melee/heads/force_staff_head_02", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-            head_03 = {model = "content/items/weapons/player/melee/heads/force_staff_head_03", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-            head_04 = {model = "content/items/weapons/player/melee/heads/force_staff_head_04", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-            head_05 = {model = "content/items/weapons/player/melee/heads/force_staff_head_05", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-            head_06 = {model = "content/items/weapons/player/melee/heads/force_staff_head_06", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-            head_07 = {model = "content/items/weapons/player/melee/heads/force_staff_head_07", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-        },
     }
 
     --#region Copies
@@ -5084,6 +4918,9 @@ end
             mod.attachment_models.lasgun_p2_m3 = mod.attachment_models.lasgun_p2_m1
             mod.attachment_models.lasgun_p3_m2 = mod.attachment_models.lasgun_p3_m1
             mod.attachment_models.lasgun_p3_m3 = mod.attachment_models.lasgun_p3_m1
+            mod.attachment_models.forcestaff_p2_m1 = mod.attachment_models.forcestaff_p1_m1
+            mod.attachment_models.forcestaff_p3_m1 = mod.attachment_models.forcestaff_p1_m1
+            mod.attachment_models.forcestaff_p4_m1 = mod.attachment_models.forcestaff_p1_m1
         --#endregion
         --region Melee
             mod.attachment_models.combataxe_p1_m2 = mod.attachment_models.combataxe_p1_m1
@@ -5098,9 +4935,8 @@ end
             mod.attachment_models.combatsword_p2_m3 = mod.attachment_models.combatsword_p2_m1
             mod.attachment_models.forcesword_p1_m2 = mod.attachment_models.forcesword_p1_m1
             mod.attachment_models.forcesword_p1_m3 = mod.attachment_models.forcesword_p1_m1
+            mod.attachment_models.combatsword_p3_m2 = mod.attachment_models.combatsword_p3_m1
+            mod.attachment_models.combatsword_p3_m3 = mod.attachment_models.combatsword_p3_m1
         --#endregion
-        mod.attachment_models.forcestaff_p2_m1 = mod.attachment_models.forcestaff_p1_m1
-        mod.attachment_models.forcestaff_p3_m1 = mod.attachment_models.forcestaff_p1_m1
-        mod.attachment_models.forcestaff_p4_m1 = mod.attachment_models.forcestaff_p1_m1
     --#endregion
 --#endregion

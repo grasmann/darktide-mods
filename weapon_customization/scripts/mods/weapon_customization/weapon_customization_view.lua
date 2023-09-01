@@ -14,12 +14,14 @@ local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.e
 local grid_width = grid_size[1] + edge_padding
 local button_width = grid_width * 0.3
 local edge = edge_padding * 0.5
+local label_height = 35
+local dropdown_height = 50
 
 mod.added_cosmetics_scenegraphs = {}
 mod.original_weapon_settings = {}
 mod.changed_weapon_settings = {}
-mod.move_duration_out = 2
-mod.move_duration_in = 4
+mod.move_duration_out = .5
+mod.move_duration_in = 1
 mod.reset_wait_time = 15
 mod.weapon_changed = nil
 mod.sound_duration = 1
@@ -421,7 +423,7 @@ mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph,
     local num_options = #options
     local num_visible_options = math.min(num_options, max_visible_options)
 
-    local size = {grid_size[1], 50}
+    local size = {grid_size[1], dropdown_height}
     local template = DropdownPassTemplates.settings_dropdown(size[1], size[2], size[1], num_visible_options, true)
 	template[7].pass_type = "texture"
 	template[7].value = "content/ui/materials/backgrounds/terminal_basic"
@@ -735,15 +737,15 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	local y = top - edge
 	for _, scenegraph_id in pairs(mod.added_cosmetics_scenegraphs) do
 		if string.find(scenegraph_id, "text_pivot") then
-			y = y + 35
+			y = y + label_height
 		else
-			y = y + 50
+			y = y + dropdown_height
 		end
 		instance.scenegraph_definition[scenegraph_id] = {
 			vertical_alignment = "top",
 			parent = "grid_tab_panel",
 			horizontal_alignment = "left",
-			size = {grid_size[1], 35},
+			size = {grid_size[1], label_height},
 			position = {edge, y, z}
 		}
 	end
@@ -959,128 +961,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 	func(self, ...)
 end)
 
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
-	func(self, settings, context, ...)
-	self._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
-		local old_alpha_multiplier = render_settings.alpha_multiplier
-		local alpha_multiplier = self._alpha_multiplier or 1
-		local elements_array = self._elements_array
-	
-		for i = 1, #elements_array do
-			local element = elements_array[i]
-	
-			if element then
-				local element_name = element.__class_name
-	
-				if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
-					ui_renderer = self._ui_default_renderer or ui_renderer
-				end
-	
-				render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
-	
-				element:draw(dt, t, ui_renderer, render_settings, input_service)
-			end
-		end
-	
-		render_settings.alpha_multiplier = old_alpha_multiplier
-	end
-end)
 
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
-	mod.debug_weapon_stuff = nil
-	mod.cosmetics_view_open = true
 
-    func(self, ...)
 
-    if self._selected_item then
-		local item_name = mod:item_name_from_content_string(self._selected_item.name)
-
-        self._custom_widgets = {}
-
-		for _, added_scenegraph in pairs(mod.added_cosmetics_scenegraphs) do
-			if string.find(added_scenegraph, "text_pivot") then
-				local slot = string.gsub(added_scenegraph, "_text_pivot", "")
-				mod:add_custom_widget(mod:generate_label(self, added_scenegraph, slot, self._selected_item), self)
-			else
-				local slot = string.gsub(added_scenegraph, "_pivot", "")
-				mod:add_custom_widget(mod:generate_dropdown(self, added_scenegraph, slot, self._selected_item), self)
-			end
-		end
-
-		local not_applicable = {}
-
-		for index, slot in pairs(mod.attachment_slots) do
-			
-			if mod.attachment[item_name] and (not mod.attachment[item_name][slot] or #mod.attachment[item_name][slot] <= 2) then
-				self._widgets_by_name[slot.."_custom"].not_applicable = true
-				self._widgets_by_name[slot.."_custom_text"].not_applicable = true
-				not_applicable[#not_applicable+1] = slot.."_pivot"
-				not_applicable[#not_applicable+1] = slot.."_text_pivot"
-			end
-		end
-
-		local move = 0
-		for _, scenegraph_entry in pairs(mod.added_cosmetics_scenegraphs) do
-			if table.contains(not_applicable, scenegraph_entry) then
-				-- move = move + 35
-				if string.find(scenegraph_entry, "text_pivot") then
-					move = move + 35
-				else
-					move = move + 50
-				end
-			end
-			if self._ui_scenegraph[scenegraph_entry] then
-				self._ui_scenegraph[scenegraph_entry].local_position[2] = self._ui_scenegraph[scenegraph_entry].local_position[2] - move
-			end
-		end
-		move = 0
-		self._custom_widgets_overlapping = 0
-		local overlapping = {}
-		for _, scenegraph_entry in pairs(mod.added_cosmetics_scenegraphs) do
-			if not table.contains(not_applicable, scenegraph_entry) then
-				-- move = move + 35
-				if string.find(scenegraph_entry, "text_pivot") then
-					move = move + 35
-				else
-					move = move + 50
-				end
-			end
-			if self._ui_scenegraph[scenegraph_entry].local_position[2] > grid_size[2] then
-				if not table.contains(not_applicable, scenegraph_entry) and not string.find(scenegraph_entry, "text_pivot") then
-					self._custom_widgets_overlapping = self._custom_widgets_overlapping + 1
-				end
-				overlapping[#overlapping+1] = scenegraph_entry
-			end
-		end
-		local extension_panel_pivot = self._ui_scenegraph.panel_extension_pivot
-		extension_panel_pivot.size[2] = (85 * self._custom_widgets_overlapping) + (edge * 2)
-		extension_panel_pivot.local_position[2] = grid_size[2] - 85 * (self._custom_widgets_overlapping + 1)
-		for _, scenegraph_entry in pairs(overlapping) do
-			self._ui_scenegraph[scenegraph_entry].local_position[1] = self._ui_scenegraph[scenegraph_entry].local_position[1] + grid_width
-			self._ui_scenegraph[scenegraph_entry].local_position[2] = self._ui_scenegraph[scenegraph_entry].local_position[2] - 85 * (self._custom_widgets_overlapping + 1)
-		end
-
-		if mod.attachment_models[item_name] then
-			if mod.attachment_models[item_name].customization_min_zoom then
-				local min_zoom = mod.attachment_models[item_name].customization_min_zoom
-				self._min_zoom = min_zoom
-			else
-				self._min_zoom = -2
-			end
-			self._weapon_zoom_target = self._min_zoom
-			self._weapon_zoom_fraction = self._min_zoom
-			self:_set_weapon_zoom(self._min_zoom)
-		end
-    end
-
-	mod.original_weapon_settings = {}
-	mod:get_changed_weapon_settings(self)
-
-	self._widgets_by_name.reset_button.content.hotspot.disabled = true
-
-    mod:hide_custom_widgets(self, true)
-
-end)
 
 mod.widget_update_functions = {
 	dropdown = function (self, widget, input_service)
@@ -1104,7 +987,7 @@ mod.widget_update_functions = {
 		content.disabled = is_disabled
 		local size = {
 			400,
-			50
+			dropdown_height
 		}
 		local using_gamepad = not Managers.ui:using_cursor_navigation()
 		local offset = widget.offset
@@ -1266,3 +1149,168 @@ mod.widget_update_functions = {
 		end
 	end,
 }
+
+-- ##### ┬  ┬┬┌─┐┬ ┬  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #################################################################################
+-- ##### └┐┌┘│├┤ │││  ├─┤│ ││ │├┴┐└─┐ #################################################################################
+-- #####  └┘ ┴└─┘└┴┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #################################################################################
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
+	func(self, settings, context, ...)
+	-- Custom
+	self._custom_widgets = {}
+	self._not_applicable = {}
+	self._custom_widgets_overlapping = 0
+	-- Overwrite draw elements function
+	-- Make view legend inputs visible when UI gets hidden
+	self._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
+		local old_alpha_multiplier = render_settings.alpha_multiplier
+		local alpha_multiplier = self._alpha_multiplier or 1
+		local elements_array = self._elements_array
+		for i = 1, #elements_array do
+			local element = elements_array[i]
+			if element then
+				local element_name = element.__class_name
+				if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
+					ui_renderer = self._ui_default_renderer or ui_renderer
+				end
+				render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
+				element:draw(dt, t, ui_renderer, render_settings, input_service)
+			end
+		end
+		render_settings.alpha_multiplier = old_alpha_multiplier
+	end
+end)
+
+mod.generate_custom_widgets = function(self, view)
+	local item = view._selected_item
+	if item then
+		-- Iterate scenegraphs additions
+		for _, added_scenegraph in pairs(self.added_cosmetics_scenegraphs) do
+			-- Differentiate text and dropdown
+			if string.find(added_scenegraph, "text_pivot") then
+				-- Generate label
+				local attachment_slot = string.gsub(added_scenegraph, "_text_pivot", "")
+				self:add_custom_widget(self:generate_label(view, added_scenegraph, attachment_slot, item), view)
+			else
+				-- Generate dropdown
+				local attachment_slot = string.gsub(added_scenegraph, "_pivot", "")
+				self:add_custom_widget(self:generate_dropdown(view, added_scenegraph, attachment_slot, item), view)
+			end
+		end
+	end
+end
+
+mod.resolve_not_applicable_attachments = function(self, view)
+	local item = view._selected_item
+	if item then
+		-- Get item name
+		local item_name = self:item_name_from_content_string(item.name)
+		local move = 0
+		-- Iterate attachment slots
+		for index, slot in pairs(self.attachment_slots) do
+			-- Check that weapon has attachment slot and more than 2 options
+			-- 1st option is default
+			if self.attachment[item_name] and (not self.attachment[item_name][slot] or #self.attachment[item_name][slot] <= 2) then
+				-- Set not applicable in widgets to hide them
+				view._widgets_by_name[slot.."_custom"].not_applicable = true
+				view._widgets_by_name[slot.."_custom_text"].not_applicable = true
+				-- Add to list of not applicable widgets
+				view._not_applicable[#view._not_applicable+1] = slot.."_pivot"
+				view._not_applicable[#view._not_applicable+1] = slot.."_text_pivot"
+			end
+		end
+		-- Move widgets according to their applicable status
+		for _, scenegraph_name in pairs(self.added_cosmetics_scenegraphs) do
+			if table.contains(view._not_applicable, scenegraph_name) then
+				-- Differentiate text and dropdown
+				if string.find(scenegraph_name, "text_pivot") then
+					move = move + label_height
+				else
+					move = move + dropdown_height
+				end
+			end
+			-- Change scenegraph position
+			local scenegraph_entry = view._ui_scenegraph[scenegraph_name]
+			if scenegraph_entry then
+				scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - move
+			end
+		end
+	end
+end
+
+mod.resolve_overlapping_widgets = function(self, view)
+	local move = 0
+	local overlapping = {}
+	-- Iterate scenegraph entries
+	for _, scenegraph_entry in pairs(self.added_cosmetics_scenegraphs) do
+		-- Make sure attachment slot is applicable
+		if not table.contains(view._not_applicable, scenegraph_entry) then
+			-- Differentiate text and dropdown
+			if string.find(scenegraph_entry, "text_pivot") then
+				move = move + label_height
+			else
+				move = move + dropdown_height
+			end
+			-- Check if widget is overlapping
+			if view._ui_scenegraph[scenegraph_entry].local_position[2] > grid_size[2] then
+				-- Count overlapping attachment slots
+				if not string.find(scenegraph_entry, "text_pivot") then
+					view._custom_widgets_overlapping = view._custom_widgets_overlapping + 1
+				end
+				-- Add overlapping widget to list
+				overlapping[#overlapping+1] = scenegraph_entry
+			end
+		end
+	end
+	-- Change extension panels size
+	local extension_panel_pivot = view._ui_scenegraph.panel_extension_pivot
+	extension_panel_pivot.size[2] = (85 * view._custom_widgets_overlapping) + (edge * 2)
+	extension_panel_pivot.local_position[2] = grid_size[2] - 85 * (view._custom_widgets_overlapping + 1)
+	-- Change overlapping widgets positions
+	for _, scenegraph_name in pairs(overlapping) do
+		local scenegraph_entry = view._ui_scenegraph[scenegraph_name]
+		scenegraph_entry.local_position[1] = scenegraph_entry.local_position[1] + grid_width
+		scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - 85 * (view._custom_widgets_overlapping + 1)
+	end
+end
+
+mod.init_custom_weapon_zoom = function(self, view)
+	local item = view._selected_item
+	if item then
+		-- Get item name
+		local item_name = self:item_name_from_content_string(item.name)
+		-- Check for weapon in data
+		if self.attachment_models[item_name] then
+			-- Check for custom weapon zoom
+			if self.attachment_models[item_name].customization_min_zoom then
+				local min_zoom = self.attachment_models[item_name].customization_min_zoom
+				view._min_zoom = min_zoom
+			else
+				view._min_zoom = -2
+			end
+			-- Set zoom
+			view._weapon_zoom_target = view._min_zoom
+			view._weapon_zoom_fraction = view._min_zoom
+			view:_set_weapon_zoom(view._min_zoom)
+		end
+	end
+end
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
+	mod.cosmetics_view_open = true
+
+    func(self, ...)
+
+	self._widgets_by_name.reset_button.content.hotspot.disabled = true
+
+    mod:generate_custom_widgets(self)
+	mod:resolve_not_applicable_attachments(self)
+	mod:resolve_overlapping_widgets(self)
+	mod:init_custom_weapon_zoom(self)
+
+	mod.original_weapon_settings = {}
+	mod:get_changed_weapon_settings(self)
+
+    mod:hide_custom_widgets(self, true)
+
+end)

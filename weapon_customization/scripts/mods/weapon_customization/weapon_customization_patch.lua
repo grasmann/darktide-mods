@@ -84,14 +84,16 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┘├─┤ │ │  ├─┤ ###########################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ###########################################################
 
-mod._recursive_set_attachment = function(self, attachments, attachment_type, model, auto)
+mod._recursive_set_attachment = function(self, attachments, attachment_name, attachment_type, model, auto)
     if not table.contains(mod.automatic_slots, attachment_type) or auto then
         for attachment_slot, attachment_data in pairs(attachments) do
             if attachment_slot == attachment_type then
                 attachment_data.item = model
+                attachment_data.attachment_type = attachment_type
+                attachment_data.attachment_name = attachment_name
             else
                 if attachment_data.children then
-                    self:_recursive_set_attachment(attachment_data.children, attachment_type, model, auto)
+                    self:_recursive_set_attachment(attachment_data.children, attachment_name, attachment_type, model, auto)
                 end
             end
         end
@@ -195,19 +197,21 @@ mod._recursive_find_attachment_item_name = function(self, attachments, item_name
     return val
 end
 
-mod._add_custom_attachments = function(self, gear_id, attachments)
-    for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
-        local attachment_setting = self:get_gear_setting(gear_id, attachment_slot)
-        local attachment = table.contains(self[attachment_table], attachment_setting)
-        if attachment then
-            if not self:_recursive_find_attachment(attachments, attachment_slot) then
-                attachments[attachment_slot] = {
-                    children = {},
-                    item = "",
-                }
+mod._recursive_find_attachment_slot = function(self, attachments, slot_name)
+    local val = nil
+    if attachments then
+        for attachment_name, attachment_data in pairs(attachments) do
+            if attachment_name == slot_name then
+                val = attachment_data
+            else
+                if attachment_data.children then
+                    val = self:_recursive_find_attachment_item_name(attachment_data.children, slot_name)
+                end
             end
+            if val then break end
         end
     end
+    return val
 end
 
 mod._recursive_attachment_slot_from_index = function(self, attachments, search_index, found_index)
@@ -242,26 +246,26 @@ mod._overwrite_attachments = function(self, item_data, attachments)
         if attachment and mod.attachment_models[item_name][attachment] then
             local model = mod.attachment_models[item_name][attachment].model
             local attachment_type = mod.attachment_models[item_name][attachment].type
-            mod:_recursive_set_attachment(attachments, attachment_type, model)
+            mod:_recursive_set_attachment(attachments, attachment, attachment_type, model)
             -- Automatic
             local automatic_equip = mod.attachment_models[item_name][attachment].automatic_equip
             if automatic_equip then
                 for auto_type, auto_attachment in pairs(automatic_equip) do
                     local auto_model = mod.attachment_models[item_name][auto_attachment].model
-                    mod:_recursive_set_attachment(attachments, auto_type, auto_model, true)
+                    mod:_recursive_set_attachment(attachments, attachment, auto_type, auto_model, true)
                 end
             end
         else
             -- Default overwrite
             if mod.default_overwrite[item_name] and mod.default_overwrite[item_name][attachment_slot] then
-                mod:_recursive_set_attachment(attachments, attachment_slot, mod.default_overwrite[item_name][attachment_slot])
+                mod:_recursive_set_attachment(attachments, attachment, attachment_slot, mod.default_overwrite[item_name][attachment_slot])
             else
                 -- Default
                 local MasterItemsCached = MasterItems.get_cached()
                 local master_item = MasterItemsCached[item_data.name]
                 local attachment = mod:_recursive_find_attachment(master_item.attachments, attachment_slot)
                 if attachment then
-                    mod:_recursive_set_attachment(attachments, attachment_slot, attachment.item)
+                    mod:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment.item)
                 end
             end
         end
@@ -281,7 +285,7 @@ mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item,
             end
 
             -- Add flashlight slot
-            mod:_add_custom_attachments(gear_id, attachments)
+            mod:_add_custom_attachments(item, attachments)
             
             -- Overwrite attachments
             mod:_overwrite_attachments(item, attachments)
@@ -306,7 +310,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
                 end
 
                 -- Add flashlight slot
-                mod:_add_custom_attachments(gear_id, attachments)
+                mod:_add_custom_attachments(instance.processing_item, attachments)
                 
                 -- Overwrite attachments
                 mod:_overwrite_attachments(instance.processing_item, attachments)
