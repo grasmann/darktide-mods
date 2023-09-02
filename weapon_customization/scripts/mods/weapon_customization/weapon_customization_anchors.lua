@@ -35,23 +35,34 @@ end
         end
         return combined
     end
+    local tv = function(t, i)
+        if type(t) == "table" then
+            if #t >= i then return t[i] end
+            return t[1]
+        elseif type(t) == "string" then
+            return t
+        end
+    end
     --#region Common
         local _flashlights_attachments = function()
             return {
-                {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "default",       name = "Default",      sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                 {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
                 {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
                 {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
                 {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
             }
         end
-        local _flashlight_models = function()
+        local _flashlight_models = function(parent, angle, move, remove)
+            local angle = angle or -2.5
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
             return {
-                default = {model = "", type = "flashlight", angle = 0},
-                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", angle = -2.5},
-                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", angle = -2.5},
-                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", angle = -2.5},
-                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", angle = -2.5},
+                default =       {model = "",                                                              type = "flashlight", parent = parent, angle = angle, move = move, remove = remove},
+                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", parent = parent, angle = angle, move = move, remove = remove},
+                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", parent = parent, angle = angle, move = move, remove = remove},
+                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", parent = parent, angle = angle, move = move, remove = remove},
+                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = parent, angle = angle, move = move, remove = remove},
             } 
         end
         local _emblem_right_attachments = function()
@@ -168,32 +179,35 @@ end
                 {id = "grip_26", name = "Lasgun 5", sounds = {UISoundEvents.weapons_swap}},
             }
         end
-        local _grip_models = function()
+        local _grip_models = function(parent, angle, move, remove)
+            local angle = angle or -2.5
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, -.3, 0)
             return {
-                grip_default = {model = "", type = "grip"},
-                grip_01 = {model = "content/items/weapons/player/ranged/grips/grip_01", type = "grip"},
-                grip_02 = {model = "content/items/weapons/player/ranged/grips/grip_02", type = "grip"},
-                grip_03 = {model = "content/items/weapons/player/ranged/grips/grip_03", type = "grip"},
-                grip_04 = {model = "content/items/weapons/player/ranged/grips/grip_04", type = "grip"},
-                grip_05 = {model = "content/items/weapons/player/ranged/grips/grip_05", type = "grip"},
-                grip_06 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_01", type = "grip"},
-                grip_07 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_02", type = "grip"},
-                grip_08 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_03", type = "grip"},
-                grip_09 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_01", type = "grip"},
-                grip_10 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_02", type = "grip"},
-                grip_11 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_03", type = "grip"},
-                grip_12 = {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_killshot_01", type = "grip"},
-                grip_13 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_01", type = "grip"},
-                grip_14 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_02", type = "grip"},
-                grip_15 = {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_03", type = "grip"},
-                grip_19 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_01", type = "grip"},
-                grip_20 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_02", type = "grip"},
-                grip_21 = {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_03", type = "grip"},
-                grip_22 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_01", type = "grip"},
-                grip_23 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_02", type = "grip"},
-                grip_24 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_03", type = "grip"},
-                grip_25 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_elysian_grip_02", type = "grip"},
-                grip_26 = {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_elysian_grip_03", type = "grip"},
+                grip_default =  {model = "",                                                                            type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_01 =       {model = "content/items/weapons/player/ranged/grips/grip_01",                           type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_02 =       {model = "content/items/weapons/player/ranged/grips/grip_02",                           type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_03 =       {model = "content/items/weapons/player/ranged/grips/grip_03",                           type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_04 =       {model = "content/items/weapons/player/ranged/grips/grip_04",                           type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_05 =       {model = "content/items/weapons/player/ranged/grips/grip_05",                           type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_06 =       {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_01",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_07 =       {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_02",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_08 =       {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_03",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_09 =       {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_01",          type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_10 =       {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_02",          type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_11 =       {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_ak_03",          type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_12 =       {model = "content/items/weapons/player/ranged/grips/autogun_rifle_grip_killshot_01",    type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_13 =       {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_01",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_14 =       {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_02",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_15 =       {model = "content/items/weapons/player/ranged/grips/boltgun_rifle_grip_03",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_19 =       {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_01",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_20 =       {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_02",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_21 =       {model = "content/items/weapons/player/ranged/grips/lasgun_pistol_grip_03",             type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_22 =       {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_01",              type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_23 =       {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_02",              type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_24 =       {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_grip_03",              type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_25 =       {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_elysian_grip_02",      type = "grip", parent = parent, angle = angle, move = move, remove = remove},
+                grip_26 =       {model = "content/items/weapons/player/ranged/grips/lasgun_rifle_elysian_grip_03",      type = "grip", parent = parent, angle = angle, move = move, remove = remove},
             }
         end
         local _bayonet_attachments = function(blades)
@@ -210,16 +224,19 @@ end
             end
             return bayonets
         end
-        local _bayonet_models = function(blades)
+        local _bayonet_models = function(parent, angle, move, remove, blades)
+            local angle = angle or -.5
+            local move = move or Vector3Box(0, -2, 0)
+            local remove = remove or Vector3Box(0, .2, 0)
             local bayonets = {
-                autogun_bayonet_default = {model = "", type = "bayonet"},
-                autogun_bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_01", type = "bayonet"},
-                autogun_bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_02", type = "bayonet"},
-                autogun_bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/bayonet_03", type = "bayonet"},
+                autogun_bayonet_default =   {model = "",                                                        type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                autogun_bayonet_01 =        {model = "content/items/weapons/player/ranged/bayonets/bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                autogun_bayonet_02 =        {model = "content/items/weapons/player/ranged/bayonets/bayonet_02", type = "bayonet", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                autogun_bayonet_03 =        {model = "content/items/weapons/player/ranged/bayonets/bayonet_03", type = "bayonet", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
             }
             if blades then
                 bayonets = table.combine(bayonets, {
-                    bayonet_blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
+                    bayonet_blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet", parent = parent, angle = angle, move = move, remove = remove},
                 })
             end
             return bayonets
@@ -231,12 +248,15 @@ end
                 {id = "reflex_sight_03", name = "Reflex Sight 3", sounds = {UISoundEvents.weapons_swap}},
             }
         end
-        local _reflex_sights_models = function()
+        local _reflex_sights_models = function(parent, angle, move, remove)
+            local angle = angle or -.5
+            local move = move or Vector3Box(0, -4, -.2)
+            local remove = remove or Vector3Box(0, -.2, 0)
             return {
-                sight_default = {model = "", type = "sight", angle = -.6},
-                reflex_sight_01 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_01", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
-                reflex_sight_02 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_02", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
-                reflex_sight_03 = {model = "content/items/weapons/player/ranged/sights/reflex_sight_03", type = "sight", angle = -.6, automatic_equip = {rail = "rail_01"}},
+                sight_default =     {model = "",                                                            type = "sight", parent = parent, angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_01"}},
+                reflex_sight_01 =   {model = "content/items/weapons/player/ranged/sights/reflex_sight_01",  type = "sight", parent = parent, angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_01"}},
+                reflex_sight_02 =   {model = "content/items/weapons/player/ranged/sights/reflex_sight_02",  type = "sight", parent = parent, angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_01"}},
+                reflex_sight_03 =   {model = "content/items/weapons/player/ranged/sights/reflex_sight_03",  type = "sight", parent = parent, angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_01"}},
             }
         end
         local _sights_attachments = function()
@@ -282,7 +302,7 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(-.3, 0, 0)
             return {
-                stock_default =             {model = "",                                                                            type = "stock", angle = .5, move = move, remove = remove},
+                stock_default =             {model = "",                                                                            type = "stock", angle = 0,  move = move, remove = remove},
                 no_stock =                  {model = "",                                                                            type = "stock", angle = .5, move = move, remove = remove},
                 stock_01 =                  {model = "content/items/weapons/player/ranged/stocks/stock_01",                         type = "stock", angle = .5, move = move, remove = remove},
                 stock_02 =                  {model = "content/items/weapons/player/ranged/stocks/stock_02",                         type = "stock", angle = .5, move = move, remove = remove},
@@ -455,16 +475,17 @@ end
                 {id = "laspistol_receiver_01",      name = "Laspistol Receiver 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
                 {id = "laspistol_receiver_02",      name = "Laspistol Receiver 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
                 {id = "laspistol_receiver_03",      name = "Laspistol Receiver 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "laspistol_receiver_04",      name = "Laspistol Receiver 4",  sounds = {UISoundEvents.weapons_equip_weapon}},
             }
         end
-        local _laspistol_receiver_models = function()
+        local _laspistol_receiver_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
             return {
-                laspistol_receiver_default =    {model = "",                                                                        type = "receiver"},
-                laspistol_receiver_01 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver"},
-                laspistol_receiver_02 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_02", type = "receiver"},
-                laspistol_receiver_03 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03", type = "receiver"},
-                -- laspistol_receiver_04 = {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_04", type = "receiver"},
+                laspistol_receiver_default =    {model = "",                                                                        type = "receiver", angle = angle, move = move, remove = remove},
+                laspistol_receiver_01 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver", angle = angle, move = move, remove = remove},
+                laspistol_receiver_02 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_02", type = "receiver", angle = angle, move = move, remove = remove},
+                laspistol_receiver_03 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03", type = "receiver", angle = angle, move = move, remove = remove},
             }
         end
     --#endregion
@@ -931,17 +952,17 @@ end
                     rotation = Vector3Box(0, 90, 0),
                     scale = Vector3Box(1, 1, 1),
                 },
-                ["fixes"] = {
-                    ["8"] = {
-                        ["barrel_03"] = {
-                            ["barrel_03"] = {
-                                position = Vector3Box(0, 0.16, -.02),
-                                rotation = Vector3Box(-30, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                    }
-                }
+                -- ["fixes"] = {
+                --     ["8"] = {
+                --         ["barrel_03"] = {
+                --             ["barrel_03"] = {
+                --                 position = Vector3Box(0, 0.16, -.02),
+                --                 rotation = Vector3Box(-30, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --     }
+                -- }
             },
             shotgun_p1_m1 = {
                 ["flashlight_01"] = {
@@ -1117,441 +1138,406 @@ end
                 },
             },
             laspistol_p1_m1 = {
-                ["flashlight_01"] = {
-                    position = Vector3Box(.03, .17, .08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
-                },
-                ["flashlight_02"] = {
-                    position = Vector3Box(.03, .17, .08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
-                },
-                ["flashlight_03"] = {
-                    position = Vector3Box(.03, .17, .08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
-                },
-                ["flashlight_04"] = {
-                    position = Vector3Box(.03, .17, .08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
-                },
-                ["autogun_rifle_stock_02"] = {
-                    position = Vector3Box(0, -0.09, 0.035),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.85, 1, .75),
-                },
-                ["autogun_rifle_stock_04"] = {
-                    position = Vector3Box(0, -0.09, 0.035),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.85, 1, .75),
-                },
-                ["stock_05"] = {
-                    position = Vector3Box(0, -0.09, 0.035),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.85, 1, .75),
-                },
-                ["autogun_bayonet_01"] = {
-                    position = Vector3Box(0, 0.27, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
-                },
-                ["autogun_bayonet_02"] = {
-                    position = Vector3Box(0, 0.27, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
-                },
-                ["autogun_bayonet_03"] = {
-                    position = Vector3Box(-0.03, 0.12, 0.09),
-                    rotation = Vector3Box(0, 90, 0),
-                    scale = Vector3Box(1, 1, 1),
-                },
+                ["flashlight_01"] = {position = Vector3Box(.03, .16, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                ["flashlight_02"] = {position = Vector3Box(.03, .16, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                ["flashlight_03"] = {position = Vector3Box(.03, .16, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                ["flashlight_04"] = {position = Vector3Box(.03, .16, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                ["autogun_rifle_stock_02"] = {position = Vector3Box(0, -0.09, 0.035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(.85, 1, .75)},
+                ["autogun_rifle_stock_04"] = {position = Vector3Box(0, -0.09, 0.035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(.85, 1, .75)},
+                ["stock_05"] = {position = Vector3Box(0, -0.09, 0.035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(.85, 1, .75)},
+                ["autogun_bayonet_01"] = {position = Vector3Box(0, .14, -.033), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                ["autogun_bayonet_02"] = {position = Vector3Box(0, .14, -.033), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                ["autogun_bayonet_03"] = {position = Vector3Box(0, .05, -.033), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
                 fixes = {
-                    {
-                        dependencies = {
-                            "laspistol_receiver_02",
-                            "!barrel_02",
-                        },
-                        emblem_left = {
-                            offset = true,
-                            position = Vector3Box(0, -.03, 0),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                        emblem_right = {
-                            offset = true,
-                            position = Vector3Box(0, -.03, 0),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                    }
+                    {dependencies = {"laspistol_receiver_01", "barrel_02"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(.0025, 0, .007), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        emblem_right = {offset = true, position = Vector3Box(.0025, 0, .007), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_01", "barrel_03"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(-.005, .1, .05), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(1, 1, 1)},
+                        emblem_right = {offset = true, position = Vector3Box(-.005, .1, .05), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_01", "barrel_04"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(-.005, .1, .05), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(1, 1, 1)},
+                        emblem_right = {offset = true, position = Vector3Box(-.005, .1, .05), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_02", "!barrel_02"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(0, -.03, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        emblem_right = {offset = true, position = Vector3Box(0, -.03, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_02", "barrel_06"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(.001, -.025, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        emblem_right = {offset = true, position = Vector3Box(.001, -.025, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_02", "barrel_04"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(-.005, -.08, .02), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(.5, .5, .5)},
+                        emblem_right = {offset = true, position = Vector3Box(-.005, -.08, .02), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(.5, .5, .5)}},
+                    {dependencies = {"laspistol_receiver_02", "barrel_05"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(-.005, -.08, .02), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(.5, .5, .5)},
+                        emblem_right = {offset = true, position = Vector3Box(-.005, -.08, .02), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(.5, .5, .5)}},
+                    {dependencies = {"muzzle_03", "autogun_bayonet_03"}, -- Bayonet 3
+                        bayonet = {offset = true, position = Vector3Box(0, .065, -.03), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
                 },
             },
             autogun_p1_m1 = {
                 ["scope_offset"] = Vector3Box(0, 0, .0125),
-                ["fixes"] = {
-                    ["4"] = {
-                        ["receiver_01"] = {
-                            ["barrel_07"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_08"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_09"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_10"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                        ["receiver_02"] = {
-                            ["barrel_07"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_08"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_09"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_10"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                        ["receiver_03"] = {
-                            ["barrel_01"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_02"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_03"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_04"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_05"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_06"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_11"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_12"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                    },
-                }
+                -- ["fixes"] = {
+                --     ["4"] = {
+                --         ["receiver_01"] = {
+                --             ["barrel_07"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_08"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_09"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_10"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --         ["receiver_02"] = {
+                --             ["barrel_07"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_08"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_09"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_10"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --         ["receiver_03"] = {
+                --             ["barrel_01"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_02"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_03"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_04"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_05"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_06"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_11"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_12"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --     },
+                -- }
             },
             autogun_p2_m1 = {
-                ["fixes"] = {
-                    ["3"] = {
-                        ["receiver_01"] = {
-                            ["barrel_07"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_08"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_09"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_10"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                        ["receiver_02"] = {
-                            ["barrel_07"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_08"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_09"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_10"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                        ["receiver_03"] = {
-                            ["barrel_01"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_02"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_03"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_04"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_05"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_06"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_11"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_12"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                    },
-                }
+                -- ["fixes"] = {
+                --     ["3"] = {
+                --         ["receiver_01"] = {
+                --             ["barrel_07"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_08"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_09"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_10"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --         ["receiver_02"] = {
+                --             ["barrel_07"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_08"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_09"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_10"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --         ["receiver_03"] = {
+                --             ["barrel_01"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_02"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_03"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_04"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_05"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_06"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_11"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_12"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --     },
+                -- }
             },
             autogun_p3_m1 = {
                 ["scope_offset"] = Vector3Box(0, 0, .0125),
-                ["fixes"] = {
-                    ["3"] = {
-                        ["receiver_01"] = {
-                            ["barrel_07"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_08"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_09"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_10"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                        ["receiver_02"] = {
-                            ["barrel_07"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_08"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_09"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_10"] = {
-                                position = Vector3Box(0, .25, .048),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                        ["receiver_03"] = {
-                            ["barrel_01"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_02"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_03"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_04"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_05"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_06"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_11"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                            ["barrel_12"] = {
-                                position = Vector3Box(0, .175, .077),
-                                rotation = Vector3Box(0, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                    },
-                }
+                -- ["fixes"] = {
+                --     ["3"] = {
+                --         ["receiver_01"] = {
+                --             ["barrel_07"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_08"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_09"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_10"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --         ["receiver_02"] = {
+                --             ["barrel_07"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_08"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_09"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_10"] = {
+                --                 position = Vector3Box(0, .25, .048),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --         ["receiver_03"] = {
+                --             ["barrel_01"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_02"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_03"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_04"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_05"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_06"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_11"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --             ["barrel_12"] = {
+                --                 position = Vector3Box(0, .175, .077),
+                --                 rotation = Vector3Box(0, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --     },
+                -- }
             },
             lasgun_p1_m1 = {
                 ["no_scope_offset"] = Vector3Box(0, 0, -.0455),
-                ["fixes"] = {
-                    ["6"] = {
-                        ["barrel_17"] = {
-                            ["barrel_17"] = {
-                                position = Vector3Box(0, 0.325, -.03),
-                                rotation = Vector3Box(-30, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                        ["barrel_18"] = {
-                            ["barrel_18"] = {
-                                position = Vector3Box(0, 0.325, -.03),
-                                rotation = Vector3Box(-30, 0, 0),
-                                scale = Vector3Box(1, 1, 1),
-                            },
-                        },
-                    }
-                }
+                -- ["fixes"] = {
+                --     ["6"] = {
+                --         ["barrel_17"] = {
+                --             ["barrel_17"] = {
+                --                 position = Vector3Box(0, 0.325, -.03),
+                --                 rotation = Vector3Box(-30, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --         ["barrel_18"] = {
+                --             ["barrel_18"] = {
+                --                 position = Vector3Box(0, 0.325, -.03),
+                --                 rotation = Vector3Box(-30, 0, 0),
+                --                 scale = Vector3Box(1, 1, 1),
+                --             },
+                --         },
+                --     }
+                -- }
             },
             lasgun_p2_m1 = {
                 ["scope_offset"] = Vector3Box(0, 0, .0275),
             },
             lasgun_p3_m1 = {
                 ["scope_offset"] = Vector3Box(0, 0, .0275),
-                ["fixes"] = {
-                    ["autogun_bayonet_01"] = {
-                        ["muzzle_07"] = {
-                            position = Vector3Box(0, .63, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                        ["muzzle_08"] = {
-                            position = Vector3Box(0, .63, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                        ["muzzle_09"] = {
-                            position = Vector3Box(0, .63, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                    },
-                    ["autogun_bayonet_02"] = {
-                        ["muzzle_07"] = {
-                            position = Vector3Box(0, .63, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                        ["muzzle_08"] = {
-                            position = Vector3Box(0, .63, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                        ["muzzle_09"] = {
-                            position = Vector3Box(0, .63, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                    },
-                    ["autogun_bayonet_03"] = {
-                        ["muzzle_07"] = {
-                            position = Vector3Box(0, .63, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                        ["muzzle_08"] = {
-                            position = Vector3Box(0, .65, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                        ["muzzle_09"] = {
-                            position = Vector3Box(0, .63, .05),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, 1, 1),
-                        },
-                    },
-                    ["rail_01"] = {
-                        ["receiver_01"] = {
-                            position = Vector3Box(0, .039, .185),
-                            rotation = Vector3Box(0, 0, 0),
-                            scale = Vector3Box(1, .96, 1),
-                        },
-                    },
-                }
+                -- ["fixes"] = {
+                --     ["autogun_bayonet_01"] = {
+                --         ["muzzle_07"] = {
+                --             position = Vector3Box(0, .63, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --         ["muzzle_08"] = {
+                --             position = Vector3Box(0, .63, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --         ["muzzle_09"] = {
+                --             position = Vector3Box(0, .63, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --     },
+                --     ["autogun_bayonet_02"] = {
+                --         ["muzzle_07"] = {
+                --             position = Vector3Box(0, .63, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --         ["muzzle_08"] = {
+                --             position = Vector3Box(0, .63, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --         ["muzzle_09"] = {
+                --             position = Vector3Box(0, .63, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --     },
+                --     ["autogun_bayonet_03"] = {
+                --         ["muzzle_07"] = {
+                --             position = Vector3Box(0, .63, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --         ["muzzle_08"] = {
+                --             position = Vector3Box(0, .65, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --         ["muzzle_09"] = {
+                --             position = Vector3Box(0, .63, .05),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, 1, 1),
+                --         },
+                --     },
+                --     ["rail_01"] = {
+                --         ["receiver_01"] = {
+                --             position = Vector3Box(0, .039, .185),
+                --             rotation = Vector3Box(0, 0, 0),
+                --             scale = Vector3Box(1, .96, 1),
+                --         },
+                --     },
+                -- }
             },
             flamer_p1_m1 = {
                 ["flashlight_01"] = {
@@ -2617,13 +2603,21 @@ end
             laspistol_p1_m1 = {
                 flashlight = _flashlights_attachments(),
                 receiver = _laspistol_receiver_attachments(),
+                bayonet = _bayonet_attachments(),
+                emblem_right = _emblem_right_attachments(),
+                emblem_left = _emblem_left_attachments(),
+                grip = _grip_attachments(),
+                sight = table.icombine(
+                    {{id = "sight_default", name = "Default", sounds = {UISoundEvents.weapons_swap}}},
+                    _reflex_sights_attachments()
+                ),
                 magazine = {
-                    {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "magazine_default", name = "Default", sounds = {UISoundEvents.apparel_equip}},
                     {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
                     -- {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.apparel_equip}},
                 },
                 barrel = {
-                    {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "barrel_default", name = "Default", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "barrel_02", name = "Barrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "barrel_03", name = "Barrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -2632,38 +2626,34 @@ end
                     {id = "barrel_06", name = "Barrel 6", sounds = {UISoundEvents.weapons_equip_gadget}},
                 },
                 muzzle = {
-                    {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "muzzle_01", name = "Muzzle 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "muzzle_02", name = "Muzzle 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    -- {id = "muzzle_02", name = "Muzzle 2", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "muzzle_03", name = "Muzzle 3", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "muzzle_04", name = "Muzzle 4", sounds = {UISoundEvents.weapons_equip_gadget}},
                 },
                 rail = {
-                    {id = "rail_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "rail_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
                     {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
                 },
-                grip = _grip_attachments(),
                 stock = {
-                    {id = "lasgun_pistol_stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "lasgun_pistol_stock_default", name = "Default"},
                     {id = "lasgun_pistol_stock_01", name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "lasgun_pistol_stock_02", name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "lasgun_pistol_stock_03", name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
                 },
                 stock_2 = {
-                    {id = "stock_2_default",        name = "Default",   sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "stock_2_default",        name = "Default"},
                     {id = "autogun_rifle_stock_02", name = "Stock 1",   sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "autogun_rifle_stock_04", name = "Stock 2",   sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "stock_05",               name = "Stock 3",   sounds = {UISoundEvents.weapons_equip_gadget}},
                 },
-                sight = {
-                    {id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "sight_01", name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sight_02", name = "Sight 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sight_03", name = "Sight 3", sounds = {UISoundEvents.weapons_swap}},
-                },
-                bayonet = _bayonet_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                -- sight = {
+                --     {id = "sight_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
+                --     {id = "sight_01", name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
+                --     {id = "sight_02", name = "Sight 2", sounds = {UISoundEvents.weapons_swap}},
+                --     {id = "sight_03", name = "Sight 3", sounds = {UISoundEvents.weapons_swap}},
+                -- },
             },
             autogun_p1_m1 = {
                 flashlight = _flashlights_attachments(),
@@ -3066,8 +3056,8 @@ end
                     {id = "chain_sword_body_01", name = "Body 1", sounds = {UISoundEvents.weapons_swap}},
                     {id = "chain_sword_body_02", name = "Body 2", sounds = {UISoundEvents.weapons_swap}},
                     {id = "chain_sword_body_03", name = "Body 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_sword_body_04", name = "Body 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_sword_body_05", name = "Body 5", sounds = {UISoundEvents.weapons_swap}},
+                    -- {id = "chain_sword_body_04", name = "Body 4", sounds = {UISoundEvents.weapons_swap}}, --buggy
+                    -- {id = "chain_sword_body_05", name = "Body 5", sounds = {UISoundEvents.weapons_swap}}, --buggy
                     {id = "chain_sword_body_06", name = "Body 6", sounds = {UISoundEvents.weapons_swap}},
                 },
                 chain = {
@@ -4338,40 +4328,39 @@ end
                 emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
             },
             laspistol_p1_m1 = table.combine(
-                _flashlight_models(),
+                _flashlight_models("receiver", -2.5, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
                 _emblem_right_models(),
                 _emblem_left_models(),
-                _bayonet_models(),
-                _grip_models(),
-                _reflex_sights_models(),
-                _sights_models(),
-                _laspistol_receiver_models(),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, Vector3Box(.1, 0, 0), Vector3Box(0, .4, -.025)),
+                _grip_models(nil, -.1, Vector3Box(-.1, 0, 0), Vector3Box(0, -.1, -.1)),
+                _reflex_sights_models("rail", -.5, Vector3Box(0, 0, -.05), Vector3Box(0, -.2, 0)),
+                _laspistol_receiver_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.00001)),
                 {
-                    magazine_default =              {model = "",                                                                        type = "magazine"},
-                    magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine"},
+                    magazine_default =              {model = "",                                                                        type = "magazine",  angle = 0, move = Vector3Box(Vector3.zero()), remove = Vector3Box(Vector3(0, 0, -.2))},
+                    magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine",  angle = 0, move = Vector3Box(Vector3.zero()), remove = Vector3Box(Vector3(0, 0, -.2))},
                     -- magazine_02 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_02", type = "magazine"},
-                    barrel_default =                {model = "",                                                                        type = "barrel",    angle = 0, move = Vector3Box(0, 0, 0)},
-                    barrel_01 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
-                    barrel_02 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
-                    barrel_03 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
-                    barrel_04 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
-                    barrel_05 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
-                    barrel_06 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel",    angle = 0, move = Vector3Box(.1, -3, 0)},
-                    muzzle_default =                {model = "",                                                                        type = "muzzle",    angle = 0, move = Vector3Box(0, 0, 0)},
-                    muzzle_01 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, -3, 0)},
-                    muzzle_02 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, -3, 0)},
-                    muzzle_03 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, -3, 0)},
-                    muzzle_04 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, -3, 0)},
-                    rail_default =                  {model = "",                                                                        type = "rail"},
-                    rail_01 =                       {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01",         type = "rail"},
-                    lasgun_pistol_stock_default =   {model = "",                                                                        type = "stock",     angle = 0, move = Vector3Box(0, 0, 0)},
-                    lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01",       type = "stock",     angle = 1, move = Vector3Box(-.2, -3, 0)},
-                    lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02",       type = "stock",     angle = 1, move = Vector3Box(-.2, -3, 0)},
-                    lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03",       type = "stock",     angle = 1, move = Vector3Box(-.2, -3, 0)},
-                    stock_2_default =               {model = "",                                                                        type = "stock_2",   parent = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(-.3, 0, 0)},
-                    autogun_rifle_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",       type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.4, -3, 0), remove = Vector3Box(-.3, 0, 0)},
-                    autogun_rifle_stock_04 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",       type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.4, -3, 0), remove = Vector3Box(-.3, 0, 0)},
-                    stock_05 =                      {model = "content/items/weapons/player/ranged/stocks/stock_05",                     type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.4, -3, 0), remove = Vector3Box(-.3, 0, 0)},
+                    barrel_default =                {model = "",                                                                        type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    barrel_01 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    barrel_02 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    barrel_03 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    barrel_04 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    barrel_05 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    barrel_06 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    muzzle_default =                {model = "",                                                                        type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    muzzle_01 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    -- muzzle_02 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    muzzle_03 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    muzzle_04 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
+                    rail_default =                  {model = "",                                                                        type = "rail",      angle = 0, move = Vector3Box(Vector3.zero()), remove = Vector3Box(Vector3(0, 0, .2))},
+                    rail_01 =                       {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01",         type = "rail",      angle = 0, move = Vector3Box(Vector3.zero()), remove = Vector3Box(Vector3(0, 0, .2))},
+                    lasgun_pistol_stock_default =   {model = "",                                                                        type = "stock",     angle = 1, move = Vector3Box(-.1, 0, 0), remove = Vector3Box(0, -.2, 0)},
+                    lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01",       type = "stock",     angle = 1, move = Vector3Box(-.1, 0, 0), remove = Vector3Box(0, -.2, 0)},
+                    lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02",       type = "stock",     angle = 1, move = Vector3Box(-.1, 0, 0), remove = Vector3Box(0, -.2, 0)},
+                    lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03",       type = "stock",     angle = 1, move = Vector3Box(-.1, 0, 0), remove = Vector3Box(0, -.2, 0)},
+                    stock_2_default =               {model = "",                                                                        type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.2, 0, 0), remove = Vector3Box(0, -.2, .035)},
+                    autogun_rifle_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",       type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.2, 0, 0), remove = Vector3Box(0, -.2, .035)},
+                    autogun_rifle_stock_04 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",       type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.2, 0, 0), remove = Vector3Box(0, -.2, .035)},
+                    stock_05 =                      {model = "content/items/weapons/player/ranged/stocks/stock_05",                     type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.2, 0, 0), remove = Vector3Box(0, -.2, .035)},
                 }
             ),
             autogun_p1_m1 = table.combine(
@@ -4679,8 +4668,8 @@ end
                     chain_sword_body_01 = {model = "content/items/weapons/player/melee/full/chain_sword_full_01", type = "body"},
                     chain_sword_body_02 = {model = "content/items/weapons/player/melee/full/chain_sword_full_02", type = "body"},
                     chain_sword_body_03 = {model = "content/items/weapons/player/melee/full/chain_sword_full_03", type = "body"},
-                    chain_sword_body_04 = {model = "content/items/weapons/player/melee/full/chain_sword_full_04", type = "body"},
-                    chain_sword_body_05 = {model = "content/items/weapons/player/melee/full/chain_sword_full_05", type = "body"},
+                    -- chain_sword_body_04 = {model = "content/items/weapons/player/melee/full/chain_sword_full_04", type = "body"}, --buggy
+                    -- chain_sword_body_05 = {model = "content/items/weapons/player/melee/full/chain_sword_full_05", type = "body"}, --buggy
                     chain_sword_body_06 = {model = "content/items/weapons/player/melee/full/chain_sword_full_06", type = "body"},
                     chain_sword_chain_default = {model = "", type = "chain"},
                     chain_sword_chain_01 = {model = "content/items/weapons/player/melee/chains/chain_sword_chain_01", type = "chain"},

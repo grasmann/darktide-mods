@@ -54,7 +54,7 @@ mod.has_flashlight_attachment = function(self)
 end
 
 mod._has_flashlight_attachment = function(self, item)
-	if item.__master_item and item.__master_item.attachments then
+	if item and item.__master_item and item.__master_item.attachments then
 		local flashlight = mod:_recursive_find_attachment(item.__master_item.attachments, "flashlight")
 		return flashlight and flashlight.item ~= ""
 	end

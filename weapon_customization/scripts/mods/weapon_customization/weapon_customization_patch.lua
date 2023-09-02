@@ -100,6 +100,25 @@ mod._recursive_set_attachment = function(self, attachments, attachment_name, att
     end
 end
 
+mod._recursive_remove_attachment = function(self, attachments, attachment_type)
+    local val = nil
+    if attachments then
+        for attachment_name, attachment_data in pairs(attachments) do
+            if attachment_name == attachment_type then
+                -- attachment_data = nil
+                attachments[attachment_name] = nil
+                val = true
+            else
+                if attachment_data.children then
+                    val = self:_recursive_remove_attachment(attachment_data.children, attachment_type)
+                end
+            end
+            if val then break end
+        end
+    end
+    return val
+end
+
 mod._recursive_find_attachment = function(self, attachments, attachment_type)
     local val = nil
     if attachments then
@@ -109,6 +128,42 @@ mod._recursive_find_attachment = function(self, attachments, attachment_type)
             else
                 if attachment_data.children then
                     val = self:_recursive_find_attachment(attachment_data.children, attachment_type)
+                end
+            end
+            if val then break end
+        end
+    end
+    return val
+end
+
+mod._recursive_find_attachment_parent = function(self, attachments, attachment_type)
+    local val = nil
+    local parent = nil
+    if attachments then
+        for attachment_name, attachment_data in pairs(attachments) do
+            if attachment_name == attachment_type then
+                val = true
+            else
+                if attachment_data.children then
+                    val, parent = self:_recursive_find_attachment_parent(attachment_data.children, attachment_type)
+                    if val and not parent then parent = attachment_name end
+                end
+            end
+            if val then break end
+        end
+    end
+    return val, parent
+end
+
+mod._recursive_get_attachment_name = function(self, attachments, attachment_type)
+    local val = nil
+    if attachments then
+        for attachment_name, attachment_data in pairs(attachments) do
+            if attachment_name == attachment_type then
+                val = attachment_name
+            else
+                if attachment_data.children then
+                    val = self:_recursive_get_attachment_name(attachment_data.children, attachment_type)
                 end
             end
             if val then break end

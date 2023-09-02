@@ -13,14 +13,16 @@ mod._add_custom_attachments = function(self, item, attachments)
             local attachment_setting = self:get_gear_setting(gear_id, attachment_slot)
             if table.contains(self[attachment_table], attachment_setting) then
                 -- Get attachment data
-                local attachment_date = self.attachment_models[item_name][attachment_setting]
-                if attachment_date and not self:_recursive_find_attachment(attachments, attachment_slot) then
+                local attachment_data = self.attachment_models[item_name][attachment_setting]
+                if attachment_data and attachment_data.parent then
                     -- Set attachment parent
                     local parent = attachments
-                    if attachment_date.parent then
-                        local parent_slot = self:_recursive_find_attachment(attachments, attachment_date.parent)
-                        parent = parent_slot and parent_slot.children or parent
+                    local has_original_parent, original_parent = self:_recursive_find_attachment_parent(attachments, attachment_slot)
+                    if has_original_parent and attachment_data.parent ~= original_parent then
+                        self:_recursive_remove_attachment(attachments, attachment_slot)
                     end
+                    local parent_slot = self:_recursive_find_attachment(attachments, attachment_data.parent)
+                    parent = parent_slot and parent_slot.children or parent
                     -- Attach custom slot
                     parent[attachment_slot] = {
                         children = {},
@@ -44,21 +46,19 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
         local item_name = mod:item_name_from_content_string(item_data.name)
         local attachments = item_data.attachments
-        if item_unit and attachments then
-            local gear_id = mod:get_gear_id(item_data)
-            if gear_id then
-                mod:setup_item_definitions()
-                -- Bulwark
-                if mod:get_gear_setting(gear_id, "left") == "bulwark_shield_01" then
-                    attach_settings.item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
-                end
-
-                -- Add flashlight slot
-                mod:_add_custom_attachments(item_data, attachments)
-                
-                -- Overwrite attachments
-                mod:_overwrite_attachments(item_data, attachments)
+        local gear_id = mod:get_gear_id(item_data)
+        if item_unit and attachments and gear_id then
+            mod:setup_item_definitions()
+            -- Bulwark
+            if mod:get_gear_setting(gear_id, "left") == "bulwark_shield_01" then
+                attach_settings.item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
             end
+
+            -- Add flashlight slot
+            mod:_add_custom_attachments(item_data, attachments)
+            
+            -- Overwrite attachments
+            mod:_overwrite_attachments(item_data, attachments)
         end
 
         local attachment_slot_info = {}
@@ -92,6 +92,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 local attachment_slot_data = attachments[name]
                 attachment_units, attachment_units_bind_poses = instance._attach_hierarchy(attachment_slot_data, override_lookup, attach_settings, item_unit, attachment_units, attachment_units_bind_poses, optional_mission_template, attachment_slot_info)
             end
+        end
+
+        if gear_id then
+            mod.attachment_slot_infos = mod.attachment_slot_infos or {}
+            mod.attachment_slot_infos[gear_id] = {}
+            mod.attachment_slot_infos[gear_id] = attachment_slot_info
         end
 
         -- ############################################################################################################
@@ -134,7 +140,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 -- Fixes
-                if not anchor and mod.anchors[item_name] and mod.anchors[item_name].fixes then
+                if mod.anchors[item_name] and mod.anchors[item_name].fixes then
                     local fixes = mod.anchors[item_name].fixes
                     for _, fix_data in pairs(fixes) do
                         -- Dependencies
@@ -176,11 +182,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     end
                 end
 
-                if anchor then
+                if anchor and anchor.position and anchor.rotation and anchor.scale then
                     local attachment_name = attachment_slot_info.unit_to_attachment_name[unit]
                     local attachment_data = attachment_name and mod.attachment_models[item_name][attachment_name]
                     local parent_name = attachment_data and attachment_data.parent
-                    local parent = attachment_slot_info.unit_to_attachment_slot[parent_name] or item_unit
+                    local parent = attachment_slot_info.attachment_slot_to_unit[parent_name] or item_unit
+                    local parent_slot = attachment_slot_info.unit_to_attachment_slot[parent]
 
                     if not anchor.offset then
                         World.unlink_unit(attach_settings.world, unit)
@@ -190,13 +197,13 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     local position = Unit.local_position(unit, 1)
 
                     if anchor.offset then
-                        position = position + Vector3Box.unbox(anchor.position)
+                        position = position + anchor.position and Vector3Box.unbox(anchor.position) or Vector3.zero()
                     else
-                        position = Vector3Box.unbox(anchor.position)
+                        position = anchor.position and Vector3Box.unbox(anchor.position) or Vector3.zero()
                     end
 
-                    local rotation_euler = Vector3Box.unbox(anchor.rotation)
-                    local scale = Vector3Box.unbox(anchor.scale)
+                    local rotation_euler = anchor.rotation and Vector3Box.unbox(anchor.rotation) or Vector3.zero()
+                    local scale = anchor.scale and Vector3Box.unbox(anchor.scale) or Vector3.zero()
                     local rotation = Quaternion.from_euler_angles_xyz(rotation_euler[1], rotation_euler[2], rotation_euler[3])
 
                     Unit.set_local_position(unit, 1, position)
