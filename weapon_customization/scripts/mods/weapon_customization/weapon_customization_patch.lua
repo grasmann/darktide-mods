@@ -68,13 +68,27 @@ end
 
 mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
-    if mod.weapon_changed then
+    if mod.weapon_changed and not mod.cosmetics_view then
+
         self:_spawn_profile(self._presentation_profile)
-        local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
-        if package_synchronizer_client then
-            package_synchronizer_client:reevaluate_all_profiles_packages()
-        end
-        mod:redo_weapon_attachments(mod.weapon_changed)
+
+        -- local gear_id = mod:get_gear_id(mod.weapon_changed)
+		-- if gear_id then
+
+        --     self:_spawn_profile(self._presentation_profile)
+
+        --     -- local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
+        --     -- if package_synchronizer_client then
+        --     --     package_synchronizer_client:reevaluate_all_profiles_packages()
+        --     -- end
+        --     -- mod:redo_weapon_attachments(gear_id)
+
+        --     -- Managers.ui:item_icon_updated(mod.weapon_changed)
+        --     -- Managers.event:trigger("event_item_icon_updated", mod.weapon_changed)
+        --     -- Managers.event:trigger("event_replace_list_item", mod.weapon_changed)
+
+        -- end
+
         mod.weapon_changed = nil
     end
     return pass_input, pass_draw
@@ -295,7 +309,7 @@ mod._overwrite_attachments = function(self, item_data, attachments)
     local gear_id = mod:get_gear_id(item_data)
     local item_name = mod:item_name_from_content_string(item_data.name)
     for _, attachment_slot in pairs(mod.attachment_slots) do
-        local attachment = mod:get_gear_setting(gear_id, attachment_slot)
+        local attachment = mod:get_gear_setting(gear_id, attachment_slot, item_data)
         
         -- Customize
         if attachment and mod.attachment_models[item_name][attachment] then
@@ -335,7 +349,7 @@ mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item,
         if gear_id then
             mod:setup_item_definitions()
              -- Bulwark
-            if mod:get_gear_setting(gear_id, "left") == "bulwark_shield_01" then
+            if mod:get_gear_setting(gear_id, "left", item) == "bulwark_shield_01" then
                 self._item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
             end
 
@@ -360,7 +374,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
             if gear_id then
                 mod:setup_item_definitions()
                 -- Bulwark
-                if mod:get_gear_setting(gear_id, "left") == "bulwark_shield_01" then
+                if mod:get_gear_setting(gear_id, "left", instance.processing_item) == "bulwark_shield_01" then
                     items_dictionary = mod:persistent_table("weapon_customization").bulwark_item_definitions
                 end
 

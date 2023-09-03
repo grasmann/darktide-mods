@@ -54,7 +54,7 @@ end
             }
         end
         local _flashlight_models = function(parent, angle, move, remove)
-            local angle = angle or -2.5
+            local angle = angle or 0
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
@@ -180,9 +180,9 @@ end
             }
         end
         local _grip_models = function(parent, angle, move, remove)
-            local angle = angle or -2.5
+            local angle = angle or 0
             local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, -.3, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
             return {
                 grip_default =  {model = "",                                                                            type = "grip", parent = parent, angle = angle, move = move, remove = remove},
                 grip_01 =       {model = "content/items/weapons/player/ranged/grips/grip_01",                           type = "grip", parent = parent, angle = angle, move = move, remove = remove},
@@ -225,9 +225,9 @@ end
             return bayonets
         end
         local _bayonet_models = function(parent, angle, move, remove, blades)
-            local angle = angle or -.5
-            local move = move or Vector3Box(0, -2, 0)
-            local remove = remove or Vector3Box(0, .2, 0)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
             local bayonets = {
                 autogun_bayonet_default =   {model = "",                                                        type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 autogun_bayonet_01 =        {model = "content/items/weapons/player/ranged/bayonets/bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -249,9 +249,9 @@ end
             }
         end
         local _reflex_sights_models = function(parent, angle, move, remove)
-            local angle = angle or -.5
-            local move = move or Vector3Box(0, -4, -.2)
-            local remove = remove or Vector3Box(0, -.2, 0)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
             return {
                 sight_default =     {model = "",                                                            type = "sight", parent = parent, angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_01"}},
                 reflex_sight_01 =   {model = "content/items/weapons/player/ranged/sights/reflex_sight_01",  type = "sight", parent = parent, angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_01"}},
@@ -298,9 +298,10 @@ end
                 {id = "lasgun_stock_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
             }
         end
-        local _stock_models = function(move, remove)
+        local _stock_models = function(parent, angle, move, remove)
+            local angle = angle or 0
             local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(-.3, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
             return {
                 stock_default =             {model = "",                                                                            type = "stock", angle = 0,  move = move, remove = remove},
                 no_stock =                  {model = "",                                                                            type = "stock", angle = .5, move = move, remove = remove},

@@ -33,7 +33,7 @@ mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func,
 end)
 
 mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)
-    if mod.cosmetics_view_open then
+    if mod.cosmetics_view then
         return
     end
 	for fixed_frame, items in pairs(self._pending_unloads) do

@@ -25,393 +25,44 @@ mod.move_duration_in = 1
 mod.reset_wait_time = 5
 mod.weapon_changed = nil
 mod.sound_duration = .5
-
 mod.weapon_part_animation_entries = {}
-
--- mod.weapon_part_animation_end = nil
 mod.weapon_part_animation_time = .5
--- mod.weapon_part_animation = nil
--- mod.weapon_part_animation_type = nil
-
-mod.get_changed_weapon_settings = function(self, InventoryWeaponCosmeticsView)
-	local gear_id = self:get_gear_id(InventoryWeaponCosmeticsView._selected_item)
-	if gear_id then
-		local attachment_slots = self:get_item_attachment_slots(InventoryWeaponCosmeticsView._selected_item)
-		for _, attachment_slot in pairs(attachment_slots) do
-			mod.changed_weapon_settings[attachment_slot] = mod:get(tostring(gear_id).."_"..attachment_slot)
-		end
-	end
-end
+mod.cosmetics_view = nil
 
 for _, attachment_slot in pairs(mod.attachment_slots) do
 	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
 	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
 end
 
-mod.update_equip_button = function(self, InventoryWeaponCosmeticsView)
-	if InventoryWeaponCosmeticsView._selected_tab_index == 3 then
-		local button = InventoryWeaponCosmeticsView._widgets_by_name.equip_button
-		local button_content = button.content
-		local disabled = table.size(self.original_weapon_settings) == 0
-		button_content.hotspot.disabled = disabled
-		button_content.text = Utf8.upper(disabled and Localize("loc_weapon_inventory_equipped_button") or Localize("loc_weapon_inventory_equip_button"))
-	end
-end
+local vector3_box = Vector3Box
+local vector3_unbox = vector3_box.unbox
+local vector3_zero = Vector3.zero
+local vector3_lerp = Vector3.lerp
+local unit_alive = Unit.alive
+local unit_set_local_position = Unit.set_local_position
+local unit_set_local_rotation = Unit.set_local_rotation
+local unit_local_position = Unit.local_position
+local math_round_with_precision = math.round_with_precision
+local math_easeInCubic = math.easeInCubic
+local math_easeOutCubic = math.easeOutCubic
+local math_min = math.min
+local math_max = math.max
+local table_size = table.size
+local table_find = table.find
+local table_contains = table.contains
+local table_clone = table.clone
 
-mod.update_reset_button = function(self, InventoryWeaponCosmeticsView)
-	local button = InventoryWeaponCosmeticsView._widgets_by_name.reset_button
-	local button_content = button.content
-	local disabled = table.size(self.changed_weapon_settings) == 0
-	button_content.hotspot.disabled = disabled
-	button_content.text = Utf8.upper(disabled and self:localize("loc_weapon_inventory_no_reset_button") or self:localize("loc_weapon_inventory_reset_button"))
-end
-
-mod.check_unsaved_changes = function(self, InventoryWeaponCosmeticsView)
-	if table.size(mod.original_weapon_settings) > 0 then
-		local gear_id = mod:get_gear_id(InventoryWeaponCosmeticsView._selected_item)
-		if gear_id then
-
-			mod:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
-
-			for attachment_slot, value in pairs(mod.original_weapon_settings) do
-				if string.find(value, "default") then
-					mod:set(tostring(gear_id).."_"..attachment_slot, nil)
-				else
-					mod:set(tostring(gear_id).."_"..attachment_slot, value)
-				end
-			end
-
-			InventoryWeaponCosmeticsView._presentation_item = MasterItems.create_preview_item_instance(InventoryWeaponCosmeticsView._selected_item)
-
-			mod.flashlight_attached[gear_id] = nil
-
-			if InventoryWeaponCosmeticsView._previewed_element then
-				InventoryWeaponCosmeticsView:_preview_element(InventoryWeaponCosmeticsView._previewed_element)
-			else
-				InventoryWeaponCosmeticsView:_preview_item(InventoryWeaponCosmeticsView._presentation_item)
-			end
-
-			local old_packages, new_packages = mod:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
-			if new_packages and #new_packages > 0 then
-				local weapon_loader = InventoryWeaponCosmeticsView._weapon_preview._ui_weapon_spawner
-				local reference_name = weapon_loader._reference_name .. "_weapon_item_loader_" .. tostring(weapon_loader._weapon_loader_index)
-				for _, new_package in pairs(new_packages) do
-					Managers.package:load(new_package, reference_name, nil, true)
-				end
-			end
-
-			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
-			if package_synchronizer_client then
-				package_synchronizer_client:reevaluate_all_profiles_packages()
-			end
-			mod:redo_weapon_attachments(gear_id)
-
-			mod.weapon_changed = nil
-			mod.original_weapon_settings = {}
-		end
-		
-		mod:update_equip_button(InventoryWeaponCosmeticsView)
-	end
-end
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", function(func, self, ...)
-	func(self, ...)
-	local widgets_by_name = self._widgets_by_name
-	local reset_button = widgets_by_name.reset_button
-	reset_button.content.hotspot.pressed_callback = callback(mod, "cb_on_reset_pressed")
-	local randomize_button = widgets_by_name.randomize_button
-	randomize_button.content.hotspot.pressed_callback = callback(mod, "cb_on_randomize_pressed")
-	local demo_button = widgets_by_name.demo_button
-	demo_button.content.hotspot.pressed_callback = callback(mod, "cb_on_demo_pressed")
-end)
-
-mod.cb_on_demo_pressed = function(self)
-	self.demo = not self.demo
-	self.demo_time = .3
-	self.demo_timer = 0
-	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
-	InventoryWeaponCosmeticsView:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
-	-- self:start_weapon_move(Vector3Box(Vector3(-.15, -2.5, 0)), true)
-	self:start_weapon_move(Vector3Box(Vector3(-.15, -1, 0)), true)
-end
-
-mod.cb_on_randomize_pressed = function(self)
-	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
-	if InventoryWeaponCosmeticsView and InventoryWeaponCosmeticsView._selected_item then
-		local random_attachments = mod:randomize_weapon(InventoryWeaponCosmeticsView._selected_item)
-
-		local gear_id = mod:get_gear_id(InventoryWeaponCosmeticsView._selected_item)
-		if gear_id and random_attachments then
-			mod:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
-
-			for attachment_slot, value in pairs(random_attachments) do
-				if not mod.original_weapon_settings[attachment_slot] then
-					if not mod:get(tostring(gear_id).."_"..attachment_slot) then
-						mod.original_weapon_settings[attachment_slot] = "default"
-					else
-						mod.original_weapon_settings[attachment_slot] = mod:get(tostring(gear_id).."_"..attachment_slot)
-					end
-				end
-				self:set(tostring(gear_id).."_"..attachment_slot, value)
-			end
-
-			InventoryWeaponCosmeticsView._presentation_item = MasterItems.create_preview_item_instance(InventoryWeaponCosmeticsView._selected_item)
-
-			mod.flashlight_attached[gear_id] = nil
-
-			if InventoryWeaponCosmeticsView._previewed_element then
-				InventoryWeaponCosmeticsView:_preview_element(InventoryWeaponCosmeticsView._previewed_element)
-			else
-				InventoryWeaponCosmeticsView:_preview_item(InventoryWeaponCosmeticsView._presentation_item)
-			end
-
-			local old_packages, new_packages = mod:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
-			if new_packages and #new_packages > 0 then
-				local weapon_loader = InventoryWeaponCosmeticsView._weapon_preview._ui_weapon_spawner
-				local reference_name = weapon_loader._reference_name .. "_weapon_item_loader_" .. tostring(weapon_loader._weapon_loader_index)
-				for _, new_package in pairs(new_packages) do
-					Managers.package:load(new_package, reference_name, nil, true)
-				end
-			end
-
-			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
-			if package_synchronizer_client then
-				package_synchronizer_client:reevaluate_all_profiles_packages()
-			end
-			mod:redo_weapon_attachments(gear_id)
-
-			self:update_reset_button(InventoryWeaponCosmeticsView)
-		end
-	end
-end
-
-mod.cb_on_reset_pressed = function(self)
-	if table.size(self.changed_weapon_settings) > 0 then
-		local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
-		if InventoryWeaponCosmeticsView then
-			local gear_id = mod:get_gear_id(InventoryWeaponCosmeticsView._selected_item)
-			if gear_id then
-				mod:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
-
-				for attachment_slot, data in pairs(self.changed_weapon_settings) do
-					self:set(tostring(gear_id).."_"..attachment_slot, nil)
-				end
-
-				InventoryWeaponCosmeticsView._presentation_item = MasterItems.create_preview_item_instance(InventoryWeaponCosmeticsView._selected_item)
-
-				mod.flashlight_attached[gear_id] = nil
-
-				if InventoryWeaponCosmeticsView._previewed_element then
-					InventoryWeaponCosmeticsView:_preview_element(InventoryWeaponCosmeticsView._previewed_element)
-				else
-					InventoryWeaponCosmeticsView:_preview_item(InventoryWeaponCosmeticsView._presentation_item)
-				end
-
-				local old_packages, new_packages = mod:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
-				if new_packages and #new_packages > 0 then
-					local weapon_loader = InventoryWeaponCosmeticsView._weapon_preview._ui_weapon_spawner
-					local reference_name = weapon_loader._reference_name .. "_weapon_item_loader_" .. tostring(weapon_loader._weapon_loader_index)
-					for _, new_package in pairs(new_packages) do
-						Managers.package:load(new_package, reference_name, nil, true)
-					end
-				end
-
-				local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
-				if package_synchronizer_client then
-					package_synchronizer_client:reevaluate_all_profiles_packages()
-				end
-				mod:redo_weapon_attachments(gear_id)
-
-				Managers.ui:item_icon_updated(InventoryWeaponCosmeticsView._selected_item)
-				Managers.event:trigger("event_item_icon_updated", InventoryWeaponCosmeticsView._selected_item)
-				Managers.event:trigger("event_replace_list_item", InventoryWeaponCosmeticsView._selected_item)
-
-				self.changed_weapon_settings = {}
-				self:update_reset_button(InventoryWeaponCosmeticsView)
-			end
-		end
-	end
-end
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
-    func(self, dt, t, input_service, ...)
-    mod:update_custom_widgets(self, input_service)
-	mod:update_equip_button(self)
-	mod:update_reset_button(self)
-	if mod.demo then
-		local rotation_angle = (mod._last_rotation_angle or 0) + dt
-		self._weapon_preview._ui_weapon_spawner._rotation_angle = rotation_angle
-		self._weapon_preview._ui_weapon_spawner._default_rotation_angle = rotation_angle
-		mod._last_rotation_angle = self._weapon_preview._ui_weapon_spawner._default_rotation_angle
-		if mod.demo_timer < t then
-			mod:cb_on_randomize_pressed()
-			mod.demo_timer = t + mod.demo_time
-		end
-	end
-end)
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
-	func(self, ...)
-	if self._selected_tab_index == 3 then
-		mod.original_weapon_settings = {}
-		mod:update_equip_button(self)
-
-		local gear_id = mod:get_gear_id(self._selected_item)
-		if gear_id then
-			self._presentation_item = MasterItems.create_preview_item_instance(self._selected_item)
-
-			mod.flashlight_attached[gear_id] = nil
-
-			if self._previewed_element then
-				self:_preview_element(self._previewed_element)
-			else
-				self:_preview_item(self._presentation_item)
-			end
-
-			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
-			if package_synchronizer_client then
-				package_synchronizer_client:reevaluate_all_profiles_packages()
-			end
-			mod:redo_weapon_attachments(gear_id)
-
-			Managers.ui:item_icon_updated(self._selected_item)
-			Managers.event:trigger("event_item_icon_updated", self._selected_item)
-			Managers.event:trigger("event_replace_list_item", self._selected_item)
-
-			mod.weapon_changed = gear_id
-		end
-	end
-	mod:get_changed_weapon_settings(self)
-end)
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, self, content, ...)
-	local item_name = mod:item_name_from_content_string(self._selected_item.name)
-	if item_name and mod.attachment[item_name] then
-		content[3] = {
-			display_name = "loc_weapon_cosmetics_customization",
-			slot_name = "slot_weapon_skin",
-			item_type = "WEAPON_SKIN",
-			icon = "content/ui/materials/icons/system/settings/category_gameplay",
-			filter_on_weapon_template = true,
-			apply_on_preview = function (real_item, presentation_item)
-				self:_preview_item(presentation_item)
-			end
-		}
-	end
-	func(self, content, ...)
-	if item_name and mod.attachment[item_name] then
-		self._tab_menu_element._widgets_by_name.entry_0.content.size[1] = button_width
-		self._tab_menu_element._widgets_by_name.entry_1.content.size[1] = button_width
-		self._tab_menu_element._widgets_by_name.entry_2.content.size[1] = button_width
-	end
-end)
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, self, index, ...)
-	if index == 3 then
-        self:present_grid_layout({})
-        self._item_grid._widgets_by_name.grid_empty.visible = false
-        mod:hide_custom_widgets(self, false)
-    else
-		local t = Managers.time:time("main")
-		mod.reset_start = t
-		mod:check_unsaved_changes(self)
-        mod:hide_custom_widgets(self, true)
-    end
-    func(self, index, ...)
-end)
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_select_starting_item_by_slot_name", function(func, self, slot_name, optional_start_index, ...)
-	if self._selected_tab_index < 3 then
-		func(self, slot_name, optional_start_index, ...)
-	end
-end)
-
-mod.label_template = function(self, text, scenegraph_id)
-	local style = table.clone(UIFontSettings.grid_title)
-	style.offset = {0, 15, 1}
-    return UIWidget.create_definition({
-        {
-            value_id = "text",
-            style_id = "text",
-            pass_type = "text",
-            value = mod:localize(text),
-            style = style,
-        }
-    }, scenegraph_id)
-end
-
-mod.generate_label = function(self, InventoryWeaponCosmeticsView, scenegraph, attachment_slot, item)
-
-	local weapon_name = self:item_name_from_content_string(item.name)
-	local style = table.clone(UIFontSettings.grid_title)
-	style.offset = {0, 15, 1}
-	local text = "loc_weapon_cosmetics_customization_"..attachment_slot
-
-	if self.text_overwrite[weapon_name] then
-		text = self.text_overwrite[weapon_name][text] or text
-	end
-
-    local definition = UIWidget.create_definition({
-        {
-            value_id = "text",
-            style_id = "text",
-            pass_type = "text",
-            value = self:localize(text),
-            style = style,
-        }
-    }, scenegraph, nil)
-
-	local widget_name = attachment_slot.."_custom_text"
-	local widget = InventoryWeaponCosmeticsView:_create_widget(widget_name, definition)
-
-	InventoryWeaponCosmeticsView._widgets_by_name[widget_name] = widget
-    InventoryWeaponCosmeticsView._widgets[#InventoryWeaponCosmeticsView._widgets+1] = widget
-
-	return widget
-end
-
-mod._recursive_get_weapon_units = function(self, current_unit, weapon_units)
-	local children = Unit.get_child_units(current_unit)
-	if children then
-		for _, unit in pairs(children) do
-			weapon_units[#weapon_units+1] = unit
-			mod:_recursive_get_weapon_units(unit, weapon_units)
-		end
-	end
-end
-
-mod.validate_item_model = function(self, model)
-	mod:setup_item_definitions()
-	if model ~= "" then
-		local definition = mod:persistent_table("weapon_customization").item_definitions[model]
-		if definition then
-			if definition.workflow_state ~= "RELEASABLE" then
-				return false
-			end
-			if table.find(definition.feature_flags, "FEATURE_unreleased_premium_cosmetics") then
-				return false
-			end
-			-- if table.find(definition.feature_flags, "FEATURE_premium_store") and 
-			-- 		not table.find(definition.feature_flags, "FEATURE_item_retained") then
-			-- 	return false
-			-- end
-			-- if not table.find(definition.feature_flags, "FEATURE_item_retained") then
-			-- 	return false
-			-- end
-		end
-	end
-	return true
-end
+-- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###################################
+-- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├┤ │ │││││   │ ││ ││││└─┐ ###################################
+-- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ###################################
 
 mod.play_attachment_sound = function(self, item, attachment_slot, attachment)
-	local item_name = self:item_name_from_content_string(item.name)
-	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
+	local item_name = self.cosmetics_view._item_name
 	if mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] then
-		-- local data = mod.attachment[item_name][attachment_slot][attachment]
 		for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
 			if data.id == attachment and data.sounds then
 				for _, sound in pairs(data.sounds) do
-					InventoryWeaponCosmeticsView:_play_sound(sound)
+					self.cosmetics_view:_play_sound(sound)
 				end
 			end
 		end
@@ -419,64 +70,101 @@ mod.play_attachment_sound = function(self, item, attachment_slot, attachment)
 end
 
 mod.detach_attachment = function(self, item, attachment_slot, attachment, new_attachment)
-	local item_name = self:item_name_from_content_string(item.name)
-	if not attachment then
-		attachment = mod:get_actual_default_attachment(item, attachment_slot)
-	end
+	local item_name = self.cosmetics_view._item_name
 	if attachment then
-		-- self.weapon_part_animation = attachment_slot
-		-- self.weapon_part_animation_type = "detach"
-		-- self.weapon_part_animation_new_attachment = new_attachment
-		-- self.weapon_part_default_position = nil
 		self:do_weapon_part_animation(item, attachment_slot, "detach", new_attachment)
-		local movement = self.attachment_models[item_name][attachment] and self.attachment_models[item_name][attachment].remove or Vector3.zero(0, 0, 0)
-		if not mod:vector3_equal(movement, Vector3.zero()) then
+		local attachment_data = self.attachment_models[item_name][attachment]
+		local movement = attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
+		if not mod:vector3_equal(movement, vector3_zero()) then
 			self:play_attachment_sound(item, attachment_slot, attachment)
 		end
 	else
 		self:load_new_attachment(item, attachment_slot, new_attachment)
 		self:do_weapon_part_animation(item, attachment_slot, "attach", new_attachment)
-		-- self.weapon_part_animation = attachment_slot
-		-- self.weapon_part_animation_type = "attach"
-		-- self.weapon_part_animation_new_attachment = new_attachment
-		-- self.weapon_part_default_position = nil
+	end
+end
+
+mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_type, new_attachment)
+	-- Main animation
+	self.weapon_part_animation_entries[#self.weapon_part_animation_entries+1] = {
+		slot = attachment_slot,
+		type = attachment_type,
+		new = new_attachment,
+		old = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item),
+	}
+	-- Get modified attachment slot
+	local modified_attachment_slot = self:_recursive_find_attachment(item.attachments, attachment_slot)
+	if modified_attachment_slot and modified_attachment_slot.children then
+		-- Find attached children
+		local children = {}
+		self:_recursive_get_attachments(modified_attachment_slot.children, children)
+		if children and #children > 0 then
+			-- Iterate children
+			for _, child in pairs(children) do
+				-- local child_setting = self:get_gear_setting(gear_id, child.slot, item)
+				self.weapon_part_animation_entries[#self.weapon_part_animation_entries+1] = {
+					slot = child.slot,
+					type = attachment_type,
+					new = self:get_gear_setting(self.cosmetics_view._gear_id, child.slot),
+					old = self:get_gear_setting(self.cosmetics_view._gear_id, child.slot, item),
+				}
+			end
+		end
+		
+	end
+end
+
+mod.start_weapon_move = function(self, position, no_reset)
+	if position then
+		self.move_position = position
+		self.do_move = true
+		self.no_reset = no_reset
+	elseif self.link_unit_position then
+		self.move_position = vector3_box(vector3_zero())
+		self.do_move = true
+	end
+end
+
+mod.play_zoom_sound = function(self, t, sound)
+	if not self.sound_end or t >= self.sound_end then
+		self.sound_end = t + self.sound_duration
+		self.cosmetics_view:_play_sound(sound)
 	end
 end
 
 mod.load_new_attachment = function(self, item, attachment_slot, attachment)
-	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
-	local gear_id = self:get_gear_id(item)
-	if gear_id then
+	if self.cosmetics_view._gear_id and self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot) ~= attachment then
 
-		self:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
+		self:attachment_package_snapshot(self.cosmetics_view._presentation_item)
 
 		if not self.original_weapon_settings[attachment_slot] then
-			if not self:get(tostring(gear_id).."_"..attachment_slot) then
+			if not self:get(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot) then
 				self.original_weapon_settings[attachment_slot] = "default"
 			else
-				self.original_weapon_settings[attachment_slot] = self:get(tostring(gear_id).."_"..attachment_slot)
+				self.original_weapon_settings[attachment_slot] = self:get(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot)
 			end
 		end
 
 		if attachment and string.find(attachment, "default") then
-			self:set(tostring(gear_id).."_"..attachment_slot, nil)
+			self:set(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot, nil)
 		else
-			self:set(tostring(gear_id).."_"..attachment_slot, attachment)
+			self:set(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot, attachment)
+		end
+		-- self:set_gear_setting(self.cosmetics_view._gear_id, attachment)
+
+		self.cosmetics_view._presentation_item = MasterItems.create_preview_item_instance(self.cosmetics_view._selected_item)
+
+		self.flashlight_attached[self.cosmetics_view._gear_id] = nil
+
+		if self.cosmetics_view._previewed_element then
+			self.cosmetics_view:_preview_element(self.cosmetics_view._previewed_element)
+		else
+			self.cosmetics_view:_preview_item(self.cosmetics_view._presentation_item)
 		end
 
-		InventoryWeaponCosmeticsView._presentation_item = MasterItems.create_preview_item_instance(InventoryWeaponCosmeticsView._selected_item)
-
-		self.flashlight_attached[gear_id] = nil
-
-		if InventoryWeaponCosmeticsView._previewed_element then
-			InventoryWeaponCosmeticsView:_preview_element(InventoryWeaponCosmeticsView._previewed_element)
-		else
-			InventoryWeaponCosmeticsView:_preview_item(InventoryWeaponCosmeticsView._presentation_item)
-		end
-
-		local old_packages, new_packages = self:attachment_package_snapshot(InventoryWeaponCosmeticsView._presentation_item)
+		local old_packages, new_packages = self:attachment_package_snapshot(self.cosmetics_view._presentation_item)
 		if new_packages and #new_packages > 0 then
-			local weapon_loader = InventoryWeaponCosmeticsView._weapon_preview._ui_weapon_spawner
+			local weapon_loader = self.cosmetics_view._weapon_preview._ui_weapon_spawner
 			local reference_name = weapon_loader._reference_name .. "_weapon_item_loader_" .. tostring(weapon_loader._weapon_loader_index)
 			for _, new_package in pairs(new_packages) do
 				Managers.package:load(new_package, reference_name, nil, true)
@@ -486,299 +174,9 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment)
 	end
 end
 
-mod.generate_dropdown = function(self, InventoryWeaponCosmeticsView, scenegraph, attachment_slot, item)
-
-    local gear_id = mod:get_gear_id(InventoryWeaponCosmeticsView._presentation_item)
-    local weapon_name = mod:item_name_from_content_string(InventoryWeaponCosmeticsView._presentation_item.name)
-    local options = {}
-    if mod.attachment[weapon_name] and mod.attachment[weapon_name][attachment_slot] then
-        for _, data in pairs(mod.attachment[weapon_name][attachment_slot]) do
-			local model = mod.attachment_models[weapon_name][data.id] and mod.attachment_models[weapon_name][data.id].model
-			if model and mod:validate_item_model(model) then
-            	options[#options+1] = mod:dropdown_option(data.id, data.name, data.sounds)
-			end
-        end
-    end
-
-    local max_visible_options = 5
-    local num_options = #options
-    local num_visible_options = math.min(num_options, max_visible_options)
-
-    local size = {grid_size[1], dropdown_height}
-    local template = DropdownPassTemplates.settings_dropdown(size[1], size[2], size[1], num_visible_options, true)
-	template[7].pass_type = "texture"
-	template[7].value = "content/ui/materials/backgrounds/terminal_basic"
-	template[7].style.horizontal_alignment = "center"
-    local definition = UIWidget.create_definition(template, scenegraph, nil, size)
-    local widget_name = attachment_slot.."_custom"
-    local widget = InventoryWeaponCosmeticsView:_create_widget(widget_name, definition)
-
-    InventoryWeaponCosmeticsView._widgets_by_name[widget_name] = widget
-    InventoryWeaponCosmeticsView._widgets[#InventoryWeaponCosmeticsView._widgets+1] = widget
-
-    local content = widget.content
-    content.entry = {
-        options = options,
-        widget_type = "dropdown",
-        on_activated = function(new_value, entry)
-
-			local attachment = self:get_gear_setting(gear_id, attachment_slot)
-			self:detach_attachment(InventoryWeaponCosmeticsView._presentation_item, attachment_slot, attachment, new_value)
-
-			local item_name = self:item_name_from_content_string(InventoryWeaponCosmeticsView._presentation_item.name)
-			local weapon_attachments = mod.attachment_models[item_name]
-			local attachment_data = weapon_attachments[new_value]
-			local new_angle = attachment_data.angle or 0
-
-			mod.do_rotation = true
-			mod.new_rotation = new_angle
-
-			if attachment_data.move then
-				self:start_weapon_move(attachment_data.move)
-			else
-				self:start_weapon_move()
-			end
-
-        end,
-        get_function = function()
-            return mod:get_gear_setting(gear_id, attachment_slot)
-        end,
-    }
-    local options_by_id = {}
-    for index, option in pairs(options) do
-        options_by_id[option.id] = option
-    end
-    content.options_by_id = options_by_id
-	content.options = options
-    content.num_visible_options = num_visible_options
-
-    content.hotspot.pressed_callback = function ()
-		if not mod.dropdown_open then
-			local selected_widget = nil
-			local selected = true
-			content.exclusive_focus = selected
-			local hotspot = content.hotspot or content.button_hotspot
-			if hotspot then
-				hotspot.is_selected = selected
-			end
-			mod.dropdown_open = true
-		end
-    end
-
-    content.area_length = size[2] * num_visible_options
-    local scroll_length = math.max(size[2] * num_options - content.area_length, 0)
-    content.scroll_length = scroll_length
-    local spacing = 0
-    local scroll_amount = scroll_length > 0 and (size[2] + spacing) / scroll_length or 0
-    content.scroll_amount = scroll_amount
-
-    return widget
-end
-
-mod.get_actual_default_attachment = function(self, item, attachment_slot)
-	local attachment = self:_recursive_find_attachment(item.attachments, attachment_slot)
-	if attachment then
-		local item_name = self:item_name_from_content_string(item.name)
-		for attachment_name, attachment_data in pairs(self.attachment_models[item_name]) do
-			if attachment_data.model == attachment.item and attachment_data.model ~= "" then
-				return attachment_name
-			end
-		end
-	end
-end
-
-mod.vector3_equal = function(self, v1, v2)
-	return v1[1] == v2[1] and v1[2] == v2[2] and v1[3] == v2[3]
-end
-
-mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_type, new_attachment)
-	self.weapon_part_animation_entries[#self.weapon_part_animation_entries+1] = {
-		slot = attachment_slot,
-		type = attachment_type,
-		new = new_attachment,
-	}
-	-- Get children
-	local modified_attachment_slot = self:_recursive_find_attachment(item.attachments, attachment_slot)
-	if modified_attachment_slot and modified_attachment_slot.children then
-		local gear_id = self:get_gear_id(item)
-		-- mod:echo(attachment_slot)
-		local children = {}
-		self:_recursive_get_attachments(modified_attachment_slot.children, children)
-		if children and #children > 0 then
-			local gear_id = self:get_gear_id(item)
-			for _, child in pairs(children) do
-				-- mod:echo(child.slot)
-				self.weapon_part_animation_entries[#self.weapon_part_animation_entries+1] = {
-					slot = child.slot,
-					type = attachment_type,
-					new = self:get_gear_setting(gear_id, child.slot),
-				}
-			end
-		end
-		
-	end
-end
-
-mod.update_weapon_part_animations = function(self, weapon_spawner, t)
-	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
-	if InventoryWeaponCosmeticsView then
-		local weapon_spawn_data = weapon_spawner._weapon_spawn_data
-		if weapon_spawn_data and not weapon_spawner._reference_name ~= "WeaponIconUI" and InventoryWeaponCosmeticsView._selected_tab_index == 3 then
-			local gear_id = self:get_gear_id(weapon_spawn_data.item)
-			local item_name = self:item_name_from_content_string(weapon_spawn_data.item.name)
-			local index = 1
-			for _, entry in pairs(mod.weapon_part_animation_entries) do
-
-				-- local time = self.weapon_part_animation_time + (self.weapon_part_animation_time * (index / 10))
-				-- if entry.type == "detach" then time = self.weapon_part_animation_time end
-
-				local attachment = self:get_gear_setting(gear_id, entry.slot)
-				if not attachment then
-					attachment = mod:get_actual_default_attachment(weapon_spawn_data.item, entry.slot)
-				end
-				local attachment_slot_info = self.attachment_slot_infos[gear_id]
-				local units = {}
-
-				local unit = attachment_slot_info.attachment_slot_to_unit[entry.slot]
-
-				if unit and Unit.alive(unit) then
-
-					local movement = self.attachment_models[item_name][attachment] and self.attachment_models[item_name][attachment].remove or Vector3.zero()
-
-					if not entry.end_time then
-						if mod:vector3_equal(movement, Vector3.zero()) then
-							entry.end_time = t
-						else
-							-- local time = self.weapon_part_animation_time + (self.weapon_part_animation_time * (index / 10))
-							-- if entry.type == "detach" then time = self.weapon_part_animation_time end
-							if entry.type == "detach" then
-								entry.end_time = t + self.weapon_part_animation_time
-							else
-								entry.end_time = t + self.weapon_part_animation_time + (self.weapon_part_animation_time * (index / 10))
-							end
-						end
-					end
-
-					if not entry.default_position then
-						entry.default_position = Vector3Box(Unit.local_position(unit, 1))
-					end
-
-					if entry.end_time and entry.end_time >= t then
-						if entry.type == "detach" then
-							local progress = (entry.end_time - t) / self.weapon_part_animation_time
-							local anim_progress = math.easeOutCubic(1 - progress)
-							local lerp_position = Vector3.lerp(Vector3Box.unbox(entry.default_position), Vector3Box.unbox(movement), anim_progress)
-							Unit.set_local_position(unit, 1, lerp_position)
-						else
-							local progress = (entry.end_time - t) / (self.weapon_part_animation_time + (self.weapon_part_animation_time * (index / 10)))
-							local anim_progress = math.easeInCubic(1 - progress)
-							local lerp_position = Vector3.lerp(Vector3Box.unbox(movement), Vector3Box.unbox(entry.default_position), anim_progress)
-							Unit.set_local_position(unit, 1, lerp_position)
-						end
-					elseif entry.end_time and entry.end_time < t then
-						if entry.type == "detach" then
-							Unit.set_local_position(unit, 1, Vector3Box.unbox(movement))
-							self:load_new_attachment(weapon_spawn_data.item, entry.slot, entry.new)
-							if mod:vector3_equal(movement, Vector3.zero()) then
-								entry.end_time = t
-							else
-								entry.end_time = t + self.weapon_part_animation_time + (self.weapon_part_animation_time * (index / 10))
-							end
-							entry.type = "attach"
-							entry.default_position = nil
-						else
-							self:play_attachment_sound(weapon_spawn_data.item, entry.slot, entry.new)
-							local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
-							Unit.set_local_position(unit, 1, Vector3Box.unbox(entry.default_position))
-							-- entry.end_time = nil
-							-- entry.slot = nil
-							-- entry.type = nil
-							-- entry.default_position = nil
-							-- entry.new = nil
-							entry.finished = true
-						end
-					-- else
-					-- 	entry.end_time = nil
-					-- 	entry.default_position = nil
-					end
-				-- else
-				-- 	entry.end_time = nil
-				-- 	entry.default_position = nil
-
-					index = index + 1
-				end
-			end
-			for index, entry in pairs(mod.weapon_part_animation_entries) do
-				if entry.finished then
-					mod.weapon_part_animation_entries[index] = nil
-				end
-			end
-		end
-
-		-- local attachment = self:get_gear_setting(gear_id, self.weapon_part_animation)
-		-- if not attachment then
-		-- 	attachment = mod:get_actual_default_attachment(weapon_spawn_data.item, self.weapon_part_animation)
-		-- end
-		-- local attachment_slot_info = self.attachment_slot_infos[gear_id]
-		-- local unit = attachment_slot_info.attachment_slot_to_unit[self.weapon_part_animation]
-		-- if unit and Unit.alive(unit) then
-		-- 	local movement = self.attachment_models[item_name][attachment] and self.attachment_models[item_name][attachment].remove or Vector3.zero()
-		-- 	if not self.weapon_part_animation_end then
-		-- 		if mod:vector3_equal(movement, Vector3.zero()) then
-		-- 			self.weapon_part_animation_end = t
-		-- 		else
-		-- 			self.weapon_part_animation_end = t + self.weapon_part_animation_time
-		-- 		end
-		-- 	end
-		-- 	if not self.weapon_part_default_position then
-		-- 		self.weapon_part_default_position = Vector3Box(Unit.local_position(unit, 1))
-		-- 	end
-		-- 	if self.weapon_part_animation_end and self.weapon_part_animation_end >= t then
-		-- 		if self.weapon_part_animation_type == "detach" then
-		-- 			local progress = (self.weapon_part_animation_end - t) / self.weapon_part_animation_time
-		-- 			local anim_progress = math.easeOutCubic(1 - progress)
-		-- 			local lerp_position = Vector3.lerp(Vector3Box.unbox(self.weapon_part_default_position), Vector3Box.unbox(movement), anim_progress)
-		-- 			Unit.set_local_position(unit, 1, lerp_position)
-		-- 		else
-		-- 			local progress = (self.weapon_part_animation_end - t) / self.weapon_part_animation_time
-		-- 			local anim_progress = math.easeInCubic(1 - progress)
-		-- 			local lerp_position = Vector3.lerp(Vector3Box.unbox(movement), Vector3Box.unbox(self.weapon_part_default_position), anim_progress)
-		-- 			Unit.set_local_position(unit, 1, lerp_position)
-		-- 		end
-		-- 	elseif self.weapon_part_animation_end and self.weapon_part_animation_end < t then
-		-- 		if self.weapon_part_animation_type == "detach" then
-		-- 			Unit.set_local_position(unit, 1, Vector3Box.unbox(movement))
-		-- 			self:load_new_attachment(weapon_spawn_data.item, self.weapon_part_animation, self.weapon_part_animation_new_attachment)
-		-- 			if mod:vector3_equal(movement, Vector3.zero()) then
-		-- 				self.weapon_part_animation_end = t
-		-- 			else
-		-- 				self.weapon_part_animation_end = t + self.weapon_part_animation_time
-		-- 			end
-		-- 			self.weapon_part_animation_type = "attach"
-		-- 			self.weapon_part_default_position = nil
-		-- 		else
-		-- 			self:play_attachment_sound(weapon_spawn_data.item, self.weapon_part_animation, self.weapon_part_animation_new_attachment)
-		-- 			local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
-		-- 			Unit.set_local_position(unit, 1, Vector3Box.unbox(self.weapon_part_default_position))
-		-- 			self.weapon_part_animation_end = nil
-		-- 			self.weapon_part_animation = nil
-		-- 			self.weapon_part_animation_type = nil
-		-- 			self.weapon_part_default_position = nil
-		-- 			self.weapon_part_animation_new_attachment = nil
-		-- 		end
-		-- 	else
-		-- 		self.weapon_part_animation_end = nil
-		-- 		self.weapon_part_default_position = nil
-		-- 	end
-		-- else
-		-- 	self.weapon_part_animation_end = nil
-		-- 	self.weapon_part_default_position = nil
-		-- end
-	else
-		-- self.weapon_part_animation_end = nil
-		-- self.weapon_part_default_position = nil
-	end
-end
+-- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################
+-- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├─┤│ ││ │├┴┐└─┐ #############################################
+-- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################
 
 mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
 	func(self, reference_name, world, camera, unit_spawner, ...)
@@ -788,58 +186,40 @@ mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, wor
 	end
 end)
 
-mod.start_weapon_move = function(self, position, no_reset)
-	if position then
-		self.move_position = position
-		self.do_move = true
-		self.no_reset = no_reset
-	elseif self.link_unit_position then
-		self.move_position = Vector3Box(Vector3.zero())
-		self.do_move = true
-	end
-end
-
-mod.play_zoom_sound = function(self, t, sound, view)
-	if not self.sound_end or t >= self.sound_end then
-		self.sound_end = t + self.sound_duration
-		view:_play_sound(sound)
-	end
-end
-
 mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
 
 	func(self, dt, t, input_service, ...)
-
-	local InventoryWeaponCosmeticsView = Managers.ui:view_instance("inventory_weapon_cosmetics_view")
 
 	mod._rotation_angle = self._rotation_angle
 
 	if self._reference_name ~= "WeaponIconUI" then
 		local weapon_spawn_data = self._weapon_spawn_data
 		if weapon_spawn_data and self._link_unit_position then
+			local item_name = mod.cosmetics_view._item_name
 			local link_unit = weapon_spawn_data.link_unit
-			local position = Vector3Box.unbox(self._link_unit_position)
+			local position = vector3_unbox(self._link_unit_position)
 
+			-- Camera movement
 			if mod.do_move then
 				if mod.move_position then
-					local last_move_position = mod.last_move_position and Vector3Box.unbox(mod.last_move_position) or Vector3.zero()
-					local move_position = Vector3Box.unbox(mod.move_position)
-					if not Vector3.equal(last_move_position, move_position) then
-						mod.new_position = Vector3Box(Vector3Box.unbox(self._link_unit_base_position) + move_position)
+					local last_move_position = mod.last_move_position and vector3_unbox(mod.last_move_position) or vector3_zero()
+					local move_position = vector3_unbox(mod.move_position)
+					if not mod:vector3_equal(last_move_position, move_position) then
+						mod.new_position = vector3_box(vector3_unbox(self._link_unit_base_position) + move_position)
 						mod.move_end = t + mod.move_duration_in
 						mod.current_move_duration = mod.move_duration_in
 						mod.last_move_position = mod.move_position
-						mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in, InventoryWeaponCosmeticsView)
+						mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
 					end
 				elseif self._link_unit_base_position then
-					local last_move_position = Vector3Box.unbox(self._link_unit_position)
-					local move_position = Vector3Box.unbox(self._link_unit_base_position)
-					if not Vector3.equal(move_position, last_move_position) then
+					local last_move_position = vector3_unbox(self._link_unit_position)
+					local move_position = vector3_unbox(self._link_unit_base_position)
+					if not mod:vector3_equal(move_position, last_move_position) then
 						mod.new_position = self._link_unit_base_position
 						mod.move_end = t + mod.move_duration_out
 						mod.current_move_duration = mod.move_duration_out
-						mod.last_move_position = Vector3.zero()
-						mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out, InventoryWeaponCosmeticsView)
+						mod.last_move_position = vector3_zero()
+						mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
 					end
 				end
 				mod.do_move = nil
@@ -848,20 +228,20 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			else
 				if mod.move_end and t <= mod.move_end then
 					local progress = (mod.move_end - t) / mod.current_move_duration
-					local anim_progress = math.easeInCubic(1 - progress)
-					local lerp_position = Vector3.lerp(position, Vector3Box.unbox(mod.new_position), anim_progress)
-					mod.link_unit_position = Vector3Box(lerp_position)
-					if link_unit and Unit.alive(link_unit) then
-						Unit.set_local_position(link_unit, 1, lerp_position)
+					local anim_progress = math_easeInCubic(1 - progress)
+					local lerp_position = vector3_lerp(position, vector3_unbox(mod.new_position), anim_progress)
+					mod.link_unit_position = vector3_box(lerp_position)
+					if link_unit and unit_alive(link_unit) then
+						unit_set_local_position(link_unit, 1, lerp_position)
 					end
-					self._link_unit_position = Vector3Box(lerp_position)
+					self._link_unit_position = vector3_box(lerp_position)
 				elseif mod.move_end and t > mod.move_end then
 					mod.move_end = nil
-					if link_unit and Unit.alive(link_unit) then
-						Unit.set_local_position(link_unit, 1, Vector3Box.unbox(mod.new_position))
+					if link_unit and unit_alive(link_unit) then
+						unit_set_local_position(link_unit, 1, vector3_unbox(mod.new_position))
 					end
-					if link_unit and Unit.alive(link_unit) then
-						mod.link_unit_position = Vector3Box(Unit.local_position(link_unit, 1))
+					if link_unit and unit_alive(link_unit) then
+						mod.link_unit_position = vector3_box(unit_local_position(link_unit, 1))
 					end
 					if mod.current_move_duration == mod.move_duration_in then
 						mod.do_reset = true
@@ -869,10 +249,11 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				end
 			end
 			
+			-- Camera rotation
 			if mod.do_rotation then
 				local new_rotation = mod.new_rotation or 0
 				if new_rotation ~= 0 and self._default_rotation_angle ~= new_rotation then
-					mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in, InventoryWeaponCosmeticsView)
+					mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
 				end
 				self._rotation_angle = mod._last_rotation_angle or 0
 				self._default_rotation_angle = new_rotation
@@ -882,17 +263,18 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				mod.reset_start = nil
 				mod.do_rotation = nil
 			elseif mod.check_rotation then
-				if math.round_with_precision(self._rotation_angle, 1) == math.round_with_precision(self._default_rotation_angle, 1) then
+				if math_round_with_precision(self._rotation_angle, 1) == math_round_with_precision(self._default_rotation_angle, 1) then
 					mod.do_reset = true
 					mod.check_rotation = nil
 				end
 			end
 
+			-- Reset
 			if mod.do_reset then
 				mod.reset_start = t + mod.reset_wait_time
 				mod.do_reset = nil
 			elseif mod.reset_start and mod.reset_start and t >= mod.reset_start then
-				mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out, InventoryWeaponCosmeticsView)
+				mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
 				mod.move_position = nil
 				mod.do_move = true
 				mod.reset_start = nil
@@ -900,11 +282,84 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				mod._last_rotation_angle = 0
 			end
 
-		end
+			-- Weapon part animations
+			local index = 1
+			for _, entry in pairs(mod.weapon_part_animation_entries) do
 
+				local attachment = mod:get_gear_setting(mod.cosmetics_view._gear_id, entry.slot, weapon_spawn_data.item)
+				local attachment_slot_info = mod.attachment_slot_infos[mod.cosmetics_view._gear_id]
+
+				local unit = attachment_slot_info.attachment_slot_to_unit[entry.slot]
+				local attachment_data = mod.attachment_models[item_name][attachment]
+				local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
+
+				if unit and unit_alive(unit) and not mod.weapon_spawning then
+
+					if not entry.end_time then
+						if mod:vector3_equal(movement, vector3_zero()) then
+							entry.end_time = t
+						else
+							if entry.type == "detach" then
+								entry.end_time = t + mod.weapon_part_animation_time
+							else
+								entry.end_time = t + mod.weapon_part_animation_time + (mod.weapon_part_animation_time * (index / 10))
+							end
+						end
+					end
+
+					local default_position = vector3_unbox(attachment_slot_info.unit_default_position[unit]) or vector3_zero()
+
+					if entry.end_time and entry.end_time >= t then
+						if entry.type == "detach" then
+							local progress = (entry.end_time - t) / mod.weapon_part_animation_time
+							local anim_progress = math_easeOutCubic(1 - progress)
+							local lerp_position = vector3_lerp(default_position, movement, anim_progress)
+							unit_set_local_position(unit, 1, lerp_position)
+						else
+							local progress = (entry.end_time - t) / (mod.weapon_part_animation_time + (mod.weapon_part_animation_time * (index / 10)))
+							local anim_progress = math_easeInCubic(1 - progress)
+							local lerp_position = vector3_lerp(movement, default_position, anim_progress)
+							unit_set_local_position(unit, 1, lerp_position)
+						end
+					elseif entry.end_time and entry.end_time < t then
+						if entry.type == "detach" then
+							unit_set_local_position(unit, 1, movement)
+
+							mod:load_new_attachment(weapon_spawn_data.item, entry.slot, entry.new)
+
+							if mod:vector3_equal(movement, vector3_zero()) then
+								entry.end_time = t
+							else
+								entry.end_time = t + mod.weapon_part_animation_time + (mod.weapon_part_animation_time * (index / 10))
+							end
+							entry.type = "attach"
+						else
+							if not mod:vector3_equal(movement, vector3_zero()) or entry.new ~= entry.old then
+								mod:play_attachment_sound(weapon_spawn_data.item, entry.slot, entry.new)
+							end
+							unit_set_local_position(unit, 1, default_position)
+
+							entry.finished = true
+						end
+					end
+
+					index = index + 1
+				else
+					if mod.weapon_spawning and unit_alive(unit) then
+						unit_set_local_position(unit, 1, movement)
+					end
+				end
+			end
+
+			-- Remove finished weapon part animations
+			for i, entry in pairs(mod.weapon_part_animation_entries) do
+				if entry.finished then
+					mod.weapon_part_animation_entries[i] = nil
+				end
+			end
+
+		end
 	end
-	
-	mod:update_weapon_part_animations(self, t)
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "_update_input_rotation", function(func, self, dt, ...)
@@ -947,14 +402,15 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 				rotation = Quaternion.multiply(rotation, initial_rotation)
 			end
 
-			Unit.set_local_rotation(link_unit, 1, rotation)
+			unit_set_local_rotation(link_unit, 1, rotation)
 
 			if self._reference_name ~= "WeaponIconUI" then
 
-				local item_name = mod:item_name_from_content_string(item.name)
+				-- local item_name = mod:item_name_from_content_string(item.name)
+				local item_name = mod.cosmetics_view._item_name
 
 				if not self._link_unit_base_position_backup then
-					self._link_unit_base_position_backup = Vector3Box(Unit.local_position(link_unit, 1))
+					self._link_unit_base_position_backup = vector3_box(unit_local_position(link_unit, 1))
 				end
 
 				if self._last_item_name and self._last_item_name ~= item_name then
@@ -967,32 +423,470 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 				end
 				
 				if mod.attachment_models[item_name] and mod.attachment_models[item_name].customization_default_position then
-					local position = Vector3Box.unbox(mod.attachment_models[item_name].customization_default_position)
-					Unit.set_local_position(link_unit, 1, Unit.local_position(link_unit, 1) + position)
+					local position = vector3_unbox(mod.attachment_models[item_name].customization_default_position)
+					unit_set_local_position(link_unit, 1, unit_local_position(link_unit, 1) + position)
 				else
-					Unit.set_local_position(link_unit, 1, Vector3Box.unbox(self._link_unit_base_position_backup))
+					unit_set_local_position(link_unit, 1, vector3_unbox(self._link_unit_base_position_backup))
 				end
 
 				if not self._link_unit_base_position then
-					self._link_unit_base_position = Vector3Box(Unit.local_position(link_unit, 1))
+					self._link_unit_base_position = vector3_box(unit_local_position(link_unit, 1))
 				end
 
 				if mod.link_unit_position then
-					local position = Vector3Box.unbox(mod.link_unit_position)
-					Unit.set_local_position(link_unit, 1, position)
+					local position = vector3_unbox(mod.link_unit_position)
+					unit_set_local_position(link_unit, 1, position)
 				end
 
-				self._link_unit_position = Vector3Box(Unit.local_position(link_unit, 1))
+				self._link_unit_position = vector3_box(unit_local_position(link_unit, 1))
 				self._last_item_name = item_name
 				
 			end
-
-			
 		end
 	end
+
+	mod.weapon_spawning = true
 end)
 
-mod.dropdown_option = function(self, id, display_name, sounds)
+mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
+	func(self, item_unit_3p, ...)
+	mod.weapon_spawning = false
+end)
+
+-- ##### ┌─┐┌─┐┌┬┐┌┬┐┬┌┐┌┌─┐┌─┐ #######################################################################################
+-- ##### └─┐├┤  │  │ │││││ ┬└─┐ #######################################################################################
+-- ##### └─┘└─┘ ┴  ┴ ┴┘└┘└─┘└─┘ #######################################################################################
+
+mod.get_changed_weapon_settings = function(self)
+	if mod.cosmetics_view._gear_id then
+		self.changed_weapon_settings = {}
+
+		local attachment_slots = self:get_item_attachment_slots(mod.cosmetics_view._selected_item)
+		for _, attachment_slot in pairs(attachment_slots) do
+			self.changed_weapon_settings[attachment_slot] = self:get_gear_setting(mod.cosmetics_view._gear_id, attachment_slot)
+		end
+
+	end
+end
+
+-- ##### ┬ ┬┬  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ##############################################################################
+-- ##### │ ││  ├┤ │ │││││   │ ││ ││││└─┐ ##############################################################################
+-- ##### └─┘┴  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ##############################################################################
+
+mod.check_unsaved_changes = function(self)
+	if table_size(mod.original_weapon_settings) > 0 then
+		if self.cosmetics_view._gear_id then
+
+			mod:attachment_package_snapshot(self.cosmetics_view._presentation_item)
+
+			for attachment_slot, value in pairs(mod.original_weapon_settings) do
+				if string.find(value, "default") then
+					mod:set(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot, nil)
+				else
+					mod:set(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot, value)
+				end
+			end
+
+			self.cosmetics_view._presentation_item = MasterItems.create_preview_item_instance(self.cosmetics_view._selected_item)
+
+			mod.flashlight_attached[self.cosmetics_view._gear_id] = nil
+
+			if self.cosmetics_view._previewed_element then
+				self.cosmetics_view:_preview_element(self.cosmetics_view._previewed_element)
+			else
+				self.cosmetics_view:_preview_item(self.cosmetics_view._presentation_item)
+			end
+
+			local old_packages, new_packages = mod:attachment_package_snapshot(self.cosmetics_view._presentation_item)
+			if new_packages and #new_packages > 0 then
+				local weapon_loader = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+				local reference_name = weapon_loader._reference_name .. "_weapon_item_loader_" .. tostring(weapon_loader._weapon_loader_index)
+				for _, new_package in pairs(new_packages) do
+					Managers.package:load(new_package, reference_name, nil, true)
+				end
+			end
+
+			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
+			if package_synchronizer_client then
+				package_synchronizer_client:reevaluate_all_profiles_packages()
+			end
+			mod:redo_weapon_attachments(self.cosmetics_view._gear_id)
+
+			mod.weapon_changed = nil
+			mod.original_weapon_settings = {}
+		end
+		
+		mod:update_equip_button()
+	end
+end
+
+mod.cb_on_demo_pressed = function(self)
+	self.demo = not self.demo
+	self.demo_time = .3
+	self.demo_timer = 0
+	self.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
+	self:start_weapon_move(vector3_box(Vector3(-.15, -1, 0)), true)
+end
+
+mod.cb_on_randomize_pressed = function(self)
+	local random_attachments = mod:randomize_weapon(self.cosmetics_view._selected_item)
+
+	if self.cosmetics_view._gear_id and random_attachments then
+		mod:attachment_package_snapshot(self.cosmetics_view._presentation_item)
+
+		for attachment_slot, value in pairs(random_attachments) do
+			if not mod.original_weapon_settings[attachment_slot] then
+				if not mod:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot) then
+					mod.original_weapon_settings[attachment_slot] = "default"
+				else
+					mod.original_weapon_settings[attachment_slot] = mod:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot)
+				end
+			end
+			self:set(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot, value)
+		end
+
+		self.cosmetics_view._presentation_item = MasterItems.create_preview_item_instance(self.cosmetics_view._selected_item)
+
+		mod.flashlight_attached[self.cosmetics_view._gear_id] = nil
+
+		if self.cosmetics_view._previewed_element then
+			self.cosmetics_view:_preview_element(self.cosmetics_view._previewed_element)
+		else
+			self.cosmetics_view:_preview_item(self.cosmetics_view._presentation_item)
+		end
+
+		local old_packages, new_packages = mod:attachment_package_snapshot(self.cosmetics_view._presentation_item)
+		if new_packages and #new_packages > 0 then
+			local weapon_loader = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+			local reference_name = weapon_loader._reference_name .. "_weapon_item_loader_" .. tostring(weapon_loader._weapon_loader_index)
+			for _, new_package in pairs(new_packages) do
+				Managers.package:load(new_package, reference_name, nil, true)
+			end
+		end
+
+		local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
+		if package_synchronizer_client then
+			package_synchronizer_client:reevaluate_all_profiles_packages()
+		end
+		mod:redo_weapon_attachments(self.cosmetics_view._gear_id)
+
+		self:update_reset_button()
+	end
+end
+
+mod.cb_on_reset_pressed = function(self)
+	if table_size(self.changed_weapon_settings) > 0 then
+		if self.cosmetics_view._gear_id then
+			mod:attachment_package_snapshot(self.cosmetics_view._presentation_item)
+
+			for attachment_slot, data in pairs(self.changed_weapon_settings) do
+				self:set(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot, nil)
+			end
+
+			self.cosmetics_view._presentation_item = MasterItems.create_preview_item_instance(self.cosmetics_view._selected_item)
+
+			mod.flashlight_attached[self.cosmetics_view._gear_id] = nil
+
+			if self.cosmetics_view._previewed_element then
+				self.cosmetics_view:_preview_element(self.cosmetics_view._previewed_element)
+			else
+				self.cosmetics_view:_preview_item(self.cosmetics_view._presentation_item)
+			end
+
+			local old_packages, new_packages = mod:attachment_package_snapshot(self.cosmetics_view._presentation_item)
+			if new_packages and #new_packages > 0 then
+				local weapon_loader = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+				local reference_name = weapon_loader._reference_name .. "_weapon_item_loader_" .. tostring(weapon_loader._weapon_loader_index)
+				for _, new_package in pairs(new_packages) do
+					Managers.package:load(new_package, reference_name, nil, true)
+				end
+			end
+
+			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
+			if package_synchronizer_client then
+				package_synchronizer_client:reevaluate_all_profiles_packages()
+			end
+			mod:redo_weapon_attachments(self.cosmetics_view._gear_id)
+
+			Managers.ui:item_icon_updated(self.cosmetics_view._selected_item)
+			Managers.event:trigger("event_item_icon_updated", self.cosmetics_view._selected_item)
+			Managers.event:trigger("event_replace_list_item", self.cosmetics_view._selected_item)
+
+			self.changed_weapon_settings = {}
+			self:update_reset_button()
+		end
+	end
+end
+
+mod.update_equip_button = function(self)
+	if self.cosmetics_view._selected_tab_index == 3 then
+		local button = self.cosmetics_view._widgets_by_name.equip_button
+		local button_content = button.content
+		local disabled = table_size(self.original_weapon_settings) == 0
+		button_content.hotspot.disabled = disabled
+		button_content.text = Utf8.upper(disabled and Localize("loc_weapon_inventory_equipped_button") or Localize("loc_weapon_inventory_equip_button"))
+	end
+end
+
+mod.update_reset_button = function(self)
+	local button = self.cosmetics_view._widgets_by_name.reset_button
+	local button_content = button.content
+	local disabled = table_size(self.changed_weapon_settings) == 0
+	button_content.hotspot.disabled = disabled
+	button_content.text = Utf8.upper(disabled and self:localize("loc_weapon_inventory_no_reset_button") or self:localize("loc_weapon_inventory_reset_button"))
+end
+
+mod.update_dropdown = function(self, widget, input_service)
+	local content = widget.content
+	local entry = content.entry
+
+	if content.close_setting then
+		content.close_setting = nil
+		content.exclusive_focus = false
+		local hotspot = content.hotspot or content.button_hotspot
+
+		if hotspot then
+			hotspot.is_selected = false
+		end
+		self.dropdown_open = false
+
+		return
+	end
+
+	local is_disabled = entry.disabled or false
+	content.disabled = is_disabled
+	local size = {
+		400,
+		dropdown_height
+	}
+	local using_gamepad = not Managers.ui:using_cursor_navigation()
+	local offset = widget.offset
+	local style = widget.style
+	local options = content.options
+	local options_by_id = content.options_by_id
+	local num_visible_options = content.num_visible_options
+	local num_options = #options
+	local focused = content.exclusive_focus and not is_disabled
+
+	if focused then
+		offset[3] = 90
+	else
+		offset[3] = 0
+	end
+
+	local selected_index = content.selected_index
+	local value, new_value, real_value = nil, nil, nil
+	local hotspot = content.hotspot
+	local hotspot_style = style.hotspot
+
+	if selected_index and focused then
+		if using_gamepad and hotspot.on_pressed then
+			new_value = options[selected_index].id
+			real_value = options[selected_index].value
+		end
+
+		hotspot_style.on_pressed_sound = hotspot_style.on_pressed_fold_in_sound
+	else
+		hotspot_style.on_pressed_sound = hotspot_style.on_pressed_fold_out_sound
+	end
+
+	value = entry.get_function and entry:get_function() or content.internal_value or "<not selected>"
+	local localization_manager = Managers.localization
+	local preview_option = options_by_id[value]
+	local preview_option_id = preview_option and preview_option.id
+	local preview_value = preview_option and preview_option.display_name or "loc_settings_option_unavailable"
+	local ignore_localization = preview_option and preview_option.ignore_localization
+	content.value_text = ignore_localization and preview_value or localization_manager:localize(preview_value)
+	local always_keep_order = true
+	local grow_downwards = content.grow_downwards
+	local new_selection_index = nil
+
+	if not selected_index or not focused then
+		for i = 1, #options do
+			local option = options[i]
+
+			if option.id == preview_option_id then
+				selected_index = i
+
+				break
+			end
+		end
+
+		selected_index = selected_index or 1
+	end
+
+	if selected_index and focused then
+		if input_service:get("navigate_up_continuous") then
+			if grow_downwards or not grow_downwards and always_keep_order then
+				new_selection_index = math_max(selected_index - 1, 1)
+			else
+				new_selection_index = math_min(selected_index + 1, num_options)
+			end
+		elseif input_service:get("navigate_down_continuous") then
+			if grow_downwards or not grow_downwards and always_keep_order then
+				new_selection_index = math_min(selected_index + 1, num_options)
+			else
+				new_selection_index = math_max(selected_index - 1, 1)
+			end
+		end
+	end
+
+	if new_selection_index or not content.selected_index then
+		if new_selection_index then
+			selected_index = new_selection_index
+		end
+
+		if num_visible_options < num_options then
+			local step_size = 1 / num_options
+			local new_scroll_percentage = math_min(selected_index - 1, num_options) * step_size
+			content.scroll_percentage = new_scroll_percentage
+			content.scroll_add = nil
+		end
+
+		content.selected_index = selected_index
+	end
+
+	local scroll_percentage = content.scroll_percentage
+
+	if scroll_percentage then
+		local step_size = 1 / (num_options - (num_visible_options - 1))
+		content.start_index = math_max(1, math.ceil(scroll_percentage / step_size))
+	end
+
+	local option_hovered = false
+	local option_index = 1
+	local start_index = content.start_index or 1
+	local end_index = math_min(start_index + num_visible_options - 1, num_options)
+	local using_scrollbar = num_visible_options < num_options
+
+	for i = start_index, end_index do
+		local actual_i = i
+
+		if not grow_downwards and always_keep_order then
+			actual_i = end_index - i + start_index
+		end
+
+		local option_text_id = "option_text_" .. option_index
+		local option_hotspot_id = "option_hotspot_" .. option_index
+		local outline_style_id = "outline_" .. option_index
+		local option_hotspot = content[option_hotspot_id]
+		option_hovered = option_hovered or option_hotspot.is_hover
+		option_hotspot.is_selected = actual_i == selected_index
+		local option = options[actual_i]
+
+		if option_hotspot.on_pressed then
+			option_hotspot.on_pressed = nil
+			new_value = option.id
+			real_value = option.value
+			content.selected_index = actual_i
+		end
+
+		local option_display_name = option.display_name
+		local option_ignore_localization = option.ignore_localization
+		content[option_text_id] = option_ignore_localization and option_display_name or localization_manager:localize(option_display_name)
+		local options_y = size[2] * option_index
+		style[option_hotspot_id].offset[2] = grow_downwards and options_y or -options_y
+		style[option_text_id].offset[2] = grow_downwards and options_y or -options_y
+		local entry_length = using_scrollbar and size[1] - style.scrollbar_hotspot.size[1] or size[1]
+		style[outline_style_id].size[1] = entry_length
+		style[option_text_id].size[1] = size[1]
+		option_index = option_index + 1
+	end
+
+	local value_changed = new_value ~= nil
+
+	if value_changed and new_value ~= value then
+		local on_activated = entry.on_activated
+
+		on_activated(new_value, entry)
+	end
+
+	local scrollbar_hotspot = content.scrollbar_hotspot
+	local scrollbar_hovered = scrollbar_hotspot.is_hover
+
+	if (input_service:get("left_pressed") or input_service:get("confirm_pressed") or input_service:get("back")) and content.exclusive_focus and not content.wait_next_frame then
+		content.wait_next_frame = true
+
+		return
+	end
+
+	if content.wait_next_frame then
+		content.wait_next_frame = nil
+		content.close_setting = true
+		self.dropdown_open = false
+
+		return
+	end
+end
+
+mod.update_custom_widgets = function(self, input_service)
+    if self.cosmetics_view._custom_widgets then
+        for _, widget in pairs(self.cosmetics_view._custom_widgets) do
+            if widget.content and widget.content.entry and widget.content.entry.widget_type == "dropdown" then
+				local pivot_name = widget.name.."_pivot"
+				pivot_name = string.gsub(pivot_name, "_custom", "")
+				local scenegraph_entry = self.cosmetics_view._ui_scenegraph[pivot_name]
+				if scenegraph_entry and scenegraph_entry.position then
+					if scenegraph_entry.position[2] > 580 then
+						widget.content.grow_downwards = false
+					else
+						widget.content.grow_downwards = true
+					end
+				end
+                self:update_dropdown(widget, input_service)
+            end
+        end
+    end
+end
+
+mod.hide_custom_widgets = function(self, hide)
+    if self.cosmetics_view and self.cosmetics_view._custom_widgets then
+        for _, widget in pairs(self.cosmetics_view._custom_widgets) do
+			if not widget.not_applicable then
+            	widget.visible = not hide
+			else
+				widget.visible = false
+			end
+        end
+		if self.cosmetics_view._custom_widgets_overlapping > 0 then
+			self.cosmetics_view._widgets_by_name.panel_extension.visible = not hide
+		else
+			self.cosmetics_view._widgets_by_name.panel_extension.visible = false
+		end
+		self.cosmetics_view._widgets_by_name.reset_button.visible = not hide
+		self.cosmetics_view._widgets_by_name.randomize_button.visible = not hide
+		self.cosmetics_view._widgets_by_name.demo_button.visible = not hide
+    end
+end
+
+-- ##### ┬  ┬┬┌─┐┬ ┬  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ #######################################################################
+-- ##### └┐┌┘│├┤ │││  ├┤ │ │││││   │ ││ ││││└─┐ #######################################################################
+-- #####  └┘ ┴└─┘└┴┘  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ #######################################################################
+
+mod.validate_item_model = function(self, model)
+	mod:setup_item_definitions()
+	if model ~= "" then
+		local definition = mod:persistent_table("weapon_customization").item_definitions[model]
+		if definition then
+			if definition.workflow_state ~= "RELEASABLE" then
+				return false
+			end
+			if table_find(definition.feature_flags, "FEATURE_unreleased_premium_cosmetics") then
+				return false
+			end
+			-- if table_find(definition.feature_flags, "FEATURE_premium_store") and 
+			-- 		not table_find(definition.feature_flags, "FEATURE_item_retained") then
+			-- 	return false
+			-- end
+			-- if not table_find(definition.feature_flags, "FEATURE_item_retained") then
+			-- 	return false
+			-- end
+		end
+	end
+	return true
+end
+
+mod.generate_dropdown_option = function(self, id, display_name, sounds)
     return {
         id = id,
         display_name = display_name,
@@ -1001,6 +895,493 @@ mod.dropdown_option = function(self, id, display_name, sounds)
 		sounds = sounds,
     }
 end
+
+mod.add_custom_widget = function(self, widget)
+	self.cosmetics_view._custom_widgets[#self.cosmetics_view._custom_widgets+1] = widget
+end
+
+mod.generate_custom_widgets = function(self)
+	local item = self.cosmetics_view._selected_item
+	if item then
+		-- Iterate scenegraphs additions
+		for _, added_scenegraph in pairs(self.added_cosmetics_scenegraphs) do
+			-- Differentiate text and dropdown
+			if string.find(added_scenegraph, "text_pivot") then
+				-- Generate label
+				local attachment_slot = string.gsub(added_scenegraph, "_text_pivot", "")
+				self:add_custom_widget(self:generate_label(added_scenegraph, attachment_slot, item))
+			else
+				-- Generate dropdown
+				local attachment_slot = string.gsub(added_scenegraph, "_pivot", "")
+				self:add_custom_widget(self:generate_dropdown(added_scenegraph, attachment_slot, item))
+			end
+		end
+	end
+end
+
+mod.resolve_not_applicable_attachments = function(self)
+	local item = self.cosmetics_view._selected_item
+	if item then
+		-- Get item name
+		-- local item_name = self:item_name_from_content_string(item.name)
+		local item_name = self.cosmetics_view._item_name
+		local move = 0
+		-- Iterate attachment slots
+		for index, slot in pairs(self.attachment_slots) do
+			-- Check that weapon has attachment slot and more than 2 options
+			-- 1st option is default
+			if self.attachment[item_name] and (not self.attachment[item_name][slot] or #self.attachment[item_name][slot] <= 2) then
+				-- Set not applicable in widgets to hide them
+				self.cosmetics_view._widgets_by_name[slot.."_custom"].not_applicable = true
+				self.cosmetics_view._widgets_by_name[slot.."_custom_text"].not_applicable = true
+				-- Add to list of not applicable widgets
+				self.cosmetics_view._not_applicable[#self.cosmetics_view._not_applicable+1] = slot.."_pivot"
+				self.cosmetics_view._not_applicable[#self.cosmetics_view._not_applicable+1] = slot.."_text_pivot"
+			end
+		end
+		-- Move widgets according to their applicable status
+		for _, scenegraph_name in pairs(self.added_cosmetics_scenegraphs) do
+			if table_contains(self.cosmetics_view._not_applicable, scenegraph_name) then
+				-- Differentiate text and dropdown
+				if string.find(scenegraph_name, "text_pivot") then
+					move = move + label_height
+				else
+					move = move + dropdown_height
+				end
+			end
+			-- Change scenegraph position
+			local scenegraph_entry = self.cosmetics_view._ui_scenegraph[scenegraph_name]
+			if scenegraph_entry then
+				scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - move
+			end
+		end
+	end
+end
+
+mod.resolve_overlapping_widgets = function(self)
+	local move = 0
+	local overlapping = {}
+	-- Iterate scenegraph entries
+	for _, scenegraph_entry in pairs(self.added_cosmetics_scenegraphs) do
+		-- Make sure attachment slot is applicable
+		if not table_contains(self.cosmetics_view._not_applicable, scenegraph_entry) then
+			-- Differentiate text and dropdown
+			if string.find(scenegraph_entry, "text_pivot") then
+				move = move + label_height
+			else
+				move = move + dropdown_height
+			end
+			-- Check if widget is overlapping
+			if self.cosmetics_view._ui_scenegraph[scenegraph_entry].local_position[2] > grid_size[2] then
+				-- Count overlapping attachment slots
+				if not string.find(scenegraph_entry, "text_pivot") then
+					self.cosmetics_view._custom_widgets_overlapping = self.cosmetics_view._custom_widgets_overlapping + 1
+				end
+				-- Add overlapping widget to list
+				overlapping[#overlapping+1] = scenegraph_entry
+			end
+		end
+	end
+	-- Change extension panels size
+	local extension_panel_pivot = self.cosmetics_view._ui_scenegraph.panel_extension_pivot
+	extension_panel_pivot.size[2] = (85 * self.cosmetics_view._custom_widgets_overlapping) + (edge * 2)
+	extension_panel_pivot.local_position[2] = grid_size[2] - 85 * (self.cosmetics_view._custom_widgets_overlapping + 1)
+	-- Change overlapping widgets positions
+	for _, scenegraph_name in pairs(overlapping) do
+		local scenegraph_entry = self.cosmetics_view._ui_scenegraph[scenegraph_name]
+		scenegraph_entry.local_position[1] = scenegraph_entry.local_position[1] + grid_width
+		scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - 85 * (self.cosmetics_view._custom_widgets_overlapping + 1)
+	end
+end
+
+mod.init_custom_weapon_zoom = function(self)
+	local item = self.cosmetics_view._selected_item
+	if item then
+		-- Get item name
+		-- local item_name = self:item_name_from_content_string(item.name)
+		local item_name = self.cosmetics_view._item_name
+		-- Check for weapon in data
+		if self.attachment_models[item_name] then
+			-- Check for custom weapon zoom
+			if self.attachment_models[item_name].customization_min_zoom then
+				local min_zoom = self.attachment_models[item_name].customization_min_zoom
+				self.cosmetics_view._min_zoom = min_zoom
+			else
+				self.cosmetics_view._min_zoom = -2
+			end
+			-- Set zoom
+			self.cosmetics_view._weapon_zoom_target = self.cosmetics_view._min_zoom
+			self.cosmetics_view._weapon_zoom_fraction = self.cosmetics_view._min_zoom
+			self.cosmetics_view:_set_weapon_zoom(self.cosmetics_view._min_zoom)
+		end
+	end
+end
+
+mod.reset_stuff = function(self)
+	self.demo = nil
+	self.move_position = nil
+	self.new_position = nil
+	self.last_move_position = nil
+	self.link_unit_position = nil
+	self.do_move = nil
+	self.move_end = nil
+	self.do_reset = nil
+	self.reset_start = nil
+	self._last_rotation_angle = 0
+end
+
+mod.label_template = function(self, text, scenegraph_id)
+	local style = table_clone(UIFontSettings.grid_title)
+	style.offset = {0, 15, 1}
+    return UIWidget.create_definition({
+        {
+            value_id = "text",
+            style_id = "text",
+            pass_type = "text",
+            value = mod:localize(text),
+            style = style,
+        }
+    }, scenegraph_id)
+end
+
+mod.generate_label = function(self, scenegraph, attachment_slot, item)
+
+	-- local weapon_name = self:item_name_from_content_string(item.name)
+	local item_name = self.cosmetics_view._item_name
+	local style = table_clone(UIFontSettings.grid_title)
+	style.offset = {0, 15, 1}
+	local text = "loc_weapon_cosmetics_customization_"..attachment_slot
+
+	if self.text_overwrite[item_name] then
+		text = self.text_overwrite[item_name][text] or text
+	end
+
+    local definition = UIWidget.create_definition({
+        {
+            value_id = "text",
+            style_id = "text",
+            pass_type = "text",
+            value = self:localize(text),
+            style = style,
+        }
+    }, scenegraph, nil)
+
+	local widget_name = attachment_slot.."_custom_text"
+	local widget = self.cosmetics_view:_create_widget(widget_name, definition)
+
+	self.cosmetics_view._widgets_by_name[widget_name] = widget
+    self.cosmetics_view._widgets[#self.cosmetics_view._widgets+1] = widget
+
+	return widget
+end
+
+mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
+
+	local item_name = self.cosmetics_view._item_name
+    local options = {}
+    if mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] then
+        for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
+			local model = mod.attachment_models[item_name][data.id] and mod.attachment_models[item_name][data.id].model
+			if model and mod:validate_item_model(model) then
+            	options[#options+1] = mod:generate_dropdown_option(data.id, data.name, data.sounds)
+			end
+        end
+    end
+
+    local max_visible_options = 5
+    local num_options = #options
+    local num_visible_options = math_min(num_options, max_visible_options)
+
+    local size = {grid_size[1], dropdown_height}
+    local template = DropdownPassTemplates.settings_dropdown(size[1], size[2], size[1], num_visible_options, true)
+	template[7].pass_type = "texture"
+	template[7].value = "content/ui/materials/backgrounds/terminal_basic"
+	template[7].style.horizontal_alignment = "center"
+    local definition = UIWidget.create_definition(template, scenegraph, nil, size)
+    local widget_name = attachment_slot.."_custom"
+    local widget = self.cosmetics_view:_create_widget(widget_name, definition)
+
+    self.cosmetics_view._widgets_by_name[widget_name] = widget
+    self.cosmetics_view._widgets[#self.cosmetics_view._widgets+1] = widget
+
+    local content = widget.content
+    content.entry = {
+        options = options,
+        widget_type = "dropdown",
+        on_activated = function(new_value, entry)
+
+			local attachment = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot)
+			self:detach_attachment(self.cosmetics_view._presentation_item, attachment_slot, attachment, new_value)
+
+			local weapon_attachments = mod.attachment_models[item_name]
+			local attachment_data = weapon_attachments[new_value]
+			local new_angle = attachment_data.angle or 0
+
+			mod.do_rotation = true
+			mod.new_rotation = new_angle
+
+			if attachment_data.move then
+				self:start_weapon_move(attachment_data.move)
+			else
+				self:start_weapon_move()
+			end
+
+        end,
+        get_function = function()
+            return mod:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot)
+        end,
+    }
+    local options_by_id = {}
+    for index, option in pairs(options) do
+        options_by_id[option.id] = option
+    end
+    content.options_by_id = options_by_id
+	content.options = options
+    content.num_visible_options = num_visible_options
+
+    content.hotspot.pressed_callback = function ()
+		if not mod.dropdown_open then
+			local selected_widget = nil
+			local selected = true
+			content.exclusive_focus = selected
+			local hotspot = content.hotspot or content.button_hotspot
+			if hotspot then
+				hotspot.is_selected = selected
+			end
+			mod.dropdown_open = true
+		end
+    end
+
+    content.area_length = size[2] * num_visible_options
+    local scroll_length = math_max(size[2] * num_options - content.area_length, 0)
+    content.scroll_length = scroll_length
+    local spacing = 0
+    local scroll_amount = scroll_length > 0 and (size[2] + spacing) / scroll_length or 0
+    content.scroll_amount = scroll_amount
+
+    return widget
+end
+
+-- ##### ┬  ┬┬┌─┐┬ ┬  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #################################################################################
+-- ##### └┐┌┘│├┤ │││  ├─┤│ ││ │├┴┐└─┐ #################################################################################
+-- #####  └┘ ┴└─┘└┴┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #################################################################################
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
+	-- Fetch instance
+	mod.cosmetics_view = self
+	-- Original function
+	func(self, settings, context, ...)
+	-- Custom attributes
+	self._custom_widgets = {}
+	self._not_applicable = {}
+	self._custom_widgets_overlapping = 0
+	self._item_name = mod:item_name_from_content_string(self._selected_item.name)
+	self._gear_id = mod:get_gear_id(self._selected_item)
+	-- Overwrite draw elements function
+	-- Make view legend inputs visible when UI gets hidden
+	self._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
+		local old_alpha_multiplier = render_settings.alpha_multiplier
+		local alpha_multiplier = self._alpha_multiplier or 1
+		local elements_array = self._elements_array
+		for i = 1, #elements_array do
+			local element = elements_array[i]
+			if element then
+				local element_name = element.__class_name
+				if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
+					ui_renderer = self._ui_default_renderer or ui_renderer
+				end
+				render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
+				element:draw(dt, t, ui_renderer, render_settings, input_service)
+			end
+		end
+		render_settings.alpha_multiplier = old_alpha_multiplier
+	end
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
+    func(self, ...)
+
+	self._widgets_by_name.reset_button.content.hotspot.disabled = true
+
+    mod:generate_custom_widgets()
+	mod:resolve_not_applicable_attachments()
+	mod:resolve_overlapping_widgets()
+	mod:init_custom_weapon_zoom()
+
+	mod.original_weapon_settings = {}
+	mod:get_changed_weapon_settings()
+
+    mod:hide_custom_widgets(true)
+
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
+
+    func(self, dt, t, input_service, ...)
+
+    mod:update_custom_widgets(input_service)
+	mod:update_equip_button()
+	mod:update_reset_button()
+
+	if mod.demo then
+		local rotation_angle = (mod._last_rotation_angle or 0) + dt
+		self._weapon_preview._ui_weapon_spawner._rotation_angle = rotation_angle
+		self._weapon_preview._ui_weapon_spawner._default_rotation_angle = rotation_angle
+		mod._last_rotation_angle = self._weapon_preview._ui_weapon_spawner._default_rotation_angle
+		if mod.demo_timer < t then
+			mod:cb_on_randomize_pressed()
+			mod.demo_timer = t + mod.demo_time
+		end
+	end
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, self, input_service, dt, t, ...)
+	local zoom_target = self._weapon_zoom_target
+
+	func(self, input_service, dt, t, ...)
+
+	if mod.dropdown_open then
+		self._weapon_zoom_target = zoom_target
+	end
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", function(func, self, ...)
+	func(self, ...)
+	local widgets_by_name = self._widgets_by_name
+	local reset_button = widgets_by_name.reset_button
+	reset_button.content.hotspot.pressed_callback = callback(mod, "cb_on_reset_pressed")
+	local randomize_button = widgets_by_name.randomize_button
+	randomize_button.content.hotspot.pressed_callback = callback(mod, "cb_on_randomize_pressed")
+	local demo_button = widgets_by_name.demo_button
+	demo_button.content.hotspot.pressed_callback = callback(mod, "cb_on_demo_pressed")
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_set_weapon_zoom", function(func, self, fraction, ...)
+	if not mod.dropdown_open then
+		func(self, fraction, ...)
+	end
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
+	local always_visible_widget_names = self._always_visible_widget_names
+	local alpha_multiplier = self._render_settings and self._render_settings.alpha_multiplier or 1
+	local anim_alpha_speed = 3
+
+	if self._visibility_toggled_on then
+		alpha_multiplier = math_min(alpha_multiplier + dt * anim_alpha_speed, 1)
+	else
+		alpha_multiplier = math_max(alpha_multiplier - dt * anim_alpha_speed, 0)
+	end
+
+	local always_visible_widget_names = self._always_visible_widget_names
+	self._alpha_multiplier = alpha_multiplier
+	local widgets = self._widgets
+	local num_widgets = #widgets
+
+	for i = 1, num_widgets do
+		local widget = widgets[i]
+		local widget_name = widget.name
+		self._render_settings.alpha_multiplier = always_visible_widget_names[widget_name] and 1 or alpha_multiplier
+
+		UIWidget.draw(widget, ui_renderer)
+	end
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...)
+	
+	mod:reset_stuff()
+	
+	local weapon_spawner = self._weapon_preview._ui_weapon_spawner
+	local default_position = weapon_spawner._link_unit_base_position
+	weapon_spawner._link_unit_position = default_position
+	weapon_spawner._rotation_angle = 0
+	weapon_spawner._default_rotation_angle = 0
+	if weapon_spawner._weapon_spawn_data then
+		local link_unit = weapon_spawner._weapon_spawn_data.link_unit
+		unit_set_local_position(link_unit, 1, vector3_unbox(default_position))
+	end
+
+	mod:check_unsaved_changes(self)
+
+	if mod.weapon_changed then
+		if self._gear_id then
+
+			local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
+			if package_synchronizer_client then
+				package_synchronizer_client:reevaluate_all_profiles_packages()
+			end
+			mod:redo_weapon_attachments(self._gear_id)
+
+			Managers.ui:item_icon_updated(mod.weapon_changed)
+			Managers.event:trigger("event_item_icon_updated", mod.weapon_changed)
+			Managers.event:trigger("event_replace_list_item", mod.weapon_changed)
+
+		end
+	end
+
+	func(self, ...)
+
+	mod.cosmetics_view = nil
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
+	if self._selected_tab_index == 3 then
+		mod.original_weapon_settings = {}
+
+		mod:update_equip_button()
+
+		mod.weapon_changed = self._selected_item
+
+		mod:get_changed_weapon_settings()
+
+		local t = Managers.time:time("main")
+		mod.reset_start = t
+	else
+		func(self, ...)
+	end
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, self, content, ...)
+	local item_name = self._item_name
+	if item_name and mod.attachment[item_name] then
+		content[3] = {
+			display_name = "loc_weapon_cosmetics_customization",
+			slot_name = "slot_weapon_skin",
+			item_type = "WEAPON_SKIN",
+			icon = "content/ui/materials/icons/system/settings/category_gameplay",
+			filter_on_weapon_template = true,
+			apply_on_preview = function (real_item, presentation_item)
+				self:_preview_item(presentation_item)
+			end
+		}
+	end
+	func(self, content, ...)
+	if item_name and mod.attachment[item_name] then
+		self._tab_menu_element._widgets_by_name.entry_0.content.size[1] = button_width
+		self._tab_menu_element._widgets_by_name.entry_1.content.size[1] = button_width
+		self._tab_menu_element._widgets_by_name.entry_2.content.size[1] = button_width
+	end
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, self, index, ...)
+	if index == 3 then
+        self:present_grid_layout({})
+        self._item_grid._widgets_by_name.grid_empty.visible = false
+        mod:hide_custom_widgets(false)
+    else
+		local t = Managers.time:time("main")
+		mod.reset_start = t
+		mod:check_unsaved_changes(self)
+        mod:hide_custom_widgets(true)
+    end
+    func(self, index, ...)
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_select_starting_item_by_slot_name", function(func, self, slot_name, optional_start_index, ...)
+	if self._selected_tab_index < 3 then
+		func(self, slot_name, optional_start_index, ...)
+	end
+end)
 
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions", function(instance)
 
@@ -1039,7 +1420,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		size = equip_button_size,
 		position = {0, -equip_button_size[2] - 15, 1}
 	}
-	instance.widget_definitions.reset_button = UIWidget.create_definition(table.clone(ButtonPassTemplates.default_button), "reset_button", {
+	instance.widget_definitions.reset_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.default_button), "reset_button", {
 		gamepad_action = "confirm_pressed",
 		text = Utf8.upper(mod:localize("loc_weapon_inventory_reset_button")),
 		hotspot = {
@@ -1054,7 +1435,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		size = equip_button_size,
 		position = {0, -equip_button_size[2] * 2 - 15 * 2, 1}
 	}
-	instance.widget_definitions.randomize_button = UIWidget.create_definition(table.clone(ButtonPassTemplates.default_button), "randomize_button", {
+	instance.widget_definitions.randomize_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.default_button), "randomize_button", {
 		gamepad_action = "confirm_pressed",
 		text = Utf8.upper(mod:localize("loc_weapon_inventory_randomize_button")),
 		hotspot = {
@@ -1069,7 +1450,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		size = equip_button_size,
 		position = {0, -equip_button_size[2] * 3 - 15 * 3, 1}
 	}
-	instance.widget_definitions.demo_button = UIWidget.create_definition(table.clone(ButtonPassTemplates.default_button), "demo_button", {
+	instance.widget_definitions.demo_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.default_button), "demo_button", {
 		gamepad_action = "confirm_pressed",
 		text = Utf8.upper(mod:localize("loc_weapon_inventory_demo_button")),
 		hotspot = {
@@ -1121,465 +1502,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 end)
 
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
-	local always_visible_widget_names = self._always_visible_widget_names
-	local alpha_multiplier = self._render_settings and self._render_settings.alpha_multiplier or 1
-	local anim_alpha_speed = 3
+-- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################
+-- ##### ├─┤├┤ │  ├─┘ #################################################################################################
+-- ##### ┴ ┴└─┘┴─┘┴   #################################################################################################
 
-	if self._visibility_toggled_on then
-		alpha_multiplier = math.min(alpha_multiplier + dt * anim_alpha_speed, 1)
-	else
-		alpha_multiplier = math.max(alpha_multiplier - dt * anim_alpha_speed, 0)
-	end
-
-	local always_visible_widget_names = self._always_visible_widget_names
-	self._alpha_multiplier = alpha_multiplier
-	local widgets = self._widgets
-	local num_widgets = #widgets
-
-	for i = 1, num_widgets do
-		local widget = widgets[i]
-		local widget_name = widget.name
-		self._render_settings.alpha_multiplier = always_visible_widget_names[widget_name] and 1 or alpha_multiplier
-
-		UIWidget.draw(widget, ui_renderer)
-	end
-end)
-
-mod.hide_custom_widgets = function(self, InventoryWeaponCosmeticsView, hide)
-    if InventoryWeaponCosmeticsView._custom_widgets then
-        for _, widget in pairs(InventoryWeaponCosmeticsView._custom_widgets) do
-			if not widget.not_applicable then
-            	widget.visible = not hide
-			else
-				widget.visible = false
-			end
-        end
-		if InventoryWeaponCosmeticsView._custom_widgets_overlapping > 0 then
-			InventoryWeaponCosmeticsView._widgets_by_name.panel_extension.visible = not hide
-		else
-			InventoryWeaponCosmeticsView._widgets_by_name.panel_extension.visible = false
-		end
-		InventoryWeaponCosmeticsView._widgets_by_name.reset_button.visible = not hide
-		InventoryWeaponCosmeticsView._widgets_by_name.randomize_button.visible = not hide
-		InventoryWeaponCosmeticsView._widgets_by_name.demo_button.visible = not hide
-    end
+mod.vector3_equal = function(self, v1, v2)
+	return v1[1] == v2[1] and v1[2] == v2[2] and v1[3] == v2[3]
 end
-
-mod.update_custom_widgets = function(self, InventoryWeaponCosmeticsView, input_service)
-    if InventoryWeaponCosmeticsView._custom_widgets then
-        for _, widget in pairs(InventoryWeaponCosmeticsView._custom_widgets) do
-            if widget.content and widget.content.entry and widget.content.entry.widget_type == "dropdown" then
-				local pivot_name = widget.name.."_pivot"
-				pivot_name = string.gsub(pivot_name, "_custom", "")
-				local scenegraph_entry = InventoryWeaponCosmeticsView._ui_scenegraph[pivot_name]
-				if scenegraph_entry and scenegraph_entry.position then
-					if scenegraph_entry.position[2] > 580 then
-						widget.content.grow_downwards = false
-					else
-						widget.content.grow_downwards = true
-					end
-				end
-                self.widget_update_functions["dropdown"](self, widget, input_service)
-            end
-        end
-    end
-end
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_set_weapon_zoom", function(func, self, fraction, ...)
-	if not mod.dropdown_open then
-		func(self, fraction, ...)
-	end
-end)
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, self, input_service, dt, t, ...)
-	local zoom_target = self._weapon_zoom_target
-	func(self, input_service, dt, t, ...)
-	if mod.dropdown_open then
-		self._weapon_zoom_target = zoom_target
-	end
-end)
-
-mod.add_custom_widget = function(self, widget, InventoryWeaponCosmeticsView)
-	InventoryWeaponCosmeticsView._custom_widgets[#InventoryWeaponCosmeticsView._custom_widgets+1] = widget
-end
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...)
-	mod.cosmetics_view_open = nil
-	mod.demo = nil
-	mod.move_position = nil
-	mod.new_position = nil
-	mod.last_move_position = nil
-	mod.link_unit_position = nil
-	mod.do_move = nil
-	mod.move_end = nil
-	mod.do_reset = nil
-	mod.reset_start = nil
-	mod._last_rotation_angle = 0
-	mod.weapon_part_animation_end = nil
-	mod.weapon_part_animation = nil
-	mod.weapon_part_animation_type = nil
-	mod.weapon_part_default_position = nil
-	mod.weapon_part_animation_new_attachment = nil
-	local weapon_spawner = self._weapon_preview._ui_weapon_spawner
-	local default_position = weapon_spawner._link_unit_base_position
-	weapon_spawner._link_unit_position = default_position
-	weapon_spawner._rotation_angle = 0
-	weapon_spawner._default_rotation_angle = 0
-	if weapon_spawner._weapon_spawn_data then
-		local link_unit = weapon_spawner._weapon_spawn_data.link_unit
-		Unit.set_local_position(link_unit, 1, Vector3Box.unbox(default_position))
-	end
-	mod:check_unsaved_changes(self)
-	func(self, ...)
-end)
-
-mod.widget_update_functions = {
-	dropdown = function (self, widget, input_service)
-		local content = widget.content
-		local entry = content.entry
-
-		if content.close_setting then
-			content.close_setting = nil
-			content.exclusive_focus = false
-			local hotspot = content.hotspot or content.button_hotspot
-
-			if hotspot then
-				hotspot.is_selected = false
-			end
-			mod.dropdown_open = false
-
-			return
-		end
-
-		local is_disabled = entry.disabled or false
-		content.disabled = is_disabled
-		local size = {
-			400,
-			dropdown_height
-		}
-		local using_gamepad = not Managers.ui:using_cursor_navigation()
-		local offset = widget.offset
-		local style = widget.style
-		local options = content.options
-		local options_by_id = content.options_by_id
-		local num_visible_options = content.num_visible_options
-		local num_options = #options
-		local focused = content.exclusive_focus and not is_disabled
-
-		if focused then
-			offset[3] = 90
-		else
-			offset[3] = 0
-		end
-
-		local selected_index = content.selected_index
-		local value, new_value, real_value = nil, nil, nil
-		local hotspot = content.hotspot
-		local hotspot_style = style.hotspot
-
-		if selected_index and focused then
-			if using_gamepad and hotspot.on_pressed then
-				new_value = options[selected_index].id
-                real_value = options[selected_index].value
-			end
-
-			hotspot_style.on_pressed_sound = hotspot_style.on_pressed_fold_in_sound
-		else
-			hotspot_style.on_pressed_sound = hotspot_style.on_pressed_fold_out_sound
-		end
-
-		value = entry.get_function and entry:get_function() or content.internal_value or "<not selected>"
-		local localization_manager = Managers.localization
-		local preview_option = options_by_id[value]
-		local preview_option_id = preview_option and preview_option.id
-		local preview_value = preview_option and preview_option.display_name or "loc_settings_option_unavailable"
-		local ignore_localization = preview_option and preview_option.ignore_localization
-		content.value_text = ignore_localization and preview_value or localization_manager:localize(preview_value)
-		local always_keep_order = true
-		local grow_downwards = content.grow_downwards
-		local new_selection_index = nil
-
-		if not selected_index or not focused then
-			for i = 1, #options do
-				local option = options[i]
-
-				if option.id == preview_option_id then
-					selected_index = i
-
-					break
-				end
-			end
-
-			selected_index = selected_index or 1
-		end
-
-		if selected_index and focused then
-			if input_service:get("navigate_up_continuous") then
-				if grow_downwards or not grow_downwards and always_keep_order then
-					new_selection_index = math.max(selected_index - 1, 1)
-				else
-					new_selection_index = math.min(selected_index + 1, num_options)
-				end
-			elseif input_service:get("navigate_down_continuous") then
-				if grow_downwards or not grow_downwards and always_keep_order then
-					new_selection_index = math.min(selected_index + 1, num_options)
-				else
-					new_selection_index = math.max(selected_index - 1, 1)
-				end
-			end
-		end
-
-		if new_selection_index or not content.selected_index then
-			if new_selection_index then
-				selected_index = new_selection_index
-			end
-
-			if num_visible_options < num_options then
-				local step_size = 1 / num_options
-				local new_scroll_percentage = math.min(selected_index - 1, num_options) * step_size
-				content.scroll_percentage = new_scroll_percentage
-				content.scroll_add = nil
-			end
-
-			content.selected_index = selected_index
-		end
-
-		local scroll_percentage = content.scroll_percentage
-
-		if scroll_percentage then
-			local step_size = 1 / (num_options - (num_visible_options - 1))
-			content.start_index = math.max(1, math.ceil(scroll_percentage / step_size))
-		end
-
-		local option_hovered = false
-		local option_index = 1
-		local start_index = content.start_index or 1
-		local end_index = math.min(start_index + num_visible_options - 1, num_options)
-		local using_scrollbar = num_visible_options < num_options
-
-		for i = start_index, end_index do
-			local actual_i = i
-
-			if not grow_downwards and always_keep_order then
-				actual_i = end_index - i + start_index
-			end
-
-			local option_text_id = "option_text_" .. option_index
-			local option_hotspot_id = "option_hotspot_" .. option_index
-			local outline_style_id = "outline_" .. option_index
-			local option_hotspot = content[option_hotspot_id]
-			option_hovered = option_hovered or option_hotspot.is_hover
-			option_hotspot.is_selected = actual_i == selected_index
-			local option = options[actual_i]
-
-			if option_hotspot.on_pressed then
-				option_hotspot.on_pressed = nil
-				new_value = option.id
-                real_value = option.value
-				content.selected_index = actual_i
-			end
-
-			local option_display_name = option.display_name
-			local option_ignore_localization = option.ignore_localization
-			content[option_text_id] = option_ignore_localization and option_display_name or localization_manager:localize(option_display_name)
-			local options_y = size[2] * option_index
-			style[option_hotspot_id].offset[2] = grow_downwards and options_y or -options_y
-			style[option_text_id].offset[2] = grow_downwards and options_y or -options_y
-			local entry_length = using_scrollbar and size[1] - style.scrollbar_hotspot.size[1] or size[1]
-			style[outline_style_id].size[1] = entry_length
-			style[option_text_id].size[1] = size[1]
-			option_index = option_index + 1
-		end
-
-		local value_changed = new_value ~= nil
-
-		if value_changed and new_value ~= value then
-			local on_activated = entry.on_activated
-
-			on_activated(new_value, entry)
-		end
-
-		local scrollbar_hotspot = content.scrollbar_hotspot
-		local scrollbar_hovered = scrollbar_hotspot.is_hover
-
-		if (input_service:get("left_pressed") or input_service:get("confirm_pressed") or input_service:get("back")) and content.exclusive_focus and not content.wait_next_frame then
-			content.wait_next_frame = true
-
-			return
-		end
-
-		if content.wait_next_frame then
-			content.wait_next_frame = nil
-			content.close_setting = true
-			mod.dropdown_open = false
-
-			return
-		end
-	end,
-}
-
--- ##### ┬  ┬┬┌─┐┬ ┬  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #################################################################################
--- ##### └┐┌┘│├┤ │││  ├─┤│ ││ │├┴┐└─┐ #################################################################################
--- #####  └┘ ┴└─┘└┴┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #################################################################################
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
-	func(self, settings, context, ...)
-	-- Custom
-	self._custom_widgets = {}
-	self._not_applicable = {}
-	self._custom_widgets_overlapping = 0
-	-- Overwrite draw elements function
-	-- Make view legend inputs visible when UI gets hidden
-	self._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
-		local old_alpha_multiplier = render_settings.alpha_multiplier
-		local alpha_multiplier = self._alpha_multiplier or 1
-		local elements_array = self._elements_array
-		for i = 1, #elements_array do
-			local element = elements_array[i]
-			if element then
-				local element_name = element.__class_name
-				if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
-					ui_renderer = self._ui_default_renderer or ui_renderer
-				end
-				render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
-				element:draw(dt, t, ui_renderer, render_settings, input_service)
-			end
-		end
-		render_settings.alpha_multiplier = old_alpha_multiplier
-	end
-end)
-
-mod.generate_custom_widgets = function(self, view)
-	local item = view._selected_item
-	if item then
-		-- Iterate scenegraphs additions
-		for _, added_scenegraph in pairs(self.added_cosmetics_scenegraphs) do
-			-- Differentiate text and dropdown
-			if string.find(added_scenegraph, "text_pivot") then
-				-- Generate label
-				local attachment_slot = string.gsub(added_scenegraph, "_text_pivot", "")
-				self:add_custom_widget(self:generate_label(view, added_scenegraph, attachment_slot, item), view)
-			else
-				-- Generate dropdown
-				local attachment_slot = string.gsub(added_scenegraph, "_pivot", "")
-				self:add_custom_widget(self:generate_dropdown(view, added_scenegraph, attachment_slot, item), view)
-			end
-		end
-	end
-end
-
-mod.resolve_not_applicable_attachments = function(self, view)
-	local item = view._selected_item
-	if item then
-		-- Get item name
-		local item_name = self:item_name_from_content_string(item.name)
-		local move = 0
-		-- Iterate attachment slots
-		for index, slot in pairs(self.attachment_slots) do
-			-- Check that weapon has attachment slot and more than 2 options
-			-- 1st option is default
-			if self.attachment[item_name] and (not self.attachment[item_name][slot] or #self.attachment[item_name][slot] <= 2) then
-				-- Set not applicable in widgets to hide them
-				view._widgets_by_name[slot.."_custom"].not_applicable = true
-				view._widgets_by_name[slot.."_custom_text"].not_applicable = true
-				-- Add to list of not applicable widgets
-				view._not_applicable[#view._not_applicable+1] = slot.."_pivot"
-				view._not_applicable[#view._not_applicable+1] = slot.."_text_pivot"
-			end
-		end
-		-- Move widgets according to their applicable status
-		for _, scenegraph_name in pairs(self.added_cosmetics_scenegraphs) do
-			if table.contains(view._not_applicable, scenegraph_name) then
-				-- Differentiate text and dropdown
-				if string.find(scenegraph_name, "text_pivot") then
-					move = move + label_height
-				else
-					move = move + dropdown_height
-				end
-			end
-			-- Change scenegraph position
-			local scenegraph_entry = view._ui_scenegraph[scenegraph_name]
-			if scenegraph_entry then
-				scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - move
-			end
-		end
-	end
-end
-
-mod.resolve_overlapping_widgets = function(self, view)
-	local move = 0
-	local overlapping = {}
-	-- Iterate scenegraph entries
-	for _, scenegraph_entry in pairs(self.added_cosmetics_scenegraphs) do
-		-- Make sure attachment slot is applicable
-		if not table.contains(view._not_applicable, scenegraph_entry) then
-			-- Differentiate text and dropdown
-			if string.find(scenegraph_entry, "text_pivot") then
-				move = move + label_height
-			else
-				move = move + dropdown_height
-			end
-			-- Check if widget is overlapping
-			if view._ui_scenegraph[scenegraph_entry].local_position[2] > grid_size[2] then
-				-- Count overlapping attachment slots
-				if not string.find(scenegraph_entry, "text_pivot") then
-					view._custom_widgets_overlapping = view._custom_widgets_overlapping + 1
-				end
-				-- Add overlapping widget to list
-				overlapping[#overlapping+1] = scenegraph_entry
-			end
-		end
-	end
-	-- Change extension panels size
-	local extension_panel_pivot = view._ui_scenegraph.panel_extension_pivot
-	extension_panel_pivot.size[2] = (85 * view._custom_widgets_overlapping) + (edge * 2)
-	extension_panel_pivot.local_position[2] = grid_size[2] - 85 * (view._custom_widgets_overlapping + 1)
-	-- Change overlapping widgets positions
-	for _, scenegraph_name in pairs(overlapping) do
-		local scenegraph_entry = view._ui_scenegraph[scenegraph_name]
-		scenegraph_entry.local_position[1] = scenegraph_entry.local_position[1] + grid_width
-		scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - 85 * (view._custom_widgets_overlapping + 1)
-	end
-end
-
-mod.init_custom_weapon_zoom = function(self, view)
-	local item = view._selected_item
-	if item then
-		-- Get item name
-		local item_name = self:item_name_from_content_string(item.name)
-		-- Check for weapon in data
-		if self.attachment_models[item_name] then
-			-- Check for custom weapon zoom
-			if self.attachment_models[item_name].customization_min_zoom then
-				local min_zoom = self.attachment_models[item_name].customization_min_zoom
-				view._min_zoom = min_zoom
-			else
-				view._min_zoom = -2
-			end
-			-- Set zoom
-			view._weapon_zoom_target = view._min_zoom
-			view._weapon_zoom_fraction = view._min_zoom
-			view:_set_weapon_zoom(view._min_zoom)
-		end
-	end
-end
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
-	mod.cosmetics_view_open = true
-
-    func(self, ...)
-
-	self._widgets_by_name.reset_button.content.hotspot.disabled = true
-
-    mod:generate_custom_widgets(self)
-	mod:resolve_not_applicable_attachments(self)
-	mod:resolve_overlapping_widgets(self)
-	mod:init_custom_weapon_zoom(self)
-
-	mod.original_weapon_settings = {}
-	mod:get_changed_weapon_settings(self)
-
-    mod:hide_custom_widgets(self, true)
-
-end)

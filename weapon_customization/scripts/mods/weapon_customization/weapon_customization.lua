@@ -38,8 +38,36 @@ mod.get_gear_id = function(self, item, original)
 	return item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id
 end
 
-mod.get_gear_setting = function(self, gear_id, setting)
-	return self:get(tostring(gear_id).."_"..setting)
+mod.set_gear_setting = function(self, gear_id, setting, value)
+	if value and string.find(value, "default") then
+		self:set(tostring(gear_id).."_"..setting, nil)
+	else
+		self:set(tostring(gear_id).."_"..setting, value)
+	end
+end
+
+mod.get_gear_setting = function(self, gear_id, setting, item)
+	local attachment = self:get(tostring(gear_id).."_"..setting)
+	if not attachment and item then
+		attachment = self:get_actual_default_attachment(item, setting)
+	end
+	return attachment
+end
+
+mod.get_actual_default_attachment = function(self, item, attachment_slot)
+	if item and item.attachments then
+		local attachment = self:_recursive_find_attachment(item.attachments, attachment_slot)
+		if attachment then
+			local item_name = self:item_name_from_content_string(item.name)
+			if item_name and self.attachment_models[item_name] then
+				for attachment_name, attachment_data in pairs(self.attachment_models[item_name]) do
+					if attachment_data.model == attachment.item and attachment_data.model ~= "" then
+						return attachment_name
+					end
+				end
+			end
+		end
+	end
 end
 
 mod.item_name_from_content_string = function(self, content_string)

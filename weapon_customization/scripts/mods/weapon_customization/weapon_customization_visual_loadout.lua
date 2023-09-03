@@ -10,7 +10,7 @@ mod._add_custom_attachments = function(self, item, attachments)
         -- Iterate custom attachment slots
         for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
             -- Get weapon setting for attachment slot
-            local attachment_setting = self:get_gear_setting(gear_id, attachment_slot)
+            local attachment_setting = self:get_gear_setting(gear_id, attachment_slot, item)
             if table.contains(self[attachment_table], attachment_setting) then
                 -- Get attachment data
                 local attachment_data = self.attachment_models[item_name][attachment_setting]
@@ -50,7 +50,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         if item_unit and attachments and gear_id then
             mod:setup_item_definitions()
             -- Bulwark
-            if mod:get_gear_setting(gear_id, "left") == "bulwark_shield_01" then
+            if mod:get_gear_setting(gear_id, "left", item_data) == "bulwark_shield_01" then
                 attach_settings.item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
             end
 
@@ -96,19 +96,19 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
         if gear_id then
             mod.attachment_slot_infos = mod.attachment_slot_infos or {}
-            mod.attachment_slot_infos[gear_id] = {}
             mod.attachment_slot_infos[gear_id] = attachment_slot_info
+            -- mod.attachment_slot_infos[gear_id] = attachment_slot_info
         end
 
         -- ############################################################################################################
 
-        if attachment_slot_info.attachment_slot_to_unit then
-            for attachment_slot, unit in pairs(attachment_slot_info.attachment_slot_to_unit) do
-                if not table.contains(mod.attachment_slots, attachment_slot) then
-                    -- mod:echo("attachment slot '"..attachment_slot.."' not found")
-                end
-            end
-        end
+        -- if attachment_slot_info.attachment_slot_to_unit then
+        --     for attachment_slot, unit in pairs(attachment_slot_info.attachment_slot_to_unit) do
+        --         if not table.contains(mod.attachment_slots, attachment_slot) then
+        --             -- mod:echo("attachment slot '"..attachment_slot.."' not found")
+        --         end
+        --     end
+        -- end
 
         -- if not mod.test then
         --     mod:dtf(attachment_slot_info, "attachment_slot_info", 15)
@@ -188,6 +188,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     local parent_name = attachment_data and attachment_data.parent
                     local parent = attachment_slot_info.attachment_slot_to_unit[parent_name] or item_unit
                     local parent_slot = attachment_slot_info.unit_to_attachment_slot[parent]
+                    local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]
 
                     if not anchor.offset then
                         World.unlink_unit(attach_settings.world, unit)
@@ -197,7 +198,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     local position = Unit.local_position(unit, 1)
 
                     if anchor.offset then
-                        position = position + anchor.position and Vector3Box.unbox(anchor.position) or Vector3.zero()
+                        local offset = anchor.position and Vector3Box.unbox(anchor.position) or Vector3.zero()
+                        position = position + offset
                     else
                         position = anchor.position and Vector3Box.unbox(anchor.position) or Vector3.zero()
                     end
@@ -209,6 +211,16 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     Unit.set_local_position(unit, 1, position)
                     Unit.set_local_rotation(unit, 1, rotation)
                     Unit.set_local_scale(unit, 1, scale)
+                end
+
+                if gear_id then
+                    local gear_info = mod.attachment_slot_infos[gear_id]
+                    gear_info.unit_default_position = gear_info.unit_default_position or {}
+                    gear_info.unit_default_position[unit] = Vector3Box(Unit.local_position(unit, 1))
+                    -- gear_info.unit_default_rotation = gear_info.unit_default_rotation or {}
+                    -- gear_info.unit_default_rotation[unit] = Vector3Box(rotation_euler)
+                    -- gear_info.unit_default_scale = gear_info.unit_default_scale or {}
+                    -- gear_info.unit_default_scale[unit] = Vector3Box(scale)
                 end
             end
         end
