@@ -57,6 +57,7 @@ return {
 	loc_weapon_inventory_demo_button = {
 		en = "Demo",
 		de = "Demo",
+		ru = "Демонстрация",
 	},
 	loc_weapon_cosmetics_customization_flashlight = {
 		en = "Special",
@@ -101,7 +102,7 @@ return {
 	loc_weapon_cosmetics_customization_handle = {
 		en = "Handle",
 		de = "Handgriff",
-		ru = "Черен",
+		ru = "Ручка",
 	},
 	loc_weapon_cosmetics_customization_stock = {
 		en = "Stock",
@@ -116,7 +117,7 @@ return {
 	loc_weapon_cosmetics_customization_stock_2 = {
 		en = "Stock",
 		de = "Schaft",
-		ru = "Ложа",
+		ru = "Приклад",
 	},
 	loc_weapon_cosmetics_customization_sight = {
 		en = "Sight",
@@ -126,7 +127,7 @@ return {
 	loc_weapon_cosmetics_customization_body = {
 		en = "Body",
 		de = "Aufbau",
-		ru = "Рама",
+		ru = "Основа",
 	},
 	loc_weapon_cosmetics_customization_rail = {
 		en = "Rail",
@@ -141,11 +142,12 @@ return {
 	loc_weapon_cosmetics_customization_hilt = {
 		en = "Hilt",
 		de = "Heft",
+		ru = "Эфес",
 	},
 	loc_weapon_cosmetics_customization_head = {
 		en = "Head",
 		de = "Kopf",
-		ru = "Головка",
+		ru = "Оголовье",
 	},
 	loc_weapon_cosmetics_customization_blade = {
 		en = "Blade",
@@ -155,10 +157,12 @@ return {
 	loc_weapon_cosmetics_customization_teeth = {
 		en = "Teeth",
 		de = "Zähne",
+		ru = "Зубья",
 	},
 	loc_weapon_cosmetics_customization_chain = {
 		en = "Chain",
 		de = "Kette",
+		ru = "Цепь",
 	},
 	loc_weapon_cosmetics_customization_shaft = {
 		en = "Shaft",
@@ -168,6 +172,7 @@ return {
 	loc_weapon_cosmetics_customization_connector = {
 		en = "Connector",
 		de = "Verbindung",
+		ru = "Соединитель",
 	},
 	loc_weapon_cosmetics_customization_left = {
 		en = "Shield",
@@ -197,5 +202,6 @@ return {
 	loc_weapon_cosmetics_customization_trinket_hook = {
 		en = "Trinket Hook",
 		de = "Trinket Haken",
+		ru = "Кольцо для брелка",
 	},
 }
