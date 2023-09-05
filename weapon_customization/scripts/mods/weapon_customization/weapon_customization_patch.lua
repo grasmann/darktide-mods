@@ -5,6 +5,21 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 
+local table_contains = table.contains
+local table_clone_instance = table.clone_instance
+local table_clone = table.clone
+local vector3_box = Vector3Box
+local vector3_unbox = vector3_box.unbox
+local camera_local_position = Camera.local_position
+local string_find = string.find
+
+mod.weapon_templates = {}
+mod.special_types = {
+	"special_bullet",
+	"melee",
+    "knife",
+}
+
 mod.add_custom_attachments = {
     flashlight = "flashlights",
     bayonet = "bayonets",
@@ -26,21 +41,15 @@ mod.get_item_attachment_slots = function(self, item)
 	return attachment_slots
 end
 
-mod.skip_randomize = {
-    -- "bayonet",
-    "emblem_left",
-    "emblem_right",
-}
-
 mod.randomize_weapon = function(self, item)
     local random_attachments = {}
     local item_name = mod:item_name_from_content_string(item.name)
     local attachment_slots = mod:get_item_attachment_slots(item)
     for _, attachment_slot in pairs(attachment_slots) do
-        if not table.contains(mod.skip_randomize, attachment_slot) then
-            local attachments = {}
+        local attachments = {}
+        if mod.attachment[item_name][attachment_slot] then
             for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
-                if not string.find(data.id, "default") then
+                if not string_find(data.id, "default") then
                     attachments[#attachments+1] = data.id
                 end
             end
@@ -53,10 +62,10 @@ end
 
 mod.setup_item_definitions = function(self)
     if mod:persistent_table("weapon_customization").item_definitions == nil then
-        mod:persistent_table("weapon_customization").item_definitions = table.clone_instance(MasterItems.get_cached())
+        mod:persistent_table("weapon_customization").item_definitions = table_clone_instance(MasterItems.get_cached())
     end
     if mod:persistent_table("weapon_customization").bulwark_item_definitions == nil then
-        mod:persistent_table("weapon_customization").bulwark_item_definitions = table.clone_instance(MasterItems.get_cached())
+        mod:persistent_table("weapon_customization").bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
         mod:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = mod:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
         mod:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
     end
@@ -66,28 +75,28 @@ end
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
 -- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
 
+-- mod:hook(CLASS.InventoryWeaponsView, "event_replace_list_item", function(func, self, item, ...)
+-- 	self:replace_item_instance(item)
+-- 	if self._previewed_item and item then
+-- 		self._previewed_item = item
+-- 	end
+-- end)
+
 mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
-    if mod.weapon_changed and not mod.cosmetics_view then
+    if mod.weapon_changed then
 
         self:_spawn_profile(self._presentation_profile)
+        -- self._preview_profile_equipped_items[mod.changed_weapon.__gear.slots[1]] = mod.changed_weapon
+        -- self:_update_presentation_wield_item()
+        -- self:_update_equipped_items()
+        -- self:_equip_slot_item(slot_name, item, force_update)
 
-        -- local gear_id = mod:get_gear_id(mod.weapon_changed)
-		-- if gear_id then
+        -- mod:redo_weapon_attachments(mod.equip_weapon)
 
-        --     self:_spawn_profile(self._presentation_profile)
-
-        --     -- local package_synchronizer_client = Managers.package_synchronization:synchronizer_client()
-        --     -- if package_synchronizer_client then
-        --     --     package_synchronizer_client:reevaluate_all_profiles_packages()
-        --     -- end
-        --     -- mod:redo_weapon_attachments(gear_id)
-
-        --     -- Managers.ui:item_icon_updated(mod.weapon_changed)
-        --     -- Managers.event:trigger("event_item_icon_updated", mod.weapon_changed)
-        --     -- Managers.event:trigger("event_replace_list_item", mod.weapon_changed)
-
-        -- end
+		Managers.ui:item_icon_updated(mod.changed_weapon)
+		Managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
+		Managers.event:trigger("event_replace_list_item", mod.changed_weapon)
 
         mod.weapon_changed = nil
     end
@@ -99,7 +108,7 @@ end)
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ###########################################################
 
 mod._recursive_set_attachment = function(self, attachments, attachment_name, attachment_type, model, auto)
-    if not table.contains(mod.automatic_slots, attachment_type) or auto then
+    -- if not table_contains(mod.automatic_slots, attachment_type) or auto then
         for attachment_slot, attachment_data in pairs(attachments) do
             if attachment_slot == attachment_type then
                 attachment_data.item = model
@@ -111,7 +120,7 @@ mod._recursive_set_attachment = function(self, attachments, attachment_name, att
                 end
             end
         end
-    end
+    -- end
 end
 
 mod._recursive_remove_attachment = function(self, attachments, attachment_type)
@@ -169,33 +178,10 @@ mod._recursive_find_attachment_parent = function(self, attachments, attachment_t
     return val, parent
 end
 
-mod._recursive_get_attachment_name = function(self, attachments, attachment_type)
-    local val = nil
-    if attachments then
-        for attachment_name, attachment_data in pairs(attachments) do
-            if attachment_name == attachment_type then
-                val = attachment_name
-            else
-                if attachment_data.children then
-                    val = self:_recursive_get_attachment_name(attachment_data.children, attachment_type)
-                end
-            end
-            if val then break end
-        end
-    end
-    return val
-end
-
-mod.filter_attachments = {
-    -- "zzz_shared_material_overrides",
-    -- "slot_body_skin_color",
-    -- "magazine2",
-}
-
-mod._recursive_get_attachments = function(self, attachments, out_found_attachments)
+mod._recursive_get_attachments = function(self, attachments, out_found_attachments, all)
     out_found_attachments = out_found_attachments or {}
     for attachment_slot, attachment_data in pairs(attachments) do
-        if type(attachment_data.item) == "string" and attachment_data.item ~= "" then
+        if type(attachment_data.item) == "string" and (attachment_data.item ~= "" or all) then
             out_found_attachments[#out_found_attachments+1] = {
                 slot = attachment_slot,
                 item = attachment_data.item,
@@ -205,25 +191,6 @@ mod._recursive_get_attachments = function(self, attachments, out_found_attachmen
             self:_recursive_get_attachments(attachment_data.children, out_found_attachments)
         end
     end
-end
-
-mod._get_attachment_slot_to_unit = function(self, attachments, attachment_units, item_name)
-    local attachment_slot_to_unit = {}
-    local units_to_attachment_slots = {}
-    local found_attachments = {}
-    self:_recursive_get_attachments(attachments, found_attachments)
-    local num_units = #attachment_units
-    local num_attachments = #found_attachments
-    for i = 1, num_attachments, 1 do
-        if type(found_attachments[i].item) == "string" then
-            local definition = mod:persistent_table("weapon_customization").item_definitions[found_attachments[i].item]
-            if definition and definition.base_unit and definition.base_unit ~= "" and num_units >= i then
-                attachment_slot_to_unit[found_attachments[i]] = attachment_units[i]
-                units_to_attachment_slots[attachment_units[i]] = found_attachments[i].item
-            end
-        end
-    end
-    return attachment_slot_to_unit, units_to_attachment_slots
 end
 
 mod._recursive_find_attachment_item_string = function(self, attachments, item_string)
@@ -238,68 +205,6 @@ mod._recursive_find_attachment_item_string = function(self, attachments, item_st
                 end
             end
             if val then break end
-        end
-    end
-    return val
-end
-
-mod._recursive_find_attachment_item_name = function(self, attachments, item_name)
-    local val = nil
-    if attachments then
-        for attachment_name, attachment_data in pairs(attachments) do
-            local this_item_name = nil
-            if type(attachment_data.item) == "string" then
-                this_item_name = self:item_name_from_content_string(attachment_data.item)
-            elseif type(attachment_data.item) == "table" and attachment_data.item.__master_item then
-                this_item_name = attachment_data.item.__master_item
-            end
-            if this_item_name == item_name then
-                val = attachment_data
-            else
-                if attachment_data.children then
-                    val = self:_recursive_find_attachment_item_name(attachment_data.children, item_name)
-                end
-            end
-            if val then break end
-        end
-    end
-    return val
-end
-
-mod._recursive_find_attachment_slot = function(self, attachments, slot_name)
-    local val = nil
-    if attachments then
-        for attachment_name, attachment_data in pairs(attachments) do
-            if attachment_name == slot_name then
-                val = attachment_data
-            else
-                if attachment_data.children then
-                    val = self:_recursive_find_attachment_item_name(attachment_data.children, slot_name)
-                end
-            end
-            if val then break end
-        end
-    end
-    return val
-end
-
-mod._recursive_attachment_slot_from_index = function(self, attachments, search_index, found_index)
-    local val = nil
-    found_index = found_index or 1
-    if attachments then
-        for attachment_name, attachment_data in pairs(attachments) do
-            if found_index == search_index then
-                val = {
-                    name = attachment_name,
-                    data = attachment_data,
-                }
-            else
-                if attachment_data.children then
-                    val = mod:_recursive_attachment_slot_from_index(attachment_data.children, search_index, found_index)
-                end
-            end
-            if val then break end
-            found_index = found_index + 1
         end
     end
     return val
@@ -341,29 +246,9 @@ mod._overwrite_attachments = function(self, item_data, attachments)
     end
 end
 
-mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
 
-    local attachments = item.__master_item and item.__master_item.attachments
-    if item and attachments then
-        local gear_id = mod:get_gear_id(item)
-        if gear_id then
-            mod:setup_item_definitions()
-             -- Bulwark
-            if mod:get_gear_setting(gear_id, "left", item) == "bulwark_shield_01" then
-                self._item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
-            end
 
-            -- Add flashlight slot
-            mod:_add_custom_attachments(item, attachments)
-            
-            -- Overwrite attachments
-            mod:_overwrite_attachments(item, attachments)
-        end
-    end
 
-    func(self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
-
-end)
 
 mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
 
@@ -412,11 +297,11 @@ mod:hook(CLASS.ActionAim, "start", function(func, self, action_settings, t, ...)
         local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight")
         if sight and sight.item and sight.item ~= "" then
             local item_name = mod:item_name_from_content_string(sight.item)
-            self._has_scope = table.contains(mod.reflex_sights, item_name)
-            self._has_sight = table.contains(mod.sights, item_name)
+            self._has_scope = table_contains(mod.reflex_sights, item_name)
+            self._has_sight = table_contains(mod.sights, item_name)
             local anchor = mod.anchors[self._weapon_template.name]
-            self._scope_offset = anchor and anchor["scope_offset"] or Vector3Box(0, 0, 0)
-            self._sight_offset = anchor and anchor["no_scope_offset"] or Vector3Box(0, 0, 0)
+            self._scope_offset = anchor and anchor["scope_offset"] or vector3_box(0, 0, 0)
+            self._sight_offset = anchor and anchor["no_scope_offset"] or vector3_box(0, 0, 0)
             self.finish = function (self, reason, data, t, time_in_action)
                 if self._is_local_unit and self._has_scope then
                     mod.camera_position = self._scope_offset
@@ -433,12 +318,12 @@ mod:hook(CLASS.ActionAim, "running_action_state", function(func, self, t, time_i
     func(self, t, time_in_action, ...)
     if self._is_local_unit and self._has_scope then
         local progress = time_in_action / self._action_settings.total_time
-        local position = Vector3Box.unbox(self._scope_offset) * progress
-        mod.camera_position = Vector3Box(position)
+        local position = vector3_unbox(self._scope_offset) * progress
+        mod.camera_position = vector3_box(position)
     elseif self._is_local_unit and self._has_sight then
         local progress = time_in_action / self._action_settings.total_time
-        local position = Vector3Box.unbox(self._sight_offset) * progress
-        mod.camera_position = Vector3Box(position)
+        local position = vector3_unbox(self._sight_offset) * progress
+        mod.camera_position = vector3_box(position)
     end
 end)
 
@@ -447,20 +332,20 @@ mod:hook(CLASS.ActionUnaim, "start", function(func, self, action_settings, t, ..
         local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight")
         if sight and sight.item and sight.item ~= "" then
             local item_name = mod:item_name_from_content_string(sight.item)
-            self._has_scope = table.contains(mod.reflex_sights, item_name)
-            self._has_sight = table.contains(mod.sights, item_name)
+            self._has_scope = table_contains(mod.reflex_sights, item_name)
+            self._has_sight = table_contains(mod.sights, item_name)
             local anchor = mod.anchors[self._weapon_template.name]
-            self._scope_offset = anchor and anchor["scope_offset"] or Vector3Box(0, 0, 0)
-            self._sight_offset = anchor and anchor["no_scope_offset"] or Vector3Box(0, 0, 0)
+            self._scope_offset = anchor and anchor["scope_offset"] or vector3_box(0, 0, 0)
+            self._sight_offset = anchor and anchor["no_scope_offset"] or vector3_box(0, 0, 0)
             self.running_action_state = function(self, t, time_in_action, ...)
                 if self._is_local_unit and self._has_scope then
                     local progress = time_in_action / self._action_settings.total_time
-                    local position = Vector3Box.unbox(self._scope_offset) * (1 - progress)
-                    mod.camera_position = Vector3Box(position)
+                    local position = vector3_unbox(self._scope_offset) * (1 - progress)
+                    mod.camera_position = vector3_box(position)
                 elseif self._is_local_unit and self._has_sight then
                     local progress = time_in_action / self._action_settings.total_time
-                    local position = Vector3Box.unbox(self._sight_offset) * (1 - progress)
-                    mod.camera_position = Vector3Box(position)
+                    local position = vector3_unbox(self._sight_offset) * (1 - progress)
+                    mod.camera_position = vector3_box(position)
                 end
             end
         end
@@ -480,7 +365,7 @@ end)
 mod:hook(CLASS.CameraManager, "_update_camera_properties", function(func, self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
     func(self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
     if viewport_name == "player1" and mod.camera_position then
-        local position = Camera.local_position(camera) + Vector3Box.unbox(mod.camera_position)
+        local position = camera_local_position(camera) + vector3_unbox(mod.camera_position)
         ScriptCamera.set_local_position(camera, position)
     end
 end)
@@ -488,6 +373,30 @@ end)
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┬─┐┌─┐┬  ┬┬┌─┐┬ ┬┌─┐ ##########################################################################
 -- ##### │ │ ├┤ │││  ├─┘├┬┘├┤ └┐┌┘│├┤ │││└─┐ ##########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘└─┘ ##########################################################################
+
+mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
+
+    local attachments = item.__master_item and item.__master_item.attachments
+    if item and attachments then
+        local gear_id = mod:get_gear_id(item)
+        if gear_id then
+            mod:setup_item_definitions()
+             -- Bulwark
+            if mod:get_gear_setting(gear_id, "left", item) == "bulwark_shield_01" then
+                self._item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
+            end
+
+            -- Add flashlight slot
+            mod:_add_custom_attachments(item, attachments)
+            
+            -- Overwrite attachments
+            mod:_overwrite_attachments(item, attachments)
+        end
+    end
+
+    func(self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
+
+end)
 
 mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, is_equipped, on_present_callback, ...)
     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
@@ -523,24 +432,19 @@ end)
 -- ##### │││├┤ ├─┤├─┘│ ││││   │ ├┤ │││├─┘│  ├─┤ │ ├┤ └─┐ ##############################################################
 -- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘└─┘ ##############################################################
 
-mod.weapon_templates = {}
-mod.special_types = {
-	"special_bullet",
-	"melee",
-    "knife",
-}
+
 
 mod.template_add_torch = function(self, orig_weapon_template)
 	if orig_weapon_template then
 		local weapon_template = orig_weapon_template
 		if not self.weapon_templates[orig_weapon_template.name] then
-			self.weapon_templates[orig_weapon_template.name] = table.clone(orig_weapon_template)
+			self.weapon_templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
 			weapon_template = self.weapon_templates[orig_weapon_template.name]
 			if weapon_template.displayed_weapon_stats_table and weapon_template.displayed_weapon_stats_table.damage[3] then
 				weapon_template.displayed_weapon_stats_table.damage[3] = nil
 			end
 			if weapon_template.displayed_attacks and weapon_template.displayed_attacks.special then
-				if table.contains(self.special_types, weapon_template.displayed_attacks.special.type) then
+				if table_contains(self.special_types, weapon_template.displayed_attacks.special.type) then
 					weapon_template.displayed_attacks.special = {
 						desc = "loc_stats_special_action_flashlight_desc",
 						display_name = "loc_weapon_special_flashlight",
@@ -578,7 +482,7 @@ end)
 -- ##### ││││├─┘│ │ │  ################################################################################################
 -- ##### ┴┘└┘┴  └─┘ ┴  ################################################################################################
 
-local table_contains = table.contains
+local table_contains = table_contains
 
 mod.special_actions = {
     "weapon_extra_pressed",

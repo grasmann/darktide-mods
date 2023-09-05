@@ -6,6 +6,10 @@ return {
 	is_togglable = false,
 	options = {
 		widgets = {
+			{["setting_id"] = "mod_option_weapon_build_animation",
+				["type"] = "checkbox",
+				["default_value"] = true,
+			},
 			{["setting_id"] = "mod_option_flashlight_shadows",
 				["type"] = "checkbox",
 				["default_value"] = true,

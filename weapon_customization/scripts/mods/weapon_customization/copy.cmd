@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\weapon_customization\scripts\mods\weapon_customization" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\weapon_customization\scripts\mods\weapon_customization"

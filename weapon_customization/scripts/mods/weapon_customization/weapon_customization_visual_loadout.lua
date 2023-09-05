@@ -2,6 +2,42 @@ local mod = get_mod("weapon_customization")
 
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 
+local table_contains = table.contains
+local table_keys = table.keys
+local table_sort = table.sort
+local table_find = table.find
+local table_remove = table.remove
+local table_append = table.append
+local table_set_readonly = table.set_readonly
+local unit_debug_name = Unit.debug_name
+local unit_set_local_position = Unit.set_local_position
+local unit_set_local_rotation = Unit.set_local_rotation
+local unit_set_local_scale = Unit.set_local_scale
+local unit_local_position = Unit.local_position
+local unit_has_node = Unit.has_node
+local unit_node = Unit.node
+local unit_world_pose = Unit.world_pose
+local unit_set_animation_state_machine = Unit.set_animation_state_machine
+local unit_has_lod_object = Unit.has_lod_object
+local unit_lod_object = Unit.lod_object
+local unit_set_unit_objects_visibility = Unit.set_unit_objects_visibility
+local unit_set_unit_culling = Unit.set_unit_culling
+local unit_set_sort_order = Unit.set_sort_order
+local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
+local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+local string_sub = string.sub
+local string_gsub = string.gsub
+local string_find = string.find
+local vector3_box = Vector3Box
+local vector3_unbox = vector3_box.unbox
+local vector3_zero = Vector3.zero
+local matrix4x4_box = Matrix4x4Box
+local world_unlink_unit = World.unlink_unit
+local world_link_unit = World.link_unit
+local world_spawn_unit_ex = World.spawn_unit_ex
+local lod_group_add_lod_object = LODGroup.add_lod_object
+local lod_object_set_static_select = LODObject.set_static_select
+
 mod._add_custom_attachments = function(self, item, attachments)
     local gear_id = mod:get_gear_id(item)
     if gear_id then
@@ -11,7 +47,7 @@ mod._add_custom_attachments = function(self, item, attachments)
         for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
             -- Get weapon setting for attachment slot
             local attachment_setting = self:get_gear_setting(gear_id, attachment_slot, item)
-            if table.contains(self[attachment_table], attachment_setting) then
+            if table_contains(self[attachment_table], attachment_setting) then
                 -- Get attachment data
                 local attachment_data = self.attachment_models[item_name][attachment_setting]
                 if attachment_data and attachment_data.parent then
@@ -34,6 +70,60 @@ mod._add_custom_attachments = function(self, item, attachments)
     end
 end
 
+mod._apply_anchor_fixes = function(self, item, unit)
+    if item and item.attachments then
+        local gear_id = mod:get_gear_id(item)
+        local item_name = mod:item_name_from_content_string(item.name)
+        local attachments = item.attachments
+        if mod.attachment_slot_infos then
+            local attachment_slot_info = mod.attachment_slot_infos[gear_id]
+            -- Fixes
+            if mod.anchors[item_name] and mod.anchors[item_name].fixes then
+                local fixes = mod.anchors[item_name].fixes
+                for _, fix_data in pairs(fixes) do
+                    -- Dependencies
+                    local has_dependencies = false
+                    local no_dependencies = false
+                    if fix_data.dependencies then
+                        for _, dependency in pairs(fix_data.dependencies) do
+                            local negative = string_sub(dependency, 1, 1) == "!"
+                            dependency = string_gsub(dependency, "!", "")
+                            if mod.attachment_models[item_name] and mod.attachment_models[item_name][dependency] then
+                                local model_string = mod.attachment_models[item_name][dependency].model
+                                if negative then
+                                    has_dependencies = not mod:_recursive_find_attachment_item_string(attachments, model_string)
+                                else
+                                    has_dependencies = mod:_recursive_find_attachment_item_string(attachments, model_string)
+                                end
+                                if not has_dependencies then break end
+                            end
+                        end
+                    else
+                        no_dependencies = true
+                    end
+                    if has_dependencies or no_dependencies then
+                        for fix_attachment, fix in pairs(fix_data) do
+                            -- Attachment
+                            if mod.attachment_models[item_name] and mod.attachment_models[item_name][fix_attachment] then
+                                local model_string = mod.attachment_models[item_name][fix_attachment].model
+                                local has_fix_attachment = mod:_recursive_find_attachment_item_string(attachments, model_string)
+                                local fix_attachment_slot = mod.attachment_models[item_name][fix_attachment].type
+                                if has_fix_attachment and fix_attachment_slot and unit == attachment_slot_info.attachment_slot_to_unit[fix_attachment_slot] then
+                                    return fix
+                                end
+                            end
+                            -- Slot
+                            if unit == attachment_slot_info.attachment_slot_to_unit[fix_attachment] then
+                                return fix
+                            end
+                        end
+                    end--else self:print("dependencies not met") end
+                end
+            end--else self:print("not fixes for item "..item_name) end
+        else self:print("slot_info is nil") end
+    end
+end
+
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
     instance._sort_order_enum = {
@@ -43,7 +133,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
     }
 
     instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
-
         local item_name = mod:item_name_from_content_string(item_data.name)
         local attachments = item_data.attachments
         local gear_id = mod:get_gear_id(item_data)
@@ -63,6 +152,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
         local attachment_slot_info = {}
 
+        -- local attachment_slot_info = {}
         -- mod:echo(item_name)
         -- mod:debug_attachments(item_data, attachments, {"combatsword_p3_m1", "combatsword_p3_m2", "combatsword_p3_m3"})
 
@@ -74,15 +164,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         if item_unit and attachments then
             attachment_units_bind_poses = optional_extract_attachment_units_bind_poses and {} or nil
             attachment_units = {}
-            local attachment_names = table.keys(attachments)
+            local attachment_names = table_keys(attachments)
     
-            table.sort(attachment_names)
+            table_sort(attachment_names)
     
             local skin_color_slot_name = "slot_body_skin_color"
-            local skin_color_slot_index = table.find(attachment_names, skin_color_slot_name)
+            local skin_color_slot_index = table_find(attachment_names, skin_color_slot_name)
     
             if skin_color_slot_index then
-                table.remove(attachment_names, skin_color_slot_index)
+                table_remove(attachment_names, skin_color_slot_index)
     
                 attachment_names[#attachment_names + 1] = skin_color_slot_name
             end
@@ -94,30 +184,18 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             end
         end
 
-        if gear_id then
-            mod.attachment_slot_infos = mod.attachment_slot_infos or {}
-            mod.attachment_slot_infos[gear_id] = attachment_slot_info
-            -- mod.attachment_slot_infos[gear_id] = attachment_slot_info
-        end
-
         -- ############################################################################################################
 
-        -- if attachment_slot_info.attachment_slot_to_unit then
-        --     for attachment_slot, unit in pairs(attachment_slot_info.attachment_slot_to_unit) do
-        --         if not table.contains(mod.attachment_slots, attachment_slot) then
-        --             -- mod:echo("attachment slot '"..attachment_slot.."' not found")
-        --         end
-        --     end
-        -- end
+        if item_unit and attachments and gear_id then
+            mod.attachment_slot_infos = mod.attachment_slot_infos or {}
+            mod.attachment_slot_infos[gear_id] = attachment_slot_info
+            
+            -- attachment_slot_info = mod.attachment_slot_infos[gear_id]
+        end
 
-        -- if not mod.test then
-        --     mod:dtf(attachment_slot_info, "attachment_slot_info", 15)
-        --     mod.test = true
-        -- end
-
-        if attachment_units and item_data then
+        if attachment_units and attachments and item_data and item_unit then
             for _, unit in pairs(attachment_units) do
-                local unit_name = Unit.debug_name(unit)
+                local unit_name = unit_debug_name(unit)
                 local anchor = nil
 
                 if mod.attachment_units[unit_name] then
@@ -131,146 +209,105 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 if unit_name == "#ID[bc25db1df0670d2a]" then
-                    Unit.set_local_position(unit, 1, Unit.local_position(unit, 1) + Vector3(0, 0, -.065))
-                    local x, y, z = Quaternion.to_euler_angles_xyz(Unit.local_rotation(unit, 1))
+                    unit_set_local_position(unit, 1, unit_local_position(unit, 1) + Vector3(0, 0, -.065))
+                    local x, y, z = quaternion_to_euler_angles_xyz(Unit.local_rotation(unit, 1))
                     local rotation = Vector3(x, y, z) + Vector3(-10, 5, 5)
-                    local rotate_quaternion = Quaternion.from_euler_angles_xyz(rotation[1], rotation[2], rotation[3])
-                    Unit.set_local_rotation(unit, 1, rotate_quaternion)
-                    Unit.set_local_scale(unit, 1, Vector3(1, 1, 0.9))
+                    local rotate_quaternion = quaternion_from_euler_angles_xyz(rotation[1], rotation[2], rotation[3])
+                    unit_set_local_rotation(unit, 1, rotate_quaternion)
+                    unit_set_local_scale(unit, 1, Vector3(1, 1, 0.9))
                 end
 
-                -- Fixes
-                if mod.anchors[item_name] and mod.anchors[item_name].fixes then
-                    local fixes = mod.anchors[item_name].fixes
-                    for _, fix_data in pairs(fixes) do
-                        -- Dependencies
-                        local has_dependencies = false
-                        if fix_data.dependencies then
-                            for _, dependency in pairs(fix_data.dependencies) do
-                                local negative = string.sub(dependency, 1, 1) == "!"
-                                dependency = string.gsub(dependency, "!", "")
-                                if mod.attachment_models[item_name] and mod.attachment_models[item_name][dependency] then
-                                    local model_string = mod.attachment_models[item_name][dependency].model
-                                    if negative then
-                                        has_dependencies = not mod:_recursive_find_attachment_item_string(attachments, model_string)
-                                    else
-                                        has_dependencies = mod:_recursive_find_attachment_item_string(attachments, model_string)
-                                    end
-                                    if not has_dependencies then break end
-                                end
-                            end
-                        end
-                        if has_dependencies then
-                            for fix_attachment, fix in pairs(fix_data) do
-                                -- Attachment
-                                if mod.attachment_models[item_name] and mod.attachment_models[item_name][fix_attachment] then
-                                    local model_string = mod.attachment_models[item_name][fix_attachment].model
-                                    local has_fix_attachment = mod:_recursive_find_attachment_item_string(attachments, model_string)
-                                    local fix_attachment_slot = mod.attachment_models[item_name][fix_attachment].type
-                                    if has_fix_attachment and fix_attachment_slot and unit == attachment_slot_info.attachment_slot_to_unit[fix_attachment_slot] then
-                                        anchor = fix
-                                        break
-                                    end
-                                end
-                                -- Slot
-                                if unit == attachment_slot_info.attachment_slot_to_unit[fix_attachment] then
-                                    anchor = fix
-                                    break
-                                end
-                            end
-                        end
-                    end
-                end
+                anchor = mod:_apply_anchor_fixes(item_data, unit) or anchor
 
                 if anchor and anchor.position and anchor.rotation and anchor.scale then
                     local attachment_name = attachment_slot_info.unit_to_attachment_name[unit]
                     local attachment_data = attachment_name and mod.attachment_models[item_name][attachment_name]
-                    local parent_name = attachment_data and attachment_data.parent
-                    local parent = attachment_slot_info.attachment_slot_to_unit[parent_name] or item_unit
+                    local parent_name = attachment_data and attachment_data.parent and attachment_data.parent
+                    local parent = parent_name and attachment_slot_info.attachment_slot_to_unit[parent_name] or item_unit
                     local parent_slot = attachment_slot_info.unit_to_attachment_slot[parent]
                     local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]
 
                     if not anchor.offset then
-                        World.unlink_unit(attach_settings.world, unit)
-                        World.link_unit(attach_settings.world, unit, 1, parent, 1)
+                        world_unlink_unit(attach_settings.world, unit)
+                        world_link_unit(attach_settings.world, unit, 1, parent, 1)
                     end
 
-                    local position = Unit.local_position(unit, 1)
+                    local position = unit_local_position(unit, 1)
 
                     if anchor.offset then
-                        local offset = anchor.position and Vector3Box.unbox(anchor.position) or Vector3.zero()
+                        local offset = anchor.position and vector3_unbox(anchor.position) or vector3_zero()
                         position = position + offset
                     else
-                        position = anchor.position and Vector3Box.unbox(anchor.position) or Vector3.zero()
+                        position = anchor.position and vector3_unbox(anchor.position) or vector3_zero()
                     end
 
-                    local rotation_euler = anchor.rotation and Vector3Box.unbox(anchor.rotation) or Vector3.zero()
-                    local scale = anchor.scale and Vector3Box.unbox(anchor.scale) or Vector3.zero()
-                    local rotation = Quaternion.from_euler_angles_xyz(rotation_euler[1], rotation_euler[2], rotation_euler[3])
+                    local rotation_euler = anchor.rotation and vector3_unbox(anchor.rotation) or vector3_zero()
+                    local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_zero()
+                    local rotation = quaternion_from_euler_angles_xyz(rotation_euler[1], rotation_euler[2], rotation_euler[3])
 
-                    Unit.set_local_position(unit, 1, position)
-                    Unit.set_local_rotation(unit, 1, rotation)
-                    Unit.set_local_scale(unit, 1, scale)
+                    unit_set_local_position(unit, 1, position)
+                    unit_set_local_rotation(unit, 1, rotation)
+                    unit_set_local_scale(unit, 1, scale)
                 end
 
                 if gear_id then
                     local gear_info = mod.attachment_slot_infos[gear_id]
                     gear_info.unit_default_position = gear_info.unit_default_position or {}
-                    gear_info.unit_default_position[unit] = Vector3Box(Unit.local_position(unit, 1))
+                    gear_info.unit_default_position[unit] = vector3_box(unit_local_position(unit, 1))
                     -- gear_info.unit_default_rotation = gear_info.unit_default_rotation or {}
-                    -- gear_info.unit_default_rotation[unit] = Vector3Box(rotation_euler)
+                    -- gear_info.unit_default_rotation[unit] = vector3_box(rotation_euler)
                     -- gear_info.unit_default_scale = gear_info.unit_default_scale or {}
-                    -- gear_info.unit_default_scale[unit] = Vector3Box(scale)
+                    -- gear_info.unit_default_scale[unit] = vector3_box(scale)
                 end
             end
         end
 
-        if mod._debug then
-            local new_unit_names = {}
-            local gear_id = mod:get_gear_id(item_data)
-            if gear_id and attachment_units then
-                if mod.last_attachment_units[gear_id] then
-                    local last_units = mod.last_attachment_units[gear_id]
-                    local new_units = mod.new_units[gear_id]
-                    local debug_units = mod.debug_selected_unit
+        -- if mod._debug then
+        --     local new_unit_names = {}
+        --     local gear_id = mod:get_gear_id(item_data)
+        --     if gear_id and attachment_units then
+        --         if mod.last_attachment_units[gear_id] then
+        --             local last_units = mod.last_attachment_units[gear_id]
+        --             local new_units = mod.new_units[gear_id]
+        --             local debug_units = mod.debug_selected_unit
 
-                    for _, unit in pairs(attachment_units) do
-                        local unit_name = Unit.debug_name(unit)
-                        if not table.contains(last_units, unit_name) then
-                            new_unit_names[#new_unit_names+1] = unit_name
-                            new_units[#new_units+1] = unit
-                            last_units[#last_units+1] = unit_name
-                        end
-                    end
+        --             for _, unit in pairs(attachment_units) do
+        --                 local unit_name = unit_debug_name(unit)
+        --                 if not table_contains(last_units, unit_name) then
+        --                     new_unit_names[#new_unit_names+1] = unit_name
+        --                     new_units[#new_units+1] = unit
+        --                     last_units[#last_units+1] = unit_name
+        --                 end
+        --             end
 
-                    if #new_unit_names > 0 then
-                        for _, unit_name in pairs(new_unit_names) do
-                            -- mod:echo(unit_name)
-                        end
-                    end
+        --             if #new_unit_names > 0 then
+        --                 for _, unit_name in pairs(new_unit_names) do
+        --                     -- mod:echo(unit_name)
+        --                 end
+        --             end
 
-                    if #new_unit_names == 1 then
-                        debug_units[#debug_units+1] = new_units[#new_units]
-                        if not mod.attachment_units[new_unit_names[1]] then
-                            -- mod:dtf(new_unit_names, "new_unit", 3)
-                        end
-                    end
+        --             if #new_unit_names == 1 then
+        --                 debug_units[#debug_units+1] = new_units[#new_units]
+        --                 if not mod.attachment_units[new_unit_names[1]] then
+        --                     -- mod:dtf(new_unit_names, "new_unit", 3)
+        --                 end
+        --             end
 
-                else
+        --         else
 
-                    local last_units = {}
-                    for _, unit in pairs(attachment_units) do
-                        local unit_name = Unit.debug_name(unit)
-                        last_units[#last_units+1] = unit_name
-                    end
-                    mod.debug_item_name = mod:item_name_from_content_string(item_data.name)
-                    mod.last_attachment_units[gear_id] = last_units
-                    mod.new_units[gear_id] = {}
-                    mod.debug_selected_unit = {}
+        --             local last_units = {}
+        --             for _, unit in pairs(attachment_units) do
+        --                 local unit_name = unit_debug_name(unit)
+        --                 last_units[#last_units+1] = unit_name
+        --             end
+        --             mod.debug_item_name = mod:item_name_from_content_string(item_data.name)
+        --             mod.last_attachment_units[gear_id] = last_units
+        --             mod.new_units[gear_id] = {}
+        --             mod.debug_selected_unit = {}
 
-                end
-            end
-        end
+        --         end
+        --     end
+        -- end
 
         -- ############################################################################################################
     
@@ -279,6 +316,55 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
     instance.attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, attachment_slot_info)
         return instance._attach_hierarchy(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, attachment_slot_info)
+    end
+
+    instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
+        local weapon_skin = instance._validate_item_name(item_data.slot_weapon_skin)
+        -- local item_name = mod:item_name_from_content_string(item_data.name)
+        -- -- mod.attachment_slot_infos = mod.attachment_slot_infos or {}
+        -- local gear_id = mod:get_gear_id(item_data)
+        -- -- mod.attachment_slot_infos[gear_id] = mod.attachment_slot_infos[gear_id] or {}
+        -- -- local gear_info = mod.attachment_slot_infos[gear_id]
+        -- local attachment_type, attachment_name = nil, nil
+        -- if gear_id and item_data.attachments then
+        --     local attachments = {}
+        --     mod:_recursive_get_attachments(item_data.attachments, attachments)
+        --     if #attachments > 0 then
+        --         attachment_type = attachments[1].slot
+        --         attachment_name = mod:get_gear_setting(gear_id, attachment_type, item_data)
+        --     end
+        -- end
+
+        -- local attachment_slot_info = {}
+        -- if gear_id then
+        --     mod.attachment_slot_infos = mod.attachment_slot_infos or {}
+        --     mod.attachment_slot_infos[gear_id] = mod.attachment_slot_infos[gear_id] or {}
+        --     attachment_slot_info = mod.attachment_slot_infos[gear_id]
+        -- end
+
+    
+        if type(weapon_skin) == "string" then
+            weapon_skin = attach_settings.item_definitions[weapon_skin]
+        end
+    
+        local item_unit, bind_pose = instance.spawn_base_unit(item_data, attach_settings, parent_unit, optional_mission_template) --, attachment_slot_info, attachment_type, attachment_name)
+        local skin_overrides = instance.generate_attachment_overrides_lookup(item_data, weapon_skin)
+        local attachment_units, attachment_units_bind_poses = instance.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)--, attachment_slot_info)
+    
+        instance.apply_material_overrides(item_data, item_unit, parent_unit, attach_settings)
+    
+        if weapon_skin then
+            instance.apply_material_overrides(weapon_skin, item_unit, parent_unit, attach_settings)
+        end
+    
+        instance.add_extensions(item_unit, attachment_units, attach_settings)
+        instance.play_item_on_spawn_anim_event(item_data, parent_unit)
+    
+        return item_unit, attachment_units, bind_pose, attachment_units_bind_poses
+    end
+
+    instance.spawn_base_unit = function(item_data, attach_settings, parent_unit, optional_mission_template)--, attachment_slot_info, attachment_type, attachment_name)
+        return instance._spawn_attachment(item_data, attach_settings, parent_unit, optional_mission_template)--, attachment_slot_info, attachment_type, attachment_name)
     end
 
     instance._attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info)
@@ -301,7 +387,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             attached_units[#attached_units + 1] = attachment_unit
     
             if attached_units_bind_poses_or_nil then
-                attached_units_bind_poses_or_nil[attachment_unit] = Matrix4x4Box(bind_pose)
+                attached_units_bind_poses_or_nil[attachment_unit] = matrix4x4_box(bind_pose)
             end
     
             local attachments = item and item.attachments
@@ -312,13 +398,13 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             local item_material_overrides = item.material_overrides
     
             if item_material_overrides then
-                table.append(material_overrides, item_material_overrides)
+                table_append(material_overrides, item_material_overrides)
             end
     
             local parent_material_overrides = attachment_slot_data.material_overrides
     
             if parent_material_overrides then
-                table.append(material_overrides, parent_material_overrides)
+                table_append(material_overrides, parent_material_overrides)
             end
     
             local apply_to_parent = item.material_override_apply_to_parent
@@ -353,11 +439,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
     instance._node_name_to_attachment_slot = function(node_name)
         local name = node_name
-        name = string.gsub(name, "ap_", "")
-        name = string.gsub(name, "_01", "")
-        name = string.gsub(name, "rp_", "")
-        name = string.gsub(name, "magazine_02", "magazine2")
-        if string.find(name, "chained_rig") then name = "receiver" end
+        name = string_gsub(name, "ap_", "")
+        name = string_gsub(name, "_01", "")
+        name = string_gsub(name, "rp_", "")
+        name = string_gsub(name, "magazine_02", "magazine2")
+        if string_find(name, "chained_rig") then name = "receiver" end
         return name
     end
 
@@ -392,19 +478,19 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             attach_node_index = tonumber(attach_node)
         elseif settings.is_minion then
             if settings.from_script_component then
-                attach_node_index = Unit.has_node(parent_unit, item_data.wielded_attach_node or attach_node) and Unit.node(parent_unit, item_data.wielded_attach_node or attach_node) or 1
+                attach_node_index = unit_has_node(parent_unit, item_data.wielded_attach_node or attach_node) and unit_node(parent_unit, item_data.wielded_attach_node or attach_node) or 1
             else
-                attach_node_index = Unit.has_node(parent_unit, item_data.unwielded_attach_node or attach_node) and Unit.node(parent_unit, item_data.unwielded_attach_node or attach_node) or 1
+                attach_node_index = unit_has_node(parent_unit, item_data.unwielded_attach_node or attach_node) and unit_node(parent_unit, item_data.unwielded_attach_node or attach_node) or 1
             end
         elseif attach_node then
-            attach_node_index = Unit.has_node(parent_unit, attach_node) and Unit.node(parent_unit, attach_node) or 1
+            attach_node_index = unit_has_node(parent_unit, attach_node) and unit_node(parent_unit, attach_node) or 1
         end
     
         local spawned_unit = nil
-        local pose = Unit.world_pose(parent_unit, attach_node_index)
+        local pose = unit_world_pose(parent_unit, attach_node_index)
     
         if settings.from_script_component then
-            spawned_unit = World.spawn_unit_ex(settings.world, base_unit, nil, pose)
+            spawned_unit = world_spawn_unit_ex(settings.world, base_unit, nil, pose)
         elseif settings.is_minion then
             spawned_unit = settings.unit_spawner:spawn_unit(base_unit, settings.attach_pose)
         else
@@ -412,18 +498,14 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         end
 
         if type(attach_node) == "string" and item_data.base_unit ~= "content/characters/empty_item/empty_item" then
-            -- local item_name = instance.item_names[item_unit]
-            -- local attachment_slot = mod.attachment_models[]
             local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(attach_node)
             attachment_slot_info = attachment_slot_info or {}
             attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
             attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
             attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
-            -- attachment_slot_info.attachment_slot_to_base_unit = attachment_slot_info.attachment_slot_to_base_unit or {}
             attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
             attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
             attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
-            -- attachment_slot_info.attachment_slot_to_base_unit[item_data.base_unit] = attachment_slot
         end
     
         local item_type = item_data.item_type
@@ -432,17 +514,17 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             local sort_order = instance._sort_order_enum[item_type]
     
             if sort_order then
-                Unit.set_sort_order(spawned_unit, sort_order)
+                unit_set_sort_order(spawned_unit, sort_order)
             end
         end
     
         if settings.is_first_person or settings.force_highest_lod_step then
-            Unit.set_unit_culling(spawned_unit, false)
+            unit_set_unit_culling(spawned_unit, false)
     
-            if Unit.has_lod_object(spawned_unit, "lod") then
-                local item_lod_object = Unit.lod_object(spawned_unit, "lod")
+            if unit_has_lod_object(spawned_unit, "lod") then
+                local item_lod_object = unit_lod_object(spawned_unit, "lod")
     
-                LODObject.set_static_select(item_lod_object, 0)
+                lod_object_set_static_select(item_lod_object, 0)
             end
         end
     
@@ -453,35 +535,35 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         local backpack_offset = item_data.backpack_offset
     
         if backpack_offset then
-            local backpack_offset_node_index = Unit.has_node(parent_unit, "j_backpackoffset") and Unit.node(parent_unit, "j_backpackoffset")
+            local backpack_offset_node_index = unit_has_node(parent_unit, "j_backpackoffset") and unit_node(parent_unit, "j_backpackoffset")
     
             if backpack_offset_node_index then
                 local backpack_offset_v3 = Vector3(0, backpack_offset, 0)
     
-                Unit.set_local_position(parent_unit, backpack_offset_node_index, backpack_offset_v3)
+                unit_set_local_position(parent_unit, backpack_offset_node_index, backpack_offset_v3)
             end
         end
     
         local bind_pose = Unit.local_pose(spawned_unit, 1)
     
         if is_first_person and (show_in_1p or only_show_in_1p) then
-            Unit.set_unit_objects_visibility(spawned_unit, false, true, VisibilityContexts.RAYTRACING_CONTEXT)
+            unit_set_unit_objects_visibility(spawned_unit, false, true, VisibilityContexts.RAYTRACING_CONTEXT)
         end
     
         local keep_local_transform = not settings.skip_link_children and true
     
-        World.link_unit(settings.world, spawned_unit, 1, parent_unit, attach_node_index, keep_local_transform)
+        world_link_unit(settings.world, spawned_unit, 1, parent_unit, attach_node_index, keep_local_transform)
     
-        if settings.lod_group and Unit.has_lod_object(spawned_unit, "lod") and not settings.is_first_person then
-            local attached_lod_object = Unit.lod_object(spawned_unit, "lod")
+        if settings.lod_group and unit_has_lod_object(spawned_unit, "lod") and not settings.is_first_person then
+            local attached_lod_object = unit_lod_object(spawned_unit, "lod")
     
-            LODGroup.add_lod_object(settings.lod_group, attached_lod_object)
+            lod_group_add_lod_object(settings.lod_group, attached_lod_object)
         end
     
-        if settings.lod_shadow_group and Unit.has_lod_object(spawned_unit, "lod_shadow") and not settings.is_first_person then
-            local attached_lod_object = Unit.lod_object(spawned_unit, "lod_shadow")
+        if settings.lod_shadow_group and unit_has_lod_object(spawned_unit, "lod_shadow") and not settings.is_first_person then
+            local attached_lod_object = unit_lod_object(spawned_unit, "lod_shadow")
     
-            LODGroup.add_lod_object(settings.lod_shadow_group, attached_lod_object)
+            lod_group_add_lod_object(settings.lod_shadow_group, attached_lod_object)
         end
     
         if optional_mission_template then
@@ -489,14 +571,14 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             local state_machine = item_data[face_state_machine_key]
     
             if state_machine and state_machine ~= "" then
-                Unit.set_animation_state_machine(spawned_unit, state_machine)
+                unit_set_animation_state_machine(spawned_unit, state_machine)
             end
         end
     
         return spawned_unit, bind_pose
     end
 
-    instance._empty_overrides_table = table.set_readonly({})
+    instance._empty_overrides_table = table_set_readonly({})
 
     instance._generate_attachment_overrides_recursive = function(attachment_slot_data, override_slot_data, override_lookup)
         if not override_slot_data then

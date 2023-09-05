@@ -3,6 +3,21 @@ local mod = get_mod("weapon_customization")
 mod._debug = mod:get("mod_option_debug")
 mod._debug_skip_some = true
 
+local string_gsub = string.gsub
+local string_find = string.find
+local unit_alive = Unit.alive
+local unit_get_child_units = Unit.get_child_units
+local unit_debug_name = Unit.debug_name
+local unit_light = Unit.light
+local unit_set_vector3_for_materials = Unit.set_vector3_for_materials
+local table_contains = table.contains
+local math_floor = math.floor
+local math_random = math.random
+local math_random_seed = math.random_seed
+local math_max = math.max
+local light_set_intensity = Light.set_intensity
+local light_color_with_intensity = Light.color_with_intensity
+
 mod:persistent_table("weapon_customization", {
 	flashlight_on = false,
 	item_definitions = nil,
@@ -39,7 +54,7 @@ mod.get_gear_id = function(self, item, original)
 end
 
 mod.set_gear_setting = function(self, gear_id, setting, value)
-	if value and string.find(value, "default") then
+	if not value or (value and (string_find(value, "default") or value == "default")) then
 		self:set(tostring(gear_id).."_"..setting, nil)
 	else
 		self:set(tostring(gear_id).."_"..setting, value)
@@ -55,14 +70,18 @@ mod.get_gear_setting = function(self, gear_id, setting, item)
 end
 
 mod.get_actual_default_attachment = function(self, item, attachment_slot)
-	if item and item.attachments then
-		local attachment = self:_recursive_find_attachment(item.attachments, attachment_slot)
-		if attachment then
-			local item_name = self:item_name_from_content_string(item.name)
-			if item_name and self.attachment_models[item_name] then
-				for attachment_name, attachment_data in pairs(self.attachment_models[item_name]) do
-					if attachment_data.model == attachment.item and attachment_data.model ~= "" then
-						return attachment_name
+	if item then
+		self:setup_item_definitions()
+		-- local original_item = self:persistent_table("weapon_customization").item_definitions[item.name]
+		local item_name = self:item_name_from_content_string(item.name)
+		if item and item.attachments then
+			local attachment = self:_recursive_find_attachment(item.attachments, attachment_slot)
+			if attachment then
+				if item_name and self.attachment_models[item_name] then
+					for attachment_name, attachment_data in pairs(self.attachment_models[item_name]) do
+						if attachment_data.model == attachment.item and attachment_data.model ~= "" then
+							return attachment_name
+						end
 					end
 				end
 			end
@@ -71,7 +90,7 @@ mod.get_actual_default_attachment = function(self, item, attachment_slot)
 end
 
 mod.item_name_from_content_string = function(self, content_string)
-	return string.gsub(content_string, '.*[%/%\\]', '')
+	return string_gsub(content_string, '.*[%/%\\]', '')
 end
 
 mod.has_flashlight_attachment = function(self)
@@ -94,7 +113,7 @@ mod.get_flashlight_unit = function(self, optional_weapon_unit)
 		local gear_id = mod:get_gear_id(weapon.item)
 		-- Check if unit set but not alive
 		if self.attached_flashlights[gear_id] then
-			if not Unit.alive(self.attached_flashlights[gear_id]) then
+			if not unit_alive(self.attached_flashlights[gear_id]) then
 				self.attached_flashlights[gear_id] = nil
 				self:print("get_flashlight_unit - flashlight unit destroyed", mod._debug_skip_some)
 			end
@@ -105,7 +124,7 @@ mod.get_flashlight_unit = function(self, optional_weapon_unit)
 			self:set_flashlight_template(self.attached_flashlights[gear_id])
 		end
 		-- Return cached unit
-		if Unit.alive(self.attached_flashlights[gear_id]) then
+		if unit_alive(self.attached_flashlights[gear_id]) then
 			return self.attached_flashlights[gear_id]
 		end
 	else self:print("get_flashlight_unit - weapon is nil", mod._debug_skip_some) end
@@ -114,11 +133,11 @@ end
 mod._get_flashlight_unit = function(self, weapon_unit)
 	self:print("get_flashlight_unit - searching flashlight unit", mod._debug_skip_some)
 	local flashlight = nil
-	local children = Unit.get_child_units(weapon_unit)
+	local children = unit_get_child_units(weapon_unit)
 	if children then
 		for _, child in pairs(children) do
-			local unit_name = Unit.debug_name(child)
-			if self.attachment_units[unit_name] and table.contains(self.flashlights, self.attachment_units[unit_name]) then
+			local unit_name = unit_debug_name(child)
+			if self.attachment_units[unit_name] and table_contains(self.flashlights, self.attachment_units[unit_name]) then
 				flashlight = child
 			else
 				flashlight = self:_get_flashlight_unit(child)
@@ -129,20 +148,19 @@ mod._get_flashlight_unit = function(self, weapon_unit)
 	return flashlight
 end
 
-mod.redo_weapon_attachments = function(self, gear_id)
+mod.redo_weapon_attachments = function(self, item)
+	local gear_id = mod:get_gear_id(item)
 	local slot_name, weapon = self:get_weapon_from_gear_id(gear_id)
 	if weapon then
-		local gear_id = mod:get_gear_id(weapon.item)
 		local fixed_time_step = GameParameters.fixed_time_step
 		local gameplay_time = self.time_manager:time("gameplay")
-		local latest_frame = math.floor(gameplay_time / fixed_time_step)
+		local latest_frame = math_floor(gameplay_time / fixed_time_step)
 		self.attached_flashlights[gear_id] = nil
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		local t = self.time_manager:time("gameplay")
-		self.visual_loadout_extension:equip_item_to_slot(weapon.item, slot_name, nil, gameplay_time)
+		self.visual_loadout_extension:equip_item_to_slot(item, slot_name, nil, gameplay_time)
 		self:print("redo_weapon_attachments - done")
 		self.update_flashlight = true
-		return weapon.item
 	else self:print("redo_weapon_attachments - weapon is nil") end
 end
 
@@ -185,7 +203,7 @@ mod.update_flicker = function(self)
 
 			if not self._flickering and (self._next_check_at_t <= t or self.start_flicker_now) then
 				local chance = settings.chance
-				local roll = math.random()
+				local roll = math_random()
 
 				if roll <= chance or self.start_flicker_now then
 					self.start_flicker_now = false
@@ -197,13 +215,13 @@ mod.update_flicker = function(self)
 					local duration = settings.duration
 					local min = duration.min
 					local max = duration.max
-					self._flicker_duration = math.random() * (max - min) + min
-					self._seed = math.random_seed()
+					self._flicker_duration = math_random() * (max - min) + min
+					self._seed = math_random_seed()
 				else
 					local interval = settings.interval
 					local min = interval.min
 					local max = interval.max
-					self._next_check_at_t = t + math.random(min, max)
+					self._next_check_at_t = t + math_random(min, max)
 
 					return
 				end
@@ -221,24 +239,24 @@ mod.update_flicker = function(self)
 					local interval = settings.interval
 					local min = interval.min
 					local max = interval.max
-					self._next_check_at_t = t + math.random(min, max)
+					self._next_check_at_t = t + math_random(min, max)
 					intensity_scale = 1
 				else
 					local fade_out = settings.fade_out
 					local min_octave_percentage = settings.min_octave_percentage
-					local fade_progress = fade_out and math.max(1 - progress, min_octave_percentage) or 1
+					local fade_progress = fade_out and math_max(1 - progress, min_octave_percentage) or 1
 					local frequence_multiplier = settings.frequence_multiplier
 					local persistance = settings.persistance
 					local octaves = settings.octaves
 					intensity_scale = 1 - PerlinNoise.calculate_perlin_value((flicker_end_time - t) * frequence_multiplier, persistance, octaves * fade_progress, self._seed)
 				end
 
-				local light = Unit.light(flashlight_unit, 1)
+				local light = unit_light(flashlight_unit, 1)
 				if light then
 					local intensity = self._flashlight_template.intensity * intensity_scale
-					Light.set_intensity(light, intensity)
-					local color = Light.color_with_intensity(light)
-					Unit.set_vector3_for_materials(flashlight_unit, "light_color", color * intensity_scale * intensity_scale * intensity_scale)
+					light_set_intensity(light, intensity)
+					local color = light_color_with_intensity(light)
+					unit_set_vector3_for_materials(flashlight_unit, "light_color", color * intensity_scale * intensity_scale * intensity_scale)
 				end
 			end
 		end
@@ -247,11 +265,11 @@ end
 
 mod.set_flashlight_template = function(self, flashlight_unit)
 	if flashlight_unit then
-		local light = Unit.light(flashlight_unit, 1)
+		local light = unit_light(flashlight_unit, 1)
 		if light then
 			Light.set_ies_profile(light, self._flashlight_template.ies_profile)
 			Light.set_correlated_color_temperature(light, self._flashlight_template.color_temperature)
-			Light.set_intensity(light, self._flashlight_template.intensity)
+			light_set_intensity(light, self._flashlight_template.intensity)
 			Light.set_volumetric_intensity(light, self._flashlight_template.volumetric_intensity)
 			Light.set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
 			Light.set_spot_angle_start(light, self._flashlight_template.spot_angle.min)
@@ -271,7 +289,7 @@ mod.toggle_flashlight = function(self, retain)
 				mod:persistent_table("weapon_customization").flashlight_on = 
 					not mod:persistent_table("weapon_customization").flashlight_on
 			end
-			local light = Unit.light(flashlight_unit, 1)
+			local light = unit_light(flashlight_unit, 1)
 			if light then
 				Light.set_enabled(light, mod:persistent_table("weapon_customization").flashlight_on)
 				Light.set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
@@ -291,6 +309,8 @@ mod.init = function(self)
 	self.player_manager = Managers.player
 	self.package_manager = Managers.package
 	self.player = self.player_manager:local_player(1)
+	self.peer_id = self.player:peer_id()
+	self.local_player_id = self.player:local_player_id()
 	self.player_unit = self.player.player_unit
 	self.fx_extension = ScriptUnit.extension(self.player_unit, "fx_system")
 	self.weapon_extension = ScriptUnit.extension(self.player_unit, "weapon_system")
