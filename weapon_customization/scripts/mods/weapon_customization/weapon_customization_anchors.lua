@@ -3541,18 +3541,12 @@ end
                 _flashlight_models("receiver", -2.25, Vector3Box(0, -3, -.2), Vector3Box(.4, 0, .4)),
                 _emblem_right_models("receiver", -3, Vector3Box(.3, -6, -.1), Vector3Box(.2, 0, 0)),
                 _emblem_left_models("receiver", 0, Vector3Box(-.3, -6, -.1), Vector3Box(-.2, 0, 0)),
-                -- _bayonet_models("receiver", -.5, Vector3Box(.4, -2, 0), {
-                --     Vector3Box(0, 0, 0),
-                --     Vector3Box(0, 0, 0),
-                --     Vector3Box(0, 0, 0),
-                --     Vector3Box(0, 0, 0),
-                --     Vector3Box(0, 1.8, -.4)}, true),
                 _ogryn_bayonet_models("receiver", -.5, Vector3Box(.4, -2, 0), Vector3Box(0, .4, 0)),
                 _stubber_barrel_models(nil, -.25, Vector3Box(.4, -3, 0), Vector3Box(0, .2, 0)),
                 _stubber_receiver_models(nil, 0, Vector3Box(0, -1, 0), Vector3Box(0, 0, -.00001)),
                 _stubber_magazine_models(nil, 0, Vector3Box(0, -3, .1), Vector3Box(0, 0, -.2)),
                 _stubber_grip_models(nil, .3, Vector3Box(-.4, -3, 0), Vector3Box(0, -.2, 0)),
-                _trinket_hook_models(nil, 0, Vector3Box(-.6, -5, .1), Vector3Box(0, 0, 0))
+                _trinket_hook_models(nil, .3, Vector3Box(-.6, -5, .1), Vector3Box(0, 0, 0))
             ),
             ogryn_rippergun_p1_m1 = {
                 default = {model = "", type = "flashlight"},

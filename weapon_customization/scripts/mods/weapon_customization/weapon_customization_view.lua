@@ -110,6 +110,8 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 			new = new_attachment,
 			old = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item),
 		}
+		-- Get auto equipy
+		local auto_equips = mod:get_auto_equips(new_attachment)
 		-- Get modified attachment slot
 		local modified_attachment_slot = self:_recursive_find_attachment(item.attachments, attachment_slot)
 		if modified_attachment_slot and modified_attachment_slot.children and not no_children then
@@ -119,7 +121,7 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 			if children and #children > 0 then
 				-- Iterate children
 				for _, child in pairs(children) do
-					if not mod:weapon_part_animation_exists(child.slot) then
+					if not mod:weapon_part_animation_exists(child.slot) and not table_contains(auto_equips, child.slot) then
 						self.weapon_part_animation_entries[#self.weapon_part_animation_entries+1] = {
 							slot = child.slot,
 							type = attachment_type,
@@ -129,6 +131,27 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 					end
 				end
 			end
+		end
+	end
+end
+
+mod.get_auto_equips = function(self, attachment)
+	local equip_data = mod.attachment_models[self.cosmetics_view._item_name][attachment]
+	local automatic_equip = equip_data and equip_data.automatic_equip
+	local auto_slots = {}
+	if automatic_equip then
+		for auto_type, auto_attachment in pairs(automatic_equip) do
+			auto_slots[#auto_slots+1] = auto_type
+		end
+	end
+	return auto_slots
+end
+
+mod.resolve_auto_equips = function(self, attachment)
+	local automatic_equip = mod.attachment_models[self.cosmetics_view._item_name][attachment].automatic_equip
+	if automatic_equip then
+		for auto_type, auto_attachment in pairs(automatic_equip) do
+			self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, auto_attachment)
 		end
 	end
 end
@@ -159,11 +182,22 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 				if not self:get(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot) then
 					self.original_weapon_settings[attachment_slot] = "default"
 				else
-					self.original_weapon_settings[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot) --self:get(tostring(self.cosmetics_view._gear_id).."_"..attachment_slot)
+					self.original_weapon_settings[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot)
 				end
 			end
 
 			self:set_gear_setting(self.cosmetics_view._gear_id, attachment_slot, attachment)
+
+			self:resolve_auto_equips(attachment)
+
+			-- -- Automatic
+			-- -- local real_attachment = mod:get_actual_default_attachment(item, attachment_slot)
+			-- local automatic_equip = mod.attachment_models[self.cosmetics_view._item_name][attachment].automatic_equip
+            -- if automatic_equip then
+            --     for auto_type, auto_attachment in pairs(automatic_equip) do
+			-- 		self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, auto_attachment)
+            --     end
+            -- end
 		end
 
 		-- self.flashlight_attached[self.cosmetics_view._gear_id] = nil
@@ -401,7 +435,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				end
 			end
 			if detach_done == count and mod.weapon_part_animation_update then
-				if string_find(mod.weapon_part_animation_entries[1].new, "default") then
+				if #mod.weapon_part_animation_entries > 0 and string_find(mod.weapon_part_animation_entries[1].new, "default") then
 					mod:start_weapon_move()
 					mod.new_rotation = 0
 					mod.do_rotation = true
@@ -667,7 +701,7 @@ mod.update_dropdowns = function(self)
 	if self.cosmetics_view._custom_widgets then
         for _, widget in pairs(self.cosmetics_view._custom_widgets) do
             if widget.content and widget.content.entry and widget.content.entry.widget_type == "dropdown" then
-				widget.content.selected_index = nil
+				widget.content.update_value = true
 			end
 		end
 	end
@@ -1175,7 +1209,7 @@ mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
 
         end,
         get_function = function()
-            return mod:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot)
+            return self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot)
         end,
     }
     local options_by_id = {}
