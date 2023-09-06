@@ -14,6 +14,7 @@ local unit_set_local_position = Unit.set_local_position
 local unit_set_local_rotation = Unit.set_local_rotation
 local unit_set_local_scale = Unit.set_local_scale
 local unit_local_position = Unit.local_position
+local unit_local_rotation = Unit.local_rotation
 local unit_has_node = Unit.has_node
 local unit_node = Unit.node
 local unit_world_pose = Unit.world_pose
@@ -203,7 +204,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     if attachment then
                         if mod.anchors[item_name] and mod.anchors[item_name][attachment] then
                             anchor = mod.anchors[item_name][attachment]
-                            if anchor.preview_only and optional_mission_template or ScriptWorld.name(attach_settings.world) == "ui_inventory" then anchor = nil end
                         end
                     end
                 end
@@ -241,11 +241,14 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                         position = anchor.position and vector3_unbox(anchor.position) or vector3_zero()
                     end
 
+                    local mat = Quaternion.matrix4x4(unit_local_rotation(unit, 1))
+                    local rotated_pos = Matrix4x4.transform(mat, position)
+
                     local rotation_euler = anchor.rotation and vector3_unbox(anchor.rotation) or vector3_zero()
                     local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_zero()
                     local rotation = quaternion_from_euler_angles_xyz(rotation_euler[1], rotation_euler[2], rotation_euler[3])
-
-                    unit_set_local_position(unit, 1, position)
+                    
+                    unit_set_local_position(unit, 1, rotated_pos)
                     unit_set_local_rotation(unit, 1, rotation)
                     unit_set_local_scale(unit, 1, scale)
                 end

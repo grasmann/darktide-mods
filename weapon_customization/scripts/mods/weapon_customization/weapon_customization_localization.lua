@@ -24,6 +24,18 @@ return {
 		de = "Debug",
 		ru = "Отладка",
 	},
+	mod_option_weapon_build_animation = {
+		en = "Weapon Animations",
+		de = "Waffen Animationen",
+	},
+	mod_option_weapon_build_animation_speed = {
+		en = "Speed",
+		de = "Geschwindigkeit",
+	},
+	mod_option_weapon_build_animation_speed_unit = {
+		en = "Seconds",
+		de = "Sekunden",
+	},
 	mod_option_flashlight_shadows = {
 		en = "Flashlight Shadows",
 		de = "Taschenlampenschatten",

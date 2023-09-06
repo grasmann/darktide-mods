@@ -46,7 +46,7 @@ end
     --#region Common
         local _flashlights_attachments = function()
             return {
-                {id = "default",       name = "Default",      sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "default",       name = "Default",      sounds = {UISoundEvents.apparel_equip_small, UISoundEvents.end_screen_summary_currency_icon_out}},
                 {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
                 {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
                 {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
@@ -58,11 +58,11 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                default =       {model = "",                                                              type = "flashlight", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
-                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
-                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
-                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+                default =       {model = "",                                                              type = "flashlight", parent = tv(parent, 1), angle = angle, move = tv(move, 1), remove = tv(remove, 1)},
+                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", parent = tv(parent, 2), angle = angle, move = tv(move, 1), remove = tv(remove, 2)},
+                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", parent = tv(parent, 3), angle = angle, move = tv(move, 1), remove = tv(remove, 3)},
+                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", parent = tv(parent, 4), angle = angle, move = tv(move, 1), remove = tv(remove, 4)},
+                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = tv(move, 1), remove = tv(remove, 5)},
             } 
         end
         local _emblem_right_attachments = function()
@@ -218,7 +218,7 @@ end
         end
         local _bayonet_attachments = function()
             return {
-                {id = "autogun_bayonet_default",    name = "Default",   sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "autogun_bayonet_default",    name = "Default",   sounds = {UISoundEvents.end_screen_summary_plasteel_zero, UISoundEvents.end_screen_summary_currency_icon_out}},
                 {id = "autogun_bayonet_01",         name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
                 {id = "autogun_bayonet_02",         name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
                 {id = "autogun_bayonet_03",         name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
@@ -455,9 +455,9 @@ end
             local remove = remove or Vector3Box(0, 0, 0)
             return {
                 grip_default =  {model = "",                                                                        type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}},
-                grip_01 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}},
-                grip_02 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_02",   type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}},
-                grip_03 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_03",   type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_01"}},
+                grip_01 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}},
+                grip_02 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_02",   type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}},
+                grip_03 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_03",   type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}},
             }
         end
         local _ogryn_bayonet_attachments = function()
@@ -479,6 +479,102 @@ end
                 bayonet_02 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 bayonet_03 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 bayonet_blade_01 =  {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01",         type = "bayonet", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+            }
+        end
+        local _ripper_barrel_attachments = function()
+            return {
+                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget, UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_05",      name = "Barrel 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_06",      name = "Barrel 6",  sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _ripper_barrel_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
+            return {
+                barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_01",   type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
+                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_02",   type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
+                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_03",   type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
+                barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_04",   type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+                barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_05",   type = "barrel", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6)},
+                barrel_06 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_06",   type = "barrel", parent = tv(parent, 7), angle = angle, move = move, remove = tv(remove, 7)},
+            }
+        end
+        local _ripper_receiver_attachments = function()
+            return {
+                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon, UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_04",        name = "Receiver 4",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_05",        name = "Receiver 5",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_06",        name = "Receiver 6",    sounds = {UISoundEvents.weapons_equip_weapon}},
+            }
+        end
+        local _ripper_receiver_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
+            return {
+                receiver_default =  {model = "",                                                                            type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_01",   type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
+                receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_02",   type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
+                receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_03",   type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
+                receiver_04 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_04",   type = "receiver", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+                receiver_05 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_05",   type = "receiver", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6)},
+                receiver_06 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_06",   type = "receiver", parent = tv(parent, 7), angle = angle, move = move, remove = tv(remove, 7)},
+            }
+        end
+        local _ripper_magazine_attachments = function()
+            return {
+                {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip, UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_03",        name = "Magazine 3",    sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_04",        name = "Magazine 4",    sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_05",        name = "Magazine 5",    sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_06",        name = "Magazine 6",    sounds = {UISoundEvents.apparel_equip}},
+            }
+        end
+        local _ripper_magazine_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
+            return {
+                magazine_default =  {model = "",                                                                            type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_01",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_02",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                magazine_03 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_03",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                magazine_04 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_04",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                magazine_05 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_05",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                magazine_06 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_06",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+            }
+        end
+        local _ripper_handle_attachments = function()
+            return {
+                {id = "handle_default", name = "Default",   sounds = {UISoundEvents.weapons_swap, UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "handle_01",      name = "Handle 1",  sounds = {UISoundEvents.weapons_swap}},
+                {id = "handle_02",      name = "Handle 2",  sounds = {UISoundEvents.weapons_swap}},
+                {id = "handle_03",      name = "Handle 3",  sounds = {UISoundEvents.weapons_swap}},
+                {id = "handle_04",      name = "Handle 4",  sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _ripper_handle_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
+            return {
+                handle_default =    {model = "",                                                                        type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                handle_01 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_01",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                handle_02 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_02",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                handle_03 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_03",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                handle_04 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_04",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
             }
         end
     --#endregion
@@ -849,7 +945,7 @@ end
 --#region Anchors
     mod.anchors = {
         --#region Ogryn Guns
-            ogryn_heavystubber_p1_m1 = {
+            ogryn_heavystubber_p1_m1 = { -- Done 5.9.2023
                 flashlight_01 = {position = Vector3Box(.09, .9, .13), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
                 flashlight_02 = {position = Vector3Box(.09, .9, .13), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
                 flashlight_03 = {position = Vector3Box(.09, .9, .13), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
@@ -863,31 +959,11 @@ end
                 }
             },
             ogryn_rippergun_p1_m1 = {
-                ["flashlight_01"] = {
-                    position = Vector3Box(.09, .76, .35),
-                    rotation = Vector3Box(0, 311, 0),
-                    scale = Vector3Box(2, 2, 2),
-                },
-                ["flashlight_02"] = {
-                    position = Vector3Box(.09, .76, .35),
-                    rotation = Vector3Box(0, 311, 0),
-                    scale = Vector3Box(2, 2, 2),
-                },
-                ["flashlight_03"] = {
-                    position = Vector3Box(.09, .76, .35),
-                    rotation = Vector3Box(0, 311, 0),
-                    scale = Vector3Box(2, 2, 2),
-                },
-                ["flashlight_04"] = {
-                    position = Vector3Box(.16, .76, .41),
-                    rotation = Vector3Box(0, 128, 0),
-                    scale = Vector3Box(2, 2, 2),
-                },
-                ["bayonet_blade_01"] = {
-                    position = Vector3Box(0, .45, 0.025),
-                    rotation = Vector3Box(-90, 0, 0),
-                    scale = Vector3Box(2, 2, 2),
-                },
+                flashlight_01 = {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
+                flashlight_02 = {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
+                flashlight_03 = {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
+                flashlight_04 = {position = Vector3Box(.16, .76, .41), rotation = Vector3Box(0, 128, 0), scale = Vector3Box(2, 2, 2)},
+                bayonet_blade_01 = {position = Vector3Box(0, .45, 0.025), rotation = Vector3Box(-90, 0, 0), scale = Vector3Box(2, 2, 2)},
             },
             ogryn_thumper_p1_m1 = {
                 ["flashlight_01"] = {
@@ -1697,7 +1773,7 @@ end
 --#region Attachments
     mod.attachment = {
         --#region Ogryn Guns
-            ogryn_heavystubber_p1_m1 = {
+            ogryn_heavystubber_p1_m1 = { -- Done 5.9.2023
                 flashlight = _flashlights_attachments(),
                 bayonet = _ogryn_bayonet_attachments(),
                 barrel = _stubber_barrel_attachments(),
@@ -1709,93 +1785,14 @@ end
                 trinket_hook = _trinket_hook_attachments(),
             },
             ogryn_rippergun_p1_m1 = {
-                flashlight = {
-                    {id = "default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                barrel = {
-                    {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_02", name = "Barrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_03", name = "Barrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_04", name = "Barrel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_05", name = "Barrel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_06", name = "Barrel 6", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                receiver = {
-                    {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_05", name = "Receiver 5", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_06", name = "Receiver 6", sounds = {UISoundEvents.weapons_equip_weapon}},
-                },
-                magazine = {
-                    {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "magazine_03", name = "Magazine 3", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "magazine_04", name = "Magazine 4", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "magazine_05", name = "Magazine 5", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "magazine_06", name = "Magazine 6", sounds = {UISoundEvents.apparel_equip}},
-                },
-                handle = {
-                    {id = "handle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "handle_01", name = "Handle 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "handle_02", name = "Handle 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "handle_03", name = "Handle 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "handle_04", name = "Handle 4", sounds = {UISoundEvents.weapons_swap}},
-                },
-                bayonet = {
-                    {id = "bayonet_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "bayonet_01", name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "bayonet_02", name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "bayonet_03", name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_01", name = "Blade", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                },
-                emblem_right = {
-                    {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                emblem_left = {
-                    {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                },
+                flashlight = _flashlights_attachments(),
+                emblem_right = _emblem_right_attachments(),
+                emblem_left = _emblem_left_attachments(),
+                bayonet = _ogryn_bayonet_attachments(),
+                barrel = _ripper_barrel_attachments(),
+                receiver = _ripper_receiver_attachments(),
+                magazine = _ripper_magazine_attachments(),
+                handle = _ripper_handle_attachments(),
             },
             ogryn_thumper_p1_m1 = {
                 flashlight = {
@@ -3540,87 +3537,25 @@ end
             ogryn_heavystubber_p1_m1 = table.combine(
                 _flashlight_models("receiver", -2.25, Vector3Box(0, -3, -.2), Vector3Box(.4, 0, .4)),
                 _emblem_right_models("receiver", -3, Vector3Box(.3, -6, -.1), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(-.3, -6, -.1), Vector3Box(-.2, 0, 0)),
+                _emblem_left_models(nil, 0, Vector3Box(-.3, -6, -.1), Vector3Box(-.2, 0, 0)),
                 _ogryn_bayonet_models("receiver", -.5, Vector3Box(.4, -2, 0), Vector3Box(0, .4, 0)),
-                _stubber_barrel_models(nil, -.25, Vector3Box(.4, -3, 0), Vector3Box(0, .2, 0)),
+                _stubber_barrel_models(nil, -.25, Vector3Box(.35, -3, 0), Vector3Box(0, .2, 0)),
                 _stubber_receiver_models(nil, 0, Vector3Box(0, -1, 0), Vector3Box(0, 0, -.00001)),
                 _stubber_magazine_models(nil, 0, Vector3Box(0, -3, .1), Vector3Box(0, 0, -.2)),
                 _stubber_grip_models(nil, .3, Vector3Box(-.4, -3, 0), Vector3Box(0, -.2, 0)),
                 _trinket_hook_models(nil, .3, Vector3Box(-.6, -5, .1), Vector3Box(0, 0, 0))
             ),
-            ogryn_rippergun_p1_m1 = {
-                default = {model = "", type = "flashlight"},
-                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},
-                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight"},
-                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight"},
-                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight"},
-                barrel_default = {model = "", type = "barrel"},
-                barrel_01 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_01", type = "barrel"},
-                barrel_02 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_02", type = "barrel"},
-                barrel_03 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_03", type = "barrel"},
-                barrel_04 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_04", type = "barrel"},
-                barrel_05 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_05", type = "barrel"},
-                barrel_06 = {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_06", type = "barrel"},
-                bayonet_default = {model = "", type = "bayonet"},
-                bayonet_01 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet"},
-                bayonet_02 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet"},
-                bayonet_03 = {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet"},
-                blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "bayonet"},
-                receiver_default = {model = "", type = "receiver"},
-                receiver_01 = {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_01", type = "receiver"},
-                receiver_02 = {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_02", type = "receiver"},
-                receiver_03 = {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_03", type = "receiver"},
-                receiver_04 = {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_04", type = "receiver"},
-                receiver_05 = {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_05", type = "receiver"},
-                receiver_06 = {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_06", type = "receiver"},
-                magazine_default = {model = "", type = "magazine"},
-                magazine_01 = {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_01", type = "magazine"},
-                magazine_02 = {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_02", type = "magazine"},
-                magazine_03 = {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_03", type = "magazine"},
-                magazine_04 = {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_04", type = "magazine"},
-                magazine_05 = {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_05", type = "magazine"},
-                magazine_06 = {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_06", type = "magazine"},
-                handle_default = {model = "", type = "handle"},
-                handle_01 = {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_01", type = "handle"},
-                handle_02 = {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_02", type = "handle"},
-                handle_03 = {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_03", type = "handle"},
-                handle_04 = {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_04", type = "handle"},
-                emblem_right_default = {model = "", type = "emblem_right"},
-                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right"},
-                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right"},
-                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right"},
-                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right"},
-                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right"},
-                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right"},
-                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right"},
-                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right"},
-                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right"},
-                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right"},
-                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right"},
-                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right"},
-                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right"},
-                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right"},
-                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right"},
-                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right"},
-                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right"},
-                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right"},
-                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right"},
-                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right"},
-                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right"},
-                emblem_left_default = {model = "", type = "emblem_left"},
-                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
-                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
-                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
-                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
-                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
-                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
-                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
-                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
-                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
-                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
-                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
-                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
-            },
+            ogryn_rippergun_p1_m1 = table.combine(
+                _flashlight_models("receiver", -2.25, Vector3Box(-.2, -3, -.1), Vector3Box(.4, 0, .4)),
+                _emblem_right_models(nil, -3, Vector3Box(-.2, -6, -.1), Vector3Box(.2, 0, 0)),
+                _emblem_left_models(nil, 0, Vector3Box(-.1, -6, -.1), Vector3Box(.2, 0, 0)),
+                _ogryn_bayonet_models(nil, -.5, Vector3Box(.2, -2, 0), Vector3Box(0, .4, 0)),
+                _ripper_barrel_models(nil, -.5, Vector3Box(.2, -2, 0), Vector3Box(0, .6, 0)),
+                _ripper_receiver_models(nil, 0, Vector3Box(0, -1, 0), Vector3Box(0, 0, -.00001)),
+                _ripper_magazine_models(nil, 0, Vector3Box(0, -3, .1), Vector3Box(0, 0, -.2)),
+                _ripper_handle_models(nil, 0, Vector3Box(0, -3, .1), Vector3Box(-.2, 0, 0)),
+                _trinket_hook_models(nil, .3, Vector3Box(-.6, -5, .1), Vector3Box(0, 0, 0))
+            ),
             ogryn_thumper_p1_m1 = {
                 default = {model = "", type = "flashlight"},
                 flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight"},

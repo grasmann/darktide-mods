@@ -333,6 +333,11 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
 	return func(self, ...)
 end)
 
+mod:hook(CLASS.Flashlight, "update_first_person_mode", function(func, self, first_person_mode, ...)
+	func(self, first_person_mode, ...)
+    mod:toggle_flashlight(true)
+end)
+
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_fix")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")

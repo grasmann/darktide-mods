@@ -9,6 +9,15 @@ return {
 			{["setting_id"] = "mod_option_weapon_build_animation",
 				["type"] = "checkbox",
 				["default_value"] = true,
+				["sub_widgets"] = {
+					{["setting_id"] = "mod_option_weapon_build_animation_speed",
+						["type"] = "numeric",
+						["default_value"] = 1,
+						["range"] = {1, 2},
+						["unit_text"] = "mod_option_weapon_build_animation_speed_unit",
+						["decimals_number"] = 2
+					},
+				},
 			},
 			{["setting_id"] = "mod_option_flashlight_shadows",
 				["type"] = "checkbox",

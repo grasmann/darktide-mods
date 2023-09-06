@@ -365,7 +365,9 @@ end)
 mod:hook(CLASS.CameraManager, "_update_camera_properties", function(func, self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
     func(self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
     if viewport_name == "player1" and mod.camera_position then
-        local position = camera_local_position(camera) + vector3_unbox(mod.camera_position)
+        local mat = Quaternion.matrix4x4(Camera.local_rotation(camera))
+        local rotated_pos = Matrix4x4.transform(mat, vector3_unbox(mod.camera_position))
+        local position = camera_local_position(camera) + rotated_pos
         ScriptCamera.set_local_position(camera, position)
     end
 end)
