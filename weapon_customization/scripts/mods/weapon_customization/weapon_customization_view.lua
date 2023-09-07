@@ -242,7 +242,6 @@ mod.resolve_no_support = function(self)
 			local no_support = mod.attachment_models[self.cosmetics_view._item_name][attachment].no_support
 			if no_support then
 				for _, no_support_entry in pairs(no_support) do
-					mod:echo(attachment.." - "..no_support_entry)
 					local widget = self.cosmetics_view._widgets_by_name[no_support_entry.."_custom"]
 					if widget then
 						widget.content.entry.disabled = true
