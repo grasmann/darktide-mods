@@ -9,6 +9,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
+local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
+local WeaponTemplates = mod:original_require("scripts/settings/equipment/weapon_templates/weapon_templates")
+local PlayerUnitAnimationMachineSettings = mod:original_require("scripts/settings/animation/player_unit_animation_state_machine_settings")
 
 local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
 local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
@@ -43,6 +46,7 @@ local unit_alive = Unit.alive
 local unit_set_local_position = Unit.set_local_position
 local unit_set_local_rotation = Unit.set_local_rotation
 local unit_local_position = Unit.local_position
+local unit_get_child_units = Unit.get_child_units
 local math_round_with_precision = math.round_with_precision
 local math_easeInCubic = math.easeInCubic
 local math_easeOutCubic = math.easeOutCubic
@@ -55,6 +59,42 @@ local table_contains = table.contains
 local table_clone = table.clone
 local string_gsub = string.gsub
 local string_find = string.find
+
+local mesh_positions = {}
+mod.mesh_positions = {}
+
+mod.setup_mesh_default_positions = function(self)
+	self.mesh_positions = self.mesh_positions or {}
+	local attachment_slot_info = self.attachment_slot_infos[self.cosmetics_view._gear_id]
+    local attachment_slots = self:get_item_attachment_slots(self.cosmetics_view._selected_item)
+    for _, attachment_slot in pairs(attachment_slots) do
+		local unit = attachment_slot_info.attachment_slot_to_unit[attachment_slot]
+		if unit and unit_alive(unit) then
+			self.mesh_positions[unit] = self.mesh_positions[unit] or {}
+			local num_meshes = Unit.num_meshes(unit)
+			for i = 1, num_meshes do
+				self.mesh_positions[unit][i] = vector3_box(Mesh.local_position(Unit.mesh(unit, i)))
+			end
+		end
+	end
+end
+
+local unit_set_local_position_mesh = function(unit, no_mesh_move, movement)
+	if unit and unit_alive(unit) then
+		local num_meshes = Unit.num_meshes(unit)
+		if not no_mesh_move and num_meshes > 0 then
+			for i = 1, num_meshes do
+				local mesh = Unit.mesh(unit, i)
+				local unit_data = mod.mesh_positions[unit]
+				local default = unit_data and unit_data[i] and vector3_unbox(unit_data[i])
+				local default_position = default or vector3_zero()
+				Mesh.set_local_position(mesh, unit, default_position + movement)
+			end
+		else
+			unit_set_local_position(unit, 1, movement)
+		end
+	end
+end
 
 -- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###################################
 -- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├┤ │ │││││   │ ││ ││││└─┐ ###################################
@@ -189,34 +229,20 @@ mod.resolve_no_support = function(self)
 			if widget.content.entry and widget.content.entry.widget_type == "dropdown" then
 				local options_by_id = widget.content.options_by_id
 				for option_index, option in pairs(widget.content.options) do
-					-- options_by_id[option.id].disabled = true
 					option.disabled = false
-					-- local option_style = widget.style["option_hotspot_"..tostring(option_index)]
-					-- if option_style then
-					-- 	option_style.disabled = false
-					-- 	option_style.on_pressed_sound = "wwise/events/ui/play_ui_click"
-					-- 	option_style.on_pressed_fold_in_sound = "wwise/events/ui/play_ui_click"
-					-- 	option_style.size[1] = grid_size[1]
-					-- end
-					-- local option_text = widget.style["option_text_"..tostring(option_index)]
-					-- if option_text then
-					-- 	-- option_text.disabled = false
-					-- 	-- option_text.text_color = Color.terminal_text_header(255, true)
-					-- 	option_text.size[1] = grid_size[1]
-					-- end
 				end
 			end
 		end
 	end
 	-- Disable no supported
-	for _, slot in pairs(self.attachment_slots) do
+	for _, attachment_slot in pairs(self.attachment_slots) do
 		local item = self.cosmetics_view._selected_item
-		local attachment = item and self:get_gear_setting(self.cosmetics_view._gear_id, slot, item)
+		local attachment = item and self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item)
 		if attachment then
 			local no_support = mod.attachment_models[self.cosmetics_view._item_name][attachment].no_support
 			if no_support then
-				-- mod:echo(attachment)
 				for _, no_support_entry in pairs(no_support) do
+					mod:echo(attachment.." - "..no_support_entry)
 					local widget = self.cosmetics_view._widgets_by_name[no_support_entry.."_custom"]
 					if widget then
 						widget.content.entry.disabled = true
@@ -227,25 +253,6 @@ mod.resolve_no_support = function(self)
 								for option_index, option in pairs(widget.content.options) do
 									if option.id == no_support_entry then
 										option.disabled = true
-										-- local option_style = widget.style["option_hotspot_"..tostring(option_index)]
-										-- if option_style then
-										-- 	option_style.disabled = true
-										-- 	option_style.on_pressed_sound = "wwise/events/ui/play_ui_back_short"
-										-- 	option_style.on_pressed_fold_in_sound = "wwise/events/ui/play_ui_back_short"
-										-- 	option_style.size[1] = 0
-										-- end
-										-- local option_text = widget.style["option_text_"..tostring(option_index)]
-										-- if option_text then
-										-- 	-- option_text.disabled = true
-										-- 	-- option_text.text_color = Color.ui_grey_light(127, true)
-										-- 	-- option_text.default_text_color = Color.ui_grey_light(127, true)
-										-- 	option_text.size[1] = 0
-										-- end
-										-- local option_outline = widget.style["option_text_"..tostring(option_index)]
-										-- if option_outline then
-										-- 	option_text.disabled = true
-										-- 	option_text.color = Color.ui_grey_light(127, true)
-										-- end
 									end
 								end
 							end
@@ -296,8 +303,9 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 				self.cosmetics_view:_preview_item(self.cosmetics_view._presentation_item)
 			end
 
+			self:setup_mesh_default_positions()
 			self:get_changed_weapon_settings()
-			self:update_reset_button()
+			-- self:update_reset_button()
 		end
 
 	end
@@ -314,6 +322,22 @@ mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, wor
 		self._default_rotation_angle = mod._last_rotation_angle or 0
 	end
 end)
+
+mod.test_move = function(self, unit)
+	if unit and unit_alive(unit) then
+		local children = unit_get_child_units(unit)
+		local target = 1
+		for index, child in pairs(children) do
+			-- if index == target then
+				local position = unit_local_position(child)
+				local new_position = position + Vector3(0, 0, .2)
+			-- end
+		end
+		-- if Unit.has_animation_state_machine(unit) and Unit.has_animation_event(unit, "shoot") then
+		-- 	Unit.animation_event(unit, "shoot")
+		-- end
+	end
+end
 
 mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
 
@@ -420,130 +444,141 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 			-- Weapon part animations
 			local index = 1
-			for _, entry in pairs(mod.weapon_part_animation_entries) do
+			local entries = mod.weapon_part_animation_entries
+			if entries then
+				for _, entry in pairs(entries) do
 
-				local attachment = mod:get_gear_setting(mod.cosmetics_view._gear_id, entry.slot, mod.cosmetics_view._selected_item)
-				local attachment_slot_info = mod.attachment_slot_infos[mod.cosmetics_view._gear_id]
+					local attachment = mod:get_gear_setting(mod.cosmetics_view._gear_id, entry.slot, mod.cosmetics_view._selected_item)
+					local attachment_slot_info = mod.attachment_slot_infos[mod.cosmetics_view._gear_id]
 
-				local unit = attachment_slot_info.attachment_slot_to_unit[entry.slot]
-				local attachment_data = attachment and mod.attachment_models[item_name][attachment]
-				local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
+					local unit = attachment_slot_info.attachment_slot_to_unit[entry.slot]
+					local attachment_data = attachment and mod.attachment_models[item_name][attachment]
+					local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
+					local parent = attachment_data and attachment_data.parent and attachment_data.parent
 
-				if not mod.weapon_spawning then
-
-					if not entry.end_time then
-						if attachment then
-							if entry.type == "detach" then
-								entry.end_time = t + animation_time / animation_speed
-							else
-								entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
-							end
-						else
-							entry.end_time = t
-						end
-					end
-
-					-- local default_position = unit and vector3_unbox(attachment_slot_info.unit_default_position[unit]) or vector3_zero()
 					local anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment]
 					anchor = mod:_apply_anchor_fixes(mod.cosmetics_view._presentation_item, unit) or anchor
 					local default_position0 = unit and vector3_unbox(attachment_slot_info.unit_default_position[unit])
 					local default_position1 = unit and unit_alive(unit) and unit_local_position(unit, 1)
 					local default_position = anchor and anchor.position and vector3_unbox(anchor.position) or default_position0 or default_position1 or vector3_zero()
 
-					movement = default_position + movement
-
-					if entry.end_time and entry.end_time >= t then
-						if entry.type == "detach" then
-							local progress = (entry.end_time - t) / (animation_time / animation_speed)
-							local anim_progress = math_easeOutCubic(1 - progress)
-							local lerp_position = vector3_lerp(default_position, movement, anim_progress)
-							if unit and unit_alive(unit) then
-								unit_set_local_position(unit, 1, lerp_position)
-							end
-						elseif entry.type == "attach" then
-							local progress = (entry.end_time - t) / ((animation_time + (animation_time * (index / 10))) / animation_speed)
-							local anim_progress = math_easeInCubic(1 - progress)
-							local lerp_position = vector3_lerp(movement, default_position, anim_progress)
-							if unit and unit_alive(unit) then
-								unit_set_local_position(unit, 1, lerp_position)
-							end
-						elseif entry.type == "wobble" then
-							local progress = (entry.end_time - t) / ((animation_time + (animation_time * (index / 10))) / animation_speed)
-							local anim_progress = math_ease_out_elastic(1 - progress)
-							local lerp_position = vector3_lerp(movement, default_position, anim_progress)
-							lerp_position = lerp_position - default_position
-							lerp_position = lerp_position * 0.1
-							lerp_position = lerp_position + default_position
-							if unit and unit_alive(unit) then
-								unit_set_local_position(unit, 1, lerp_position)
-							end
-						end
-					elseif entry.end_time and entry.end_time < t then
-						if entry.type == "detach" then
-							if unit and unit_alive(unit) then
-								unit_set_local_position(unit, 1, movement)
-							end
-							entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
-							entry.type = "attach"
-						elseif entry.type == "attach" then
-							if not mod:vector3_equal(movement, vector3_zero()) or entry.new ~= entry.old and unit then
-								mod:play_attachment_sound(mod.cosmetics_view._selected_item, entry.slot, entry.new)
-							end
-							if unit and unit_alive(unit) then
-								unit_set_local_position(unit, 1, default_position)
-							end
-							entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
-							entry.type = "wobble"
-						elseif entry.type == "wobble" then
-							if unit and unit_alive(unit) then
-								unit_set_local_position(unit, 1, default_position)
-							end
-							entry.finished = true
-						end
+					local no_mesh_move = (parent or (attachment_data and attachment_data.no_mesh_move)) and true
+					if no_mesh_move then
+						movement = default_position + movement
 					end
 
-					index = index + 1
-				else
-					if mod.weapon_spawning then
-						if unit and unit_alive(unit) then unit_set_local_position(unit, 1, movement) end
-						if entry.end_time then entry.end_time = entry.end_time + dt end
+					if not mod.weapon_spawning then
+
+						if not entry.end_time then
+							if attachment then
+								if entry.type == "detach" or entry.type == "wobble" then
+									entry.end_time = t + animation_time / animation_speed
+								else
+									entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
+								end
+							else
+								entry.end_time = t
+							end
+						end
+
+						if entry.end_time and entry.end_time >= t then
+							if entry.type == "detach" then
+								local progress = (entry.end_time - t) / (animation_time / animation_speed)
+								local anim_progress = math_easeOutCubic(1 - progress)
+								local lerp_position = vector3_lerp(default_position, movement, anim_progress)
+								if unit and unit_alive(unit) then
+									unit_set_local_position_mesh(unit, no_mesh_move, lerp_position)
+								end
+							elseif entry.type == "attach" then
+								local progress = (entry.end_time - t) / ((animation_time + (animation_time * (index / 10))) / animation_speed)
+								local anim_progress = math_easeInCubic(1 - progress)
+								local lerp_position = vector3_lerp(movement, default_position, anim_progress)
+								if unit and unit_alive(unit) then
+									unit_set_local_position_mesh(unit, no_mesh_move, lerp_position)
+								end
+							elseif entry.type == "wobble" then
+								local progress = (entry.end_time - t) / (animation_time / animation_speed)--(entry.end_time - t) / ((animation_time + (animation_time * (index / 10))) / animation_speed)
+								local anim_progress = math_ease_out_elastic(1 - progress)
+								local lerp_position = vector3_lerp(movement, default_position, anim_progress)
+								lerp_position = lerp_position - default_position
+								lerp_position = lerp_position * 0.1
+								lerp_position = lerp_position + default_position
+								if unit and unit_alive(unit) then
+									unit_set_local_position_mesh(unit, no_mesh_move, lerp_position)
+								end
+							end
+						elseif entry.end_time and entry.end_time < t then
+							if entry.type == "detach" then
+								if unit and unit_alive(unit) then
+									unit_set_local_position_mesh(unit, no_mesh_move, movement)
+								end
+								entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
+								entry.type = "attach"
+							elseif entry.type == "attach" then
+								if not mod:vector3_equal(movement, vector3_zero()) or entry.new ~= entry.old and unit then
+									mod:play_attachment_sound(mod.cosmetics_view._selected_item, entry.slot, entry.new)
+								end
+								if unit and unit_alive(unit) then
+									unit_set_local_position_mesh(unit, no_mesh_move, default_position)
+								end
+								entry.end_time = t + animation_time / animation_speed--t + (animation_time + (animation_time * (index / 10))) / animation_speed
+								entry.type = "wobble"
+							elseif entry.type == "wobble" then
+								if unit and unit_alive(unit) then
+									unit_set_local_position_mesh(unit, no_mesh_move, default_position)
+								end
+								entry.finished = true
+							end
+						end
+
+						index = index + 1
+					else
+						if mod.weapon_spawning then
+							if unit and unit_alive(unit) then unit_set_local_position_mesh(unit, no_mesh_move, movement) end
+							if entry.end_time then entry.end_time = entry.end_time + dt end
+						end
 					end
 				end
-			end
 
-			-- Detach done?
-			local detach_done = 0
-			for i, entry in pairs(mod.weapon_part_animation_entries) do
-				if entry.update_done or entry.type == "attach" or entry.type == "wobble" then
-					detach_done = detach_done + 1
+				local count = #entries
+				for i, entry in pairs(entries) do
+					if not entry.update_done and (entry.type == "attach" or entry.type == "wobble") then
+						mod:load_new_attachment(weapon_spawn_data.item, entry.slot, entry.new, true)
+						entry.update_done = true
+					end
 				end
-			end
 
-			local group = mod.weapon_part_animation_group or 0
-			local count = math.max(group, #mod.weapon_part_animation_entries)
-			for i, entry in pairs(mod.weapon_part_animation_entries) do
-				if not entry.update_done and (entry.type == "attach" or entry.type == "wobble") then
-					mod:load_new_attachment(weapon_spawn_data.item, entry.slot, entry.new, true)
-					entry.update_done = true
+				-- Detach done?
+				local detach_done = 0
+				for i, entry in pairs(entries) do
+					if entry.update_done then
+						detach_done = detach_done + 1
+					end
 				end
-			end
-			if detach_done == count and mod.weapon_part_animation_update then
-				if #mod.weapon_part_animation_entries > 0 and string_find(mod.weapon_part_animation_entries[1].new, "default") then
-					mod:start_weapon_move()
-					mod.new_rotation = 0
-					mod.do_rotation = true
-				end
-				mod:load_new_attachment(weapon_spawn_data.item)
-				mod.weapon_part_animation_update = nil
-			end
 
-			-- Remove finished weapon part animations
-			for i, entry in pairs(mod.weapon_part_animation_entries) do
-				if entry.finished then
-					mod.weapon_part_animation_entries[i] = nil
+				if detach_done == count and mod.weapon_part_animation_update then
+					if entries and #entries > 0 and entries[1] and string_find(entries[1].new, "default") then
+						mod:start_weapon_move()
+						mod.new_rotation = 0
+						mod.do_rotation = true
+					end
+					mod:load_new_attachment(weapon_spawn_data.item)
+					mod.weapon_part_animation_update = nil
 				end
-			end
 
+				-- Remove finished weapon part animations
+				if not mod.weapon_part_animation_update then
+					for i, entry in pairs(entries) do
+						if entry.finished then
+							entries[i] = nil
+						end
+					end
+				end
+
+				mod:update_equip_button()
+				mod:update_reset_button()
+				mod:update_randomize_button()
+			end
 		end
 	end
 end)
@@ -564,6 +599,8 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 	func(self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
 	local weapon_spawn_data = self._weapon_spawn_data
 	if weapon_spawn_data and mod.cosmetics_view and self._reference_name ~= "WeaponIconUI" then
+		local item_name = mod.cosmetics_view._item_name
+
 		mod.weapon_spawning = true
 
 		Unit.set_unit_visibility(weapon_spawn_data.item_unit_3p, true, true)
@@ -591,11 +628,6 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 			end
 
 			unit_set_local_rotation(link_unit, 1, rotation)
-
-			-- if self._reference_name ~= "WeaponIconUI" then
-
-			-- local item_name = mod:item_name_from_content_string(item.name)
-			local item_name = mod.cosmetics_view._item_name
 
 			if not self._link_unit_base_position_backup then
 				self._link_unit_base_position_backup = vector3_box(unit_local_position(link_unit, 1))
@@ -628,15 +660,69 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 
 			self._link_unit_position = vector3_box(unit_local_position(link_unit, 1))
 			self._last_item_name = item_name
-			-- end
 		end
+
+		mod:setup_mesh_default_positions()
 	end
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
 	func(self, item_unit_3p, ...)
-	mod.weapon_spawning = nil
+	local weapon_spawn_data = self._weapon_spawn_data
+	if weapon_spawn_data and mod.cosmetics_view and self._reference_name ~= "WeaponIconUI" then
+		mod.weapon_spawning = nil
+		local link_unit = weapon_spawn_data.link_unit
+		-- mod:map_out_unit(item_unit_3p)
+	end
 end)
+
+mod._recursive_get_child_units = function(self, unit, out_units)
+	local attachment_slot_info = self.attachment_slot_infos[self.cosmetics_view._gear_id]
+	local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]
+	local text = attachment_slot and attachment_slot or unit
+	out_units[text] = {}
+	local children = Unit.get_child_units(unit)
+	if children then
+		for _, child in pairs(children) do
+			self:_recursive_get_child_units(child, out_units[text])
+		end
+	end
+end
+
+mod.map_out_unit = function(self, unit)
+	local map = {}
+	self:_recursive_get_child_units(unit, map)
+	self:dtf(map, "map", 20)
+end
+
+mod.test_move = function(self, unit)
+	if unit and unit_alive(unit) then
+
+		-- self:map_out_unit(unit)
+
+		local children = Unit.get_child_units(unit)
+		-- local child = children[2] -- receiver
+
+		local children2 = Unit.get_child_units(children[2])
+		local child = children2[3] -- magazine
+
+		local num_meshes = Unit.num_meshes(child)
+		if num_meshes then mod:echo("num meshes: "..tostring(num_meshes)) end
+		local from, to = 4, 12
+		for i = from, to, 1 do
+			-- Unit.set_mesh_visibility(child, i, false)
+		end
+
+		-- mod:dtf(Mesh, "Mesh", 10)
+
+		-- local has_group = Unit.has_visibility_group(child, "mag")
+		-- mod:echo("has group: "..tostring(has_group))
+
+		-- Unit.set_unit_objects_visibility(child, false)
+		-- Unit.set_unit_visibility(child, true, true)
+
+	end
+end
 
 -- ##### ┌─┐┌─┐┌┬┐┌┬┐┬┌┐┌┌─┐┌─┐ #######################################################################################
 -- ##### └─┐├┤  │  │ │││││ ┬└─┐ #######################################################################################
@@ -678,7 +764,6 @@ mod.check_unsaved_changes = function(self, no_animation)
 				for attachment_slot, value in pairs(original_weapon_settings) do
 					attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
 				end
-				mod.weapon_part_animation_group = table.size(original_weapon_settings)
 				mod.weapon_part_animation_update = true
 				for attachment_slot, value in pairs(original_weapon_settings) do
 					-- local attachment_name = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot)
@@ -713,7 +798,6 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 		for attachment_slot, value in pairs(random_attachments) do
 			attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
 		end
-		mod.weapon_part_animation_group = table.size(random_attachments)
 		mod.weapon_part_animation_update = true
 		local index = 1
 		for attachment_slot, value in pairs(random_attachments) do
@@ -722,14 +806,14 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 				self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], value, true)
 			else
 				-- self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], value, true)
-				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, value, index < mod.weapon_part_animation_group)
+				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, value, index < table_size(random_attachments))
 			end
 			index = index + 1
 		end
 
-		self:get_changed_weapon_settings()
-		self:update_reset_button()
-		self:update_equip_button()
+		-- self:get_changed_weapon_settings()
+		-- self:update_reset_button()
+		-- self:update_equip_button()
 	end
 end
 
@@ -751,7 +835,6 @@ mod.cb_on_reset_pressed = function(self, skip_animation)
 		for attachment_slot, value in pairs(changed_weapon_settings) do
 			attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
 		end
-		mod.weapon_part_animation_group = table.size(changed_weapon_settings)
 		mod.weapon_part_animation_update = true
 		local index = 1
 		for attachment_slot, data in pairs(changed_weapon_settings) do
@@ -759,14 +842,14 @@ mod.cb_on_reset_pressed = function(self, skip_animation)
 			if not skip_animation then
 				self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], "default")
 			else
-				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, "default", index < mod.weapon_part_animation_group)
+				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, "default", index < table.size(changed_weapon_settings))
 			end
 			index = index + 1
 		end
 
-		self:get_changed_weapon_settings()
-		self:update_reset_button()
-		self:update_equip_button()
+		-- self:get_changed_weapon_settings()
+		-- self:update_reset_button()
+		-- self:update_equip_button()
 
 		self:start_weapon_move()
 		mod.new_rotation = 0
@@ -775,11 +858,18 @@ mod.cb_on_reset_pressed = function(self, skip_animation)
 	-- end
 end
 
+mod.update_randomize_button = function(self)
+	local button = self.cosmetics_view._widgets_by_name.randomize_button
+	local button_content = button.content
+	local disabled = #mod.weapon_part_animation_entries > 0
+	button_content.hotspot.disabled = disabled
+end
+
 mod.update_equip_button = function(self)
 	if self.cosmetics_view._selected_tab_index == 3 then
 		local button = self.cosmetics_view._widgets_by_name.equip_button
 		local button_content = button.content
-		local disabled = table_size(self.original_weapon_settings) == 0
+		local disabled = table_size(self.original_weapon_settings) == 0 or #mod.weapon_part_animation_entries > 0
 		button_content.hotspot.disabled = disabled
 		button_content.text = Utf8.upper(disabled and Localize("loc_weapon_inventory_equipped_button") or Localize("loc_weapon_inventory_equip_button"))
 	end
@@ -788,7 +878,7 @@ end
 mod.update_reset_button = function(self)
 	local button = self.cosmetics_view._widgets_by_name.reset_button
 	local button_content = button.content
-	local disabled = table_size(self.changed_weapon_settings) == 0
+	local disabled = table_size(self.changed_weapon_settings) == 0 or #mod.weapon_part_animation_entries > 0
 	button_content.hotspot.disabled = disabled
 	button_content.text = Utf8.upper(disabled and self:localize("loc_weapon_inventory_no_reset_button") or self:localize("loc_weapon_inventory_reset_button"))
 end
@@ -1199,6 +1289,9 @@ mod.reset_stuff = function(self)
 	self.do_reset = nil
 	self.reset_start = nil
 	self._last_rotation_angle = 0
+	self.mesh_positions = {}
+	self.weapon_part_animation_update = nil
+	self.weapon_part_animation_entries = {}
 end
 
 mod.label_template = function(self, text, scenegraph_id)
@@ -1289,7 +1382,6 @@ mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
         on_activated = function(new_value, entry)
 
 			local attachment = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
-			mod.weapon_part_animation_group = 1
 			mod.weapon_part_animation_update = true
 
 			if mod:get("mod_option_weapon_build_animation") then
@@ -1391,11 +1483,8 @@ end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
     func(self, ...)
-
 	-- Fetch instance
 	mod.cosmetics_view = self
-
-	-- self._widgets_by_name.reset_button.content.hotspot.disabled = true
 
     mod:generate_custom_widgets()
 	mod:resolve_not_applicable_attachments()
@@ -1503,20 +1592,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 
 	mod:check_unsaved_changes(true)
 
-	-- if mod.weapon_changed then
-
-		
-
-	-- 	-- Managers.ui:item_icon_updated(self._selected_item)
-	-- 	-- Managers.event:trigger("event_item_icon_updated", self._selected_item)
-	-- 	-- Managers.event:trigger("event_replace_list_item", self._selected_item)
-
-	-- 	-- mod:redo_weapon_attachments(self._presentation_item)
-
-	-- 	--self._selected_item = self._presentation_item
-
-	-- end
-
 	func(self, ...)
 
 	mod.cosmetics_view = nil
@@ -1525,19 +1600,8 @@ end)
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
 	if self._selected_tab_index == 3 then
 		mod.original_weapon_settings = {}
-		-- mod.changed_weapon_settings = {}
-		-- mod.changed_weapon_settings = {}
-		-- self.original_weapon_settings = {}
-
 		mod:update_equip_button()
 
-		-- local gear = result.item
-		-- local gear_id = self._selected_item.gear_id
-		-- local item = MasterItems.get_item_instance(self._presentation_item, self._selected_item.gear_id)
-		-- self._selected_item = item
-
-		-- self._selected_item = self._presentation_item
-		-- mod.equip_weapon = self._presentation_item
 		mod:attachment_package_snapshot(self._selected_item)
 
 		local old_packages, new_packages = mod:attachment_package_snapshot(self._presentation_item)
@@ -1560,16 +1624,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 		mod.weapon_changed = true
 		mod.changed_weapon = self._presentation_item
 
-		-- Managers.ui:item_icon_updated(self._presentation_item)
-		-- Managers.event:trigger("event_item_icon_updated", self._presentation_item)
-		-- Managers.event:trigger("event_replace_list_item", self._presentation_item)
-
 		mod:get_changed_weapon_settings()
 
-		local t = Managers.time:time("main")
-		mod.reset_start = t
-
-		-- self:_equip_weapon_cosmetics()
+		mod.reset_start = Managers.time:time("main")
 	else
 		func(self, ...)
 	end

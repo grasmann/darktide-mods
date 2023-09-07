@@ -72,10 +72,10 @@ end
 mod.get_actual_default_attachment = function(self, item, attachment_slot)
 	if item then
 		self:setup_item_definitions()
-		-- local original_item = self:persistent_table("weapon_customization").item_definitions[item.name]
+		local original_item = self:persistent_table("weapon_customization").item_definitions[item.name]
 		local item_name = self:item_name_from_content_string(item.name)
-		if item and item.attachments then
-			local attachment = self:_recursive_find_attachment(item.attachments, attachment_slot)
+		if original_item and original_item.attachments then
+			local attachment = self:_recursive_find_attachment(original_item.attachments, attachment_slot)
 			if attachment then
 				if item_name and self.attachment_models[item_name] then
 					for attachment_name, attachment_data in pairs(self.attachment_models[item_name]) do
