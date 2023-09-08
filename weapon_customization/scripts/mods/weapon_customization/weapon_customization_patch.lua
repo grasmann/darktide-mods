@@ -43,18 +43,39 @@ end
 
 mod.randomize_weapon = function(self, item)
     local random_attachments = {}
+    local possible_attachments = {}
+    local no_support_entries = {}
     local item_name = mod:item_name_from_content_string(item.name)
     local attachment_slots = mod:get_item_attachment_slots(item)
     for _, attachment_slot in pairs(attachment_slots) do
-        local attachments = {}
         if mod.attachment[item_name][attachment_slot] then
             for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
                 if not string_find(data.id, "default") then
-                    attachments[#attachments+1] = data.id
+                    possible_attachments[attachment_slot] = possible_attachments[attachment_slot] or {}
+                    possible_attachments[attachment_slot][#possible_attachments[attachment_slot]+1] = data.id
                 end
             end
-            local random_attachment = math.random_array_entry(attachments)
+            local random_attachment = math.random_array_entry(possible_attachments[attachment_slot])
             random_attachments[attachment_slot] = random_attachment
+            local attachment_data = self.attachment_models[item_name][random_attachment]
+            local no_support = attachment_data and attachment_data.no_support
+            if no_support then
+                for _, no_support_entry in pairs(no_support) do
+                    no_support_entries[#no_support_entries+1] = no_support_entry
+                end
+            end
+        end
+    end
+    -- No support
+    for _, no_support_entry in pairs(no_support_entries) do
+        for attachment_slot, random_attachment in pairs(random_attachments) do
+            while random_attachment == no_support_entry do
+                random_attachment = math.random_array_entry(possible_attachments[attachment_slot])
+                random_attachments[attachment_slot] = random_attachment
+            end
+            if attachment_slot == no_support_entry then
+                random_attachments[no_support_entry] = "default"
+            end
         end
     end
     return random_attachments
