@@ -82,7 +82,7 @@ end
 local unit_set_local_position_mesh = function(unit, no_mesh_move, movement)
 	if unit and unit_alive(unit) then
 		local num_meshes = Unit.num_meshes(unit)
-		if not no_mesh_move and num_meshes > 0 then
+		if (not no_mesh_move or no_mesh_move == "both") and num_meshes > 0 then
 			for i = 1, num_meshes do
 				local mesh = Unit.mesh(unit, i)
 				local unit_data = mod.mesh_positions[unit]
@@ -90,7 +90,8 @@ local unit_set_local_position_mesh = function(unit, no_mesh_move, movement)
 				local default_position = default or vector3_zero()
 				Mesh.set_local_position(mesh, unit, default_position + movement)
 			end
-		else
+		end
+		if no_mesh_move or no_mesh_move == "both" then
 			unit_set_local_position(unit, 1, movement)
 		end
 	end
@@ -238,7 +239,7 @@ mod.resolve_no_support = function(self)
 	for _, attachment_slot in pairs(self.attachment_slots) do
 		local item = self.cosmetics_view._selected_item
 		local attachment = item and self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item)
-		if attachment then
+		if attachment and mod.attachment_models[self.cosmetics_view._item_name] and mod.attachment_models[self.cosmetics_view._item_name][attachment] then
 			local no_support = mod.attachment_models[self.cosmetics_view._item_name][attachment].no_support
 			if no_support then
 				for _, no_support_entry in pairs(no_support) do
@@ -462,7 +463,8 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 					local default_position = anchor and anchor.position and vector3_unbox(anchor.position) or default_position0 or default_position1 or vector3_zero()
 
 					local no_mesh_move = (parent or (attachment_data and attachment_data.no_mesh_move)) and true
-					if no_mesh_move then
+					no_mesh_move = attachment_data and attachment_data.no_mesh_move or no_mesh_move
+					if no_mesh_move == true then
 						movement = default_position + movement
 					end
 

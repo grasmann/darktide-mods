@@ -40,10 +40,10 @@ local lod_group_add_lod_object = LODGroup.add_lod_object
 local lod_object_set_static_select = LODObject.set_static_select
 
 mod._add_custom_attachments = function(self, item, attachments)
-    local gear_id = mod:get_gear_id(item)
+    local gear_id = self:get_gear_id(item)
     if gear_id then
         -- Get item name
-        local item_name = mod:item_name_from_content_string(item.name)
+        local item_name = self:item_name_from_content_string(item.name)
         -- Iterate custom attachment slots
         for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
             -- Get weapon setting for attachment slot
@@ -73,14 +73,14 @@ end
 
 mod._apply_anchor_fixes = function(self, item, unit)
     if item and item.attachments then
-        local gear_id = mod:get_gear_id(item)
-        local item_name = mod:item_name_from_content_string(item.name)
+        local gear_id = self:get_gear_id(item)
+        local item_name = self:item_name_from_content_string(item.name)
         local attachments = item.attachments
-        if mod.attachment_slot_infos then
-            local attachment_slot_info = mod.attachment_slot_infos[gear_id]
+        if gear_id and self.attachment_slot_infos and self.attachment_slot_infos[gear_id] then
+            local attachment_slot_info = self.attachment_slot_infos[gear_id]
             -- Fixes
-            if mod.anchors[item_name] and mod.anchors[item_name].fixes then
-                local fixes = mod.anchors[item_name].fixes
+            if self.anchors[item_name] and self.anchors[item_name].fixes then
+                local fixes = self.anchors[item_name].fixes
                 for _, fix_data in pairs(fixes) do
                     -- Dependencies
                     local has_dependencies = false
@@ -89,12 +89,12 @@ mod._apply_anchor_fixes = function(self, item, unit)
                         for _, dependency in pairs(fix_data.dependencies) do
                             local negative = string_sub(dependency, 1, 1) == "!"
                             dependency = string_gsub(dependency, "!", "")
-                            if mod.attachment_models[item_name] and mod.attachment_models[item_name][dependency] then
-                                local model_string = mod.attachment_models[item_name][dependency].model
+                            if self.attachment_models[item_name] and self.attachment_models[item_name][dependency] then
+                                local model_string = self.attachment_models[item_name][dependency].model
                                 if negative then
-                                    has_dependencies = not mod:_recursive_find_attachment_item_string(attachments, model_string)
+                                    has_dependencies = not self:_recursive_find_attachment_item_string(attachments, model_string)
                                 else
-                                    has_dependencies = mod:_recursive_find_attachment_item_string(attachments, model_string)
+                                    has_dependencies = self:_recursive_find_attachment_item_string(attachments, model_string)
                                 end
                                 if not has_dependencies then break end
                             end
@@ -105,10 +105,10 @@ mod._apply_anchor_fixes = function(self, item, unit)
                     if has_dependencies or no_dependencies then
                         for fix_attachment, fix in pairs(fix_data) do
                             -- Attachment
-                            if mod.attachment_models[item_name] and mod.attachment_models[item_name][fix_attachment] then
-                                local model_string = mod.attachment_models[item_name][fix_attachment].model
-                                local has_fix_attachment = mod:_recursive_find_attachment_item_string(attachments, model_string)
-                                local fix_attachment_slot = mod.attachment_models[item_name][fix_attachment].type
+                            if self.attachment_models[item_name] and self.attachment_models[item_name][fix_attachment] then
+                                local model_string = self.attachment_models[item_name][fix_attachment].model
+                                local has_fix_attachment = self:_recursive_find_attachment_item_string(attachments, model_string)
+                                local fix_attachment_slot = self.attachment_models[item_name][fix_attachment].type
                                 if has_fix_attachment and fix_attachment_slot and unit == attachment_slot_info.attachment_slot_to_unit[fix_attachment_slot] then
                                     return fix
                                 end
