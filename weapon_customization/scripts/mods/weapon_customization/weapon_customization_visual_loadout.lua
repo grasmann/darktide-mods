@@ -79,7 +79,7 @@ mod._apply_anchor_fixes = function(self, item, unit)
         if gear_id and self.attachment_slot_infos and self.attachment_slot_infos[gear_id] then
             local attachment_slot_info = self.attachment_slot_infos[gear_id]
             -- Fixes
-            if self.anchors[item_name] and self.anchors[item_name].fixes then
+            if attachment_slot_info and self.anchors[item_name] and self.anchors[item_name].fixes then
                 local fixes = self.anchors[item_name].fixes
                 for _, fix_data in pairs(fixes) do
                     -- Dependencies

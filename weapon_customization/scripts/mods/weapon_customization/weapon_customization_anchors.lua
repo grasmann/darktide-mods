@@ -1134,7 +1134,7 @@ end
                         emblem_right = {offset = true, position = Vector3Box(.123, .765, .11), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(2, 2, 2)}},
                 }
             },
-            ogryn_gauntlet_p1_m1 = {
+            ogryn_gauntlet_p1_m1 = { -- Done 8.9.2023
                 flashlight_01 =    {position = Vector3Box(.2, .18, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
                 flashlight_02 =    {position = Vector3Box(.2, .18, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
                 flashlight_03 =    {position = Vector3Box(.2, .18, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
@@ -1912,7 +1912,7 @@ end
                 body = _thumper_body_attachments(),
                 trinket_hook = _trinket_hook_attachments(),
             },
-            ogryn_gauntlet_p1_m1 = {
+            ogryn_gauntlet_p1_m1 = { -- Done 8.9.2023
                 flashlight = _flashlights_attachments(),
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
@@ -3545,7 +3545,7 @@ end
                 _thumper_body_models(nil, 0, Vector3Box(0, -1, 0), Vector3Box(0, 0, -.00001)),
                 _trinket_hook_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, 0))
             ),
-            ogryn_gauntlet_p1_m1 = table.combine(
+            ogryn_gauntlet_p1_m1 = table.combine( -- Done 8.9.2023
                 _flashlight_models("receiver", -2.25, Vector3Box(0, -3, 0), Vector3Box(.4, 0, 0)),
                 _emblem_right_models(nil, -3, Vector3Box(-.1, -6, -.05), Vector3Box(.2, 0, 0)),
                 _emblem_left_models(nil, 0, Vector3Box(-.3, -6, -.05), Vector3Box(.2, 0, 0)),
