@@ -976,12 +976,23 @@ end
                     {emblem_left = {offset = true, position = Vector3Box(-.09, .42, .085), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)}}, -- Emblem left
                 }
             },
-            ogryn_rippergun_p1_m1 = {
+            ogryn_rippergun_p1_m1 = { -- Done 8.9.2023
                 flashlight_01 = {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
                 flashlight_02 = {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
                 flashlight_03 = {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
                 flashlight_04 = {position = Vector3Box(.16, .76, .41), rotation = Vector3Box(0, 128, 0), scale = Vector3Box(2, 2, 2)},
                 bayonet_blade_01 = {position = Vector3Box(0, .45, 0.025), rotation = Vector3Box(-90, 0, 0), scale = Vector3Box(2, 2, 2)},
+                fixes = {
+                    {dependencies = {"receiver_02"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(-.145, .3, .27), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(3, 3, 3)},
+                        emblem_right = {offset = true, position = Vector3Box(.145, .615, .27), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"receiver_03"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(.0047, 0, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        emblem_right = {offset = true, position = Vector3Box(.0047, 0, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                    {dependencies = {"receiver_06"}, -- Emblems
+                        emblem_left = {offset = true, position = Vector3Box(0, 0, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1.5, 1.5, 1.5)},
+                        emblem_right = {offset = true, position = Vector3Box(.06, 0, .05), rotation = Vector3Box(0, -20, 0), scale = Vector3Box(2, 2, 2)}},
+                }
             },
             ogryn_thumper_p1_m1 = {
                 ["flashlight_01"] = {
@@ -1802,7 +1813,7 @@ end
                 emblem_left = _emblem_left_attachments(),
                 trinket_hook = _trinket_hook_attachments(),
             },
-            ogryn_rippergun_p1_m1 = {
+            ogryn_rippergun_p1_m1 = { -- Done 8.9.2023
                 flashlight = _flashlights_attachments(),
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
@@ -3504,7 +3515,7 @@ end
 --#region Models
     mod.attachment_models = {
         --#region Ogryn Guns
-            ogryn_heavystubber_p1_m1 = table.combine(
+            ogryn_heavystubber_p1_m1 = table.combine( -- Done 5.9.2023
                 _flashlight_models("receiver", -2.25, Vector3Box(0, -3, -.2), Vector3Box(.4, 0, .4)),
                 _emblem_right_models("receiver", -3, Vector3Box(.3, -6, -.1), Vector3Box(.2, 0, 0)),
                 _emblem_left_models("receiver", 0, Vector3Box(-.3, -6, -.1), Vector3Box(-.2, 0, 0)),
@@ -3515,10 +3526,10 @@ end
                 _stubber_grip_models(nil, .3, Vector3Box(-.4, -3, 0), Vector3Box(0, -.2, 0)),
                 _trinket_hook_models(nil, .3, Vector3Box(-.6, -5, .1), Vector3Box(0, 0, 0))
             ),
-            ogryn_rippergun_p1_m1 = table.combine(
+            ogryn_rippergun_p1_m1 = table.combine( -- Done 8.9.2023
                 _flashlight_models("receiver", -2.25, Vector3Box(-.2, -3, -.1), Vector3Box(.4, 0, .4)),
-                _emblem_right_models(nil, -3, Vector3Box(-.2, -6, -.1), Vector3Box(.2, 0, 0)),
-                _emblem_left_models(nil, 0, Vector3Box(-.1, -6, -.1), Vector3Box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, Vector3Box(-.2, -6, -.1), Vector3Box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, Vector3Box(-.1, -6, -.1), Vector3Box(.2, 0, 0)),
                 _ogryn_bayonet_models({"", "", "", "", "receiver"}, -.5, Vector3Box(.2, -2, 0), Vector3Box(0, .4, 0)),
                 _ripper_barrel_models(nil, -.5, Vector3Box(.2, -2, 0), Vector3Box(0, .6, 0)),
                 _ripper_receiver_models(nil, 0, Vector3Box(0, -1, 0), Vector3Box(0, 0, -.00001)),
