@@ -3547,8 +3547,8 @@ end
             ),
             ogryn_gauntlet_p1_m1 = table.combine( -- Done 8.9.2023
                 _flashlight_models("receiver", -2.25, Vector3Box(0, -3, 0), Vector3Box(.4, 0, 0)),
-                _emblem_right_models(nil, -3, Vector3Box(-.1, -6, -.05), Vector3Box(.2, 0, 0)),
-                _emblem_left_models(nil, 0, Vector3Box(-.3, -6, -.05), Vector3Box(.2, 0, 0)),
+                _emblem_right_models(nil, -3, Vector3Box(0, -2, 0), Vector3Box(.2, 0, 0)),
+                _emblem_left_models(nil, 0, Vector3Box(0, -2, 0), Vector3Box(.2, 0, 0)),
                 _ogryn_bayonet_models("barrel", -.5, Vector3Box(.4, -2, 0), Vector3Box(0, .4, 0)),
                 _gauntlet_barrel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 2, 0)),
                 _gauntlet_body_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.00001)),
