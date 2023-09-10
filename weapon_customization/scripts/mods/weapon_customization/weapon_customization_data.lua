@@ -17,6 +17,10 @@ return {
 						["unit_text"] = "mod_option_weapon_build_animation_speed_unit",
 						["decimals_number"] = 2
 					},
+					{["setting_id"] = "mod_option_weapon_build_animation_wobble",
+						["type"] = "checkbox",
+						["default_value"] = true,
+					},
 				},
 			},
 			{["setting_id"] = "mod_option_flashlight_shadows",

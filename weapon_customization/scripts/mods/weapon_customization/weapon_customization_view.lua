@@ -42,11 +42,18 @@ local vector3_box = Vector3Box
 local vector3_unbox = vector3_box.unbox
 local vector3_zero = Vector3.zero
 local vector3_lerp = Vector3.lerp
+local Quaternion_matrix_4x4 = Quaternion.matrix4x4
+local Matrix4x4_transform = Matrix4x4.transform
 local unit_alive = Unit.alive
 local unit_set_local_position = Unit.set_local_position
 local unit_set_local_rotation = Unit.set_local_rotation
 local unit_local_position = Unit.local_position
+local unit_local_rotation = Unit.local_rotation
 local unit_get_child_units = Unit.get_child_units
+local unit_num_meshes = Unit.num_meshes
+local mesh_set_local_position = Mesh.set_local_position
+local mesh_local_rotation = Mesh.local_rotation
+local unit_mesh = Unit.mesh
 local math_round_with_precision = math.round_with_precision
 local math_easeInCubic = math.easeInCubic
 local math_easeOutCubic = math.easeOutCubic
@@ -60,39 +67,84 @@ local table_clone = table.clone
 local string_gsub = string.gsub
 local string_find = string.find
 
-local mesh_positions = {}
+-- local mesh_positions = {}
 mod.mesh_positions = {}
 
-mod.setup_mesh_default_positions = function(self)
-	self.mesh_positions = self.mesh_positions or {}
-	local attachment_slot_info = self.attachment_slot_infos[self.cosmetics_view._gear_id]
-    local attachment_slots = self:get_item_attachment_slots(self.cosmetics_view._selected_item)
-    for _, attachment_slot in pairs(attachment_slots) do
-		local unit = attachment_slot_info.attachment_slot_to_unit[attachment_slot]
-		if unit and unit_alive(unit) then
-			self.mesh_positions[unit] = self.mesh_positions[unit] or {}
-			local num_meshes = Unit.num_meshes(unit)
-			for i = 1, num_meshes do
-				self.mesh_positions[unit][i] = vector3_box(Mesh.local_position(Unit.mesh(unit, i)))
-			end
-		end
-	end
-end
+-- mod.setup_mesh_default_positions = function(self, gear_id, item, item_unit)
+-- 	if self.cosmetics_view then
+-- 		self.mesh_positions = self.mesh_positions or {}
+-- 		local attachment_slot_info = self.attachment_slot_infos[gear_id]
+-- 		local attachment_slots = self:get_item_attachment_slots(item)
+-- 		for _, attachment_slot in pairs(attachment_slots) do
+-- 			local unit = attachment_slot_info.attachment_slot_to_unit[attachment_slot]
+-- 			if unit and unit_alive(unit) then
+-- 				self.mesh_positions[unit] = self.mesh_positions[unit] or {}
+-- 				local num_meshes = Unit.num_meshes(unit)
+-- 				for i = 1, num_meshes do
+-- 					self.mesh_positions[unit][i] = vector3_box(Mesh.local_position(Unit.mesh(unit, i)))
+-- 				end
+-- 			end
+-- 		end
+-- 		self.attachment_slot_infos = self.attachment_slot_infos or {}
+-- 		self.attachment_slot_infos[gear_id] = self.attachment_slot_infos[gear_id] or {}
+-- 		local gear_info = self.attachment_slot_infos[gear_id]
+-- 		gear_info.attachment_slot_to_unit = gear_info.attachment_slot_to_unit or {}
+-- 		gear_info.unit_to_attachment_slot = gear_info.unit_to_attachment_slot or {}
+-- 		gear_info.unit_to_attachment_name = gear_info.unit_to_attachment_name or {}
+-- 		gear_info.attachment_slot_to_unit["root"] = item_unit
+-- 		gear_info.unit_to_attachment_slot[item_unit] = "root"
+-- 		gear_info.unit_to_attachment_name[item_unit] = "root"
+-- 		gear_info.unit_default_position = gear_info.unit_default_position or {}
+-- 		gear_info.unit_default_position[item_unit] = vector3_box(unit_local_position(item_unit, 1))
+-- 	end
+-- end
 
-local unit_set_local_position_mesh = function(unit, no_mesh_move, movement)
+mod.unit_set_local_position_mesh = function(self, gear_id, unit, movement) --, root_movement)--, root_unit, root_default_position)
 	if unit and unit_alive(unit) then
-		local num_meshes = Unit.num_meshes(unit)
-		if (not no_mesh_move or no_mesh_move == "both") and num_meshes > 0 then
+		local gear_info = self.attachment_slot_infos[gear_id]
+		local mesh_move = gear_info and gear_info.unit_mesh_move[unit]
+		local unit_and_meshes = mesh_move == "both" or false
+		local root_unit = gear_info and gear_info.attachment_slot_to_unit["root"] or unit
+		local mesh_position = gear_info and gear_info.unit_mesh_position[unit] and vector3_unbox(gear_info.unit_mesh_position[unit])
+
+		local num_meshes = unit_num_meshes(unit)
+		if (mesh_move or unit_and_meshes or mesh_position) and num_meshes > 0 then
 			for i = 1, num_meshes do
-				local mesh = Unit.mesh(unit, i)
-				local unit_data = mod.mesh_positions[unit]
-				local default = unit_data and unit_data[i] and vector3_unbox(unit_data[i])
-				local default_position = default or vector3_zero()
-				Mesh.set_local_position(mesh, unit, default_position + movement)
+				local mesh = unit_mesh(unit, i)
+				local unit_data = self.mesh_positions[unit]
+				local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
+				local mesh_position = mesh_position or vector3_zero()
+				-- mod:echo("mesh_position:"..tostring(mesh_position).." mesh_default:"..tostring(mesh_default))
+				local position = mesh_default + mesh_position
+				if mesh_move or unit_and_meshes then
+					position = position + movement
+				end
+				mesh_set_local_position(mesh, unit, position)
 			end
 		end
-		if no_mesh_move or no_mesh_move == "both" then
+
+		if not mesh_move or unit_and_meshes then
 			unit_set_local_position(unit, 1, movement)
+		end
+
+		local root_movement = gear_info and gear_info.unit_root_movement[unit]
+		-- local root_unit = gear_info and gear_info.attachment_slot_to_unit["root"]
+		-- -- local root_default_position = gear_info and gear_info.unit_root_position[unit]
+		local root_default_position = gear_info and gear_info.unit_default_position["root"]
+		local root_position = gear_info and gear_info.unit_root_position[unit]
+		if (root_movement or root_position) and root_unit and unit_alive(root_unit) then
+			local default_position = root_default_position and vector3_unbox(root_default_position) or vector3_zero()
+			local position = root_position and vector3_unbox(root_position) or vector3_zero()
+			local offset = default_position + position + movement
+
+			-- local mat = Quaternion_matrix_4x4(unit_local_rotation(root_unit, 1))
+			-- mod:echo("root_rotation: "..tostring(unit_local_rotation(root_unit, 1)))
+        	-- local rotated_offset = Matrix4x4_transform(mat, offset)
+
+			-- local mat = Quaternion_matrix_4x4(unit_local_rotation(root_unit, 1))
+        	-- local rotated_position = Matrix4x4_transform(mat, default_position + movement)
+
+			unit_set_local_position(root_unit, 1, default_position + position + movement)
 		end
 	end
 end
@@ -157,10 +209,22 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 		local auto_equips = mod:get_auto_equips(new_attachment)
 		-- Get modified attachment slot
 		local modified_attachment_slot = self:_recursive_find_attachment(item.attachments, attachment_slot)
-		if modified_attachment_slot and modified_attachment_slot.children and not no_children then
+		local children = {}
+
+		-- Trigger move
+		local item_name = self.cosmetics_view._item_name
+		local attachment_data = self.attachment_models[item_name][new_attachment]
+		local trigger_move = attachment_data and attachment_data.trigger_move
+		if trigger_move then
+			for _, trigger_attachment_slot in pairs(trigger_move) do
+				children[#children+1] = {slot = trigger_attachment_slot}
+			end
+		end
+
+		if modified_attachment_slot and (modified_attachment_slot.children or #children > 0) and not no_children then
 			-- Find attached children
-			local children = {}
 			self:_recursive_get_attachments(modified_attachment_slot.children, children)
+			-- Has children?
 			if children and #children > 0 then
 				-- Iterate children
 				for _, child in pairs(children) do
@@ -171,6 +235,7 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 							new = self:get_gear_setting(self.cosmetics_view._gear_id, child.slot),
 							old = self:get_gear_setting(self.cosmetics_view._gear_id, child.slot, item),
 						}
+						-- mod:echo(child.slot)
 					-- elseif existing_animation and existing_animation.new ~= existing_animation.old and not table_contains(auto_equips, child.slot) then
 					-- 	existing_animation.new
 					end
@@ -195,7 +260,8 @@ mod.get_auto_equips = function(self, attachment)
 end
 
 mod.resolve_auto_equips = function(self, attachment)
-	local automatic_equip = mod.attachment_models[self.cosmetics_view._item_name][attachment].automatic_equip
+	local attachment_data = mod.attachment_models[self.cosmetics_view._item_name][attachment]
+	local automatic_equip = attachment_data and attachment_data.automatic_equip
 	if automatic_equip then
 		for auto_type, auto_attachment in pairs(automatic_equip) do
 			self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, auto_attachment)
@@ -303,7 +369,7 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 				self.cosmetics_view:_preview_item(self.cosmetics_view._presentation_item)
 			end
 
-			self:setup_mesh_default_positions()
+			-- self:setup_mesh_default_positions()
 			self:get_changed_weapon_settings()
 			-- self:update_reset_button()
 		end
@@ -354,6 +420,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			local position = vector3_unbox(self._link_unit_position)
 			local animation_speed = mod:get("mod_option_weapon_build_animation_speed")
 			local animation_time = mod.weapon_part_animation_time
+			local item_unit_3p = weapon_spawn_data.item_unit_3p
 
 			-- Camera movement
 			if mod.do_move then
@@ -446,25 +513,35 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			local index = 1
 			local entries = mod.weapon_part_animation_entries
 			if entries then
+
 				for _, entry in pairs(entries) do
 
-					local attachment = mod:get_gear_setting(mod.cosmetics_view._gear_id, entry.slot, mod.cosmetics_view._selected_item)
-					local attachment_slot_info = mod.attachment_slot_infos[mod.cosmetics_view._gear_id]
+					local gear_id = mod.cosmetics_view._gear_id
+					local gear_info = mod.attachment_slot_infos[gear_id]
+					local attachment = mod:get_gear_setting(gear_id, entry.slot, mod.cosmetics_view._selected_item)
 
-					local unit = attachment_slot_info.attachment_slot_to_unit[entry.slot]
 					local attachment_data = attachment and mod.attachment_models[item_name][attachment]
 					local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
 					local parent = attachment_data and attachment_data.parent and attachment_data.parent
+					-- local moving_slot = attachment_data and attachment_data.move_root and "root" or entry.slot
+					local root_movement = attachment_data and attachment_data.move_root
+					local root_unit = gear_info.attachment_slot_to_unit["root"]
+					local root_default = gear_info.unit_default_position[root_unit]
+					local root_default_position = root_default and vector3_unbox(root_default) or vector3_zero()
+					local unit = gear_info.attachment_slot_to_unit[entry.slot]
+					local unit_good = unit and unit_alive(unit)
+					local wobble = mod:get("mod_option_weapon_build_animation_wobble")
 
 					local anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment]
 					anchor = mod:_apply_anchor_fixes(mod.cosmetics_view._presentation_item, unit) or anchor
-					local default_position0 = unit and vector3_unbox(attachment_slot_info.unit_default_position[unit])
-					local default_position1 = unit and unit_alive(unit) and unit_local_position(unit, 1)
+					local default_position0 = unit and vector3_unbox(gear_info.unit_default_position[unit])
+					local default_position1 = unit_good and unit_local_position(unit, 1)
 					local default_position = anchor and anchor.position and vector3_unbox(anchor.position) or default_position0 or default_position1 or vector3_zero()
 
-					local no_mesh_move = (parent or (attachment_data and attachment_data.no_mesh_move)) and true
-					no_mesh_move = attachment_data and attachment_data.no_mesh_move or no_mesh_move
-					if no_mesh_move == true then
+					-- local mesh_move = (parent or (attachment_data and attachment_data.mesh_move)) and true
+					-- mesh_move = attachment_data and attachment_data.mesh_move or mesh_move
+					local mesh_move = gear_info and gear_info.unit_mesh_move[unit]
+					if not mesh_move then
 						movement = default_position + movement
 					end
 
@@ -487,31 +564,31 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								local progress = (entry.end_time - t) / (animation_time / animation_speed)
 								local anim_progress = math_easeOutCubic(1 - progress)
 								local lerp_position = vector3_lerp(default_position, movement, anim_progress)
-								if unit and unit_alive(unit) then
-									unit_set_local_position_mesh(unit, no_mesh_move, lerp_position)
+								if unit_good then
+									mod:unit_set_local_position_mesh(gear_id, unit, lerp_position)--, root_movement, root_unit, root_default_position)
 								end
 							elseif entry.type == "attach" then
 								local progress = (entry.end_time - t) / ((animation_time + (animation_time * (index / 10))) / animation_speed)
 								local anim_progress = math_easeInCubic(1 - progress)
 								local lerp_position = vector3_lerp(movement, default_position, anim_progress)
-								if unit and unit_alive(unit) then
-									unit_set_local_position_mesh(unit, no_mesh_move, lerp_position)
+								if unit_good then
+									mod:unit_set_local_position_mesh(gear_id, unit, lerp_position)--, root_movement, root_unit, root_default_position)
 								end
 							elseif entry.type == "wobble" then
-								local progress = (entry.end_time - t) / (animation_time / animation_speed)--(entry.end_time - t) / ((animation_time + (animation_time * (index / 10))) / animation_speed)
+								local progress = (entry.end_time - t) / (animation_time / animation_speed)
 								local anim_progress = math_ease_out_elastic(1 - progress)
 								local lerp_position = vector3_lerp(movement, default_position, anim_progress)
 								lerp_position = lerp_position - default_position
 								lerp_position = lerp_position * 0.1
 								lerp_position = lerp_position + default_position
-								if unit and unit_alive(unit) then
-									unit_set_local_position_mesh(unit, no_mesh_move, lerp_position)
+								if unit_good then
+									mod:unit_set_local_position_mesh(gear_id, unit, lerp_position)--, root_movement, root_unit, root_default_position)
 								end
 							end
 						elseif entry.end_time and entry.end_time < t then
 							if entry.type == "detach" then
-								if unit and unit_alive(unit) then
-									unit_set_local_position_mesh(unit, no_mesh_move, movement)
+								if unit_good then
+									mod:unit_set_local_position_mesh(gear_id, unit, movement)--, root_movement, root_unit, root_default_position)
 								end
 								entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
 								entry.type = "attach"
@@ -519,15 +596,20 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								if not mod:vector3_equal(movement, vector3_zero()) or entry.new ~= entry.old and unit then
 									mod:play_attachment_sound(mod.cosmetics_view._selected_item, entry.slot, entry.new)
 								end
-								if unit and unit_alive(unit) then
-									unit_set_local_position_mesh(unit, no_mesh_move, default_position)
+								if unit_good then
+									mod:unit_set_local_position_mesh(gear_id, unit, default_position)--, root_movement, root_unit, root_default_position)
 								end
-								entry.end_time = t + animation_time / animation_speed--t + (animation_time + (animation_time * (index / 10))) / animation_speed
-								entry.type = "wobble"
+								if wobble then
+									entry.end_time = t + animation_time / animation_speed
+									entry.type = "wobble"
+								else
+									entry.finished = true
+								end
 							elseif entry.type == "wobble" then
-								if unit and unit_alive(unit) then
-									unit_set_local_position_mesh(unit, no_mesh_move, default_position)
+								if unit_good then
+									mod:unit_set_local_position_mesh(gear_id, unit, default_position)--, root_movement, root_unit, root_default_position)
 								end
+
 								entry.finished = true
 							end
 						end
@@ -535,7 +617,9 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 						index = index + 1
 					else
 						if mod.weapon_spawning then
-							if unit and unit_alive(unit) then unit_set_local_position_mesh(unit, no_mesh_move, movement) end
+							if unit_good then
+								mod:unit_set_local_position_mesh(gear_id, unit, movement)--, root_movement, root_unit, root_default_position)
+							end
 							if entry.end_time then entry.end_time = entry.end_time + dt end
 						end
 					end
@@ -663,7 +747,8 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 			self._last_item_name = item_name
 		end
 
-		mod:setup_mesh_default_positions()
+		-- mod:setup_mesh_default_positions(mod.cosmetics_view._gear_id, mod.cosmetics_view._selected_item, weapon_spawn_data.item_unit_3p)
+		mod.attachment_slot_infos[mod.cosmetics_view._gear_id].unit_default_position["root"] = vector3_box(unit_local_position(weapon_spawn_data.item_unit_3p, 1))
 	end
 end)
 
@@ -672,7 +757,6 @@ mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(fun
 	local weapon_spawn_data = self._weapon_spawn_data
 	if weapon_spawn_data and mod.cosmetics_view and self._reference_name ~= "WeaponIconUI" then
 		mod.weapon_spawning = nil
-		local link_unit = weapon_spawn_data.link_unit
 		-- mod:map_out_unit(item_unit_3p)
 	end
 end)
@@ -902,7 +986,7 @@ mod.update_dropdown = function(self, widget, input_service)
 	end
 
 	local is_disabled = entry.disabled or false
-	content.disabled = is_disabled
+	content.disabled = is_disabled or #self.weapon_part_animation_entries > 0
 	local size = {
 		400,
 		dropdown_height

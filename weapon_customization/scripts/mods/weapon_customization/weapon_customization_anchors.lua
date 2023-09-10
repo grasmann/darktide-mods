@@ -61,16 +61,16 @@ end
                 {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
             }
         end
-        local _flashlight_models = function(parent, angle, move, remove)
+        local _flashlight_models = function(parent, angle, move, remove, mesh_move)
             local angle = angle or 0
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                default =       {model = "",                                                              type = "flashlight", parent = tv(parent, 1), angle = angle, move = tv(move, 1), remove = tv(remove, 1)},
-                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", parent = tv(parent, 2), angle = angle, move = tv(move, 1), remove = tv(remove, 2)},
-                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", parent = tv(parent, 3), angle = angle, move = tv(move, 1), remove = tv(remove, 3)},
-                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", parent = tv(parent, 4), angle = angle, move = tv(move, 1), remove = tv(remove, 4)},
-                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = tv(move, 1), remove = tv(remove, 5)},
+                default =       {model = "",                                                              type = "flashlight", parent = tv(parent, 1), angle = angle, move = tv(move, 1), remove = tv(remove, 1), mesh_move = false},
+                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", parent = tv(parent, 2), angle = angle, move = tv(move, 1), remove = tv(remove, 2), mesh_move = false},
+                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", parent = tv(parent, 3), angle = angle, move = tv(move, 1), remove = tv(remove, 3), mesh_move = false},
+                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", parent = tv(parent, 4), angle = angle, move = tv(move, 1), remove = tv(remove, 4), mesh_move = false},
+                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = tv(move, 1), remove = tv(remove, 5), mesh_move = false},
             } 
         end
         local _emblem_right_attachments = function()
@@ -104,28 +104,28 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                emblem_right_default = {model = "",                                                         type = "emblem_right", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01",    type = "emblem_right", parent = tv(parent, 2), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02",    type = "emblem_right", parent = tv(parent, 3), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03",    type = "emblem_right", parent = tv(parent, 4), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a",   type = "emblem_right", parent = tv(parent, 5), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b",   type = "emblem_right", parent = tv(parent, 6), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c",   type = "emblem_right", parent = tv(parent, 7), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d",   type = "emblem_right", parent = tv(parent, 8), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e",   type = "emblem_right", parent = tv(parent, 9), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f",   type = "emblem_right", parent = tv(parent, 10), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05",    type = "emblem_right", parent = tv(parent, 11), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06",    type = "emblem_right", parent = tv(parent, 12), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07",    type = "emblem_right", parent = tv(parent, 13), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a",   type = "emblem_right", parent = tv(parent, 14), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b",   type = "emblem_right", parent = tv(parent, 15), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c",   type = "emblem_right", parent = tv(parent, 16), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a",   type = "emblem_right", parent = tv(parent, 17), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b",   type = "emblem_right", parent = tv(parent, 18), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c",   type = "emblem_right", parent = tv(parent, 19), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d",   type = "emblem_right", parent = tv(parent, 20), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e",   type = "emblem_right", parent = tv(parent, 21), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10",    type = "emblem_right", parent = tv(parent, 22), angle = angle, move = move, remove = remove, no_mesh_move = true},
+                emblem_right_default = {model = "",                                                         type = "emblem_right", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01",    type = "emblem_right", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02",    type = "emblem_right", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03",    type = "emblem_right", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a",   type = "emblem_right", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b",   type = "emblem_right", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c",   type = "emblem_right", parent = tv(parent, 7), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d",   type = "emblem_right", parent = tv(parent, 8), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e",   type = "emblem_right", parent = tv(parent, 9), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f",   type = "emblem_right", parent = tv(parent, 10), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05",    type = "emblem_right", parent = tv(parent, 11), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06",    type = "emblem_right", parent = tv(parent, 12), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07",    type = "emblem_right", parent = tv(parent, 13), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a",   type = "emblem_right", parent = tv(parent, 14), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b",   type = "emblem_right", parent = tv(parent, 15), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c",   type = "emblem_right", parent = tv(parent, 16), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a",   type = "emblem_right", parent = tv(parent, 17), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b",   type = "emblem_right", parent = tv(parent, 18), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c",   type = "emblem_right", parent = tv(parent, 19), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d",   type = "emblem_right", parent = tv(parent, 20), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e",   type = "emblem_right", parent = tv(parent, 21), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10",    type = "emblem_right", parent = tv(parent, 22), angle = angle, move = move, remove = remove, mesh_move = false},
             }
         end
         local _emblem_left_attachments = function()
@@ -150,19 +150,19 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                emblem_left_default = {model = "",                                                      type = "emblem_left", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01",  type = "emblem_left", parent = tv(parent, 2), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02",  type = "emblem_left", parent = tv(parent, 3), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03",  type = "emblem_left", parent = tv(parent, 4), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left", parent = tv(parent, 5), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left", parent = tv(parent, 6), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left", parent = tv(parent, 7), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left", parent = tv(parent, 8), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left", parent = tv(parent, 9), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left", parent = tv(parent, 10), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05",  type = "emblem_left", parent = tv(parent, 11), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06",  type = "emblem_left", parent = tv(parent, 12), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10",  type = "emblem_left", parent = tv(parent, 13), angle = angle, move = move, remove = remove, no_mesh_move = true},
+                emblem_left_default = {model = "",                                                      type = "emblem_left", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01",  type = "emblem_left", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02",  type = "emblem_left", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03",  type = "emblem_left", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left", parent = tv(parent, 7), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left", parent = tv(parent, 8), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left", parent = tv(parent, 9), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left", parent = tv(parent, 10), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05",  type = "emblem_left", parent = tv(parent, 11), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06",  type = "emblem_left", parent = tv(parent, 12), angle = angle, move = move, remove = remove, mesh_move = false},
+                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10",  type = "emblem_left", parent = tv(parent, 13), angle = angle, move = move, remove = remove, mesh_move = false},
             }
         end
         local _grip_attachments = function()
@@ -363,45 +363,35 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                trinket_hook_default =      {model = "",                                                                type = "trinket_hook", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), no_mesh_move = true},
-                trinket_hook_02_90 =        {model = "content/items/weapons/player/trinkets/trinket_hook_02_90",        type = "trinket_hook", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), no_mesh_move = true},
-                trinket_hook_01_v =         {model = "content/items/weapons/player/trinkets/trinket_hook_01_v",         type = "trinket_hook", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), no_mesh_move = true},
-                trinket_hook_04_gold_v =    {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold_v",    type = "trinket_hook", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), no_mesh_move = true},
-                trinket_hook_02 =           {model = "content/items/weapons/player/trinkets/trinket_hook_02",           type = "trinket_hook", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), no_mesh_move = true},
-                trinket_hook_03 =           {model = "content/items/weapons/player/trinkets/trinket_hook_03",           type = "trinket_hook", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6), no_mesh_move = true},
-                trinket_hook_04_steel_v =   {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel_v",   type = "trinket_hook", parent = tv(parent, 7), angle = angle, move = move, remove = tv(remove, 7), no_mesh_move = true},
-                trinket_hook_04_carbon =    {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon",    type = "trinket_hook", parent = tv(parent, 8), angle = angle, move = move, remove = tv(remove, 8), no_mesh_move = true},
-                trinket_hook_04_gold =      {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold",      type = "trinket_hook", parent = tv(parent, 9), angle = angle, move = move, remove = tv(remove, 9), no_mesh_move = true},
-                trinket_hook_04_carbon_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon_v",  type = "trinket_hook", parent = tv(parent, 10), angle = angle, move = move, remove = tv(remove, 10), no_mesh_move = true},
-                trinket_hook_04_coated =    {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated",    type = "trinket_hook", parent = tv(parent, 11), angle = angle, move = move, remove = tv(remove, 11), no_mesh_move = true},
-                trinket_hook_01 =           {model = "content/items/weapons/player/trinkets/trinket_hook_01",           type = "trinket_hook", parent = tv(parent, 12), angle = angle, move = move, remove = tv(remove, 12), no_mesh_move = true},
-                trinket_hook_04_steel =     {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel",     type = "trinket_hook", parent = tv(parent, 13), angle = angle, move = move, remove = tv(remove, 13), no_mesh_move = true},
-                trinket_hook_02_45 =        {model = "content/items/weapons/player/trinkets/trinket_hook_02_45",        type = "trinket_hook", parent = tv(parent, 14), angle = angle, move = move, remove = tv(remove, 14), no_mesh_move = true},
-                trinket_hook_empty =        {model = "content/items/weapons/player/trinkets/trinket_hook_empty",        type = "trinket_hook", parent = tv(parent, 15), angle = angle, move = move, remove = tv(remove, 15), no_mesh_move = true},
-                trinket_hook_05_gold =      {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold",      type = "trinket_hook", parent = tv(parent, 16), angle = angle, move = move, remove = tv(remove, 16), no_mesh_move = true},
-                trinket_hook_05_carbon =    {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon",    type = "trinket_hook", parent = tv(parent, 17), angle = angle, move = move, remove = tv(remove, 17), no_mesh_move = true},
-                trinket_hook_05_coated_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated_v",  type = "trinket_hook", parent = tv(parent, 18), angle = angle, move = move, remove = tv(remove, 18), no_mesh_move = true},
-                trinket_hook_05_gold_v =    {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold_v",    type = "trinket_hook", parent = tv(parent, 19), angle = angle, move = move, remove = tv(remove, 19), no_mesh_move = true},
-                trinket_hook_05_steel_v =   {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel_v",   type = "trinket_hook", parent = tv(parent, 20), angle = angle, move = move, remove = tv(remove, 20), no_mesh_move = true},
-                trinket_hook_05_coated =    {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated",    type = "trinket_hook", parent = tv(parent, 21), angle = angle, move = move, remove = tv(remove, 21), no_mesh_move = true},
-                trinket_hook_05_carbon_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon_v",  type = "trinket_hook", parent = tv(parent, 22), angle = angle, move = move, remove = tv(remove, 22), no_mesh_move = true},
-                trinket_hook_03_v =         {model = "content/items/weapons/player/trinkets/trinket_hook_03_v",         type = "trinket_hook", parent = tv(parent, 23), angle = angle, move = move, remove = tv(remove, 23), no_mesh_move = true},
-                trinket_hook_05_steel =     {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel",     type = "trinket_hook", parent = tv(parent, 24), angle = angle, move = move, remove = tv(remove, 24), no_mesh_move = true},
-                trinket_hook_04_coated_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated_v",  type = "trinket_hook", parent = tv(parent, 25), angle = angle, move = move, remove = tv(remove, 25), no_mesh_move = true},
+                trinket_hook_default =      {model = "",                                                                type = "trinket_hook", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
+                trinket_hook_02_90 =        {model = "content/items/weapons/player/trinkets/trinket_hook_02_90",        type = "trinket_hook", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = false},
+                trinket_hook_01_v =         {model = "content/items/weapons/player/trinkets/trinket_hook_01_v",         type = "trinket_hook", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = false},
+                trinket_hook_04_gold_v =    {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold_v",    type = "trinket_hook", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = false},
+                trinket_hook_02 =           {model = "content/items/weapons/player/trinkets/trinket_hook_02",           type = "trinket_hook", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = false},
+                trinket_hook_03 =           {model = "content/items/weapons/player/trinkets/trinket_hook_03",           type = "trinket_hook", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6), mesh_move = false},
+                trinket_hook_04_steel_v =   {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel_v",   type = "trinket_hook", parent = tv(parent, 7), angle = angle, move = move, remove = tv(remove, 7), mesh_move = false},
+                trinket_hook_04_carbon =    {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon",    type = "trinket_hook", parent = tv(parent, 8), angle = angle, move = move, remove = tv(remove, 8), mesh_move = false},
+                trinket_hook_04_gold =      {model = "content/items/weapons/player/trinkets/trinket_hook_04_gold",      type = "trinket_hook", parent = tv(parent, 9), angle = angle, move = move, remove = tv(remove, 9), mesh_move = false},
+                trinket_hook_04_carbon_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_04_carbon_v",  type = "trinket_hook", parent = tv(parent, 10), angle = angle, move = move, remove = tv(remove, 10), mesh_move = false},
+                trinket_hook_04_coated =    {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated",    type = "trinket_hook", parent = tv(parent, 11), angle = angle, move = move, remove = tv(remove, 11), mesh_move = false},
+                trinket_hook_01 =           {model = "content/items/weapons/player/trinkets/trinket_hook_01",           type = "trinket_hook", parent = tv(parent, 12), angle = angle, move = move, remove = tv(remove, 12), mesh_move = false},
+                trinket_hook_04_steel =     {model = "content/items/weapons/player/trinkets/trinket_hook_04_steel",     type = "trinket_hook", parent = tv(parent, 13), angle = angle, move = move, remove = tv(remove, 13), mesh_move = false},
+                trinket_hook_02_45 =        {model = "content/items/weapons/player/trinkets/trinket_hook_02_45",        type = "trinket_hook", parent = tv(parent, 14), angle = angle, move = move, remove = tv(remove, 14), mesh_move = false},
+                trinket_hook_empty =        {model = "content/items/weapons/player/trinkets/trinket_hook_empty",        type = "trinket_hook", parent = tv(parent, 15), angle = angle, move = move, remove = tv(remove, 15), mesh_move = false},
+                trinket_hook_05_gold =      {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold",      type = "trinket_hook", parent = tv(parent, 16), angle = angle, move = move, remove = tv(remove, 16), mesh_move = false},
+                trinket_hook_05_carbon =    {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon",    type = "trinket_hook", parent = tv(parent, 17), angle = angle, move = move, remove = tv(remove, 17), mesh_move = false},
+                trinket_hook_05_coated_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated_v",  type = "trinket_hook", parent = tv(parent, 18), angle = angle, move = move, remove = tv(remove, 18), mesh_move = false},
+                trinket_hook_05_gold_v =    {model = "content/items/weapons/player/trinkets/trinket_hook_05_gold_v",    type = "trinket_hook", parent = tv(parent, 19), angle = angle, move = move, remove = tv(remove, 19), mesh_move = false},
+                trinket_hook_05_steel_v =   {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel_v",   type = "trinket_hook", parent = tv(parent, 20), angle = angle, move = move, remove = tv(remove, 20), mesh_move = false},
+                trinket_hook_05_coated =    {model = "content/items/weapons/player/trinkets/trinket_hook_05_coated",    type = "trinket_hook", parent = tv(parent, 21), angle = angle, move = move, remove = tv(remove, 21), mesh_move = false},
+                trinket_hook_05_carbon_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_05_carbon_v",  type = "trinket_hook", parent = tv(parent, 22), angle = angle, move = move, remove = tv(remove, 22), mesh_move = false},
+                trinket_hook_03_v =         {model = "content/items/weapons/player/trinkets/trinket_hook_03_v",         type = "trinket_hook", parent = tv(parent, 23), angle = angle, move = move, remove = tv(remove, 23), mesh_move = false},
+                trinket_hook_05_steel =     {model = "content/items/weapons/player/trinkets/trinket_hook_05_steel",     type = "trinket_hook", parent = tv(parent, 24), angle = angle, move = move, remove = tv(remove, 24), mesh_move = false},
+                trinket_hook_04_coated_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated_v",  type = "trinket_hook", parent = tv(parent, 25), angle = angle, move = move, remove = tv(remove, 25), mesh_move = false},
             }
         end
     --#endregion
     --#region Ogryn Guns
-            -- talents_equip_talent - grenade launcher
-        -- social_menu_unfriend_player - gas tank
-        -- end_screen_summary_credits_stop - ?
-        -- end_screen_summary_card_expand - ?
-        -- smart_tag_pickup_default_enter - small
-        -- end_screen_summary_experience_stop - ?
-        -- mark_vendor_replace_contract - energy
-            -- weapons_trinket_select - small
-            -- smart_tag_hud_default - small
-            -- weapons_skin_select - small
         local _stubber_barrel_attachments = function()
             return {
                 {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
@@ -453,10 +443,10 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                magazine_default =  {model = "",                                                                                type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_01",   type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_02",   type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove, no_mesh_move = true},
-                magazine_03 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_03",   type = "magazine", parent = tv(parent, 4), angle = angle, move = move, remove = remove, no_mesh_move = true},
+                magazine_default =  {model = "",                                                                                type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_01",   type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_02",   type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                magazine_03 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_03",   type = "magazine", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
             }
         end
         local _stubber_grip_attachments = function()
@@ -472,10 +462,10 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                grip_default =  {model = "",                                                                        type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_mesh_move = true},
-                grip_01 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, no_mesh_move = true},
-                grip_02 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_02",   type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, no_mesh_move = true},
-                grip_03 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_03",   type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}, no_mesh_move = true},
+                grip_default =  {model = "",                                                                        type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, mesh_move = false},
+                grip_01 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, mesh_move = false},
+                grip_02 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_02",   type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, mesh_move = false},
+                grip_03 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_03",   type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}, mesh_move = false},
             }
         end
         local _ogryn_bayonet_attachments = function()
@@ -492,11 +482,11 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                bayonet_default =   {model = "",                                                                        type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                bayonet_01 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
-                bayonet_02 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
-                bayonet_03 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
-                bayonet_blade_01 =  {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01",         type = "bayonet", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+                bayonet_default =   {model = "",                                                                        type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
+                bayonet_01 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = false},
+                bayonet_02 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = false},
+                bayonet_03 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = false},
+                bayonet_blade_01 =  {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01",         type = "bayonet", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = false},
             }
         end
         local _ripper_barrel_attachments = function()
@@ -676,11 +666,11 @@ end
             local move = move or Vector3Box(0, 0, 0)
             local remove = remove or Vector3Box(0, 0, 0)
             return {
-                barrel_default = {model = "",                                                                     type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), no_mesh_move = "both"},
-                barrel_01 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), no_mesh_move = "both"},
-                barrel_02 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_02", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), no_mesh_move = "both"},
-                barrel_03 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_03", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), no_mesh_move = "both"},
-                barrel_04 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_04", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), no_mesh_move = "both"},
+                barrel_default = {model = "",                                                                     type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = "both"},
+                barrel_01 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = "both"},
+                barrel_02 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_02", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = "both"},
+                barrel_03 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_03", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = "both"},
+                barrel_04 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_04", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = "both"},
             }
         end
         local _gauntlet_body_attachments = function()
@@ -719,6 +709,77 @@ end
                 magazine_default = {model = "",                                                                         type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 magazine_01 =      {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_01", type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 magazine_02 =      {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_02", type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+            }
+        end
+    --#endregion
+    --#region Ogryn Melee
+        local _ogryn_shovel_head_attachments = function()
+            return {
+                {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "head_01",      name = "Head 1",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "head_02",      name = "Head 2",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "head_03",      name = "Head 3",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "head_04",      name = "Head 4",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "head_05",      name = "Head 5",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            }
+        end
+        local _ogryn_shovel_head_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
+            return {
+                head_default = {model = "",                                                              type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
+                head_01 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_01", type = "head", parent = tv(parent, 2), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
+                head_02 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_02", type = "head", parent = tv(parent, 3), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
+                head_03 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_03", type = "head", parent = tv(parent, 4), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
+                head_04 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_04", type = "head", parent = tv(parent, 5), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
+                head_05 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_05", type = "head", parent = tv(parent, 6), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
+            }
+        end
+        local _ogryn_shovel_grip_attachments = function()
+            return {
+                {id = "grip_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_01",      name = "Grip 1",  sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_02",      name = "Grip 2",  sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_03",      name = "Grip 3",  sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_04",      name = "Grip 4",  sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_05",      name = "Grip 5",  sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _ogryn_shovel_grip_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
+            return {
+                grip_default = {model = "",                                                              type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                grip_01 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_01", type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                grip_02 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_02", type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                grip_03 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_03", type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                grip_04 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_04", type = "grip", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
+                grip_05 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_05", type = "grip", parent = tv(parent, 6), angle = angle, move = move, remove = remove},
+            }
+        end
+        local _ogryn_shovel_pommel_attachments = function()
+            return {
+                {id = "pommel_default", name = "Default",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "pommel_01",      name = "Pommel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "pommel_02",      name = "Pommel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "pommel_03",      name = "Pommel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "pommel_04",      name = "Pommel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "pommel_05",      name = "Pommel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _ogryn_shovel_pommel_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or Vector3Box(0, 0, 0)
+            local remove = remove or Vector3Box(0, 0, 0)
+            return {
+                pommel_default = {model = "",                                                                  type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                pommel_01 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_01", type = "pommel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                pommel_02 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_02", type = "pommel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                pommel_03 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_03", type = "pommel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                pommel_04 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_04", type = "pommel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                pommel_05 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_05", type = "pommel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = "both"},
             }
         end
     --#endregion
@@ -1158,6 +1219,259 @@ end
             },
         --#endregion
         --#region Ogryn Melee
+            ogryn_club_p1_m1 = {
+                fixes = {
+                    {dependencies = {"head_01", "grip_01"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .85), rotation = Vector3Box(90, -5, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .475), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_01", "grip_02"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .86), rotation = Vector3Box(90, -5, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .485), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_01", "grip_04"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .85), rotation = Vector3Box(90, -5, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .475), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_01"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .825), rotation = Vector3Box(90, -5, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .47), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+
+                    {dependencies = {"head_02", "grip_01"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .85), rotation = Vector3Box(90, -25, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .5), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_02", "grip_02"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .86), rotation = Vector3Box(90, -25, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .51), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_02", "grip_04"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .85), rotation = Vector3Box(90, -25, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .5), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_02"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .825), rotation = Vector3Box(90, -25, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .5), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+
+                    {dependencies = {"head_03", "grip_01"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0475, -.2, .85), rotation = Vector3Box(90, -10, 180), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .6), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_03", "grip_02"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0475, -.2, .86), rotation = Vector3Box(90, -10, 180), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .615), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_03", "grip_04"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0475, -.2, .85), rotation = Vector3Box(90, -10, 180), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .6), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_03"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.0475, -.2, .825), rotation = Vector3Box(90, -10, 180), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .585), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+
+                    {dependencies = {"head_04", "grip_01"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.02, -.17, .95), rotation = Vector3Box(90, -10, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.15, 0, .695), rotation = Vector3Box(90, 0, 3), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_04", "grip_02"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.02, -.17, .96), rotation = Vector3Box(90, -10, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.15, 0, .695), rotation = Vector3Box(90, 0, 3), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_04", "grip_04"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.02, -.17, .95), rotation = Vector3Box(90, -10, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.15, 0, .695), rotation = Vector3Box(90, 0, 3), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_04"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.02, -.17, .925), rotation = Vector3Box(90, -10, 183), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.15, 0, .685), rotation = Vector3Box(90, 0, 3), scale = Vector3Box(3, 3, 3)}},
+
+                    {dependencies = {"head_05", "grip_01"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.04, 0, .78), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .52), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_05", "grip_02"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.04, 0, .78), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .51), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_05", "grip_04"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.04, 0, .79), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .535), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_05"}, -- Emblems
+                        emblem_left = {parent = "grip", position = Vector3Box(.04, 0, .77), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .525), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                    {dependencies = {"head_01", "grip_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .185), mesh_position = Vector3Box(0, 0, -.370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_01", "grip_04"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .12), mesh_position = Vector3Box(0, 0, -.24), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.06), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_01", "grip_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_01", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_01", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_01"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_03", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_03", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_03"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_04", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.07), mesh_position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_04", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.07), mesh_position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_04"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.07), mesh_position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_05", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.05), mesh_position = Vector3Box(0, 0, .1), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_05", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.05), mesh_position = Vector3Box(0, 0, .1), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_02", "grip_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.05), mesh_position = Vector3Box(0, 0, .1), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .025), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_02", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .185), mesh_position = Vector3Box(0, 0, -.370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_02", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .185), mesh_position = Vector3Box(0, 0, -.370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .185), mesh_position = Vector3Box(0, 0, -.370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_04", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_04", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_04"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_05", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_05", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_03", "grip_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_04", "grip_01", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_04", "grip_01", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_04", "grip_01"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_04", "grip_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, -.05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, .05), mesh_position = Vector3Box(0, 0, -.1), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, -.025), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_04", "grip_03", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.12), mesh_position = Vector3Box(0, 0, .24), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_04", "grip_03", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.12), mesh_position = Vector3Box(0, 0, .24), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_04", "grip_03"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.12), mesh_position = Vector3Box(0, 0, .24), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .06), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_05", "grip_01", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_05", "grip_01", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_05", "grip_01"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_05", "grip_03", "pommel_02"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_05", "grip_03", "pommel_05"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                    {dependencies = {"head_05", "grip_03"}, -- Grip
+                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                        pommel = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                    },
+                },
+            },
             ogryn_powermaul_slabshield_p1_m1 = {
                 ["bulwark_shield_01"] = {
                     position = Vector3Box(0, 0, 0),
@@ -1925,69 +2239,12 @@ end
         --#endregion
         --#region Ogryn Melee
             ogryn_club_p1_m1 = {
-                grip = {
-                    {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                pommel = {
-                    {id = "pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "pommel_01", name = "Pommel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "pommel_02", name = "Pommel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "pommel_03", name = "Pommel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "pommel_04", name = "Pommel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "pommel_05", name = "Pommel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                head = {
-                    {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "head_01", name = "Head 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_02", name = "Head 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_03", name = "Head 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_04", name = "Head 4", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_05", name = "Head 5", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                },
-                emblem_right = {
-                    {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                emblem_left = {
-                    {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                },
+                grip = _ogryn_shovel_grip_attachments(),
+                pommel = _ogryn_shovel_pommel_attachments(),
+                head = _ogryn_shovel_head_attachments(),
+                emblem_right = _emblem_right_attachments(),
+                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _trinket_hook_attachments(),
             },
             ogryn_combatblade_p1_m1 = {
                 blade = {
@@ -3557,61 +3814,15 @@ end
             ),
         --#endregion
         --#region Ogryn Melee
-            ogryn_club_p1_m1 = {
-                grip_default = {model = "", type = "grip"},
-                grip_01 = {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_01", type = "grip"},
-                grip_02 = {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_02", type = "grip"},
-                grip_03 = {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_03", type = "grip"},
-                grip_04 = {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_04", type = "grip"},
-                grip_05 = {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_05", type = "grip"},
-                pommel_default = {model = "", type = "pommel"},
-                pommel_01 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_01", type = "pommel"},
-                pommel_02 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_02", type = "pommel"},
-                pommel_03 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_03", type = "pommel"},
-                pommel_04 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_04", type = "pommel"},
-                pommel_05 = {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_05", type = "pommel"},
-                head_default = {model = "", type = "head"},
-                head_01 = {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_01", type = "head"},
-                head_02 = {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_02", type = "head"},
-                head_03 = {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_03", type = "head"},
-                head_04 = {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_04", type = "head"},
-                head_05 = {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_05", type = "head"},
-                emblem_right_default = {model = "", type = "emblem_right"},
-                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right"},
-                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right"},
-                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right"},
-                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right"},
-                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right"},
-                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right"},
-                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right"},
-                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right"},
-                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right"},
-                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right"},
-                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right"},
-                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right"},
-                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right"},
-                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right"},
-                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right"},
-                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right"},
-                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right"},
-                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right"},
-                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right"},
-                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right"},
-                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right"},
-                emblem_left_default = {model = "", type = "emblem_left"},
-                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
-                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
-                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
-                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
-                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
-                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
-                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
-                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
-                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
-                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
-                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
-                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
-            },
+            ogryn_club_p1_m1 = table.combine(
+                _emblem_right_models("grip", 0, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
+                _emblem_left_models("grip", 0, Vector3Box(0, 0, 0), Vector3Box(-.2, 0, 0)),
+                _trinket_hook_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, 0)),
+                _ogryn_shovel_head_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, .4)),
+                _ogryn_shovel_grip_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, 0)),
+                _ogryn_shovel_pommel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.3)),
+                _trinket_hook_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, 0))
+            ),
             ogryn_combatblade_p1_m1 = {
                 blade_default = {model = "", type = "blade"},
                 blade_01 = {model = "content/items/weapons/player/melee/blades/combat_blade_blade_01", type = "blade"},

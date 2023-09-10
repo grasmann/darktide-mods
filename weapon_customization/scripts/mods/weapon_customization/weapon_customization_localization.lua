@@ -32,6 +32,10 @@ return {
 		en = "Speed",
 		de = "Geschwindigkeit",
 	},
+	mod_option_weapon_build_animation_wobble = {
+		en = "Wobble",
+		de = "Wackeln",
+	},
 	mod_option_weapon_build_animation_speed_unit = {
 		en = "Seconds",
 		de = "Sekunden",
