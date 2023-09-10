@@ -16,6 +16,7 @@ local unit_set_local_rotation = Unit.set_local_rotation
 local unit_set_local_scale = Unit.set_local_scale
 local unit_local_position = Unit.local_position
 local unit_local_rotation = Unit.local_rotation
+local unit_local_pose = Unit.local_pose
 local unit_has_node = Unit.has_node
 local unit_node = Unit.node
 local unit_world_pose = Unit.world_pose
@@ -25,11 +26,15 @@ local unit_lod_object = Unit.lod_object
 local unit_set_unit_objects_visibility = Unit.set_unit_objects_visibility
 local unit_set_unit_culling = Unit.set_unit_culling
 local unit_set_sort_order = Unit.set_sort_order
+local unit_num_meshes = Unit.num_meshes
+local unit_mesh = Unit.mesh
+local mesh_local_position = Mesh.local_position
 local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
 local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 local string_sub = string.sub
 local string_gsub = string.gsub
 local string_find = string.find
+local vector3 = Vector3
 local vector3_box = Vector3Box
 local vector3_unbox = vector3_box.unbox
 local vector3_zero = Vector3.zero
@@ -40,6 +45,10 @@ local world_link_unit = World.link_unit
 local world_spawn_unit_ex = World.spawn_unit_ex
 local lod_group_add_lod_object = LODGroup.add_lod_object
 local lod_object_set_static_select = LODObject.set_static_select
+local pairs = pairs
+local type = type
+local tonumber = tonumber
+local visibility_contexts = VisibilityContexts
 
 mod._add_custom_attachments = function(self, item, attachments)
 	local gear_id = self:get_gear_id(item)
@@ -91,7 +100,7 @@ mod._apply_anchor_fixes = function(self, item, unit)
 					local no_dependencies = false
 					if fix_data.dependencies then
 						for _, dependency in pairs(fix_data.dependencies) do
-							local negative = string_sub(dependency, 1, 1) == "!"
+							local negative = string_find(dependency, "!")
 							dependency = string_gsub(dependency, "!", "")
 							if self.attachment_models[item_name] and self.attachment_models[item_name][dependency] then
 								local model_string = self.attachment_models[item_name][dependency].model
@@ -122,9 +131,9 @@ mod._apply_anchor_fixes = function(self, item, unit)
 								return fix
 							end
 						end
-					end--else self:print("dependencies not met") end
+					end
 				end
-			end--else self:print("not fixes for item "..item_name) end
+			end
 		else self:print("slot_info is nil") end
 	end
 end
@@ -206,49 +215,28 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			mod.attachment_slot_infos[gear_id].attachment_slot_to_unit["root"] = item_unit
 			mod.attachment_slot_infos[gear_id].unit_to_attachment_slot[item_unit] = "root"
 			mod.attachment_slot_infos[gear_id].unit_to_attachment_name[item_unit] = "root"
-			-- mod.mesh_positions[item_unit] = mod.mesh_positions[item_unit] or {}
-			-- local num_meshes = Unit.num_meshes(item_unit)
-			-- for i = 1, num_meshes do
-			--     mod.mesh_positions[item_unit][i] = vector3_box(Mesh.local_position(Unit.mesh(item_unit, i)))
-			-- end
-			-- mod.attachment_slot_infos[gear_id].unit_default_position = mod.attachment_slot_infos[gear_id].unit_default_position or {}
+
+			-- Set root default position
 			mod.attachment_slot_infos[gear_id].unit_default_position["root"] = vector3_box(unit_local_position(item_unit, 1))
 
-			-- -- Set unit default positions
+			-- Set unit default positions
 			for _, unit in pairs(attachment_units) do
-				-- mod.attachment_slot_infos[gear_id].unit_default_position = mod.attachment_slot_infos[gear_id].unit_default_position or {}
 				mod.attachment_slot_infos[gear_id].unit_default_position[unit] = vector3_box(unit_local_position(unit, 1))
 			end
 
-			-- mod:setup_mesh_default_positions(gear_id, item_data, item_unit)
-			-- mod:echo("setup"..tostring(item_data.__is_preview_item))
-			-- if not mod.test then
-			--     mod:dtf(item_data, "item_data", 15)
-			--     mod.test = true
-			-- end
-
-			-- for _, unit in pairs(attachment_units) do
-			--     mod.mesh_positions[unit] = mod.mesh_positions[unit] or {}
-			--     local num_meshes = Unit.num_meshes(unit)
-			--     for i = 1, num_meshes do
-			--         mod.mesh_positions[unit][i] = vector3_box(Mesh.local_position(Unit.mesh(unit, i)))
-			--     end
-			-- end
-
-			-- local _attachment_units = table.clone(attachment_units)
-			-- _attachment_units[#_attachment_units+1] = item_unit
-
+			-- Iterate attachment units
 			for _, unit in pairs(attachment_units) do
-
 				local unit_name = unit_debug_name(unit)
 				local anchor = nil
 
+				-- Set unit mesh default positions
 				mod.mesh_positions[unit] = mod.mesh_positions[unit] or {}
-			    local num_meshes = Unit.num_meshes(unit)
+			    local num_meshes = unit_num_meshes(unit)
 			    for i = 1, num_meshes do
-			        mod.mesh_positions[unit][i] = vector3_box(Mesh.local_position(Unit.mesh(unit, i)))
+			        mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
 			    end
 
+				-- Find anchor
 				if mod.attachment_units[unit_name] then
 					local attachment = mod.attachment_units[unit_name]
 					if attachment then
@@ -258,131 +246,72 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					end
 				end
 
+				-- Bulwark shield
 				if unit_name == "#ID[bc25db1df0670d2a]" then
-					unit_set_local_position(unit, 1, unit_local_position(unit, 1) + Vector3(0, 0, -.065))
-					local x, y, z = quaternion_to_euler_angles_xyz(Unit.local_rotation(unit, 1))
-					local rotation = Vector3(x, y, z) + Vector3(-10, 5, 5)
+					unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 0, -.065))
+					local x, y, z = quaternion_to_euler_angles_xyz(unit_local_rotation(unit, 1))
+					local rotation = vector3(x, y, z) + vector3(-10, 5, 5)
 					local rotate_quaternion = quaternion_from_euler_angles_xyz(rotation[1], rotation[2], rotation[3])
 					unit_set_local_rotation(unit, 1, rotate_quaternion)
-					unit_set_local_scale(unit, 1, Vector3(1, 1, 0.9))
+					unit_set_local_scale(unit, 1, vector3(1, 1, 0.9))
 				end
 
+				-- Handle positioning and setup infos
 				if mod.attachment_slot_infos[gear_id] then
 					local attachment_name = mod.attachment_slot_infos[gear_id].unit_to_attachment_name[unit]
 					local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
 					local parent_name = attachment_data and attachment_data.parent and attachment_data.parent
 					local parent = parent_name and mod.attachment_slot_infos[gear_id].attachment_slot_to_unit[parent_name] or item_unit
 
+					-- Root movement
 					local root_movement = attachment_data and attachment_data.move_root or false
-					-- local root_default = mod.attachment_slot_infos[gear_id].unit_default_position[item_unit]
-					-- local root_default_position = root_default and vector3_unbox(root_default) or vector3_zero()
-
 					mod.attachment_slot_infos[gear_id].unit_root_movement[unit] = root_movement
 
-					-- local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
-
+					-- Anchor
 					anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment_name]
 					anchor = mod:_apply_anchor_fixes(item_data, unit) or anchor
 
-					-- local default_position0 = unit and vector3_unbox(mod.attachment_slot_infos[gear_id].unit_default_position[unit])
+					-- Default position
 					local default_position1 = unit and unit_alive(unit) and unit_local_position(unit, 1)
 					local default_position = anchor and anchor.position and vector3_unbox(anchor.position) or default_position1 or vector3_zero()
 
+					-- Mesh movement
 					local mesh_move = attachment_data and attachment_data.mesh_move
 					if mesh_move == nil then mesh_move = true end
-					-- mesh_move = attachment_data and attachment_data.mesh_move or mesh_move
 
+					-- Setup data
 					mod.attachment_slot_infos[gear_id].unit_mesh_move[unit] = mesh_move
 					mod.attachment_slot_infos[gear_id].unit_mesh_position[unit] = anchor and anchor.mesh_position
 					mod.attachment_slot_infos[gear_id].unit_root_position[unit] = anchor and anchor.root_position
 
-					if anchor then 
+					-- Anchor found?
+					if anchor then
+						-- Make sure unit is valid
 						if unit and unit_alive(unit) then
+							-- Link to parent
 							if not anchor.offset then
 								world_unlink_unit(attach_settings.world, unit)
 								world_link_unit(attach_settings.world, unit, 1, parent, 1)
 							end
 
-							-- local anchor_offset = anchor.position and vector3_unbox(anchor.position) or vector3_zero()
-							-- local position = default_position + anchor_offset
+							-- Set position ( with meshes )
+							mod:unit_set_local_position_mesh(gear_id, unit, default_position)
 
-							-- local mesh_move = (parent or (attachment_data and attachment_data.mesh_move)) and true
-							-- mesh_move = attachment_data and attachment_data.mesh_move or mesh_move
-
-							mod:unit_set_local_position_mesh(gear_id, unit, default_position)--, root_movement, item_unit, root_default_position)
-
+							-- Set rotation
 							local rotation_euler = anchor.rotation and vector3_unbox(anchor.rotation) or vector3_zero()
-							local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_one()
 							local rotation = quaternion_from_euler_angles_xyz(rotation_euler[1], rotation_euler[2], rotation_euler[3])
-
 							unit_set_local_rotation(unit, 1, rotation)
+
+							-- Set scale
+							local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_one()
 							unit_set_local_scale(unit, 1, scale)
 						end
 					end
 				end
-
-				
 			end
-
-			-- mod.attachment_slot_infos[gear_id].unit_default_position = mod.attachment_slot_infos[gear_id].unit_default_position or {}
-			-- mod.attachment_slot_infos[gear_id].unit_default_position[item_unit] = vector3_box(unit_local_position(item_unit, 1))
-
-			-- -- Set unit default positions
-			-- for _, unit in pairs(attachment_units) do
-			-- 	mod.attachment_slot_infos[gear_id].unit_default_position = mod.attachment_slot_infos[gear_id].unit_default_position or {}
-			-- 	mod.attachment_slot_infos[gear_id].unit_default_position[unit] = vector3_box(unit_local_position(unit, 1))
-			-- end
 		end
-
-		-- if mod._debug then
-		--     local new_unit_names = {}
-		--     local gear_id = mod:get_gear_id(item_data)
-		--     if gear_id and attachment_units then
-		--         if mod.last_attachment_units[gear_id] then
-		--             local last_units = mod.last_attachment_units[gear_id]
-		--             local new_units = mod.new_units[gear_id]
-		--             local debug_units = mod.debug_selected_unit
-
-		--             for _, unit in pairs(attachment_units) do
-		--                 local unit_name = unit_debug_name(unit)
-		--                 if not table_contains(last_units, unit_name) then
-		--                     new_unit_names[#new_unit_names+1] = unit_name
-		--                     new_units[#new_units+1] = unit
-		--                     last_units[#last_units+1] = unit_name
-		--                 end
-		--             end
-
-		--             if #new_unit_names > 0 then
-		--                 for _, unit_name in pairs(new_unit_names) do
-		--                     -- mod:echo(unit_name)
-		--                 end
-		--             end
-
-		--             if #new_unit_names == 1 then
-		--                 debug_units[#debug_units+1] = new_units[#new_units]
-		--                 if not mod.attachment_units[new_unit_names[1]] then
-		--                     -- mod:dtf(new_unit_names, "new_unit", 3)
-		--                 end
-		--             end
-
-		--         else
-
-		--             local last_units = {}
-		--             for _, unit in pairs(attachment_units) do
-		--                 local unit_name = unit_debug_name(unit)
-		--                 last_units[#last_units+1] = unit_name
-		--             end
-		--             mod.debug_item_name = mod:item_name_from_content_string(item_data.name)
-		--             mod.last_attachment_units[gear_id] = last_units
-		--             mod.new_units[gear_id] = {}
-		--             mod.debug_selected_unit = {}
-
-		--         end
-		--     end
-		-- end
-
-		-- ############################################################################################################
 	
+		-- Return original values
 		return attachment_units, attachment_units_bind_poses
 	end
 
@@ -591,16 +520,16 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				local backpack_offset_node_index = unit_has_node(parent_unit, "j_backpackoffset") and unit_node(parent_unit, "j_backpackoffset")
 		
 				if backpack_offset_node_index then
-					local backpack_offset_v3 = Vector3(0, backpack_offset, 0)
+					local backpack_offset_v3 = vector3(0, backpack_offset, 0)
 		
 					unit_set_local_position(parent_unit, backpack_offset_node_index, backpack_offset_v3)
 				end
 			end
 		
-			local bind_pose = Unit.local_pose(spawned_unit, 1)
+			local bind_pose = unit_local_pose(spawned_unit, 1)
 		
 			if is_first_person and (show_in_1p or only_show_in_1p) then
-				unit_set_unit_objects_visibility(spawned_unit, false, true, VisibilityContexts.RAYTRACING_CONTEXT)
+				unit_set_unit_objects_visibility(spawned_unit, false, true, visibility_contexts.RAYTRACING_CONTEXT)
 			end
 		
 			local keep_local_transform = not settings.skip_link_children and true

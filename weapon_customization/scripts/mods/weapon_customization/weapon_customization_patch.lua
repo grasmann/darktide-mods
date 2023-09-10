@@ -10,8 +10,16 @@ local table_clone_instance = table.clone_instance
 local table_clone = table.clone
 local vector3_box = Vector3Box
 local vector3_unbox = vector3_box.unbox
+local quaternion_matrix4x4 = Quaternion.matrix4x4
+local matrix4x4_transform = Matrix4x4.transform
 local camera_local_position = Camera.local_position
+local Camera_local_rotation = Camera.local_rotation
+local math_random_array_entry = math.random_array_entry
 local string_find = string.find
+local pairs = pairs
+local CLASS = CLASS
+local managers = Managers
+local type = type
 
 mod.weapon_templates = {}
 mod.special_types = {
@@ -28,6 +36,10 @@ mod.add_custom_attachments = {
     rail = "rails",
     emblem_left = "emblems_left",
     emblem_right = "emblems_right",
+}
+
+mod.special_actions = {
+    "weapon_extra_pressed",
 }
 
 mod.get_item_attachment_slots = function(self, item)
@@ -55,7 +67,7 @@ mod.randomize_weapon = function(self, item)
                     possible_attachments[attachment_slot][#possible_attachments[attachment_slot]+1] = data.id
                 end
             end
-            local random_attachment = math.random_array_entry(possible_attachments[attachment_slot])
+            local random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
             random_attachments[attachment_slot] = random_attachment
             local attachment_data = self.attachment_models[item_name][random_attachment]
             local no_support = attachment_data and attachment_data.no_support
@@ -70,7 +82,7 @@ mod.randomize_weapon = function(self, item)
     for _, no_support_entry in pairs(no_support_entries) do
         for attachment_slot, random_attachment in pairs(random_attachments) do
             while random_attachment == no_support_entry do
-                random_attachment = math.random_array_entry(possible_attachments[attachment_slot])
+                random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
                 random_attachments[attachment_slot] = random_attachment
             end
             if attachment_slot == no_support_entry then
@@ -96,28 +108,15 @@ end
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
 -- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
 
--- mod:hook(CLASS.InventoryWeaponsView, "event_replace_list_item", function(func, self, item, ...)
--- 	self:replace_item_instance(item)
--- 	if self._previewed_item and item then
--- 		self._previewed_item = item
--- 	end
--- end)
-
 mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
     if mod.weapon_changed then
 
         self:_spawn_profile(self._presentation_profile)
-        -- self._preview_profile_equipped_items[mod.changed_weapon.__gear.slots[1]] = mod.changed_weapon
-        -- self:_update_presentation_wield_item()
-        -- self:_update_equipped_items()
-        -- self:_equip_slot_item(slot_name, item, force_update)
 
-        -- mod:redo_weapon_attachments(mod.equip_weapon)
-
-		Managers.ui:item_icon_updated(mod.changed_weapon)
-		Managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
-		Managers.event:trigger("event_replace_list_item", mod.changed_weapon)
+		managers.ui:item_icon_updated(mod.changed_weapon)
+		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
+		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
 
         mod.weapon_changed = nil
     end
@@ -129,19 +128,17 @@ end)
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ###########################################################
 
 mod._recursive_set_attachment = function(self, attachments, attachment_name, attachment_type, model, auto)
-    -- if not table_contains(mod.automatic_slots, attachment_type) or auto then
-        for attachment_slot, attachment_data in pairs(attachments) do
-            if attachment_slot == attachment_type then
-                attachment_data.item = model
-                attachment_data.attachment_type = attachment_type
-                attachment_data.attachment_name = attachment_name
-            else
-                if attachment_data.children then
-                    self:_recursive_set_attachment(attachment_data.children, attachment_name, attachment_type, model, auto)
-                end
+    for attachment_slot, attachment_data in pairs(attachments) do
+        if attachment_slot == attachment_type then
+            attachment_data.item = model
+            attachment_data.attachment_type = attachment_type
+            attachment_data.attachment_name = attachment_name
+        else
+            if attachment_data.children then
+                self:_recursive_set_attachment(attachment_data.children, attachment_name, attachment_type, model, auto)
             end
         end
-    -- end
+    end
 end
 
 mod._recursive_remove_attachment = function(self, attachments, attachment_type)
@@ -149,7 +146,6 @@ mod._recursive_remove_attachment = function(self, attachments, attachment_type)
     if attachments then
         for attachment_name, attachment_data in pairs(attachments) do
             if attachment_name == attachment_type then
-                -- attachment_data = nil
                 attachments[attachment_name] = nil
                 val = true
             else
@@ -267,10 +263,6 @@ mod._overwrite_attachments = function(self, item_data, attachments)
     end
 end
 
-
-
-
-
 mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
 
     if not instance.__resolve_item_packages_recursive then instance.__resolve_item_packages_recursive = instance._resolve_item_packages_recursive end
@@ -386,8 +378,8 @@ end)
 mod:hook(CLASS.CameraManager, "_update_camera_properties", function(func, self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
     func(self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
     if viewport_name == "player1" and mod.camera_position then
-        local mat = Quaternion.matrix4x4(Camera.local_rotation(camera))
-        local rotated_pos = Matrix4x4.transform(mat, vector3_unbox(mod.camera_position))
+        local mat = quaternion_matrix4x4(Camera_local_rotation(camera))
+        local rotated_pos = matrix4x4_transform(mat, vector3_unbox(mod.camera_position))
         local position = camera_local_position(camera) + rotated_pos
         ScriptCamera.set_local_position(camera, position)
     end
@@ -455,8 +447,6 @@ end)
 -- ##### │││├┤ ├─┤├─┘│ ││││   │ ├┤ │││├─┘│  ├─┤ │ ├┤ └─┐ ##############################################################
 -- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘└─┘ ##############################################################
 
-
-
 mod.template_add_torch = function(self, orig_weapon_template)
 	if orig_weapon_template then
 		local weapon_template = orig_weapon_template
@@ -493,7 +483,6 @@ mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
 	end
 end)
 
-
 mod:hook_require("scripts/settings/equipment/flashlight_templates", function(instance)
     for name, template in pairs(instance) do
         template.light.first_person.cast_shadows = mod:get("mod_option_flashlight_shadows")
@@ -504,12 +493,6 @@ end)
 -- ##### ┬┌┐┌┌─┐┬ ┬┌┬┐ ################################################################################################
 -- ##### ││││├─┘│ │ │  ################################################################################################
 -- ##### ┴┘└┘┴  └─┘ ┴  ################################################################################################
-
-local table_contains = table_contains
-
-mod.special_actions = {
-    "weapon_extra_pressed",
-}
 
 mod:hook(CLASS.InputService, "get", function(func, self, action_name, ...)
 	local pressed = func(self, action_name, ...)

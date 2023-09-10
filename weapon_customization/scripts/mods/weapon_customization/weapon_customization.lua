@@ -17,6 +17,22 @@ local math_random_seed = math.random_seed
 local math_max = math.max
 local light_set_intensity = Light.set_intensity
 local light_color_with_intensity = Light.color_with_intensity
+local light_set_ies_profile = Light.set_ies_profile
+local light_set_correlated_color_temperature = Light.set_correlated_color_temperature
+local light_set_volumetric_intensity = Light.set_volumetric_intensity
+local light_set_casts_shadows = Light.set_casts_shadows
+local light_set_spot_angle_start = Light.set_spot_angle_start
+local light_set_spot_angle_end = Light.set_spot_angle_end
+local light_set_spot_reflector = Light.set_spot_reflector
+local light_set_falloff_start = Light.set_falloff_start
+local light_set_falloff_end = Light.set_falloff_end
+local light_set_enabled = Light.set_enabled
+local tostring = tostring
+local pairs = pairs
+local game_parameters = GameParameters
+local script_unit = ScriptUnit
+local managers = Managers
+local CLASS = CLASS
 
 mod:persistent_table("weapon_customization", {
 	flashlight_on = false,
@@ -152,7 +168,7 @@ mod.redo_weapon_attachments = function(self, item)
 	local gear_id = mod:get_gear_id(item)
 	local slot_name, weapon = self:get_weapon_from_gear_id(gear_id)
 	if weapon then
-		local fixed_time_step = GameParameters.fixed_time_step
+		local fixed_time_step = game_parameters.fixed_time_step
 		local gameplay_time = self.time_manager:time("gameplay")
 		local latest_frame = math_floor(gameplay_time / fixed_time_step)
 		self.attached_flashlights[gear_id] = nil
@@ -267,16 +283,16 @@ mod.set_flashlight_template = function(self, flashlight_unit)
 	if flashlight_unit then
 		local light = unit_light(flashlight_unit, 1)
 		if light then
-			Light.set_ies_profile(light, self._flashlight_template.ies_profile)
-			Light.set_correlated_color_temperature(light, self._flashlight_template.color_temperature)
+			light_set_ies_profile(light, self._flashlight_template.ies_profile)
+			light_set_correlated_color_temperature(light, self._flashlight_template.color_temperature)
 			light_set_intensity(light, self._flashlight_template.intensity)
-			Light.set_volumetric_intensity(light, self._flashlight_template.volumetric_intensity)
-			Light.set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
-			Light.set_spot_angle_start(light, self._flashlight_template.spot_angle.min)
-			Light.set_spot_angle_end(light, self._flashlight_template.spot_angle.max)
-			Light.set_spot_reflector(light, self._flashlight_template.spot_reflector)
-			Light.set_falloff_start(light, self._flashlight_template.falloff.near)
-			Light.set_falloff_end(light, self._flashlight_template.falloff.far)
+			light_set_volumetric_intensity(light, self._flashlight_template.volumetric_intensity)
+			light_set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
+			light_set_spot_angle_start(light, self._flashlight_template.spot_angle.min)
+			light_set_spot_angle_end(light, self._flashlight_template.spot_angle.max)
+			light_set_spot_reflector(light, self._flashlight_template.spot_reflector)
+			light_set_falloff_start(light, self._flashlight_template.falloff.near)
+			light_set_falloff_end(light, self._flashlight_template.falloff.far)
 		end
 	end
 end
@@ -291,8 +307,8 @@ mod.toggle_flashlight = function(self, retain)
 			end
 			local light = unit_light(flashlight_unit, 1)
 			if light then
-				Light.set_enabled(light, mod:persistent_table("weapon_customization").flashlight_on)
-				Light.set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
+				light_set_enabled(light, mod:persistent_table("weapon_customization").flashlight_on)
+				light_set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
 				if mod:persistent_table("weapon_customization").flashlight_on then
 					if mod:get("mod_option_flashlight_flicker_start") then self.start_flicker_now = true end
 					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
@@ -305,19 +321,19 @@ mod.toggle_flashlight = function(self, retain)
 end
 
 mod.init = function(self)
-	self.ui_manager = Managers.ui
-	self.player_manager = Managers.player
-	self.package_manager = Managers.package
+	self.ui_manager = managers.ui
+	self.player_manager = managers.player
+	self.package_manager = managers.package
 	self.player = self.player_manager:local_player(1)
 	self.peer_id = self.player:peer_id()
 	self.local_player_id = self.player:local_player_id()
 	self.player_unit = self.player.player_unit
-	self.fx_extension = ScriptUnit.extension(self.player_unit, "fx_system")
-	self.weapon_extension = ScriptUnit.extension(self.player_unit, "weapon_system")
-	self.unit_data = ScriptUnit.extension(self.player_unit, "unit_data_system")
-	self.visual_loadout_extension = ScriptUnit.extension(self.player_unit, "visual_loadout_system")
+	self.fx_extension = script_unit.extension(self.player_unit, "fx_system")
+	self.weapon_extension = script_unit.extension(self.player_unit, "weapon_system")
+	self.unit_data = script_unit.extension(self.player_unit, "unit_data_system")
+	self.visual_loadout_extension = script_unit.extension(self.player_unit, "visual_loadout_system")
 	self.inventory_component = self.unit_data:read_component("inventory")
-	self.time_manager = Managers.time
+	self.time_manager = managers.time
 	self.initialized = true
 	self._next_check_at_t = 0
 	self:print("Initialized")
@@ -346,6 +362,6 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_cus
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_mod_options")
 
-if Managers and Managers.player._game_state ~= nil then
+if managers and managers.player._game_state ~= nil then
 	mod:init()
 end

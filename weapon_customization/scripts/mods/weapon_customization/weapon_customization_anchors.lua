@@ -2,6 +2,12 @@ local mod = get_mod("weapon_customization")
 
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 
+local vector3_box = Vector3Box
+local table = table
+local pairs = pairs
+local ipairs = ipairs
+local type = type
+
 mod.debugged_units = function(self)
     local units = {}
     for weapon_name, weapon_anchors in pairs(self.anchors) do
@@ -63,8 +69,8 @@ end
         end
         local _flashlight_models = function(parent, angle, move, remove, mesh_move)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 default =       {model = "",                                                              type = "flashlight", parent = tv(parent, 1), angle = angle, move = tv(move, 1), remove = tv(remove, 1), mesh_move = false},
                 flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", parent = tv(parent, 2), angle = angle, move = tv(move, 1), remove = tv(remove, 2), mesh_move = false},
@@ -101,8 +107,8 @@ end
         end
         local _emblem_right_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 emblem_right_default = {model = "",                                                         type = "emblem_right", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
                 emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01",    type = "emblem_right", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
@@ -147,8 +153,8 @@ end
         end
         local _emblem_left_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 emblem_left_default = {model = "",                                                      type = "emblem_left", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
                 emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01",  type = "emblem_left", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
@@ -195,8 +201,8 @@ end
         end
         local _grip_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 grip_default =  {model = "",                                                                            type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 grip_01 =       {model = "content/items/weapons/player/ranged/grips/grip_01",                           type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -234,8 +240,8 @@ end
         end
         local _bayonet_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 autogun_bayonet_default =   {model = "",                                                        type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 autogun_bayonet_01 =        {model = "content/items/weapons/player/ranged/bayonets/bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
@@ -252,8 +258,8 @@ end
         end
         local _reflex_sights_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 sight_default =     {model = "",                                                            type = "sight", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_01"}},
                 reflex_sight_01 =   {model = "content/items/weapons/player/ranged/sights/reflex_sight_01",  type = "sight", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_01"}},
@@ -271,8 +277,8 @@ end
         end
         local _sights_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 sight_default =                 {model = "",                                                                              type = "sight", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 autogun_rifle_ak_sight_01 =     {model = "content/items/weapons/player/ranged/sights/autogun_rifle_ak_sight_01",          type = "sight", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_default"}},
@@ -305,8 +311,8 @@ end
         end
         local _stock_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 stock_default =             {model = "",                                                                            type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 no_stock =                  {model = "",                                                                            type = "stock", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -360,8 +366,8 @@ end
         end
         local _trinket_hook_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 trinket_hook_default =      {model = "",                                                                type = "trinket_hook", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
                 trinket_hook_02_90 =        {model = "content/items/weapons/player/trinkets/trinket_hook_02_90",        type = "trinket_hook", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = false},
@@ -402,8 +408,8 @@ end
         end
         local _stubber_barrel_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 barrel_default =    {model = "",                                                                            type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_01",   type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -421,8 +427,8 @@ end
         end
         local _stubber_receiver_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 receiver_default =  {model = "",                                                                                type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/stubgun_heavy_ogryn_receiver_01",   type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -440,8 +446,8 @@ end
         end
         local _stubber_magazine_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 magazine_default =  {model = "",                                                                                type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
                 magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_01",   type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
@@ -459,8 +465,8 @@ end
         end
         local _stubber_grip_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 grip_default =  {model = "",                                                                        type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, mesh_move = false},
                 grip_01 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, mesh_move = false},
@@ -479,8 +485,8 @@ end
         end
         local _ogryn_bayonet_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 bayonet_default =   {model = "",                                                                        type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
                 bayonet_01 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = false},
@@ -502,8 +508,8 @@ end
         end
         local _ripper_barrel_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_01",   type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
@@ -527,8 +533,8 @@ end
         end
         local _ripper_receiver_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 receiver_default =  {model = "",                                                                            type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), no_support = {"trinket_hook_empty"}},
                 receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_01",   type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), no_support = {"trinket_hook_empty"}},
@@ -552,8 +558,8 @@ end
         end
         local _ripper_magazine_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 magazine_default =  {model = "",                                                                            type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_01",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
@@ -575,8 +581,8 @@ end
         end
         local _ripper_handle_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 handle_default =    {model = "",                                                                        type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 handle_01 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_01",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
@@ -597,8 +603,8 @@ end
         end
         local _thumper_grip_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 grip_default =  {model = "",                                                                    type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 grip_01 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
@@ -619,8 +625,8 @@ end
         end
         local _thumper_sight_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 sight_default = {model = "",                                                                    type = "sight", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 sight_01 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_01", type = "sight", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
@@ -641,8 +647,8 @@ end
         end
         local _thumper_body_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 body_default = {model = "",                                                                type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 body_01 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_01", type = "body", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
@@ -663,14 +669,14 @@ end
         end
         local _gauntlet_barrel_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
-                barrel_default = {model = "",                                                                     type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = "both"},
-                barrel_01 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = "both"},
-                barrel_02 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_02", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = "both"},
-                barrel_03 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_03", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = "both"},
-                barrel_04 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_04", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = "both"},
+                barrel_default = {model = "",                                                                     type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                barrel_01 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                barrel_02 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_02", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                barrel_03 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_03", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                barrel_04 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_04", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = "both", no_support = {"trinket_hook_empty"}},
             }
         end
         local _gauntlet_body_attachments = function()
@@ -684,8 +690,8 @@ end
         end
         local _gauntlet_body_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 body_default = {model = "",                                                                         type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 body_01 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_01", type = "body", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
@@ -703,8 +709,8 @@ end
         end
         local _gauntlet_magazine_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 magazine_default = {model = "",                                                                         type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
                 magazine_01 =      {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_01", type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
@@ -725,15 +731,15 @@ end
         end
         local _ogryn_shovel_head_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
-                head_default = {model = "",                                                              type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
-                head_01 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_01", type = "head", parent = tv(parent, 2), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
-                head_02 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_02", type = "head", parent = tv(parent, 3), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
-                head_03 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_03", type = "head", parent = tv(parent, 4), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
-                head_04 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_04", type = "head", parent = tv(parent, 5), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
-                head_05 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_05", type = "head", parent = tv(parent, 6), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both"},
+                head_default = {model = "",                                                              type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                head_01 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_01", type = "head", parent = tv(parent, 2), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                head_02 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_02", type = "head", parent = tv(parent, 3), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                head_03 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_03", type = "head", parent = tv(parent, 4), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                head_04 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_04", type = "head", parent = tv(parent, 5), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                head_05 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_05", type = "head", parent = tv(parent, 6), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
             }
         end
         local _ogryn_shovel_grip_attachments = function()
@@ -748,8 +754,8 @@ end
         end
         local _ogryn_shovel_grip_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 grip_default = {model = "",                                                              type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 grip_01 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_01", type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -771,8 +777,8 @@ end
         end
         local _ogryn_shovel_pommel_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 pommel_default = {model = "",                                                                  type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = "both"},
                 pommel_01 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_01", type = "pommel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = "both"},
@@ -780,6 +786,81 @@ end
                 pommel_03 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_03", type = "pommel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = "both"},
                 pommel_04 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_04", type = "pommel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = "both"},
                 pommel_05 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_05", type = "pommel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = "both"},
+            }
+        end
+        local _combat_blade_blade_attachments = function()
+            return {
+                {id = "blade_default",  name = "Default", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "blade_01",       name = "Blade 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "blade_02",       name = "Blade 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "blade_03",       name = "Blade 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "blade_04",       name = "Blade 4", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "blade_05",       name = "Blade 5", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "blade_06",       name = "Blade 6", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+            }
+        end
+        local _combat_blade_blade_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                blade_default = {model = "",                                                                type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                blade_01 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_01", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                blade_02 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_02", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                blade_03 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_03", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                blade_04 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_04", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                blade_05 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_05", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                blade_06 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_06", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+            }
+        end
+        local _combat_blade_grip_attachments = function()
+            return {
+                {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_04",        name = "Grip 4",    sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_05",        name = "Grip 5",    sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_06",        name = "Grip 6",    sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _combat_blade_grip_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                grip_default =  {model = "",                                                                type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                grip_01 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_01",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                grip_02 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_02",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                grip_03 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_03",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook"}},
+                grip_04 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_04",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                grip_05 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_05",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                grip_06 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_06",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+            }
+        end
+        local _combat_blade_handle_attachments = function()
+            return {
+                {id = "handle_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "handle_01",      name = "Handle 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "handle_02",      name = "Handle 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "handle_03",      name = "Handle 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "handle_04",      name = "Handle 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "handle_05",      name = "Handle 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "handle_06",      name = "Handle 6",  sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _combat_blade_handle_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                handle_default =    {model = "",                                                                    type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                handle_01 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_01",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                handle_02 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_02",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                handle_03 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_03",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                handle_04 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_04",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                handle_05 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_05",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                handle_06 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_06",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
             }
         end
     --#endregion
@@ -809,8 +890,8 @@ end
         end
         local _lasgun_barrel_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 barrel_default =    {model = "",                                                                            type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_rifle_barrel_01",          type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -849,8 +930,8 @@ end
         end
         local _lasgun_muzzle_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 muzzle_default =    {model = "",                                                                            type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 muzzle_01 =         {model = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_muzzle_01",          type = "muzzle", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -872,8 +953,8 @@ end
         end
         local _lasgun_rail_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 rail_default =  {model = "",                                                                type = "rail", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 rail_01 =       {model = "content/items/weapons/player/ranged/rails/lasgun_rifle_rail_01",  type = "rail", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -889,8 +970,8 @@ end
         end
         local _laspistol_receiver_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 laspistol_receiver_default =    {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 laspistol_receiver_01 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -910,8 +991,8 @@ end
         end
         local _autogun_braced_barrel_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 barrel_07 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_01",  type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -928,8 +1009,8 @@ end
         end
         local _autogun_headhunter_barrel_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 barrel_default =    {model = "",                                                                                type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 barrel_11 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_01",    type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -954,8 +1035,8 @@ end
         end
         local _autogun_barrel_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -983,8 +1064,8 @@ end
         end
         local _autogun_muzzle_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 muzzle_default =    {model = "",                                                                                type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 muzzle_01 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_rifle_muzzle_01",             type = "muzzle", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -1010,8 +1091,8 @@ end
         end
         local _autogun_magazine_models = function(parent, angle, move, remove)
             local angle = angle or 0
-            local move = move or Vector3Box(0, 0, 0)
-            local remove = remove or Vector3Box(0, 0, 0)
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
             return {
                 magazine_default =  {model = "",                                                                            type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
                 magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_01",     type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
@@ -1151,332 +1232,356 @@ end
     mod.anchors = {
         --#region Ogryn Guns
             ogryn_heavystubber_p1_m1 = { -- Done 5.9.2023
-                flashlight_01 =    {position = Vector3Box(.09, .9, .13), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_02 =    {position = Vector3Box(.09, .9, .13), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_03 =    {position = Vector3Box(.09, .9, .13), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_04 =    {position = Vector3Box(.15, .86, .21), rotation = Vector3Box(0, 128, 0), scale = Vector3Box(2, 2, 2)},
-                bayonet_blade_01 = {position = Vector3Box(0, 1.04, -0.39), rotation = Vector3Box(-90, 0, 0), scale = Vector3Box(2, 2, 2)},
-                bayonet_01 =       {position = Vector3Box(0, 1.08, -0.36), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                bayonet_02 =       {position = Vector3Box(0, 1.08, -0.36), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                bayonet_03 =       {position = Vector3Box(0, 1.08, -0.36), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                flashlight_01 =    {position = vector3_box(.09, .9, .13), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_02 =    {position = vector3_box(.09, .9, .13), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_03 =    {position = vector3_box(.09, .9, .13), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_04 =    {position = vector3_box(.15, .86, .21), rotation = vector3_box(0, 128, 0), scale = vector3_box(2, 2, 2)},
+                bayonet_blade_01 = {position = vector3_box(0, 1.04, -0.39), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)},
+                bayonet_01 =       {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_02 =       {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_03 =       {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
-                    {emblem_left = {offset = true, position = Vector3Box(-.09, .42, .085), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)}}, -- Emblem left
+                    {emblem_left = {offset = true, position = vector3_box(-.09, .42, .085), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)}}, -- Emblem left
                 }
             },
             ogryn_rippergun_p1_m1 = { -- Done 8.9.2023
-                flashlight_01 =    {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_02 =    {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_03 =    {position = Vector3Box(.09, .76, .35), rotation = Vector3Box(0, 311, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_04 =    {position = Vector3Box(.16, .76, .41), rotation = Vector3Box(0, 128, 0), scale = Vector3Box(2, 2, 2)},
-                bayonet_blade_01 = {position = Vector3Box(0, .45, 0.025), rotation = Vector3Box(-90, 0, 0), scale = Vector3Box(2, 2, 2)},
+                flashlight_01 =    {position = vector3_box(.09, .76, .35), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_02 =    {position = vector3_box(.09, .76, .35), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_03 =    {position = vector3_box(.09, .76, .35), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_04 =    {position = vector3_box(.16, .76, .41), rotation = vector3_box(0, 128, 0), scale = vector3_box(2, 2, 2)},
+                bayonet_blade_01 = {position = vector3_box(0, .45, 0.025), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)},
                 fixes = {
                     {dependencies = {"receiver_02"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(-.145, .3, .27), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(3, 3, 3)},
-                        emblem_right = {offset = true, position = Vector3Box(.145, .615, .27), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {offset = true, position = vector3_box(-.145, .3, .27), rotation = vector3_box(0, 0, 180), scale = vector3_box(3, 3, 3)},
+                        emblem_right = {offset = true, position = vector3_box(.145, .615, .27), rotation = vector3_box(0, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"receiver_03"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(.0047, 0, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        emblem_right = {offset = true, position = Vector3Box(.0047, 0, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                        emblem_left = {offset = true, position = vector3_box(.0047, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(.0047, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"receiver_06"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(0, 0, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1.5, 1.5, 1.5)},
-                        emblem_right = {offset = true, position = Vector3Box(.06, 0, .05), rotation = Vector3Box(0, -20, 0), scale = Vector3Box(2, 2, 2)}},
+                        emblem_left = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, 1.5, 1.5)},
+                        emblem_right = {offset = true, position = vector3_box(.06, 0, .05), rotation = vector3_box(0, -20, 0), scale = vector3_box(2, 2, 2)}},
                 }
             },
             ogryn_thumper_p1_m1 = { -- Done 8.9.2023
-                flashlight_01 =    {position = Vector3Box(.12, .33, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_02 =    {position = Vector3Box(.12, .33, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_03 =    {position = Vector3Box(.12, .33, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_04 =    {position = Vector3Box(.12, .33, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
-                bayonet_blade_01 = {position = Vector3Box(0, .8, 0.065), rotation = Vector3Box(-90, 0, 0), scale = Vector3Box(2, 2, 2)},
-                bayonet_01 =       {position = Vector3Box(0, .9, 0.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                bayonet_02 =       {position = Vector3Box(0, .9, 0.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                bayonet_03 =       {position = Vector3Box(0, .9, 0.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                flashlight_01 =    {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_02 =    {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_03 =    {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_04 =    {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
+                bayonet_blade_01 = {position = vector3_box(0, .8, 0.065), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)},
+                bayonet_01 =       {position = vector3_box(0, .9, 0.07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_02 =       {position = vector3_box(0, .9, 0.07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_03 =       {position = vector3_box(0, .9, 0.07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
-                    {emblem_left = {offset = true, position = Vector3Box(-.12, .22, .11), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)}, -- Emblems
-                        emblem_right = {offset = true, position = Vector3Box(.123, .765, .11), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(2, 2, 2)}},
+                    {emblem_left = {offset = true, position = vector3_box(-.12, .22, .11), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)}, -- Emblems
+                        emblem_right = {offset = true, position = vector3_box(.123, .765, .11), rotation = vector3_box(0, 0, 0), scale = vector3_box(2, 2, 2)}},
                 }
             },
             ogryn_gauntlet_p1_m1 = { -- Done 8.9.2023
-                flashlight_01 =    {position = Vector3Box(.2, .18, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_02 =    {position = Vector3Box(.2, .18, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_03 =    {position = Vector3Box(.2, .18, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
-                flashlight_04 =    {position = Vector3Box(.2, .18, .11), rotation = Vector3Box(0, 360, 0), scale = Vector3Box(2, 2, 2)},
-                bayonet_blade_01 = {position = Vector3Box(0, .4, -0.27), rotation = Vector3Box(-90, 0, 0), scale = Vector3Box(2, 2, 2)},
-                bayonet_01 =       {position = Vector3Box(0, .4, -0.27), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                bayonet_02 =       {position = Vector3Box(0, .4, -0.27), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                bayonet_03 =       {position = Vector3Box(0, .4, -0.27), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                flashlight_01 =    {position = vector3_box(.2, .18, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_02 =    {position = vector3_box(.2, .18, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_03 =    {position = vector3_box(.2, .18, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
+                flashlight_04 =    {position = vector3_box(.2, .18, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
+                bayonet_blade_01 = {position = vector3_box(0, .4, -0.27), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)},
+                bayonet_01 =       {position = vector3_box(0, .4, -0.27), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_02 =       {position = vector3_box(0, .4, -0.27), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_03 =       {position = vector3_box(0, .4, -0.27), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
                     {dependencies = {"barrel_01"}, -- Trinket hook
-                        trinket_hook = {parent = "barrel", position = Vector3Box(-.19, .375, -.08), rotation = Vector3Box(0, 90, 0), scale = Vector3Box(2.5, 2.5, 2.5)}},
+                        trinket_hook = {parent = "barrel", position = vector3_box(-.19, .375, -.08), rotation = vector3_box(0, 90, 0), scale = vector3_box(2.5, 2.5, 2.5)}},
                     {dependencies = {"barrel_02"}, -- Trinket hook
-                        trinket_hook = {parent = "barrel", position = Vector3Box(-.19, .375, -.04), rotation = Vector3Box(0, 90, 0), scale = Vector3Box(2.5, 2.5, 2.5)}},
+                        trinket_hook = {parent = "barrel", position = vector3_box(-.19, .375, -.04), rotation = vector3_box(0, 90, 0), scale = vector3_box(2.5, 2.5, 2.5)}},
                     {dependencies = {"barrel_03"}, -- Trinket hook
-                        trinket_hook = {parent = "barrel", position = Vector3Box(-.19, .375, -.08), rotation = Vector3Box(0, 90, 0), scale = Vector3Box(2.5, 2.5, 2.5)}},
+                        trinket_hook = {parent = "barrel", position = vector3_box(-.19, .375, -.08), rotation = vector3_box(0, 90, 0), scale = vector3_box(2.5, 2.5, 2.5)}},
                     {dependencies = {"barrel_04"}, -- Trinket hook
-                        trinket_hook = {parent = "barrel", position = Vector3Box(-.19, .375, -.08), rotation = Vector3Box(0, 90, 0), scale = Vector3Box(2.5, 2.5, 2.5)}},
-                    {emblem_left = {offset = true, position = Vector3Box(.001, 0, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}, -- Emblems
-                        emblem_right = {offset = true, position = Vector3Box(.001, 0, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                        trinket_hook = {parent = "barrel", position = vector3_box(-.19, .375, -.08), rotation = vector3_box(0, 90, 0), scale = vector3_box(2.5, 2.5, 2.5)}},
+                    {emblem_left = {offset = true, position = vector3_box(.001, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}, -- Emblems
+                        emblem_right = {offset = true, position = vector3_box(.001, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 }
             },
         --#endregion
         --#region Ogryn Melee
-            ogryn_club_p1_m1 = {
+            ogryn_club_p1_m1 = { -- Done 10.9.2023
                 fixes = {
                     {dependencies = {"head_01", "grip_01"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .85), rotation = Vector3Box(90, -5, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .475), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .85), rotation = vector3_box(90, -5, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.115, 0, .475), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_01", "grip_02"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .86), rotation = Vector3Box(90, -5, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .485), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .86), rotation = vector3_box(90, -5, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.115, 0, .485), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_01", "grip_04"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .85), rotation = Vector3Box(90, -5, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .475), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .85), rotation = vector3_box(90, -5, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.115, 0, .475), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_01"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .825), rotation = Vector3Box(90, -5, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .47), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .825), rotation = vector3_box(90, -5, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.115, 0, .47), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
 
                     {dependencies = {"head_02", "grip_01"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .85), rotation = Vector3Box(90, -25, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .5), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .85), rotation = vector3_box(90, -25, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.135, 0, .5), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_02", "grip_02"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .86), rotation = Vector3Box(90, -25, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .51), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .86), rotation = vector3_box(90, -25, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.135, 0, .51), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_02", "grip_04"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .85), rotation = Vector3Box(90, -25, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .5), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .85), rotation = vector3_box(90, -25, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.135, 0, .5), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_02"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0375, -.2, .825), rotation = Vector3Box(90, -25, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .5), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .825), rotation = vector3_box(90, -25, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.135, 0, .5), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
 
                     {dependencies = {"head_03", "grip_01"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0475, -.2, .85), rotation = Vector3Box(90, -10, 180), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .6), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0475, -.2, .85), rotation = vector3_box(90, -10, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.135, 0, .6), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_03", "grip_02"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0475, -.2, .86), rotation = Vector3Box(90, -10, 180), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .615), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0475, -.2, .86), rotation = vector3_box(90, -10, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.135, 0, .615), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_03", "grip_04"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0475, -.2, .85), rotation = Vector3Box(90, -10, 180), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .6), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0475, -.2, .85), rotation = vector3_box(90, -10, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.135, 0, .6), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_03"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.0475, -.2, .825), rotation = Vector3Box(90, -10, 180), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.135, 0, .585), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.0475, -.2, .825), rotation = vector3_box(90, -10, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.135, 0, .585), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
 
                     {dependencies = {"head_04", "grip_01"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.02, -.17, .95), rotation = Vector3Box(90, -10, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.15, 0, .695), rotation = Vector3Box(90, 0, 3), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.02, -.17, .95), rotation = vector3_box(90, -10, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.15, 0, .695), rotation = vector3_box(90, 0, 3), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_04", "grip_02"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.02, -.17, .96), rotation = Vector3Box(90, -10, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.15, 0, .695), rotation = Vector3Box(90, 0, 3), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.02, -.17, .96), rotation = vector3_box(90, -10, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.15, 0, .695), rotation = vector3_box(90, 0, 3), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_04", "grip_04"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.02, -.17, .95), rotation = Vector3Box(90, -10, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.15, 0, .695), rotation = Vector3Box(90, 0, 3), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.02, -.17, .95), rotation = vector3_box(90, -10, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.15, 0, .695), rotation = vector3_box(90, 0, 3), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_04"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.02, -.17, .925), rotation = Vector3Box(90, -10, 183), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.15, 0, .685), rotation = Vector3Box(90, 0, 3), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.02, -.17, .925), rotation = vector3_box(90, -10, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.15, 0, .685), rotation = vector3_box(90, 0, 3), scale = vector3_box(3, 3, 3)}},
 
                     {dependencies = {"head_05", "grip_01"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.04, 0, .78), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .52), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.04, 0, .78), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.115, 0, .52), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_05", "grip_02"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.04, 0, .78), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .51), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.04, 0, .78), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.115, 0, .51), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_05", "grip_04"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.04, 0, .79), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .535), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.04, 0, .79), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.115, 0, .535), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_05"}, -- Emblems
-                        emblem_left = {parent = "grip", position = Vector3Box(.04, 0, .77), rotation = Vector3Box(0, 0, 180), scale = Vector3Box(2, 2, 2)},
-                        emblem_right = {parent = "grip", position = Vector3Box(.115, 0, .525), rotation = Vector3Box(90, 0, 0), scale = Vector3Box(3, 3, 3)}},
+                        emblem_left = {parent = "grip", position = vector3_box(.04, 0, .77), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.115, 0, .525), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
                     {dependencies = {"head_01", "grip_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .185), mesh_position = Vector3Box(0, 0, -.370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .185), mesh_position = vector3_box(0, 0, -.370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.0925), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_01", "grip_04"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .12), mesh_position = Vector3Box(0, 0, -.24), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.06), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .12), mesh_position = vector3_box(0, 0, -.24), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_01", "grip_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .14), mesh_position = vector3_box(0, 0, -.28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_01", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_01", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_01"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .0925), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_03", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_03", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_03"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .0925), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_04", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.07), mesh_position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.07), mesh_position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_04", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.07), mesh_position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.07), mesh_position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_04"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.07), mesh_position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.07), mesh_position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_05", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.05), mesh_position = Vector3Box(0, 0, .1), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.05), mesh_position = vector3_box(0, 0, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_05", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.05), mesh_position = Vector3Box(0, 0, .1), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.05), mesh_position = vector3_box(0, 0, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_02", "grip_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.05), mesh_position = Vector3Box(0, 0, .1), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .025), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.05), mesh_position = vector3_box(0, 0, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_02", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .185), mesh_position = Vector3Box(0, 0, -.370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .185), mesh_position = vector3_box(0, 0, -.370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_02", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .185), mesh_position = Vector3Box(0, 0, -.370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .185), mesh_position = vector3_box(0, 0, -.370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .185), mesh_position = Vector3Box(0, 0, -.370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .185), mesh_position = vector3_box(0, 0, -.370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.0925), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_04", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .14), mesh_position = vector3_box(0, 0, -.28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_04", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .14), mesh_position = vector3_box(0, 0, -.28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_04"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .14), mesh_position = vector3_box(0, 0, -.28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_05", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .14), mesh_position = vector3_box(0, 0, -.28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_05", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .14), mesh_position = vector3_box(0, 0, -.28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_03", "grip_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .14), mesh_position = Vector3Box(0, 0, -.28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .14), mesh_position = vector3_box(0, 0, -.28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_04", "grip_01", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.14), mesh_position = vector3_box(0, 0, .28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_04", "grip_01", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.14), mesh_position = vector3_box(0, 0, .28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_04", "grip_01"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.14), mesh_position = vector3_box(0, 0, .28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_04", "grip_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, -.05), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, .05), mesh_position = Vector3Box(0, 0, -.1), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, -.025), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, .05), mesh_position = vector3_box(0, 0, -.1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_04", "grip_03", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.12), mesh_position = Vector3Box(0, 0, .24), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.12), mesh_position = vector3_box(0, 0, .24), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_04", "grip_03", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.12), mesh_position = Vector3Box(0, 0, .24), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.12), mesh_position = vector3_box(0, 0, .24), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_04", "grip_03"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .12), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.12), mesh_position = Vector3Box(0, 0, .24), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .06), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.12), mesh_position = vector3_box(0, 0, .24), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_05", "grip_01", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_05", "grip_01", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_05", "grip_01"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .185), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.185), mesh_position = Vector3Box(0, 0, .370), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .0925), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.185), mesh_position = vector3_box(0, 0, .370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .0925), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_05", "grip_03", "pommel_02"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.14), mesh_position = vector3_box(0, 0, .28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_05", "grip_03", "pommel_05"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.14), mesh_position = vector3_box(0, 0, .28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
                     {dependencies = {"head_05", "grip_03"}, -- Grip
-                        head = {offset = true, position = Vector3Box(0, 0, .14), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        grip = {offset = true, position = Vector3Box(0, 0, -.14), mesh_position = Vector3Box(0, 0, .28), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        pommel = {offset = true, position = Vector3Box(0, 0, .07), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}
+                        head = {offset = true, position = vector3_box(0, 0, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        grip = {offset = true, position = vector3_box(0, 0, -.14), mesh_position = vector3_box(0, 0, .28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        pommel = {offset = true, position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}
                     },
+                },
+            },
+            ogryn_combatblade_p1_m1 = {
+                fixes = {
+                    {dependencies = {"grip_05", "!handle_05"}, -- Trinket hook
+                        trinket_hook = {offset = true, position = vector3_box(0, 0, .055), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"blade_01"}, -- Emblems
+                        emblem_left = {parent = "blade", position = vector3_box(-.02, .02, .375), rotation = vector3_box(90, 0, 180), scale = vector3_box(3, 3, 3)},
+                        emblem_right = {parent = "blade", position = vector3_box(.02, .02, .375), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
+                    {dependencies = {"blade_02"}, -- Emblems
+                        emblem_left = {parent = "blade", position = vector3_box(-.02, -.01, .275), rotation = vector3_box(90, 0, 180), scale = vector3_box(3, 3, 3)},
+                        emblem_right = {parent = "blade", position = vector3_box(.02, -.01, .275), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
+                    {dependencies = {"blade_03"}, -- Emblems
+                        emblem_left = {parent = "blade", position = vector3_box(-.02, .015, .175), rotation = vector3_box(90, 0, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "blade", position = vector3_box(.02, .015, .175), rotation = vector3_box(90, 0, 0), scale = vector3_box(2, 2, 2)}},
+                    {dependencies = {"blade_04"}, -- Emblems
+                        emblem_left = {parent = "blade", position = vector3_box(-.02, .04, .525), rotation = vector3_box(90, 0, 180), scale = vector3_box(3, 3, 3)},
+                        emblem_right = {parent = "blade", position = vector3_box(.02, .04, .525), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
+                    {dependencies = {"blade_05"}, -- Emblems
+                        emblem_left = {parent = "blade", position = vector3_box(-.02, .06, .125), rotation = vector3_box(83, 0, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "blade", position = vector3_box(.02, .06, .125), rotation = vector3_box(83, 0, 0), scale = vector3_box(2, 2, 2)}},
+                    {dependencies = {"blade_06"}, -- Emblems
+                        emblem_left = {parent = "blade", position = vector3_box(-.02, 0, .275), rotation = vector3_box(90, 0, 180), scale = vector3_box(4, 4, 4)},
+                        emblem_right = {parent = "blade", position = vector3_box(.02, 0, .275), rotation = vector3_box(90, 0, 0), scale = vector3_box(4, 4, 4)}},
                 },
             },
             ogryn_powermaul_slabshield_p1_m1 = {
                 ["bulwark_shield_01"] = {
-                    position = Vector3Box(0, 0, 0),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                     preview_only = true,
                 },
             },
@@ -1484,72 +1589,72 @@ end
         --#region Guns
             autopistol_p1_m1 = {
                 ["autogun_rifle_stock_01"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_02"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_03"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_04"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_01"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_02"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_03"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_04"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_05"] = {
-                    position = Vector3Box(0, -0.095, 0.065),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.095, 0.065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_bayonet_01"] = {
-                    position = Vector3Box(0, 0.27, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, 0.27, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_bayonet_02"] = {
-                    position = Vector3Box(0, 0.27, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, 0.27, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_bayonet_03"] = {
-                    position = Vector3Box(-0.03, 0.12, 0.09),
-                    rotation = Vector3Box(0, 90, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(-0.03, 0.12, 0.09),
+                    rotation = vector3_box(0, 90, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 -- ["fixes"] = {
                 --     ["8"] = {
                 --         ["barrel_03"] = {
                 --             ["barrel_03"] = {
-                --                 position = Vector3Box(0, 0.16, -.02),
-                --                 rotation = Vector3Box(-30, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
+                --                 position = vector3_box(0, 0.16, -.02),
+                --                 rotation = vector3_box(-30, 0, 0),
+                --                 scale = vector3_box(1, 1, 1),
                 --             },
                 --         },
                 --     }
@@ -1557,599 +1662,251 @@ end
             },
             shotgun_p1_m1 = {
                 ["flashlight_01"] = {
-                    position = Vector3Box(.045, .55, .06),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.045, .55, .06),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_02"] = {
-                    position = Vector3Box(.045, .55, .06),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.045, .55, .06),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_03"] = {
-                    position = Vector3Box(.045, .55, .06),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.045, .55, .06),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_04"] = {
-                    position = Vector3Box(.045, .55, .06),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.045, .55, .06),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
             },
             bolter_p1_m1 = {
                 ["flashlight_01"] = {
-                    position = Vector3Box(.045, .3, .1),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.045, .3, .1),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_02"] = {
-                    position = Vector3Box(.045, .3, .1),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.045, .3, .1),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_03"] = {
-                    position = Vector3Box(.045, .3, .1),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.045, .3, .1),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_04"] = {
-                    position = Vector3Box(.045, .3, .1),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.045, .3, .1),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_01"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_02"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_03"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_04"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_01"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_02"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_03"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_04"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_05"] = {
-                    position = Vector3Box(0, -0.1, 0.08),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.1, 0.08),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
             },
             stubrevolver_p1_m1 = {
                 ["flashlight_01"] = {
-                    position = Vector3Box(.01, .07, .01),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.5, .5, .5),
+                    position = vector3_box(.01, .07, .01),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.5, .5, .5),
                 },
                 ["flashlight_02"] = {
-                    position = Vector3Box(.01, .07, .01),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.5, .5, .5),
+                    position = vector3_box(.01, .07, .01),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.5, .5, .5),
                 },
                 ["flashlight_03"] = {
-                    position = Vector3Box(.01, .07, .01),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.5, .5, .5),
+                    position = vector3_box(.01, .07, .01),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.5, .5, .5),
                 },
                 ["flashlight_04"] = {
-                    position = Vector3Box(.01, .07, .01),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.5, .5, .5),
+                    position = vector3_box(.01, .07, .01),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.5, .5, .5),
                 },
                 ["autogun_rifle_stock_02"] = {
-                    position = Vector3Box(0, -0.055, 0.035),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.85, .85, .85),
+                    position = vector3_box(0, -0.055, 0.035),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.85, .85, .85),
                 },
                 ["autogun_rifle_stock_04"] = {
-                    position = Vector3Box(0, -0.055, 0.035),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.85, .85, .85),
+                    position = vector3_box(0, -0.055, 0.035),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.85, .85, .85),
                 },
                 ["stock_05"] = {
-                    position = Vector3Box(0, -0.055, 0.035),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(.85, .85, .85),
+                    position = vector3_box(0, -0.055, 0.035),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.85, .85, .85),
                 },
             },
             plasmagun_p1_m1 = {
                 ["autogun_rifle_stock_01"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_02"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_03"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["autogun_rifle_stock_04"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_01"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_02"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_03"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_04"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["stock_05"] = {
-                    position = Vector3Box(0, -0.085, 0.045),
-                    rotation = Vector3Box(0, 0, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(0, -0.085, 0.045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
             },
             laspistol_p1_m1 = {
-                flashlight_01 =             {position = Vector3Box(.03, .16, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                flashlight_02 =             {position = Vector3Box(.03, .16, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                flashlight_03 =             {position = Vector3Box(.03, .16, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                flashlight_04 =             {position = Vector3Box(.03, .16, .035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                autogun_rifle_stock_02 =    {position = Vector3Box(0, -0.09, 0.035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(.85, 1, .75)},
-                autogun_rifle_stock_04 =    {position = Vector3Box(0, -0.09, 0.035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(.85, 1, .75)},
-                stock_05 =                  {position = Vector3Box(0, -0.09, 0.035), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(.85, 1, .75)},
-                autogun_bayonet_01 =        {position = Vector3Box(0, .14, -.033), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                autogun_bayonet_02 =        {position = Vector3Box(0, .14, -.033), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                autogun_bayonet_03 =        {position = Vector3Box(0, .05, -.033), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
+                flashlight_01 =             {position = vector3_box(.03, .16, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                flashlight_02 =             {position = vector3_box(.03, .16, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                flashlight_03 =             {position = vector3_box(.03, .16, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                flashlight_04 =             {position = vector3_box(.03, .16, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                autogun_rifle_stock_02 =    {position = vector3_box(0, -0.09, 0.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.85, 1, .75)},
+                autogun_rifle_stock_04 =    {position = vector3_box(0, -0.09, 0.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.85, 1, .75)},
+                stock_05 =                  {position = vector3_box(0, -0.09, 0.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.85, 1, .75)},
+                autogun_bayonet_01 =        {position = vector3_box(0, .14, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                autogun_bayonet_02 =        {position = vector3_box(0, .14, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                autogun_bayonet_03 =        {position = vector3_box(0, .05, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
                     {dependencies = {"laspistol_receiver_01", "barrel_02"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(.0025, 0, .007), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        emblem_right = {offset = true, position = Vector3Box(.0025, 0, .007), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                        emblem_left = {offset = true, position = vector3_box(.0025, 0, .007), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(.0025, 0, .007), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_01", "barrel_03"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(-.005, .1, .05), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(1, 1, 1)},
-                        emblem_right = {offset = true, position = Vector3Box(-.005, .1, .05), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(1, 1, 1)}},
+                        emblem_left = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_01", "barrel_04"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(-.005, .1, .05), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(1, 1, 1)},
-                        emblem_right = {offset = true, position = Vector3Box(-.005, .1, .05), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(1, 1, 1)}},
+                        emblem_left = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_02", "!barrel_02"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(0, -.03, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        emblem_right = {offset = true, position = Vector3Box(0, -.03, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                        emblem_left = {offset = true, position = vector3_box(0, -.03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(0, -.03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_02", "barrel_06"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(.001, -.025, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)},
-                        emblem_right = {offset = true, position = Vector3Box(.001, -.025, 0), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                        emblem_left = {offset = true, position = vector3_box(.001, -.025, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(.001, -.025, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_02", "barrel_04"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(-.005, -.08, .02), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(.5, .5, .5)},
-                        emblem_right = {offset = true, position = Vector3Box(-.005, -.08, .02), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(.5, .5, .5)}},
+                        emblem_left = {offset = true, position = vector3_box(-.005, -.08, .02), rotation = vector3_box(0, -25, 0), scale = vector3_box(.5, .5, .5)},
+                        emblem_right = {offset = true, position = vector3_box(-.005, -.08, .02), rotation = vector3_box(0, -25, 0), scale = vector3_box(.5, .5, .5)}},
                     {dependencies = {"laspistol_receiver_02", "barrel_05"}, -- Emblems
-                        emblem_left = {offset = true, position = Vector3Box(-.005, -.08, .02), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(.5, .5, .5)},
-                        emblem_right = {offset = true, position = Vector3Box(-.005, -.08, .02), rotation = Vector3Box(0, -25, 0), scale = Vector3Box(.5, .5, .5)}},
+                        emblem_left = {offset = true, position = vector3_box(-.005, -.08, .02), rotation = vector3_box(0, -25, 0), scale = vector3_box(.5, .5, .5)},
+                        emblem_right = {offset = true, position = vector3_box(-.005, -.08, .02), rotation = vector3_box(0, -25, 0), scale = vector3_box(.5, .5, .5)}},
                     {dependencies = {"muzzle_03", "autogun_bayonet_03"}, -- Bayonet 3
-                        bayonet = {offset = true, position = Vector3Box(0, .065, -.03), rotation = Vector3Box(0, 0, 0), scale = Vector3Box(1, 1, 1)}},
+                        bayonet = {offset = true, position = vector3_box(0, .065, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 },
             },
             autogun_p1_m1 = {
-                ["scope_offset"] = Vector3Box(0, 0, .0125),
-                -- ["fixes"] = {
-                --     ["4"] = {
-                --         ["receiver_01"] = {
-                --             ["barrel_07"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_08"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_09"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_10"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --         ["receiver_02"] = {
-                --             ["barrel_07"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_08"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_09"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_10"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --         ["receiver_03"] = {
-                --             ["barrel_01"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_02"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_03"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_04"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_05"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_06"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_11"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_12"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --     },
-                -- }
+                ["scope_offset"] = vector3_box(0, 0, .0125),
             },
             autogun_p2_m1 = {
-                -- ["fixes"] = {
-                --     ["3"] = {
-                --         ["receiver_01"] = {
-                --             ["barrel_07"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_08"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_09"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_10"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --         ["receiver_02"] = {
-                --             ["barrel_07"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_08"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_09"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_10"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --         ["receiver_03"] = {
-                --             ["barrel_01"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_02"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_03"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_04"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_05"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_06"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_11"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_12"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --     },
-                -- }
             },
             autogun_p3_m1 = {
-                ["scope_offset"] = Vector3Box(0, 0, .0125),
-                -- ["fixes"] = {
-                --     ["3"] = {
-                --         ["receiver_01"] = {
-                --             ["barrel_07"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_08"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_09"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_10"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --         ["receiver_02"] = {
-                --             ["barrel_07"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_08"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_09"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_10"] = {
-                --                 position = Vector3Box(0, .25, .048),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --         ["receiver_03"] = {
-                --             ["barrel_01"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_02"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_03"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_04"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_05"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_06"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_11"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --             ["barrel_12"] = {
-                --                 position = Vector3Box(0, .175, .077),
-                --                 rotation = Vector3Box(0, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --     },
-                -- }
+                ["scope_offset"] = vector3_box(0, 0, .0125),
             },
             lasgun_p1_m1 = {
-                ["no_scope_offset"] = Vector3Box(0, 0, -.0455),
-                -- ["fixes"] = {
-                --     ["6"] = {
-                --         ["barrel_17"] = {
-                --             ["barrel_17"] = {
-                --                 position = Vector3Box(0, 0.325, -.03),
-                --                 rotation = Vector3Box(-30, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --         ["barrel_18"] = {
-                --             ["barrel_18"] = {
-                --                 position = Vector3Box(0, 0.325, -.03),
-                --                 rotation = Vector3Box(-30, 0, 0),
-                --                 scale = Vector3Box(1, 1, 1),
-                --             },
-                --         },
-                --     }
-                -- }
+                ["no_scope_offset"] = vector3_box(0, 0, -.0455),
             },
             lasgun_p2_m1 = {
-                ["scope_offset"] = Vector3Box(0, 0, .0275),
+                ["scope_offset"] = vector3_box(0, 0, .0275),
             },
             lasgun_p3_m1 = {
-                ["scope_offset"] = Vector3Box(0, 0, .0275),
-                -- ["fixes"] = {
-                --     ["autogun_bayonet_01"] = {
-                --         ["muzzle_07"] = {
-                --             position = Vector3Box(0, .63, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --         ["muzzle_08"] = {
-                --             position = Vector3Box(0, .63, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --         ["muzzle_09"] = {
-                --             position = Vector3Box(0, .63, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --     },
-                --     ["autogun_bayonet_02"] = {
-                --         ["muzzle_07"] = {
-                --             position = Vector3Box(0, .63, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --         ["muzzle_08"] = {
-                --             position = Vector3Box(0, .63, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --         ["muzzle_09"] = {
-                --             position = Vector3Box(0, .63, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --     },
-                --     ["autogun_bayonet_03"] = {
-                --         ["muzzle_07"] = {
-                --             position = Vector3Box(0, .63, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --         ["muzzle_08"] = {
-                --             position = Vector3Box(0, .65, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --         ["muzzle_09"] = {
-                --             position = Vector3Box(0, .63, .05),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, 1, 1),
-                --         },
-                --     },
-                --     ["rail_01"] = {
-                --         ["receiver_01"] = {
-                --             position = Vector3Box(0, .039, .185),
-                --             rotation = Vector3Box(0, 0, 0),
-                --             scale = Vector3Box(1, .96, 1),
-                --         },
-                --     },
-                -- }
+                ["scope_offset"] = vector3_box(0, 0, .0275),
             },
             flamer_p1_m1 = {
                 ["flashlight_01"] = {
-                    position = Vector3Box(.04075, .42, 0),
-                    rotation = Vector3Box(0, 45, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.04075, .42, 0),
+                    rotation = vector3_box(0, 45, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_02"] = {
-                    position = Vector3Box(.04075, .42, 0),
-                    rotation = Vector3Box(0, 45, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.04075, .42, 0),
+                    rotation = vector3_box(0, 45, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_03"] = {
-                    position = Vector3Box(.04075, .42, 0),
-                    rotation = Vector3Box(0, 45, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.04075, .42, 0),
+                    rotation = vector3_box(0, 45, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
                 ["flashlight_04"] = {
-                    position = Vector3Box(.04075, .42, 0),
-                    rotation = Vector3Box(0, 45, 0),
-                    scale = Vector3Box(1, 1, 1),
+                    position = vector3_box(.04075, .42, 0),
+                    rotation = vector3_box(0, 45, 0),
+                    scale = vector3_box(1, 1, 1),
                 },
             },
         --#endregion
@@ -2167,6 +1924,10 @@ end
             mod.anchors.ogryn_rippergun_p1_m2 = mod.anchors.ogryn_rippergun_p1_m1
             mod.anchors.ogryn_rippergun_p1_m3 = mod.anchors.ogryn_rippergun_p1_m1
             mod.anchors.ogryn_thumper_p1_m2 = mod.anchors.ogryn_thumper_p1_m1
+        --#endregion
+        --#region Ogryn Melee
+            mod.anchors.ogryn_combatblade_p1_m2 = mod.anchors.ogryn_combatblade_p1_m1
+            mod.anchors.ogryn_combatblade_p1_m3 = mod.anchors.ogryn_combatblade_p1_m1
         --#endregion
         --#region Guns
             mod.anchors.shotgun_p1_m2 = mod.anchors.shotgun_p1_m1
@@ -2223,8 +1984,7 @@ end
                 bayonet = _ogryn_bayonet_attachments(),
                 sight = _thumper_sight_attachments(),
                 grip = _thumper_grip_attachments(),
-                body = _thumper_body_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                body = _thumper_body_attachments()
             },
             ogryn_gauntlet_p1_m1 = { -- Done 8.9.2023
                 flashlight = _flashlights_attachments(),
@@ -2238,7 +1998,7 @@ end
             },
         --#endregion
         --#region Ogryn Melee
-            ogryn_club_p1_m1 = {
+            ogryn_club_p1_m1 = { -- Done 10.9.2023
                 grip = _ogryn_shovel_grip_attachments(),
                 pommel = _ogryn_shovel_pommel_attachments(),
                 head = _ogryn_shovel_head_attachments(),
@@ -2247,72 +2007,12 @@ end
                 trinket_hook = _trinket_hook_attachments(),
             },
             ogryn_combatblade_p1_m1 = {
-                blade = {
-                    {id = "blade_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "blade_01", name = "Blade 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_02", name = "Blade 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_03", name = "Blade 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_04", name = "Blade 4", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_05", name = "Blade 5", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_06", name = "Blade 6", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                },
-                grip = {
-                    {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_06", name = "Grip 6", sounds = {UISoundEvents.weapons_swap}},
-                },
-                handle = {
-                    {id = "handle_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "handle_01", name = "Handle 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "handle_02", name = "Handle 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "handle_03", name = "Handle 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "handle_04", name = "Handle 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "handle_05", name = "Handle 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "handle_06", name = "Handle 6", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                emblem_right = {
-                    {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                emblem_left = {
-                    {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                },
+                blade = _combat_blade_blade_attachments(),
+                grip = _combat_blade_grip_attachments(),
+                handle = _combat_blade_handle_attachments(),
+                emblem_right = _emblem_right_attachments(),
+                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _trinket_hook_attachments(),
             },
             ogryn_powermaul_p1_m1 = {
                 shaft = {
@@ -3771,116 +3471,64 @@ end
     mod.attachment_models = {
         --#region Ogryn Guns
             ogryn_heavystubber_p1_m1 = table.combine( -- Done 5.9.2023
-                _flashlight_models("receiver", -2.25, Vector3Box(0, -3, -.2), Vector3Box(.4, 0, .4)),
-                _emblem_right_models("receiver", -3, Vector3Box(.3, -6, -.1), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(-.3, -6, -.1), Vector3Box(-.2, 0, 0)),
-                _ogryn_bayonet_models("receiver", -.5, Vector3Box(.4, -2, 0), Vector3Box(0, .4, 0)),
-                _stubber_barrel_models(nil, -.25, Vector3Box(.35, -3, 0), Vector3Box(0, .2, 0)),
-                _stubber_receiver_models(nil, 0, Vector3Box(0, -1, 0), Vector3Box(0, 0, -.00001)),
-                _stubber_magazine_models(nil, 0, Vector3Box(0, -3, .1), Vector3Box(0, 0, -.2)),
-                _stubber_grip_models(nil, .3, Vector3Box(-.4, -3, 0), Vector3Box(0, -.2, 0)),
-                _trinket_hook_models(nil, .3, Vector3Box(-.6, -5, .1), Vector3Box(0, 0, 0))
+                _flashlight_models("receiver", -2.25, vector3_box(0, -3, -.2), vector3_box(.4, 0, .4)),
+                _emblem_right_models("receiver", -3, vector3_box(.3, -6, -.1), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(-.3, -6, -.1), vector3_box(-.2, 0, 0)),
+                _ogryn_bayonet_models("receiver", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
+                _stubber_barrel_models(nil, -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0)),
+                _stubber_receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
+                _stubber_magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
+                _stubber_grip_models(nil, .3, vector3_box(-.4, -3, 0), vector3_box(0, -.2, 0)),
+                _trinket_hook_models(nil, .3, vector3_box(-.6, -5, .1), vector3_box(0, -.1, -.1))
             ),
             ogryn_rippergun_p1_m1 = table.combine( -- Done 8.9.2023
-                _flashlight_models("receiver", -2.25, Vector3Box(-.2, -3, -.1), Vector3Box(.4, 0, .4)),
-                _emblem_right_models("receiver", -3, Vector3Box(-.2, -6, -.1), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(-.1, -6, -.1), Vector3Box(.2, 0, 0)),
-                _ogryn_bayonet_models({"", "", "", "", "receiver"}, -.5, Vector3Box(.2, -2, 0), Vector3Box(0, .4, 0)),
-                _ripper_barrel_models(nil, -.5, Vector3Box(.2, -2, 0), Vector3Box(0, .6, 0)),
-                _ripper_receiver_models(nil, 0, Vector3Box(0, -1, 0), Vector3Box(0, 0, -.00001)),
-                _ripper_magazine_models(nil, 0, Vector3Box(0, -3, .1), Vector3Box(0, 0, -.2)),
-                _ripper_handle_models(nil, -.75, Vector3Box(-.2, -4, -.1), Vector3Box(-.2, 0, 0)),
-                _trinket_hook_models(nil, -.3, Vector3Box(.15, -5, .1), Vector3Box(0, 0, 0))
+                _flashlight_models("receiver", -2.25, vector3_box(-.2, -3, -.1), vector3_box(.4, 0, .4)),
+                _emblem_right_models("receiver", -3, vector3_box(-.2, -6, -.1), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(-.1, -6, -.1), vector3_box(.2, 0, 0)),
+                _ogryn_bayonet_models({"", "", "", "", "receiver"}, -.5, vector3_box(.2, -2, 0), vector3_box(0, .4, 0)),
+                _ripper_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .6, 0)),
+                _ripper_receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
+                _ripper_magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
+                _ripper_handle_models(nil, -.75, vector3_box(-.2, -4, -.1), vector3_box(-.2, 0, 0)),
+                _trinket_hook_models(nil, -.3, vector3_box(.15, -5, .1), vector3_box(0, 0, -.2))
             ),
             ogryn_thumper_p1_m1 = table.combine( -- Done 8.9.2023
-                _flashlight_models("receiver", -2.25, Vector3Box(0, -3, 0), Vector3Box(.4, 0, 0)),
-                _emblem_right_models("receiver", -3, Vector3Box(-.3, -6, 0), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(-.1, -6, 0), Vector3Box(-.2, 0, 0)),
-                _ogryn_bayonet_models("receiver", -.5, Vector3Box(.4, -2, 0), Vector3Box(0, .4, 0)),
-                _thumper_grip_models(nil, 0, Vector3Box(-.3, -3, 0), Vector3Box(0, -.2, 0)),
-                _thumper_sight_models(nil, -.5, Vector3Box(.2, -3, 0), Vector3Box(0, 0, .2)),
-                _thumper_body_models(nil, 0, Vector3Box(0, -1, 0), Vector3Box(0, 0, -.00001)),
-                _trinket_hook_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, 0))
+                _flashlight_models("receiver", -2.25, vector3_box(0, -3, 0), vector3_box(.4, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(-.3, -6, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(-.1, -6, 0), vector3_box(-.2, 0, 0)),
+                _ogryn_bayonet_models("receiver", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
+                _thumper_grip_models(nil, 0, vector3_box(-.3, -3, 0), vector3_box(0, -.2, 0)),
+                _thumper_sight_models(nil, -.5, vector3_box(.2, -3, 0), vector3_box(0, 0, .2)),
+                _thumper_body_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001))
             ),
             ogryn_gauntlet_p1_m1 = table.combine( -- Done 8.9.2023
-                _flashlight_models("receiver", -2.25, Vector3Box(0, -3, 0), Vector3Box(.4, 0, 0)),
-                _emblem_right_models(nil, -3, Vector3Box(0, -2, 0), Vector3Box(.2, 0, 0)),
-                _emblem_left_models(nil, 0, Vector3Box(0, -2, 0), Vector3Box(.2, 0, 0)),
-                _ogryn_bayonet_models("barrel", -.5, Vector3Box(.4, -2, 0), Vector3Box(0, .4, 0)),
-                _gauntlet_barrel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 2, 0)),
-                _gauntlet_body_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.00001)),
-                _gauntlet_magazine_models(nil, 0, Vector3Box(-.8, -4, 0), Vector3Box(0, -.6, 0)),
-                _trinket_hook_models("barrel", -.3, Vector3Box(.25, -5, .1), Vector3Box(0, 0, 0))
+                _flashlight_models("receiver", -2.25, vector3_box(0, -3, 0), vector3_box(.4, 0, 0)),
+                _emblem_right_models(nil, -3, vector3_box(0, -2, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models(nil, 0, vector3_box(0, -2, 0), vector3_box(.2, 0, 0)),
+                _ogryn_bayonet_models("barrel", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
+                _gauntlet_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 1.5, 0)),
+                _gauntlet_body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
+                _gauntlet_magazine_models(nil, 0, vector3_box(-.8, -4, 0), vector3_box(0, -.6, 0)),
+                _trinket_hook_models("barrel", -.3, vector3_box(.25, -5, .1), vector3_box(-.2, 0, 0))
             ),
         --#endregion
         --#region Ogryn Melee
-            ogryn_club_p1_m1 = table.combine(
-                _emblem_right_models("grip", 0, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("grip", 0, Vector3Box(0, 0, 0), Vector3Box(-.2, 0, 0)),
-                _trinket_hook_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, 0)),
-                _ogryn_shovel_head_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, .4)),
-                _ogryn_shovel_grip_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, 0)),
-                _ogryn_shovel_pommel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.3)),
-                _trinket_hook_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, 0))
+            ogryn_club_p1_m1 = table.combine( -- Done 10.9.2023
+                _emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
+                _trinket_hook_models("head", 0, vector3_box(.05, -4, 0), vector3_box(0, 0, -.2)),
+                _ogryn_shovel_head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4)),
+                _ogryn_shovel_grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0)),
+                _ogryn_shovel_pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3))
             ),
-            ogryn_combatblade_p1_m1 = {
-                blade_default = {model = "", type = "blade"},
-                blade_01 = {model = "content/items/weapons/player/melee/blades/combat_blade_blade_01", type = "blade"},
-                blade_02 = {model = "content/items/weapons/player/melee/blades/combat_blade_blade_02", type = "blade"},
-                blade_03 = {model = "content/items/weapons/player/melee/blades/combat_blade_blade_03", type = "blade"},
-                blade_04 = {model = "content/items/weapons/player/melee/blades/combat_blade_blade_04", type = "blade"},
-                blade_05 = {model = "content/items/weapons/player/melee/blades/combat_blade_blade_05", type = "blade"},
-                blade_06 = {model = "content/items/weapons/player/melee/blades/combat_blade_blade_06", type = "blade"},
-                grip_default = {model = "", type = "grip"},
-                grip_01 = {model = "content/items/weapons/player/melee/grips/combat_blade_grip_01", type = "grip"},
-                grip_02 = {model = "content/items/weapons/player/melee/grips/combat_blade_grip_02", type = "grip"},
-                grip_03 = {model = "content/items/weapons/player/melee/grips/combat_blade_grip_03", type = "grip"},
-                grip_04 = {model = "content/items/weapons/player/melee/grips/combat_blade_grip_04", type = "grip"},
-                grip_05 = {model = "content/items/weapons/player/melee/grips/combat_blade_grip_05", type = "grip"},
-                grip_06 = {model = "content/items/weapons/player/melee/grips/combat_blade_grip_06", type = "grip"},
-                handle_default = {model = "", type = "handle"},
-                handle_01 = {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_01", type = "handle"},
-                handle_02 = {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_02", type = "handle"},
-                handle_03 = {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_03", type = "handle"},
-                handle_04 = {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_04", type = "handle"},
-                handle_05 = {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_05", type = "handle"},
-                handle_06 = {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_06", type = "handle"},
-                emblem_right_default = {model = "", type = "emblem_right"},
-                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right"},
-                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right"},
-                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right"},
-                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right"},
-                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right"},
-                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right"},
-                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right"},
-                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right"},
-                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right"},
-                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right"},
-                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right"},
-                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right"},
-                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right"},
-                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right"},
-                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right"},
-                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right"},
-                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right"},
-                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right"},
-                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right"},
-                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right"},
-                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right"},
-                emblem_left_default = {model = "", type = "emblem_left"},
-                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
-                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
-                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
-                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
-                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
-                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
-                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
-                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
-                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
-                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
-                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
-                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
-            },
+            ogryn_combatblade_p1_m1 = table.combine(
+                _emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
+                _trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
+                _combat_blade_blade_models(nil, 0, vector3_box(.1, -3, -.1), vector3_box(0, 0, .2)),
+                _combat_blade_grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, .2, 0)),
+                _combat_blade_handle_models(nil, 0, vector3_box(-.15, -5, .2), vector3_box(0, 0, -.2))
+            ),
             ogryn_powermaul_p1_m1 = {
                 shaft_default = {model = "", type = "shaft"},
                 shaft_01 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_01", type = "shaft"},
@@ -4040,12 +3688,12 @@ end
         --#endregion
         --#region Guns
             autopistol_p1_m1 = table.combine(
-                _flashlight_models(nil, -2.5, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, Vector3Box(.1, 0, 0), Vector3Box(0, .4, -.025)),
-                _grip_models(nil, -.1, Vector3Box(-.1, 0, 0), Vector3Box(0, -.1, -.1)),
-                _stock_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, -.2, 0)),
+                _flashlight_models(nil, -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
+                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
+                _stock_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, -.2, 0)),
                 _trinket_hook_models(),
                 {
                     receiver_default = {model = "", type = "receiver"},
@@ -4329,106 +3977,106 @@ end
                 emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
             },
             laspistol_p1_m1 = table.combine(
-                _flashlight_models("receiver", -2.5, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, Vector3Box(.1, 0, 0), Vector3Box(0, .4, -.025)),
-                _grip_models(nil, -.1, Vector3Box(-.1, 0, 0), Vector3Box(0, -.1, -.1)),
-                _reflex_sights_models("rail", -.5, Vector3Box(0, 0, -.05), Vector3Box(0, -.2, 0)),
-                _laspistol_receiver_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.00001)),
+                _flashlight_models("receiver", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
+                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
+                _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
+                _laspistol_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 {
-                    magazine_default =              {model = "",                                                                        type = "magazine",  angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(Vector3(0, 0, -.2))},
-                    magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine",  angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(Vector3(0, 0, -.2))},
+                    magazine_default =              {model = "",                                                                        type = "magazine",  angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.2)},
+                    magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine",  angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.2)},
                     -- magazine_02 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_02", type = "magazine"},
-                    barrel_default =                {model = "",                                                                        type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    barrel_01 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    barrel_02 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    barrel_03 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    barrel_04 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    barrel_05 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    barrel_06 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel",    angle = 0, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    muzzle_default =                {model = "",                                                                        type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    muzzle_01 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    -- muzzle_02 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    muzzle_03 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    muzzle_04 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle",    angle = -.5, move = Vector3Box(.1, 0, 0), remove = Vector3Box(0, .2, 0)},
-                    rail_default =                  {model = "",                                                                        type = "rail",      angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, .2)},
-                    rail_01 =                       {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01",         type = "rail",      angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, .2)},
-                    lasgun_pistol_stock_default =   {model = "",                                                                        type = "stock",     angle = 1, move = Vector3Box(-.1, 0, 0), remove = Vector3Box(0, -.2, 0)},
-                    lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01",       type = "stock",     angle = 1, move = Vector3Box(-.1, 0, 0), remove = Vector3Box(0, -.2, 0)},
-                    lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02",       type = "stock",     angle = 1, move = Vector3Box(-.1, 0, 0), remove = Vector3Box(0, -.2, 0)},
-                    lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03",       type = "stock",     angle = 1, move = Vector3Box(-.1, 0, 0), remove = Vector3Box(0, -.2, 0)},
-                    stock_2_default =               {model = "",                                                                        type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.2, 0, 0), remove = Vector3Box(0, -.2, .035)},
-                    autogun_rifle_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",       type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.2, 0, 0), remove = Vector3Box(0, -.2, .035)},
-                    autogun_rifle_stock_04 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",       type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.2, 0, 0), remove = Vector3Box(0, -.2, .035)},
-                    stock_05 =                      {model = "content/items/weapons/player/ranged/stocks/stock_05",                     type = "stock_2",   parent = "receiver", angle = .5, move = Vector3Box(-.2, 0, 0), remove = Vector3Box(0, -.2, .035)},
+                    barrel_default =                {model = "",                                                                        type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    barrel_01 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    barrel_02 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    barrel_03 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    barrel_04 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    barrel_05 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    barrel_06 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    muzzle_default =                {model = "",                                                                        type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    muzzle_01 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    -- muzzle_02 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    muzzle_03 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    muzzle_04 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
+                    rail_default =                  {model = "",                                                                        type = "rail",      angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, .2)},
+                    rail_01 =                       {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01",         type = "rail",      angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, .2)},
+                    lasgun_pistol_stock_default =   {model = "",                                                                        type = "stock",     angle = 1, move = vector3_box(-.1, 0, 0), remove = vector3_box(0, -.2, 0)},
+                    lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01",       type = "stock",     angle = 1, move = vector3_box(-.1, 0, 0), remove = vector3_box(0, -.2, 0)},
+                    lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02",       type = "stock",     angle = 1, move = vector3_box(-.1, 0, 0), remove = vector3_box(0, -.2, 0)},
+                    lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03",       type = "stock",     angle = 1, move = vector3_box(-.1, 0, 0), remove = vector3_box(0, -.2, 0)},
+                    stock_2_default =               {model = "",                                                                        type = "stock_2",   parent = "receiver", angle = .5, move = vector3_box(-.2, 0, 0), remove = vector3_box(0, -.2, .035)},
+                    autogun_rifle_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",       type = "stock_2",   parent = "receiver", angle = .5, move = vector3_box(-.2, 0, 0), remove = vector3_box(0, -.2, .035)},
+                    autogun_rifle_stock_04 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",       type = "stock_2",   parent = "receiver", angle = .5, move = vector3_box(-.2, 0, 0), remove = vector3_box(0, -.2, .035)},
+                    stock_05 =                      {model = "content/items/weapons/player/ranged/stocks/stock_05",                     type = "stock_2",   parent = "receiver", angle = .5, move = vector3_box(-.2, 0, 0), remove = vector3_box(0, -.2, .035)},
                 }
             ),
             autogun_p1_m1 = table.combine(
-                _flashlight_models(nil, -2.5, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, Vector3Box(.1, 0, 0), Vector3Box(0, .4, -.025)),
-                _grip_models(nil, -.1, Vector3Box(-.1, 0, 0), Vector3Box(0, -.1, -.1)),
-                _reflex_sights_models("rail", -.5, Vector3Box(0, 0, -.05), Vector3Box(0, -.2, 0)),
-                _sights_models(nil, -.5, Vector3Box(0, 0, -.05), Vector3Box(0, -.2, 0)),
-                _stock_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, -.2, 0)),
-                _autogun_barrel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, .2, 0)),
+                _flashlight_models(nil, -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
+                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
+                _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
+                _sights_models(nil, -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
+                _stock_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, -.2, 0)),
+                _autogun_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
                 -- _autogun_braced_barrel_models(),
-                _autogun_headhunter_barrel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, .2, 0)),
-                _lasgun_rail_models("receiver", 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, .2)),
-                _autogun_muzzle_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, .2, 0)),
-                _autogun_magazine_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.2)),
+                _autogun_headhunter_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
+                _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+                _autogun_muzzle_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
+                _autogun_magazine_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
                 _trinket_hook_models(),
                 {
-                    receiver_default =  {model = "",                                                                                    type = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, -.00001)},
-                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_receiver_01",             type = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, -.00001)},
-                    receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_killshot_receiver_01",    type = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, -.00001)},
+                    receiver_default =  {model = "",                                                                                    type = "receiver", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.00001)},
+                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_receiver_01",             type = "receiver", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.00001)},
+                    receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_killshot_receiver_01",    type = "receiver", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.00001)},
                     -- receiver_03 = {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_ak_receiver_01", type = "receiver"},
                 }
             ),
             autogun_p2_m1 = table.combine(
-                _flashlight_models("barrel", -2.5, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, Vector3Box(.1, 0, 0), Vector3Box(0, .4, -.025)),
-                _grip_models(nil, -.1, Vector3Box(-.1, 0, 0), Vector3Box(0, -.1, -.1)),
-                _reflex_sights_models("rail", -.5, Vector3Box(0, 0, -.05), Vector3Box(0, -.2, 0)),
-                _sights_models(nil, -.5, Vector3Box(0, 0, -.05), Vector3Box(0, -.2, 0)),
-                _stock_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, -.2, 0)),
+                _flashlight_models("barrel", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
+                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
+                _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
+                _sights_models(nil, -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
+                _stock_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, -.2, 0)),
                 -- _autogun_barrel_models(),
-                _autogun_braced_barrel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, .2, 0)),
+                _autogun_braced_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
                 -- _autogun_headhunter_barrel_models(),
-                _lasgun_rail_models("receiver", 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, .2)),
-                _autogun_muzzle_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, .2, 0)),
-                _autogun_magazine_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.2)),
+                _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+                _autogun_muzzle_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
+                _autogun_magazine_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
                 _trinket_hook_models(),
                 {
-                    receiver_default =  {model = "",                                                                            type = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, -.00001)},
+                    receiver_default =  {model = "",                                                                            type = "receiver", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.00001)},
                     -- receiver_01 = {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_receiver_01", type = "receiver"},
                     -- receiver_02 = {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_killshot_receiver_01", type = "receiver"},
-                    receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_ak_receiver_01",  type = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, -.00001)},
+                    receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_ak_receiver_01",  type = "receiver", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.00001)},
                 }
             ),
             autogun_p3_m1 = table.combine(
-                _flashlight_models("barrel", -2.5, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, Vector3Box(0, 0, 0), Vector3Box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, Vector3Box(.1, 0, 0), Vector3Box(0, .4, -.025)),
-                _grip_models(nil, -.1, Vector3Box(-.1, 0, 0), Vector3Box(0, -.1, -.1)),
-                _reflex_sights_models("rail", -.5, Vector3Box(0, 0, -.05), Vector3Box(0, -.2, 0)),
-                _sights_models(nil, -.5, Vector3Box(0, 0, -.05), Vector3Box(0, -.2, 0)),
-                _stock_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, -.2, 0)),
-                _autogun_barrel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, .2, 0)),
-                _autogun_headhunter_barrel_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, .2, 0)),
-                _lasgun_rail_models("receiver", 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, .2)),
-                _autogun_muzzle_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, .2, 0)),
-                _autogun_magazine_models(nil, 0, Vector3Box(0, 0, 0), Vector3Box(0, 0, -.2)),
+                _flashlight_models("barrel", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
+                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
+                _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
+                _sights_models(nil, -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
+                _stock_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, -.2, 0)),
+                _autogun_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
+                _autogun_headhunter_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
+                _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+                _autogun_muzzle_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
+                _autogun_magazine_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
                 _trinket_hook_models(),
                 {
-                    receiver_default =  {model = "",                                                                                    type = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, -.00001)},
-                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_receiver_01",             type = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, -.00001)},
-                    receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_killshot_receiver_01",    type = "receiver", angle = 0, move = Vector3Box(0, 0, 0), remove = Vector3Box(0, 0, -.00001)},
+                    receiver_default =  {model = "",                                                                                    type = "receiver", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.00001)},
+                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_receiver_01",             type = "receiver", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.00001)},
+                    receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_killshot_receiver_01",    type = "receiver", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.00001)},
                     -- receiver_03 = {model = "content/items/weapons/player/ranged/recievers/autogun_rifle_ak_receiver_01", type = "receiver"},
                 }
             ),
@@ -4537,33 +4185,33 @@ end
                 }
             ),
             forcestaff_p1_m1 = {
-                customization_default_position = Vector3Box(0, 8, .75),
-                shaft_lower_default = {model = "", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-                shaft_lower_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_01", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-                shaft_lower_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_02", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-                shaft_lower_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_03", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-                shaft_lower_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_04", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-                shaft_lower_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_05", type = "shaft_lower", move = Vector3Box(-.75, -4, .5)},
-                shaft_upper_default = {model = "", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-                shaft_upper_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_01", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-                shaft_upper_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_02", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-                shaft_upper_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_03", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-                shaft_upper_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_04", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-                shaft_upper_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_05", type = "shaft_upper", move = Vector3Box(-.25, -5.5, -.4)},
-                body_default = {model = "", type = "body", move = Vector3Box(.1, -7, -.65)},
-                body_01 = {model = "content/items/weapons/player/melee/full/force_staff_full_01", type = "body", move = Vector3Box(.1, -7, -.65)},
-                body_02 = {model = "content/items/weapons/player/melee/full/force_staff_full_02", type = "body", move = Vector3Box(.1, -7, -.65)},
-                body_03 = {model = "content/items/weapons/player/melee/full/force_staff_full_03", type = "body", move = Vector3Box(.1, -7, -.65)},
-                body_04 = {model = "content/items/weapons/player/melee/full/force_staff_full_04", type = "body", move = Vector3Box(.1, -7, -.65)},
-                body_05 = {model = "content/items/weapons/player/melee/full/force_staff_full_05", type = "body", move = Vector3Box(.1, -7, -.65)},
-                head_default = {model = "", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-                head_01 = {model = "content/items/weapons/player/melee/heads/force_staff_head_01", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-                head_02 = {model = "content/items/weapons/player/melee/heads/force_staff_head_02", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-                head_03 = {model = "content/items/weapons/player/melee/heads/force_staff_head_03", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-                head_04 = {model = "content/items/weapons/player/melee/heads/force_staff_head_04", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-                head_05 = {model = "content/items/weapons/player/melee/heads/force_staff_head_05", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-                head_06 = {model = "content/items/weapons/player/melee/heads/force_staff_head_06", type = "head", move = Vector3Box(.15, -8.5, -.8)},
-                head_07 = {model = "content/items/weapons/player/melee/heads/force_staff_head_07", type = "head", move = Vector3Box(.15, -8.5, -.8)},
+                customization_default_position = vector3_box(0, 8, .75),
+                shaft_lower_default = {model = "", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
+                shaft_lower_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_01", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
+                shaft_lower_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_02", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
+                shaft_lower_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_03", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
+                shaft_lower_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_04", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
+                shaft_lower_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_05", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
+                shaft_upper_default = {model = "", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
+                shaft_upper_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_01", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
+                shaft_upper_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_02", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
+                shaft_upper_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_03", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
+                shaft_upper_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_04", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
+                shaft_upper_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_05", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
+                body_default = {model = "", type = "body", move = vector3_box(.1, -7, -.65)},
+                body_01 = {model = "content/items/weapons/player/melee/full/force_staff_full_01", type = "body", move = vector3_box(.1, -7, -.65)},
+                body_02 = {model = "content/items/weapons/player/melee/full/force_staff_full_02", type = "body", move = vector3_box(.1, -7, -.65)},
+                body_03 = {model = "content/items/weapons/player/melee/full/force_staff_full_03", type = "body", move = vector3_box(.1, -7, -.65)},
+                body_04 = {model = "content/items/weapons/player/melee/full/force_staff_full_04", type = "body", move = vector3_box(.1, -7, -.65)},
+                body_05 = {model = "content/items/weapons/player/melee/full/force_staff_full_05", type = "body", move = vector3_box(.1, -7, -.65)},
+                head_default = {model = "", type = "head", move = vector3_box(.15, -8.5, -.8)},
+                head_01 = {model = "content/items/weapons/player/melee/heads/force_staff_head_01", type = "head", move = vector3_box(.15, -8.5, -.8)},
+                head_02 = {model = "content/items/weapons/player/melee/heads/force_staff_head_02", type = "head", move = vector3_box(.15, -8.5, -.8)},
+                head_03 = {model = "content/items/weapons/player/melee/heads/force_staff_head_03", type = "head", move = vector3_box(.15, -8.5, -.8)},
+                head_04 = {model = "content/items/weapons/player/melee/heads/force_staff_head_04", type = "head", move = vector3_box(.15, -8.5, -.8)},
+                head_05 = {model = "content/items/weapons/player/melee/heads/force_staff_head_05", type = "head", move = vector3_box(.15, -8.5, -.8)},
+                head_06 = {model = "content/items/weapons/player/melee/heads/force_staff_head_06", type = "head", move = vector3_box(.15, -8.5, -.8)},
+                head_07 = {model = "content/items/weapons/player/melee/heads/force_staff_head_07", type = "head", move = vector3_box(.15, -8.5, -.8)},
             },
         --#endregion
         --#region Melee
@@ -4721,71 +4369,71 @@ end
                 }
             ),
             thunderhammer_2h_p1_m1 = table.combine(
-                {customization_default_position = Vector3Box(0, 3, .35)},
+                {customization_default_position = vector3_box(0, 3, .35)},
                 _emblem_right_models(),
                 _emblem_left_models(),
                 _trinket_hook_models(),
                 {
-                    thunder_hammer_shaft_default = {model = "", type = "shaft", move = Vector3Box(-.5, -3, .3)},
-                    thunder_hammer_shaft_01 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_01", type = "shaft", move = Vector3Box(-.5, -3, .3)},
-                    thunder_hammer_shaft_02 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_02", type = "shaft", move = Vector3Box(-.5, -3, .3)},
-                    thunder_hammer_shaft_03 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_03", type = "shaft", move = Vector3Box(-.5, -3, .3)},
-                    thunder_hammer_shaft_04 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_04", type = "shaft", move = Vector3Box(-.5, -3, .3)},
-                    thunder_hammer_shaft_05 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_05", type = "shaft", move = Vector3Box(-.5, -3, .3)},
-                    thunder_hammer_pommel_default = {model = "", type = "pommel", move = Vector3Box(-.75, -4, .5)},
-                    thunder_hammer_pommel_01 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_01", type = "pommel", move = Vector3Box(-.75, -4, .5)},
-                    thunder_hammer_pommel_02 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_05", type = "pommel", move = Vector3Box(-.75, -4, .5)},
-                    thunder_hammer_pommel_03 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_03", type = "pommel", move = Vector3Box(-.75, -4, .5)},
-                    thunder_hammer_pommel_04 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_04", type = "pommel", move = Vector3Box(-.75, -4, .5)},
-                    thunder_hammer_pommel_05 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_05", type = "pommel", move = Vector3Box(-.75, -4, .5)},
-                    thunder_hammer_connector_default = {model = "", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    thunder_hammer_connector_01 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_01", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    thunder_hammer_connector_02 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_02", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    thunder_hammer_connector_03 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_03", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    thunder_hammer_connector_04 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_04", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    thunder_hammer_connector_05 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_05", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    thunder_hammer_head_default = {model = "", type = "head", move = Vector3Box(.15, -6.5, -.4)},
-                    thunder_hammer_head_01 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_01", type = "head", move = Vector3Box(.15, -6.5, -.4)},
-                    thunder_hammer_head_02 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_02", type = "head", move = Vector3Box(.15, -6.5, -.4)},
-                    thunder_hammer_head_03 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_03", type = "head", move = Vector3Box(.15, -6.5, -.4)},
-                    thunder_hammer_head_04 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_04", type = "head", move = Vector3Box(.15, -6.5, -.4)},
-                    thunder_hammer_head_05 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_05", type = "head", move = Vector3Box(.15, -6.5, -.4)},
+                    thunder_hammer_shaft_default = {model = "", type = "shaft", move = vector3_box(-.5, -3, .3)},
+                    thunder_hammer_shaft_01 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_01", type = "shaft", move = vector3_box(-.5, -3, .3)},
+                    thunder_hammer_shaft_02 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_02", type = "shaft", move = vector3_box(-.5, -3, .3)},
+                    thunder_hammer_shaft_03 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_03", type = "shaft", move = vector3_box(-.5, -3, .3)},
+                    thunder_hammer_shaft_04 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_04", type = "shaft", move = vector3_box(-.5, -3, .3)},
+                    thunder_hammer_shaft_05 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_05", type = "shaft", move = vector3_box(-.5, -3, .3)},
+                    thunder_hammer_pommel_default = {model = "", type = "pommel", move = vector3_box(-.75, -4, .5)},
+                    thunder_hammer_pommel_01 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_01", type = "pommel", move = vector3_box(-.75, -4, .5)},
+                    thunder_hammer_pommel_02 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_05", type = "pommel", move = vector3_box(-.75, -4, .5)},
+                    thunder_hammer_pommel_03 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_03", type = "pommel", move = vector3_box(-.75, -4, .5)},
+                    thunder_hammer_pommel_04 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_04", type = "pommel", move = vector3_box(-.75, -4, .5)},
+                    thunder_hammer_pommel_05 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_05", type = "pommel", move = vector3_box(-.75, -4, .5)},
+                    thunder_hammer_connector_default = {model = "", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    thunder_hammer_connector_01 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_01", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    thunder_hammer_connector_02 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_02", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    thunder_hammer_connector_03 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_03", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    thunder_hammer_connector_04 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_04", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    thunder_hammer_connector_05 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_05", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    thunder_hammer_head_default = {model = "", type = "head", move = vector3_box(.15, -6.5, -.4)},
+                    thunder_hammer_head_01 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_01", type = "head", move = vector3_box(.15, -6.5, -.4)},
+                    thunder_hammer_head_02 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_02", type = "head", move = vector3_box(.15, -6.5, -.4)},
+                    thunder_hammer_head_03 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_03", type = "head", move = vector3_box(.15, -6.5, -.4)},
+                    thunder_hammer_head_04 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_04", type = "head", move = vector3_box(.15, -6.5, -.4)},
+                    thunder_hammer_head_05 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_05", type = "head", move = vector3_box(.15, -6.5, -.4)},
                 }
             ),
             powermaul_2h_p1_m1 = table.combine(
-                {customization_default_position = Vector3Box(0, 2, .35)},
+                {customization_default_position = vector3_box(0, 2, .35)},
                 _emblem_right_models(),
                 _emblem_left_models(),
                 _trinket_hook_models(),
                 {
-                    ["2h_power_maul_shaft_default"] = {model = "", type = "shaft", move = Vector3Box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_01"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_01", type = "shaft", move = Vector3Box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_02"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_02", type = "shaft", move = Vector3Box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_03"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_03", type = "shaft", move = Vector3Box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_04"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_04", type = "shaft", move = Vector3Box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_05"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_05", type = "shaft", move = Vector3Box(-.3, -3, .2)},
-                    ["2h_power_maul_pommel_default"] = {model = "", type = "pommel", move = Vector3Box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_01"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_01", type = "pommel", move = Vector3Box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_02"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_05", type = "pommel", move = Vector3Box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_03"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_03", type = "pommel", move = Vector3Box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_04"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_04", type = "pommel", move = Vector3Box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_05"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_05", type = "pommel", move = Vector3Box(-.5, -4, .5)},
-                    ["2h_power_maul_connector_default"] = {model = "", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_01"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_01", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_02"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_02", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_03"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_03", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_04"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_04", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_05"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_05", type = "connector", move = Vector3Box(0, -5.5, -.4)},
-                    ["2h_power_maul_head_default"] = {model = "", type = "head", move = Vector3Box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_01"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_01", type = "head", move = Vector3Box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_02"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_02", type = "head", move = Vector3Box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_03"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_03", type = "head", move = Vector3Box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_04"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_04", type = "head", move = Vector3Box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_05"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_05", type = "head", move = Vector3Box(.05, -4.5, -.5)},
+                    ["2h_power_maul_shaft_default"] = {model = "", type = "shaft", move = vector3_box(-.3, -3, .2)},
+                    ["2h_power_maul_shaft_01"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_01", type = "shaft", move = vector3_box(-.3, -3, .2)},
+                    ["2h_power_maul_shaft_02"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_02", type = "shaft", move = vector3_box(-.3, -3, .2)},
+                    ["2h_power_maul_shaft_03"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_03", type = "shaft", move = vector3_box(-.3, -3, .2)},
+                    ["2h_power_maul_shaft_04"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_04", type = "shaft", move = vector3_box(-.3, -3, .2)},
+                    ["2h_power_maul_shaft_05"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_05", type = "shaft", move = vector3_box(-.3, -3, .2)},
+                    ["2h_power_maul_pommel_default"] = {model = "", type = "pommel", move = vector3_box(-.5, -4, .5)},
+                    ["2h_power_maul_pommel_01"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_01", type = "pommel", move = vector3_box(-.5, -4, .5)},
+                    ["2h_power_maul_pommel_02"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_05", type = "pommel", move = vector3_box(-.5, -4, .5)},
+                    ["2h_power_maul_pommel_03"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_03", type = "pommel", move = vector3_box(-.5, -4, .5)},
+                    ["2h_power_maul_pommel_04"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_04", type = "pommel", move = vector3_box(-.5, -4, .5)},
+                    ["2h_power_maul_pommel_05"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_05", type = "pommel", move = vector3_box(-.5, -4, .5)},
+                    ["2h_power_maul_connector_default"] = {model = "", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    ["2h_power_maul_connector_01"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_01", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    ["2h_power_maul_connector_02"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_02", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    ["2h_power_maul_connector_03"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_03", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    ["2h_power_maul_connector_04"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_04", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    ["2h_power_maul_connector_05"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_05", type = "connector", move = vector3_box(0, -5.5, -.4)},
+                    ["2h_power_maul_head_default"] = {model = "", type = "head", move = vector3_box(.05, -4.5, -.5)},
+                    ["2h_power_maul_head_01"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_01", type = "head", move = vector3_box(.05, -4.5, -.5)},
+                    ["2h_power_maul_head_02"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_02", type = "head", move = vector3_box(.05, -4.5, -.5)},
+                    ["2h_power_maul_head_03"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_03", type = "head", move = vector3_box(.05, -4.5, -.5)},
+                    ["2h_power_maul_head_04"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_04", type = "head", move = vector3_box(.05, -4.5, -.5)},
+                    ["2h_power_maul_head_05"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_05", type = "head", move = vector3_box(.05, -4.5, -.5)},
                 }
             ),
             chainsword_2h_p1_m1 = table.combine(
-                -- {customization_default_position = Vector3Box(0, 2, .35)},
+                -- {customization_default_position = vector3_box(0, 2, .35)},
                 _emblem_right_models(),
                 _emblem_left_models(),
                 _trinket_hook_models(),

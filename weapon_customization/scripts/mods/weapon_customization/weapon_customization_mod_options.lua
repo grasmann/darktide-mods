@@ -2,6 +2,10 @@ local mod = get_mod("weapon_customization")
 
 local WeaponCustomizationData = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_data")
 
+local pairs = pairs
+local managers = Managers
+local CLASS = CLASS
+
 function mod.find_option_in_data(obj, setting_id)
 	for _, option in pairs(obj) do
 		if option.setting_id == setting_id then
@@ -18,7 +22,7 @@ function mod.fetch_option_from_data(setting_id)
 end
 
 function mod.fetch_option_from_view(setting_id)
-	local options_view = Managers.ui:view_instance("dmf_options_view")
+	local options_view = managers.ui:view_instance("dmf_options_view")
 	if options_view then
 		for mod_name, mod_group in pairs(options_view._settings_category_widgets) do
 			for index, widget_data in pairs(mod_group) do
@@ -33,7 +37,7 @@ function mod.fetch_option_from_view(setting_id)
 end
 
 function mod.update_option(setting_id)
-	local options_view = Managers.ui:view_instance("dmf_options_view")
+	local options_view = managers.ui:view_instance("dmf_options_view")
 	if options_view then
 		local data_option = mod.fetch_option_from_data(setting_id)
 		if data_option.type == "checkbox" then
