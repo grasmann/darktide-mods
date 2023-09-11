@@ -419,7 +419,7 @@ end
         end
         local _stubber_receiver_attachments = function()
             return {
-                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.end_screen_summary_currency_icon_out, UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
                 {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
                 {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
                 {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
@@ -930,6 +930,23 @@ end
                 pommel_03 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_03", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
                 pommel_04 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_04", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
                 pommel_05 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_05", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
+            }
+        end
+        local _ogryn_shield_attachments = function()
+            return {
+                {id = "left_default",       name = "Default",           sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "left_01",            name = "Slab Shield",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "bulwark_shield_01",  name = "Bulwark Shield",    sounds = {UISoundEvents.weapons_equip_weapon}},
+            }
+        end
+        local _ogryn_shield_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                left_default =      {model = "",                                                                    type = "left", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                left_01 =           {model = "content/items/weapons/player/melee/ogryn_slabshield_p1_m1",           type = "left", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                bulwark_shield_01 = {model = "content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
             }
         end
     --#endregion
@@ -1667,13 +1684,26 @@ end
                         emblem_right = {parent = "head", position = vector3_box(.16, -.05, .3), rotation = vector3_box(90, -10, 0), scale = vector3_box(2, 2, 2)}},
                 }
             },
-            ogryn_powermaul_slabshield_p1_m1 = {
-                ["bulwark_shield_01"] = {
-                    position = vector3_box(0, 0, 0),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    preview_only = true,
-                },
+            ogryn_powermaul_slabshield_p1_m1 = { -- Done 11.9.2023 Additional custom positions for paper thing emblems?
+                fixes = {
+                    {dependencies = {"pommel_05"}, -- Trinket hook
+                        trinket_hook = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.01, .01, .01)}},
+                    {dependencies = {"head_01"}, -- Emblems
+                        emblem_left = {parent = "head", position = vector3_box(-.08, -.08, .54), rotation = vector3_box(90, 45, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "head", position = vector3_box(.08, .08, .54), rotation = vector3_box(90, 45, 0), scale = vector3_box(2, 2, 2)}},
+                    {dependencies = {"head_02"}, -- Emblems
+                        emblem_left = {parent = "head", position = vector3_box(-.185, -.005, .315), rotation = vector3_box(90, 0, 185), scale = vector3_box(3, 3, 3)},
+                        emblem_right = {parent = "head", position = vector3_box(.185, -.005, .315), rotation = vector3_box(90, 0, -5), scale = vector3_box(3, 3, 3)}},
+                    {dependencies = {"head_03"}, -- Emblems
+                        emblem_left = {parent = "head", position = vector3_box(-.21, 0, .280), rotation = vector3_box(90, 0, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "head", position = vector3_box(.21, 0, .280), rotation = vector3_box(90, 0, 0), scale = vector3_box(2, 2, 2)}},
+                    {dependencies = {"head_04"}, -- Emblems
+                        emblem_left = {parent = "head", position = vector3_box(-.045, .105, .12), rotation = vector3_box(90, 0, 180), scale = vector3_box(1.75, 1.75, 1.75)},
+                        emblem_right = {parent = "head", position = vector3_box(.045, -.105, .12), rotation = vector3_box(90, 0, 0), scale = vector3_box(1.75, 1.75, 1.75)}},
+                    {dependencies = {"head_05"}, -- Emblems
+                        emblem_left = {parent = "head", position = vector3_box(-.16, -.05, .3), rotation = vector3_box(90, 10, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "head", position = vector3_box(.16, -.05, .3), rotation = vector3_box(90, -10, 0), scale = vector3_box(2, 2, 2)}},
+                }
             },
         --#endregion
         --#region Guns
@@ -2112,75 +2142,14 @@ end
                 emblem_left = _emblem_left_attachments(),
                 trinket_hook = _trinket_hook_attachments(),
             },
-            ogryn_powermaul_slabshield_p1_m1 = {
-                shaft = {
-                    {id = "shaft_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "shaft_01", name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shaft_02", name = "Shaft 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shaft_03", name = "Shaft 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shaft_04", name = "Shaft 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shaft_05", name = "Shaft 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                head = {
-                    {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "head_01", name = "Head 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_02", name = "Head 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_03", name = "Head 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_04", name = "Head 4", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_05", name = "Head 5", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                },
-                pommel = {
-                    {id = "pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "pommel_01", name = "Pommel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "pommel_02", name = "Pommel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "pommel_03", name = "Pommel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "pommel_04", name = "Pommel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "pommel_05", name = "Pommel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                left = {
-                    {id = "left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "left_01", name = "Shield 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "bulwark_shield_01", name = "Shield 2", sounds = {UISoundEvents.weapons_swap}},
-                },
-                emblem_right = {
-                    {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                emblem_left = {
-                    {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                },
+            ogryn_powermaul_slabshield_p1_m1 = { -- Done 11.9.2023
+                shaft = _power_maul_shaft_attachments(),
+                head = _power_maul_head_attachments(),
+                pommel = _power_maul_pommel_attachments(),
+                emblem_right = _emblem_right_attachments(),
+                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _trinket_hook_attachments(),
+                left = _ogryn_shield_attachments(),
             },
             ogryn_club_p2_m1 = {
                 body = {
@@ -3571,64 +3540,16 @@ end
                 _power_maul_head_models(nil, 0, vector3_box(.3, -3, -.3), vector3_box(0, 0, .2)),
                 _power_maul_pommel_models(nil, 0, vector3_box(-.25, -5, .4), vector3_box(0, 0, -.2))
             ),
-            ogryn_powermaul_slabshield_p1_m1 = {
-                left_default = {model = "", type = "left"},
-                left_01 = {model = "content/items/weapons/player/melee/ogryn_slabshield_p1_m1", type = "left"},
-                bulwark_shield_01 = {model = "content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01", type = "left"},
-                shaft_default = {model = "", type = "shaft"},
-                shaft_01 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_01", type = "shaft"},
-                shaft_02 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_02", type = "shaft"},
-                shaft_03 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_03", type = "shaft"},
-                shaft_04 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_04", type = "shaft"},
-                shaft_05 = {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_05", type = "shaft"},
-                head_default = {model = "", type = "head"},
-                head_01 = {model = "content/items/weapons/player/melee/heads/power_maul_head_01", type = "head"},
-                head_02 = {model = "content/items/weapons/player/melee/heads/power_maul_head_02", type = "head"},
-                head_03 = {model = "content/items/weapons/player/melee/heads/power_maul_head_03", type = "head"},
-                head_04 = {model = "content/items/weapons/player/melee/heads/power_maul_head_04", type = "head"},
-                head_05 = {model = "content/items/weapons/player/melee/heads/power_maul_head_05", type = "head"},
-                pommel_default = {model = "", type = "pommel"},
-                pommel_01 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_01", type = "pommel"},
-                pommel_02 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_02", type = "pommel"},
-                pommel_03 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_03", type = "pommel"},
-                pommel_04 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_04", type = "pommel"},
-                pommel_05 = {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_05", type = "pommel"},
-                emblem_right_default = {model = "", type = "emblem_right"},
-                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right"},
-                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right"},
-                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right"},
-                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right"},
-                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right"},
-                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right"},
-                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right"},
-                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right"},
-                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right"},
-                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right"},
-                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right"},
-                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right"},
-                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right"},
-                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right"},
-                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right"},
-                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right"},
-                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right"},
-                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right"},
-                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right"},
-                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right"},
-                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right"},
-                emblem_left_default = {model = "", type = "emblem_left"},
-                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
-                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
-                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
-                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
-                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
-                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
-                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
-                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
-                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
-                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
-                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
-                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
-            },
+            ogryn_powermaul_slabshield_p1_m1 = table.combine( -- Done 11.9.2023
+                -- {customization_default_position = vector3_box(.2, 0, 0)},
+                _power_maul_shaft_models(nil, -2.5, vector3_box(0, -5, -.15), vector3_box(0, 0, 0)),
+                _emblem_right_models("head", 0, vector3_box(0, -5, -.4), vector3_box(.2, 0, 0)),
+                _emblem_left_models("head", -3, vector3_box(0, -5, -.4), vector3_box(-.2, 0, 0)),
+                _trinket_hook_models(nil, -2.5, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
+                _power_maul_head_models(nil, -2.5, vector3_box(0, -5, -.4), vector3_box(0, 0, .2)),
+                _power_maul_pommel_models(nil, -2.5, vector3_box(0, -6, .1), vector3_box(0, 0, -.2)),
+                _ogryn_shield_models(nil, 0, vector3_box(-.15, -2, .1), vector3_box(0, 0, -.2))
+            ),
             ogryn_club_p2_m1 = {
                 body_default = {model = "", type = "body"},
                 body_01 = {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_01", type = "body"},
