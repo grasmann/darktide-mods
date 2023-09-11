@@ -12,6 +12,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
 local WeaponTemplates = mod:original_require("scripts/settings/equipment/weapon_templates/weapon_templates")
 local PlayerUnitAnimationMachineSettings = mod:original_require("scripts/settings/animation/player_unit_animation_state_machine_settings")
+local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
 
 local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
 local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
@@ -716,32 +717,6 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 	end
 end)
 
-mod:hook(CLASS.ViewElementInventoryWeaponPreview, "present_item", function(func, self, item, disable_auto_spin, ...)
-	func(self, item, disable_auto_spin, ...)
-
-	-- local world_spawner = self._world_spawner
-	-- local world = world_spawner:world()
-	-- local level = world_spawner:level()
-
-	-- local light_units = {
-	-- 	"#ID[7c763e4de74815e3]", -- lights
-	-- 	"#ID[be13f33921de73ac]", -- lights
-	-- }
-
-	-- mod.preview_lights = {}
-
-	-- local level_units = level_units(level, true)
-	-- for _, unit in pairs(level_units) do
-	-- 	if table_contains(light_units, unit_debug_name(unit)) then
-	-- 		mod.preview_lights[#mod.preview_lights+1] = {
-	-- 			unit = unit,
-	-- 			position = vector3_box(unit_world_position(unit, 1)),
-	-- 		}
-	-- 	end
-	-- end
-
-end)
-
 mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
 	func(self, item_unit_3p, ...)
 	local weapon_spawn_data = self._weapon_spawn_data
@@ -1152,6 +1127,7 @@ mod.generate_dropdown_option = function(self, id, display_name, sounds)
 end
 
 mod.add_custom_widget = function(self, widget)
+	widget.custom = true
 	self.cosmetics_view._custom_widgets[#self.cosmetics_view._custom_widgets+1] = widget
 end
 
@@ -1365,7 +1341,6 @@ mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
     local definition = UIWidget.create_definition(template, scenegraph, nil, size)
     local widget_name = attachment_slot.."_custom"
     local widget = self.cosmetics_view:_create_widget(widget_name, definition)
-
     self.cosmetics_view._widgets_by_name[widget_name] = widget
     self.cosmetics_view._widgets[#self.cosmetics_view._widgets+1] = widget
 
@@ -1464,9 +1439,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 			local element = elements_array[i]
 			if element then
 				local element_name = element.__class_name
-				if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
-					ui_renderer = self._ui_default_renderer or ui_renderer
-				end
+				-- if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
+				-- 	ui_renderer = self._ui_renderer or self._ui_default_renderer or ui_renderer
+				-- end
 				render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
 				element:draw(dt, t, ui_renderer, render_settings, input_service)
 			end
@@ -1496,7 +1471,7 @@ end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
 
-    func(self, dt, t, input_service, ...)
+    local pass_input, pass_draw = func(self, dt, t, input_service, ...)
 
 	if mod.cosmetics_view then
 		mod:update_custom_widgets(input_service)
@@ -1515,6 +1490,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
 		end
 	end
 
+	return pass_input, pass_draw
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, self, input_service, dt, t, ...)
@@ -1626,6 +1602,27 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 	end
 end)
 
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_forward_gui", function(func, self, ...)
+	local ui_manager = Managers.ui
+	local timer_name = "ui"
+	local world_layer = 200
+	local world_name = self._unique_id .. "_ui_forward_world"
+	local view_name = self.view_name
+	self._world = ui_manager:create_world(world_name, world_layer, timer_name, view_name)
+	local viewport_name = self._unique_id .. "_ui_forward_world_viewport"
+	local viewport_type = "default_with_alpha"
+	local viewport_layer = 10
+	self._viewport = ui_manager:create_viewport(self._world, viewport_name, viewport_type, viewport_layer)
+	self._viewport_name = viewport_name
+	local renderer_name = self._unique_id .. "_forward_renderer"
+	self._ui_forward_renderer = ui_manager:create_renderer(renderer_name, self._world)
+	local gui = self._ui_forward_renderer.gui
+	local gui_retained = self._ui_forward_renderer.gui_retained
+	local resource_renderer_name = self._unique_id
+	local material_name = "content/ui/materials/render_target_masks/ui_render_target_straight_blur"
+	self._ui_resource_renderer = ui_manager:create_renderer(resource_renderer_name, self._world, true, gui, gui_retained, material_name)
+end)
+
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, self, content, ...)
 	local item_name = self._item_name
 	if item_name and mod.attachment[item_name] then
@@ -1649,21 +1646,23 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, self, index, ...)
-	if index == 3 then
-        self:present_grid_layout({})
-        self._item_grid._widgets_by_name.grid_empty.visible = false
-        mod:hide_custom_widgets(false)
-		mod.original_weapon_settings = {}
-		mod:get_changed_weapon_settings()
-		mod:update_equip_button()
-		mod:update_reset_button()
-    else
-		local t = managers.time:time("main")
-		mod.reset_start = t
-		mod:check_unsaved_changes(true)
-        mod:hide_custom_widgets(true)
-    end
-    func(self, index, ...)
+	if not mod.dropdown_open then
+		if index == 3 then
+			self:present_grid_layout({})
+			self._item_grid._widgets_by_name.grid_empty.visible = false
+			mod:hide_custom_widgets(false)
+			mod.original_weapon_settings = {}
+			mod:get_changed_weapon_settings()
+			mod:update_equip_button()
+			mod:update_reset_button()
+		else
+			local t = managers.time:time("main")
+			mod.reset_start = t
+			mod:check_unsaved_changes(true)
+			mod:hide_custom_widgets(true)
+		end
+		func(self, index, ...)
+	end
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_select_starting_item_by_slot_name", function(func, self, slot_name, optional_start_index, ...)
