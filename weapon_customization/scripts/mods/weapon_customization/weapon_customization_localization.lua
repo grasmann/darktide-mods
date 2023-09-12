@@ -139,6 +139,11 @@ return {
 		de = "Visier",
 		ru = "Прицел",
 	},
+	loc_weapon_cosmetics_customization_sight_2 = {
+		en = "Sight",
+		de = "Visier",
+		ru = "Прицел",
+	},
 	loc_weapon_cosmetics_customization_body = {
 		en = "Body",
 		de = "Aufbau",

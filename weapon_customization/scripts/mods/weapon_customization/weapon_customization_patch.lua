@@ -36,6 +36,7 @@ mod.add_custom_attachments = {
     rail = "rails",
     emblem_left = "emblems_left",
     emblem_right = "emblems_right",
+    sight_2 = "reflex_sights",
 }
 
 mod.special_actions = {
@@ -242,8 +243,10 @@ mod._overwrite_attachments = function(self, item_data, attachments)
             local automatic_equip = mod.attachment_models[item_name][attachment].automatic_equip
             if automatic_equip then
                 for auto_type, auto_attachment in pairs(automatic_equip) do
-                    local auto_model = mod.attachment_models[item_name][auto_attachment].model
-                    mod:_recursive_set_attachment(attachments, attachment, auto_type, auto_model, true)
+                    if mod.attachment_models[item_name][auto_attachment] then
+                        local auto_model = mod.attachment_models[item_name][auto_attachment].model
+                        mod:_recursive_set_attachment(attachments, attachment, auto_type, auto_model, true)
+                    end
                 end
             end
         else
@@ -307,7 +310,8 @@ end)
 
 mod:hook(CLASS.ActionAim, "start", function(func, self, action_settings, t, ...)
     if self._is_local_unit and self._weapon and self._weapon.item and self._weapon.item.__master_item then
-        local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight")
+        local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight_2")
+        if not sight then sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight") end
         if sight and sight.item and sight.item ~= "" then
             local item_name = mod:item_name_from_content_string(sight.item)
             self._has_scope = table_contains(mod.reflex_sights, item_name)
@@ -342,7 +346,8 @@ end)
 
 mod:hook(CLASS.ActionUnaim, "start", function(func, self, action_settings, t, ...)
     if self._is_local_unit and self._weapon and self._weapon.item and self._weapon.item.__master_item then
-        local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight")
+        local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight_2")
+        if not sight then sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight") end
         if sight and sight.item and sight.item ~= "" then
             local item_name = mod:item_name_from_content_string(sight.item)
             self._has_scope = table_contains(mod.reflex_sights, item_name)

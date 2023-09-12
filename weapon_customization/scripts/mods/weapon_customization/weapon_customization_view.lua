@@ -186,6 +186,8 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 			new = new_attachment,
 			old = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item),
 		}
+		mod.cosmetics_view._visibility_toggled_on = true
+		self.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
 		-- Get auto equipy
 		local auto_equips = mod:get_auto_equips(new_attachment)
 		-- Get modified attachment slot
@@ -512,7 +514,12 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 						if not entry.end_time then
 							if attachment then
-								if entry.type == "detach" or entry.type == "wobble" then
+								local attachment = entry.old == "default" and mod:get_actual_default_attachment(mod.cosmetics_view._selected_item, entry.slot) or entry.old
+								local attachment_data = mod.attachment_models[mod.cosmetics_view._item_name][attachment]
+								local no_animation = attachment_data and attachment_data.no_animation
+								entry.no_detach_animation = no_animation
+
+								if (entry.type == "detach" or entry.type == "wobble") then
 									entry.end_time = t + animation_time / animation_speed
 								else
 									entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
@@ -524,11 +531,13 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 						if entry.end_time and entry.end_time >= t then
 							if entry.type == "detach" then
-								local progress = (entry.end_time - t) / (animation_time / animation_speed)
-								local anim_progress = math_easeOutCubic(1 - progress)
-								local lerp_position = vector3_lerp(default_position, movement, anim_progress)
-								if unit_good then
-									mod:unit_set_local_position_mesh(gear_id, unit, lerp_position)
+								if not entry.no_detach_animation then
+									local progress = (entry.end_time - t) / (animation_time / animation_speed)
+									local anim_progress = math_easeOutCubic(1 - progress)
+									local lerp_position = vector3_lerp(default_position, movement, anim_progress)
+									if unit_good then
+										mod:unit_set_local_position_mesh(gear_id, unit, lerp_position)
+									end
 								end
 							elseif entry.type == "attach" then
 								local progress = (entry.end_time - t) / ((animation_time + (animation_time * (index / 10))) / animation_speed)
@@ -553,8 +562,19 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								if unit_good then
 									mod:unit_set_local_position_mesh(gear_id, unit, movement)
 								end
-								entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
-								entry.type = "attach"
+
+								local attachment = entry.new == "default" and mod:get_actual_default_attachment(mod.cosmetics_view._selected_item, entry.slot) or entry.new
+								local attachment_data = mod.attachment_models[mod.cosmetics_view._item_name][attachment]
+								local no_animation = attachment_data and attachment_data.no_animation
+
+								if not no_animation then
+									entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
+									entry.type = "attach"
+								else
+									entry.end_time = t
+									entry.type = "wobble"
+									entry.finished = true
+								end
 							elseif entry.type == "attach" then
 								if not mod:vector3_equal(movement, vector3_zero()) or entry.new ~= entry.old and unit then
 									mod:play_attachment_sound(mod.cosmetics_view._selected_item, entry.slot, entry.new)
@@ -620,6 +640,10 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 						if entry.finished then
 							entries[i] = nil
 						end
+					end
+					if #mod.weapon_part_animation_entries == 0 then
+						mod.cosmetics_view._visibility_toggled_on = false
+						mod.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
 					end
 				end
 
@@ -790,6 +814,8 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 		mod.weapon_part_animation_update = true
 		local index = 1
 		for attachment_slot, value in pairs(random_attachments) do
+			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment_names[attachment_slot]]
+			-- local no_animation = attachment_data and attachment_data.no_animation
 			if not skip_animation then
 				self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], value, true)
 			else
@@ -813,6 +839,8 @@ mod.cb_on_reset_pressed = function(self, skip_animation)
 		mod.weapon_part_animation_update = true
 		local index = 1
 		for attachment_slot, data in pairs(changed_weapon_settings) do
+			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment_names[attachment_slot]]
+			-- local no_animation = attachment_data and attachment_data.no_animation
 			if not skip_animation then
 				self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], "default")
 			else
@@ -1352,8 +1380,10 @@ mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
 
 			local attachment = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
 			mod.weapon_part_animation_update = true
+			local attachment_data = self.attachment_models[item_name][attachment]
+			local no_animation = attachment_data and attachment_data.no_animation
 
-			if mod:get("mod_option_weapon_build_animation") then
+			if mod:get("mod_option_weapon_build_animation") and not no_animation then
 				self:detach_attachment(self.cosmetics_view._presentation_item, attachment_slot, attachment, new_value)
 			else
 				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, new_value)

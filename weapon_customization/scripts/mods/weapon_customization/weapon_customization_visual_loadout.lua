@@ -74,7 +74,7 @@ mod._add_custom_attachments = function(self, item, attachments)
 					-- Attach custom slot
 					parent[attachment_slot] = {
 						children = {},
-						item = "",
+						item = attachment_data.model,
 					}
 				end
 			end
@@ -167,7 +167,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"combatsword_p3_m1", "combatsword_p3_m2", "combatsword_p3_m3"})
+		-- mod:debug_attachments(item_data, attachments, {"shotgun_p1_m1", "shotgun_p1_m2", "shotgun_p1_m3"})
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses = nil, nil
@@ -261,7 +261,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					local attachment_name = mod.attachment_slot_infos[gear_id].unit_to_attachment_name[unit]
 					local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
 					local parent_name = attachment_data and attachment_data.parent and attachment_data.parent
-					local parent = parent_name and mod.attachment_slot_infos[gear_id].attachment_slot_to_unit[parent_name] or item_unit
+					local parent_node = attachment_data and attachment_data.parent_node and attachment_data.parent_node or 1
 
 					-- Root movement
 					local root_movement = attachment_data and attachment_data.move_root or false
@@ -270,6 +270,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					-- Anchor
 					anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment_name]
 					anchor = mod:_apply_anchor_fixes(item_data, unit) or anchor
+					parent_name = anchor and anchor.parent and anchor.parent or parent_name
+					parent_node = anchor and anchor.parent_node and anchor.parent_node or parent_node
+
+					-- Parent
+					local parent = parent_name and mod.attachment_slot_infos[gear_id].attachment_slot_to_unit[parent_name] or item_unit
 
 					-- Default position
 					local default_position1 = unit and unit_alive(unit) and unit_local_position(unit, 1)
@@ -291,7 +296,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 							-- Link to parent
 							if not anchor.offset then
 								world_unlink_unit(attach_settings.world, unit)
-								world_link_unit(attach_settings.world, unit, 1, parent, 1)
+								world_link_unit(attach_settings.world, unit, 1, parent, parent_node)
 							end
 
 							-- Set position ( with meshes )
