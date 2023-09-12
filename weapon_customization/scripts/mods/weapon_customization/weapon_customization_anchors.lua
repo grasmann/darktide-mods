@@ -1932,7 +1932,7 @@ end
             },
         --#endregion
         --#region Guns
-            autopistol_p1_m1 = {
+            autopistol_p1_m1 = { -- Done 12.9.2023
                 fixes = {
                     {dependencies = {"reflex_sight_01"}, -- Sight
                         sight = {offset = true, position = vector3_box(0, -.05, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
@@ -1984,12 +1984,8 @@ end
                         bayonet = {parent = "muzzle", position = vector3_box(0, .052, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 },
             },
-            shotgun_p1_m1 = {
+            shotgun_p1_m1 = { -- Done 13.9.2023
                 scope_offset = vector3_box(0, 0, .02),
-                -- flashlight_01 = {position = vector3_box(.045, .55, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
-                -- flashlight_02 = {position = vector3_box(.045, .55, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
-                -- flashlight_03 = {position = vector3_box(.045, .55, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
-                -- flashlight_04 = {position = vector3_box(.045, .55, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
                     {dependencies = {"barrel_01"}, -- Flashlight
                         flashlight = {parent = "barrel", position = vector3_box(.03, .4, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
@@ -2381,7 +2377,7 @@ end
             },
         --#endregion
         --#region Guns
-            autopistol_p1_m1 = {
+            autopistol_p1_m1 = { -- Done 12.9.2023
                 flashlight = _flashlights_attachments(),
                 trinket_hook = _trinket_hook_attachments(),
                 grip = _grip_attachments(),
@@ -2404,7 +2400,7 @@ end
                     _sights_attachments()
                 ),
             },
-            shotgun_p1_m1 = {
+            shotgun_p1_m1 = { -- Done 13.9.2023
                 flashlight = _flashlights_attachments(),
                 trinket_hook = _trinket_hook_attachments(),
                 receiver = _shotgun_receiver_attachments(),
@@ -3674,7 +3670,7 @@ end
             ),
         --#endregion
         --#region Guns
-            autopistol_p1_m1 = table.combine(
+            autopistol_p1_m1 = table.combine( -- Done 12.9.2023
                 _flashlight_models(nil, -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
                 _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
                 _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
@@ -3691,7 +3687,7 @@ end
                 _autogun_magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
                 _sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0))
             ),
-            shotgun_p1_m1 = table.combine(
+            shotgun_p1_m1 = table.combine( -- Done 13.9.2023
                 _flashlight_models(nil, -2.5, vector3_box(-.3, -3, 0), vector3_box(.2, 0, 0)),
                 _emblem_right_models("receiver", -3, vector3_box(-.4, -5, 0), vector3_box(.2, 0, 0)),
                 _emblem_left_models("receiver", 0, vector3_box(0, -5, 0), vector3_box(-.2, 0, 0)),
