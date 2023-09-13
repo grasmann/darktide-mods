@@ -33,6 +33,7 @@ mod.add_custom_attachments = {
     bayonet = "bayonets",
     stock = "stocks",
     stock_2 = "stocks",
+    stock_3 = "shotgun_stocks",
     rail = "rails",
     emblem_left = "emblems_left",
     emblem_right = "emblems_right",

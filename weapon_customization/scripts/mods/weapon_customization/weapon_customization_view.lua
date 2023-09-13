@@ -12,6 +12,8 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 
+local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
+
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
@@ -23,6 +25,7 @@ local button_width = grid_width * 0.3
 local edge = edge_padding * 0.5
 local label_height = 35
 local dropdown_height = 50
+local DROPDOWN_BUTTON_MARGIN = 30
 
 mod.added_cosmetics_scenegraphs = {}
 mod.original_weapon_settings = {}
@@ -36,6 +39,7 @@ mod.weapon_part_animation_entries = {}
 mod.weapon_part_animation_time = .75
 mod.cosmetics_view = nil
 mod.mesh_positions = {}
+mod.dropdown_positions = {}
 
 for _, attachment_slot in pairs(mod.attachment_slots) do
 	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
@@ -222,6 +226,37 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 	end
 end
 
+
+
+mod.test_draw_lines = function(self, dt, t)
+	local item = mod.cosmetics_view._selected_item
+	local attachments = item.attachments
+	if attachments and #self.weapon_part_animation_entries == 0 then
+		local found_attachment_slots = self:get_item_attachment_slots(item)
+		if #found_attachment_slots > 0 then
+			local gear_id = self.cosmetics_view._gear_id
+			local gui = self.cosmetics_view._ui_forward_renderer.gui
+			local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
+			for _, attachment_slot in pairs(found_attachment_slots) do
+				local unit = self.attachment_slot_infos[gear_id].attachment_slot_to_unit[attachment_slot]
+				if unit and unit_alive(unit) then
+					local box = Unit.box(unit, false)
+					local center_position = Matrix4x4.translation(box)
+					local world_to_screen, distance = Camera.world_to_screen(camera, center_position)
+					local saved_origin = self.dropdown_positions[attachment_slot]
+					if saved_origin and saved_origin[3] and saved_origin[3] == true then
+						local origin = Vector2(saved_origin[1], saved_origin[2])
+						local color = Color(255, 49, 62, 45)
+						-- ScriptGui.hud_line(gui, origin, world_to_screen, 20, 12, Color(127, 106, 121, 100))
+						ScriptGui.hud_line(gui, origin, world_to_screen, 20, 4, Color(255, 106, 121, 100))
+						ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
+					end
+				end
+			end
+		end
+	end
+end
+
 -- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###################################
 -- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├┤ │ │││││   │ ││ ││││└─┐ ###################################
 -- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ###################################
@@ -403,7 +438,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			local item_unit_3p = weapon_spawn_data.item_unit_3p
 
 			-- Camera movement
-			if mod.do_move then
+			if mod.do_move and mod:get("mod_option_camera_zoom") then
 				if mod.move_position then
 					local last_move_position = mod.last_move_position and vector3_unbox(mod.last_move_position) or vector3_zero()
 					local move_position = vector3_unbox(mod.move_position)
@@ -457,17 +492,19 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			
 			-- Camera rotation
 			if mod.do_rotation then
-				local new_rotation = mod.new_rotation or 0
-				if new_rotation ~= 0 and self._default_rotation_angle ~= new_rotation then
-					mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
+				local new_rotation = mod.new_rotation
+				if new_rotation then
+					if new_rotation ~= 0 and self._default_rotation_angle ~= new_rotation then
+						-- mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
+					end
+					-- self._rotation_angle = mod._last_rotation_angle or 0
+					self._default_rotation_angle = new_rotation
+					mod._last_rotation_angle = self._default_rotation_angle
+					mod.check_rotation = true
+					mod.do_reset = nil
+					mod.reset_start = nil
+					mod.do_rotation = nil
 				end
-				self._rotation_angle = mod._last_rotation_angle or 0
-				self._default_rotation_angle = new_rotation
-				mod._last_rotation_angle = self._default_rotation_angle
-				mod.check_rotation = true
-				mod.do_reset = nil
-				mod.reset_start = nil
-				mod.do_rotation = nil
 			elseif mod.check_rotation then
 				if math_round_with_precision(self._rotation_angle, 1) == math_round_with_precision(self._default_rotation_angle, 1) then
 					if math_round_with_precision(self._rotation_angle, 1) ~= 0 then
@@ -482,7 +519,9 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				mod.reset_start = t + mod.reset_wait_time
 				mod.do_reset = nil
 			elseif mod.reset_start and t >= mod.reset_start then
-				mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
+				if mod.move_position then
+					mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
+				end
 				mod.move_position = nil
 				mod.do_move = true
 				mod.reset_start = nil
@@ -676,7 +715,7 @@ mod:hook(CLASS.UIWeaponSpawner, "_update_input_rotation", function(func, self, d
 		return
 	end
 	if not self._is_rotating and self._rotation_angle ~= self._default_rotation_angle then
-		local rotation_angle = math_lerp(self._rotation_angle, self._default_rotation_angle, dt * 3)
+		local rotation_angle = math_lerp(self._rotation_angle, self._default_rotation_angle, dt)
 		self:_set_rotation(rotation_angle)
 	end
 end)
@@ -753,6 +792,17 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 		end
 
 		mod.attachment_slot_infos[mod.cosmetics_view._gear_id].unit_default_position["root"] = vector3_box(unit_local_position(weapon_spawn_data.item_unit_3p, 1))
+
+		-- local barrel = mod.attachment_slot_infos[mod.cosmetics_view._gear_id].attachment_slot_to_unit["barrel"]
+		-- if barrel then
+		-- 	-- mod:echo("lol")
+		-- 	-- Unit.set_scalar_for_materials(barrel, "health_value", .5, false)
+		-- 	local meshes = unit_num_meshes(barrel)
+		-- 	mod:echo(tostring(meshes))
+		-- 	local index = 8
+		-- 	local mesh = unit_mesh(barrel, index)
+		-- 	mesh_set_local_position(mesh, barrel, vector3(0, 0, .2))
+		-- end
 	end
 end)
 
@@ -895,7 +945,7 @@ mod.update_reset_button = function(self)
 	button_content.text = utf8_upper(disabled and self:localize("loc_weapon_inventory_no_reset_button") or self:localize("loc_weapon_inventory_reset_button"))
 end
 
-mod.update_dropdown = function(self, widget, input_service)
+mod.update_dropdown = function(self, widget, input_service, dt, t)
 	local content = widget.content
 	local entry = content.entry
 
@@ -911,6 +961,12 @@ mod.update_dropdown = function(self, widget, input_service)
 
 		return
 	end
+
+	mod.dropdown_positions[entry.attachment_slot][3] = (not self.dropdown_open and content.hotspot.is_hover) or content.hotspot.is_selected
+
+	-- if content.hotspot.is_hover or content.hotspot.is_selected then
+	-- 	mod.dropdown_positions[entry.attachment_slot][3] = true
+	-- end
 
 	local is_disabled = entry.disabled or false
 	content.disabled = is_disabled or #self.weapon_part_animation_entries > 0
@@ -950,6 +1006,7 @@ mod.update_dropdown = function(self, widget, input_service)
 	end
 
 	value = entry.get_function and entry:get_function() or content.internal_value or "<not selected>"
+
 	local localization_manager = managers.localization
 	local preview_option = options_by_id[value]
 	local preview_option_id = preview_option and preview_option.id
@@ -1064,7 +1121,21 @@ mod.update_dropdown = function(self, widget, input_service)
 	if value_changed and new_value ~= value then
 		local on_activated = entry.on_activated
 
+		mod.reset_start = nil
+		mod.do_reset = nil
+
 		on_activated(new_value, entry)
+	elseif mod.dropdown_positions[entry.attachment_slot][3] and not value_changed and not self.dropdown_open and #mod.weapon_part_animation_entries == 0 and not mod.check_rotation then
+		local attachment_data = self.attachment_models[self.cosmetics_view._item_name][value]
+		if attachment_data then
+			local rotation = attachment_data.angle or 0
+			if mod._last_rotation_angle ~= rotation then
+				-- mod.do_rotation = true
+				-- mod.new_rotation = rotation
+				self.cosmetics_view._weapon_preview._ui_weapon_spawner._default_rotation_angle = rotation
+			end
+			mod.reset_start = t + .1
+		end
 	end
 
 	local scrollbar_hotspot = content.scrollbar_hotspot
@@ -1091,13 +1162,27 @@ mod.update_dropdown = function(self, widget, input_service)
 	end
 end
 
-mod.update_custom_widgets = function(self, input_service)
+mod.update_custom_widgets = function(self, input_service, dt, t)
     if self.cosmetics_view._custom_widgets then
         for _, widget in pairs(self.cosmetics_view._custom_widgets) do
             if widget.content and widget.content.entry and widget.content.entry.widget_type == "dropdown" then
 				local pivot_name = widget.name.."_pivot"
 				pivot_name = string_gsub(pivot_name, "_custom", "")
 				local scenegraph_entry = self.cosmetics_view._ui_scenegraph[pivot_name]
+				local any_active = false
+				for _, data in pairs(mod.dropdown_positions) do
+					if data[3] == true then
+						any_active = true
+						break
+					end
+				end
+				local entry = mod.dropdown_positions[widget.content.entry.attachment_slot]
+				local active = entry and entry[3]
+				if active or not any_active or not entry then
+					widget.alpha_multiplier = math_lerp(widget.alpha_multiplier, 1, dt * 2)
+				else
+					widget.alpha_multiplier = math_lerp(widget.alpha_multiplier, .25, dt * 2)
+				end
 				if scenegraph_entry and scenegraph_entry.position then
 					if scenegraph_entry.position[2] > grid_size[2] / 2 then
 						widget.content.grow_downwards = false
@@ -1105,7 +1190,7 @@ mod.update_custom_widgets = function(self, input_service)
 						widget.content.grow_downwards = true
 					end
 				end
-                self:update_dropdown(widget, input_service)
+                self:update_dropdown(widget, input_service, dt, t)
             end
         end
     end
@@ -1268,6 +1353,22 @@ mod.resolve_overlapping_widgets = function(self)
 	end
 end
 
+mod.get_dropdown_positions = function(self)
+	if self.cosmetics_view then
+		for _, scenegraph_name in pairs(self.added_cosmetics_scenegraphs) do
+			if not string_find(scenegraph_name, "text_pivot") then
+				local attachment_slot = string_gsub(scenegraph_name, "_pivot", "")
+				local scenegraph_entry = self.cosmetics_view._ui_scenegraph[scenegraph_name]
+				local entry = mod.dropdown_positions[attachment_slot] or {}
+				entry[1] = scenegraph_entry.position[1] + grid_size[1] + DROPDOWN_BUTTON_MARGIN * 2
+				entry[2] = scenegraph_entry.position[2] + dropdown_height * 1.5
+				entry[3] = entry[3] or false
+				mod.dropdown_positions[attachment_slot] = entry
+			end
+		end
+	end
+end
+
 mod.init_custom_weapon_zoom = function(self)
 	local item = self.cosmetics_view._selected_item
 	if item then
@@ -1384,11 +1485,13 @@ mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
     local definition = UIWidget.create_definition(template, scenegraph, nil, size)
     local widget_name = attachment_slot.."_custom"
     local widget = self.cosmetics_view:_create_widget(widget_name, definition)
+	widget.alpha_multiplier = 1
     self.cosmetics_view._widgets_by_name[widget_name] = widget
     self.cosmetics_view._widgets[#self.cosmetics_view._widgets+1] = widget
 
     local content = widget.content
     content.entry = {
+		attachment_slot = attachment_slot,
         options = options,
         widget_type = "dropdown",
         on_activated = function(new_value, entry)
@@ -1503,6 +1606,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
     mod:generate_custom_widgets()
 	mod:resolve_not_applicable_attachments()
 	mod:resolve_overlapping_widgets()
+	mod:get_dropdown_positions()
 	mod:init_custom_weapon_zoom()
 
 	mod.original_weapon_settings = {}
@@ -1519,7 +1623,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
 
 	if mod.cosmetics_view then
-		mod:update_custom_widgets(input_service)
+		mod:update_custom_widgets(input_service, dt, t)
 		mod:update_equip_button()
 		mod:update_reset_button()
 	end
@@ -1588,6 +1692,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_draw_widgets", function(func, sel
 
 		UIWidget.draw(widget, ui_renderer)
 	end
+
+	mod:get_dropdown_positions()
+	mod:test_draw_lines(dt, t)
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...)

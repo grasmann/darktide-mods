@@ -38,6 +38,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 	local unit_num_meshes = Unit.num_meshes
 	local unit_mesh = Unit.mesh
 	local mesh_local_position = Mesh.local_position
+	local mesh_set_local_position = Mesh.set_local_position
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
 	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 	local string_sub = string.sub
@@ -313,6 +314,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					mod.attachment_slot_infos[gear_id].unit_mesh_position[unit] = anchor and anchor.mesh_position
 					mod.attachment_slot_infos[gear_id].unit_root_position[unit] = anchor and anchor.root_position
 
+					
+
 					-- Anchor found?
 					if anchor then
 						-- Make sure unit is valid
@@ -334,6 +337,26 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 							-- Set scale
 							local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_one()
 							unit_set_local_scale(unit, 1, scale)
+						end
+					end
+				end
+			end
+
+			for _, unit in pairs(attachment_units) do
+				local unit_name = unit_debug_name(unit)
+				local anchor = nil
+				-- Handle positioning and setup infos
+				if mod.attachment_slot_infos[gear_id] then
+					local attachment_name = mod.attachment_slot_infos[gear_id].unit_to_attachment_name[unit]
+					local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
+					-- Hide meshes
+					local hide_mesh = attachment_data and attachment_data.hide_mesh and attachment_data.hide_mesh
+					if hide_mesh then
+						for attachment_slot, mesh_index in pairs(hide_mesh) do
+							local hide_unit = mod.attachment_slot_infos[gear_id].attachment_slot_to_unit[attachment_slot]
+							if hide_unit and unit_alive(hide_unit) then
+								Unit.set_mesh_visibility(hide_unit, mesh_index, false)
+							end
 						end
 					end
 				end

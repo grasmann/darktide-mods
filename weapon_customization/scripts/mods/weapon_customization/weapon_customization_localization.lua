@@ -69,6 +69,10 @@ return {
 		ru = "Мерцание при включении",
 		["zh-cn"] = "开启时闪烁",
 	},
+	mod_option_camera_zoom = {
+		en = "Camera Zoom",
+		de = "Kamera Zoom",
+	},
 	loc_weapon_inventory_reset_button = {
 		en = "Reset All",
 		de = "Alles Zurücksetzen",
@@ -160,6 +164,12 @@ return {
 		["zh-cn"] = "通气孔",
 	},
 	loc_weapon_cosmetics_customization_stock_2 = {
+		en = "Stock",
+		de = "Schaft",
+		ru = "Приклад",
+		["zh-cn"] = "枪托",
+	},
+	loc_weapon_cosmetics_customization_stock_3 = {
 		en = "Stock",
 		de = "Schaft",
 		ru = "Приклад",
