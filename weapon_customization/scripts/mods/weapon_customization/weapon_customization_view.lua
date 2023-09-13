@@ -1,18 +1,20 @@
 local mod = get_mod("weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
 local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
 local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
 local MasterItems = mod:original_require("scripts/backend/master_items")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
-local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
-local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
-local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
-local WeaponTemplates = mod:original_require("scripts/settings/equipment/weapon_templates/weapon_templates")
-local PlayerUnitAnimationMachineSettings = mod:original_require("scripts/settings/animation/player_unit_animation_state_machine_settings")
-local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
 local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
@@ -33,68 +35,77 @@ mod.sound_duration = .5
 mod.weapon_part_animation_entries = {}
 mod.weapon_part_animation_time = .75
 mod.cosmetics_view = nil
+mod.mesh_positions = {}
 
 for _, attachment_slot in pairs(mod.attachment_slots) do
 	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
 	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
 end
 
-local vector3 = Vector3
-local vector3_box = Vector3Box
-local vector3_unbox = vector3_box.unbox
-local vector3_zero = Vector3.zero
-local vector3_lerp = Vector3.lerp
-local quaternion_matrix_4x4 = Quaternion.matrix4x4
-local quaternion_axis_angle = Quaternion.axis_angle
-local quaternionbox_unbox = QuaternionBox.unbox
-local quaternion_multiply = Quaternion.multiply
-local matrix4x4_transform = Matrix4x4.transform
-local unit_alive = Unit.alive
-local unit_set_local_position = Unit.set_local_position
-local unit_set_local_rotation = Unit.set_local_rotation
-local unit_local_position = Unit.local_position
-local unit_local_rotation = Unit.local_rotation
-local unit_get_child_units = Unit.get_child_units
-local unit_num_meshes = Unit.num_meshes
-local unit_set_unit_visibility = Unit.set_unit_visibility
-local unit_debug_name = Unit.debug_name
-local mesh_set_local_position = Mesh.set_local_position
-local mesh_local_rotation = Mesh.local_rotation
-local unit_mesh = Unit.mesh
-local unit_world_pose = Unit.world_pose
-local unit_local_pose = Unit.local_pose
-local unit_set_local_pose = Unit.set_local_pose
-local unit_world_position = Unit.world_position
-local unit_world_rotation = Unit.world_rotation
-local level_units = Level.units
-local world_unlink_unit = World.unlink_unit
-local world_link_unit = World.link_unit
-local math_round_with_precision = math.round_with_precision
-local math_easeInCubic = math.easeInCubic
-local math_easeOutCubic = math.easeOutCubic
-local math_ease_out_elastic = math.ease_out_elastic
-local math_min = math.min
-local math_max = math.max
-local math_lerp = math.lerp
-local math_sin = math.sin
-local math_pi = math.pi
-local math_ceil = math.ceil
-local table_size = table.size
-local table_find = table.find
-local table_contains = table.contains
-local table_clone = table.clone
-local table_reverse = table.reverse
-local string_gsub = string.gsub
-local string_find = string.find
-local pairs = pairs
-local tostring = tostring
-local CLASS = CLASS
-local managers = Managers
-local utf8_upper = Utf8.upper
-local localize = Localize
-local callback = callback
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
-mod.mesh_positions = {}
+--#region local functions
+	local vector3 = Vector3
+	local vector3_box = Vector3Box
+	local vector3_unbox = vector3_box.unbox
+	local vector3_zero = Vector3.zero
+	local vector3_lerp = Vector3.lerp
+	local quaternion_matrix_4x4 = Quaternion.matrix4x4
+	local quaternion_axis_angle = Quaternion.axis_angle
+	local quaternionbox_unbox = QuaternionBox.unbox
+	local quaternion_multiply = Quaternion.multiply
+	local matrix4x4_transform = Matrix4x4.transform
+	local unit_alive = Unit.alive
+	local unit_set_local_position = Unit.set_local_position
+	local unit_set_local_rotation = Unit.set_local_rotation
+	local unit_local_position = Unit.local_position
+	local unit_local_rotation = Unit.local_rotation
+	local unit_get_child_units = Unit.get_child_units
+	local unit_num_meshes = Unit.num_meshes
+	local unit_set_unit_visibility = Unit.set_unit_visibility
+	local unit_debug_name = Unit.debug_name
+	local mesh_set_local_position = Mesh.set_local_position
+	local mesh_local_rotation = Mesh.local_rotation
+	local unit_mesh = Unit.mesh
+	local unit_world_pose = Unit.world_pose
+	local unit_local_pose = Unit.local_pose
+	local unit_set_local_pose = Unit.set_local_pose
+	local unit_world_position = Unit.world_position
+	local unit_world_rotation = Unit.world_rotation
+	local level_units = Level.units
+	local world_unlink_unit = World.unlink_unit
+	local world_link_unit = World.link_unit
+	local math_round_with_precision = math.round_with_precision
+	local math_easeInCubic = math.easeInCubic
+	local math_easeOutCubic = math.easeOutCubic
+	local math_ease_out_elastic = math.ease_out_elastic
+	local math_min = math.min
+	local math_max = math.max
+	local math_lerp = math.lerp
+	local math_sin = math.sin
+	local math_pi = math.pi
+	local math_ceil = math.ceil
+	local table_size = table.size
+	local table_find = table.find
+	local table_contains = table.contains
+	local table_clone = table.clone
+	local table_reverse = table.reverse
+	local string_gsub = string.gsub
+	local string_find = string.find
+	local pairs = pairs
+	local tostring = tostring
+	local CLASS = CLASS
+	local managers = Managers
+	local utf8_upper = Utf8.upper
+	local localize = Localize
+	local callback = callback
+--#endregion
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.unit_set_local_position_mesh = function(self, gear_id, unit, movement)
 	if unit and unit_alive(unit) then
@@ -135,25 +146,9 @@ mod.unit_set_local_position_mesh = function(self, gear_id, unit, movement)
 	end
 end
 
--- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###################################
--- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├┤ │ │││││   │ ││ ││││└─┐ ###################################
--- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ###################################
-
-mod.play_attachment_sound = function(self, item, attachment_slot, attachment)
-	local item_name = self.cosmetics_view._item_name
-	if attachment == "default" then
-		attachment = mod:get_actual_default_attachment(item, attachment_slot)
-	end
-	if mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] then
-		for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
-			if data.id == attachment and data.sounds then
-				for _, sound in pairs(data.sounds) do
-					self.cosmetics_view:_play_sound(sound)
-				end
-			end
-		end
-	end
-end
+-- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │││├┤ ├─┤├─┘│ ││││  ├─┤│││││││├─┤ │ ││ ││││ ##################################################################
+-- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘  ┴ ┴┘└┘┴┴ ┴┴ ┴ ┴ ┴└─┘┘└┘ ##################################################################
 
 mod.detach_attachment = function(self, item, attachment_slot, attachment, new_attachment, no_children)
 	local item_name = self.cosmetics_view._item_name
@@ -224,6 +219,26 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 		end
 	elseif existing_animation and existing_animation.new == existing_animation.old and new_attachment ~= existing_animation.new then
 		existing_animation.new = new_attachment
+	end
+end
+
+-- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###################################
+-- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├┤ │ │││││   │ ││ ││││└─┐ ###################################
+-- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ###################################
+
+mod.play_attachment_sound = function(self, item, attachment_slot, attachment)
+	local item_name = self.cosmetics_view._item_name
+	if attachment == "default" then
+		attachment = mod:get_actual_default_attachment(item, attachment_slot)
+	end
+	if mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] then
+		for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
+			if data.id == attachment and data.sounds then
+				for _, sound in pairs(data.sounds) do
+					self.cosmetics_view:_play_sound(sound)
+				end
+			end
+		end
 	end
 end
 
@@ -341,18 +356,6 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 	end
 end
 
--- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################
--- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├─┤│ ││ │├┴┐└─┐ #############################################
--- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################
-
-mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
-	func(self, reference_name, world, camera, unit_spawner, ...)
-	if reference_name ~= "WeaponIconUI" then
-		self._rotation_angle = mod._rotation_angle or 0
-		self._default_rotation_angle = mod._last_rotation_angle or 0
-	end
-end)
-
 mod.set_light_positions = function(self, ui_weapon_spawner)
 	if mod.preview_lights then
 		for _, unit_data in pairs(mod.preview_lights) do
@@ -369,6 +372,18 @@ mod.set_light_positions = function(self, ui_weapon_spawner)
 		end
 	end
 end
+
+-- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################
+-- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├─┤│ ││ │├┴┐└─┐ #############################################
+-- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################
+
+mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
+	func(self, reference_name, world, camera, unit_spawner, ...)
+	if reference_name ~= "WeaponIconUI" then
+		self._rotation_angle = mod._rotation_angle or 0
+		self._default_rotation_angle = mod._last_rotation_angle or 0
+	end
+end)
 
 mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
 
@@ -635,7 +650,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				end
 
 				-- Remove finished weapon part animations
-				if not mod.weapon_part_animation_update then
+				if not mod.weapon_part_animation_update and #entries > 0 then
 					for i, entry in pairs(entries) do
 						if entry.finished then
 							entries[i] = nil

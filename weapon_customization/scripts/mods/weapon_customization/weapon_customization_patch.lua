@@ -37,6 +37,7 @@ mod.add_custom_attachments = {
     emblem_left = "emblems_left",
     emblem_right = "emblems_right",
     sight_2 = "reflex_sights",
+    muzzle = "muzzles",
 }
 
 mod.special_actions = {

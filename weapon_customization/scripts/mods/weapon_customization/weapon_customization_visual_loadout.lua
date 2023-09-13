@@ -1,54 +1,68 @@
 local mod = get_mod("weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 
-local table_contains = table.contains
-local table_keys = table.keys
-local table_sort = table.sort
-local table_find = table.find
-local table_remove = table.remove
-local table_append = table.append
-local table_set_readonly = table.set_readonly
-local unit_debug_name = Unit.debug_name
-local unit_alive = Unit.alive
-local unit_set_local_position = Unit.set_local_position
-local unit_set_local_rotation = Unit.set_local_rotation
-local unit_set_local_scale = Unit.set_local_scale
-local unit_local_position = Unit.local_position
-local unit_local_rotation = Unit.local_rotation
-local unit_local_pose = Unit.local_pose
-local unit_has_node = Unit.has_node
-local unit_node = Unit.node
-local unit_world_pose = Unit.world_pose
-local unit_set_animation_state_machine = Unit.set_animation_state_machine
-local unit_has_lod_object = Unit.has_lod_object
-local unit_lod_object = Unit.lod_object
-local unit_set_unit_objects_visibility = Unit.set_unit_objects_visibility
-local unit_set_unit_culling = Unit.set_unit_culling
-local unit_set_sort_order = Unit.set_sort_order
-local unit_num_meshes = Unit.num_meshes
-local unit_mesh = Unit.mesh
-local mesh_local_position = Mesh.local_position
-local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
-local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
-local string_sub = string.sub
-local string_gsub = string.gsub
-local string_find = string.find
-local vector3 = Vector3
-local vector3_box = Vector3Box
-local vector3_unbox = vector3_box.unbox
-local vector3_zero = Vector3.zero
-local vector3_one = Vector3.one
-local matrix4x4_box = Matrix4x4Box
-local world_unlink_unit = World.unlink_unit
-local world_link_unit = World.link_unit
-local world_spawn_unit_ex = World.spawn_unit_ex
-local lod_group_add_lod_object = LODGroup.add_lod_object
-local lod_object_set_static_select = LODObject.set_static_select
-local pairs = pairs
-local type = type
-local tonumber = tonumber
-local visibility_contexts = VisibilityContexts
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+--#region local functions
+	local table_contains = table.contains
+	local table_keys = table.keys
+	local table_sort = table.sort
+	local table_find = table.find
+	local table_remove = table.remove
+	local table_append = table.append
+	local table_set_readonly = table.set_readonly
+	local unit_debug_name = Unit.debug_name
+	local unit_alive = Unit.alive
+	local unit_set_local_position = Unit.set_local_position
+	local unit_set_local_rotation = Unit.set_local_rotation
+	local unit_set_local_scale = Unit.set_local_scale
+	local unit_local_position = Unit.local_position
+	local unit_local_rotation = Unit.local_rotation
+	local unit_local_pose = Unit.local_pose
+	local unit_has_node = Unit.has_node
+	local unit_node = Unit.node
+	local unit_world_pose = Unit.world_pose
+	local unit_set_animation_state_machine = Unit.set_animation_state_machine
+	local unit_has_lod_object = Unit.has_lod_object
+	local unit_lod_object = Unit.lod_object
+	local unit_set_unit_objects_visibility = Unit.set_unit_objects_visibility
+	local unit_set_unit_culling = Unit.set_unit_culling
+	local unit_set_sort_order = Unit.set_sort_order
+	local unit_num_meshes = Unit.num_meshes
+	local unit_mesh = Unit.mesh
+	local mesh_local_position = Mesh.local_position
+	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
+	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+	local string_sub = string.sub
+	local string_gsub = string.gsub
+	local string_find = string.find
+	local vector3 = Vector3
+	local vector3_box = Vector3Box
+	local vector3_unbox = vector3_box.unbox
+	local vector3_zero = Vector3.zero
+	local vector3_one = Vector3.one
+	local matrix4x4_box = Matrix4x4Box
+	local world_unlink_unit = World.unlink_unit
+	local world_link_unit = World.link_unit
+	local world_spawn_unit_ex = World.spawn_unit_ex
+	local lod_group_add_lod_object = LODGroup.add_lod_object
+	local lod_object_set_static_select = LODObject.set_static_select
+	local pairs = pairs
+	local type = type
+	local tonumber = tonumber
+	local visibility_contexts = VisibilityContexts
+--#endregion
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod._add_custom_attachments = function(self, item, attachments)
 	local gear_id = self:get_gear_id(item)
@@ -82,8 +96,6 @@ mod._add_custom_attachments = function(self, item, attachments)
 	end
 end
 
--- mod.dependency_debugged = {}
-
 mod._apply_anchor_fixes = function(self, item, unit)
 	if item and item.attachments then
 		local gear_id = self:get_gear_id(item)
@@ -108,6 +120,13 @@ mod._apply_anchor_fixes = function(self, item, unit)
 									has_dependencies = not self:_recursive_find_attachment_item_string(attachments, model_string)
 								else
 									has_dependencies = self:_recursive_find_attachment_item_string(attachments, model_string)
+								end
+								if not has_dependencies then break end
+							elseif table_contains(self.attachment_slots, dependency) then
+								if negative then
+									has_dependencies = not self:_recursive_find_attachment(attachments, dependency)
+								else
+									has_dependencies = self:_recursive_find_attachment(attachments, dependency)
 								end
 								if not has_dependencies then break end
 							end
@@ -138,6 +157,11 @@ mod._apply_anchor_fixes = function(self, item, unit)
 	end
 end
 
+-- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
+-- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
+-- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
+
+-- Visual loadout extension hooks
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
 	instance._sort_order_enum = {
@@ -167,7 +191,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"shotgun_p1_m1", "shotgun_p1_m2", "shotgun_p1_m3"})
+		-- mod:debug_attachments(item_data, attachments, {"bolter_p1_m1"})
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses = nil, nil
