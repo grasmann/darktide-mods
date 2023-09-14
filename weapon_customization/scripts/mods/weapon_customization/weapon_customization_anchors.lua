@@ -1226,7 +1226,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             }
         end
     --#endregion
-    --#Ranged
+    --#region Guns
         local _auto_pistol_receiver_attachments = function()
             return {
                 {id = "receiver_default",   name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
@@ -2247,7 +2247,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                         trinket_hook = {parent = "grip", position = vector3_box(0, -.165, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
                 },
             },
-            stubrevolver_p1_m1 = {
+            stubrevolver_p1_m1 = { -- Done 13.9.2023
                 scope_offset = vector3_box(0, 0, .025),
                 flashlight_01 = {position = vector3_box(.01, .07, .01), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)},
                 flashlight_02 = {position = vector3_box(.01, .07, .01), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)},
@@ -2269,50 +2269,16 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 }
             },
             plasmagun_p1_m1 = {
-                ["autogun_rifle_stock_01"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["autogun_rifle_stock_02"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["autogun_rifle_stock_03"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["autogun_rifle_stock_04"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["stock_01"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["stock_02"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["stock_03"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["stock_04"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["stock_05"] = {
-                    position = vector3_box(0, -0.085, 0.045),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
+                scope_offset = vector3_box(.065, .15, -.015),
+                fixes = {
+                    {dependencies = {"reflex_sight_01"}, -- Sight
+                        sight = {parent = "receiver", position = vector3_box(.092, .05, .122), rotation = vector3_box(-1, -52, 1), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"reflex_sight_02"}, -- Sight
+                        sight = {parent = "receiver", position = vector3_box(-.045, .3, .145), rotation = vector3_box(-1, -52, 1), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"reflex_sight_03"}, -- Sight
+                        sight = {parent = "receiver", position = vector3_box(-.045, .3, .145), rotation = vector3_box(-1, -52, 1), scale = vector3_box(1, 1, 1)}},
+                    {rail = {parent = "receiver", position = vector3_box(-.045, .05, .15), rotation = vector3_box(-1, -52, 1), scale = vector3_box(1, 1.3, 1)}}, -- Rail
+                    {stock_2 = {parent = "receiver", position = vector3_box(0, -.09, -.11), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
                 },
             },
             laspistol_p1_m1 = {
@@ -2593,7 +2559,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     _ripper_barrel_attachments()
                 ),
             },
-            stubrevolver_p1_m1 = {
+            stubrevolver_p1_m1 = { -- Done 13.9.2023
                 flashlight = _flashlights_attachments(),
                 body = _revolver_body_attachments(),
                 barrel = _revolver_barrel_attachments(),
@@ -2608,6 +2574,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 emblem_left = _emblem_left_attachments(),
             },
             plasmagun_p1_m1 = {
+                sight_2 = table.icombine(
+                    {{id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}}},
+                    _reflex_sights_attachments()
+                ),
                 receiver = {
                     {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
@@ -2630,62 +2600,15 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
                 },
                 stock = {
-                    {id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "plasma_rifle_stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "plasma_rifle_stock_01", name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "plasma_rifle_stock_02", name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
                     {id = "plasma_rifle_stock_03", name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
                 },
-                stock_2 = {
-                    {id = "stock_2_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "autogun_rifle_stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "autogun_rifle_stock_02", name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "autogun_rifle_stock_03", name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "autogun_rifle_stock_04", name = "Stock 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_01", name = "Stock 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_02", name = "Stock 6", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_03", name = "Stock 7", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_04", name = "Stock 8", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_05", name = "Stock 9", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                emblem_right = {
-                    {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_13", name = "Emblem 13", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_14", name = "Emblem 14", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_15", name = "Emblem 15", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_16", name = "Emblem 16", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_17", name = "Emblem 17", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_18", name = "Emblem 18", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_19", name = "Emblem 19", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                emblem_left = {
-                    {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_02", name = "Emblem 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_03", name = "Emblem 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_04", name = "Emblem 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_05", name = "Emblem 5", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_06", name = "Emblem 6", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_07", name = "Emblem 7", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_08", name = "Emblem 8", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_09", name = "Emblem 9", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_10", name = "Emblem 10", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
-                },
+                rail = _lasgun_rail_attachments(),
+                stock_2 = _stock_attachments(),
+                emblem_right = _emblem_right_attachments(),
+                emblem_left = _emblem_left_attachments(),
             },
             laspistol_p1_m1 = {
                 flashlight = _flashlights_attachments(),
@@ -3832,7 +3755,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _ripper_barrel_models("receiver", -.5, vector3_box(.2, -2, 0), vector3_box(0, .6, 0), "muzzle")
             ),
-            stubrevolver_p1_m1 = table.combine(
+            stubrevolver_p1_m1 = table.combine( -- Done 13.9.2023
                 {customization_default_position = vector3_box(-.2, 0, 0)},
                 _flashlight_models("body", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
                 _emblem_right_models("body", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
@@ -3854,70 +3777,37 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {barrel = 8},
                 })
             ),
-            plasmagun_p1_m1 = {
-                receiver_default = {model = "", type = "receiver"},
-                receiver_01 = {model = "content/items/weapons/player/ranged/recievers/plasma_rifle_receiver_01", type = "receiver"},
-                magazine_default = {model = "", type = "magazine"},
-                magazine_01 = {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_01", type = "magazine"},
-                magazine_02 = {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_02", type = "magazine"},
-                barrel_default = {model = "", type = "barrel"},
-                barrel_01 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_01", type = "barrel"},
-                barrel_02 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_02", type = "barrel"},
-                barrel_03 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_03", type = "barrel"},
-                grip_default = {model = "", type = "grip"},
-                grip_01 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_01", type = "grip"},
-                grip_02 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_02", type = "grip"},
-                grip_03 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_03", type = "grip"},
-                stock_default = {model = "", type = "stock", angle = 1},
-                plasma_rifle_stock_01 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_01", type = "stock", angle = 1},
-                plasma_rifle_stock_02 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_02", type = "stock", angle = 1},
-                plasma_rifle_stock_03 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_03", type = "stock", angle = 1},
-                stock_2_default = {model = "", type = "stock_2", angle = .5},
-                autogun_rifle_stock_01 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_01", type = "stock_2", angle = .5},
-                autogun_rifle_stock_02 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02", type = "stock_2", angle = .5},
-                autogun_rifle_stock_03 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_03", type = "stock_2", angle = .5},
-                autogun_rifle_stock_04 = {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04", type = "stock_2", angle = .5},
-                stock_01 = {model = "content/items/weapons/player/ranged/stocks/stock_01", type = "stock_2", angle = .5},
-                stock_02 = {model = "content/items/weapons/player/ranged/stocks/stock_02", type = "stock_2", angle = .5},
-                stock_03 = {model = "content/items/weapons/player/ranged/stocks/stock_03", type = "stock_2", angle = .5},
-                stock_04 = {model = "content/items/weapons/player/ranged/stocks/stock_04", type = "stock_2", angle = .5},
-                stock_05 = {model = "content/items/weapons/player/ranged/stocks/stock_05", type = "stock_2", angle = .5},
-                emblem_right_default = {model = "", type = "emblem_right", angle = -3},
-                emblem_right_01 = {model = "content/items/weapons/player/ranged/emblems/emblemright_01", type = "emblem_right", angle = -3},
-                emblem_right_02 = {model = "content/items/weapons/player/ranged/emblems/emblemright_02", type = "emblem_right", angle = -3},
-                emblem_right_03 = {model = "content/items/weapons/player/ranged/emblems/emblemright_03", type = "emblem_right", angle = -3},
-                emblem_right_04 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04a", type = "emblem_right", angle = -3},
-                emblem_right_05 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04b", type = "emblem_right", angle = -3},
-                emblem_right_06 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04c", type = "emblem_right", angle = -3},
-                emblem_right_07 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04d", type = "emblem_right", angle = -3},
-                emblem_right_08 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04e", type = "emblem_right", angle = -3},
-                emblem_right_09 = {model = "content/items/weapons/player/ranged/emblems/emblemright_04f", type = "emblem_right", angle = -3},
-                emblem_right_10 = {model = "content/items/weapons/player/ranged/emblems/emblemright_05", type = "emblem_right", angle = -3},
-                emblem_right_11 = {model = "content/items/weapons/player/ranged/emblems/emblemright_06", type = "emblem_right", angle = -3},
-                emblem_right_12 = {model = "content/items/weapons/player/ranged/emblems/emblemright_07", type = "emblem_right", angle = -3},
-                emblem_right_13 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08a", type = "emblem_right", angle = -3},
-                emblem_right_14 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08b", type = "emblem_right", angle = -3},
-                emblem_right_15 = {model = "content/items/weapons/player/ranged/emblems/emblemright_08c", type = "emblem_right", angle = -3},
-                emblem_right_16 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09a", type = "emblem_right", angle = -3},
-                emblem_right_17 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09b", type = "emblem_right", angle = -3},
-                emblem_right_18 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09c", type = "emblem_right", angle = -3},
-                emblem_right_19 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09d", type = "emblem_right", angle = -3},
-                emblem_right_20 = {model = "content/items/weapons/player/ranged/emblems/emblemright_09e", type = "emblem_right", angle = -3},
-                emblem_right_21 = {model = "content/items/weapons/player/ranged/emblems/emblemright_10", type = "emblem_right", angle = -3},
-                emblem_left_default = {model = "", type = "emblem_left"},
-                emblem_left_01 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_01", type = "emblem_left"},
-                emblem_left_02 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_02", type = "emblem_left"},
-                emblem_left_03 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_03", type = "emblem_left"},
-                emblem_left_04 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04a", type = "emblem_left"},
-                emblem_left_05 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04b", type = "emblem_left"},
-                emblem_left_06 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04c", type = "emblem_left"},
-                emblem_left_07 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04d", type = "emblem_left"},
-                emblem_left_08 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04e", type = "emblem_left"},
-                emblem_left_09 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_04f", type = "emblem_left"},
-                emblem_left_10 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_05", type = "emblem_left"},
-                emblem_left_11 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_06", type = "emblem_left"},
-                emblem_left_12 = {model = "content/items/weapons/player/ranged/emblems/emblemleft_10", type = "emblem_left"},
-            },
+            plasmagun_p1_m1 = table.combine(
+                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                    {rail = "rail_default"},
+                    {rail = "rail_01"},
+                    {rail = "rail_01"},
+                    {rail = "rail_01"},
+                }),
+                _stock_models("receiver", 0, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0), "stock_2"),
+                _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                {
+                    receiver_default = {model = "", type = "receiver"},
+                    receiver_01 = {model = "content/items/weapons/player/ranged/recievers/plasma_rifle_receiver_01", type = "receiver"},
+                    magazine_default = {model = "", type = "magazine"},
+                    magazine_01 = {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_01", type = "magazine"},
+                    magazine_02 = {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_02", type = "magazine"},
+                    barrel_default = {model = "", type = "barrel"},
+                    barrel_01 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_01", type = "barrel"},
+                    barrel_02 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_02", type = "barrel"},
+                    barrel_03 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_03", type = "barrel"},
+                    grip_default = {model = "", type = "grip"},
+                    grip_01 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_01", type = "grip"},
+                    grip_02 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_02", type = "grip"},
+                    grip_03 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_03", type = "grip"},
+                    plasma_rifle_stock_default = {model = "", type = "stock", angle = 1},
+                    plasma_rifle_stock_01 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_01", type = "stock", angle = 1},
+                    plasma_rifle_stock_02 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_02", type = "stock", angle = 1},
+                    plasma_rifle_stock_03 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_03", type = "stock", angle = 1},
+                }
+            ),
             laspistol_p1_m1 = table.combine(
                 _flashlight_models("receiver", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
                 _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),

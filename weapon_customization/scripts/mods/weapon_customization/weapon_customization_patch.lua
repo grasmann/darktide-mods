@@ -382,6 +382,76 @@ mod:hook(CLASS.ActionUnaim, "finish", function(func, self, reason, data, t, time
     end
 end)
 
+-- ####################################################################################################################
+
+mod:hook(CLASS.ActionOverloadCharge, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
+    if self._is_local_unit and self._weapon and self._weapon.item and self._weapon.item.__master_item then
+        local sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight_2")
+        if not sight then sight = mod:_recursive_find_attachment(self._weapon.item.__master_item.attachments, "sight") end
+        if sight and sight.item and sight.item ~= "" then
+            local item_name = mod:item_name_from_content_string(sight.item)
+            self._has_scope = table_contains(mod.reflex_sights, item_name)
+            local anchor = mod.anchors[self._weapon_template.name]
+            self._scope_offset = anchor and anchor["scope_offset"] or vector3_box(0, 0, 0)
+            self._is_starting_up = true
+        end
+    end
+    func(self, action_settings, t, time_scale, action_start_params, ...)
+end)
+
+mod:hook(CLASS.ActionOverloadCharge, "running_action_state", function(func, self, t, time_in_action, ...)
+    func(self, t, time_in_action, ...)
+    local time_in_action = math.min(time_in_action, 1)
+    if self._is_local_unit and self._has_scope and self._is_starting_up then
+        if time_in_action < 1 then
+            local progress = time_in_action / 1
+            local position = vector3_unbox(self._scope_offset) * progress
+            mod.camera_position = vector3_box(position)
+        else
+            mod.camera_position = self._scope_offset
+            self._is_starting_up = false
+        end
+    end
+end)
+
+mod:hook(CLASS.ActionOverloadCharge, "finish", function(func, self, reason, data, t, time_in_action, ...)
+    func(self, reason, data, t, time_in_action, ...)
+    if self._is_local_unit and self._weapon and self._weapon.item and self._weapon.item.__master_item then
+        mod.do_camera_position_reset = {
+            has_scope = self._has_scope,
+            scope_offset = self._scope_offset,
+            is_local_unit = self._is_local_unit,
+            end_time = t + 1,
+        }
+    end
+end)
+
+mod.camera_position_reset = function(self, dt, t)
+    if mod.do_camera_position_reset then
+        local has_scope = mod.do_camera_position_reset.has_scope
+        local scope_offset = mod.do_camera_position_reset.scope_offset
+        local is_local_unit = mod.do_camera_position_reset.is_local_unit
+        local time_in_action = 1 - (mod.do_camera_position_reset.end_time - t)
+        if time_in_action < 1 then
+            if is_local_unit and has_scope then
+                local progress = time_in_action / 1
+                local position = vector3_unbox(scope_offset) * (1 - progress)
+                mod.camera_position = vector3_box(position)
+            end
+        else
+            mod.camera_position = nil
+            mod.do_camera_position_reset = nil
+        end
+    end
+end
+
+-- ####################################################################################################################
+
+mod:hook(CLASS.CameraManager, "update", function(func, self, dt, t, viewport_name, yaw, pitch, roll, ...)
+    mod:camera_position_reset(dt, t)
+    func(self, dt, t, viewport_name, yaw, pitch, roll, ...)
+end)
+
 mod:hook(CLASS.CameraManager, "_update_camera_properties", function(func, self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
     func(self, camera, shadow_cull_camera, current_node, camera_data, viewport_name, ...)
     if viewport_name == "player1" and mod.camera_position then
