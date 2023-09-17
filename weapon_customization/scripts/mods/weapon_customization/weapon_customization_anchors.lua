@@ -65,6 +65,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 {id = "flashlight_02", name = "Flashlight 2", sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
                 {id = "flashlight_03", name = "Flashlight 3", sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
                 {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
+                {id = "laser_pointer", name = "Laser Pointer", sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
             }
         end
         local _flashlight_models = function(parent, angle, move, remove, mesh_move)
@@ -77,7 +78,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", parent = tv(parent, 3), angle = angle, move = tv(move, 1), remove = tv(remove, 3), mesh_move = false},
                 flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", parent = tv(parent, 4), angle = angle, move = tv(move, 1), remove = tv(remove, 4), mesh_move = false},
                 flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = tv(move, 1), remove = tv(remove, 5), mesh_move = false},
-            } 
+                laser_pointer = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = tv(move, 1), remove = tv(remove, 5), mesh_move = false},
+            }
         end
         local _emblem_right_attachments = function()
             return {
@@ -265,7 +267,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             local remove = remove or vector3_box(0, 0, 0)
             local type = type or "sight"
             local no_support = no_support or {}
-            local automatic_equip = automatic_equip or {rail = "rail_01"}
+            local automatic_equip = automatic_equip or {
+                {rail = "rail_default"},
+                {rail = "rail_01"},
+            }
             local hide_mesh = hide_mesh or {}
             return {
                 sight_default =     {model = "",                                                            type = type, parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 1), no_support = tv(no_support, 1), hide_mesh = tv(hide_mesh, 1)},
@@ -317,30 +322,31 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 {id = "lasgun_stock_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
             }
         end
-        local _stock_models = function(parent, angle, move, remove)
+        local _stock_models = function(parent, angle, move, remove, type)
             local angle = angle or 0
             local move = move or vector3_box(0, 0, 0)
             local remove = remove or vector3_box(0, 0, 0)
+            local type = type or "stock"
             return {
-                stock_default =             {model = "",                                                                            type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                no_stock =                  {model = "",                                                                            type = "stock", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
-                stock_01 =                  {model = "content/items/weapons/player/ranged/stocks/stock_01",                         type = "stock", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
-                stock_02 =                  {model = "content/items/weapons/player/ranged/stocks/stock_02",                         type = "stock", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
-                stock_03 =                  {model = "content/items/weapons/player/ranged/stocks/stock_03",                         type = "stock", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
-                stock_04 =                  {model = "content/items/weapons/player/ranged/stocks/stock_04",                         type = "stock", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false},
-                stock_05 =                  {model = "content/items/weapons/player/ranged/stocks/stock_05",                         type = "stock", parent = tv(parent, 7), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_01 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_01",           type = "stock", parent = tv(parent, 8), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_02 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",           type = "stock", parent = tv(parent, 9), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_03 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_03",           type = "stock", parent = tv(parent, 10), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_04 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",           type = "stock", parent = tv(parent, 11), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_05 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_01",        type = "stock", parent = tv(parent, 12), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_06 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_02",        type = "stock", parent = tv(parent, 13), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_07 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_03",        type = "stock", parent = tv(parent, 14), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_08 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_killshot_stock_01",  type = "stock", parent = tv(parent, 15), angle = angle, move = move, remove = remove, mesh_move = false},
-                autogun_rifle_stock_09 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_killshot_stock_02",  type = "stock", parent = tv(parent, 16), angle = angle, move = move, remove = remove, mesh_move = false},
-                lasgun_stock_01 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_01",            type = "stock", parent = tv(parent, 17), angle = angle, move = move, remove = remove, mesh_move = false},
-                lasgun_stock_02 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_02",            type = "stock", parent = tv(parent, 18), angle = angle, move = move, remove = remove, mesh_move = false},
-                lasgun_stock_03 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_03",            type = "stock", parent = tv(parent, 19), angle = angle, move = move, remove = remove, mesh_move = false},
+                stock_default =             {model = "",                                                                            type = type, parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                no_stock =                  {model = "",                                                                            type = type, parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                stock_01 =                  {model = "content/items/weapons/player/ranged/stocks/stock_01",                         type = type, parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                stock_02 =                  {model = "content/items/weapons/player/ranged/stocks/stock_02",                         type = type, parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
+                stock_03 =                  {model = "content/items/weapons/player/ranged/stocks/stock_03",                         type = type, parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
+                stock_04 =                  {model = "content/items/weapons/player/ranged/stocks/stock_04",                         type = type, parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false},
+                stock_05 =                  {model = "content/items/weapons/player/ranged/stocks/stock_05",                         type = type, parent = tv(parent, 7), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_01 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_01",           type = type, parent = tv(parent, 8), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_02 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",           type = type, parent = tv(parent, 9), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_03 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_03",           type = type, parent = tv(parent, 10), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_04 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",           type = type, parent = tv(parent, 11), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_05 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_01",        type = type, parent = tv(parent, 12), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_06 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_02",        type = type, parent = tv(parent, 13), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_07 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_ak_stock_03",        type = type, parent = tv(parent, 14), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_08 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_killshot_stock_01",  type = type, parent = tv(parent, 15), angle = angle, move = move, remove = remove, mesh_move = false},
+                autogun_rifle_stock_09 =    {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_killshot_stock_02",  type = type, parent = tv(parent, 16), angle = angle, move = move, remove = remove, mesh_move = false},
+                lasgun_stock_01 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_01",            type = type, parent = tv(parent, 17), angle = angle, move = move, remove = remove, mesh_move = false},
+                lasgun_stock_02 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_02",            type = type, parent = tv(parent, 18), angle = angle, move = move, remove = remove, mesh_move = false},
+                lasgun_stock_03 =           {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_stock_03",            type = type, parent = tv(parent, 19), angle = angle, move = move, remove = remove, mesh_move = false},
             }
         end
         local _trinket_hook_attachments = function()
@@ -1539,6 +1545,95 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 rail_01 =       {model = "content/items/weapons/player/ranged/rails/stubgun_pistol_rail_off",   type = "rail", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
             }
         end
+        local _plasma_receiver_attachments = function()
+            return {
+                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+            }
+        end
+        local _plasma_receiver_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                receiver_default =  {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/plasma_rifle_receiver_01",  type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+            }
+        end
+        local _plasma_magazine_attachments = function()
+            return {
+                {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
+                {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
+                {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
+            }
+        end
+        local _plasma_magazine_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                magazine_default =  {model = "",                                                                        type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_01",  type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_02",  type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+            }
+        end
+        local _plasma_barrel_attachments = function()
+            return {
+                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _plasma_barrel_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_01",  type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_02",  type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_03",  type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+            }
+        end
+        local _plasma_stock_attachments = function()
+            return {
+                {id = "plasma_rifle_stock_default", name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "plasma_rifle_stock_01",      name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "plasma_rifle_stock_02",      name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "plasma_rifle_stock_03",      name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _plasma_stock_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                plasma_rifle_stock_default =    {model = "",                                                                    type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                plasma_rifle_stock_01 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_01",    type = "stock", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                plasma_rifle_stock_02 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_02",    type = "stock", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                plasma_rifle_stock_03 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_03",    type = "stock", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+            }
+        end
+        local _plasma_grip_attachments = function()
+            return {
+                {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_swap}},
+            }
+        end
+        local _plasma_grip_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                grip_default =  {model = "",                                                                type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                grip_01 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_01",  type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                grip_02 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_02",  type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                grip_03 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_03",  type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+            }
+        end
     --#endregion
     --#region Melee
         local _axe_grip_attachments = function()
@@ -1674,6 +1769,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 bayonet_02 =       {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 bayonet_03 =       {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {position = vector3_box(.15, .86, .21), rotation = vector3_box(0, 128, 0), scale = vector3_box(2, 2, 2)}},
                     {emblem_left = {offset = true, position = vector3_box(-.09, .42, .085), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)}}, -- Emblem left
                 }
             },
@@ -1684,6 +1781,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 flashlight_04 =    {position = vector3_box(.16, .76, .41), rotation = vector3_box(0, 128, 0), scale = vector3_box(2, 2, 2)},
                 bayonet_blade_01 = {position = vector3_box(0, .45, 0.025), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)},
                 fixes = {
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {position = vector3_box(.16, .76, .41), rotation = vector3_box(0, 128, 0), scale = vector3_box(2, 2, 2)}},
                     {dependencies = {"receiver_02"}, -- Emblems
                         emblem_left = {offset = true, position = vector3_box(-.145, .3, .27), rotation = vector3_box(0, 0, 180), scale = vector3_box(3, 3, 3)},
                         emblem_right = {offset = true, position = vector3_box(.145, .615, .27), rotation = vector3_box(0, 0, 0), scale = vector3_box(3, 3, 3)}},
@@ -1705,6 +1804,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 bayonet_02 =       {parent = "barrel", parent_node = 7, position = vector3_box(0, .4, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 bayonet_03 =       {parent = "barrel", parent_node = 7, position = vector3_box(0, .4, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {offset = true, position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)}},
                     {emblem_left = {offset = true, position = vector3_box(-.12, .22, .11), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)}, -- Emblems
                         emblem_right = {offset = true, position = vector3_box(.123, .765, .11), rotation = vector3_box(0, 0, 0), scale = vector3_box(2, 2, 2)}},
                 }
@@ -1719,6 +1820,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 bayonet_02 =       {position = vector3_box(0, .4, -0.27), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 bayonet_03 =       {position = vector3_box(0, .4, -0.27), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(2, 2, 2)}},
                     {dependencies = {"barrel_01"}, -- Trinket hook
                         trinket_hook = {parent = "barrel", position = vector3_box(-.19, .375, -.08), rotation = vector3_box(0, 90, 0), scale = vector3_box(2.5, 2.5, 2.5)}},
                     {dependencies = {"barrel_02"}, -- Trinket hook
@@ -2075,6 +2178,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Guns
             autopistol_p1_m1 = { -- Done 12.9.2023
                 fixes = {
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"reflex_sight_01"}, -- Sight
                         sight = {offset = true, position = vector3_box(0, -.05, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"reflex_sight_02"}, -- Sight
@@ -2136,6 +2241,14 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                         flashlight = {parent = "barrel", position = vector3_box(.025, .4, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_04"}, -- Flashlight
                         flashlight = {parent = "barrel", position = vector3_box(.042, .4, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_01", "laser_pointer"}, -- Flashlight
+                        flashlight = {parent = "barrel", position = vector3_box(.03, .4, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_02", "laser_pointer"}, -- Flashlight
+                        flashlight = {parent = "barrel", position = vector3_box(.03, .45, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_03", "laser_pointer"}, -- Flashlight
+                        flashlight = {parent = "barrel", position = vector3_box(.025, .4, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_04", "laser_pointer"}, -- Flashlight
+                        flashlight = {parent = "barrel", position = vector3_box(.042, .4, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {sight_2 = {parent = "sight", position = vector3_box(0, -.04, .025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_01", "emblem_left_02"}, -- Emblem
                         emblem_left = {parent = "barrel", position = vector3_box(-.035, .225, .003), rotation = vector3_box(0, 0, 180), scale = vector3_box(1, -1, 1)}},
@@ -2184,9 +2297,11 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                         magazine = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1, 1)}},
                     {dependencies = {"magazine_04"}, -- Magazine
                         magazine = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1, 1)}},
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {parent = "receiver", position = vector3_box(.045, .3, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {flashlight = {parent = "receiver", position = vector3_box(.045, .3, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Flashlight
                     {stock = {parent = "receiver", position = vector3_box(0, -0.1, 0.08), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
-                    {rail = {parent = "receiver", position = vector3_box(0, .0315, .162), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.35, 1.3)}}, -- Rail
+                    {rail = {parent = "receiver", position = vector3_box(0, .025, .125), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.35, 1.3)}}, -- Rail
                     {dependencies = {"autogun_bayonet_03"}, -- Bayonet
                         bayonet = {parent = "barrel", position = vector3_box(0, .125, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {bayonet = {parent = "barrel", position = vector3_box(0, .2, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Bayonet
@@ -2248,12 +2363,14 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 },
             },
             stubrevolver_p1_m1 = { -- Done 13.9.2023
-                scope_offset = vector3_box(0, 0, .025),
+                scope_offset = vector3_box(0, .1, .03),
                 flashlight_01 = {position = vector3_box(.01, .07, .01), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)},
                 flashlight_02 = {position = vector3_box(.01, .07, .01), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)},
                 flashlight_03 = {position = vector3_box(.01, .07, .01), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)},
                 flashlight_04 = {position = vector3_box(.01, .07, .01), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)},
                 fixes = {
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {position = vector3_box(.01, .07, .01), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)}},
                     {dependencies = {"emblem_left_02"}, -- Emblem
                         emblem_left = {parent = "body", position = vector3_box(-.011, .045, .0095), rotation = vector3_box(0, 0, 180), scale = vector3_box(.65, -.65, .65)}},
                     {emblem_left = {parent = "body", position = vector3_box(-.011, .045, .0095), rotation = vector3_box(0, 0, 180), scale = vector3_box(.65, .65, .65)}, -- Emblems
@@ -2268,17 +2385,17 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {stock_3 = {parent = "body", position = vector3_box(0, -.09, -.11), rotation = vector3_box(-10, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
                 }
             },
-            plasmagun_p1_m1 = {
-                scope_offset = vector3_box(.065, .15, -.015),
+            plasmagun_p1_m1 = { -- Done 14.9.2023
+                scope_offset = vector3_box(.0725, .15, -.01475),
                 fixes = {
                     {dependencies = {"reflex_sight_01"}, -- Sight
-                        sight = {parent = "receiver", position = vector3_box(.092, .05, .122), rotation = vector3_box(-1, -52, 1), scale = vector3_box(1, 1, 1)}},
+                        sight_2 = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"reflex_sight_02"}, -- Sight
-                        sight = {parent = "receiver", position = vector3_box(-.045, .3, .145), rotation = vector3_box(-1, -52, 1), scale = vector3_box(1, 1, 1)}},
+                        sight_2 = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"reflex_sight_03"}, -- Sight
-                        sight = {parent = "receiver", position = vector3_box(-.045, .3, .145), rotation = vector3_box(-1, -52, 1), scale = vector3_box(1, 1, 1)}},
-                    {rail = {parent = "receiver", position = vector3_box(-.045, .05, .15), rotation = vector3_box(-1, -52, 1), scale = vector3_box(1, 1.3, 1)}}, -- Rail
-                    {stock_2 = {parent = "receiver", position = vector3_box(0, -.09, -.11), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
+                        sight_2 = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 1, 1)}},
+                    {rail = {parent = "receiver", position = vector3_box(.089, -.02, .129), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, .3, 1)}}, -- Rail
+                    {stock_2 = {parent = "receiver", position = vector3_box(0, -0.095, 0.055), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
                 },
             },
             laspistol_p1_m1 = {
@@ -2573,38 +2690,16 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
             },
-            plasmagun_p1_m1 = {
+            plasmagun_p1_m1 = { -- Done 14.9.2023
                 sight_2 = table.icombine(
                     {{id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}}},
                     _reflex_sights_attachments()
                 ),
-                receiver = {
-                    {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                },
-                magazine = {
-                    {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.apparel_equip}},
-                },
-                barrel = {
-                    {id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_02", name = "Barrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_03", name = "Barrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                grip = {
-                    {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                },
-                stock = {
-                    {id = "plasma_rifle_stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "plasma_rifle_stock_01", name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "plasma_rifle_stock_02", name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "plasma_rifle_stock_03", name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
+                receiver = _plasma_receiver_attachments(),
+                magazine = _plasma_magazine_attachments(),
+                barrel = _plasma_barrel_attachments(),
+                grip = _plasma_grip_attachments(),
+                stock = _plasma_stock_attachments(),
                 rail = _lasgun_rail_attachments(),
                 stock_2 = _stock_attachments(),
                 emblem_right = _emblem_right_attachments(),
@@ -3375,23 +3470,19 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             loc_weapon_cosmetics_customization_stock = "loc_weapon_cosmetics_customization_ventilation",
         },
     }
-
     mod.default_overwrite = {
         laspistol_p1_m1 = {
             receiver = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03",
         }
     }
-
     mod.automatic_slots = {
         "rail",
     }
-
     mod.reflex_sights = {
         "reflex_sight_01",
         "reflex_sight_02",
         "reflex_sight_03",
     }
-
     mod.sights = {
         "lasgun_rifle_elysian_sight_01",
         "lasgun_rifle_elysian_sight_02",
@@ -3401,17 +3492,14 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         "headhunter_autogun_sight_01",
         "sight_01",
     }
-
     mod.all_sights = table.combine(
         mod.reflex_sights,
         mod.sights
     )
-
     mod.rails = {
         "rail_default",
         "rail_01"
     }
-
     mod.muzzles = {
         "muzzle_01",
         "muzzle_02",
@@ -3425,7 +3513,6 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         "barrel_05",
         "barrel_06",
     }
-
     mod.emblems_right = {
         "emblem_right_01",
         "emblem_right_02",
@@ -3449,7 +3536,6 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         "emblem_right_20",
         "emblem_right_21",
     }
-
     mod.emblems_left = {
         "emblem_left_01",
         "emblem_left_02",
@@ -3464,24 +3550,21 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         "emblem_left_11",
         "emblem_left_12",
     }
-
-    mod.flashlight_attached = {}
-    mod.attached_flashlights = {}
-
     mod.flashlights = {
         "flashlight_01",
         "flashlight_02",
         "flashlight_03",
         "flashlight_04",
     }
-
+    mod.laser_pointers = {
+        "flashlight_04",
+    }
     mod.bayonets = {
         "bayonet_blade_01",
         "autogun_bayonet_01",
         "autogun_bayonet_02",
         "autogun_bayonet_03",
     }
-
     mod.stocks = {
         "autogun_rifle_stock_01",
         "autogun_rifle_stock_02",
@@ -3501,14 +3584,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         "lasgun_stock_02",
         "lasgun_stock_03",
     }
-
     mod.shotgun_stocks = {
         "shotgun_rifle_stock_01",
         "shotgun_rifle_stock_02",
         "shotgun_rifle_stock_03",
         "shotgun_rifle_stock_04",
     }
-
     mod.attachment_units = {
         ["#ID[c54f4d16d170cfdb]"] = "flashlight_01",
         ["#ID[28ae77de0a24aba6]"] = "flashlight_02",
@@ -3532,24 +3613,23 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         ["#ID[891692deb6c77ef1]"] = "stock_05",
         ["#ID[bc25db1df0670d2a]"] = "bulwark_shield_01",
     }
-
     mod.attachment_slots = {
         "flashlight",
+        "handle",
+        "bayonet",
+        "muzzle",
         "barrel",
         "underbarrel",
-        "muzzle",
         "receiver",
         "magazine",
         "magazine2",
+        "rail",
+        "sight",
+        "sight_2",
         "grip",
-        "handle",
         "stock",
         "stock_2",
         "stock_3",
-        "bayonet",
-        "sight",
-        "sight_2",
-        "rail",
         "body",
         "pommel",
         "hilt",
@@ -3670,7 +3750,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _auto_pistol_magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
                 _auto_pistol_muzzle_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _auto_pistol_sight_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
-                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
+                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
+                    {rail = "rail_default"},
+                    {rail = "rail_01"},
+                    {rail = "rail_01"},
+                    {rail = "rail_01"},
+                }),
                 _autogun_magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
                 _sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0))
             ),
@@ -3740,7 +3825,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty"},
                 }),
-                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
+                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                    {rail = "rail_default"},
+                    {rail = "rail_01"},
+                    {rail = "rail_01"},
+                    {rail = "rail_01"},
+                }),
                 _stock_models("receiver", 0, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0)),
                 _bolter_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _auto_pistol_magazine_models(nil, 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
@@ -3753,7 +3843,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _bayonet_models("barrel", -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, 0)),
                 _auto_pistol_muzzle_models("barrel", -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
-                _ripper_barrel_models("receiver", -.5, vector3_box(.2, -2, 0), vector3_box(0, .6, 0), "muzzle")
+                _ripper_barrel_models("receiver", -.5, vector3_box(.2, -2, 0), vector3_box(0, .3, 0), "muzzle")
             ),
             stubrevolver_p1_m1 = table.combine( -- Done 13.9.2023
                 {customization_default_position = vector3_box(-.2, 0, 0)},
@@ -3777,36 +3867,22 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {barrel = 8},
                 })
             ),
-            plasmagun_p1_m1 = table.combine(
-                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+            plasmagun_p1_m1 = table.combine( -- Done 14.9.2023
+                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                 }),
-                _stock_models("receiver", 0, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0), "stock_2"),
+                _stock_models("receiver", .5, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0), "stock_2"),
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
                 _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
                 _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                {
-                    receiver_default = {model = "", type = "receiver"},
-                    receiver_01 = {model = "content/items/weapons/player/ranged/recievers/plasma_rifle_receiver_01", type = "receiver"},
-                    magazine_default = {model = "", type = "magazine"},
-                    magazine_01 = {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_01", type = "magazine"},
-                    magazine_02 = {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_02", type = "magazine"},
-                    barrel_default = {model = "", type = "barrel"},
-                    barrel_01 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_01", type = "barrel"},
-                    barrel_02 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_02", type = "barrel"},
-                    barrel_03 = {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_03", type = "barrel"},
-                    grip_default = {model = "", type = "grip"},
-                    grip_01 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_01", type = "grip"},
-                    grip_02 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_02", type = "grip"},
-                    grip_03 = {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_03", type = "grip"},
-                    plasma_rifle_stock_default = {model = "", type = "stock", angle = 1},
-                    plasma_rifle_stock_01 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_01", type = "stock", angle = 1},
-                    plasma_rifle_stock_02 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_02", type = "stock", angle = 1},
-                    plasma_rifle_stock_03 = {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_03", type = "stock", angle = 1},
-                }
+                _plasma_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
+                _plasma_magazine_models(nil, .1, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
+                _plasma_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
+                _plasma_stock_models(nil, .75, vector3_box(-.6, -4, 0), vector3_box(0, -.015, .1)),
+                _plasma_grip_models(nil, .2, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1))
             ),
             laspistol_p1_m1 = table.combine(
                 _flashlight_models("receiver", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),

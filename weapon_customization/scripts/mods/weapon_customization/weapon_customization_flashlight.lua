@@ -12,7 +12,10 @@ local PerlinNoise = mod:original_require("scripts/utilities/perlin_noise")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 mod._flicker_settings = FlashlightTemplates.assault.flicker
+mod._active_flicker_settings = mod._flicker_settings
 mod._flashlight_template = FlashlightTemplates.assault.light.first_person
+mod._active_flashlight_template = mod._flashlight_template
+mod.attached_flashlights = {}
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -64,7 +67,11 @@ mod._has_flashlight_attachment = function(self, item)
     -- Check item
 	if item and item.__master_item and item.__master_item.attachments then
         -- Check flashlight
-		local flashlight = mod:_recursive_find_attachment(item.__master_item.attachments, "flashlight")
+        local flashlight = nil
+        for _, flashlight_attachment in pairs(self.flashlights) do
+		    flashlight = mod:_recursive_find_attachment_name(item.__master_item.attachments, flashlight_attachment)
+            if flashlight then break end
+        end
 		return flashlight and flashlight.item ~= ""
 	end
 end
@@ -86,7 +93,8 @@ mod.get_flashlight_unit = function(self)
 		-- Search for flashlight unit
 		if not self.attached_flashlights[gear_id] then
 			self.attached_flashlights[gear_id] = self:_get_flashlight_unit(weapon.weapon_unit)
-			self:set_flashlight_template(self.attached_flashlights[gear_id])
+			self:set_flashlight_template(self.attached_flashlights[gear_id], self._flashlight_template)
+            self:set_flicker_template(self._flicker_settings)
 		end
 		-- Return cached unit
 		if unit_alive(self.attached_flashlights[gear_id]) then
@@ -120,13 +128,14 @@ end
 -- Update flashlight flicker
 mod.update_flicker = function(self)
     -- Check flashlight and flicker setting
-	if self:has_flashlight_attachment() and mod:get("mod_option_flashlight_flicker") then
+	if (self:has_flashlight_attachment() or self:has_laser_pointer_attachment()) and mod:get("mod_option_flashlight_flicker") then
         -- Get flashlight unit
-		local flashlight_unit = self:get_flashlight_unit()
+		local light_unit = self:get_flashlight_unit() or self:get_laser_pointer_unit()
         -- Check flashlight unit and state
-		if flashlight_unit and mod:persistent_table("weapon_customization").flashlight_on then
+        local state = mod:persistent_table("weapon_customization").flashlight_on or mod:persistent_table("weapon_customization").laser_pointer_on
+		if light_unit and state then
 			local t = self.time_manager:time("gameplay")
-			local settings = self._flicker_settings
+			local settings = self._active_flicker_settings
 
 			if not self._flickering and (self._next_check_at_t <= t or self.start_flicker_now) then
 				local chance = settings.chance
@@ -136,7 +145,7 @@ mod.update_flicker = function(self)
 					self.start_flicker_now = false
 					self._flickering = true
 					self._flicker_start_t = t
-					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_flicker", false, flashlight_unit, 1)
+					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_flicker", false, light_unit, 1)
 					local duration = settings.duration
 					local min = duration.min
 					local max = duration.max
@@ -175,51 +184,64 @@ mod.update_flicker = function(self)
 					intensity_scale = 1 - PerlinNoise.calculate_perlin_value((flicker_end_time - t) * frequence_multiplier, persistance, octaves * fade_progress, self._seed)
 				end
 
-				local light = unit_light(flashlight_unit, 1)
+				local light = unit_light(light_unit, 1)
 				if light then
-					local intensity = self._flashlight_template.intensity * intensity_scale
+					local intensity = self._active_flashlight_template.intensity * intensity_scale
 					light_set_intensity(light, intensity)
 					local color = light_color_with_intensity(light)
-					unit_set_vector3_for_materials(flashlight_unit, "light_color", color * intensity_scale * intensity_scale * intensity_scale)
+					unit_set_vector3_for_materials(light_unit, "light_color", color * intensity_scale * intensity_scale * intensity_scale)
 				end
 			end
 		end
 	end
 end
 
+mod.set_flicker_template = function(self, template)
+    self._active_flicker_settings = template
+end
+
 -- Set flashlight template
-mod.set_flashlight_template = function(self, flashlight_unit)
+mod.set_flashlight_template = function(self, light_unit, template)
     -- Check flashlight unit
-	if flashlight_unit then
+	if light_unit then
         -- Get and check light
-		local light = unit_light(flashlight_unit, 1)
+		local light = unit_light(light_unit, 1)
 		if light then
             -- Set values
-			light_set_ies_profile(light, self._flashlight_template.ies_profile)
-			light_set_correlated_color_temperature(light, self._flashlight_template.color_temperature)
-			light_set_intensity(light, self._flashlight_template.intensity)
-			light_set_volumetric_intensity(light, self._flashlight_template.volumetric_intensity)
-			light_set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
-			light_set_spot_angle_start(light, self._flashlight_template.spot_angle.min)
-			light_set_spot_angle_end(light, self._flashlight_template.spot_angle.max)
-			light_set_spot_reflector(light, self._flashlight_template.spot_reflector)
-			light_set_falloff_start(light, self._flashlight_template.falloff.near)
-			light_set_falloff_end(light, self._flashlight_template.falloff.far)
+			light_set_ies_profile(light, template.ies_profile)
+			light_set_correlated_color_temperature(light, template.color_temperature)
+			light_set_intensity(light, template.intensity)
+			light_set_volumetric_intensity(light, template.volumetric_intensity)
+			light_set_casts_shadows(light, self:get("mod_option_flashlight_shadows"))
+			light_set_spot_angle_start(light, template.spot_angle.min)
+			light_set_spot_angle_end(light, template.spot_angle.max)
+			light_set_spot_reflector(light, template.spot_reflector)
+			light_set_falloff_start(light, template.falloff.near)
+			light_set_falloff_end(light, template.falloff.far)
+            if template.color_filter then
+                local color_filter = Vector3Box.unbox(template.color_filter)
+                Light.set_color_filter(light, color_filter)
+            end
+            self._active_flashlight_template = template
 		end
 	end
 end
 
 -- Toggle equipped flashlight
-mod.toggle_flashlight = function(self, retain)
+mod.toggle_flashlight = function(self, retain, optional_flashlight_unit, optional_value)
     -- Initialized?
 	if self.initialized then
         -- Get and check flashlight unit
-		local flashlight_unit = self:get_flashlight_unit()
+		local flashlight_unit = optional_flashlight_unit or self:get_flashlight_unit()
 		if flashlight_unit then
             -- Check retain ( flashlight update )
 			if not retain then
 				mod:persistent_table("weapon_customization").flashlight_on = not mod:persistent_table("weapon_customization").flashlight_on
 			end
+            -- Optional overwrite value
+            if optional_value then
+                mod:persistent_table("weapon_customization").flashlight_on = optional_value
+            end
             -- Get and check light
 			local light = unit_light(flashlight_unit, 1)
 			if light then

@@ -46,10 +46,10 @@ mod.special_actions = {
 }
 
 mod.get_item_attachment_slots = function(self, item)
-	local item_name = mod:item_name_from_content_string(item.name)
+	local item_name = self:item_name_from_content_string(item.name)
 	local attachment_slots = {}
-    if item_name and mod.attachment[item_name] then
-        for attachment_slot, _ in pairs(mod.attachment[item_name]) do
+    if item_name and self.attachment[item_name] then
+        for attachment_slot, _ in pairs(self.attachment[item_name]) do
             attachment_slots[#attachment_slots+1] = attachment_slot
         end
     end
@@ -60,11 +60,11 @@ mod.randomize_weapon = function(self, item)
     local random_attachments = {}
     local possible_attachments = {}
     local no_support_entries = {}
-    local item_name = mod:item_name_from_content_string(item.name)
+    local item_name = self:item_name_from_content_string(item.name)
     local attachment_slots = mod:get_item_attachment_slots(item)
     for _, attachment_slot in pairs(attachment_slots) do
-        if mod.attachment[item_name][attachment_slot] then
-            for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
+        if self.attachment[item_name][attachment_slot] and not table_contains(self.automatic_slots, attachment_slot) then
+            for _, data in pairs(self.attachment[item_name][attachment_slot]) do
                 if not string_find(data.id, "default") then
                     possible_attachments[attachment_slot] = possible_attachments[attachment_slot] or {}
                     possible_attachments[attachment_slot][#possible_attachments[attachment_slot]+1] = data.id
@@ -230,6 +230,23 @@ mod._recursive_find_attachment_item_string = function(self, attachments, item_st
     return val
 end
 
+mod._recursive_find_attachment_name = function(self, attachments, attachment_name)
+    local val = nil
+    if attachments then
+        for attachment_slot, attachment_data in pairs(attachments) do
+            if attachment_data.attachment_name == attachment_name then
+                val = attachment_data
+            else
+                if attachment_data.children then
+                    val = self:_recursive_find_attachment_name(attachment_data.children, attachment_name)
+                end
+            end
+            if val then break end
+        end
+    end
+    return val
+end
+
 mod._overwrite_attachments = function(self, item_data, attachments)
     local gear_id = mod:get_gear_id(item_data)
     local item_name = mod:item_name_from_content_string(item_data.name)
@@ -247,7 +264,7 @@ mod._overwrite_attachments = function(self, item_data, attachments)
                 for auto_type, auto_attachment in pairs(automatic_equip) do
                     if mod.attachment_models[item_name][auto_attachment] then
                         local auto_model = mod.attachment_models[item_name][auto_attachment].model
-                        mod:_recursive_set_attachment(attachments, attachment, auto_type, auto_model, true)
+                        mod:_recursive_set_attachment(attachments, auto_attachment, auto_type, auto_model, true)
                     end
                 end
             end
@@ -334,7 +351,7 @@ mod:hook(CLASS.ActionAim, "start", function(func, self, action_settings, t, ...)
 end)
 
 mod:hook(CLASS.ActionAim, "running_action_state", function(func, self, t, time_in_action, ...)
-    func(self, t, time_in_action, ...)
+    local ret = func(self, t, time_in_action, ...)
     if self._is_local_unit and self._has_scope then
         local progress = time_in_action / self._action_settings.total_time
         local position = vector3_unbox(self._scope_offset) * progress
@@ -344,6 +361,7 @@ mod:hook(CLASS.ActionAim, "running_action_state", function(func, self, t, time_i
         local position = vector3_unbox(self._sight_offset) * progress
         mod.camera_position = vector3_box(position)
     end
+    return ret
 end)
 
 mod:hook(CLASS.ActionUnaim, "start", function(func, self, action_settings, t, ...)
@@ -400,7 +418,7 @@ mod:hook(CLASS.ActionOverloadCharge, "start", function(func, self, action_settin
 end)
 
 mod:hook(CLASS.ActionOverloadCharge, "running_action_state", function(func, self, t, time_in_action, ...)
-    func(self, t, time_in_action, ...)
+    local ret = func(self, t, time_in_action, ...)
     local time_in_action = math.min(time_in_action, 1)
     if self._is_local_unit and self._has_scope and self._is_starting_up then
         if time_in_action < 1 then
@@ -412,6 +430,7 @@ mod:hook(CLASS.ActionOverloadCharge, "running_action_state", function(func, self
             self._is_starting_up = false
         end
     end
+    return ret
 end)
 
 mod:hook(CLASS.ActionOverloadCharge, "finish", function(func, self, reason, data, t, time_in_action, ...)
@@ -574,13 +593,18 @@ end)
 mod:hook(CLASS.InputService, "get", function(func, self, action_name, ...)
 	local pressed = func(self, action_name, ...)
     if mod.initialized then
-        if table_contains(mod.special_actions, action_name) and mod:has_flashlight_attachment() then
-            if pressed then
+        local has_flashlight = mod:has_flashlight_attachment()
+        local has_laser_pointer = mod:has_laser_pointer_attachment()
+        if table_contains(mod.special_actions, action_name) and (has_flashlight or has_laser_pointer) then
+            if pressed and has_flashlight then
                 mod:toggle_flashlight()
+            end
+            if pressed and has_laser_pointer then
+                mod:toggle_laser()
             end
             return self:get_default(action_name)
         end
-        if action_name == "weapon_extra_hold" and mod:has_flashlight_attachment() then
+        if action_name == "weapon_extra_hold" and (has_flashlight or has_laser_pointer) then
             return self:get_default(action_name)
         end
 	end

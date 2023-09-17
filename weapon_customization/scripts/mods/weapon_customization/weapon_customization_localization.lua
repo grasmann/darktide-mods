@@ -69,6 +69,10 @@ return {
 		ru = "Мерцание при включении",
 		["zh-cn"] = "开启时闪烁",
 	},
+	mod_option_laser_pointer_wild = {
+		en = "Laser Pointer Wild Flickering",
+		de = "Laserpointer Flimmert Wild",
+	},
 	mod_option_camera_zoom = {
 		en = "Camera Zoom",
 		de = "Kamera Zoom",

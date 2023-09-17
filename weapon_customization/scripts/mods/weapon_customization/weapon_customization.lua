@@ -17,6 +17,8 @@ mod._debug_skip_some = true
 -- Persistent values
 mod:persistent_table("weapon_customization", {
 	flashlight_on = false,
+	laser_pointer_on = false,
+	spawned_lasers = {},
 	item_definitions = nil,
 })
 
@@ -28,6 +30,7 @@ mod:persistent_table("weapon_customization", {
 function mod.on_game_state_changed(status, state_name)
 	-- Reset flashlight state
 	mod:persistent_table("weapon_customization").flashlight_on = false
+	mod:reset_laser_pointer()
 end
 
 -- Mod settings changed
@@ -35,8 +38,12 @@ function mod.on_setting_changed(setting_id)
 	-- Update mod settings
 	mod.update_option(setting_id)
 	-- Update flashlight
-	if setting_id == "mod_option_flashlight_shadows" then
-		mod:toggle_flashlight(true)
+	if setting_id == "mod_option_flashlight_shadows" or setting_id == "mod_option_flashlight_flicker" then
+		if mod:has_flashlight_attachment() then mod:toggle_flashlight(true) end
+		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
+	end
+	if setting_id == "mod_option_laser_pointer_wild" then
+		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
 	end
 end
 
@@ -83,7 +90,8 @@ end)
 mod:hook(CLASS.Flashlight, "update_first_person_mode", function(func, self, first_person_mode, ...)
 	func(self, first_person_mode, ...)
 	-- Update flashlight
-    mod:toggle_flashlight(true)
+    if mod:has_flashlight_attachment() then mod:toggle_flashlight(true) end
+	if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
 end)
 
 -- Update flashlight state
@@ -91,7 +99,8 @@ mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
 	func(self, ...)
 	-- Update flashlight
 	if mod.update_flashlight then
-		mod:toggle_flashlight(true)
+		if mod:has_flashlight_attachment() then mod:toggle_flashlight(true) end
+		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
 	end
 end)
 
@@ -126,6 +135,14 @@ mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item)
 	if not attachment and optional_item then
 		-- Get real vanilla attachment
 		attachment = self:get_actual_default_attachment(optional_item, attachment_slot)
+	end
+	-- Check attachment
+	if not attachment and optional_item then
+		local item_name = self:item_name_from_content_string(optional_item.name)
+		-- Get custom slot default
+		if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
+			attachment = self.attachment[item_name][attachment_slot][1].id
+		end
 	end
 	return attachment
 end
@@ -175,6 +192,11 @@ mod.redo_weapon_attachments = function(self, item)
 		local latest_frame = math_floor(gameplay_time / fixed_time_step)
 		-- Reset flashlight cache
 		self.attached_flashlights[gear_id] = nil
+		self:persistent_table("weapon_customization").flashlight_on = false
+		-- Reset laser pointer cache
+		self:despawn_all_lasers()
+		self.attached_laser_pointers[gear_id] = nil
+		self:persistent_table("weapon_customization").laser_pointer_on = false
 		-- Unequip
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		-- Get time
@@ -229,9 +251,13 @@ mod.init = function(self)
 	self.player_unit = self.player.player_unit
 	self.fx_extension = script_unit.extension(self.player_unit, "fx_system")
 	self.weapon_extension = script_unit.extension(self.player_unit, "weapon_system")
+	self.character_state_machine_extensions = script_unit.extension(self.player_unit, "character_state_machine_system")
 	self.unit_data = script_unit.extension(self.player_unit, "unit_data_system")
 	self.visual_loadout_extension = script_unit.extension(self.player_unit, "visual_loadout_system")
 	self.inventory_component = self.unit_data:read_component("inventory")
+	self.first_person_component = self.unit_data:read_component("first_person")
+	self.first_person_extension = ScriptUnit.extension(self.player_unit, "first_person_system")
+	self.first_person_unit = self.first_person_extension:first_person_unit()
 	self.time_manager = managers.time
 	self.initialized = true
 	self._next_check_at_t = 0
@@ -240,6 +266,7 @@ end
 
 -- Import mod files
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_laser_pointer")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_fix")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
