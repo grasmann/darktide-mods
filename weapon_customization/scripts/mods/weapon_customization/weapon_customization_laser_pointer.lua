@@ -276,17 +276,20 @@ mod.toggle_laser_light = function(self, laser_pointer, laser_pointer_state)
 end
 
 -- Toggle laser pointer
-mod.toggle_laser = function(self, retain)
+mod.toggle_laser = function(self, retain, optional_laser_pointer_unit, optional_value)
     if self.initialized then
-        local laser_pointer = self:get_laser_pointer_unit()
+        local laser_pointer = optional_laser_pointer_unit or self:get_laser_pointer_unit()
         if laser_pointer then
             local laser_pointer_state = not self:persistent_table("weapon_customization").laser_pointer_on and true
             if retain then laser_pointer_state = not laser_pointer_state end
-
+            -- Optional overwrite value
+            if optional_value then
+                laser_pointer_state = optional_value
+            end
+            -- Toggle
             if laser_pointer_state then
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
                 self.fx_extension:register_vfx_spawner("slot_primary_laser_pointer", laser_pointer, nil, 1, false)
-                self:persistent_table("weapon_customization").laser_pointer_on = laser_pointer_state
                 self:toggle_laser_light(laser_pointer, laser_pointer_state)
                 if self:get("mod_option_laser_pointer_wild") then
                     self:set_flicker_template(self.laser_pointer_flicker)
@@ -294,12 +297,12 @@ mod.toggle_laser = function(self, retain)
                     self:set_flicker_template(self._flicker_settings)
                 end
             else
-                self:persistent_table("weapon_customization").laser_pointer_on = laser_pointer_state
                 self:toggle_laser_light(laser_pointer, laser_pointer_state)
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
                 self:despawn_all_lasers()
                 self.fx_extension:unregister_vfx_spawner("slot_primary_laser_pointer")
             end
+            self:persistent_table("weapon_customization").laser_pointer_on = laser_pointer_state
         end
     end
 end
@@ -374,7 +377,8 @@ end
 
 mod:hook(CLASS.PlayerUnitFxExtension, "update", function(func, self, unit, dt, t, ...)
     if mod.initialized then
-        if mod:has_laser_pointer_attachment() then
+        local laser_pointer = mod:get_laser_pointer_unit()
+        if laser_pointer and mod:has_laser_pointer_attachment() then
             mod.use_fallback = not table_contains(mod.acceptable_states, mod.character_state_machine_extensions:current_state())
             if mod:persistent_table("weapon_customization").laser_pointer_on then
                 if t > mod.laser_timer then

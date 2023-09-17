@@ -396,17 +396,15 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 	end
 end
 
+-- Change light positions
 mod.set_light_positions = function(self, ui_weapon_spawner)
 	if mod.preview_lights then
 		for _, unit_data in pairs(mod.preview_lights) do
+			-- Get default position
 			local default_position = vector3_unbox(unit_data.position)
-
+			-- Get difference to link unit position
 			local link_difference = vector3_unbox(ui_weapon_spawner._link_unit_base_position) - vector3_unbox(ui_weapon_spawner._link_unit_position)
-
-			-- local light_position = vector3(default_position[1], default_position[2] - link_position[2], default_position[3])
-			-- if not mod:vector3_equal() then
-			-- 	mod:echo(tostring(link_difference))
-			-- end
+			-- Position with offset
 			local light_position = vector3(default_position[1], default_position[2] - link_difference[2], default_position[3])
 			unit_set_local_position(unit_data.unit, 1, light_position)
 		end

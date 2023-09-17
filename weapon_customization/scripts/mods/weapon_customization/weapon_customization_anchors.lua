@@ -2388,6 +2388,19 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             plasmagun_p1_m1 = { -- Done 14.9.2023
                 scope_offset = vector3_box(.0725, .15, -.01475),
                 fixes = {
+                    {dependencies = {"barrel_01", "emblem_left_02"}, -- Emblem
+                        emblem_left = {parent = "barrel", position = vector3_box(-.0415, .3, -.025), rotation = vector3_box(0, -5, 177.5), scale = vector3_box(1, -1, 1)}},
+                    {dependencies = {"barrel_01"}, -- Emblem
+                        emblem_left = {parent = "barrel", position = vector3_box(-.0415, .3, -.025), rotation = vector3_box(0, -5, 177.5), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_02", "emblem_left_02"}, -- Emblem
+                        emblem_left = {parent = "barrel", position = vector3_box(-.043, .2965, -.033), rotation = vector3_box(0, -5, 177.5), scale = vector3_box(.65, -.65, .65)}},
+                    {dependencies = {"barrel_02"}, -- Emblem
+                        emblem_left = {parent = "barrel", position = vector3_box(-.043, .2965, -.033), rotation = vector3_box(0, -5, 177.5), scale = vector3_box(.65, .65, .65)}},
+                    {dependencies = {"barrel_03", "emblem_left_02"}, -- Emblem
+                        emblem_left = {parent = "barrel", position = vector3_box(-.04, .375, -.023), rotation = vector3_box(0, -5, 177.5), scale = vector3_box(.65, -.65, .65)}},
+                    {dependencies = {"barrel_03"}, -- Emblem
+                        emblem_left = {parent = "barrel", position = vector3_box(-.04, .375, -.023), rotation = vector3_box(0, -5, 177.5), scale = vector3_box(.65, .65, .65)}},
+                    {emblem_right = {parent = "receiver", position = vector3_box(.062, .115, -.005), rotation = vector3_box(0, 0, 0), scale = vector3_box(.65, .65, .65)}},
                     {dependencies = {"reflex_sight_01"}, -- Sight
                         sight_2 = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"reflex_sight_02"}, -- Sight
@@ -3875,15 +3888,15 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                 }),
-                _stock_models("receiver", .5, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0), "stock_2"),
+                _stock_models("receiver", .5, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0), "stock_2"),
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
                 _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
                 _plasma_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _plasma_magazine_models(nil, .1, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
                 _plasma_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
-                _plasma_stock_models(nil, .75, vector3_box(-.6, -4, 0), vector3_box(0, -.015, .1)),
-                _plasma_grip_models(nil, .2, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1))
+                _plasma_stock_models(nil, .75, vector3_box(-.3, -4, -.1), vector3_box(0, -.015, .1)),
+                _plasma_grip_models(nil, .2, vector3_box(-.3, -4, .1), vector3_box(0, -.1, -.1))
             ),
             laspistol_p1_m1 = table.combine(
                 _flashlight_models("receiver", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),

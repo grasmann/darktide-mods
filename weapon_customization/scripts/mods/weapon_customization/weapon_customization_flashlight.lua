@@ -22,6 +22,7 @@ mod.attached_flashlights = {}
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+    local vector3_unbox = Vector3Box.unbox
     local unit_alive = Unit.alive
     local unit_get_child_units = Unit.get_child_units
     local unit_debug_name = Unit.debug_name
@@ -43,6 +44,7 @@ mod.attached_flashlights = {}
     local light_set_falloff_start = Light.set_falloff_start
     local light_set_falloff_end = Light.set_falloff_end
     local light_set_enabled = Light.set_enabled
+    local light_set_color_filter = Light.set_color_filter
     local tostring = tostring
     local pairs = pairs
     local managers = Managers
@@ -202,6 +204,7 @@ end
 
 -- Set flashlight template
 mod.set_flashlight_template = function(self, light_unit, template)
+    local template = template or self._flashlight_template
     -- Check flashlight unit
 	if light_unit then
         -- Get and check light
@@ -219,8 +222,8 @@ mod.set_flashlight_template = function(self, light_unit, template)
 			light_set_falloff_start(light, template.falloff.near)
 			light_set_falloff_end(light, template.falloff.far)
             if template.color_filter then
-                local color_filter = Vector3Box.unbox(template.color_filter)
-                Light.set_color_filter(light, color_filter)
+                local color_filter = vector3_unbox(template.color_filter)
+                light_set_color_filter(light, color_filter)
             end
             self._active_flashlight_template = template
 		end
@@ -234,30 +237,29 @@ mod.toggle_flashlight = function(self, retain, optional_flashlight_unit, optiona
         -- Get and check flashlight unit
 		local flashlight_unit = optional_flashlight_unit or self:get_flashlight_unit()
 		if flashlight_unit then
+            local flashlight_state = not self:persistent_table("weapon_customization").flashlight_on
             -- Check retain ( flashlight update )
-			if not retain then
-				mod:persistent_table("weapon_customization").flashlight_on = not mod:persistent_table("weapon_customization").flashlight_on
-			end
+			if retain then flashlight_state = not flashlight_state end
             -- Optional overwrite value
-            if optional_value then
-                mod:persistent_table("weapon_customization").flashlight_on = optional_value
-            end
+            if optional_value ~= nil then flashlight_state = optional_value end
             -- Get and check light
 			local light = unit_light(flashlight_unit, 1)
 			if light then
                 -- Set values
-				light_set_enabled(light, mod:persistent_table("weapon_customization").flashlight_on)
-				light_set_casts_shadows(light, mod:get("mod_option_flashlight_shadows"))
+				light_set_enabled(light, flashlight_state)
+				light_set_casts_shadows(light, self:get("mod_option_flashlight_shadows"))
                 -- Check flicker
-				if mod:persistent_table("weapon_customization").flashlight_on then
+				if flashlight_state then
                     -- Switch on
-					if mod:get("mod_option_flashlight_flicker_start") then self.start_flicker_now = true end
+					if self:get("mod_option_flashlight_flicker_start") then self.start_flicker_now = true end
 					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
 				else
                     -- Switch off
 					self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
 				end
-			else self:print("toggle_flashlight - light not found", mod._debug_skip_some) end
-		else self:print("toggle_flashlight - flashlight_unit not found", mod._debug_skip_some) end
-	else self:print("toggle_flashlight - mod not initialized", mod._debug_skip_some) end
+			else self:print("toggle_flashlight - light not found", self._debug_skip_some) end
+            -- Set state
+            self:persistent_table("weapon_customization").flashlight_on = flashlight_state
+		else self:print("toggle_flashlight - flashlight_unit not found", self._debug_skip_some) end
+	else self:print("toggle_flashlight - mod not initialized", self._debug_skip_some) end
 end
