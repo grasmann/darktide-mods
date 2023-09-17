@@ -194,7 +194,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"autopistol_p1_m1"})
+		-- mod:debug_attachments(item_data, attachments, {"ogryn_club_p1_m1"})
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses = nil, nil

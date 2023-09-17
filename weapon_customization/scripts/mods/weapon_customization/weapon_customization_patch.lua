@@ -251,7 +251,7 @@ mod._overwrite_attachments = function(self, item_data, attachments)
     local gear_id = mod:get_gear_id(item_data)
     local item_name = mod:item_name_from_content_string(item_data.name)
     for _, attachment_slot in pairs(mod.attachment_slots) do
-        local attachment = mod:get_gear_setting(gear_id, attachment_slot, item_data)
+        local attachment = mod:get_gear_setting(gear_id, attachment_slot)--, item_data)
         
         -- Customize
         if attachment and mod.attachment_models[item_name][attachment] then
