@@ -30,6 +30,7 @@ mod.special_types = {
 
 mod.add_custom_attachments = {
     flashlight = "flashlights",
+    laser_pointer = "laser_pointers",
     bayonet = "bayonets",
     stock = "stocks",
     stock_2 = "stocks",
@@ -276,9 +277,10 @@ mod._overwrite_attachments = function(self, item_data, attachments)
                 -- Default
                 local MasterItemsCached = MasterItems.get_cached()
                 local master_item = MasterItemsCached[item_data.name]
-                local attachment = mod:_recursive_find_attachment(master_item.attachments, attachment_slot)
-                if attachment then
-                    mod:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment.item)
+                local attachment_data = mod:_recursive_find_attachment(master_item.attachments, attachment_slot)
+                local attachment = mod:get_gear_setting(gear_id, attachment_slot, item_data)
+                if attachment_data then
+                    mod:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment_data.item)
                 end
             end
         end

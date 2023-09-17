@@ -58,7 +58,7 @@ mod.has_flashlight_attachment = function(self)
         -- Get wielded item
 		local item = self.visual_loadout_extension:item_from_slot(self.inventory_component.wielded_slot)
         -- Check
-		return self:_has_flashlight_attachment(item)
+		return self:_has_flashlight_attachment(item) and not self:has_laser_pointer_attachment()
 	end
 end
 

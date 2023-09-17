@@ -74,11 +74,11 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             local remove = remove or vector3_box(0, 0, 0)
             return {
                 default =       {model = "",                                                              type = "flashlight", parent = tv(parent, 1), angle = angle, move = tv(move, 1), remove = tv(remove, 1), mesh_move = false},
-                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", parent = tv(parent, 2), angle = angle, move = tv(move, 1), remove = tv(remove, 2), mesh_move = false},
-                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", parent = tv(parent, 3), angle = angle, move = tv(move, 1), remove = tv(remove, 3), mesh_move = false},
-                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", parent = tv(parent, 4), angle = angle, move = tv(move, 1), remove = tv(remove, 4), mesh_move = false},
-                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = tv(move, 1), remove = tv(remove, 5), mesh_move = false},
-                laser_pointer = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = tv(move, 1), remove = tv(remove, 5), mesh_move = false},
+                flashlight_01 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_01", type = "flashlight", parent = tv(parent, 2), angle = angle, move = tv(move, 2), remove = tv(remove, 2), mesh_move = false},
+                flashlight_02 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_02", type = "flashlight", parent = tv(parent, 3), angle = angle, move = tv(move, 3), remove = tv(remove, 3), mesh_move = false},
+                flashlight_03 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_03", type = "flashlight", parent = tv(parent, 4), angle = angle, move = tv(move, 4), remove = tv(remove, 4), mesh_move = false},
+                flashlight_04 = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = angle, move = tv(move, 5), remove = tv(remove, 5), mesh_move = false},
+                laser_pointer = {model = "content/items/weapons/player/ranged/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 6), angle = angle, move = tv(move, 6), remove = tv(remove, 6), mesh_move = false},
             }
         end
         local _emblem_right_attachments = function()
@@ -1805,7 +1805,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 bayonet_03 =       {parent = "barrel", parent_node = 7, position = vector3_box(0, .4, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
                     {dependencies = {"laser_pointer"}, -- Laser Pointer
-                        flashlight = {offset = true, position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)}},
+                        flashlight = {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)}},
                     {emblem_left = {offset = true, position = vector3_box(-.12, .22, .11), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)}, -- Emblems
                         emblem_right = {offset = true, position = vector3_box(.123, .765, .11), rotation = vector3_box(0, 0, 0), scale = vector3_box(2, 2, 2)}},
                 }
@@ -1821,7 +1821,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 bayonet_03 =       {position = vector3_box(0, .4, -0.27), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
                     {dependencies = {"laser_pointer"}, -- Laser Pointer
-                        flashlight = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(2, 2, 2)}},
+                        flashlight = {position = vector3_box(.2, .18, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)}},
                     {dependencies = {"barrel_01"}, -- Trinket hook
                         trinket_hook = {parent = "barrel", position = vector3_box(-.19, .375, -.08), rotation = vector3_box(0, 90, 0), scale = vector3_box(2.5, 2.5, 2.5)}},
                     {dependencies = {"barrel_02"}, -- Trinket hook
@@ -3555,6 +3555,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         "flashlight_02",
         "flashlight_03",
         "flashlight_04",
+        "laser_pointer",
     }
     mod.laser_pointers = {
         "flashlight_04",

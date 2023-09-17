@@ -194,7 +194,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"ogryn_club_p1_m1"})
+		-- mod:debug_attachments(item_data, attachments, {"ogryn_rippergun_p1_m1", "ogryn_rippergun_p1_m2", "ogryn_rippergun_p1_m3"})
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses = nil, nil
@@ -263,15 +263,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			        mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
 			    end
 
-				-- Find anchor
-				if mod.attachment_units[unit_name] then
-					local attachment = mod.attachment_units[unit_name]
-					if attachment then
-						if mod.anchors[item_name] and mod.anchors[item_name][attachment] then
-							anchor = mod.anchors[item_name][attachment]
-						end
-					end
-				end
+				-- -- Find anchor
+				-- if mod.attachment_units[unit_name] then
+				-- 	local attachment = mod.attachment_units[unit_name]
+				-- 	if attachment then
+				-- 		if mod.anchors[item_name] and mod.anchors[item_name][attachment] then
+				-- 			anchor = mod.anchors[item_name][attachment]
+				-- 		end
+				-- 	end
+				-- end
 
 				-- Bulwark shield
 				if unit_name == "#ID[bc25db1df0670d2a]" then
