@@ -17,7 +17,7 @@ mod._debug_skip_some = true
 -- Persistent values
 mod:persistent_table("weapon_customization", {
 	flashlight_on = false,
-	laser_pointer_on = false,
+	laser_pointer_on = 0,
 	spawned_lasers = {},
 	item_definitions = nil,
 })
@@ -196,7 +196,7 @@ mod.redo_weapon_attachments = function(self, item)
 		-- Reset laser pointer cache
 		self:despawn_all_lasers()
 		self.attached_laser_pointers[gear_id] = nil
-		self:persistent_table("weapon_customization").laser_pointer_on = false
+		self:persistent_table("weapon_customization").laser_pointer_on = 0
 		-- Unequip
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		-- Get time

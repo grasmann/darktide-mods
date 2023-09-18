@@ -67,14 +67,16 @@ end
 -- Check if item has flashlight attachment
 mod._has_flashlight_attachment = function(self, item)
     -- Check item
-	if item and item.__master_item and item.__master_item.attachments then
+    local attachments = item and item.attachments
+    attachments = attachments or item and item.__master_item and item.__master_item.attachments
+	if attachments then
         -- Check flashlight
         local flashlight = nil
         for _, flashlight_attachment in pairs(self.flashlights) do
-		    flashlight = mod:_recursive_find_attachment_name(item.__master_item.attachments, flashlight_attachment)
+		    flashlight = mod:_recursive_find_attachment_name(attachments, flashlight_attachment)
             if flashlight then break end
         end
-		return flashlight and flashlight.item ~= ""
+		return flashlight
 	end
 end
 

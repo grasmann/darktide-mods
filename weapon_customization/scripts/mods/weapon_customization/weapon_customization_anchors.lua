@@ -277,6 +277,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 reflex_sight_01 =   {model = "content/items/weapons/player/ranged/sights/reflex_sight_01",  type = type, parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 2), no_support = tv(no_support, 2), hide_mesh = tv(hide_mesh, 2)},
                 reflex_sight_02 =   {model = "content/items/weapons/player/ranged/sights/reflex_sight_02",  type = type, parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 3), no_support = tv(no_support, 3), hide_mesh = tv(hide_mesh, 3)},
                 reflex_sight_03 =   {model = "content/items/weapons/player/ranged/sights/reflex_sight_03",  type = type, parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 4), no_support = tv(no_support, 4), hide_mesh = tv(hide_mesh, 4)},
+                sight_none =        {model = "",                                                            type = type, parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 5), no_support = tv(no_support, 5), hide_mesh = tv(hide_mesh, 5)},
             }
         end
         local _sights_attachments = function()
@@ -1634,6 +1635,101 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 grip_03 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_03",  type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
             }
         end
+        local _laspistol_magazine_attachments = function()
+            return {
+                {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip}},
+                {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.apparel_equip}},
+            }
+        end
+        local _laspistol_magazine_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                magazine_default =              {model = "",                                                                        type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+            }
+        end
+        local _laspistol_barrel_attachments = function()
+            return {
+                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_05",      name = "Barrel 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_06",      name = "Barrel 6",  sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _laspistol_barrel_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_06 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel", parent = tv(parent, 7), angle = angle, move = move, remove = remove, mesh_move = false},
+            }
+        end
+        local _laspistol_muzzle_attachments = function()
+            return {
+                {id = "muzzle_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_01",      name = "Muzzle 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                -- {id = "muzzle_02",      name = "Muzzle 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_03",      name = "Muzzle 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "muzzle_04",      name = "Muzzle 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _laspistol_muzzle_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                muzzle_default = {model = "",                                                                        type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                muzzle_01 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                -- muzzle_02 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                muzzle_03 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                muzzle_04 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+            }
+        end
+        local _laspistol_rail_attachments = function()
+            return {
+                {id = "rail_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "rail_01",        name = "Rail 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+            }
+        end
+        local _laspistol_rail_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                rail_default = {model = "",                                                                type = "rail", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                rail_01 =      {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01", type = "rail", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+            }
+        end
+        local _laspistol_stock_attachments = function()
+            return {
+                {id = "lasgun_pistol_stock_default",    name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "lasgun_pistol_stock_01",         name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "lasgun_pistol_stock_02",         name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "lasgun_pistol_stock_03",         name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _laspistol_stock_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                lasgun_pistol_stock_default =   {model = "",                                                                  type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+            }
+        end
     --#endregion
     --#region Melee
         local _axe_grip_attachments = function()
@@ -2423,18 +2519,32 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 autogun_bayonet_02 =        {position = vector3_box(0, .14, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 autogun_bayonet_03 =        {position = vector3_box(0, .05, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {position = vector3_box(.03, .16, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_01", "barrel_02"}, -- Emblems
                         emblem_left = {offset = true, position = vector3_box(.0025, 0, .007), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                         emblem_right = {offset = true, position = vector3_box(.0025, 0, .007), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_01", "barrel_03"}, -- Emblems
                         emblem_left = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)},
-                        emblem_right = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)}},
+                        emblem_right = {offset = true, position = vector3_box(-.005, -.1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_01", "barrel_04"}, -- Emblems
                         emblem_left = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)},
-                        emblem_right = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"laspistol_receiver_02", "!barrel_02"}, -- Emblems
-                        emblem_left = {offset = true, position = vector3_box(0, -.03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
-                        emblem_right = {offset = true, position = vector3_box(0, -.03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                        emblem_right = {offset = true, position = vector3_box(-.005, -.1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_01", "barrel_05"}, -- Emblems
+                        emblem_left = {offset = true, position = vector3_box(-.005, .1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(-.005, -.1, .05), rotation = vector3_box(0, -25, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_01", "barrel_06"}, -- Emblems
+                        emblem_left = {offset = true, position = vector3_box(.0055, 0, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(.0055, 0, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_02", "barrel_01"}, -- Emblems
+                        emblem_left = {offset = true, position = vector3_box(0, -.03, -.005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(0, -.03, -.005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_02", "barrel_02"}, -- Emblems
+                        emblem_left = {offset = true, position = vector3_box(0, -.01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(0, -.01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"laspistol_receiver_02", "barrel_03"}, -- Emblems
+                        emblem_left = {offset = true, position = vector3_box(0, -.03, -.005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {offset = true, position = vector3_box(0, -.03, -.005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"laspistol_receiver_02", "barrel_06"}, -- Emblems
                         emblem_left = {offset = true, position = vector3_box(.001, -.025, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                         emblem_right = {offset = true, position = vector3_box(.001, -.025, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
@@ -2444,8 +2554,29 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {dependencies = {"laspistol_receiver_02", "barrel_05"}, -- Emblems
                         emblem_left = {offset = true, position = vector3_box(-.005, -.08, .02), rotation = vector3_box(0, -25, 0), scale = vector3_box(.5, .5, .5)},
                         emblem_right = {offset = true, position = vector3_box(-.005, -.08, .02), rotation = vector3_box(0, -25, 0), scale = vector3_box(.5, .5, .5)}},
+                    {dependencies = {"barrel_01", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {offset = true, position = vector3_box(0, .08, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_01", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {offset = true, position = vector3_box(0, .08, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_02", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {offset = true, position = vector3_box(0, .1, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_02", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {offset = true, position = vector3_box(0, .1, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_04", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_04", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_05", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {offset = true, position = vector3_box(0, .13, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_05", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {offset = true, position = vector3_box(0, .13, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_06", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_06", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"muzzle_03", "autogun_bayonet_03"}, -- Bayonet 3
                         bayonet = {offset = true, position = vector3_box(0, .065, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {stock_3 = {parent = "body", position = vector3_box(0, -.13, -.1), rotation = vector3_box(5, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
                 },
             },
             autogun_p1_m1 = {
@@ -2726,52 +2857,16 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 emblem_left = _emblem_left_attachments(),
                 grip = _grip_attachments(),
                 sight = table.icombine(
-                    {{id = "sight_default", name = "Default", sounds = {UISoundEvents.weapons_swap}}},
+                    {{id = "sight_default", name = "Default",   sounds = {UISoundEvents.weapons_swap}}},
+                    {{id = "sight_none",    name = "No Sight"}},
                     _reflex_sights_attachments()
                 ),
-                magazine = {
-                    {id = "magazine_default", name = "Default", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
-                    -- {id = "magazine_02", name = "Magazine 2", sounds = {UISoundEvents.apparel_equip}},
-                },
-                barrel = {
-                    {id = "barrel_default", name = "Default", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_01", name = "Barrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_02", name = "Barrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_03", name = "Barrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_04", name = "Barrel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_05", name = "Barrel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "barrel_06", name = "Barrel 6", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                muzzle = {
-                    {id = "muzzle_default", name = "Default", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "muzzle_01", name = "Muzzle 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    -- {id = "muzzle_02", name = "Muzzle 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "muzzle_03", name = "Muzzle 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "muzzle_04", name = "Muzzle 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                rail = {
-                    {id = "rail_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                },
-                stock = {
-                    {id = "lasgun_pistol_stock_default", name = "Default"},
-                    {id = "lasgun_pistol_stock_01", name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "lasgun_pistol_stock_02", name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "lasgun_pistol_stock_03", name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                stock_2 = {
-                    {id = "stock_2_default",        name = "Default"},
-                    {id = "autogun_rifle_stock_02", name = "Stock 1",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "autogun_rifle_stock_04", name = "Stock 2",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_05",               name = "Stock 3",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                -- sight = {
-                --     {id = "sight_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
-                --     {id = "sight_01", name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
-                --     {id = "sight_02", name = "Sight 2", sounds = {UISoundEvents.weapons_swap}},
-                --     {id = "sight_03", name = "Sight 3", sounds = {UISoundEvents.weapons_swap}},
-                -- },
+                magazine = _laspistol_magazine_attachments(),
+                barrel = _laspistol_barrel_attachments(),
+                muzzle = _laspistol_muzzle_attachments(),
+                rail = _laspistol_rail_attachments(),
+                stock = _laspistol_stock_attachments(),
+                stock_3 = _shotgun_stock_attachments(),
             },
             autogun_p1_m1 = {
                 flashlight = _flashlights_attachments(),
@@ -3906,33 +4001,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
                 _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
                 _laspistol_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
-                {
-                    magazine_default =              {model = "",                                                                        type = "magazine",  angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.2)},
-                    magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine",  angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.2)},
-                    -- magazine_02 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_02", type = "magazine"},
-                    barrel_default =                {model = "",                                                                        type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    barrel_01 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    barrel_02 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    barrel_03 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    barrel_04 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    barrel_05 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    barrel_06 =                     {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel",    angle = 0, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    muzzle_default =                {model = "",                                                                        type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    muzzle_01 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    -- muzzle_02 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    muzzle_03 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    muzzle_04 =                     {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle",    angle = -.5, move = vector3_box(.1, 0, 0), remove = vector3_box(0, .2, 0)},
-                    rail_default =                  {model = "",                                                                        type = "rail",      angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, .2)},
-                    rail_01 =                       {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01",         type = "rail",      angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, .2)},
-                    lasgun_pistol_stock_default =   {model = "",                                                                        type = "stock",     angle = 1, move = vector3_box(-.1, 0, 0), remove = vector3_box(0, -.2, 0)},
-                    lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01",       type = "stock",     angle = 1, move = vector3_box(-.1, 0, 0), remove = vector3_box(0, -.2, 0)},
-                    lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02",       type = "stock",     angle = 1, move = vector3_box(-.1, 0, 0), remove = vector3_box(0, -.2, 0)},
-                    lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03",       type = "stock",     angle = 1, move = vector3_box(-.1, 0, 0), remove = vector3_box(0, -.2, 0)},
-                    stock_2_default =               {model = "",                                                                        type = "stock_2",   parent = "receiver", angle = .5, move = vector3_box(-.2, 0, 0), remove = vector3_box(0, -.2, .035)},
-                    autogun_rifle_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_02",       type = "stock_2",   parent = "receiver", angle = .5, move = vector3_box(-.2, 0, 0), remove = vector3_box(0, -.2, .035)},
-                    autogun_rifle_stock_04 =        {model = "content/items/weapons/player/ranged/stocks/autogun_rifle_stock_04",       type = "stock_2",   parent = "receiver", angle = .5, move = vector3_box(-.2, 0, 0), remove = vector3_box(0, -.2, .035)},
-                    stock_05 =                      {model = "content/items/weapons/player/ranged/stocks/stock_05",                     type = "stock_2",   parent = "receiver", angle = .5, move = vector3_box(-.2, 0, 0), remove = vector3_box(0, -.2, .035)},
-                }
+                _laspistol_magazine_models(nil, 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
+                _laspistol_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
+                _laspistol_muzzle_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
+                _laspistol_rail_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+                _laspistol_stock_models(nil, 0, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0)),
+                _shotgun_stock_models("grip", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, -.11), "stock_3")
             ),
             autogun_p1_m1 = table.combine(
                 _flashlight_models(nil, -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),

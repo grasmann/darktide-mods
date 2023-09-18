@@ -7,6 +7,14 @@ mod:add_global_localize_strings({
 		ru = "Настройка",
 		["zh-cn"] = "自定义",
 	},
+	loc_weapon_special_laser_pointer = {
+		en = "Laser Pointer",
+		de = "Laserpointer",
+	},
+	loc_stats_special_action_laser_pointer_desc = {
+		en = "Turn on or off the weapon mounted laser pointer.\nAlso functions as a torch. Useful in dark areas.",
+		-- de = "Schalte die Turn on or off the weapon mounted laser pointer.\nAlso functions as a torch. Useful in dark areas."
+	}
 })
 
 return {
@@ -22,17 +30,27 @@ return {
 		ru = "Extended Weapon Customization – значительно расширяет возможности настройки внешнего вида оружия.",
 		["zh-cn"] = "武器自定义扩展",
 	},
+	group_debug = {
+		en = "Debug",
+		de = "Debug",
+		ru = "Отладка",
+		["zh-cn"] = "调试",
+	},
 	mod_option_debug = {
 		en = "Debug",
 		de = "Debug",
 		ru = "Отладка",
 		["zh-cn"] = "调试",
 	},
-	mod_option_weapon_build_animation = {
+	group_weapon_animation = {
 		en = "Weapon Animations",
 		de = "Waffen Animationen",
 		ru = "Анимации оружия",
 		["zh-cn"] = "武器动画",
+	},
+	mod_option_weapon_build_animation = {
+		en = "Play Animations",
+		de = "Animationen Abspielen",
 	},
 	mod_option_weapon_build_animation_speed = {
 		en = "Speed",
@@ -50,6 +68,10 @@ return {
 		de = "Sekunden",
 		ru = "Секунды",
 		["zh-cn"] = "秒",
+	},
+	group_flashlight = {
+		en = "Flashlight",
+		de = "Taschenlampe",
 	},
 	mod_option_flashlight_shadows = {
 		en = "Flashlight Shadows",
@@ -69,9 +91,21 @@ return {
 		ru = "Мерцание при включении",
 		["zh-cn"] = "开启时闪烁",
 	},
+	group_laser_pointer = {
+		en = "Laser Pointer",
+		de = "Laserpointer",
+	},
+	mod_option_deactivate_crosshair = {
+		en = "Deactivate Crosshair",
+		de = "Zielkreuz Deaktivieren",
+	},
+	mod_option_laser_pointer_dot_size = {
+		en = "Dot Size",
+		de = "Punktgröße",
+	},
 	mod_option_laser_pointer_wild = {
-		en = "Laser Pointer Wild Flickering",
-		de = "Laserpointer Flimmert Wild",
+		en = "Wild Flickering",
+		de = "Flimmert Wild",
 	},
 	mod_option_camera_zoom = {
 		en = "Camera Zoom",

@@ -26,6 +26,7 @@ mod.special_types = {
 	"special_bullet",
 	"melee",
     "knife",
+    "melee_hand",
 }
 
 mod.add_custom_attachments = {
@@ -513,32 +514,66 @@ end)
 
 mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, is_equipped, on_present_callback, ...)
     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
+    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
 	func(self, item, is_equipped, on_present_callback, ...)
 	mod.previewed_weapon_flashlight = nil
+    mod.previewed_weapon_laser_pointer = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponActions, "present_item", function(func, self, item, ...)
     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
+    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
+    mod.previewed_weapon_laser_pointer = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponInfo, "present_item", function(func, self, item, ...)
     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
+    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
+    mod.previewed_weapon_laser_pointer = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponPatterns, "present_item", function(func, self, item, ...)
     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
+    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
+    mod.previewed_weapon_laser_pointer = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponActionsExtended, "present_item", function(func, self, item, ...)
     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
+    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
 	func(self, item, ...)
 	mod.previewed_weapon_flashlight = nil
+    mod.previewed_weapon_laser_pointer = nil
+end)
+
+mod:hook(CLASS.WeaponStats, "init", function(func, self, item, ...)
+    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
+    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
+	func(self, item, ...)
+	mod.previewed_weapon_flashlight = nil
+    mod.previewed_weapon_laser_pointer = nil
+end)
+
+mod:hook(CLASS.WeaponStats, "get_compairing_stats", function(func, self, ...)
+    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(self._item)
+    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(self._item)
+	local values = func(self, ...)
+	mod.previewed_weapon_flashlight = nil
+    mod.previewed_weapon_laser_pointer = nil
+    return values
+end)
+
+mod:hook(CLASS.ItemGridViewBase, "_preview_element", function(func, self, element, ...)
+    local gear_id = mod:get_gear_id(element.item)
+    local _, weapon = mod:get_weapon_from_gear_id(gear_id)
+    if weapon and weapon.item then element.real_item = weapon.item end
+    func(self, element, ...)
 end)
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐┌─┐ ##############################################################
@@ -546,30 +581,32 @@ end)
 -- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘└─┘ ##############################################################
 
 mod.template_add_torch = function(self, orig_weapon_template)
-	if orig_weapon_template then
-		local weapon_template = orig_weapon_template
-		if not self.weapon_templates[orig_weapon_template.name] then
-			self.weapon_templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
-			weapon_template = self.weapon_templates[orig_weapon_template.name]
-			if weapon_template.displayed_weapon_stats_table and weapon_template.displayed_weapon_stats_table.damage[3] then
-				weapon_template.displayed_weapon_stats_table.damage[3] = nil
-			end
-			if weapon_template.displayed_attacks and weapon_template.displayed_attacks.special then
-				if table_contains(self.special_types, weapon_template.displayed_attacks.special.type) then
-					weapon_template.displayed_attacks.special = {
-						desc = "loc_stats_special_action_flashlight_desc",
-						display_name = "loc_weapon_special_flashlight",
-						type = "flashlight"
-					}
-				end
-			end
-		else
-			weapon_template = self.weapon_templates[orig_weapon_template.name]
-		end
-		if weapon_template and self.previewed_weapon_flashlight then
-			return weapon_template
-		end
-	end
+    if self.previewed_weapon_flashlight or self.previewed_weapon_laser_pointer then
+        if not self.weapon_templates[orig_weapon_template.name] then
+            self.weapon_templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
+        end
+        local weapon_template = self.weapon_templates[orig_weapon_template.name]
+            
+        if weapon_template.displayed_weapon_stats_table and weapon_template.displayed_weapon_stats_table.damage[3] then
+            weapon_template.displayed_weapon_stats_table.damage[3] = nil
+        end
+
+        if self.previewed_weapon_laser_pointer then
+            weapon_template.displayed_attacks.special = {
+                type = "vent",
+                display_name = "loc_weapon_special_laser_pointer",
+                desc = "loc_stats_special_action_laser_pointer_desc",
+            }
+        elseif self.previewed_weapon_flashlight then
+            weapon_template.displayed_attacks.special = {
+                desc = "loc_stats_special_action_flashlight_desc",
+                display_name = "loc_weapon_special_flashlight",
+                type = "flashlight",
+            }
+        end
+
+        return weapon_template
+    end
 	return orig_weapon_template
 end
 
@@ -579,6 +616,15 @@ mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
 		local weapon_template = instance._weapon_template(template_name)
 		return mod:template_add_torch(weapon_template)
 	end
+    if not instance._weapon_template_from_item then instance._weapon_template_from_item = instance.weapon_template_from_item end
+    instance.weapon_template_from_item = function(weapon_item)
+        mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(weapon_item)
+        mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(weapon_item)
+        local template = instance._weapon_template_from_item(weapon_item)
+        mod.previewed_weapon_flashlight = nil
+        mod.previewed_weapon_laser_pointer = nil
+        return template
+    end
 end)
 
 mod:hook_require("scripts/settings/equipment/flashlight_templates", function(instance)

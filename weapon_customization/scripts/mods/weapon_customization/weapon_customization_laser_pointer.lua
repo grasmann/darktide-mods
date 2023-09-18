@@ -161,10 +161,12 @@ end
 -- Check if item has laser pointer attachment
 mod._has_laser_pointer_attachment = function(self, item)
     -- Check item
-	if item and item.__master_item and item.__master_item.attachments then
+	local attachments = item and item.attachments
+    attachments = attachments or item and item.__master_item and item.__master_item.attachments
+	if attachments then
         -- Check laser pointer
-		local laser_pointer = mod:_recursive_find_attachment_name(item.__master_item.attachments, "laser_pointer")
-		return laser_pointer and laser_pointer.item ~= ""
+		local laser_pointer = mod:_recursive_find_attachment_name(attachments, "laser_pointer")
+		return laser_pointer
 	end
 end
 
@@ -219,7 +221,7 @@ end
 -- Calculate laser end position
 mod.calculate_laser_end_position = function(self)
     local laser_pointer = self:get_laser_pointer_unit()
-    if laser_pointer then
+    if laser_pointer and unit_alive(laser_pointer) then
         -- Laser pointer position
         local laser_position = unit_world_position(laser_pointer, 2)
         local laser_rotation = unit_world_rotation(laser_pointer, 2)
@@ -279,25 +281,29 @@ end
 mod.toggle_laser = function(self, retain, optional_laser_pointer_unit, optional_value)
     if self.initialized then
         local laser_pointer = optional_laser_pointer_unit or self:get_laser_pointer_unit()
-        if laser_pointer then
-            local laser_pointer_state = not self:persistent_table("weapon_customization").laser_pointer_on and true
-            if retain then laser_pointer_state = not laser_pointer_state end
+        if laser_pointer and unit_alive(laser_pointer) then
+            local laser_pointer_state = self:persistent_table("weapon_customization").laser_pointer_on + 1
+            if retain then laser_pointer_state = laser_pointer_state - 1 end
             -- Optional overwrite value
             if optional_value then
                 laser_pointer_state = optional_value
             end
+            -- Wrap
+            if laser_pointer_state > 2 then
+                laser_pointer_state = 0
+            end
             -- Toggle
-            if laser_pointer_state then
+            if laser_pointer_state > 0 then
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
                 self.fx_extension:register_vfx_spawner("slot_primary_laser_pointer", laser_pointer, nil, 1, false)
-                self:toggle_laser_light(laser_pointer, laser_pointer_state)
-                if self:get("mod_option_laser_pointer_wild") then
+                self:toggle_laser_light(laser_pointer, laser_pointer_state == 2)
+                if self:get("mod_option_laser_pointer_wild") and laser_pointer_state == 2 then
                     self:set_flicker_template(self.laser_pointer_flicker)
                 else
                     self:set_flicker_template(self._flicker_settings)
                 end
             else
-                self:toggle_laser_light(laser_pointer, laser_pointer_state)
+                self:toggle_laser_light(laser_pointer, false)
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
                 self:despawn_all_lasers()
                 self.fx_extension:unregister_vfx_spawner("slot_primary_laser_pointer")
@@ -365,7 +371,7 @@ mod._ray_cast = function(self, from, to, distance)
 end
 
 mod.reset_laser_pointer = function(self)
-    self:persistent_table("weapon_customization").laser_pointer_on = false
+    self:persistent_table("weapon_customization").laser_pointer_on = 0
 	self:persistent_table("weapon_customization").spawned_lasers = {}
 	self.laser_timer = 0
     self.saved_laser_pointer_position = nil
@@ -378,9 +384,9 @@ end
 mod:hook(CLASS.PlayerUnitFxExtension, "update", function(func, self, unit, dt, t, ...)
     if mod.initialized then
         local laser_pointer = mod:get_laser_pointer_unit()
-        if laser_pointer and mod:has_laser_pointer_attachment() then
+        if laser_pointer and unit_alive(laser_pointer) and mod:has_laser_pointer_attachment() then
             mod.use_fallback = not table_contains(mod.acceptable_states, mod.character_state_machine_extensions:current_state())
-            if mod:persistent_table("weapon_customization").laser_pointer_on then
+            if mod:persistent_table("weapon_customization").laser_pointer_on > 0 then
                 if t > mod.laser_timer then
                     if #mod:persistent_table("weapon_customization").spawned_lasers < mod.laser_counts then
                         mod:spawn_laser()
@@ -400,7 +406,7 @@ end)
 mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, dt, t, ...)
     if mod.initialized then
         local laser_pointer = mod:get_laser_pointer_unit()
-        if laser_pointer then
+        if laser_pointer and unit_alive(laser_pointer) then
 
             if #mod:persistent_table("weapon_customization").spawned_lasers > 0 then
                 local aligned_vfx = self._aligned_vfx
@@ -430,11 +436,11 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                         local camera_rotation = Managers.state.camera:camera_rotation(mod.player.viewport_name)
                         local camera_forward = quaternion_forward(camera_rotation)
                         if hit_actor then
-                            laser_pos = camera_position + camera_forward * 2
+                            laser_pos = camera_position + camera_forward * (2 / mod:get("mod_option_laser_pointer_dot_size"))
                         elseif camera_hit_distance < 6 then
-                            laser_pos = camera_position + camera_forward * camera_hit_distance
+                            laser_pos = camera_position + camera_forward * (camera_hit_distance / mod:get("mod_option_laser_pointer_dot_size"))
                         else
-                            laser_pos = camera_position + camera_forward * 6
+                            laser_pos = camera_position + camera_forward * (6 / mod:get("mod_option_laser_pointer_dot_size"))
                         end
                     end
                     world_move_particles(self._world, mod.laser_dot, laser_pos)
@@ -464,6 +470,15 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
         end
     end
     func(self, unit, dt, t, ...)
+end)
+
+mod:hook(CLASS.HudElementCrosshair, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
+    if mod:get("mod_option_deactivate_crosshair") then
+        if mod:has_laser_pointer_attachment() and mod:persistent_table("weapon_customization").laser_pointer_on > 0 then
+            return
+        end
+    end
+    func(self, dt, t, input_service, ui_renderer, render_settings, ...)
 end)
 
 mod:hook(CLASS.PlayerUnitFxExtension, "_create_particles_wrapper", function(func, self, world, particle_name, position, rotation, scale, ...)
