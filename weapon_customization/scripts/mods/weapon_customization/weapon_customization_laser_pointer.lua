@@ -6,6 +6,7 @@ local mod = get_mod("weapon_customization")
 
 local LagCompensation = mod:original_require("scripts/utilities/lag_compensation")
 local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
+local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -85,7 +86,6 @@ mod.laser_pointer_flicker_wild = {
 		min = 0
 	}
 }
-mod.saved_laser_pointer_position = nil
 mod.weapon_dot = nil
 mod.laser_dot = nil
 mod.attached_laser_pointers = {}
@@ -294,8 +294,8 @@ mod.toggle_laser = function(self, retain, optional_laser_pointer_unit, optional_
             end
             -- Toggle
             if laser_pointer_state > 0 then
+                self:despawn_dots()
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
-                self.fx_extension:register_vfx_spawner("slot_primary_laser_pointer", laser_pointer, nil, 1, false)
                 self:toggle_laser_light(laser_pointer, laser_pointer_state == 2)
                 if self:get("mod_option_laser_pointer_wild") and laser_pointer_state == 2 then
                     self:set_flicker_template(self.laser_pointer_flicker)
@@ -306,26 +306,13 @@ mod.toggle_laser = function(self, retain, optional_laser_pointer_unit, optional_
                 self:toggle_laser_light(laser_pointer, false)
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
                 self:despawn_all_lasers()
-                self.fx_extension:unregister_vfx_spawner("slot_primary_laser_pointer")
             end
             self:persistent_table("weapon_customization").laser_pointer_on = laser_pointer_state
         end
     end
 end
 
-mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
-    func(self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
-    if spawner_name == "slot_primary_laser_pointer" then
-        spawners[spawner_name].node = 2
-    end
-end)
-
--- Despawn all laser pointer particles
-mod.despawn_all_lasers = function(self)
-    for i, particle in pairs(self:persistent_table("weapon_customization").spawned_lasers) do
-        self:despawn_laser(particle.effect_id)
-    end
-    self:persistent_table("weapon_customization").spawned_lasers = {}
+mod.despawn_dots = function(self)
     local world = Managers.world:world("level_world")
     if mod.weapon_dot then
         world_destroy_particles(world, mod.weapon_dot)
@@ -337,6 +324,15 @@ mod.despawn_all_lasers = function(self)
     end
 end
 
+-- Despawn all laser pointer particles
+mod.despawn_all_lasers = function(self)
+    for i, particle in pairs(self:persistent_table("weapon_customization").spawned_lasers) do
+        self:despawn_laser(particle.effect_id)
+    end
+    self:persistent_table("weapon_customization").spawned_lasers = {}
+    self:despawn_dots()
+end
+
 -- Despawn laser pointer particle
 mod.despawn_laser = function(self, effect_id)
     local world = Managers.world:world("level_world")
@@ -346,6 +342,7 @@ end
 -- Spawn laser pointer particle
 mod.spawn_laser = function(self)
     local position, end_position = self:calculate_laser_end_position()
+    self:check_fx_spawner()
     self.fx_extension:_spawn_unit_fx_line(LINE_EFFECT, true, "slot_primary_laser_pointer", end_position, true, "stop", vector3(1, 1, 1), false)
 end
 
@@ -372,14 +369,41 @@ end
 
 mod.reset_laser_pointer = function(self)
     self:persistent_table("weapon_customization").laser_pointer_on = 0
-	self:persistent_table("weapon_customization").spawned_lasers = {}
+    self:despawn_all_lasers()
 	self.laser_timer = 0
-    self.saved_laser_pointer_position = nil
+end
+
+mod.check_fx_spawner = function(self)
+    local spawner = self.fx_extension._vfx_spawners["slot_primary_laser_pointer"]
+    -- Unregister spawner if necessary
+    if spawner and (not spawner.unit or not unit_alive(spawner.unit)) then
+        self.fx_extension._vfx_spawners["slot_primary_laser_pointer"] = nil
+        spawner = nil
+    end
+    local laser_pointer = mod:get_laser_pointer_unit()
+    if laser_pointer then
+        -- Register spawner if necessary
+        if not spawner then
+            self.fx_extension._vfx_spawners["slot_primary_laser_pointer"] = {
+                node = 2,
+                unit = laser_pointer,
+            }
+        end
+    end
 end
 
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
+
+mod:hook(CLASS.InventoryWeaponsView, "_equip_item", function(func, self, slot_name, item, ...)
+    func(self, slot_name, item, ...)
+    local ITEM_TYPES = UISettings.ITEM_TYPES
+	local item_type = item.item_type
+    if item_type == ITEM_TYPES.WEAPON_RANGED then
+        mod:reset_laser_pointer()
+    end
+end)
 
 mod:hook(CLASS.PlayerUnitFxExtension, "update", function(func, self, unit, dt, t, ...)
     if mod.initialized then
@@ -422,7 +446,7 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                     mod.weapon_dot = world_create_particles(self._world, LASER_DOT, vector3_zero(), Quaternion.identity())
                     local unit_world_pose = Matrix4x4.identity()
 	                Matrix4x4.set_translation(unit_world_pose, vector3(0, .065, 0))
-                    Matrix4x4.set_scale(unit_world_pose, vector3(2, 2, 2))
+                    Matrix4x4.set_scale(unit_world_pose, vector3(1, 1, 1))
                     World.link_particles(self._world, mod.weapon_dot, laser_pointer, 2, unit_world_pose, "destroy")
                     World.set_particles_material_vector3(self._world, mod.weapon_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
                 end
@@ -473,10 +497,10 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
 end)
 
 mod:hook(CLASS.HudElementCrosshair, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
-    if mod:get("mod_option_deactivate_crosshair") then
-        if mod:has_laser_pointer_attachment() and mod:persistent_table("weapon_customization").laser_pointer_on > 0 then
-            return
-        end
+    if mod:get("mod_option_deactivate_crosshair") and mod:has_laser_pointer_attachment() and mod:persistent_table("weapon_customization").laser_pointer_on > 0 then
+        if self._widget then self._widget.visible = false end
+    else
+        if self._widget then self._widget.visible = true end
     end
     func(self, dt, t, input_service, ui_renderer, render_settings, ...)
 end)

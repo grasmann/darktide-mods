@@ -1724,10 +1724,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             local move = move or vector3_box(0, 0, 0)
             local remove = remove or vector3_box(0, 0, 0)
             return {
-                lasgun_pistol_stock_default =   {model = "",                                                                  type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                lasgun_pistol_stock_default =   {model = "",                                                                  type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
             }
         end
     --#endregion
@@ -2482,7 +2482,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 }
             },
             plasmagun_p1_m1 = { -- Done 14.9.2023
-                scope_offset = vector3_box(.0725, .15, -.01475),
+                scope_offset = vector3_box(.063, .15, -.00675),
                 fixes = {
                     {dependencies = {"barrel_01", "emblem_left_02"}, -- Emblem
                         emblem_left = {parent = "barrel", position = vector3_box(-.0415, .3, -.025), rotation = vector3_box(0, -5, 177.5), scale = vector3_box(1, -1, 1)}},
@@ -2512,9 +2512,6 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 flashlight_02 =             {position = vector3_box(.03, .16, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 flashlight_03 =             {position = vector3_box(.03, .16, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 flashlight_04 =             {position = vector3_box(.03, .16, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
-                autogun_rifle_stock_02 =    {position = vector3_box(0, -0.09, 0.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.85, 1, .75)},
-                autogun_rifle_stock_04 =    {position = vector3_box(0, -0.09, 0.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.85, 1, .75)},
-                stock_05 =                  {position = vector3_box(0, -0.09, 0.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.85, 1, .75)},
                 autogun_bayonet_01 =        {position = vector3_box(0, .14, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 autogun_bayonet_02 =        {position = vector3_box(0, .14, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 autogun_bayonet_03 =        {position = vector3_box(0, .05, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
@@ -2576,7 +2573,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                         bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"muzzle_03", "autogun_bayonet_03"}, -- Bayonet 3
                         bayonet = {offset = true, position = vector3_box(0, .065, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {stock_3 = {parent = "body", position = vector3_box(0, -.13, -.1), rotation = vector3_box(5, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
+                    {stock_3 = {parent = "body", position = vector3_box(0, -.11, -.1), rotation = vector3_box(5, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
                 },
             },
             autogun_p1_m1 = {
@@ -3951,7 +3948,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
                 _bayonet_models("barrel", -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, 0)),
                 _auto_pistol_muzzle_models("barrel", -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
-                _trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _trinket_hook_models("grip", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _ripper_barrel_models("receiver", -.5, vector3_box(.2, -2, 0), vector3_box(0, .3, 0), "muzzle")
             ),
             stubrevolver_p1_m1 = table.combine( -- Done 13.9.2023
@@ -3994,19 +3991,24 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _plasma_grip_models(nil, .2, vector3_box(-.3, -4, .1), vector3_box(0, -.1, -.1))
             ),
             laspistol_p1_m1 = table.combine(
-                _flashlight_models("receiver", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
-                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
-                _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
+                _flashlight_models("receiver", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -4, 0), vector3_box(0, .4, -.025)),
+                _grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1)),
+                _reflex_sights_models("rail", -.5, vector3_box(-.1, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                    {rail = "rail_default"},
+                    {rail = "rail_01"},
+                    {rail = "rail_01"},
+                    {rail = "rail_01"},
+                }),
                 _laspistol_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _laspistol_magazine_models(nil, 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
                 _laspistol_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _laspistol_muzzle_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _laspistol_rail_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _laspistol_stock_models(nil, 0, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0)),
-                _shotgun_stock_models("grip", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, -.11), "stock_3")
+                _laspistol_stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0)),
+                _shotgun_stock_models("grip", 0, vector3_box(-.6, -4, .2), vector3_box(0, -.4, -.11), "stock_3")
             ),
             autogun_p1_m1 = table.combine(
                 _flashlight_models(nil, -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),

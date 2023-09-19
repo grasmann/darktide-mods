@@ -552,29 +552,29 @@ mod:hook(CLASS.ViewElementWeaponActionsExtended, "present_item", function(func, 
     mod.previewed_weapon_laser_pointer = nil
 end)
 
-mod:hook(CLASS.WeaponStats, "init", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
-    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
-	func(self, item, ...)
-	mod.previewed_weapon_flashlight = nil
-    mod.previewed_weapon_laser_pointer = nil
-end)
+-- mod:hook(CLASS.WeaponStats, "init", function(func, self, item, ...)
+--     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
+--     mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
+-- 	func(self, item, ...)
+-- 	mod.previewed_weapon_flashlight = nil
+--     mod.previewed_weapon_laser_pointer = nil
+-- end)
 
-mod:hook(CLASS.WeaponStats, "get_compairing_stats", function(func, self, ...)
-    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(self._item)
-    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(self._item)
-	local values = func(self, ...)
-	mod.previewed_weapon_flashlight = nil
-    mod.previewed_weapon_laser_pointer = nil
-    return values
-end)
+-- mod:hook(CLASS.WeaponStats, "get_compairing_stats", function(func, self, ...)
+--     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(self._item)
+--     mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(self._item)
+-- 	local values = func(self, ...)
+-- 	mod.previewed_weapon_flashlight = nil
+--     mod.previewed_weapon_laser_pointer = nil
+--     return values
+-- end)
 
-mod:hook(CLASS.ItemGridViewBase, "_preview_element", function(func, self, element, ...)
-    local gear_id = mod:get_gear_id(element.item)
-    local _, weapon = mod:get_weapon_from_gear_id(gear_id)
-    if weapon and weapon.item then element.real_item = weapon.item end
-    func(self, element, ...)
-end)
+-- mod:hook(CLASS.ItemGridViewBase, "_preview_element", function(func, self, element, ...)
+--     local gear_id = mod:get_gear_id(element.item)
+--     local _, weapon = mod:get_weapon_from_gear_id(gear_id)
+--     if weapon and weapon.item then element.real_item = weapon.item end
+--     func(self, element, ...)
+-- end)
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐┌─┐ ##############################################################
 -- ##### │││├┤ ├─┤├─┘│ ││││   │ ├┤ │││├─┘│  ├─┤ │ ├┤ └─┐ ##############################################################
@@ -616,15 +616,16 @@ mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
 		local weapon_template = instance._weapon_template(template_name)
 		return mod:template_add_torch(weapon_template)
 	end
-    if not instance._weapon_template_from_item then instance._weapon_template_from_item = instance.weapon_template_from_item end
-    instance.weapon_template_from_item = function(weapon_item)
-        mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(weapon_item)
-        mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(weapon_item)
-        local template = instance._weapon_template_from_item(weapon_item)
-        mod.previewed_weapon_flashlight = nil
-        mod.previewed_weapon_laser_pointer = nil
-        return template
-    end
+    -- instance.weapon_template_from_item = instance._weapon_template_from_item
+    -- if not instance._weapon_template_from_item then instance._weapon_template_from_item = instance.weapon_template_from_item end
+    -- instance.weapon_template_from_item = function(weapon_item)
+    --     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(weapon_item)
+    --     mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(weapon_item)
+    --     local template = instance._weapon_template_from_item(weapon_item)
+    --     mod.previewed_weapon_flashlight = nil
+    --     mod.previewed_weapon_laser_pointer = nil
+    --     return template
+    -- end
 end)
 
 mod:hook_require("scripts/settings/equipment/flashlight_templates", function(instance)

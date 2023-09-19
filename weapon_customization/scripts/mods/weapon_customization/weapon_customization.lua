@@ -194,9 +194,10 @@ mod.redo_weapon_attachments = function(self, item)
 		self.attached_flashlights[gear_id] = nil
 		self:persistent_table("weapon_customization").flashlight_on = false
 		-- Reset laser pointer cache
-		self:despawn_all_lasers()
+		-- self:despawn_all_lasers()
+		self:reset_laser_pointer()
 		self.attached_laser_pointers[gear_id] = nil
-		self:persistent_table("weapon_customization").laser_pointer_on = 0
+		-- self:persistent_table("weapon_customization").laser_pointer_on = 0
 		-- Unequip
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		-- Get time
