@@ -1,51 +1,41 @@
 local mod = get_mod("weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
 local MasterItems = mod:original_require("scripts/backend/master_items")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 
-local table_contains = table.contains
-local table_clone_instance = table.clone_instance
-local table_clone = table.clone
-local vector3_box = Vector3Box
-local vector3_unbox = vector3_box.unbox
-local quaternion_matrix4x4 = Quaternion.matrix4x4
-local matrix4x4_transform = Matrix4x4.transform
-local camera_local_position = Camera.local_position
-local Camera_local_rotation = Camera.local_rotation
-local math_random_array_entry = math.random_array_entry
-local string_find = string.find
-local pairs = pairs
-local CLASS = CLASS
-local managers = Managers
-local type = type
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+--#region Local functions
+    local table_contains = table.contains
+    local table_clone_instance = table.clone_instance
+    local table_clone = table.clone
+    local vector3_box = Vector3Box
+    local vector3_unbox = vector3_box.unbox
+    local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local matrix4x4_transform = Matrix4x4.transform
+    local camera_local_position = Camera.local_position
+    local Camera_local_rotation = Camera.local_rotation
+    local math_random_array_entry = math.random_array_entry
+    local string_find = string.find
+    local pairs = pairs
+    local CLASS = CLASS
+    local managers = Managers
+    local type = type
+--#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 mod.weapon_templates = {}
-mod.special_types = {
-	"special_bullet",
-	"melee",
-    "knife",
-    "melee_hand",
-}
-
-mod.add_custom_attachments = {
-    flashlight = "flashlights",
-    laser_pointer = "laser_pointers",
-    bayonet = "bayonets",
-    stock = "stocks",
-    stock_2 = "stocks",
-    stock_3 = "shotgun_stocks",
-    rail = "rails",
-    emblem_left = "emblems_left",
-    emblem_right = "emblems_right",
-    sight_2 = "reflex_sights",
-    muzzle = "muzzles",
-}
-
-mod.special_actions = {
-    "weapon_extra_pressed",
-}
 
 mod.get_item_attachment_slots = function(self, item)
 	local item_name = self:item_name_from_content_string(item.name)
@@ -252,39 +242,53 @@ end
 mod._overwrite_attachments = function(self, item_data, attachments)
     local gear_id = mod:get_gear_id(item_data)
     local item_name = mod:item_name_from_content_string(item_data.name)
+    local automatic_equip_entries = {}
     for _, attachment_slot in pairs(mod.attachment_slots) do
-        local attachment = mod:get_gear_setting(gear_id, attachment_slot)--, item_data)
-        
-        -- Customize
-        if attachment and mod.attachment_models[item_name][attachment] then
-            local model = mod.attachment_models[item_name][attachment].model
-            local attachment_type = mod.attachment_models[item_name][attachment].type
-            mod:_recursive_set_attachment(attachments, attachment, attachment_type, model)
-            -- Automatic
-            local automatic_equip = mod.attachment_models[item_name][attachment].automatic_equip
-            if automatic_equip then
-                for auto_type, auto_attachment in pairs(automatic_equip) do
-                    if mod.attachment_models[item_name][auto_attachment] then
-                        local auto_model = mod.attachment_models[item_name][auto_attachment].model
-                        mod:_recursive_set_attachment(attachments, auto_attachment, auto_type, auto_model, true)
+        if attachment_slot ~= "slot_trinket_1" and attachment_slot ~= "slot_trinket_2" then
+            local attachment = mod:get_gear_setting(gear_id, attachment_slot)--, item_data)
+            
+            -- Customize
+            if attachment and mod.attachment_models[item_name][attachment] then
+                local model = mod.attachment_models[item_name][attachment].model
+                local attachment_type = mod.attachment_models[item_name][attachment].type
+                mod:_recursive_set_attachment(attachments, attachment, attachment_type, model)
+                -- Automatic
+                local automatic_equip = mod.attachment_models[item_name][attachment].automatic_equip
+                if automatic_equip then
+                    for auto_type, auto_attachment in pairs(automatic_equip) do
+                        if mod.attachment_models[item_name][auto_attachment] then
+                            local auto_model = mod.attachment_models[item_name][auto_attachment].model
+                            -- mod:_recursive_set_attachment(attachments, auto_attachment, auto_type, auto_model, true)
+                            automatic_equip_entries[#automatic_equip_entries+1] = {
+                                attachment = auto_attachment,
+                                type = auto_type,
+                                model = auto_model,
+                            }
+                        end
+                    end
+                end
+            else
+                -- Default overwrite
+                if mod.default_overwrite[item_name] and mod.default_overwrite[item_name][attachment_slot] then
+                    mod:_recursive_set_attachment(attachments, attachment, attachment_slot, mod.default_overwrite[item_name][attachment_slot])
+                else
+                    -- Default
+                    local MasterItemsCached = MasterItems.get_cached()
+                    local master_item = MasterItemsCached[item_data.name]
+                    local attachment_data = mod:_recursive_find_attachment(master_item.attachments, attachment_slot)
+                    local attachment = mod:get_gear_setting(gear_id, attachment_slot, item_data)
+                    if attachment_data then
+                        mod:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment_data.item)
                     end
                 end
             end
-        else
-            -- Default overwrite
-            if mod.default_overwrite[item_name] and mod.default_overwrite[item_name][attachment_slot] then
-                mod:_recursive_set_attachment(attachments, attachment, attachment_slot, mod.default_overwrite[item_name][attachment_slot])
-            else
-                -- Default
-                local MasterItemsCached = MasterItems.get_cached()
-                local master_item = MasterItemsCached[item_data.name]
-                local attachment_data = mod:_recursive_find_attachment(master_item.attachments, attachment_slot)
-                local attachment = mod:get_gear_setting(gear_id, attachment_slot, item_data)
-                if attachment_data then
-                    mod:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment_data.item)
-                end
-            end
         end
+    end
+    -- Automatic
+    for _, entry in pairs(automatic_equip_entries) do
+        -- if entry.type ~= "slot_trinket_1" and not entry.type ~= "slot_trinket_2" then
+            mod:_recursive_set_attachment(attachments, entry.attachment, entry.type, entry.model, true)
+        -- end
     end
 end
 

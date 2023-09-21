@@ -69,6 +69,10 @@ return {
 						["type"] = "checkbox",
 						["default_value"] = false,
 					},
+					{["setting_id"] = "mod_option_laser_pointer_weapon_dot",
+						["type"] = "checkbox",
+						["default_value"] = true,
+					},
 				}
 			},
 			{["setting_id"] = "group_debug",

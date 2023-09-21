@@ -21,6 +21,7 @@ mod:persistent_table("weapon_customization", {
 	spawned_lasers = {},
 	item_definitions = nil,
 })
+mod.was_third_person = nil
 
 -- ##### ┌┬┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ###############################################################################
 -- ##### ││││ │ ││  ├┤ └┐┌┘├┤ │││ │ └─┐ ###############################################################################
@@ -42,14 +43,17 @@ function mod.on_setting_changed(setting_id)
 		if mod:has_flashlight_attachment() then mod:toggle_flashlight(true) end
 		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
 	end
-	if setting_id == "mod_option_laser_pointer_wild" then
+	if setting_id == "mod_option_laser_pointer_wild" or setting_id == "mod_option_laser_pointer_weapon_dot" or setting_id == "mod_option_laser_pointer_weapon_flash" then
 		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
 	end
 end
 
 -- Update loop
 function mod.update(main_dt)
+	mod:update_laser_pointer()
+	mod:update_flashlight()
 	mod:update_flicker()
+	mod.was_third_person = mod:_is_in_third_person()
 end
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -98,7 +102,7 @@ end)
 mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
 	func(self, ...)
 	-- Update flashlight
-	if mod.update_flashlight then
+	if mod._update_flashlight then
 		if mod:has_flashlight_attachment() then mod:toggle_flashlight(true) end
 		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
 	end
@@ -191,12 +195,12 @@ mod.redo_weapon_attachments = function(self, item)
 		local gameplay_time = self.time_manager:time("gameplay")
 		local latest_frame = math_floor(gameplay_time / fixed_time_step)
 		-- Reset flashlight cache
-		self.attached_flashlights[gear_id] = nil
+		self.attached_flashlights[gear_id] = {}
 		self:persistent_table("weapon_customization").flashlight_on = false
 		-- Reset laser pointer cache
 		-- self:despawn_all_lasers()
 		self:reset_laser_pointer()
-		self.attached_laser_pointers[gear_id] = nil
+		self.attached_laser_pointers[gear_id] = {}
 		-- self:persistent_table("weapon_customization").laser_pointer_on = 0
 		-- Unequip
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
@@ -206,13 +210,9 @@ mod.redo_weapon_attachments = function(self, item)
 		self.visual_loadout_extension:equip_item_to_slot(item, slot_name, nil, gameplay_time)
 		self:print("redo_weapon_attachments - done")
 		-- Trigger flashlight update
-		self.update_flashlight = true
+		self._update_flashlight = true
 	else self:print("redo_weapon_attachments - weapon is nil") end
 end
-
--- mod.get_equipped_weapon_from_slot = function(self, slot_name)
--- 	return self.weapon_extension._weapons[slot_name]
--- end
 
 -- Get currently wielded weapon
 mod.get_wielded_weapon = function(self)
@@ -238,6 +238,22 @@ mod.get_weapon_from_gear_id = function(self, from_gear_id)
 	end
 end
 
+mod.is_in_third_person = function(self)
+	local is_third_person = mod:_is_in_third_person()
+	local changed = false
+	if self.was_third_person == nil then self.was_third_person = is_third_person end
+	if self.was_third_person ~= is_third_person then
+		changed = true
+	end
+    return is_third_person, changed
+end
+
+mod._is_in_third_person = function(self)
+	local first_person_extension = ScriptUnit.extension(self.player_unit, "first_person_system")
+	local first_person = first_person_extension and first_person_extension:is_in_first_person_mode()
+	return not first_person
+end
+
 -- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐ #######################################################################################
 -- ##### │││││ │ │├─┤│  │┌─┘├┤  #######################################################################################
 -- ##### ┴┘└┘┴ ┴ ┴┴ ┴┴─┘┴└─┘└─┘ #######################################################################################
@@ -257,7 +273,7 @@ mod.init = function(self)
 	self.visual_loadout_extension = script_unit.extension(self.player_unit, "visual_loadout_system")
 	self.inventory_component = self.unit_data:read_component("inventory")
 	self.first_person_component = self.unit_data:read_component("first_person")
-	self.first_person_extension = ScriptUnit.extension(self.player_unit, "first_person_system")
+	self.first_person_extension = script_unit.extension(self.player_unit, "first_person_system")
 	self.first_person_unit = self.first_person_extension:first_person_unit()
 	self.time_manager = managers.time
 	self.initialized = true

@@ -7,6 +7,55 @@ local mod = get_mod("weapon_customization")
 local LagCompensation = mod:original_require("scripts/utilities/lag_compensation")
 local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
 local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
+local Recoil = mod:original_require("scripts/utilities/recoil")
+local Sway = mod:original_require("scripts/utilities/sway")
+
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+--#region local functions
+    local table_contains = table.contains
+    local table_remove = table.remove
+    local table_size = table.size
+    local math_abs = math.abs
+    local math_huge = math.huge
+    local unit_alive = Unit.alive
+    local unit_world_position = Unit.world_position
+    local unit_world_rotation = Unit.world_rotation
+    local unit_get_child_units = Unit.get_child_units
+    local unit_light = Unit.light
+    local unit_debug_name = Unit.debug_name
+    local actor_unit = Actor.unit
+    local quaternion_identity = Quaternion.identity
+    local quaternion_forward = Quaternion.forward
+    local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local quaternion_look = Quaternion.look
+    local matrix4x4_identity = Matrix4x4.identity
+    local matrix4x4_transform = Matrix4x4.transform
+    local matrix4x4_set_translation = Matrix4x4.set_translation
+    local matrix4x4_set_scale = Matrix4x4.set_scale
+    local vector3_box = Vector3Box
+    local vector3 = Vector3
+    local vector3_zero = vector3.zero
+    local vector3_normalize = vector3.normalize
+    local vector3_length = vector3.length
+    local vector3_distance = vector3.distance
+    local world_physics_world = World.physics_world
+    local world_create_particles = World.create_particles
+    local world_destroy_particles = World.destroy_particles
+    local world_find_particles_variable = World.find_particles_variable
+    local world_set_particles_variable = World.set_particles_variable
+    local world_set_particles_material_vector3 = World.set_particles_material_vector3
+    local world_link_particles = World.link_particles
+    local world_move_particles = World.move_particles
+    local physics_world_raycast = PhysicsWorld.raycast
+    local light_set_casts_shadows = Light.set_casts_shadows
+    local light_set_enabled = Light.set_enabled
+    local pairs = pairs
+    local CLASS = CLASS
+    local script_unit = ScriptUnit
+--#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -40,7 +89,7 @@ mod._laser_pointer_template = {
     spot_reflector = false,
     intensity = .1,
     color_temperature = 6000,
-    color_filter = Vector3Box(255, 0, 0),
+    color_filter = vector3_box(255, 0, 0),
     cast_shadows = false,
     ies_profile = "content/environment/ies_profiles/narrow/narrow_05",
     volumetric_intensity = .001,
@@ -100,42 +149,7 @@ mod.acceptable_states = {
     "dodging",
     "ledge_vaulting",
 }
-
--- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
--- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
--- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
-
---#region local functions
-    local table_contains = table.contains
-    local table_remove = table.remove
-    local math_abs = math.abs
-    local unit_alive = Unit.alive
-    local unit_world_position = Unit.world_position
-    local unit_world_rotation = Unit.world_rotation
-    local unit_get_child_units = Unit.get_child_units
-    local unit_light = Unit.light
-    local unit_debug_name = Unit.debug_name
-    local quaternion_forward = Quaternion.forward
-    local quaternion_matrix4x4 = Quaternion.matrix4x4
-    local quaternion_look = Quaternion.look
-    local matrix4x4_transform = Matrix4x4.transform
-    local vector3 = Vector3
-    local vector3_zero = vector3.zero
-    local vector3_normalize = vector3.normalize
-    local vector3_length = vector3.length
-    local vector3_distance = vector3.distance
-    local world_physics_world = World.physics_world
-    local world_create_particles = World.create_particles
-    local world_destroy_particles = World.destroy_particles
-    local world_find_particles_variable = World.find_particles_variable
-    local world_set_particles_variable = World.set_particles_variable
-    local world_move_particles = World.move_particles
-    local physics_world_raycast = PhysicsWorld.raycast
-    local light_set_casts_shadows = Light.set_casts_shadows
-    local light_set_enabled = Light.set_enabled
-    local pairs = pairs
-    local CLASS = CLASS
---#endregion
+mod.unaccetable_states = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -153,8 +167,12 @@ mod.has_laser_pointer_attachment = function(self)
 	if self.initialized then
         -- Get wielded item
 		local item = self.visual_loadout_extension:item_from_slot(self.inventory_component.wielded_slot)
-        -- Check
-		return self:_has_laser_pointer_attachment(item)
+        -- Gear id
+        local gear_id = self:get_gear_id(item)
+        if gear_id and self:get_gear_setting(gear_id, "flashlight") then
+            -- Check
+            return self:_has_laser_pointer_attachment(item)
+        end
 	end
 end
 
@@ -165,7 +183,7 @@ mod._has_laser_pointer_attachment = function(self, item)
     attachments = attachments or item and item.__master_item and item.__master_item.attachments
 	if attachments then
         -- Check laser pointer
-		local laser_pointer = mod:_recursive_find_attachment_name(attachments, "laser_pointer")
+		local laser_pointer = self:_recursive_find_attachment_name(attachments, "laser_pointer")
 		return laser_pointer
 	end
 end
@@ -177,22 +195,27 @@ mod.get_laser_pointer_unit = function(self)
     -- Check weapon and laser pointer
 	if weapon and self:has_laser_pointer_attachment() then
 		local gear_id = self:get_gear_id(weapon.item)
+        self.attached_laser_pointers[gear_id] = self.attached_laser_pointers[gear_id] or {}
 		-- Check if unit set but not alive
-		if self.attached_laser_pointers[gear_id] then
-			if not unit_alive(self.attached_laser_pointers[gear_id]) then
-				self.attached_laser_pointers[gear_id] = nil
+		if table_size(self.attached_laser_pointers[gear_id]) > 0 then
+			if not unit_alive(self.attached_laser_pointers[gear_id].unit_1p) or not unit_alive(self.attached_laser_pointers[gear_id].unit_3p) then
+				self.attached_laser_pointers[gear_id] = {}
 				self:print("get_laser_pointer_unit - laser pointer unit destroyed", self._debug_skip_some)
 			end
 		end
 		-- Search for laser pointer unit
-		if not self.attached_laser_pointers[gear_id] then
-			self.attached_laser_pointers[gear_id] = self:_get_laser_pointer_unit(weapon.weapon_unit)
-			self:set_flashlight_template(self.attached_laser_pointers[gear_id], self._laser_pointer_template)
+		if table_size(self.attached_laser_pointers[gear_id]) == 0 then
+			-- self.attached_laser_pointers[gear_id] = self:_get_laser_pointer_unit(weapon.weapon_unit)
+            local weapon_3p = self.visual_loadout_extension:unit_3p_from_slot("slot_secondary")
+            self.attached_laser_pointers[gear_id] = {
+                unit_1p = self:_get_laser_pointer_unit(weapon.weapon_unit),
+                unit_3p = self:_get_laser_pointer_unit(weapon_3p),
+            }
+            self:set_flashlight_template(self.attached_laser_pointers[gear_id].unit_1p, self._laser_pointer_template)
+            self:set_flashlight_template(self.attached_laser_pointers[gear_id].unit_3p, self._laser_pointer_template)
 		end
 		-- Return cached unit
-		if unit_alive(self.attached_laser_pointers[gear_id]) then
-			return self.attached_laser_pointers[gear_id]
-		end
+		return self.attached_laser_pointers[gear_id].unit_1p, self.attached_laser_pointers[gear_id].unit_3p
 	else self:print("get_laser_pointer_unit - weapon is nil", self._debug_skip_some) end
 end
 
@@ -220,7 +243,10 @@ end
 
 -- Calculate laser end position
 mod.calculate_laser_end_position = function(self)
-    local laser_pointer = self:get_laser_pointer_unit()
+    local laser_pointer_1p, laser_pointer_3p = self:get_laser_pointer_unit()
+    local laser_pointer = laser_pointer_1p
+    local is_in_third_person = self:is_in_third_person()
+    if is_in_third_person then laser_pointer = laser_pointer_3p end
     if laser_pointer and unit_alive(laser_pointer) then
         -- Laser pointer position
         local laser_position = unit_world_position(laser_pointer, 2)
@@ -231,6 +257,17 @@ mod.calculate_laser_end_position = function(self)
         local camera_position = Managers.state.camera:camera_position(self.player.viewport_name)
         local camera_rotation = Managers.state.camera:camera_rotation(self.player.viewport_name)
         local camera_forward = quaternion_forward(camera_rotation)
+        if is_in_third_person then
+            if self.first_person_extension and self.unit_data and self.weapon_extension then
+                local first_person_unit = self.first_person_extension:first_person_unit()
+                local shoot_rotation = unit_world_rotation(first_person_unit, 1)
+                local movement_state_component = self.unit_data:read_component("movement_state")
+                shoot_rotation = Recoil.apply_weapon_recoil_rotation(self.weapon_extension:recoil_template(), self.unit_data:read_component("recoil"), movement_state_component, shoot_rotation)
+                shoot_rotation = Sway.apply_sway_rotation(self.weapon_extension:sway_template(), self.unit_data:read_component("sway"), movement_state_component, shoot_rotation)
+                camera_forward = quaternion_forward(shoot_rotation)
+                camera_position = unit_world_position(first_person_unit, 1)
+            end
+        end
 
         -- Calculate laser pointer end position
         local end_position = vector3_zero()
@@ -238,15 +275,19 @@ mod.calculate_laser_end_position = function(self)
         local end_direction = nil
         local forced_fallback = false
         local hit_actor = nil
-        local camera_hit_distance = math.huge
-        if self:vectors_almost_same(camera_forward, laser_forward, .2) or 
-                (not self.use_fallback and self:vectors_almost_same(camera_forward, laser_forward, .1)) then
-            local target_position = camera_position + camera_forward * MAX_DISTANCE
+        local camera_hit_distance = math_huge
+        local big_tolerance, small_tolerance = .2, .1
+        local forward_vector = nil
+        if is_in_third_person then big_tolerance, small_tolerance = .4, .2 end
+        if self:vectors_almost_same(camera_forward, laser_forward, big_tolerance) or (not self.use_fallback and self:vectors_almost_same(camera_forward, laser_forward, small_tolerance)) then
+            forward_vector = camera_forward
+            local target_position = camera_position + forward_vector * MAX_DISTANCE
             hit_position, end_direction, _, hit_actor = self:_ray_cast(camera_position, target_position, MAX_DISTANCE)
             end_position = hit_position
             camera_hit_distance = vector3_distance(camera_position, end_position)
         else
             forced_fallback = true
+            forward_vector = laser_forward
             local target_position = laser_position + laser_forward * MAX_DISTANCE
             hit_position, end_direction, _, hit_actor = self:_ray_cast(laser_position, target_position, MAX_DISTANCE)
             if hit_position then
@@ -256,31 +297,40 @@ mod.calculate_laser_end_position = function(self)
             end
         end
         if hit_actor then
-            local hit_unit = Actor.unit(hit_actor)
+            local hit_unit = actor_unit(hit_actor)
             local side_system = Managers.state.extension:system("side_system")
             local is_enemy = side_system:is_enemy(self.player_unit, hit_unit)
             hit_actor = is_enemy
         end
-        return laser_position, end_position, end_direction, forced_fallback, camera_hit_distance, hit_actor
+        return laser_position, end_position, end_direction, forced_fallback, camera_hit_distance, hit_actor, camera_position, forward_vector
     else self:print("calculate_laser_end_position laser pointer unit nil") end
 end
 
-mod.toggle_laser_light = function(self, laser_pointer, laser_pointer_state)
-    local light = unit_light(laser_pointer, 1)
-    if light then
+mod.toggle_laser_light = function(self, laser_pointer_state)
+    local laser_pointer_1p, laser_pointer_3p = self:get_laser_pointer_unit()
+    local light_1p = unit_light(laser_pointer_1p, 1)
+    local light_3p = unit_light(laser_pointer_3p, 1)
+    if light_1p then
         -- Set values
-        light_set_enabled(light, laser_pointer_state)
-        light_set_casts_shadows(light, self:get("mod_option_flashlight_shadows"))
-        if laser_pointer_state and self:get("mod_option_flashlight_flicker_start") then
-            self.start_flicker_now = true
-        end
+        light_set_enabled(light_1p, laser_pointer_state)
+        light_set_casts_shadows(light_1p, self:get("mod_option_flashlight_shadows"))
+    end
+    if light_3p then
+        -- Set values
+        light_set_enabled(light_3p, laser_pointer_state)
+        light_set_casts_shadows(light_3p, self:get("mod_option_flashlight_shadows"))
+    end
+    if laser_pointer_state and self:get("mod_option_flashlight_flicker_start") then
+        self.start_flicker_now = true
     end
 end
 
 -- Toggle laser pointer
-mod.toggle_laser = function(self, retain, optional_laser_pointer_unit, optional_value)
+mod.toggle_laser = function(self, retain, optional_value)
     if self.initialized then
-        local laser_pointer = optional_laser_pointer_unit or self:get_laser_pointer_unit()
+        local laser_pointer_1p, laser_pointer_3p = self:get_laser_pointer_unit()
+        local laser_pointer = laser_pointer_1p
+        if self:is_in_third_person() then laser_pointer = laser_pointer_3p end
         if laser_pointer and unit_alive(laser_pointer) then
             local laser_pointer_state = self:persistent_table("weapon_customization").laser_pointer_on + 1
             if retain then laser_pointer_state = laser_pointer_state - 1 end
@@ -296,14 +346,14 @@ mod.toggle_laser = function(self, retain, optional_laser_pointer_unit, optional_
             if laser_pointer_state > 0 then
                 self:despawn_dots()
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
-                self:toggle_laser_light(laser_pointer, laser_pointer_state == 2)
+                self:toggle_laser_light(laser_pointer_state == 2)
                 if self:get("mod_option_laser_pointer_wild") and laser_pointer_state == 2 then
                     self:set_flicker_template(self.laser_pointer_flicker)
                 else
                     self:set_flicker_template(self._flicker_settings)
                 end
             else
-                self:toggle_laser_light(laser_pointer, false)
+                self:toggle_laser_light(false)
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
                 self:despawn_all_lasers()
             end
@@ -312,14 +362,17 @@ mod.toggle_laser = function(self, retain, optional_laser_pointer_unit, optional_
     end
 end
 
+mod.world = function(self)
+    return Managers.world:world("level_world")
+end
+
 mod.despawn_dots = function(self)
-    local world = Managers.world:world("level_world")
     if mod.weapon_dot then
-        world_destroy_particles(world, mod.weapon_dot)
+        world_destroy_particles(self:world(), mod.weapon_dot)
         mod.weapon_dot = nil
     end
     if mod.laser_dot then
-        world_destroy_particles(world, mod.laser_dot)
+        world_destroy_particles(self:world(), mod.laser_dot)
         mod.laser_dot = nil
     end
 end
@@ -335,27 +388,25 @@ end
 
 -- Despawn laser pointer particle
 mod.despawn_laser = function(self, effect_id)
-    local world = Managers.world:world("level_world")
-    world_destroy_particles(world, effect_id)
+    world_destroy_particles(self:world(), effect_id)
 end
 
 -- Spawn laser pointer particle
 mod.spawn_laser = function(self)
     local position, end_position = self:calculate_laser_end_position()
     self:check_fx_spawner()
-    self.fx_extension:_spawn_unit_fx_line(LINE_EFFECT, true, "slot_primary_laser_pointer", end_position, true, "stop", vector3(1, 1, 1), false)
+    local spawner_name = "slot_primary_laser_pointer_1p"
+    if self:is_in_third_person() then spawner_name = "slot_primary_laser_pointer_3p" end
+    self.fx_extension:_spawn_unit_fx_line(LINE_EFFECT, true, spawner_name, end_position, true, "stop", vector3(1, 1, 1), false)
 end
 
 -- Execute raycast
 mod._ray_cast = function(self, from, to, distance)
-    local world = Managers.world:world("level_world")
-    local physics_world = world_physics_world(world)
+    local physics_world = world_physics_world(self:world())
     local rewind_ms = LagCompensation.rewind_ms(false, true, self.player)
 	local collision_filter = "filter_player_character_shooting_projectile"
 	local to_target = to - from
 	local direction = vector3_normalize(to_target)
-	-- local from_offset = direction * 3
-	-- from = from + from_offset
 	local _, hit_position, _, _, hit_actor = physics_world_raycast(physics_world, from, direction, MAX_DISTANCE, "closest", "types", "both", "collision_filter", collision_filter, "rewind_ms", rewind_ms)
 
 	if not hit_position then
@@ -374,20 +425,34 @@ mod.reset_laser_pointer = function(self)
 end
 
 mod.check_fx_spawner = function(self)
-    local spawner = self.fx_extension._vfx_spawners["slot_primary_laser_pointer"]
+    local spawner = self.fx_extension._vfx_spawners["slot_primary_laser_pointer_1p"]
     -- Unregister spawner if necessary
     if spawner and (not spawner.unit or not unit_alive(spawner.unit)) then
-        self.fx_extension._vfx_spawners["slot_primary_laser_pointer"] = nil
+        self.fx_extension._vfx_spawners["slot_primary_laser_pointer_1p"] = nil
+        self.fx_extension._vfx_spawners["slot_primary_laser_pointer_3p"] = nil
         spawner = nil
     end
-    local laser_pointer = mod:get_laser_pointer_unit()
-    if laser_pointer then
+    local laser_pointer_1p, laser_pointer_3p = mod:get_laser_pointer_unit()
+    if laser_pointer_1p and laser_pointer_3p then
         -- Register spawner if necessary
         if not spawner then
-            self.fx_extension._vfx_spawners["slot_primary_laser_pointer"] = {
+            self.fx_extension._vfx_spawners["slot_primary_laser_pointer_1p"] = {
                 node = 2,
-                unit = laser_pointer,
+                unit = laser_pointer_1p,
             }
+            self.fx_extension._vfx_spawners["slot_primary_laser_pointer_3p"] = {
+                node = 2,
+                unit = laser_pointer_3p,
+            }
+        end
+    end
+end
+
+mod.update_laser_pointer = function(self)
+    if self:has_laser_pointer_attachment() then
+        local _, changed = self:is_in_third_person()
+        if changed then
+            self:toggle_laser(true)
         end
     end
 end
@@ -406,9 +471,8 @@ mod:hook(CLASS.InventoryWeaponsView, "_equip_item", function(func, self, slot_na
 end)
 
 mod:hook(CLASS.PlayerUnitFxExtension, "update", function(func, self, unit, dt, t, ...)
-    if mod.initialized then
-        local laser_pointer = mod:get_laser_pointer_unit()
-        if laser_pointer and unit_alive(laser_pointer) and mod:has_laser_pointer_attachment() then
+    if mod.initialized and unit == mod.player_unit then
+        if mod:has_laser_pointer_attachment() then
             mod.use_fallback = not table_contains(mod.acceptable_states, mod.character_state_machine_extensions:current_state())
             if mod:persistent_table("weapon_customization").laser_pointer_on > 0 then
                 if t > mod.laser_timer then
@@ -428,8 +492,11 @@ mod:hook(CLASS.PlayerUnitFxExtension, "update", function(func, self, unit, dt, t
 end)
 
 mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, dt, t, ...)
-    if mod.initialized then
-        local laser_pointer = mod:get_laser_pointer_unit()
+    if mod.initialized and unit == mod.player_unit then
+        local laser_pointer_1p, laser_pointer_3p = mod:get_laser_pointer_unit()
+        local laser_pointer = laser_pointer_1p
+        local is_in_third_person = mod:is_in_third_person()
+        if is_in_third_person then laser_pointer = laser_pointer_3p end
         if laser_pointer and unit_alive(laser_pointer) then
 
             if #mod:persistent_table("weapon_customization").spawned_lasers > 0 then
@@ -442,29 +509,43 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                 -- Dot
                 local laser_position = unit_world_position(laser_pointer, 1)
                 local weapon_dot_position = laser_position + direction * .05
-                if not mod.weapon_dot then
-                    mod.weapon_dot = world_create_particles(self._world, LASER_DOT, vector3_zero(), Quaternion.identity())
-                    local unit_world_pose = Matrix4x4.identity()
-	                Matrix4x4.set_translation(unit_world_pose, vector3(0, .065, 0))
-                    Matrix4x4.set_scale(unit_world_pose, vector3(1, 1, 1))
-                    World.link_particles(self._world, mod.weapon_dot, laser_pointer, 2, unit_world_pose, "destroy")
-                    World.set_particles_material_vector3(self._world, mod.weapon_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
+                if not mod.weapon_dot and mod:get("mod_option_laser_pointer_weapon_dot") then
+                    mod.weapon_dot = world_create_particles(self._world, LASER_DOT, vector3_zero(), quaternion_identity())
+                    local unit_world_pose = matrix4x4_identity()
+	                matrix4x4_set_translation(unit_world_pose, vector3(0, .065, 0))
+                    matrix4x4_set_scale(unit_world_pose, vector3(.5, .5, .5))
+                    world_link_particles(self._world, mod.weapon_dot, laser_pointer, 2, unit_world_pose, "destroy")
+                    world_set_particles_material_vector3(self._world, mod.weapon_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
                 end
                 if not mod.laser_dot then
                     mod.laser_dot = world_create_particles(self._world, LASER_DOT, end_position)
-                    World.set_particles_material_vector3(self._world, mod.laser_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
+                    world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
                 else
                     local laser_pos = end_position
                     if not mod.use_fallback and not forced_fallback then
                         local camera_position = Managers.state.camera:camera_position(mod.player.viewport_name)
                         local camera_rotation = Managers.state.camera:camera_rotation(mod.player.viewport_name)
                         local camera_forward = quaternion_forward(camera_rotation)
-                        if hit_actor then
-                            laser_pos = camera_position + camera_forward * (2 / mod:get("mod_option_laser_pointer_dot_size"))
-                        elseif camera_hit_distance < 6 then
-                            laser_pos = camera_position + camera_forward * (camera_hit_distance / mod:get("mod_option_laser_pointer_dot_size"))
-                        else
-                            laser_pos = camera_position + camera_forward * (6 / mod:get("mod_option_laser_pointer_dot_size"))
+                        if not is_in_third_person then
+                            if hit_actor then
+                                laser_pos = camera_position + camera_forward * (2 / mod:get("mod_option_laser_pointer_dot_size"))
+                            elseif camera_hit_distance < 6 then
+                                laser_pos = camera_position + camera_forward * (camera_hit_distance / mod:get("mod_option_laser_pointer_dot_size"))
+                            else
+                                laser_pos = camera_position + camera_forward * (6 / mod:get("mod_option_laser_pointer_dot_size"))
+                            end
+                        elseif is_in_third_person then
+                            local distance = vector3_distance(camera_position, end_position)
+                            local to_camera = end_position - camera_position
+                            local to_camera_direction = vector3_normalize(to_camera)
+                            laser_pos = laser_pos - to_camera_direction * distance
+                            if hit_actor then
+                                laser_pos = laser_pos + to_camera_direction * (2 / mod:get("mod_option_laser_pointer_dot_size"))
+                            elseif camera_hit_distance < 6 then
+                                laser_pos = laser_pos + to_camera_direction * (camera_hit_distance / mod:get("mod_option_laser_pointer_dot_size"))
+                            else
+                                laser_pos = laser_pos + to_camera_direction * (6 / mod:get("mod_option_laser_pointer_dot_size"))
+                            end
                         end
                     end
                     world_move_particles(self._world, mod.laser_dot, laser_pos)

@@ -16,9 +16,6 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
     local pairs = pairs
     local ipairs = ipairs
     local type = type
---#endregion
-
---#region Table functions
     table.combine = function(...)
         local arg = {...}
         local combined = {}
@@ -57,6 +54,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         return res
     end
+--#endregion
+
+--#region Table functions
     --#region Common
         local _flashlights_attachments = function()
             return {
@@ -411,583 +411,629 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 trinket_hook_04_coated_v =  {model = "content/items/weapons/player/trinkets/trinket_hook_04_coated_v",  type = "trinket_hook", parent = tv(parent, 25), angle = angle, move = move, remove = tv(remove, 25), mesh_move = false},
             }
         end
+        local _slot_trinket_1_attachments = function()
+            return {
+                {id = "slot_trinket_1", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            }
+        end
+        local _slot_trinket_1_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                slot_trinket_1 = {model = "content/items/weapons/player/trinkets/empty_trinket", type = "slot_trinket_1", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
+            }
+        end
+        local _slot_trinket_2_attachments = function()
+            return {
+                {id = "slot_trinket_2", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+            }
+        end
+        local _slot_trinket_2_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                slot_trinket_2 = {model = "content/items/weapons/player/trinkets/empty_trinket", type = "slot_trinket_2", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
+            }
+        end
     --#endregion
     --#region Ogryn Guns
-        local _stubber_barrel_attachments = function()
-            return {
-                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
-            }
-        end
-        local _stubber_barrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                barrel_default =    {model = "",                                                                            type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_01",   type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_02",   type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_03",   type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _stubber_receiver_attachments = function()
-            return {
-                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _stubber_receiver_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                receiver_default =  {model = "",                                                                                type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/stubgun_heavy_ogryn_receiver_01",   type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/stubgun_heavy_ogryn_receiver_02",   type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/stubgun_heavy_ogryn_receiver_03",   type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _stubber_magazine_attachments = function()
-            return {
-                {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_03",        name = "Magazine 3",    sounds = {UISoundEvents.weapons_trinket_select}},
-            }
-        end
-        local _stubber_magazine_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                magazine_default =  {model = "",                                                                                type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_01",   type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
-                magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_02",   type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
-                magazine_03 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_03",   type = "magazine", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
-            }
-        end
-        local _stubber_grip_attachments = function()
-            return {
-                {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.smart_tag_hud_default}},
-                {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.smart_tag_hud_default}},
-                {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.smart_tag_hud_default}},
-                {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.smart_tag_hud_default}},
-            }
-        end
-        local _stubber_grip_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                grip_default =  {model = "",                                                                        type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, mesh_move = false},
-                grip_01 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, mesh_move = false},
-                grip_02 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_02",   type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, mesh_move = false},
-                grip_03 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_03",   type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}, mesh_move = false},
-            }
-        end
-        local _ogryn_bayonet_attachments = function()
-            return {
-                {id = "bayonet_default",    name = "Default",   sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "bayonet_01",         name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "bayonet_02",         name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "bayonet_03",         name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "bayonet_blade_01",   name = "Blade",     sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-            }
-        end
-        local _ogryn_bayonet_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                bayonet_default =   {model = "",                                                                        type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
-                bayonet_01 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = false},
-                bayonet_02 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = false},
-                bayonet_03 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = false},
-                bayonet_blade_01 =  {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01",         type = "bayonet", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = false},
-            }
-        end
-        local _ripper_barrel_attachments = function()
-            return {
-                -- {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_01",      name = "Ripper Barrel A",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_02",      name = "Ripper Barrel B",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_03",      name = "Ripper Barrel C",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_04",      name = "Ripper Barrel D",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_05",      name = "Ripper Barrel E",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_06",      name = "Ripper Barrel F",  sounds = {UISoundEvents.talents_equip_talent}},
-            }
-        end
-        local _ripper_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            local type = type or "barrel"
-            return {
-                barrel_default =    {model = "",                                                                        type = type, parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
-                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_01",   type = type, parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = false},
-                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_02",   type = type, parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = false},
-                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_03",   type = type, parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = false},
-                barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_04",   type = type, parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = false},
-                barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_05",   type = type, parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6), mesh_move = false},
-                barrel_06 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_06",   type = type, parent = tv(parent, 7), angle = angle, move = move, remove = tv(remove, 7), mesh_move = false},
-            }
-        end
-        local _ripper_receiver_attachments = function()
-            return {
-                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_04",        name = "Receiver 4",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_05",        name = "Receiver 5",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_06",        name = "Receiver 6",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _ripper_receiver_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                receiver_default =  {model = "",                                                                            type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), no_support = {"trinket_hook_empty"}},
-                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_01",   type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), no_support = {"trinket_hook_empty"}},
-                receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_02",   type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), no_support = {"trinket_hook_empty"}},
-                receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_03",   type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), no_support = {"trinket_hook_empty"}},
-                receiver_04 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_04",   type = "receiver", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), no_support = {"trinket_hook_empty"}},
-                receiver_05 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_05",   type = "receiver", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6), no_support = {"trinket_hook_empty"}},
-                receiver_06 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_06",   type = "receiver", parent = tv(parent, 7), angle = angle, move = move, remove = tv(remove, 7), no_support = {"trinket_hook_empty"}},
-            }
-        end
-        local _ripper_magazine_attachments = function()
-            return {
-                {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_03",        name = "Magazine 3",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_04",        name = "Magazine 4",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_05",        name = "Magazine 5",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_06",        name = "Magazine 6",    sounds = {UISoundEvents.weapons_trinket_select}},
-            }
-        end
-        local _ripper_magazine_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                magazine_default =  {model = "",                                                                            type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_01",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_02",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                magazine_03 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_03",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                magazine_04 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_04",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                magazine_05 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_05",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                magazine_06 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_06",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-            }
-        end
-        local _ripper_handle_attachments = function()
-            return {
-                {id = "handle_default", name = "Default",   sounds = {UISoundEvents.smart_tag_hud_default}},
-                {id = "handle_01",      name = "Handle 1",  sounds = {UISoundEvents.smart_tag_hud_default}},
-                {id = "handle_02",      name = "Handle 2",  sounds = {UISoundEvents.smart_tag_hud_default}},
-                {id = "handle_03",      name = "Handle 3",  sounds = {UISoundEvents.smart_tag_hud_default}},
-                {id = "handle_04",      name = "Handle 4",  sounds = {UISoundEvents.smart_tag_hud_default}},
-            }
-        end
-        local _ripper_handle_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                handle_default =    {model = "",                                                                        type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                handle_01 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_01",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                handle_02 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_02",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                handle_03 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_03",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                handle_04 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_04",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-            }
-        end
-        local _thumper_grip_attachments = function()
-            return {
-                {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "grip_04",        name = "Grip 4",    sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "grip_05",        name = "Grip 5",    sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _thumper_grip_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                grip_default =  {model = "",                                                                    type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                grip_01 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
-                grip_02 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_02",   type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
-                grip_03 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_03",   type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
-                grip_04 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_04",   type = "grip", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
-                grip_05 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_05",   type = "grip", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6)},
-            }
-        end
-        local _thumper_sight_attachments = function()
-            return {
-                {id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "sight_01",       name = "Sight 1", sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "sight_02",       name = "No Sight", sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "sight_03",       name = "Sight 3", sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "sight_04",       name = "Sight 4", sounds = {UISoundEvents.weapons_trinket_select}},
-            }
-        end
-        local _thumper_sight_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                sight_default = {model = "",                                                                    type = "sight", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                sight_01 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_01", type = "sight", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
-                sight_02 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_02", type = "sight", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
-                sight_03 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_03", type = "sight", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
-                sight_04 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_04", type = "sight", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
-            }
-        end
-        local _thumper_body_attachments = function()
-            return {
-                {id = "body_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_01",      name = "Body 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_02",      name = "Body 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_03",      name = "Body 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_04",      name = "Body 4",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_05",      name = "Body 5",  sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _thumper_body_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                body_default = {model = "",                                                                type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                body_01 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_01", type = "body", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
-                body_02 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_02", type = "body", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
-                body_03 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_03", type = "body", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
-                body_04 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_04", type = "body", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
-                body_05 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_05", type = "body", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6)},
-            }
-        end
-        local _gauntlet_barrel_attachments = function()
-            return {
-                {id = "barrel_default", name = "Default",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_01",      name = "Barrel 1", sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_02",      name = "Barrel 2", sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_03",      name = "Barrel 3", sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_04",      name = "Barrel 4", sounds = {UISoundEvents.talents_equip_talent}},
-            }
-        end
-        local _gauntlet_barrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                barrel_default = {model = "",                                                                     type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                barrel_01 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                barrel_02 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_02", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                barrel_03 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_03", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                barrel_04 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_04", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = "both", no_support = {"trinket_hook_empty"}},
-            }
-        end
-        local _gauntlet_body_attachments = function()
-            return {
-                {id = "body_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_01",      name = "Body 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_02",      name = "Body 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_03",      name = "Body 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_04",      name = "Body 4",  sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _gauntlet_body_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                body_default = {model = "",                                                                         type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                body_01 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_01", type = "body", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
-                body_02 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_02", type = "body", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
-                body_03 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_03", type = "body", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
-                body_04 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_04", type = "body", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
-            }
-        end
-        local _gauntlet_magazine_attachments = function()
-            return {
-                {id = "magazine_default", name = "Default",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_01",      name = "Magazine 1", sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_02",      name = "Magazine 2", sounds = {UISoundEvents.weapons_trinket_select}},
-            }
-        end
-        local _gauntlet_magazine_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                magazine_default = {model = "",                                                                         type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                magazine_01 =      {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_01", type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-                magazine_02 =      {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_02", type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
-            }
-        end
+        --#region Common
+            local _ogryn_bayonet_attachments = function()
+                return {
+                    {id = "bayonet_default",    name = "Default",   sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "bayonet_01",         name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "bayonet_02",         name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "bayonet_03",         name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "bayonet_blade_01",   name = "Blade",     sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                }
+            end
+            local _ogryn_bayonet_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    bayonet_default =   {model = "",                                                                        type = "bayonet", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
+                    bayonet_01 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = false},
+                    bayonet_02 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_02", type = "bayonet", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = false},
+                    bayonet_03 =        {model = "content/items/weapons/player/ranged/bayonets/rippergun_rifle_bayonet_03", type = "bayonet", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = false},
+                    bayonet_blade_01 =  {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01",         type = "bayonet", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = false},
+                }
+            end
+        --#endregion
+        --#region Stubber
+            local _stubber_barrel_attachments = function()
+                return {
+                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
+                }
+            end
+            local _stubber_barrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    barrel_default =    {model = "",                                                                            type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_01",   type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_02",   type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_heavy_ogryn_barrel_03",   type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _stubber_receiver_attachments = function()
+                return {
+                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _stubber_receiver_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    receiver_default =  {model = "",                                                                                type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/stubgun_heavy_ogryn_receiver_01",   type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/stubgun_heavy_ogryn_receiver_02",   type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/stubgun_heavy_ogryn_receiver_03",   type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _stubber_magazine_attachments = function()
+                return {
+                    {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_03",        name = "Magazine 3",    sounds = {UISoundEvents.weapons_trinket_select}},
+                }
+            end
+            local _stubber_magazine_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    magazine_default =  {model = "",                                                                                type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_01",   type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                    magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_02",   type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                    magazine_03 =       {model = "content/items/weapons/player/ranged/magazines/stubgun_heavy_ogryn_magazine_03",   type = "magazine", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
+                }
+            end
+            local _stubber_grip_attachments = function()
+                return {
+                    {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.smart_tag_hud_default}},
+                }
+            end
+            local _stubber_grip_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    grip_default =  {model = "",                                                                        type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, mesh_move = false},
+                    grip_01 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, mesh_move = false},
+                    grip_02 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_02",   type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}, mesh_move = false},
+                    grip_03 =       {model = "content/items/weapons/player/ranged/grips/stubgun_heavy_ogryn_grip_03",   type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}, mesh_move = false},
+                }
+            end
+        --#endregion
+        --#region Ripper
+            local _ripper_barrel_attachments = function()
+                return {
+                    -- {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_01",      name = "Ripper Barrel A",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_02",      name = "Ripper Barrel B",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_03",      name = "Ripper Barrel C",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_04",      name = "Ripper Barrel D",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_05",      name = "Ripper Barrel E",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_06",      name = "Ripper Barrel F",  sounds = {UISoundEvents.talents_equip_talent}},
+                }
+            end
+            local _ripper_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                local type = type or "barrel"
+                return {
+                    barrel_default =    {model = "",                                                                        type = type, parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
+                    barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_01",   type = type, parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = false},
+                    barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_02",   type = type, parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = false},
+                    barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_03",   type = type, parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = false},
+                    barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_04",   type = type, parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = false},
+                    barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_05",   type = type, parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6), mesh_move = false},
+                    barrel_06 =         {model = "content/items/weapons/player/ranged/barrels/rippergun_rifle_barrel_06",   type = type, parent = tv(parent, 7), angle = angle, move = move, remove = tv(remove, 7), mesh_move = false},
+                }
+            end
+            local _ripper_receiver_attachments = function()
+                return {
+                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_04",        name = "Receiver 4",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_05",        name = "Receiver 5",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_06",        name = "Receiver 6",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _ripper_receiver_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    receiver_default =  {model = "",                                                                            type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), no_support = {"trinket_hook_empty"}},
+                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_01",   type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), no_support = {"trinket_hook_empty"}},
+                    receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_02",   type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), no_support = {"trinket_hook_empty"}},
+                    receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_03",   type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), no_support = {"trinket_hook_empty"}},
+                    receiver_04 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_04",   type = "receiver", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), no_support = {"trinket_hook_empty"}},
+                    receiver_05 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_05",   type = "receiver", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6), no_support = {"trinket_hook_empty"}},
+                    receiver_06 =       {model = "content/items/weapons/player/ranged/recievers/rippergun_rifle_receiver_06",   type = "receiver", parent = tv(parent, 7), angle = angle, move = move, remove = tv(remove, 7), no_support = {"trinket_hook_empty"}},
+                }
+            end
+            local _ripper_magazine_attachments = function()
+                return {
+                    {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_03",        name = "Magazine 3",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_04",        name = "Magazine 4",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_05",        name = "Magazine 5",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_06",        name = "Magazine 6",    sounds = {UISoundEvents.weapons_trinket_select}},
+                }
+            end
+            local _ripper_magazine_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    magazine_default =  {model = "",                                                                            type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_01",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_02",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    magazine_03 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_03",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    magazine_04 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_04",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    magazine_05 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_05",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    magazine_06 =       {model = "content/items/weapons/player/ranged/magazines/rippergun_rifle_magazine_06",   type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                }
+            end
+            local _ripper_handle_attachments = function()
+                return {
+                    {id = "handle_default", name = "Default",   sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "handle_01",      name = "Handle 1",  sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "handle_02",      name = "Handle 2",  sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "handle_03",      name = "Handle 3",  sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "handle_04",      name = "Handle 4",  sounds = {UISoundEvents.smart_tag_hud_default}},
+                }
+            end
+            local _ripper_handle_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    handle_default =    {model = "",                                                                        type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    handle_01 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_01",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    handle_02 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_02",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    handle_03 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_03",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    handle_04 =         {model = "content/items/weapons/player/ranged/handles/rippergun_rifle_handle_04",   type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                }
+            end
+        --#endregion
+        --#region Thumber
+            local _thumper_grip_attachments = function()
+                return {
+                    {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "grip_04",        name = "Grip 4",    sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "grip_05",        name = "Grip 5",    sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _thumper_grip_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    grip_default =  {model = "",                                                                    type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    grip_01 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_01",   type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
+                    grip_02 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_02",   type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
+                    grip_03 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_03",   type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
+                    grip_04 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_04",   type = "grip", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+                    grip_05 =       {model = "content/items/weapons/player/ranged/grips/shotgun_grenade_grip_05",   type = "grip", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6)},
+                }
+            end
+            local _thumper_sight_attachments = function()
+                return {
+                    {id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "sight_01",       name = "Sight 1", sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "sight_02",       name = "No Sight", sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "sight_03",       name = "Sight 3", sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "sight_04",       name = "Sight 4", sounds = {UISoundEvents.weapons_trinket_select}},
+                }
+            end
+            local _thumper_sight_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    sight_default = {model = "",                                                                    type = "sight", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    sight_01 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_01", type = "sight", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
+                    sight_02 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_02", type = "sight", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
+                    sight_03 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_03", type = "sight", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
+                    sight_04 =      {model = "content/items/weapons/player/ranged/sights/shotgun_grenade_sight_04", type = "sight", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+                }
+            end
+            local _thumper_body_attachments = function()
+                return {
+                    {id = "body_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_01",      name = "Body 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_02",      name = "Body 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_03",      name = "Body 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_04",      name = "Body 4",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_05",      name = "Body 5",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _thumper_body_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    body_default = {model = "",                                                                type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    body_01 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_01", type = "body", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
+                    body_02 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_02", type = "body", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
+                    body_03 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_03", type = "body", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
+                    body_04 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_04", type = "body", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+                    body_05 =      {model = "content/items/weapons/player/melee/full/shotgun_grenade_full_05", type = "body", parent = tv(parent, 6), angle = angle, move = move, remove = tv(remove, 6)},
+                }
+            end
+        --#endregion
+        --#region Gauntlet
+            local _gauntlet_barrel_attachments = function()
+                return {
+                    {id = "barrel_default", name = "Default",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_01",      name = "Barrel 1", sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_02",      name = "Barrel 2", sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_03",      name = "Barrel 3", sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_04",      name = "Barrel 4", sounds = {UISoundEvents.talents_equip_talent}},
+                }
+            end
+            local _gauntlet_barrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    barrel_default = {model = "",                                                                     type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    barrel_01 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    barrel_02 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_02", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    barrel_03 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_03", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    barrel_04 =      {model = "content/items/weapons/player/ranged/barrels/gauntlet_basic_barrel_04", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5), mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                }
+            end
+            local _gauntlet_body_attachments = function()
+                return {
+                    {id = "body_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_01",      name = "Body 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_02",      name = "Body 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_03",      name = "Body 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_04",      name = "Body 4",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _gauntlet_body_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    body_default = {model = "",                                                                         type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    body_01 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_01", type = "body", parent = tv(parent, 2), angle = angle, move = move, remove = tv(remove, 2)},
+                    body_02 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_02", type = "body", parent = tv(parent, 3), angle = angle, move = move, remove = tv(remove, 3)},
+                    body_03 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_03", type = "body", parent = tv(parent, 4), angle = angle, move = move, remove = tv(remove, 4)},
+                    body_04 =      {model = "content/items/weapons/player/ranged/recievers/gauntlet_basic_receiver_04", type = "body", parent = tv(parent, 5), angle = angle, move = move, remove = tv(remove, 5)},
+                }
+            end
+            local _gauntlet_magazine_attachments = function()
+                return {
+                    {id = "magazine_default", name = "Default",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_01",      name = "Magazine 1", sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_02",      name = "Magazine 2", sounds = {UISoundEvents.weapons_trinket_select}},
+                }
+            end
+            local _gauntlet_magazine_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    magazine_default = {model = "",                                                                         type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    magazine_01 =      {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_01", type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                    magazine_02 =      {model = "content/items/weapons/player/ranged/magazines/gauntlet_basic_magazine_02", type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1)},
+                }
+            end
+        --#endregion
     --#endregion
     --#region Ogryn Melee
-        local _ogryn_shovel_head_attachments = function()
-            return {
-                {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_01",      name = "Head 1",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_02",      name = "Head 2",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_03",      name = "Head 3",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_04",      name = "Head 4",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_05",      name = "Head 5",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-            }
-        end
-        local _ogryn_shovel_head_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                head_default = {model = "",                                                              type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                head_01 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_01", type = "head", parent = tv(parent, 2), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                head_02 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_02", type = "head", parent = tv(parent, 3), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                head_03 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_03", type = "head", parent = tv(parent, 4), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                head_04 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_04", type = "head", parent = tv(parent, 5), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                head_05 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_05", type = "head", parent = tv(parent, 6), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-            }
-        end
-        local _ogryn_shovel_grip_attachments = function()
-            return {
-                {id = "grip_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_01",      name = "Grip 1",  sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_02",      name = "Grip 2",  sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_03",      name = "Grip 3",  sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_04",      name = "Grip 4",  sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_05",      name = "Grip 5",  sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _ogryn_shovel_grip_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                grip_default = {model = "",                                                              type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                grip_01 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_01", type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                grip_02 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_02", type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                grip_03 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_03", type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-                grip_04 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_04", type = "grip", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
-                grip_05 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_05", type = "grip", parent = tv(parent, 6), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _ogryn_shovel_pommel_attachments = function()
-            return {
-                {id = "pommel_default", name = "Default",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_01",      name = "Pommel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_02",      name = "Pommel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_03",      name = "Pommel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_04",      name = "Pommel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_05",      name = "Pommel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _ogryn_shovel_pommel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                pommel_default = {model = "",                                                                  type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = "both"},
-                pommel_01 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_01", type = "pommel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = "both"},
-                pommel_02 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_02", type = "pommel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = "both"},
-                pommel_03 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_03", type = "pommel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = "both"},
-                pommel_04 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_04", type = "pommel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = "both"},
-                pommel_05 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_05", type = "pommel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = "both"},
-            }
-        end
-        local _combat_blade_blade_attachments = function()
-            return {
-                {id = "blade_default",  name = "Default", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "blade_01",       name = "Blade 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "blade_02",       name = "Blade 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "blade_03",       name = "Blade 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "blade_04",       name = "Blade 4", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "blade_05",       name = "Blade 5", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "blade_06",       name = "Blade 6", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-            }
-        end
-        local _combat_blade_blade_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                blade_default = {model = "",                                                                type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
-                blade_01 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_01", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
-                blade_02 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_02", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
-                blade_03 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_03", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
-                blade_04 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_04", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
-                blade_05 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_05", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
-                blade_06 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_06", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
-            }
-        end
-        local _combat_blade_grip_attachments = function()
-            return {
-                {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_04",        name = "Grip 4",    sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_05",        name = "Grip 5",    sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_06",        name = "Grip 6",    sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _combat_blade_grip_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                grip_default =  {model = "",                                                                type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                grip_01 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_01",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
-                grip_02 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_02",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
-                grip_03 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_03",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}},
-                grip_04 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_04",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
-                grip_05 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_05",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
-                grip_06 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_06",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
-            }
-        end
-        local _combat_blade_handle_attachments = function()
-            return {
-                {id = "handle_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "handle_01",      name = "Handle 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "handle_02",      name = "Handle 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "handle_03",      name = "Handle 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "handle_04",      name = "Handle 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "handle_05",      name = "Handle 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "handle_06",      name = "Handle 6",  sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _combat_blade_handle_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                handle_default =    {model = "",                                                                    type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                handle_01 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_01",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                handle_02 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_02",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                handle_03 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_03",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                handle_04 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_04",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                handle_05 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_05",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                handle_06 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_06",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _power_maul_shaft_attachments = function()
-            return {
-                {id = "shaft_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_01",       name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_02",       name = "Shaft 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_03",       name = "Shaft 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_04",       name = "Shaft 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shaft_05",       name = "Shaft 5", sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _power_maul_shaft_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                shaft_default = {model = "",                                                                type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                shaft_01 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_01",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                shaft_02 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_02",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                shaft_03 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_03",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                shaft_04 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_04",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                shaft_05 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_05",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _power_maul_head_attachments = function()
-            return {
-                {id = "head_default",   name = "Default",   sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_01",        name = "Head 1",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_02",        name = "Head 2",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_03",        name = "Head 3",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_04",        name = "Head 4",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "head_05",        name = "Head 5",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-            }
-        end
-        local _power_maul_head_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                head_default =  {model = "",                                                            type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                head_01 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_01", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                head_02 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_02", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                head_03 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_03", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                head_04 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_04", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                head_05 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_05", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _power_maul_pommel_attachments = function()
-            return {
-                {id = "pommel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_01",      name = "Pommel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_02",      name = "Pommel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_03",      name = "Pommel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_04",      name = "Pommel 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "pommel_05",      name = "Pommel 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _power_maul_pommel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                pommel_default =    {model = "",                                                                type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                pommel_01 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_01", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
-                pommel_02 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_02", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
-                pommel_03 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_03", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
-                pommel_04 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_04", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
-                pommel_05 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_05", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
-            }
-        end
-        local _ogryn_shield_attachments = function()
-            return {
-                {id = "left_default",       name = "Default",           sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "left_01",            name = "Slab Shield",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "bulwark_shield_01",  name = "Bulwark Shield",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _ogryn_shield_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                left_default =      {model = "",                                                                    type = "left", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                left_01 =           {model = "content/items/weapons/player/melee/ogryn_slabshield_p1_m1",           type = "left", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                bulwark_shield_01 = {model = "content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
-            }
-        end
-        local _ogryn_club_body_attachments = function()
-            return {
-                {id = "body_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_01",        name = "Body 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_02",        name = "Body 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_03",        name = "Body 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_04",        name = "Body 4",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_05",        name = "Body 5",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _ogryn_club_body_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                body_default =  {model = "",                                                                type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                body_01 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_01", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                body_02 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_02", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                body_03 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_03", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                body_04 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_04", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                body_05 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_05", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-            }
-        end
+        --#region Shovel
+            local _ogryn_shovel_head_attachments = function()
+                return {
+                    {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_01",      name = "Head 1",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_02",      name = "Head 2",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_03",      name = "Head 3",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_04",      name = "Head 4",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_05",      name = "Head 5",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                }
+            end
+            local _ogryn_shovel_head_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    head_default = {model = "",                                                              type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    head_01 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_01", type = "head", parent = tv(parent, 2), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    head_02 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_02", type = "head", parent = tv(parent, 3), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    head_03 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_03", type = "head", parent = tv(parent, 4), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    head_04 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_04", type = "head", parent = tv(parent, 5), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    head_05 =      {model = "content/items/weapons/player/melee/heads/shovel_ogryn_head_05", type = "head", parent = tv(parent, 6), angle = angle, move = move, remove = remove, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                }
+            end
+            local _ogryn_shovel_grip_attachments = function()
+                return {
+                    {id = "grip_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_01",      name = "Grip 1",  sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_02",      name = "Grip 2",  sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_03",      name = "Grip 3",  sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_04",      name = "Grip 4",  sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_05",      name = "Grip 5",  sounds = {UISoundEvents.weapons_swap}},
+                }
+            end
+            local _ogryn_shovel_grip_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    grip_default = {model = "",                                                              type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    grip_01 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_01", type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    grip_02 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_02", type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    grip_03 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_03", type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                    grip_04 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_04", type = "grip", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
+                    grip_05 =      {model = "content/items/weapons/player/melee/grips/shovel_ogryn_grip_05", type = "grip", parent = tv(parent, 6), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _ogryn_shovel_pommel_attachments = function()
+                return {
+                    {id = "pommel_default", name = "Default",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_01",      name = "Pommel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_02",      name = "Pommel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_03",      name = "Pommel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_04",      name = "Pommel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_05",      name = "Pommel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _ogryn_shovel_pommel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    pommel_default = {model = "",                                                                  type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                    pommel_01 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_01", type = "pommel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                    pommel_02 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_02", type = "pommel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                    pommel_03 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_03", type = "pommel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                    pommel_04 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_04", type = "pommel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                    pommel_05 =      {model = "content/items/weapons/player/melee/pommels/shovel_ogryn_pommel_05", type = "pommel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = "both"},
+                }
+            end
+        --#endregion
+        --#region Combat blade
+            local _combat_blade_blade_attachments = function()
+                return {
+                    {id = "blade_default",  name = "Default", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "blade_01",       name = "Blade 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "blade_02",       name = "Blade 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "blade_03",       name = "Blade 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "blade_04",       name = "Blade 4", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "blade_05",       name = "Blade 5", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "blade_06",       name = "Blade 6", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                }
+            end
+            local _combat_blade_blade_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    blade_default = {model = "",                                                                type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                    blade_01 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_01", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                    blade_02 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_02", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                    blade_03 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_03", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                    blade_04 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_04", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                    blade_05 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_05", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                    blade_06 =      {model = "content/items/weapons/player/melee/blades/combat_blade_blade_06", type = "blade", parent = tv(parent, 1), angle = angle, move = move, remove = remove, trigger_move = {"emblem_left", "emblem_right"}},
+                }
+            end
+            local _combat_blade_grip_attachments = function()
+                return {
+                    {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_04",        name = "Grip 4",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_05",        name = "Grip 5",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_06",        name = "Grip 6",    sounds = {UISoundEvents.weapons_swap}},
+                }
+            end
+            local _combat_blade_grip_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    grip_default =  {model = "",                                                                type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    grip_01 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_01",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                    grip_02 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_02",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                    grip_03 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_03",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}},
+                    grip_04 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_04",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                    grip_05 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_05",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                    grip_06 =       {model = "content/items/weapons/player/melee/grips/combat_blade_grip_06",   type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove, no_support = {"trinket_hook_empty"}},
+                }
+            end
+            local _combat_blade_handle_attachments = function()
+                return {
+                    {id = "handle_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "handle_01",      name = "Handle 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "handle_02",      name = "Handle 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "handle_03",      name = "Handle 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "handle_04",      name = "Handle 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "handle_05",      name = "Handle 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "handle_06",      name = "Handle 6",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _combat_blade_handle_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    handle_default =    {model = "",                                                                    type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    handle_01 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_01",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    handle_02 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_02",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    handle_03 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_03",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    handle_04 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_04",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    handle_05 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_05",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    handle_06 =         {model = "content/items/weapons/player/ranged/handles/combat_blade_handle_06",  type = "handle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                }
+            end
+        --#endregion
+        --#region Powermaul
+            local _power_maul_shaft_attachments = function()
+                return {
+                    {id = "shaft_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_01",       name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_02",       name = "Shaft 2", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_03",       name = "Shaft 3", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_04",       name = "Shaft 4", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "shaft_05",       name = "Shaft 5", sounds = {UISoundEvents.weapons_swap}},
+                }
+            end
+            local _power_maul_shaft_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    shaft_default = {model = "",                                                                type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    shaft_01 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_01",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    shaft_02 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_02",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    shaft_03 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_03",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    shaft_04 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_04",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    shaft_05 =      {model = "content/items/weapons/player/ranged/shafts/power_maul_shaft_05",  type = "shaft", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _power_maul_head_attachments = function()
+                return {
+                    {id = "head_default",   name = "Default",   sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_01",        name = "Head 1",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_02",        name = "Head 2",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_03",        name = "Head 3",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_04",        name = "Head 4",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_05",        name = "Head 5",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                }
+            end
+            local _power_maul_head_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    head_default =  {model = "",                                                            type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    head_01 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_01", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    head_02 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_02", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    head_03 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_03", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    head_04 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_04", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    head_05 =       {model = "content/items/weapons/player/melee/heads/power_maul_head_05", type = "head", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _power_maul_pommel_attachments = function()
+                return {
+                    {id = "pommel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_01",      name = "Pommel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_02",      name = "Pommel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_03",      name = "Pommel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_04",      name = "Pommel 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "pommel_05",      name = "Pommel 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _power_maul_pommel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    pommel_default =    {model = "",                                                                type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    pommel_01 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_01", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
+                    pommel_02 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_02", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
+                    pommel_03 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_03", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
+                    pommel_04 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_04", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
+                    pommel_05 =         {model = "content/items/weapons/player/melee/pommels/power_maul_pommel_05", type = "pommel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, no_support = {"trinket_hook_empty"}},
+                }
+            end
+        --#endregion
+        --#region Slab shield
+            local _ogryn_shield_attachments = function()
+                return {
+                    {id = "left_default",       name = "Default",           sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "left_01",            name = "Slab Shield",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "bulwark_shield_01",  name = "Bulwark Shield",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _ogryn_shield_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    left_default =      {model = "",                                                                    type = "left", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    left_01 =           {model = "content/items/weapons/player/melee/ogryn_slabshield_p1_m1",           type = "left", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    bulwark_shield_01 = {model = "content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                }
+            end
+        --#endregion
+        --#region Club
+            local _ogryn_club_body_attachments = function()
+                return {
+                    {id = "body_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_01",        name = "Body 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_02",        name = "Body 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_03",        name = "Body 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_04",        name = "Body 4",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_05",        name = "Body 5",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _ogryn_club_body_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    body_default =  {model = "",                                                                type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    body_01 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_01", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    body_02 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_02", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    body_03 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_03", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    body_04 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_04", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    body_05 =       {model = "content/items/weapons/player/melee/full/ogryn_club_pipe_full_05", type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                }
+            end
+        --#endregion
     --#endregion
     --#region Lasguns
         local _lasgun_barrel_attachments = function()
@@ -1234,502 +1280,514 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
     --#endregion
     --#region Guns
-        local _auto_pistol_receiver_attachments = function()
-            return {
-                {id = "receiver_default",   name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_01",        name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                -- {id = "receiver_02",        name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-                -- {id = "receiver_03",        name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
-                -- {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_05",        name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _auto_pistol_receiver_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                receiver_default =  {model = "",                                                                            type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_01",    type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                -- receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_02",    type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                -- receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_03",    type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-                -- receiver_04 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_04",    type = "receiver", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
-                receiver_05 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_05",    type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _auto_pistol_barrel_attachments = function()
-            return {
-                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_05",      name = "Barrel 5",  sounds = {UISoundEvents.talents_equip_talent}},
-            }
-        end
-        local _auto_pistol_barrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_01",    type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
-                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_02",    type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
-                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_03",    type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}},
-                barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_04",    type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
-                barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_05",    type = "barrel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
-            }
-        end
-        local _auto_pistol_magazine_attachments = function()
-            return {
-                -- {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip}},
-                {id = "auto_pistol_magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
-            }
-        end
-        local _auto_pistol_magazine_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                magazine_default =          {model = "",                                                                            type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                auto_pistol_magazine_01 =   {model = "content/items/weapons/player/ranged/magazines/autogun_pistol_magazine_01",    type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
-            }
-        end
-        local _auto_pistol_muzzle_attachments = function()
-            return {
-                {id = "muzzle_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "muzzle_01",      name = "Autopistol Muzzle A",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "muzzle_02",      name = "Autopistol Muzzle B",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "muzzle_03",      name = "Autopistol Muzzle C",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "muzzle_04",      name = "Autopistol Muzzle D",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "muzzle_05",      name = "Autopistol Muzzle E",  sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _auto_pistol_muzzle_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                muzzle_default =    {model = "",                                                                        type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                muzzle_01 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_01",    type = "muzzle", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                muzzle_02 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_02",    type = "muzzle", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                muzzle_03 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_03",    type = "muzzle", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-                muzzle_04 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_04",    type = "muzzle", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
-                muzzle_05 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_05",    type = "muzzle", parent = tv(parent, 6), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _auto_pistol_sight_attachments = function()
-            return {
-                {id = "sight_01",       name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _auto_pistol_sight_models = function(parent, angle, move, remove, type)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            local type = type or "sight"
-            return {
-                sight_default = {model = "",                                                                    type = type, parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                sight_01 =      {model = "content/items/weapons/player/ranged/sights/autogun_pistol_sight_01",  type = type, parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _shotgun_receiver_attachments = function()
-            return {
-                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _shotgun_receiver_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                receiver_default =  {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/shotgun_rifle_receiver_01", type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _shotgun_stock_attachments = function()
-            return {
-                {id = "shotgun_rifle_stock_default",    name = "Default", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "shotgun_rifle_stock_01",         name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "shotgun_rifle_stock_02",         name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "shotgun_rifle_stock_03",         name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "shotgun_rifle_stock_04",         name = "Stock 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _shotgun_stock_models = function(parent, angle, move, remove, type)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            local type = type or "stock"
-            return {
-                shotgun_rifle_stock_default =   {model = "",                                                                    type = type, parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                shotgun_rifle_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/shotgun_rifle_stock_01",   type = type, parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                shotgun_rifle_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/shotgun_rifle_stock_03",   type = type, parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                shotgun_rifle_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/shotgun_rifle_stock_05",   type = type, parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-                shotgun_rifle_stock_04 =        {model = "content/items/weapons/player/ranged/stocks/shotgun_rifle_stock_06",   type = type, parent = tv(parent, 5), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _shotgun_barrel_attachments = function()
-            return {
-                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.talents_equip_talent}},
-            }
-        end
-        local _shotgun_barrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/shotgun_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}},
-                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/shotgun_rifle_barrel_04", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}},
-                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/shotgun_rifle_barrel_05", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
-                barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/shotgun_rifle_barrel_06", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
-            }
-        end
-        local _shotgun_underbarrel_attachments = function()
-            return {
-                {id = "underbarrel_default",    name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "underbarrel_01",         name = "Underbarrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "underbarrel_02",         name = "Underbarrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "underbarrel_03",         name = "Underbarrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "underbarrel_04",         name = "Underbarrel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _shotgun_underbarrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                underbarrel_default =   {model = "",                                                                                type = "underbarrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                underbarrel_01 =        {model = "content/items/weapons/player/ranged/underbarrels/shotgun_rifle_underbarrel_01",   type = "underbarrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                underbarrel_02 =        {model = "content/items/weapons/player/ranged/underbarrels/shotgun_rifle_underbarrel_04",   type = "underbarrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                underbarrel_03 =        {model = "content/items/weapons/player/ranged/underbarrels/shotgun_rifle_underbarrel_05",   type = "underbarrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-                underbarrel_04 =        {model = "content/items/weapons/player/ranged/underbarrels/shotgun_rifle_underbarrel_06",   type = "underbarrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _bolter_receiver_attachments = function()
-            return {
-                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _bolter_receiver_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                receiver_default =  {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/boltgun_rifle_receiver_01", type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/boltgun_rifle_receiver_02", type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/boltgun_rifle_receiver_03", type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _bolter_magazine_attachments = function()
-            return {
-                {id = "bolter_magazine_01",        name = "Bolter Magazine A",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "bolter_magazine_02",        name = "Bolter Magazine B",    sounds = {UISoundEvents.weapons_trinket_select}},
-            }
-        end
-        local _bolter_magazine_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                magazine_default =      {model = "",                                                                        type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                bolter_magazine_01 =    {model = "content/items/weapons/player/ranged/magazines/boltgun_rifle_magazine_01", type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                bolter_magazine_02 =    {model = "content/items/weapons/player/ranged/magazines/boltgun_rifle_magazine_02", type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _bolter_barrel_attachments = function()
-            return {
-                {id = "barrel_default",     name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "bolter_barrel_01",   name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-            }
-        end
-        local _bolter_barrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                bolter_barrel_01 =  {model = "content/items/weapons/player/ranged/barrels/boltgun_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
-            }
-        end
-        local _bolter_underbarrel_attachments = function()
-            return {
-                {id = "underbarrel_default",    name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "underbarrel_01",         name = "Underbarrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "underbarrel_02",         name = "Underbarrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "underbarrel_03",         name = "Underbarrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _bolter_underbarrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                underbarrel_default =   {model = "",                                                                                type = "underbarrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                underbarrel_01 =        {model = "content/items/weapons/player/ranged/underbarrels/boltgun_rifle_underbarrel_01",   type = "underbarrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                underbarrel_02 =        {model = "content/items/weapons/player/ranged/underbarrels/boltgun_rifle_underbarrel_02",   type = "underbarrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                underbarrel_03 =        {model = "content/items/weapons/player/ranged/underbarrels/boltgun_rifle_underbarrel_03",   type = "underbarrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _bolter_sight_attachments = function()
-            return {
-                {id = "bolter_sight_01",       name = "Bolter Sight A", sounds = {UISoundEvents.weapons_swap}},
-                {id = "bolter_sight_02",       name = "Bolter Sight B", sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _bolter_sight_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                sight_default =     {model = "",                                                                    type = "sight", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                bolter_sight_01 =   {model = "content/items/weapons/player/ranged/sights/boltgun_rifle_sight_01",   type = "sight", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_default"}, no_support = {"rail"}},
-                bolter_sight_02 =   {model = "content/items/weapons/player/ranged/sights/boltgun_rifle_sight_02",   type = "sight", parent = tv(parent, 3), angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_default"}, no_support = {"rail"}},
-            }
-        end
-        local _revolver_body_attachments = function()
-            return {
-                {id = "body_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "body_01",        name = "Body 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _revolver_body_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                body_default =  {model = "",                                                                type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                body_01 =       {model = "content/items/weapons/player/melee/full/stubgun_pistol_full_01",  type = "body", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _revolver_barrel_attachments = function()
-            return {
-                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
-                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
-            }
-        end
-        local _revolver_barrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_pistol_barrel_01",    type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_pistol_barrel_02",    type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_pistol_barrel_03",    type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _revolver_rail_attachments = function()
-            return {
-                {id = "rail_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "rail_01",        name = "Rail 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _revolver_rail_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                rail_default =  {model = "",                                                                    type = "rail", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                rail_01 =       {model = "content/items/weapons/player/ranged/rails/stubgun_pistol_rail_off",   type = "rail", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _plasma_receiver_attachments = function()
-            return {
-                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _plasma_receiver_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                receiver_default =  {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/plasma_rifle_receiver_01",  type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _plasma_magazine_attachments = function()
-            return {
-                {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
-            }
-        end
-        local _plasma_magazine_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                magazine_default =  {model = "",                                                                        type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_01",  type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_02",  type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _plasma_barrel_attachments = function()
-            return {
-                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _plasma_barrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_01",  type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_02",  type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_03",  type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _plasma_stock_attachments = function()
-            return {
-                {id = "plasma_rifle_stock_default", name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "plasma_rifle_stock_01",      name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "plasma_rifle_stock_02",      name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "plasma_rifle_stock_03",      name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _plasma_stock_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                plasma_rifle_stock_default =    {model = "",                                                                    type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                plasma_rifle_stock_01 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_01",    type = "stock", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                plasma_rifle_stock_02 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_02",    type = "stock", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                plasma_rifle_stock_03 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_03",    type = "stock", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _plasma_grip_attachments = function()
-            return {
-                {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _plasma_grip_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                grip_default =  {model = "",                                                                type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                grip_01 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_01",  type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                grip_02 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_02",  type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                grip_03 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_03",  type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _laspistol_magazine_attachments = function()
-            return {
-                {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip}},
-                {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.apparel_equip}},
-            }
-        end
-        local _laspistol_magazine_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                magazine_default =              {model = "",                                                                        type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _laspistol_barrel_attachments = function()
-            return {
-                {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_05",      name = "Barrel 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_06",      name = "Barrel 6",  sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _laspistol_barrel_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_06 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel", parent = tv(parent, 7), angle = angle, move = move, remove = remove, mesh_move = false},
-            }
-        end
-        local _laspistol_muzzle_attachments = function()
-            return {
-                {id = "muzzle_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "muzzle_01",      name = "Muzzle 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                -- {id = "muzzle_02",      name = "Muzzle 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "muzzle_03",      name = "Muzzle 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "muzzle_04",      name = "Muzzle 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _laspistol_muzzle_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                muzzle_default = {model = "",                                                                        type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                muzzle_01 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                -- muzzle_02 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                muzzle_03 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                muzzle_04 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _laspistol_rail_attachments = function()
-            return {
-                {id = "rail_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "rail_01",        name = "Rail 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-            }
-        end
-        local _laspistol_rail_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                rail_default = {model = "",                                                                type = "rail", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                rail_01 =      {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01", type = "rail", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-            }
-        end
-        local _laspistol_stock_attachments = function()
-            return {
-                {id = "lasgun_pistol_stock_default",    name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "lasgun_pistol_stock_01",         name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "lasgun_pistol_stock_02",         name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "lasgun_pistol_stock_03",         name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-            }
-        end
-        local _laspistol_stock_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                lasgun_pistol_stock_default =   {model = "",                                                                  type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-            }
-        end
+        --#region Autopistol
+            local _auto_pistol_receiver_attachments = function()
+                return {
+                    {id = "receiver_default",   name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_01",        name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    -- {id = "receiver_02",        name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    -- {id = "receiver_03",        name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    -- {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_05",        name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _auto_pistol_receiver_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    receiver_default =  {model = "",                                                                            type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_01",    type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    -- receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_02",    type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    -- receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_03",    type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                    -- receiver_04 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_04",    type = "receiver", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
+                    receiver_05 =       {model = "content/items/weapons/player/ranged/recievers/autogun_pistol_receiver_05",    type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _auto_pistol_barrel_attachments = function()
+                return {
+                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_05",      name = "Barrel 5",  sounds = {UISoundEvents.talents_equip_talent}},
+                }
+            end
+            local _auto_pistol_barrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_01",    type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
+                    barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_02",    type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
+                    barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_03",    type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}},
+                    barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_04",    type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
+                    barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/autogun_pistol_barrel_05",    type = "barrel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
+                }
+            end
+            local _auto_pistol_magazine_attachments = function()
+                return {
+                    -- {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip}},
+                    {id = "auto_pistol_magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
+                }
+            end
+            local _auto_pistol_magazine_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    magazine_default =          {model = "",                                                                            type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    auto_pistol_magazine_01 =   {model = "content/items/weapons/player/ranged/magazines/autogun_pistol_magazine_01",    type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                }
+            end
+            local _auto_pistol_muzzle_attachments = function()
+                return {
+                    {id = "muzzle_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "muzzle_01",      name = "Autopistol Muzzle A",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "muzzle_02",      name = "Autopistol Muzzle B",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "muzzle_03",      name = "Autopistol Muzzle C",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "muzzle_04",      name = "Autopistol Muzzle D",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "muzzle_05",      name = "Autopistol Muzzle E",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _auto_pistol_muzzle_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    muzzle_default =    {model = "",                                                                        type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    muzzle_01 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_01",    type = "muzzle", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    muzzle_02 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_02",    type = "muzzle", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    muzzle_03 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_03",    type = "muzzle", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                    muzzle_04 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_04",    type = "muzzle", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
+                    muzzle_05 =         {model = "content/items/weapons/player/ranged/muzzles/autogun_pistol_muzzle_05",    type = "muzzle", parent = tv(parent, 6), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _auto_pistol_sight_attachments = function()
+                return {
+                    {id = "sight_01",       name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
+                }
+            end
+            local _auto_pistol_sight_models = function(parent, angle, move, remove, type)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                local type = type or "sight"
+                return {
+                    sight_default = {model = "",                                                                    type = type, parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    sight_01 =      {model = "content/items/weapons/player/ranged/sights/autogun_pistol_sight_01",  type = type, parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                }
+            end
+        --#endregion
+        --#region Shotgun
+            local _shotgun_receiver_attachments = function()
+                return {
+                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _shotgun_receiver_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    receiver_default =  {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/shotgun_rifle_receiver_01", type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _shotgun_stock_attachments = function()
+                return {
+                    {id = "shotgun_rifle_stock_default",    name = "Default", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "shotgun_rifle_stock_01",         name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "shotgun_rifle_stock_02",         name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "shotgun_rifle_stock_03",         name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "shotgun_rifle_stock_04",         name = "Stock 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _shotgun_stock_models = function(parent, angle, move, remove, type)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                local type = type or "stock"
+                return {
+                    shotgun_rifle_stock_default =   {model = "",                                                                    type = type, parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    shotgun_rifle_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/shotgun_rifle_stock_01",   type = type, parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    shotgun_rifle_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/shotgun_rifle_stock_03",   type = type, parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    shotgun_rifle_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/shotgun_rifle_stock_05",   type = type, parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                    shotgun_rifle_stock_04 =        {model = "content/items/weapons/player/ranged/stocks/shotgun_rifle_stock_06",   type = type, parent = tv(parent, 5), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _shotgun_barrel_attachments = function()
+                return {
+                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.talents_equip_talent}},
+                }
+            end
+            local _shotgun_barrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/shotgun_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}},
+                    barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/shotgun_rifle_barrel_04", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_01"}, no_support = {"trinket_hook_empty"}},
+                    barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/shotgun_rifle_barrel_05", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
+                    barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/shotgun_rifle_barrel_06", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = {trinket_hook = "trinket_hook_empty"}, no_support = {"trinket_hook"}},
+                }
+            end
+            local _shotgun_underbarrel_attachments = function()
+                return {
+                    {id = "underbarrel_default",    name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "underbarrel_01",         name = "Underbarrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "underbarrel_02",         name = "Underbarrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "underbarrel_03",         name = "Underbarrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "underbarrel_04",         name = "Underbarrel 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _shotgun_underbarrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    underbarrel_default =   {model = "",                                                                                type = "underbarrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    underbarrel_01 =        {model = "content/items/weapons/player/ranged/underbarrels/shotgun_rifle_underbarrel_01",   type = "underbarrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    underbarrel_02 =        {model = "content/items/weapons/player/ranged/underbarrels/shotgun_rifle_underbarrel_04",   type = "underbarrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    underbarrel_03 =        {model = "content/items/weapons/player/ranged/underbarrels/shotgun_rifle_underbarrel_05",   type = "underbarrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                    underbarrel_04 =        {model = "content/items/weapons/player/ranged/underbarrels/shotgun_rifle_underbarrel_06",   type = "underbarrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove},
+                }
+            end
+        --#endregion
+        --#region Bolter
+            local _bolter_receiver_attachments = function()
+                return {
+                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _bolter_receiver_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    receiver_default =  {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/boltgun_rifle_receiver_01", type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/boltgun_rifle_receiver_02", type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/boltgun_rifle_receiver_03", type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _bolter_magazine_attachments = function()
+                return {
+                    {id = "bolter_magazine_01",        name = "Bolter Magazine A",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "bolter_magazine_02",        name = "Bolter Magazine B",    sounds = {UISoundEvents.weapons_trinket_select}},
+                }
+            end
+            local _bolter_magazine_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    magazine_default =      {model = "",                                                                        type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    bolter_magazine_01 =    {model = "content/items/weapons/player/ranged/magazines/boltgun_rifle_magazine_01", type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    bolter_magazine_02 =    {model = "content/items/weapons/player/ranged/magazines/boltgun_rifle_magazine_02", type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _bolter_barrel_attachments = function()
+                return {
+                    {id = "barrel_default",     name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "bolter_barrel_01",   name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
+                }
+            end
+            local _bolter_barrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    bolter_barrel_01 =  {model = "content/items/weapons/player/ranged/barrels/boltgun_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                }
+            end
+            local _bolter_underbarrel_attachments = function()
+                return {
+                    {id = "underbarrel_default",    name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "underbarrel_01",         name = "Underbarrel 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "underbarrel_02",         name = "Underbarrel 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "underbarrel_03",         name = "Underbarrel 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _bolter_underbarrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    underbarrel_default =   {model = "",                                                                                type = "underbarrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    underbarrel_01 =        {model = "content/items/weapons/player/ranged/underbarrels/boltgun_rifle_underbarrel_01",   type = "underbarrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    underbarrel_02 =        {model = "content/items/weapons/player/ranged/underbarrels/boltgun_rifle_underbarrel_02",   type = "underbarrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    underbarrel_03 =        {model = "content/items/weapons/player/ranged/underbarrels/boltgun_rifle_underbarrel_03",   type = "underbarrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _bolter_sight_attachments = function()
+                return {
+                    {id = "bolter_sight_01",       name = "Bolter Sight A", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "bolter_sight_02",       name = "Bolter Sight B", sounds = {UISoundEvents.weapons_swap}},
+                }
+            end
+            local _bolter_sight_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    sight_default =     {model = "",                                                                    type = "sight", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    bolter_sight_01 =   {model = "content/items/weapons/player/ranged/sights/boltgun_rifle_sight_01",   type = "sight", parent = tv(parent, 2), angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_default"}, no_support = {"rail"}},
+                    bolter_sight_02 =   {model = "content/items/weapons/player/ranged/sights/boltgun_rifle_sight_02",   type = "sight", parent = tv(parent, 3), angle = angle, move = move, remove = remove, automatic_equip = {rail = "rail_default"}, no_support = {"rail"}},
+                }
+            end
+        --#endregion
+        --#region Revolver
+            local _revolver_body_attachments = function()
+                return {
+                    {id = "body_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_01",        name = "Body 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _revolver_body_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    body_default =  {model = "",                                                                type = "body", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    body_01 =       {model = "content/items/weapons/player/melee/full/stubgun_pistol_full_01",  type = "body", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _revolver_barrel_attachments = function()
+                return {
+                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
+                }
+            end
+            local _revolver_barrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_pistol_barrel_01",    type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_pistol_barrel_02",    type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/stubgun_pistol_barrel_03",    type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _revolver_rail_attachments = function()
+                return {
+                    {id = "rail_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "rail_01",        name = "Rail 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _revolver_rail_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    rail_default =  {model = "",                                                                    type = "rail", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    rail_01 =       {model = "content/items/weapons/player/ranged/rails/stubgun_pistol_rail_off",   type = "rail", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                }
+            end
+        --#endregion
+        --#region Plasma gun
+            local _plasma_receiver_attachments = function()
+                return {
+                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _plasma_receiver_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    receiver_default =  {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/plasma_rifle_receiver_01",  type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _plasma_magazine_attachments = function()
+                return {
+                    {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
+                }
+            end
+            local _plasma_magazine_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    magazine_default =  {model = "",                                                                        type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_01",  type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    magazine_02 =       {model = "content/items/weapons/player/ranged/magazines/plasma_rifle_magazine_02",  type = "magazine", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _plasma_barrel_attachments = function()
+                return {
+                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _plasma_barrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_01",  type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_02",  type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/plasma_rifle_barrel_03",  type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _plasma_stock_attachments = function()
+                return {
+                    {id = "plasma_rifle_stock_default", name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "plasma_rifle_stock_01",      name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "plasma_rifle_stock_02",      name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "plasma_rifle_stock_03",      name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _plasma_stock_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    plasma_rifle_stock_default =    {model = "",                                                                    type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    plasma_rifle_stock_01 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_01",    type = "stock", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    plasma_rifle_stock_02 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_02",    type = "stock", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    plasma_rifle_stock_03 =         {model = "content/items/weapons/player/ranged/stocks/plasma_rifle_stock_03",    type = "stock", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _plasma_grip_attachments = function()
+                return {
+                    {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_swap}},
+                }
+            end
+            local _plasma_grip_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    grip_default =  {model = "",                                                                type = "grip", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    grip_01 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_01",  type = "grip", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    grip_02 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_02",  type = "grip", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    grip_03 =       {model = "content/items/weapons/player/ranged/grips/plasma_rifle_grip_03",  type = "grip", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+        --#endregion
+        --#region Laspistol
+            local _laspistol_magazine_attachments = function()
+                return {
+                    {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip}},
+                    {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.apparel_equip}},
+                }
+            end
+            local _laspistol_magazine_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    magazine_default =              {model = "",                                                                        type = "magazine", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    magazine_01 =                   {model = "content/items/weapons/player/ranged/magazines/lasgun_pistol_magazine_01", type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _laspistol_barrel_attachments = function()
+                return {
+                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_05",      name = "Barrel 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "barrel_06",      name = "Barrel 6",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _laspistol_barrel_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_01",     type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                    barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_02",     type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                    barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_03",     type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
+                    barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_04",     type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
+                    barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_05",     type = "barrel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false},
+                    barrel_06 =         {model = "content/items/weapons/player/ranged/barrels/lasgun_pistol_barrel_06",     type = "barrel", parent = tv(parent, 7), angle = angle, move = move, remove = remove, mesh_move = false},
+                }
+            end
+            local _laspistol_muzzle_attachments = function()
+                return {
+                    {id = "muzzle_default", name = "Default",   sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "muzzle_01",      name = "Muzzle 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    -- {id = "muzzle_02",      name = "Muzzle 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "muzzle_03",      name = "Muzzle 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "muzzle_04",      name = "Muzzle 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _laspistol_muzzle_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    muzzle_default = {model = "",                                                                        type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    muzzle_01 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_01",     type = "muzzle", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    -- muzzle_02 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_02",     type = "muzzle", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    muzzle_03 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_03",     type = "muzzle", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    muzzle_04 =      {model = "content/items/weapons/player/ranged/muzzles/lasgun_pistol_muzzle_04",     type = "muzzle", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _laspistol_rail_attachments = function()
+                return {
+                    {id = "rail_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "rail_01",        name = "Rail 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                }
+            end
+            local _laspistol_rail_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    rail_default = {model = "",                                                                type = "rail", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    rail_01 =      {model = "content/items/weapons/player/ranged/rails/lasgun_pistol_rail_01", type = "rail", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                }
+            end
+            local _laspistol_stock_attachments = function()
+                return {
+                    {id = "lasgun_pistol_stock_default",    name = "Default",       sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "lasgun_pistol_stock_01",         name = "Ventilation 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "lasgun_pistol_stock_02",         name = "Ventilation 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                    {id = "lasgun_pistol_stock_03",         name = "Ventilation 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+                }
+            end
+            local _laspistol_stock_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    lasgun_pistol_stock_default =   {model = "",                                                                  type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    lasgun_pistol_stock_01 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_01", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    lasgun_pistol_stock_02 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_02", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                    lasgun_pistol_stock_03 =        {model = "content/items/weapons/player/ranged/stocks/lasgun_pistol_stock_03", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                }
+            end
+        --#endregion
     --#endregion
     --#region Melee
         local _axe_grip_attachments = function()
@@ -2370,6 +2428,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             },
             bolter_p1_m1 = { -- Done 13.9.2023
                 scope_offset = vector3_box(0, 0, .02),
+                trinket_slot = "slot_trinket_2",
                 fixes = {
                     {dependencies = {"receiver_01", "emblem_left_02"}, -- Emblem
                         emblem_left = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, -1, 1)}},
@@ -2420,6 +2479,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {dependencies = {"barrel_06"}, -- Ripper muzzle
                         muzzle = {parent = "barrel", position = vector3_box(0, -.1, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.56, .56, .56)}},
                     {muzzle = {position = vector3_box(0, .145, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1.4, 1.4)}},
+                    -- {slot_trinket_2 = {parent = "trinket_hook", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"grip_01"}, -- Trinket
                         trinket_hook = {parent = "grip", position = vector3_box(0, -.115, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"grip_02"}, -- Trinket
@@ -2574,6 +2634,43 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {dependencies = {"muzzle_03", "autogun_bayonet_03"}, -- Bayonet 3
                         bayonet = {offset = true, position = vector3_box(0, .065, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {stock_3 = {parent = "body", position = vector3_box(0, -.11, -.1), rotation = vector3_box(5, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
+                    {slot_trinket_1 = {parent = "trinket_hook", position = vector3_box(0, 0, .2), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_01"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.115, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_02"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.165), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_03"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.155, -.125), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_04"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.132, -.136), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_05"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.145, -.120), rotation = vector3_box(-35, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_06"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.145), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_07"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.132, -.136), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_08"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.145, -.120), rotation = vector3_box(-35, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_12"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.155, -.13), rotation = vector3_box(-35, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_14"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.165, -.115), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_19"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.115, -.14), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_20"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.125, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_21"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_22"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.145), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_23"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.145), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_24"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.135, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_25"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.165, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_26"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.165, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
                 },
             },
             autogun_p1_m1 = {
@@ -2793,6 +2890,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 flashlight = _flashlights_attachments(),
                 receiver = _bolter_receiver_attachments(),
                 trinket_hook = _trinket_hook_attachments(),
+                -- slot_trinket_2 = _slot_trinket_2_attachments(),
                 magazine = table.icombine(
                     {{id = "magazine_default", name = "Default", sounds = {UISoundEvents.weapons_trinket_select}}},
                     _bolter_magazine_attachments(),
@@ -2845,6 +2943,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 stock_2 = _stock_attachments(),
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
+                trinket_hook = _trinket_hook_attachments(),
             },
             laspistol_p1_m1 = {
                 flashlight = _flashlights_attachments(),
@@ -2852,6 +2951,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 bayonet = _bayonet_attachments(),
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
+                trinket_hook = _trinket_hook_attachments(),
+                slot_trinket_1 = _slot_trinket_1_attachments(),
                 grip = _grip_attachments(),
                 sight = table.icombine(
                     {{id = "sight_default", name = "Default",   sounds = {UISoundEvents.weapons_swap}}},
@@ -3567,6 +3668,64 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
 --#endregion
 
 --#region Data
+    mod.special_types = {
+        "special_bullet",
+        "melee",
+        "knife",
+        "melee_hand",
+    }
+    mod.add_custom_attachments = {
+        flashlight = "flashlights",
+        laser_pointer = "laser_pointers",
+        bayonet = "bayonets",
+        stock = "stocks",
+        stock_2 = "stocks",
+        stock_3 = "shotgun_stocks",
+        rail = "rails",
+        emblem_left = "emblems_left",
+        emblem_right = "emblems_right",
+        sight_2 = "reflex_sights",
+        muzzle = "muzzles",
+        trinket_hook = "trinket_hooks",
+        slot_trinket_1 = "slot_trinket_1",
+        slot_trinket_2 = "slot_trinket_2",
+    }
+    mod.slot_trinket_1 = {
+        "slot_trinket_1",
+    }
+    mod.slot_trinket_2 = {
+        "slot_trinket_2",
+    }
+    mod.special_actions = {
+        "weapon_extra_pressed",
+    }
+    mod.trinket_hooks = {
+        "trinket_hook_default",
+        "trinket_hook_empty",
+        "trinket_hook_01",
+        "trinket_hook_01_v",
+        "trinket_hook_02",
+        "trinket_hook_02_45",
+        "trinket_hook_02_90",
+        "trinket_hook_03",
+        "trinket_hook_03_v",
+        "trinket_hook_04_steel",
+        "trinket_hook_04_steel_v",
+        "trinket_hook_04_coated",
+        "trinket_hook_04_coated_v",
+        "trinket_hook_04_carbon",
+        "trinket_hook_04_carbon_v",
+        "trinket_hook_04_gold",
+        "trinket_hook_04_gold_v",
+        "trinket_hook_05_steel",
+        "trinket_hook_05_steel_v",
+        "trinket_hook_05_coated",
+        "trinket_hook_05_coated_v",
+        "trinket_hook_05_carbon",
+        "trinket_hook_05_carbon_v",
+        "trinket_hook_05_gold",
+        "trinket_hook_05_gold_v",
+    }
     mod.text_overwrite = {
         plasmagun_p1_m1 = {
             loc_weapon_cosmetics_customization_stock = "loc_weapon_cosmetics_customization_ventilation",
@@ -3751,6 +3910,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         "shaft_lower",
         "shaft_upper",
         "trinket_hook",
+        "slot_trinket_1",
+        "slot_trinket_2",
     }
 --#endregion
 
@@ -3948,7 +4109,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
                 _bayonet_models("barrel", -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, 0)),
                 _auto_pistol_muzzle_models("barrel", -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
-                _trinket_hook_models("grip", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _trinket_hook_models("grip", -.2, vector3_box(-.1, -4, .2), vector3_box(0, 0, -.2)),
+                -- _slot_trinket_2_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
                 _ripper_barrel_models("receiver", -.5, vector3_box(.2, -2, 0), vector3_box(0, .3, 0), "muzzle")
             ),
             stubrevolver_p1_m1 = table.combine( -- Done 13.9.2023
@@ -3986,8 +4148,14 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
                 _plasma_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _plasma_magazine_models(nil, .1, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
-                _plasma_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
+                _plasma_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), "barrel", {
+                    "trinket_hook_empty",
+                    "trinket_hook_empty",
+                    "trinket_hook_empty",
+                    "trinket_hook_empty",
+                }),
                 _plasma_stock_models(nil, .75, vector3_box(-.3, -4, -.1), vector3_box(0, -.015, .1)),
+                _trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _plasma_grip_models(nil, .2, vector3_box(-.3, -4, .1), vector3_box(0, -.1, -.1))
             ),
             laspistol_p1_m1 = table.combine(
@@ -3995,7 +4163,59 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
                 _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
                 _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -4, 0), vector3_box(0, .4, -.025)),
-                _grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1)),
+                _trinket_hook_models("grip", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _slot_trinket_1_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
+                _grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1), "grip", {
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                }, {
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                }),
                 _reflex_sights_models("rail", -.5, vector3_box(-.1, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},

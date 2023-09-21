@@ -11,7 +11,6 @@ local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_setting
 local MasterItems = mod:original_require("scripts/backend/master_items")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
-
 local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

@@ -18,6 +18,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 	local table_remove = table.remove
 	local table_append = table.append
 	local table_set_readonly = table.set_readonly
+	local table_clone = table.clone
 	local unit_debug_name = Unit.debug_name
 	local unit_alive = Unit.alive
 	local unit_set_local_position = Unit.set_local_position
@@ -67,6 +68,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 
 mod._add_custom_attachments = function(self, item, attachments)
 	local gear_id = self:get_gear_id(item)
+	local slot_info_id = item.__gear_id or item.gear_id
 	if gear_id then
 		-- Get item name
 		local item_name = self:item_name_from_content_string(item.name)
@@ -74,9 +76,12 @@ mod._add_custom_attachments = function(self, item, attachments)
 		for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
 			-- Get weapon setting for attachment slot
 			local attachment_setting = self:get_gear_setting(gear_id, attachment_slot, item)
+			local attachment = self:_recursive_find_attachment(attachments, attachment_slot)
+			if attachment_slot == "slot_trinket_1" then attachment_setting = "slot_trinket_1" end
+			if attachment_slot == "slot_trinket_2" then attachment_setting = "slot_trinket_2" end
 			if table_contains(self[attachment_table], attachment_setting) then
 				-- Get attachment data
-				local attachment_data = self.attachment_models[item_name][attachment_setting]
+				local attachment_data = self.attachment_models[item_name] and self.attachment_models[item_name][attachment_setting]
 				if attachment_data and attachment_data.parent then
 					-- Set attachment parent
 					local parent = attachments
@@ -86,10 +91,20 @@ mod._add_custom_attachments = function(self, item, attachments)
 					end
 					local parent_slot = self:_recursive_find_attachment(attachments, attachment_data.parent)
 					parent = parent_slot and parent_slot.children or parent
+					-- Children
+					local original_children = {}
+					if attachment and attachment.children then
+						original_children = table_clone(attachment.children)
+					end
+					-- Value
+					local original_value = nil
+					if attachment and attachment.item and attachment.item ~= "" then
+						original_value = attachment and attachment.item
+					end
 					-- Attach custom slot
 					parent[attachment_slot] = {
-						children = {},
-						item = attachment_data.model,
+						children = original_children,
+						item = original_value or attachment_data.model,
 					}
 				end
 			end
@@ -194,7 +209,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"ogryn_rippergun_p1_m1", "ogryn_rippergun_p1_m2", "ogryn_rippergun_p1_m3"})
+		-- mod:debug_attachments(item_data, attachments, {"bolter_p1_m1", "laspistol_p1_m1", "plasmagun_p1_m1"})
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses = nil, nil
@@ -219,7 +234,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				for i = 1, #attachment_names do
 					local name = attachment_names[i]
 					local attachment_slot_data = attachments[name]
-					attachment_units, attachment_units_bind_poses = instance._attach_hierarchy(attachment_slot_data, override_lookup, attach_settings, item_unit, attachment_units, attachment_units_bind_poses, optional_mission_template, attachment_slot_info)
+					attachment_units, attachment_units_bind_poses = instance._attach_hierarchy(attachment_slot_data, override_lookup, attach_settings, item_unit, attachment_units, attachment_units_bind_poses, optional_mission_template, attachment_slot_info, item_name)
 				end
 			end
 		--#endregion Original
@@ -316,8 +331,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					mod.attachment_slot_infos[slot_info_id].unit_mesh_position[unit] = anchor and anchor.mesh_position
 					mod.attachment_slot_infos[slot_info_id].unit_root_position[unit] = anchor and anchor.root_position
 
-					
-
 					-- Anchor found?
 					if anchor then
 						-- Make sure unit is valid
@@ -369,8 +382,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		return attachment_units, attachment_units_bind_poses
 	end
 
-	instance.attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, attachment_slot_info)
-		return instance._attach_hierarchy(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, attachment_slot_info)
+	instance.attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, attachment_slot_info, item_name)
+		return instance._attach_hierarchy(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, attachment_slot_info, item_name)
 	end
 
 	instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
@@ -400,9 +413,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		return instance._spawn_attachment(item_data, attach_settings, parent_unit, optional_mission_template)
 	end
 
-	instance._attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info)
-		local item_name = attachment_slot_data.item
-		local item = instance._validate_item_name(item_name)
+	instance._attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
+		local item_name_ = attachment_slot_data.item
+		local item = instance._validate_item_name(item_name_)
 		local override_item = override_lookup[attachment_slot_data]
 		item = override_item or item
 	
@@ -414,7 +427,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			return attached_units, attached_units_bind_poses_or_nil
 		end
 	
-		local attachment_unit, bind_pose = instance._spawn_attachment(item, settings, parent_unit, optional_mission_template, attachment_slot_info, attachment_slot_data.attachment_type, attachment_slot_data.attachment_name)
+		local attachment_unit, bind_pose = instance._spawn_attachment(item, settings, parent_unit, optional_mission_template, attachment_slot_info, attachment_slot_data.attachment_type, attachment_slot_data.attachment_name, item_name)
 	
 		if attachment_unit then
 			attached_units[#attached_units + 1] = attachment_unit
@@ -424,9 +437,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			end
 	
 			local attachments = item and item.attachments
-			attached_units = instance._attach_hierarchy_children(attachments, override_lookup, settings, attachment_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info)
+			attached_units = instance._attach_hierarchy_children(attachments, override_lookup, settings, attachment_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 			local children = attachment_slot_data.children
-			attached_units = instance._attach_hierarchy_children(children, override_lookup, settings, attachment_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info)
+			attached_units = instance._attach_hierarchy_children(children, override_lookup, settings, attachment_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 			local material_overrides = {}
 			local item_material_overrides = item.material_overrides
 	
@@ -452,10 +465,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		return attached_units, attached_units_bind_poses_or_nil
 	end
 
-	instance._attach_hierarchy_children = function(children, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info)
+	instance._attach_hierarchy_children = function(children, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 		if children then
 			for name, child_attachment_slot_data in pairs(children) do
-				attached_units, attached_units_bind_poses_or_nil = instance._attach_hierarchy(child_attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info)
+				attached_units, attached_units_bind_poses_or_nil = instance._attach_hierarchy(child_attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 			end
 		end
 	
@@ -470,17 +483,18 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		return item
 	end
 
-	instance._node_name_to_attachment_slot = function(node_name)
+	instance._node_name_to_attachment_slot = function(item_name, node_name)
 		local name = node_name
 		name = string_gsub(name, "ap_", "")
 		name = string_gsub(name, "_01", "")
 		name = string_gsub(name, "rp_", "")
 		name = string_gsub(name, "magazine_02", "magazine2")
 		if string_find(name, "chained_rig") then name = "receiver" end
+		if name == "trinket" then name = mod.anchors[item_name] and mod.anchors[item_name].trinket_slot or "slot_trinket_1" end
 		return name
 	end
 
-	instance._spawn_attachment = function(item_data, settings, parent_unit, optional_mission_template, attachment_slot_info, attachment_type, attachment_name)
+	instance._spawn_attachment = function(item_data, settings, parent_unit, optional_mission_template, attachment_slot_info, attachment_type, attachment_name, item_name)
 		--#region Original
 			if not item_data then
 				return nil
@@ -532,15 +546,17 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			end
 		--#endregion Original
 
-		if type(attach_node) == "string" and item_data.base_unit ~= "content/characters/empty_item/empty_item" then
-			local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(attach_node)
-			attachment_slot_info = attachment_slot_info or {}
-			attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
-			attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
-			attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
-			attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
-			attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
-			attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
+		if type(attach_node) == "string" then
+			local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
+			if item_data.base_unit ~= "content/characters/empty_item/empty_item" then
+				attachment_slot_info = attachment_slot_info or {}
+				attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
+				attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
+				attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
+				attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
+				attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
+				attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
+			end
 		end
 	
 		--#region Original

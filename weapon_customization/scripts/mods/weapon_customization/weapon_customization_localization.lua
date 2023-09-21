@@ -107,6 +107,10 @@ return {
 		en = "Wild Flickering",
 		de = "Flimmert Wild",
 	},
+	mod_option_laser_pointer_weapon_dot = {
+		en = "Weapon Shine Effect",
+		de = "Waffen Scheineffekt",
+	},
 	mod_option_camera_zoom = {
 		en = "Camera Zoom",
 		de = "Kamera Zoom",
