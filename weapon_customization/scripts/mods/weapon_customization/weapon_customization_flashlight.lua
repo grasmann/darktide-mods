@@ -78,7 +78,7 @@ mod._has_flashlight_attachment = function(self, item)
         -- Check flashlight
         local flashlight = nil
         for _, flashlight_attachment in pairs(self.flashlights) do
-		    flashlight = mod:_recursive_find_attachment_name(attachments, flashlight_attachment)
+		    flashlight = self:_recursive_find_attachment_name(attachments, flashlight_attachment)
             if flashlight then break end
         end
 		return flashlight
@@ -90,14 +90,14 @@ mod.get_flashlight_unit = function(self)
     -- Get wielded weapon
 	local weapon = self:get_wielded_weapon()
     -- Check weapon and flashlight
-	if weapon and mod:has_flashlight_attachment() then
-		local gear_id = mod:get_gear_id(weapon.item)
+	if weapon and self:has_flashlight_attachment() then
+		local gear_id = self:get_gear_id(weapon.item)
         self.attached_flashlights[gear_id] = self.attached_flashlights[gear_id] or {}
 		-- Check if unit set but not alive
 		if table_size(self.attached_flashlights[gear_id]) > 0 then
 			if not unit_alive(self.attached_flashlights[gear_id].unit_1p) or not unit_alive(self.attached_flashlights[gear_id].unit_3p) then
 				self.attached_flashlights[gear_id] = {}
-				self:print("get_flashlight_unit - flashlight unit destroyed", mod._debug_skip_some)
+				self:print("get_flashlight_unit - flashlight unit destroyed", self._debug_skip_some)
 			end
 		end
 		-- Search for flashlight unit
@@ -114,12 +114,12 @@ mod.get_flashlight_unit = function(self)
 		end
 		-- Return cached unit
 		return self.attached_flashlights[gear_id].unit_1p, self.attached_flashlights[gear_id].unit_3p
-	else self:print("get_flashlight_unit - weapon is nil", mod._debug_skip_some) end
+	else self:print("get_flashlight_unit - weapon is nil", self._debug_skip_some) end
 end
 
 -- Get flashlight unit of specified weapon unit
 mod._get_flashlight_unit = function(self, weapon_unit)
-	self:print("get_flashlight_unit - searching flashlight unit", mod._debug_skip_some)
+	self:print("get_flashlight_unit - searching flashlight unit", self._debug_skip_some)
 	local flashlight = nil
     -- Get unit children
 	local children = unit_get_child_units(weapon_unit)
@@ -135,13 +135,13 @@ mod._get_flashlight_unit = function(self, weapon_unit)
 			end
 			if flashlight then break end
 		end
-	else self:print("get_flashlight_unit - main_childs is nil", mod._debug_skip_some) end
+	else self:print("get_flashlight_unit - main_childs is nil", self._debug_skip_some) end
 	return flashlight
 end
 
 mod.update_flashlight = function(self)
     local _, changed = self:is_in_third_person()
-    if changed then
+    if changed or self:character_state_changed() then
         self:toggle_flashlight(true)
     end
 end
@@ -149,13 +149,13 @@ end
 -- Update flashlight flicker
 mod.update_flicker = function(self)
     -- Check flashlight and flicker setting
-	if (self:has_flashlight_attachment() or self:has_laser_pointer_attachment()) and mod:get("mod_option_flashlight_flicker") then
+	if (self:has_flashlight_attachment() or self:has_laser_pointer_attachment()) and self:get("mod_option_flashlight_flicker") then
         -- Get flashlight unit
 		local light_unit_1p, light_unit_3p = self:get_flashlight_unit() or self:get_laser_pointer_unit()
         local light_unit = light_unit_1p
         if self:is_in_third_person() then light_unit = light_unit_3p end
         -- Check flashlight unit and state
-        local state = mod:persistent_table("weapon_customization").flashlight_on or mod:persistent_table("weapon_customization").laser_pointer_on
+        local state = self:persistent_table("weapon_customization").flashlight_on or self:persistent_table("weapon_customization").laser_pointer_on
 		if light_unit and state then
 			local t = self.time_manager:time("gameplay")
 			local settings = self._active_flicker_settings
@@ -277,11 +277,11 @@ mod.toggle_flashlight = function(self, retain, optional_value)
             end
 
             -- Check flicker
-            if flashlight_state then
+            if not retain and flashlight_state then
                 -- Switch on
                 if self:get("mod_option_flashlight_flicker_start") then self.start_flicker_now = true end
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1)
-            else
+            elseif not retain then
                 -- Switch off
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1)
             end

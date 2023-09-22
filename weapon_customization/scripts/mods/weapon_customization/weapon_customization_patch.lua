@@ -53,7 +53,7 @@ mod.randomize_weapon = function(self, item)
     local possible_attachments = {}
     local no_support_entries = {}
     local item_name = self:item_name_from_content_string(item.name)
-    local attachment_slots = mod:get_item_attachment_slots(item)
+    local attachment_slots = self:get_item_attachment_slots(item)
     for _, attachment_slot in pairs(attachment_slots) do
         if self.attachment[item_name][attachment_slot] and not table_contains(self.automatic_slots, attachment_slot) then
             for _, data in pairs(self.attachment[item_name][attachment_slot]) do
@@ -89,13 +89,13 @@ mod.randomize_weapon = function(self, item)
 end
 
 mod.setup_item_definitions = function(self)
-    if mod:persistent_table("weapon_customization").item_definitions == nil then
-        mod:persistent_table("weapon_customization").item_definitions = table_clone_instance(MasterItems.get_cached())
+    if self:persistent_table("weapon_customization").item_definitions == nil then
+        self:persistent_table("weapon_customization").item_definitions = table_clone_instance(MasterItems.get_cached())
     end
-    if mod:persistent_table("weapon_customization").bulwark_item_definitions == nil then
-        mod:persistent_table("weapon_customization").bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
-        mod:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = mod:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
-        mod:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+    if self:persistent_table("weapon_customization").bulwark_item_definitions == nil then
+        self:persistent_table("weapon_customization").bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
+        self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+        self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
     end
 end
 
@@ -240,24 +240,25 @@ mod._recursive_find_attachment_name = function(self, attachments, attachment_nam
 end
 
 mod._overwrite_attachments = function(self, item_data, attachments)
-    local gear_id = mod:get_gear_id(item_data)
-    local item_name = mod:item_name_from_content_string(item_data.name)
+    local gear_id = self:get_gear_id(item_data)
+    local item_name = self:item_name_from_content_string(item_data.name)
     local automatic_equip_entries = {}
-    for _, attachment_slot in pairs(mod.attachment_slots) do
+    for _, attachment_slot in pairs(self.attachment_slots) do
+        -- Don't handle trinkets
         if attachment_slot ~= "slot_trinket_1" and attachment_slot ~= "slot_trinket_2" then
-            local attachment = mod:get_gear_setting(gear_id, attachment_slot)--, item_data)
+            local attachment = self:get_gear_setting(gear_id, attachment_slot)--, item_data)
             
             -- Customize
-            if attachment and mod.attachment_models[item_name][attachment] then
-                local model = mod.attachment_models[item_name][attachment].model
+            if attachment and self.attachment_models[item_name][attachment] then
+                local model = self.attachment_models[item_name][attachment].model
                 local attachment_type = mod.attachment_models[item_name][attachment].type
-                mod:_recursive_set_attachment(attachments, attachment, attachment_type, model)
+                self:_recursive_set_attachment(attachments, attachment, attachment_type, model)
                 -- Automatic
-                local automatic_equip = mod.attachment_models[item_name][attachment].automatic_equip
+                local automatic_equip = self.attachment_models[item_name][attachment].automatic_equip
                 if automatic_equip then
                     for auto_type, auto_attachment in pairs(automatic_equip) do
-                        if mod.attachment_models[item_name][auto_attachment] then
-                            local auto_model = mod.attachment_models[item_name][auto_attachment].model
+                        if self.attachment_models[item_name][auto_attachment] then
+                            local auto_model = self.attachment_models[item_name][auto_attachment].model
                             -- mod:_recursive_set_attachment(attachments, auto_attachment, auto_type, auto_model, true)
                             automatic_equip_entries[#automatic_equip_entries+1] = {
                                 attachment = auto_attachment,
@@ -269,26 +270,40 @@ mod._overwrite_attachments = function(self, item_data, attachments)
                 end
             else
                 -- Default overwrite
-                if mod.default_overwrite[item_name] and mod.default_overwrite[item_name][attachment_slot] then
-                    mod:_recursive_set_attachment(attachments, attachment, attachment_slot, mod.default_overwrite[item_name][attachment_slot])
+                if self.default_overwrite[item_name] and self.default_overwrite[item_name][attachment_slot] then
+                    self:_recursive_set_attachment(attachments, attachment, attachment_slot, self.default_overwrite[item_name][attachment_slot])
                 else
                     -- Default
                     local MasterItemsCached = MasterItems.get_cached()
                     local master_item = MasterItemsCached[item_data.name]
-                    local attachment_data = mod:_recursive_find_attachment(master_item.attachments, attachment_slot)
-                    local attachment = mod:get_gear_setting(gear_id, attachment_slot, item_data)
+                    local attachment_data = self:_recursive_find_attachment(master_item.attachments, attachment_slot)
+                    local attachment = self:get_gear_setting(gear_id, attachment_slot, item_data)
                     if attachment_data then
-                        mod:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment_data.item)
+                        self:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment_data.item)
                     end
+                end
+            end
+        else
+            -- Handle trinket
+            local master_instance = item_data.__gear and item_data.__gear.masterDataInstance
+            local master_attachments = master_instance and master_instance.overrides and master_instance.overrides.attachments
+            if master_attachments then
+                local attachment_data = self:_recursive_find_attachment(master_attachments, attachment_slot)
+                if attachment_data and attachment_data.item then
+                    local trinket_name = nil
+                    if type(attachment_data.item) == "string" then
+                        trinket_name = self:item_name_from_content_string(attachment_data.item)
+                    else
+                        trinket_name = self:item_name_from_content_string(attachment_data.item.__master_item.name)
+                    end
+                    self:_recursive_set_attachment(attachments, trinket_name, attachment_slot, attachment_data.item)
                 end
             end
         end
     end
     -- Automatic
     for _, entry in pairs(automatic_equip_entries) do
-        -- if entry.type ~= "slot_trinket_1" and not entry.type ~= "slot_trinket_2" then
-            mod:_recursive_set_attachment(attachments, entry.attachment, entry.type, entry.model, true)
-        -- end
+        self:_recursive_set_attachment(attachments, entry.attachment, entry.type, entry.model, true)
     end
 end
 

@@ -421,7 +421,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             local move = move or vector3_box(0, 0, 0)
             local remove = remove or vector3_box(0, 0, 0)
             return {
-                slot_trinket_1 = {model = "content/items/weapons/player/trinkets/empty_trinket", type = "slot_trinket_1", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
+                slot_trinket_1 = {model = "content/items/weapons/player/trinkets/empty_trinket", type = "slot_trinket_1", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false, no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "trinket_hook_empty"}},
             }
         end
         local _slot_trinket_2_attachments = function()
@@ -434,7 +434,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             local move = move or vector3_box(0, 0, 0)
             local remove = remove or vector3_box(0, 0, 0)
             return {
-                slot_trinket_2 = {model = "content/items/weapons/player/trinkets/empty_trinket", type = "slot_trinket_2", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false},
+                slot_trinket_2 = {model = "content/items/weapons/player/trinkets/empty_trinket", type = "slot_trinket_2", parent = tv(parent, 1), angle = angle, move = move, remove = tv(remove, 1), mesh_move = false, no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "trinket_hook_empty"}},
             }
         end
     --#endregion
@@ -2427,7 +2427,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 },
             },
             bolter_p1_m1 = { -- Done 13.9.2023
-                scope_offset = vector3_box(0, 0, .02),
+                scope_offset = vector3_box(0, 0, .022),
                 trinket_slot = "slot_trinket_2",
                 fixes = {
                     {dependencies = {"receiver_01", "emblem_left_02"}, -- Emblem
@@ -2633,8 +2633,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                         bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"muzzle_03", "autogun_bayonet_03"}, -- Bayonet 3
                         bayonet = {offset = true, position = vector3_box(0, .065, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {stock_3 = {parent = "body", position = vector3_box(0, -.11, -.1), rotation = vector3_box(5, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
-                    {slot_trinket_1 = {parent = "trinket_hook", position = vector3_box(0, 0, .2), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {stock_3 = {parent = "body", position = vector3_box(0, -.0225, -.0125), rotation = vector3_box(15, 0, 0), scale = vector3_box(.6, 1.2, 1)}}, -- Stocks
+                    -- {slot_trinket_1 = {parent = "trinket_hook", position = vector3_box(0, 0, .5), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"grip_01"}, -- Trinket
                         trinket_hook = {parent = "grip", position = vector3_box(0, -.115, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"grip_02"}, -- Trinket
@@ -4051,9 +4051,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {"trinket_hook"},
                     {"trinket_hook"},
                     {"trinket_hook_empty"},
-                    {"trinket_hook_empty"},
-                    {"trinket_hook_empty"},
-                    {"trinket_hook_empty"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
                     {"trinket_hook_empty"},
                     {"trinket_hook_empty"},
                     {"trinket_hook"},
@@ -4076,9 +4076,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_05_carbon"},
-                    {trinket_hook = "trinket_hook_05_carbon"},
-                    {trinket_hook = "trinket_hook_05_carbon"},
-                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_05_carbon"},
                     {trinket_hook = "trinket_hook_05_carbon"},
                     {trinket_hook = "trinket_hook_empty"},
@@ -4166,7 +4166,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _trinket_hook_models("grip", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _slot_trinket_1_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
                 _grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1), "grip", {
-                    {"trinket_hook"},
+                    {"trinket_hook_empty"},
                     {"trinket_hook"},
                     {"trinket_hook"},
                     {"trinket_hook"},
@@ -4175,9 +4175,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {"trinket_hook"},
                     {"trinket_hook"},
                     {"trinket_hook_empty"},
-                    {"trinket_hook_empty"},
-                    {"trinket_hook_empty"},
-                    {"trinket_hook_empty"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
+                    {"trinket_hook"},
                     {"trinket_hook_empty"},
                     {"trinket_hook_empty"},
                     {"trinket_hook"},
@@ -4191,7 +4191,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {"trinket_hook"},
                     {"trinket_hook"},
                 }, {
-                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_05_carbon"},
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty"},
@@ -4200,9 +4200,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_05_carbon"},
-                    {trinket_hook = "trinket_hook_05_carbon"},
-                    {trinket_hook = "trinket_hook_05_carbon"},
-                    {trinket_hook = "trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_05_carbon"},
                     {trinket_hook = "trinket_hook_05_carbon"},
                     {trinket_hook = "trinket_hook_empty"},

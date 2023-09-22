@@ -68,10 +68,15 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 
 mod._add_custom_attachments = function(self, item, attachments)
 	local gear_id = self:get_gear_id(item)
-	local slot_info_id = item.__gear_id or item.gear_id
-	if gear_id then
+	if gear_id and attachments then
 		-- Get item name
 		local item_name = self:item_name_from_content_string(item.name)
+		-- Save original attachments
+		if (item.preview_item or self.cosmetics_view) and item.__master_item and not item.__master_item.original_attachments then
+			item.__master_item.original_attachments = table_clone(attachments)
+		elseif (item.preview_item or self.cosmetics_view) and not item.original_attachments then
+			item.original_attachments = table_clone(attachments)
+		end
 		-- Iterate custom attachment slots
 		for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
 			-- Get weapon setting for attachment slot
@@ -115,7 +120,7 @@ end
 mod._apply_anchor_fixes = function(self, item, unit)
 	if item and item.attachments then
 		local gear_id = self:get_gear_id(item)
-		local slot_info_id = item.__gear_id
+		local slot_info_id = self:get_slot_info_id(item)
 		local item_name = self:item_name_from_content_string(item.name)
 		local attachments = item.attachments
 		if gear_id and self.attachment_slot_infos and self.attachment_slot_infos[slot_info_id] then
@@ -191,7 +196,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local item_name = mod:item_name_from_content_string(item_data.name)
 		local attachments = item_data.attachments
 		local gear_id = mod:get_gear_id(item_data)
-		local slot_info_id = item_data.__gear_id or item_data.gear_id
+		local slot_info_id = mod:get_slot_info_id(item_data)
 		local attachment_slot_info = {}
 
 		if item_unit and attachments and gear_id then
@@ -209,7 +214,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"bolter_p1_m1", "laspistol_p1_m1", "plasmagun_p1_m1"})
+		-- mod:debug_attachments(item_data, attachments, {"bolter_p1_m1", "laspistol_p1_m1", "plasmagun_p1_m1"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses = nil, nil

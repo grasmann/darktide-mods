@@ -50,10 +50,7 @@ end
 
 -- Update loop
 function mod.update(main_dt)
-	mod:update_laser_pointer()
-	mod:update_flashlight()
 	mod:update_flicker()
-	mod.was_third_person = mod:_is_in_third_person()
 end
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -93,9 +90,13 @@ end)
 -- Update flashlight state
 mod:hook(CLASS.Flashlight, "update_first_person_mode", function(func, self, first_person_mode, ...)
 	func(self, first_person_mode, ...)
-	-- Update flashlight
-    if mod:has_flashlight_attachment() then mod:toggle_flashlight(true) end
-	if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
+	if mod.initialized then
+		-- Update flashlight
+		if mod:has_flashlight_attachment() then mod:update_flashlight() end
+		if mod:has_laser_pointer_attachment() then mod:update_laser_pointer() end
+		mod.was_third_person = mod:_is_in_third_person()
+		mod.last_character_state = mod:_character_state()
+	end
 end)
 
 -- Update flashlight state
@@ -119,7 +120,11 @@ end
 
 -- Get gear id from item
 mod.get_gear_id = function(self, item, original)
-	return item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id
+	return item and (item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id)
+end
+
+mod.get_slot_info_id = function(self, item)
+	return item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid
 end
 
 -- Set attachment for specified gear id and slot
@@ -239,7 +244,7 @@ mod.get_weapon_from_gear_id = function(self, from_gear_id)
 end
 
 mod.is_in_third_person = function(self)
-	local is_third_person = mod:_is_in_third_person()
+	local is_third_person = self:_is_in_third_person()
 	local changed = false
 	if self.was_third_person == nil then self.was_third_person = is_third_person end
 	if self.was_third_person ~= is_third_person then
@@ -252,6 +257,20 @@ mod._is_in_third_person = function(self)
 	local first_person_extension = ScriptUnit.extension(self.player_unit, "first_person_system")
 	local first_person = first_person_extension and first_person_extension:is_in_first_person_mode()
 	return not first_person
+end
+
+mod.character_state_changed = function(self)
+	local changed = false
+	local character_state = self:_character_state()
+	if character_state ~= self.last_character_state then
+		self:echo(tostring(character_state))
+		changed = true
+	end
+	return changed
+end
+
+mod._character_state = function(self)
+	return self.character_state_machine_extension:current_state()
 end
 
 -- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐ #######################################################################################
@@ -268,7 +287,7 @@ mod.init = function(self)
 	self.player_unit = self.player.player_unit
 	self.fx_extension = script_unit.extension(self.player_unit, "fx_system")
 	self.weapon_extension = script_unit.extension(self.player_unit, "weapon_system")
-	self.character_state_machine_extensions = script_unit.extension(self.player_unit, "character_state_machine_system")
+	self.character_state_machine_extension = script_unit.extension(self.player_unit, "character_state_machine_system")
 	self.unit_data = script_unit.extension(self.player_unit, "unit_data_system")
 	self.visual_loadout_extension = script_unit.extension(self.player_unit, "visual_loadout_system")
 	self.inventory_component = self.unit_data:read_component("inventory")
