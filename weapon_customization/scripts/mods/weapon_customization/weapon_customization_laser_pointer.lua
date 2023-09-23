@@ -9,6 +9,7 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
 local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
 local Recoil = mod:original_require("scripts/utilities/recoil")
 local Sway = mod:original_require("scripts/utilities/sway")
+local Breed = mod:original_require("scripts/utilities/breed")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -68,6 +69,7 @@ local MAX_DISTANCE = 1000
 local INTERVAL = .1
 local TIME = .5
 local DOT_TIME = .75
+local HIT_TIME = .25
 local LINE_EFFECT = {
     vfx = LASER_PARTICLE_EFFECT,
     keep_aligned = true,
@@ -532,13 +534,15 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                         local camera_position = Managers.state.camera:camera_position(mod.player.viewport_name)
                         local camera_rotation = Managers.state.camera:camera_rotation(mod.player.viewport_name)
                         local camera_forward = quaternion_forward(camera_rotation)
+                        local distance_target = 6
+                        if mod.laser_hit and t < mod.laser_hit then distance_target = 10 end
                         if not is_in_third_person then
                             if hit_actor then
                                 laser_pos = camera_position + camera_forward * (2 / mod:get("mod_option_laser_pointer_dot_size"))
-                            elseif camera_hit_distance < 6 then
+                            elseif camera_hit_distance < distance_target then
                                 laser_pos = camera_position + camera_forward * (camera_hit_distance / mod:get("mod_option_laser_pointer_dot_size"))
                             else
-                                laser_pos = camera_position + camera_forward * (6 / mod:get("mod_option_laser_pointer_dot_size"))
+                                laser_pos = camera_position + camera_forward * (distance_target / mod:get("mod_option_laser_pointer_dot_size"))
                             end
                         elseif is_in_third_person then
                             local distance = vector3_distance(camera_position, end_position)
@@ -547,11 +551,14 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                             laser_pos = laser_pos - to_camera_direction * distance
                             if hit_actor then
                                 laser_pos = laser_pos + to_camera_direction * (2 / mod:get("mod_option_laser_pointer_dot_size"))
-                            elseif camera_hit_distance < 6 then
+                            elseif camera_hit_distance < distance_target then
                                 laser_pos = laser_pos + to_camera_direction * (camera_hit_distance / mod:get("mod_option_laser_pointer_dot_size"))
                             else
-                                laser_pos = laser_pos + to_camera_direction * (6 / mod:get("mod_option_laser_pointer_dot_size"))
+                                laser_pos = laser_pos + to_camera_direction * (distance_target / mod:get("mod_option_laser_pointer_dot_size"))
                             end
+                        end
+                        if mod.laser_hit and t > mod.laser_hit then
+                            mod.laser_hit = nil
                         end
                     end
                     world_move_particles(self._world, mod.laser_dot, laser_pos)
@@ -642,5 +649,32 @@ mod:hook(CLASS.ActionInspect, "finish", function(func, self, reason, data, t, ti
     mod.forced_fallback = false
     func(self, reason, data, t, time_in_action, ...)
 end)
+
+-- mod:hook(CLASS.AttackReportManager, "add_attack_result",
+-- function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage,
+-- 	attack_result, attack_type, damage_efficiency, ...)
+-- 	-- local player = mod:player_from_unit(attacking_unit)
+-- 	if attacking_unit == mod.player_unit then
+-- 		local unit_data_extension = script_unit.has_extension(attacked_unit, "unit_data_system")
+-- 		local breed_or_nil = unit_data_extension and unit_data_extension:breed()
+-- 		local target_is_minion = breed_or_nil and Breed.is_minion(breed_or_nil)
+
+--         if target_is_minion then
+--             if mod.laser_dot then
+--                 world_destroy_particles(mod:world(), mod.laser_dot)
+--                 mod.laser_dot = nil
+--                 mod.laser_hit = mod.time_manager:time("gameplay") + HIT_TIME
+
+--                 local player_unit_data_extension = ScriptUnit.has_extension(attacking_unit, "unit_data_system")
+--                 local critical_strike_component = player_unit_data_extension:read_component("critical_strike")
+--                 mod.laser_hit_critical = critical_strike_component.is_active
+
+--                 mod.laser_hit_weakspot = hit_weakspot
+--             end
+--         end
+--     end
+-- 	-- Original function
+-- 	return func(self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
+-- end)
 
 mod:despawn_all_lasers()

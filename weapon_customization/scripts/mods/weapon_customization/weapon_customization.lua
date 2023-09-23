@@ -263,7 +263,6 @@ mod.character_state_changed = function(self)
 	local changed = false
 	local character_state = self:_character_state()
 	if character_state ~= self.last_character_state then
-		self:echo(tostring(character_state))
 		changed = true
 	end
 	return changed
@@ -308,6 +307,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_cus
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_sights")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_mod_options")
 

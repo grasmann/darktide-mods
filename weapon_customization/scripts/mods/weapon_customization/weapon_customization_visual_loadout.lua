@@ -117,16 +117,15 @@ mod._add_custom_attachments = function(self, item, attachments)
 	end
 end
 
-mod._apply_anchor_fixes = function(self, item, unit)
+mod._apply_anchor_fixes = function(self, item, unit_or_name)
 	if item and item.attachments then
 		local gear_id = self:get_gear_id(item)
 		local slot_info_id = self:get_slot_info_id(item)
 		local item_name = self:item_name_from_content_string(item.name)
 		local attachments = item.attachments
-		if gear_id and self.attachment_slot_infos and self.attachment_slot_infos[slot_info_id] then
-			local attachment_slot_info = self.attachment_slot_infos[slot_info_id]
+		if gear_id then
 			-- Fixes
-			if attachment_slot_info and self.anchors[item_name] and self.anchors[item_name].fixes then
+			if self.anchors[item_name] and self.anchors[item_name].fixes then
 				local fixes = self.anchors[item_name].fixes
 				for _, fix_data in pairs(fixes) do
 					-- Dependencies
@@ -159,16 +158,23 @@ mod._apply_anchor_fixes = function(self, item, unit)
 					if has_dependencies or no_dependencies then
 						for fix_attachment, fix in pairs(fix_data) do
 							-- Attachment
-							if self.attachment_models[item_name] and self.attachment_models[item_name][fix_attachment] then
-								-- local model_string = self.attachment_models[item_name][fix_attachment].model
-								local has_fix_attachment = self:_recursive_find_attachment_name(attachments, fix_attachment)
-								local fix_attachment_slot = self.attachment_models[item_name][fix_attachment].type
-								if has_fix_attachment and fix_attachment_slot and unit == attachment_slot_info.attachment_slot_to_unit[fix_attachment_slot] then
+							if self.attachment_slot_infos and self.attachment_slot_infos[slot_info_id] then
+								local attachment_slot_info = self.attachment_slot_infos[slot_info_id]
+								if self.attachment_models[item_name] and self.attachment_models[item_name][fix_attachment] then
+									-- local model_string = self.attachment_models[item_name][fix_attachment].model
+									local has_fix_attachment = self:_recursive_find_attachment_name(attachments, fix_attachment)
+									local fix_attachment_slot = self.attachment_models[item_name][fix_attachment].type
+									if has_fix_attachment and fix_attachment_slot and unit_or_name == attachment_slot_info.attachment_slot_to_unit[fix_attachment_slot] then
+										return fix
+									end
+								end
+								-- Slot
+								if unit_or_name == attachment_slot_info.attachment_slot_to_unit[fix_attachment] then
 									return fix
 								end
 							end
-							-- Slot
-							if unit == attachment_slot_info.attachment_slot_to_unit[fix_attachment] then
+							-- Scope offset etc
+							if unit_or_name == fix_attachment then
 								return fix
 							end
 						end
