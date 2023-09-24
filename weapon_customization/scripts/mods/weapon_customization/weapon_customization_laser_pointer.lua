@@ -610,6 +610,10 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_create_particles_wrapper", function(func
     return effect_id
 end)
 
+-- ##### ┌─┐┌─┐┬  ┬  ┌─┐┬ ┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌ #######################################################################
+-- ##### ├┤ │ ││  │  │ ││││  │││├┤ ├─┤├─┘│ ││││ #######################################################################
+-- ##### └  └─┘┴─┘┴─┘└─┘└┴┘  └┴┘└─┘┴ ┴┴  └─┘┘└┘ #######################################################################
+
 mod:hook(CLASS.ActionVentOverheat, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
     mod.forced_fallback = true
     func(self, action_settings, t, time_scale, action_start_params, ...)
@@ -650,11 +654,14 @@ mod:hook(CLASS.ActionInspect, "finish", function(func, self, reason, data, t, ti
     func(self, reason, data, t, time_in_action, ...)
 end)
 
-mod:hook(CLASS.AttackReportManager, "add_attack_result",
-function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage,
+-- ##### ┬ ┬┬┌┬┐  ┬┌┐┌┌┬┐┬┌─┐┌─┐┌┬┐┌─┐┬─┐  ┌─┐┬  ┌─┐┌─┐┬ ┬ ############################################################
+-- ##### ├─┤│ │   ││││ ││││  ├─┤ │ │ │├┬┘  ├┤ │  ├─┤└─┐├─┤ ############################################################
+-- ##### ┴ ┴┴ ┴   ┴┘└┘─┴┘┴└─┘┴ ┴ ┴ └─┘┴└─  └  ┴─┘┴ ┴└─┘┴ ┴ ############################################################
+
+mod:hook(CLASS.AttackReportManager, "add_attack_result", function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage,
 	attack_result, attack_type, damage_efficiency, ...)
 	-- local player = mod:player_from_unit(attacking_unit)
-	if attacking_unit == mod.player_unit then
+	if attacking_unit == mod.player_unit and mod:get("mod_option_laser_pointer_hit_indicator") then
 		local unit_data_extension = script_unit.has_extension(attacked_unit, "unit_data_system")
 		local breed_or_nil = unit_data_extension and unit_data_extension:breed()
 		local target_is_minion = breed_or_nil and Breed.is_minion(breed_or_nil)
@@ -676,5 +683,9 @@ function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direc
 	-- Original function
 	return func(self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
 end)
+
+-- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐ #######################################################################################
+-- ##### │││││ │ │├─┤│  │┌─┘├┤  #######################################################################################
+-- ##### ┴┘└┘┴ ┴ ┴┴ ┴┴─┘┴└─┘└─┘ #######################################################################################
 
 mod:despawn_all_lasers()
