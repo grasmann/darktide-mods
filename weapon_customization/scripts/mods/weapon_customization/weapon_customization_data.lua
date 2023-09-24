@@ -62,7 +62,6 @@ return {
 						["type"] = "numeric",
 						["default_value"] = 1,
 						["range"] = {.5, 1},
-						["unit_text"] = "mod_option_weapon_build_animation_speed_unit",
 						["decimals_number"] = 2
 					},
 					{["setting_id"] = "mod_option_laser_pointer_wild",
@@ -72,6 +71,10 @@ return {
 					{["setting_id"] = "mod_option_laser_pointer_weapon_dot",
 						["type"] = "checkbox",
 						["default_value"] = true,
+					},
+					{["setting_id"] = "mod_option_laser_pointer_hit_indicator",
+						["type"] = "checkbox",
+						["default_value"] = false,
 					},
 				}
 			},

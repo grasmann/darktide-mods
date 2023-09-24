@@ -485,7 +485,7 @@ mod:hook(CLASS.PlayerUnitFxExtension, "update", function(func, self, unit, dt, t
                     if #mod:persistent_table("weapon_customization").spawned_lasers < mod.laser_counts then
                         mod:spawn_laser()
                         mod.laser_timer = t + INTERVAL
-                    else mod:print("PlayerUnitFxExtension.update laser pointer count max") end
+                    end
                 end
             else
                 mod:despawn_all_lasers()
@@ -493,7 +493,7 @@ mod:hook(CLASS.PlayerUnitFxExtension, "update", function(func, self, unit, dt, t
         else
             mod:despawn_all_lasers()
         end
-    else mod:print("PlayerUnitFxExtension.update mot not initialized") end
+    end
     func(self, unit, dt, t, ...)
 end)
 
@@ -650,31 +650,31 @@ mod:hook(CLASS.ActionInspect, "finish", function(func, self, reason, data, t, ti
     func(self, reason, data, t, time_in_action, ...)
 end)
 
--- mod:hook(CLASS.AttackReportManager, "add_attack_result",
--- function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage,
--- 	attack_result, attack_type, damage_efficiency, ...)
--- 	-- local player = mod:player_from_unit(attacking_unit)
--- 	if attacking_unit == mod.player_unit then
--- 		local unit_data_extension = script_unit.has_extension(attacked_unit, "unit_data_system")
--- 		local breed_or_nil = unit_data_extension and unit_data_extension:breed()
--- 		local target_is_minion = breed_or_nil and Breed.is_minion(breed_or_nil)
+mod:hook(CLASS.AttackReportManager, "add_attack_result",
+function(func, self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage,
+	attack_result, attack_type, damage_efficiency, ...)
+	-- local player = mod:player_from_unit(attacking_unit)
+	if attacking_unit == mod.player_unit then
+		local unit_data_extension = script_unit.has_extension(attacked_unit, "unit_data_system")
+		local breed_or_nil = unit_data_extension and unit_data_extension:breed()
+		local target_is_minion = breed_or_nil and Breed.is_minion(breed_or_nil)
 
---         if target_is_minion then
---             if mod.laser_dot then
---                 world_destroy_particles(mod:world(), mod.laser_dot)
---                 mod.laser_dot = nil
---                 mod.laser_hit = mod.time_manager:time("gameplay") + HIT_TIME
+        if target_is_minion then
+            if mod.laser_dot then
+                world_destroy_particles(mod:world(), mod.laser_dot)
+                mod.laser_dot = nil
+                mod.laser_hit = mod.time_manager:time("gameplay") + HIT_TIME
 
---                 local player_unit_data_extension = ScriptUnit.has_extension(attacking_unit, "unit_data_system")
---                 local critical_strike_component = player_unit_data_extension:read_component("critical_strike")
---                 mod.laser_hit_critical = critical_strike_component.is_active
+                local player_unit_data_extension = ScriptUnit.has_extension(attacking_unit, "unit_data_system")
+                local critical_strike_component = player_unit_data_extension:read_component("critical_strike")
+                mod.laser_hit_critical = critical_strike_component.is_active
 
---                 mod.laser_hit_weakspot = hit_weakspot
---             end
---         end
---     end
--- 	-- Original function
--- 	return func(self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
--- end)
+                mod.laser_hit_weakspot = hit_weakspot
+            end
+        end
+    end
+	-- Original function
+	return func(self, damage_profile, attacked_unit, attacking_unit, attack_direction, hit_world_position, hit_weakspot, damage, attack_result, attack_type, damage_efficiency, ...)
+end)
 
 mod:despawn_all_lasers()

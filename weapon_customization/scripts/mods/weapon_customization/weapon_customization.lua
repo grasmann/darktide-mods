@@ -46,6 +46,8 @@ function mod.on_setting_changed(setting_id)
 	if setting_id == "mod_option_laser_pointer_wild" or setting_id == "mod_option_laser_pointer_weapon_dot" or setting_id == "mod_option_laser_pointer_weapon_flash" then
 		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
 	end
+	-- Debug
+	mod._debug = mod:get("mod_option_debug")
 end
 
 -- Update loop

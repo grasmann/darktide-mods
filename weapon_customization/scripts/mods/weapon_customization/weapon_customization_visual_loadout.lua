@@ -38,6 +38,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 	local unit_set_sort_order = Unit.set_sort_order
 	local unit_num_meshes = Unit.num_meshes
 	local unit_mesh = Unit.mesh
+	local unit_set_mesh_visibility = Unit.set_mesh_visibility
 	local mesh_local_position = Mesh.local_position
 	local mesh_set_local_position = Mesh.set_local_position
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
@@ -45,6 +46,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 	local string_sub = string.sub
 	local string_gsub = string.gsub
 	local string_find = string.find
+	local string_split = string.split
 	local vector3 = Vector3
 	local vector3_box = Vector3Box
 	local vector3_unbox = vector3_box.unbox
@@ -132,25 +134,34 @@ mod._apply_anchor_fixes = function(self, item, unit_or_name)
 					local has_dependencies = false
 					local no_dependencies = false
 					if fix_data.dependencies then
-						for _, dependency in pairs(fix_data.dependencies) do
-							local negative = string_find(dependency, "!")
-							dependency = string_gsub(dependency, "!", "")
-							if self.attachment_models[item_name] and self.attachment_models[item_name][dependency] then
-								-- local model_string = self.attachment_models[item_name][dependency].model
-								if negative then
-									has_dependencies = not self:_recursive_find_attachment_name(attachments, dependency)
-								else
-									has_dependencies = self:_recursive_find_attachment_name(attachments, dependency)
+						for _, dependency_entry in pairs(fix_data.dependencies) do
+
+							local dependency_possibilities = string_split(dependency_entry, "|")
+							local has_dependency_possibility = false
+
+							for _, dependency_possibility in pairs(dependency_possibilities) do
+								local negative = string_find(dependency_possibility, "!")
+								dependency_possibility = string_gsub(dependency_possibility, "!", "")
+								if self.attachment_models[item_name] and self.attachment_models[item_name][dependency_possibility] then
+									-- local model_string = self.attachment_models[item_name][dependency].model
+									if negative then
+										has_dependency_possibility = not self:_recursive_find_attachment_name(attachments, dependency_possibility)
+									else
+										has_dependency_possibility = self:_recursive_find_attachment_name(attachments, dependency_possibility)
+									end
+									if has_dependency_possibility then break end
+								elseif table_contains(self.attachment_slots, dependency_possibility) then
+									if negative then
+										has_dependency_possibility = not self:_recursive_find_attachment(attachments, dependency_possibility)
+									else
+										has_dependency_possibility = self:_recursive_find_attachment(attachments, dependency_possibility)
+									end
+									if has_dependency_possibility then break end
 								end
-								if not has_dependencies then break end
-							elseif table_contains(self.attachment_slots, dependency) then
-								if negative then
-									has_dependencies = not self:_recursive_find_attachment(attachments, dependency)
-								else
-									has_dependencies = self:_recursive_find_attachment(attachments, dependency)
-								end
-								if not has_dependencies then break end
 							end
+
+							has_dependencies = has_dependency_possibility
+							if not has_dependencies then break end
 						end
 					else
 						no_dependencies = true
@@ -376,12 +387,22 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					local attachment_name = mod.attachment_slot_infos[slot_info_id].unit_to_attachment_name[unit]
 					local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
 					-- Hide meshes
-					local hide_mesh = attachment_data and attachment_data.hide_mesh and attachment_data.hide_mesh
+					local hide_mesh = attachment_data and attachment_data.hide_mesh
+					-- Get fixes
+					local fixes = mod:_apply_anchor_fixes(item_data, unit)
+					hide_mesh = fixes and fixes.hide_mesh or hide_mesh
 					if hide_mesh then
-						for attachment_slot, mesh_index in pairs(hide_mesh) do
-							local hide_unit = mod.attachment_slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
-							if hide_unit and unit_alive(hide_unit) then
-								Unit.set_mesh_visibility(hide_unit, mesh_index, false)
+						for _, hide_entry in pairs(hide_mesh) do
+							if #hide_entry > 1 then
+								local attachment_slot = hide_entry[1]
+								local hide_unit = mod.attachment_slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+								if hide_unit and unit_alive(hide_unit) then
+									for i = 2, #hide_entry do
+										mod:echo("hide mesh: "..tostring(hide_entry[i]))
+										local mesh_index = hide_entry[i]
+										unit_set_mesh_visibility(hide_unit, mesh_index, false)
+									end
+								end
 							end
 						end
 					end

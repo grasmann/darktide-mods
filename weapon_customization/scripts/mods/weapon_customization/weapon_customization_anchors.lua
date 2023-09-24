@@ -5,6 +5,11 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
+local _barrel_sound = UISoundEvents.talents_equip_talent
+local _receiver_sound = UISoundEvents.weapons_equip_weapon
+local _magazine_sound = UISoundEvents.weapons_trinket_select
+local _grip_sound = UISoundEvents.smart_tag_hud_default
+local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -175,30 +180,30 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         local _grip_attachments = function()
             return {
-                {id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                {id = "grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_06", name = "Autogun 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_07", name = "Autogun 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_08", name = "Autogun 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_09", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_10", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_11", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_12", name = "Headhunter Autogun", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_13", name = "Boltgun 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_14", name = "Boltgun 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_15", name = "Boltgun 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_19", name = "Laspistol 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_20", name = "Laspistol 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_21", name = "Laspistol 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_22", name = "Lasgun 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_23", name = "Lasgun 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_24", name = "Lasgun 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_25", name = "Lasgun 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "grip_26", name = "Lasgun 5", sounds = {UISoundEvents.weapons_swap}},
+                {id = "grip_default", name = "Default", sounds = {_grip_sound}},
+                {id = "grip_01", name = "Grip 1", sounds = {_grip_sound}},
+                {id = "grip_02", name = "Grip 2", sounds = {_grip_sound}},
+                {id = "grip_03", name = "Grip 3", sounds = {_grip_sound}},
+                {id = "grip_04", name = "Grip 4", sounds = {_grip_sound}},
+                {id = "grip_05", name = "Grip 5", sounds = {_grip_sound}},
+                {id = "grip_06", name = "Autogun 1", sounds = {_grip_sound}},
+                {id = "grip_07", name = "Autogun 2", sounds = {_grip_sound}},
+                {id = "grip_08", name = "Autogun 3", sounds = {_grip_sound}},
+                {id = "grip_09", name = "Braced Autogun 1", sounds = {_grip_sound}},
+                {id = "grip_10", name = "Braced Autogun 2", sounds = {_grip_sound}},
+                {id = "grip_11", name = "Braced Autogun 3", sounds = {_grip_sound}},
+                {id = "grip_12", name = "Headhunter Autogun", sounds = {_grip_sound}},
+                {id = "grip_13", name = "Boltgun 1", sounds = {_grip_sound}},
+                {id = "grip_14", name = "Boltgun 2", sounds = {_grip_sound}},
+                {id = "grip_15", name = "Boltgun 3", sounds = {_grip_sound}},
+                {id = "grip_19", name = "Laspistol 1", sounds = {_grip_sound}},
+                {id = "grip_20", name = "Laspistol 2", sounds = {_grip_sound}},
+                {id = "grip_21", name = "Laspistol 3", sounds = {_grip_sound}},
+                {id = "grip_22", name = "Lasgun 1", sounds = {_grip_sound}},
+                {id = "grip_23", name = "Lasgun 2", sounds = {_grip_sound}},
+                {id = "grip_24", name = "Lasgun 3", sounds = {_grip_sound}},
+                {id = "grip_25", name = "Lasgun 4", sounds = {_grip_sound}},
+                {id = "grip_26", name = "Lasgun 5", sounds = {_grip_sound}},
             }
         end
         local _grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
@@ -237,10 +242,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         local _bayonet_attachments = function()
             return {
-                {id = "autogun_bayonet_default",    name = "Default",   sounds = {UISoundEvents.end_screen_summary_plasteel_zero, UISoundEvents.end_screen_summary_currency_icon_out}},
-                {id = "autogun_bayonet_01",         name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "autogun_bayonet_02",         name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                {id = "autogun_bayonet_03",         name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                {id = "autogun_bayonet_default",    name = "Default",   sounds = {_knife_sound}},
+                {id = "autogun_bayonet_01",         name = "Bayonet 1", sounds = {_knife_sound}},
+                {id = "autogun_bayonet_02",         name = "Bayonet 2", sounds = {_knife_sound}},
+                {id = "autogun_bayonet_03",         name = "Bayonet 3", sounds = {_knife_sound}},
             }
         end
         local _bayonet_models = function(parent, angle, move, remove)
@@ -256,9 +261,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         local _reflex_sights_attachments = function()
             return {
-                {id = "reflex_sight_01", name = "Reflex Sight 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "reflex_sight_02", name = "Reflex Sight 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "reflex_sight_03", name = "Reflex Sight 3", sounds = {UISoundEvents.weapons_swap}},
+                {id = "reflex_sight_01", name = "Reflex Sight 1", sounds = {_magazine_sound}},
+                {id = "reflex_sight_02", name = "Reflex Sight 2", sounds = {_magazine_sound}},
+                {id = "reflex_sight_03", name = "Reflex Sight 3", sounds = {_magazine_sound}},
             }
         end
         local _reflex_sights_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
@@ -282,10 +287,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         local _sights_attachments = function()
             return {
-                {id = "autogun_rifle_sight_01", name = "Autogun", sounds = {UISoundEvents.weapons_swap}},
-                {id = "autogun_rifle_ak_sight_01", name = "Braced Autogun", sounds = {UISoundEvents.weapons_swap}},
-                {id = "autogun_rifle_killshot_sight_01", name = "Headhunter Autogun", sounds = {UISoundEvents.weapons_swap}},
-                {id = "lasgun_rifle_sight_01", name = "Lasgun", sounds = {UISoundEvents.weapons_swap}},
+                {id = "autogun_rifle_sight_01", name = "Autogun", sounds = {_magazine_sound}},
+                {id = "autogun_rifle_ak_sight_01", name = "Braced Autogun", sounds = {_magazine_sound}},
+                {id = "autogun_rifle_killshot_sight_01", name = "Headhunter Autogun", sounds = {_magazine_sound}},
+                {id = "lasgun_rifle_sight_01", name = "Lasgun", sounds = {_magazine_sound}},
             }
         end
         local _sights_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
@@ -358,7 +363,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         local _trinket_hook_attachments = function()
             return {
-                {id = "trinket_hook_default",       name = "Default",                   sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                {id = "trinket_hook_default",       name = "Default",                   sounds = {UISoundEvents.apparel_equip}},
                 {id = "trinket_hook_empty",         name = "No Trinket Hook",           sounds = {UISoundEvents.apparel_equip}},
                 {id = "trinket_hook_01",            name = "Trinket Hook 1",            sounds = {UISoundEvents.apparel_equip}},
                 {id = "trinket_hook_01_v",          name = "Trinket Hook 1 V",          sounds = {UISoundEvents.apparel_equip}},
@@ -448,11 +453,11 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Common
             local _ogryn_bayonet_attachments = function()
                 return {
-                    {id = "bayonet_default",    name = "Default",   sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "bayonet_01",         name = "Bayonet 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "bayonet_02",         name = "Bayonet 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "bayonet_03",         name = "Bayonet 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "bayonet_blade_01",   name = "Blade",     sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "bayonet_default",    name = "Default",   sounds = {_knife_sound}},
+                    {id = "bayonet_01",         name = "Bayonet 1", sounds = {_knife_sound}},
+                    {id = "bayonet_02",         name = "Bayonet 2", sounds = {_knife_sound}},
+                    {id = "bayonet_03",         name = "Bayonet 3", sounds = {_knife_sound}},
+                    {id = "bayonet_blade_01",   name = "Blade",     sounds = {_knife_sound}},
                 }
             end
             local _ogryn_bayonet_models = function(parent, angle, move, remove)
@@ -471,10 +476,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Stubber
             local _stubber_barrel_attachments = function()
                 return {
-                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_default", name = "Default",   sounds = {_barrel_sound}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {_barrel_sound}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {_barrel_sound}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {_barrel_sound}},
                 }
             end
             local _stubber_barrel_models = function(parent, angle, move, remove)
@@ -490,10 +495,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _stubber_receiver_attachments = function()
                 return {
-                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_default",   name = "Default",       sounds = {_receiver_sound}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {_receiver_sound}},
+                    {id = "receiver_02",        name = "Receiver 2",    sounds = {_receiver_sound}},
+                    {id = "receiver_03",        name = "Receiver 3",    sounds = {_receiver_sound}},
                 }
             end
             local _stubber_receiver_models = function(parent, angle, move, remove)
@@ -509,10 +514,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _stubber_magazine_attachments = function()
                 return {
-                    {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_03",        name = "Magazine 3",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_default",   name = "Default",       sounds = {_magazine_sound}},
+                    {id = "magazine_01",        name = "Magazine 1",    sounds = {_magazine_sound}},
+                    {id = "magazine_02",        name = "Magazine 2",    sounds = {_magazine_sound}},
+                    {id = "magazine_03",        name = "Magazine 3",    sounds = {_magazine_sound}},
                 }
             end
             local _stubber_magazine_models = function(parent, angle, move, remove)
@@ -528,10 +533,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _stubber_grip_attachments = function()
                 return {
-                    {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.smart_tag_hud_default}},
-                    {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.smart_tag_hud_default}},
-                    {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.smart_tag_hud_default}},
-                    {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "grip_default",   name = "Default",   sounds = {_grip_sound}},
+                    {id = "grip_01",        name = "Grip 1",    sounds = {_grip_sound}},
+                    {id = "grip_02",        name = "Grip 2",    sounds = {_grip_sound}},
+                    {id = "grip_03",        name = "Grip 3",    sounds = {_grip_sound}},
                 }
             end
             local _stubber_grip_models = function(parent, angle, move, remove)
@@ -549,13 +554,13 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Ripper
             local _ripper_barrel_attachments = function()
                 return {
-                    -- {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_01",      name = "Ripper Barrel A",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_02",      name = "Ripper Barrel B",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_03",      name = "Ripper Barrel C",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_04",      name = "Ripper Barrel D",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_05",      name = "Ripper Barrel E",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_06",      name = "Ripper Barrel F",  sounds = {UISoundEvents.talents_equip_talent}},
+                    -- {id = "barrel_default", name = "Default",   sounds = {_barrel_sound}},
+                    {id = "barrel_01",      name = "Ripper Barrel A",  sounds = {_barrel_sound}},
+                    {id = "barrel_02",      name = "Ripper Barrel B",  sounds = {_barrel_sound}},
+                    {id = "barrel_03",      name = "Ripper Barrel C",  sounds = {_barrel_sound}},
+                    {id = "barrel_04",      name = "Ripper Barrel D",  sounds = {_barrel_sound}},
+                    {id = "barrel_05",      name = "Ripper Barrel E",  sounds = {_barrel_sound}},
+                    {id = "barrel_06",      name = "Ripper Barrel F",  sounds = {_barrel_sound}},
                 }
             end
             local _ripper_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
@@ -575,13 +580,13 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _ripper_receiver_attachments = function()
                 return {
-                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_04",        name = "Receiver 4",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_05",        name = "Receiver 5",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_06",        name = "Receiver 6",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_default",   name = "Default",       sounds = {_receiver_sound}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {_receiver_sound}},
+                    {id = "receiver_02",        name = "Receiver 2",    sounds = {_receiver_sound}},
+                    {id = "receiver_03",        name = "Receiver 3",    sounds = {_receiver_sound}},
+                    {id = "receiver_04",        name = "Receiver 4",    sounds = {_receiver_sound}},
+                    {id = "receiver_05",        name = "Receiver 5",    sounds = {_receiver_sound}},
+                    {id = "receiver_06",        name = "Receiver 6",    sounds = {_receiver_sound}},
                 }
             end
             local _ripper_receiver_models = function(parent, angle, move, remove)
@@ -600,13 +605,13 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _ripper_magazine_attachments = function()
                 return {
-                    {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_03",        name = "Magazine 3",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_04",        name = "Magazine 4",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_05",        name = "Magazine 5",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_06",        name = "Magazine 6",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_default",   name = "Default",       sounds = {_magazine_sound}},
+                    {id = "magazine_01",        name = "Magazine 1",    sounds = {_magazine_sound}},
+                    {id = "magazine_02",        name = "Magazine 2",    sounds = {_magazine_sound}},
+                    {id = "magazine_03",        name = "Magazine 3",    sounds = {_magazine_sound}},
+                    {id = "magazine_04",        name = "Magazine 4",    sounds = {_magazine_sound}},
+                    {id = "magazine_05",        name = "Magazine 5",    sounds = {_magazine_sound}},
+                    {id = "magazine_06",        name = "Magazine 6",    sounds = {_magazine_sound}},
                 }
             end
             local _ripper_magazine_models = function(parent, angle, move, remove)
@@ -625,11 +630,11 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _ripper_handle_attachments = function()
                 return {
-                    {id = "handle_default", name = "Default",   sounds = {UISoundEvents.smart_tag_hud_default}},
-                    {id = "handle_01",      name = "Handle 1",  sounds = {UISoundEvents.smart_tag_hud_default}},
-                    {id = "handle_02",      name = "Handle 2",  sounds = {UISoundEvents.smart_tag_hud_default}},
-                    {id = "handle_03",      name = "Handle 3",  sounds = {UISoundEvents.smart_tag_hud_default}},
-                    {id = "handle_04",      name = "Handle 4",  sounds = {UISoundEvents.smart_tag_hud_default}},
+                    {id = "handle_default", name = "Default",   sounds = {_grip_sound}},
+                    {id = "handle_01",      name = "Handle 1",  sounds = {_grip_sound}},
+                    {id = "handle_02",      name = "Handle 2",  sounds = {_grip_sound}},
+                    {id = "handle_03",      name = "Handle 3",  sounds = {_grip_sound}},
+                    {id = "handle_04",      name = "Handle 4",  sounds = {_grip_sound}},
                 }
             end
             local _ripper_handle_models = function(parent, angle, move, remove)
@@ -671,11 +676,11 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _thumper_sight_attachments = function()
                 return {
-                    {id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "sight_01",       name = "Sight 1", sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "sight_02",       name = "No Sight", sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "sight_03",       name = "Sight 3", sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "sight_04",       name = "Sight 4", sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "sight_default",  name = "Default",  sounds = {_magazine_sound}},
+                    {id = "sight_01",       name = "Sight 1",  sounds = {_magazine_sound}},
+                    {id = "sight_02",       name = "No Sight", sounds = {_magazine_sound}},
+                    {id = "sight_03",       name = "Sight 3",  sounds = {_magazine_sound}},
+                    {id = "sight_04",       name = "Sight 4",  sounds = {_magazine_sound}},
                 }
             end
             local _thumper_sight_models = function(parent, angle, move, remove)
@@ -692,12 +697,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _thumper_body_attachments = function()
                 return {
-                    {id = "body_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_01",      name = "Body 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_02",      name = "Body 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_03",      name = "Body 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_04",      name = "Body 4",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_05",      name = "Body 5",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_default", name = "Default", sounds = {_receiver_sound}},
+                    {id = "body_01",      name = "Body 1",  sounds = {_receiver_sound}},
+                    {id = "body_02",      name = "Body 2",  sounds = {_receiver_sound}},
+                    {id = "body_03",      name = "Body 3",  sounds = {_receiver_sound}},
+                    {id = "body_04",      name = "Body 4",  sounds = {_receiver_sound}},
+                    {id = "body_05",      name = "Body 5",  sounds = {_receiver_sound}},
                 }
             end
             local _thumper_body_models = function(parent, angle, move, remove)
@@ -717,11 +722,11 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Gauntlet
             local _gauntlet_barrel_attachments = function()
                 return {
-                    {id = "barrel_default", name = "Default",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_01",      name = "Barrel 1", sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_02",      name = "Barrel 2", sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_03",      name = "Barrel 3", sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_04",      name = "Barrel 4", sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_default", name = "Default",  sounds = {_barrel_sound}},
+                    {id = "barrel_01",      name = "Barrel 1", sounds = {_barrel_sound}},
+                    {id = "barrel_02",      name = "Barrel 2", sounds = {_barrel_sound}},
+                    {id = "barrel_03",      name = "Barrel 3", sounds = {_barrel_sound}},
+                    {id = "barrel_04",      name = "Barrel 4", sounds = {_barrel_sound}},
                 }
             end
             local _gauntlet_barrel_models = function(parent, angle, move, remove)
@@ -738,11 +743,11 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _gauntlet_body_attachments = function()
                 return {
-                    {id = "body_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_01",      name = "Body 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_02",      name = "Body 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_03",      name = "Body 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_04",      name = "Body 4",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_default", name = "Default", sounds = {_receiver_sound}},
+                    {id = "body_01",      name = "Body 1",  sounds = {_receiver_sound}},
+                    {id = "body_02",      name = "Body 2",  sounds = {_receiver_sound}},
+                    {id = "body_03",      name = "Body 3",  sounds = {_receiver_sound}},
+                    {id = "body_04",      name = "Body 4",  sounds = {_receiver_sound}},
                 }
             end
             local _gauntlet_body_models = function(parent, angle, move, remove)
@@ -759,9 +764,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _gauntlet_magazine_attachments = function()
                 return {
-                    {id = "magazine_default", name = "Default",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_01",      name = "Magazine 1", sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_02",      name = "Magazine 2", sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_default", name = "Default",    sounds = {_magazine_sound}},
+                    {id = "magazine_01",      name = "Magazine 1", sounds = {_magazine_sound}},
+                    {id = "magazine_02",      name = "Magazine 2", sounds = {_magazine_sound}},
                 }
             end
             local _gauntlet_magazine_models = function(parent, angle, move, remove)
@@ -780,12 +785,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Shovel
             local _ogryn_shovel_head_attachments = function()
                 return {
-                    {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_01",      name = "Head 1",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_02",      name = "Head 2",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_03",      name = "Head 3",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_04",      name = "Head 4",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_05",      name = "Head 5",  sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_default", name = "Default", sounds = {_knife_sound}},
+                    {id = "head_01",      name = "Head 1",  sounds = {_knife_sound}},
+                    {id = "head_02",      name = "Head 2",  sounds = {_knife_sound}},
+                    {id = "head_03",      name = "Head 3",  sounds = {_knife_sound}},
+                    {id = "head_04",      name = "Head 4",  sounds = {_knife_sound}},
+                    {id = "head_05",      name = "Head 5",  sounds = {_knife_sound}},
                 }
             end
             local _ogryn_shovel_head_models = function(parent, angle, move, remove)
@@ -803,12 +808,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _ogryn_shovel_grip_attachments = function()
                 return {
-                    {id = "grip_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_01",      name = "Grip 1",  sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_02",      name = "Grip 2",  sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_03",      name = "Grip 3",  sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_04",      name = "Grip 4",  sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_05",      name = "Grip 5",  sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_default", name = "Default", sounds = {_grip_sound}},
+                    {id = "grip_01",      name = "Grip 1",  sounds = {_grip_sound}},
+                    {id = "grip_02",      name = "Grip 2",  sounds = {_grip_sound}},
+                    {id = "grip_03",      name = "Grip 3",  sounds = {_grip_sound}},
+                    {id = "grip_04",      name = "Grip 4",  sounds = {_grip_sound}},
+                    {id = "grip_05",      name = "Grip 5",  sounds = {_grip_sound}},
                 }
             end
             local _ogryn_shovel_grip_models = function(parent, angle, move, remove)
@@ -851,13 +856,13 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Combat blade
             local _combat_blade_blade_attachments = function()
                 return {
-                    {id = "blade_default",  name = "Default", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_01",       name = "Blade 1", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_02",       name = "Blade 2", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_03",       name = "Blade 3", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_04",       name = "Blade 4", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_05",       name = "Blade 5", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "blade_06",       name = "Blade 6", sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "blade_default",  name = "Default", sounds = {_knife_sound}},
+                    {id = "blade_01",       name = "Blade 1", sounds = {_knife_sound}},
+                    {id = "blade_02",       name = "Blade 2", sounds = {_knife_sound}},
+                    {id = "blade_03",       name = "Blade 3", sounds = {_knife_sound}},
+                    {id = "blade_04",       name = "Blade 4", sounds = {_knife_sound}},
+                    {id = "blade_05",       name = "Blade 5", sounds = {_knife_sound}},
+                    {id = "blade_06",       name = "Blade 6", sounds = {_knife_sound}},
                 }
             end
             local _combat_blade_blade_models = function(parent, angle, move, remove)
@@ -876,13 +881,13 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _combat_blade_grip_attachments = function()
                 return {
-                    {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_04",        name = "Grip 4",    sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_05",        name = "Grip 5",    sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_06",        name = "Grip 6",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_default",   name = "Default",   sounds = {_grip_sound}},
+                    {id = "grip_01",        name = "Grip 1",    sounds = {_grip_sound}},
+                    {id = "grip_02",        name = "Grip 2",    sounds = {_grip_sound}},
+                    {id = "grip_03",        name = "Grip 3",    sounds = {_grip_sound}},
+                    {id = "grip_04",        name = "Grip 4",    sounds = {_grip_sound}},
+                    {id = "grip_05",        name = "Grip 5",    sounds = {_grip_sound}},
+                    {id = "grip_06",        name = "Grip 6",    sounds = {_grip_sound}},
                 }
             end
             local _combat_blade_grip_models = function(parent, angle, move, remove)
@@ -951,12 +956,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _power_maul_head_attachments = function()
                 return {
-                    {id = "head_default",   name = "Default",   sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_01",        name = "Head 1",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_02",        name = "Head 2",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_03",        name = "Head 3",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_04",        name = "Head 4",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
-                    {id = "head_05",        name = "Head 5",    sounds = {UISoundEvents.end_screen_summary_plasteel_zero}},
+                    {id = "head_default",   name = "Default",   sounds = {_knife_sound}},
+                    {id = "head_01",        name = "Head 1",    sounds = {_knife_sound}},
+                    {id = "head_02",        name = "Head 2",    sounds = {_knife_sound}},
+                    {id = "head_03",        name = "Head 3",    sounds = {_knife_sound}},
+                    {id = "head_04",        name = "Head 4",    sounds = {_knife_sound}},
+                    {id = "head_05",        name = "Head 5",    sounds = {_knife_sound}},
                 }
             end
             local _power_maul_head_models = function(parent, angle, move, remove)
@@ -999,9 +1004,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Slab shield
             local _ogryn_shield_attachments = function()
                 return {
-                    {id = "left_default",       name = "Default",           sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "left_01",            name = "Slab Shield",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "bulwark_shield_01",  name = "Bulwark Shield",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "left_default",       name = "Default",           sounds = {_receiver_sound}},
+                    {id = "left_01",            name = "Slab Shield",       sounds = {_receiver_sound}},
+                    {id = "bulwark_shield_01",  name = "Bulwark Shield",    sounds = {_receiver_sound}},
                 }
             end
             local _ogryn_shield_models = function(parent, angle, move, remove)
@@ -1018,12 +1023,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Club
             local _ogryn_club_body_attachments = function()
                 return {
-                    {id = "body_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_01",        name = "Body 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_02",        name = "Body 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_03",        name = "Body 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_04",        name = "Body 4",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_05",        name = "Body 5",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_default",   name = "Default",   sounds = {_receiver_sound}},
+                    {id = "body_01",        name = "Body 1",    sounds = {_receiver_sound}},
+                    {id = "body_02",        name = "Body 2",    sounds = {_receiver_sound}},
+                    {id = "body_03",        name = "Body 3",    sounds = {_receiver_sound}},
+                    {id = "body_04",        name = "Body 4",    sounds = {_receiver_sound}},
+                    {id = "body_05",        name = "Body 5",    sounds = {_receiver_sound}},
                 }
             end
             local _ogryn_club_body_models = function(parent, angle, move, remove)
@@ -1124,8 +1129,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         local _lasgun_rail_attachments = function()
             return {
-                {id = "rail_default", name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "rail_01", name = "Rail 1", sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "rail_default",   name = "Default",   sounds = {_magazine_sound}},
+                {id = "rail_01",        name = "Rail 1",    sounds = {_magazine_sound}},
             }
         end
         local _lasgun_rail_models = function(parent, angle, move, remove, type)
@@ -1139,10 +1144,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         local _laspistol_receiver_attachments = function()
             return {
-                {id = "laspistol_receiver_default", name = "Default",               sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                {id = "laspistol_receiver_01",      name = "Laspistol Receiver 1",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "laspistol_receiver_02",      name = "Laspistol Receiver 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "laspistol_receiver_03",      name = "Laspistol Receiver 3",  sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "laspistol_receiver_default", name = "Default",               sounds = {_receiver_sound}},
+                {id = "laspistol_receiver_01",      name = "Laspistol Receiver 1",  sounds = {_receiver_sound}},
+                {id = "laspistol_receiver_02",      name = "Laspistol Receiver 2",  sounds = {_receiver_sound}},
+                {id = "laspistol_receiver_03",      name = "Laspistol Receiver 3",  sounds = {_receiver_sound}},
             }
         end
         local _laspistol_receiver_models = function(parent, angle, move, remove)
@@ -1160,68 +1165,71 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
     --#region Autoguns
         local _autogun_braced_barrel_attachments = function()
             return {
-                {id = "barrel_07", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_08", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_09", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_10", name = "Braced Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_07", name = "Braced Autogun 1", sounds = {_barrel_sound}},
+                {id = "barrel_08", name = "Braced Autogun 2", sounds = {_barrel_sound}},
+                {id = "barrel_09", name = "Braced Autogun 3", sounds = {_barrel_sound}},
+                {id = "barrel_10", name = "Braced Autogun 4", sounds = {_barrel_sound}},
             }
         end
-        local _autogun_braced_barrel_models = function(parent, angle, move, remove)
+        local _autogun_braced_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
             local angle = angle or 0
             local move = move or vector3_box(0, 0, 0)
             local remove = remove or vector3_box(0, 0, 0)
+            local type = type or "barrel"
+            local no_support = no_support or {}
+            local automatic_equip = automatic_equip or {}
+            local hide_mesh = hide_mesh or {}
             return {
-                barrel_default =    {model = "",                                                                        type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_07 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_01",  type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_08 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_02",  type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_09 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_03",  type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_10 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_04",  type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_07 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_01",  type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 1), no_support = tv(no_support, 1), hide_mesh = tv(hide_mesh, 1)},
+                barrel_08 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_02",  type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 2), no_support = tv(no_support, 2), hide_mesh = tv(hide_mesh, 2)},
+                barrel_09 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_03",  type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 3), no_support = tv(no_support, 3), hide_mesh = tv(hide_mesh, 3)},
+                barrel_10 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_ak_04",  type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 4), no_support = tv(no_support, 4), hide_mesh = tv(hide_mesh, 4)},
             }
         end
         local _autogun_headhunter_barrel_attachments = function()
             return {
-                {id = "barrel_11", name = "Headhunter Autogun 11", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_12", name = "Headhunter Autogun 12", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_11", name = "Headhunter Autogun 11", sounds = {_barrel_sound}},
+                {id = "barrel_12", name = "Headhunter Autogun 12", sounds = {_barrel_sound}},
             }
         end
-        local _autogun_headhunter_barrel_models = function(parent, angle, move, remove)
+        local _autogun_headhunter_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
             local angle = angle or 0
             local move = move or vector3_box(0, 0, 0)
             local remove = remove or vector3_box(0, 0, 0)
+            local type = type or "barrel"
+            local no_support = no_support or {}
+            local automatic_equip = automatic_equip or {}
+            local hide_mesh = hide_mesh or {}
             return {
-                barrel_default =    {model = "",                                                                                type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_11 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_01",    type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_12 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_03",    type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_11 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_01",    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 1), no_support = tv(no_support, 1), hide_mesh = tv(hide_mesh, 1)},
+                barrel_12 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_killshot_03",    type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 2), no_support = tv(no_support, 2), hide_mesh = tv(hide_mesh, 2)},
             }
         end
         local _autogun_barrel_attachments = function()
             return {
-                {id = "barrel_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_02", name = "Infantry Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_03", name = "Infantry Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_04", name = "Infantry Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_05", name = "Infantry Autogun 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                {id = "barrel_06", name = "Infantry Autogun 6", sounds = {UISoundEvents.weapons_equip_gadget}},
-                -- {id = "barrel_07", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                -- {id = "barrel_08", name = "Braced Autogun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                -- {id = "barrel_09", name = "Braced Autogun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                -- {id = "barrel_10", name = "Braced Autogun 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                -- {id = "barrel_11", name = "Headhunter Autogun 11", sounds = {UISoundEvents.weapons_equip_gadget}},
-                -- {id = "barrel_12", name = "Headhunter Autogun 12", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "barrel_01", name = "Infantry Autogun 1", sounds = {_barrel_sound}},
+                {id = "barrel_02", name = "Infantry Autogun 2", sounds = {_barrel_sound}},
+                {id = "barrel_03", name = "Infantry Autogun 3", sounds = {_barrel_sound}},
+                {id = "barrel_04", name = "Infantry Autogun 4", sounds = {_barrel_sound}},
+                {id = "barrel_05", name = "Infantry Autogun 5", sounds = {_barrel_sound}},
+                {id = "barrel_06", name = "Infantry Autogun 6", sounds = {_barrel_sound}},
             }
         end
-        local _autogun_barrel_models = function(parent, angle, move, remove)
+        local _autogun_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
             local angle = angle or 0
             local move = move or vector3_box(0, 0, 0)
             local remove = remove or vector3_box(0, 0, 0)
+            local type = type or "barrel"
+            local no_support = no_support or {}
+            local automatic_equip = automatic_equip or {}
+            local hide_mesh = hide_mesh or {}
             return {
-                barrel_default =    {model = "",                                                                    type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_02", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_03", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_04", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_05", type = "barrel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false},
-                barrel_06 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_06", type = "barrel", parent = tv(parent, 7), angle = angle, move = move, remove = remove, mesh_move = false},
+                barrel_01 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_01", type = "barrel", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 1), no_support = tv(no_support, 1), hide_mesh = tv(hide_mesh, 1)},
+                barrel_02 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_02", type = "barrel", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 2), no_support = tv(no_support, 2), hide_mesh = tv(hide_mesh, 2)},
+                barrel_03 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_03", type = "barrel", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 3), no_support = tv(no_support, 3), hide_mesh = tv(hide_mesh, 3)},
+                barrel_04 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_04", type = "barrel", parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 4), no_support = tv(no_support, 4), hide_mesh = tv(hide_mesh, 4)},
+                barrel_05 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_05", type = "barrel", parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 5), no_support = tv(no_support, 5), hide_mesh = tv(hide_mesh, 5)},
+                barrel_06 =         {model = "content/items/weapons/player/ranged/barrels/autogun_rifle_barrel_06", type = "barrel", parent = tv(parent, 6), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 6), no_support = tv(no_support, 6), hide_mesh = tv(hide_mesh, 6)},
             }
         end
         local _autogun_muzzle_attachments = function()
@@ -1260,10 +1268,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         local _autogun_magazine_attachments = function()
             return {
                 -- {id = "magazine_default", name = "Default", sounds = {UISoundEvents.apparel_equip}},
-                {id = "magazine_01", name = "Autogun 1", sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_02", name = "Autogun 2", sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_03", name = "Autogun 3", sounds = {UISoundEvents.weapons_trinket_select}},
-                {id = "magazine_04", name = "Braced Autogun 4", sounds = {UISoundEvents.weapons_trinket_select}},
+                {id = "magazine_01", name = "Autogun 1",        sounds = {_magazine_sound}},
+                {id = "magazine_02", name = "Autogun 2",        sounds = {_magazine_sound}},
+                {id = "magazine_03", name = "Autogun 3",        sounds = {_magazine_sound}},
+                {id = "magazine_04", name = "Braced Autogun 4", sounds = {_magazine_sound}},
             }
         end
         local _autogun_magazine_models = function(parent, angle, move, remove, type)
@@ -1281,10 +1289,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         end
         local _autogun_receiver_attachments = function()
             return {
-                {id = "receiver_default",   name = "Default",               sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_01",        name = "Infantry Autogun 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_02",        name = "Headhunter Autogun 2",  sounds = {UISoundEvents.weapons_equip_weapon}},
-                {id = "receiver_03",        name = "Receiver 3",            sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_default",   name = "Default",               sounds = {_receiver_sound}},
+                {id = "receiver_01",        name = "Infantry Autogun 1",    sounds = {_receiver_sound}},
+                {id = "receiver_02",        name = "Headhunter Autogun 2",  sounds = {_receiver_sound}},
+                {id = "receiver_03",        name = "Braced Autogun 1",      sounds = {_receiver_sound}},
             }
         end
         local _autogun_receiver_models = function(parent, angle, move, remove)
@@ -1303,12 +1311,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Autopistol
             local _auto_pistol_receiver_attachments = function()
                 return {
-                    {id = "receiver_default",   name = "Default", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_01",        name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    -- {id = "receiver_02",        name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    -- {id = "receiver_03",        name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    -- {id = "receiver_04", name = "Receiver 4", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_05",        name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_default",   name = "Default",    sounds = {_receiver_sound}},
+                    {id = "receiver_01",        name = "Receiver 1", sounds = {_receiver_sound}},
+                    -- {id = "receiver_02",     name = "Receiver 2", sounds = {_receiver_sound}},
+                    -- {id = "receiver_03",     name = "Receiver 3", sounds = {_receiver_sound}},
+                    -- {id = "receiver_04",     name = "Receiver 4", sounds = {_receiver_sound}},
+                    {id = "receiver_05",        name = "Receiver 2", sounds = {_receiver_sound}},
                 }
             end
             local _auto_pistol_receiver_models = function(parent, angle, move, remove)
@@ -1326,12 +1334,12 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _auto_pistol_barrel_attachments = function()
                 return {
-                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_05",      name = "Barrel 5",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_default", name = "Default",   sounds = {_barrel_sound}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {_barrel_sound}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {_barrel_sound}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {_barrel_sound}},
+                    {id = "barrel_04",      name = "Barrel 4",  sounds = {_barrel_sound}},
+                    {id = "barrel_05",      name = "Barrel 5",  sounds = {_barrel_sound}},
                 }
             end
             local _auto_pistol_barrel_models = function(parent, angle, move, remove)
@@ -1350,7 +1358,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             local _auto_pistol_magazine_attachments = function()
                 return {
                     -- {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip}},
-                    {id = "auto_pistol_magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "auto_pistol_magazine_01",        name = "Magazine 1",    sounds = {_magazine_sound}},
                 }
             end
             local _auto_pistol_magazine_models = function(parent, angle, move, remove)
@@ -1387,7 +1395,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _auto_pistol_sight_attachments = function()
                 return {
-                    {id = "sight_01",       name = "Sight 1", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "sight_01",       name = "Sight 1", sounds = {_magazine_sound}},
                 }
             end
             local _auto_pistol_sight_models = function(parent, angle, move, remove, type)
@@ -1404,8 +1412,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Shotgun
             local _shotgun_receiver_attachments = function()
                 return {
-                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_default",   name = "Default",       sounds = {_receiver_sound}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {_receiver_sound}},
                 }
             end
             local _shotgun_receiver_models = function(parent, angle, move, remove)
@@ -1441,11 +1449,11 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _shotgun_barrel_attachments = function()
                 return {
-                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_04",      name = "Barrel 4",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_default", name = "Default",   sounds = {_barrel_sound}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {_barrel_sound}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {_barrel_sound}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {_barrel_sound}},
+                    {id = "barrel_04",      name = "Barrel 4",  sounds = {_barrel_sound}},
                 }
             end
             local _shotgun_barrel_models = function(parent, angle, move, remove)
@@ -1485,10 +1493,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Bolter
             local _bolter_receiver_attachments = function()
                 return {
-                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_default",   name = "Default",       sounds = {_receiver_sound}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {_receiver_sound}},
+                    {id = "receiver_02",        name = "Receiver 2",    sounds = {_receiver_sound}},
+                    {id = "receiver_03",        name = "Receiver 3",    sounds = {_receiver_sound}},
                 }
             end
             local _bolter_receiver_models = function(parent, angle, move, remove)
@@ -1504,8 +1512,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _bolter_magazine_attachments = function()
                 return {
-                    {id = "bolter_magazine_01",        name = "Bolter Magazine A",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "bolter_magazine_02",        name = "Bolter Magazine B",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "bolter_magazine_01",        name = "Bolter Magazine A",    sounds = {_magazine_sound}},
+                    {id = "bolter_magazine_02",        name = "Bolter Magazine B",    sounds = {_magazine_sound}},
                 }
             end
             local _bolter_magazine_models = function(parent, angle, move, remove)
@@ -1520,8 +1528,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _bolter_barrel_attachments = function()
                 return {
-                    {id = "barrel_default",     name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "bolter_barrel_01",   name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_default",     name = "Default",   sounds = {_barrel_sound}},
+                    {id = "bolter_barrel_01",   name = "Barrel 1",  sounds = {_barrel_sound}},
                 }
             end
             local _bolter_barrel_models = function(parent, angle, move, remove)
@@ -1554,8 +1562,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _bolter_sight_attachments = function()
                 return {
-                    {id = "bolter_sight_01",       name = "Bolter Sight A", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "bolter_sight_02",       name = "Bolter Sight B", sounds = {UISoundEvents.weapons_swap}},
+                    {id = "bolter_sight_01",       name = "Bolter Sight A", sounds = {_magazine_sound}},
+                    {id = "bolter_sight_02",       name = "Bolter Sight B", sounds = {_magazine_sound}},
                 }
             end
             local _bolter_sight_models = function(parent, angle, move, remove)
@@ -1572,8 +1580,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Revolver
             local _revolver_body_attachments = function()
                 return {
-                    {id = "body_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "body_01",        name = "Body 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "body_default",   name = "Default",   sounds = {_receiver_sound}},
+                    {id = "body_01",        name = "Body 1",    sounds = {_receiver_sound}},
                 }
             end
             local _revolver_body_models = function(parent, angle, move, remove)
@@ -1587,10 +1595,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _revolver_barrel_attachments = function()
                 return {
-                    {id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_01",      name = "Barrel 1",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_02",      name = "Barrel 2",  sounds = {UISoundEvents.talents_equip_talent}},
-                    {id = "barrel_03",      name = "Barrel 3",  sounds = {UISoundEvents.talents_equip_talent}},
+                    {id = "barrel_default", name = "Default",   sounds = {_barrel_sound}},
+                    {id = "barrel_01",      name = "Barrel 1",  sounds = {_barrel_sound}},
+                    {id = "barrel_02",      name = "Barrel 2",  sounds = {_barrel_sound}},
+                    {id = "barrel_03",      name = "Barrel 3",  sounds = {_barrel_sound}},
                 }
             end
             local _revolver_barrel_models = function(parent, angle, move, remove)
@@ -1606,8 +1614,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _revolver_rail_attachments = function()
                 return {
-                    {id = "rail_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "rail_01",        name = "Rail 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "rail_default",   name = "Default",   sounds = {_magazine_sound}},
+                    {id = "rail_01",        name = "Rail 1",    sounds = {_magazine_sound}},
                 }
             end
             local _revolver_rail_models = function(parent, angle, move, remove)
@@ -1623,8 +1631,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
         --#region Plasma gun
             local _plasma_receiver_attachments = function()
                 return {
-                    {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "receiver_default",   name = "Default",       sounds = {_receiver_sound}},
+                    {id = "receiver_01",        name = "Receiver 1",    sounds = {_receiver_sound}},
                 }
             end
             local _plasma_receiver_models = function(parent, angle, move, remove)
@@ -1638,9 +1646,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _plasma_magazine_attachments = function()
                 return {
-                    {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_01",        name = "Magazine 1",    sounds = {UISoundEvents.weapons_trinket_select}},
-                    {id = "magazine_02",        name = "Magazine 2",    sounds = {UISoundEvents.weapons_trinket_select}},
+                    {id = "magazine_default",   name = "Default",       sounds = {_magazine_sound}},
+                    {id = "magazine_01",        name = "Magazine 1",    sounds = {_magazine_sound}},
+                    {id = "magazine_02",        name = "Magazine 2",    sounds = {_magazine_sound}},
                 }
             end
             local _plasma_magazine_models = function(parent, angle, move, remove)
@@ -1693,10 +1701,10 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _plasma_grip_attachments = function()
                 return {
-                    {id = "grip_default",   name = "Default",   sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_01",        name = "Grip 1",    sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_02",        name = "Grip 2",    sounds = {UISoundEvents.weapons_swap}},
-                    {id = "grip_03",        name = "Grip 3",    sounds = {UISoundEvents.weapons_swap}},
+                    {id = "grip_default",   name = "Default",   sounds = {_grip_sound}},
+                    {id = "grip_01",        name = "Grip 1",    sounds = {_grip_sound}},
+                    {id = "grip_02",        name = "Grip 2",    sounds = {_grip_sound}},
+                    {id = "grip_03",        name = "Grip 3",    sounds = {_grip_sound}},
                 }
             end
             local _plasma_grip_models = function(parent, angle, move, remove)
@@ -1775,8 +1783,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             end
             local _laspistol_rail_attachments = function()
                 return {
-                    {id = "rail_default",   name = "Default",   sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "rail_01",        name = "Rail 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                    {id = "rail_default",   name = "Default",   sounds = {_magazine_sound}},
+                    {id = "rail_01",        name = "Rail 1",    sounds = {_magazine_sound}},
                 }
             end
             local _laspistol_rail_models = function(parent, angle, move, remove)
@@ -1812,18 +1820,18 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
     --#region Melee
         local _axe_grip_attachments = function()
             return {
-                {id = "axe_grip_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_grip_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_grip_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_grip_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_grip_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_grip_06", name = "Combat Axe 6", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_grip_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_grip_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_grip_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_grip_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_grip_05", name = "Tactical Axe 5", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_grip_06", name = "Tactical Axe 6", sounds = {UISoundEvents.weapons_swap}},
+                {id = "axe_grip_01", name = "Combat Axe 1", sounds = {_grip_sound}},
+                {id = "axe_grip_02", name = "Combat Axe 2", sounds = {_grip_sound}},
+                {id = "axe_grip_03", name = "Combat Axe 3", sounds = {_grip_sound}},
+                {id = "axe_grip_04", name = "Combat Axe 4", sounds = {_grip_sound}},
+                {id = "axe_grip_05", name = "Combat Axe 5", sounds = {_grip_sound}},
+                {id = "axe_grip_06", name = "Combat Axe 6", sounds = {_grip_sound}},
+                {id = "hatchet_grip_01", name = "Tactical Axe 1", sounds = {_grip_sound}},
+                {id = "hatchet_grip_02", name = "Tactical Axe 2", sounds = {_grip_sound}},
+                {id = "hatchet_grip_03", name = "Tactical Axe 3", sounds = {_grip_sound}},
+                {id = "hatchet_grip_04", name = "Tactical Axe 4", sounds = {_grip_sound}},
+                {id = "hatchet_grip_05", name = "Tactical Axe 5", sounds = {_grip_sound}},
+                {id = "hatchet_grip_06", name = "Tactical Axe 6", sounds = {_grip_sound}},
             }
         end
         local _axe_grip_models = function()
@@ -2693,7 +2701,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                         trinket_hook = {parent = "grip", position = vector3_box(0, -.165, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
                 },
             },
-            autogun_p1_m1 = {
+            autogun_p1_m1 = { -- Done 24.9.2023
                 -- scope_offset = vector3_box(0, 0, .009),
                 fixes = {
                     {dependencies = {"barrel_01", "autogun_bayonet_01"}, -- Bayonet 1
@@ -2744,63 +2752,216 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                         bayonet = {offset = true, position = vector3_box(0, .09, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"muzzle_10", "autogun_bayonet_03"}, -- Bayonet 3
                         bayonet = {offset = true, position = vector3_box(0, .1, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"lasgun_rifle_sight_01", "receiver_01"}, -- Sight
+                    -- Sights
+                    -- Infantry receiver
+                    {dependencies = {"lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
                         sight = {offset = true, position = vector3_box(0, -.028, .0265), rotation = vector3_box(0, 0, 0)}},
-                    {dependencies = {"rail_01", "receiver_01"}, -- Rail
-                        rail = {offset = true, position = vector3_box(0, -.05, 0), rotation = vector3_box(0, 0, 0)}},
-                    {dependencies = {"barrel_07", "autogun_rifle_sight_01", "!receiver_03"}, -- Sight Offset
+                    -- Headhunter receiver
+                    {dependencies = {"autogun_rifle_sight_01", "receiver_02"}, -- Infantry sight
+                        sight = {offset = true, position = vector3_box(0, -.006, -.005), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, 1, 1)}},
+                    {dependencies = {"autogun_rifle_ak_sight_01", "receiver_02"}, -- Braced sight
+                        sight = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"autogun_rifle_killshot_sight_01", "receiver_02"}, -- Headhunter sight
+                        sight = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"lasgun_rifle_sight_01", "receiver_02"}, -- Headhunter sight
+                        sight = {offset = true, position = vector3_box(0, -.028, .026), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    -- Braced receiver
+                    {dependencies = {"autogun_rifle_sight_01", "receiver_03"}, -- Infantry sight
+                        sight = {offset = true, position = vector3_box(0, .03, .0005), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, 1, 1)}},
+                    {dependencies = {"autogun_rifle_ak_sight_01", "receiver_03"}, -- Braced sight
+                        sight = {offset = true, position = vector3_box(0, .01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"autogun_rifle_killshot_sight_01", "receiver_03"}, -- Headhunter sight
+                        sight = {offset = true, position = vector3_box(0, .01, .001), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"lasgun_rifle_sight_01", "receiver_03"}, -- Headhunter sight
+                        sight = {offset = true, position = vector3_box(0, .015, .026), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"receiver_02"}, -- Sight
+                        sight = {offset = true, position = vector3_box(0, -.045, 0), rotation = vector3_box(0, 0, 0)}},
+                    {dependencies = {"receiver_03"}, -- Sight
+                        sight = {offset = true, position = vector3_box(0, -.035, 0), rotation = vector3_box(0, 0, 0)}},
+                    -- Rails
+                    -- Infantry receiver
+                    {dependencies = {"rail_01", "receiver_01", "barrel_01|barrel_03"}, -- Rail
+                        rail = {offset = true, position = vector3_box(0, -.01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 2.2, 1)}},
+                    {dependencies = {"rail_01", "receiver_01", "barrel_02|barrel_04|barrel_05|barrel_11|barrel_12"}, -- Rail
+                        rail = {offset = true, position = vector3_box(0, -.035, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.3, 1)}},
+                    {dependencies = {"rail_01", "receiver_01", "barrel_06"}, -- Rail
+                        rail = {offset = true, position = vector3_box(0, -.01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 2, 1)}},
+                    {dependencies = {"rail_01", "receiver_01", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Rail
+                        rail = {offset = true, position = vector3_box(0, -.04, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.15, 1)}},
+                    -- Braced / Headhunter receiver
+                    {dependencies = {"rail_01", "receiver_02|receiver_03"}, -- Rail
+                        rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                    -- Sight offsets
+                    -- Infantry receiver / Infantry barrels
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_ak_sight_01", "receiver_01"}, -- Braced sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(-.3, 0, 0)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_killshot_sight_01", "receiver_01"}, -- Headhunter sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.2, 0, 0)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.0075), rotation = vector3_box(-.55, 0, 0)}},
+                    -- Infantry receiver / Braced barrels
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_sight_01", "receiver_01"}, -- Infantry sight
                         no_scope_offset = {position = vector3_box(0, 0, -.00075), rotation = vector3_box(.75, 0, 0)}},
-                    {dependencies = {"barrel_07", "autogun_rifle_ak_sight_01", "!receiver_03"}, -- Sight Offset
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_ak_sight_01", "receiver_01"}, -- Braced sight
                         no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(.4, 0, 0)}},
-                    {dependencies = {"barrel_07", "autogun_rifle_killshot_sight_01", "!receiver_03"}, -- Sight Offset
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_killshot_sight_01", "receiver_01"}, -- Headhunter sight
                         no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(.75, 0, 0)}},
-                    {dependencies = {"barrel_07", "lasgun_rifle_sight_01", "!receiver_03"}, -- Sight Offset
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
                         no_scope_offset = {position = vector3_box(0, 0, -.008), rotation = vector3_box(-.1, 0, 0)}},
-                    {dependencies = {"barrel_07", "!receiver_02"}, -- Barrel 7
-                        barrel = {offset = true, position = vector3_box(0, 0, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_08", "!receiver_02"}, -- Barrel 8
-                        barrel = {offset = true, position = vector3_box(0, 0, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_09", "!receiver_02"}, -- Barrel 9
-                        barrel = {offset = true, position = vector3_box(0, 0, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_10", "!receiver_02"}, -- Barrel 10
-                        barrel = {offset = true, position = vector3_box(0, 0, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    -- Infantry receiver / Headhunter barrels
+                    {dependencies = {"barrel_11|barrel_12", "autogun_rifle_ak_sight_01", "receiver_01"}, -- Braced sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.0025), rotation = vector3_box(-.3, 0, 0)}},
+                    {dependencies = {"barrel_11|barrel_12", "autogun_rifle_killshot_sight_01", "receiver_01"}, -- Headhunter sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.1, 0, 0)}},
+                    {dependencies = {"barrel_11|barrel_12", "lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.0075), rotation = vector3_box(-.5, 0, 0)}},
+                    -- Headhunter receiver / Infantry barrels
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_sight_01", "receiver_02"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.0035), rotation = vector3_box(-.1, 0, 0)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_ak_sight_01", "receiver_02"}, -- Braced sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.25, 0, 0)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_killshot_sight_01", "receiver_02"}, -- Headhunter sight
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.1, 0, 0)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "lasgun_rifle_sight_01", "receiver_02"}, -- Lasgun sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.0065), rotation = vector3_box(-.55, 0, 0)}},
+                    -- Headhunter receiver / Braced barrels
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_sight_01", "receiver_02"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.004), rotation = vector3_box(.4, 0, 0)}},
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_ak_sight_01", "receiver_02"}, -- Braced sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(.5, 0, 0)}},
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_killshot_sight_01", "receiver_02"}, -- Headhunter sight
+                        no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(.75, 0, 0)}},
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "lasgun_rifle_sight_01", "receiver_02"}, -- Lasgun sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.007), rotation = vector3_box(0, 0, 0)}},
+                    -- Headhunter receiver / Headhunter barrels
+                    {dependencies = {"barrel_11|barrel_12", "autogun_rifle_sight_01", "receiver_02"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(-.2, 0, 0)}},
+                    {dependencies = {"barrel_11|barrel_12", "autogun_rifle_ak_sight_01", "receiver_02"}, -- Braced sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.1, 0, 0)}},
+                    {dependencies = {"barrel_11|barrel_12", "autogun_rifle_killshot_sight_01", "receiver_02"}, -- Headhunter sight
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(0, 0, 0)}},
+                    {dependencies = {"barrel_11|barrel_12", "lasgun_rifle_sight_01", "receiver_02"}, -- Lasgun sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.0065), rotation = vector3_box(-.5, 0, 0)}},
+                    -- Braced receiver / Infantry barrels
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_sight_01", "receiver_03"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_ak_sight_01", "receiver_03"}, -- Braced sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(-.25, 0, 0)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_killshot_sight_01", "receiver_03"}, -- Headhunter sight
+                        no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(-.1, 0, 0)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "lasgun_rifle_sight_01", "receiver_03"}, -- Lasgun sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.009), rotation = vector3_box(-.9, 0, 0)}},
+                    -- Braced receiver / Braced barrels
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_sight_01", "receiver_03"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(.8, 0, 0)}},
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_ak_sight_01", "receiver_03"}, -- Braced sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(.5, 0, 0)}},
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_killshot_sight_01", "receiver_03"}, -- Headhunter sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(.75, 0, 0)}},
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "lasgun_rifle_sight_01", "receiver_03"}, -- Lasgun sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.009), rotation = vector3_box(0, 0, 0)}},
+                    -- Braced receiver / Headhunter barrels
+                    {dependencies = {"barrel_11|barrel_12", "autogun_rifle_sight_01", "receiver_03"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(-.1, 0, 0)}},
+                    {dependencies = {"barrel_11|barrel_12", "autogun_rifle_ak_sight_01", "receiver_03"}, -- Braced sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(-.1, 0, 0)}},
+                    {dependencies = {"barrel_11|barrel_12", "autogun_rifle_killshot_sight_01", "receiver_03"}, -- Headhunter sight
+                        no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0)}},
+                    {dependencies = {"barrel_11|barrel_12", "lasgun_rifle_sight_01", "receiver_03"}, -- Lasgun sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.009), rotation = vector3_box(-.7, 0, 0)}},
+                    {dependencies = {"lasgun_rifle_sight_01"}, -- Sight Offset
+                        no_scope_offset = {position = vector3_box(0, 0, -.008), rotation = vector3_box(-.1, 0, 0)}},
+                    {dependencies = {"receiver_01", "emblem_left_02"}, -- Scope Offset
+                        emblem_left = {parent = "receiver", position = vector3_box(-.027, .21, .07), rotation = vector3_box(0, 0, 180), scale = vector3_box(1, -1, 1)}},
                     {dependencies = {"receiver_01"}, -- Scope Offset
-                        scope_offset = {position = vector3_box(0, 0, .009)}},
+                        emblem_left = {parent = "receiver", position = vector3_box(-.027, .21, .07), rotation = vector3_box(0, 0, 180), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {parent = "receiver", position = vector3_box(.027, .21, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"receiver_02", "emblem_left_02"}, -- Scope Offset
+                        emblem_left = {parent = "receiver", position = vector3_box(-.029, -.02, .07), rotation = vector3_box(0, 0, 180), scale = vector3_box(1.8, -1.8, 1.8)}},
                     {dependencies = {"receiver_02"}, -- Scope Offset
-                        scope_offset = {position = vector3_box(0, 0, .01)}},
+                        emblem_left = {parent = "receiver", position = vector3_box(-.029, -.02, .07), rotation = vector3_box(0, 0, 180), scale = vector3_box(1.8, 1.8, 1.8)},
+                        emblem_right = {parent = "receiver", position = vector3_box(.029, -.02, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.8, 1.8, 1.8)}},
+                    {dependencies = {"receiver_03", "emblem_left_02"}, -- Scope Offset
+                        emblem_left = {parent = "receiver", position = vector3_box(-.021, .11, .1025), rotation = vector3_box(0, 20, 180), scale = vector3_box(1, -1, 1)}},
+                    {dependencies = {"receiver_03"}, -- Scope Offset
+                        emblem_left = {parent = "receiver", position = vector3_box(-.021, .11, .1025), rotation = vector3_box(0, 20, 180), scale = vector3_box(1, 1, 1)},
+                        emblem_right = {parent = "receiver", position = vector3_box(.029, -.02, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, 1.5, 1.5)}},
+                    {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "!receiver_03"}, -- Barrel 7
+                        barrel = {offset = true, position = vector3_box(0, 0, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06|barrel_11|barrel_12", "receiver_03"}, -- Barrel 7
+                        barrel = {offset = true, position = vector3_box(0, 0, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"grip_01", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.115, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_02", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.165), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_03", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.155, -.125), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_04", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.132, -.136), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_05", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.145, -.120), rotation = vector3_box(-35, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook_empty"}, automatic_equip = {trinket_hook = "trinket_hook_empty|trinket_hook_02"}}},
+                    {dependencies = {"grip_06", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.145), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_07", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.132, -.136), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_08", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.145, -.120), rotation = vector3_box(-35, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook_empty"}, automatic_equip = {trinket_hook = "trinket_hook_empty|trinket_hook_02"}}},
+                    {dependencies = {"grip_09|grip_10|grip_11", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", parent_node = 5, position = vector3_box(.018, 0, 0), rotation = vector3_box(90, 0, -90), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "trinket_hook_empty"}}},
+                    {dependencies = {"grip_12", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.155, -.13), rotation = vector3_box(-35, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook_empty"}, automatic_equip = {trinket_hook = "trinket_hook_empty|trinket_hook_02"}}},
+                    {dependencies = {"grip_14", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.165, -.115), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_13|grip_15", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.145, -.12), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook_empty"}, automatic_equip = {trinket_hook = "trinket_hook_empty|trinket_hook_02"}}},
+                    {dependencies = {"grip_19", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.115, -.14), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_20", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.125, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_21", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_22", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.145), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_23", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.12, -.145), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_24", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.135, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_25", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.165, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"grip_26", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Trinket
+                        trinket_hook = {parent = "grip", position = vector3_box(0, -.165, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"barrel_11"}, -- Trinket
+                        trinket_hook = {parent = "barrel", position = vector3_box(0, .25, -.105), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"barrel_12"}, -- Trinket
+                        trinket_hook = {parent = "barrel", parent_node = 3, position = vector3_box(.029, 0, 0), rotation = vector3_box(90, 0, -45), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
+                    {dependencies = {"receiver_02", "auto_pistol_magazine_01"}, -- Magazine
+                        magazine = {offset = true, position = vector3_box(0, .01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.6, 1)}},
+                    {dependencies = {"auto_pistol_magazine_01"}, -- Magazine
+                        magazine = {offset = true, position = vector3_box(0, .0025, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.6, 1)}},
+                    {dependencies = {"receiver_02", "bolter_magazine_01"}, -- Magazine
+                        magazine = {offset = true, position = vector3_box(0, .005, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
+                    {dependencies = {"bolter_magazine_01"}, -- Magazine
+                        magazine = {offset = true, position = vector3_box(0, 0, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
+                    {dependencies = {"receiver_02", "bolter_magazine_02"}, -- Magazine
+                        magazine = {offset = true, position = vector3_box(0, .005, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
+                    {dependencies = {"bolter_magazine_02"}, -- Magazine
+                        magazine = {offset = true, position = vector3_box(0, 0, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
+                    {dependencies = {"receiver_01"}, -- Scope Offset
+                        scope_offset = {position = vector3_box(0, 0, .0085)}},
+                    {dependencies = {"receiver_02"}, -- Scope Offset
+                        scope_offset = {position = vector3_box(0, 0, .01025)}},
                     {dependencies = {"receiver_03"}, -- Scope Offset
                         scope_offset = {position = vector3_box(0, 0, .009)}},
                 },
             },
-            autogun_p2_m1 = {
-                -- fixes = {
-                --     {dependencies = {"receiver_01"}, -- Scope Offset
-                --         scope_offset = {position = vector3_box(0, 0, .009)}},
-                --     {dependencies = {"receiver_02"}, -- Scope Offset
-                --         scope_offset = {position = vector3_box(0, 0, .009)}},
-                --     {dependencies = {"receiver_03"}, -- Scope Offset
-                --         scope_offset = {position = vector3_box(0, 0, .009)}},
-                -- },
-            },
-            autogun_p3_m1 = {
-                -- scope_offset = vector3_box(0, 0, .0125),
-                -- fixes = {
-                --     {dependencies = {"receiver_01"}, -- Scope Offset
-                --         scope_offset = {position = vector3_box(0, 0, .009)}},
-                --     {dependencies = {"receiver_02"}, -- Scope Offset
-                --         scope_offset = {position = vector3_box(0, 0, .009)}},
-                --     {dependencies = {"receiver_03"}, -- Scope Offset
-                --         scope_offset = {position = vector3_box(0, 0, .009)}},
-                -- },
-            },
             lasgun_p1_m1 = {
-                ["no_scope_offset"] = vector3_box(0, 0, -.0455),
+                no_scope_offset = {position = vector3_box(0, 0, -.0455)},
             },
             lasgun_p2_m1 = {
-                ["scope_offset"] = vector3_box(0, 0, .0275),
+                scope_offset = {position = vector3_box(0, 0, .0275)},
             },
             lasgun_p3_m1 = {
-                ["scope_offset"] = vector3_box(0, 0, .0275),
+                scope_offset = {position = vector3_box(0, 0, .0275)},
             },
             flamer_p1_m1 = {
                 ["flashlight_01"] = {
@@ -2853,10 +3014,16 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             mod.anchors.bolter_p1_m3 = mod.anchors.bolter_p1_m1
             mod.anchors.autogun_p1_m2 = mod.anchors.autogun_p1_m1
             mod.anchors.autogun_p1_m3 = mod.anchors.autogun_p1_m1
-            mod.anchors.autogun_p2_m2 = mod.anchors.autogun_p2_m1
-            mod.anchors.autogun_p2_m3 = mod.anchors.autogun_p2_m1
-            mod.anchors.autogun_p3_m2 = mod.anchors.autogun_p3_m1
-            mod.anchors.autogun_p3_m3 = mod.anchors.autogun_p3_m1
+            -- mod.anchors.autogun_p2_m2 = mod.anchors.autogun_p2_m1
+            -- mod.anchors.autogun_p2_m3 = mod.anchors.autogun_p2_m1
+            -- mod.anchors.autogun_p3_m2 = mod.anchors.autogun_p3_m1
+            -- mod.anchors.autogun_p3_m3 = mod.anchors.autogun_p3_m1
+            mod.anchors.autogun_p2_m1 = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p2_m2 = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p2_m3 = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p3_m1 = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p3_m2 = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p3_m3 = mod.anchors.autogun_p1_m1
             mod.anchors.lasgun_p1_m2 = mod.anchors.lasgun_p1_m1
             mod.anchors.lasgun_p1_m3 = mod.anchors.lasgun_p1_m1
             mod.anchors.lasgun_p2_m2 = mod.anchors.lasgun_p2_m1
@@ -2891,7 +3058,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 emblem_left = _emblem_left_attachments(),
                 bayonet = _ogryn_bayonet_attachments(),
                 barrel = table.icombine(
-                    {{id = "barrel_default", name = "Default",   sounds = {UISoundEvents.talents_equip_talent}}},
+                    {{id = "barrel_default", name = "Default",   sounds = {_barrel_sound}}},
                     _ripper_barrel_attachments()
                 ),
                 receiver = _ripper_receiver_attachments(),
@@ -2972,7 +3139,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 receiver = _auto_pistol_receiver_attachments(),
                 barrel = _auto_pistol_barrel_attachments(),
                 magazine = table.icombine(
-                    {{id = "magazine_default", name = "Default", sounds = {UISoundEvents.weapons_trinket_select}}},
+                    {{id = "magazine_default", name = "Default", sounds = {_magazine_sound}}},
                     _auto_pistol_magazine_attachments(),
                     _autogun_magazine_attachments()
                 ),
@@ -3004,7 +3171,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 trinket_hook = _trinket_hook_attachments(),
                 -- slot_trinket_2 = _slot_trinket_2_attachments(),
                 magazine = table.icombine(
-                    {{id = "magazine_default", name = "Default", sounds = {UISoundEvents.weapons_trinket_select}}},
+                    {{id = "magazine_default", name = "Default", sounds = {_magazine_sound}}},
                     _bolter_magazine_attachments(),
                     _auto_pistol_magazine_attachments(),
                     _autogun_magazine_attachments()
@@ -3078,19 +3245,21 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 stock = _laspistol_stock_attachments(),
                 stock_3 = _shotgun_stock_attachments(),
             },
-            autogun_p1_m1 = {
+            autogun_p1_m1 = { -- Done 24.9.2023
                 flashlight = _flashlights_attachments(),
                 rail = _lasgun_rail_attachments(),
                 grip = _grip_attachments(),
-                receiver = _autogun_receiver_attachments(),
                 stock = table.icombine(
                     {{id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
                     _stock_attachments()
                 ),
                 magazine = table.icombine(
-                    {{id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}}},
-                    _autogun_magazine_attachments()
+                    {{id = "magazine_default", name = "Default", sounds = {_magazine_sound}}},
+                    _autogun_magazine_attachments(),
+                    _bolter_magazine_attachments(),
+                    _auto_pistol_magazine_attachments()
                 ),
+                trinket_hook = _trinket_hook_attachments(),
                 barrel = table.icombine(
                     {{id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
                     _autogun_barrel_attachments(),
@@ -3103,75 +3272,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     _reflex_sights_attachments(),
                     _sights_attachments()
                 ),
-                bayonet = _bayonet_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
-            },
-            autogun_p2_m1 = {
-                flashlight = _flashlights_attachments(),
-                rail = _lasgun_rail_attachments(),
-                grip = _grip_attachments(),
-                receiver = {
-                    {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    -- {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    -- {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_03", name = "Braced Autogun 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                },
-                stock = table.icombine(
-                    {{id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _stock_attachments()
-                ),
-                magazine = table.icombine(
-                    {{id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}}},
-                    _autogun_magazine_attachments()
-                ),
-                barrel = table.icombine(
-                    {{id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    -- _autogun_barrel_attachments(),
-                    _autogun_braced_barrel_attachments()
-                    -- _autogun_headhunter_barrel_attachments()
-                ),
-                muzzle = _autogun_muzzle_attachments(),
-                sight = table.icombine(
-                    {{id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _reflex_sights_attachments(),
-                    _sights_attachments()
-                ),
-                bayonet = _bayonet_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-            },
-            autogun_p3_m1 = {
-                flashlight = _flashlights_attachments(),
-                rail = _lasgun_rail_attachments(),
-                grip = _grip_attachments(),
-                receiver = {
-                    {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "receiver_01", name = "Infantry Autogun 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_02", name = "Headhunter Autogun 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    -- {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
-                },
-                stock = table.icombine(
-                    {{id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _stock_attachments()
-                ),
-                magazine = table.icombine(
-                    {{id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.weapons_trinket_select}}},
-                    _autogun_magazine_attachments()
-                ),
-                barrel = table.icombine(
-                    {{id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _autogun_barrel_attachments(),
-                    -- _autogun_braced_barrel_attachments(),
-                    _autogun_headhunter_barrel_attachments()
-                ),
-                muzzle = _autogun_muzzle_attachments(),
-                sight = table.icombine(
-                    {{id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _reflex_sights_attachments(),
-                    _sights_attachments()
-                ),
+                receiver = _autogun_receiver_attachments(),
                 bayonet = _bayonet_attachments(),
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
@@ -3740,12 +3841,16 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             mod.attachment.stubrevolver_p1_m3 = mod.attachment.stubrevolver_p1_m1
             mod.attachment.autogun_p1_m2 = mod.attachment.autogun_p1_m1
             mod.attachment.autogun_p1_m3 = mod.attachment.autogun_p1_m1
-            -- mod.attachment.autogun_p2_m1 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p2_m2 = mod.attachment.autogun_p2_m1
-            mod.attachment.autogun_p2_m3 = mod.attachment.autogun_p2_m1
-            -- mod.attachment.autogun_p3_m1 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p3_m2 = mod.attachment.autogun_p3_m1
-            mod.attachment.autogun_p3_m3 = mod.attachment.autogun_p3_m1
+            -- mod.attachment.autogun_p2_m2 = mod.attachment.autogun_p2_m1
+            -- mod.attachment.autogun_p2_m3 = mod.attachment.autogun_p2_m1
+            -- mod.attachment.autogun_p3_m2 = mod.attachment.autogun_p3_m1
+            -- mod.attachment.autogun_p3_m3 = mod.attachment.autogun_p3_m1
+            mod.attachment.autogun_p2_m1 = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p2_m2 = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p2_m3 = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p3_m1 = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p3_m2 = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p3_m3 = mod.attachment.autogun_p1_m1
             mod.attachment.lasgun_p1_m2 = mod.attachment.lasgun_p1_m1
             mod.attachment.lasgun_p1_m3 = mod.attachment.lasgun_p1_m1
             mod.attachment.lasgun_p2_m2 = mod.attachment.lasgun_p2_m1
@@ -4239,9 +4344,9 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                     {rail = "rail_01"},
                 }, {
                     {},
-                    {barrel = 8},
-                    {barrel = 8},
-                    {barrel = 8},
+                    {{"barrel", 8}},
+                    {{"barrel", 8}},
+                    {{"barrel", 8}},
                 })
             ),
             plasmagun_p1_m1 = table.combine( -- Done 14.9.2023
@@ -4339,63 +4444,38 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
                 _laspistol_stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0)),
                 _shotgun_stock_models("grip", 0, vector3_box(-.6, -4, .2), vector3_box(0, -.4, -.11), "stock_3")
             ),
-            autogun_p1_m1 = table.combine(
-                _flashlight_models(nil, -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
-                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
-                _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0), "sight", {}, {
+            autogun_p1_m1 = table.combine( -- Done 24.9.2023
+                _emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+                _flashlight_models(nil, -2.5, vector3_box(-.6, -3, 0), vector3_box(.2, 0, 0)),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
+                _emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(-.2, 0, 0)),
+                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
+                _reflex_sights_models("rail", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                 }),
-                _sights_models(nil, -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
-                _stock_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, -.2, 0)),
-                _autogun_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _autogun_braced_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _autogun_headhunter_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
+                _sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
+                _stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
+                _trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                {barrel_default = {model = "", type = "barrel"}},
+                _autogun_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {
+                    {"trinket_hook_empty"},
+                }, {
+                    {trinket_hook = "trinket_hook_empty|trinket_hook_02"},
+                }),
+                _autogun_braced_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
+                _autogun_headhunter_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {
+                    {"trinket_hook"},
+                }, {
+                    {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
+                }),
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _autogun_muzzle_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _autogun_magazine_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
-                _trinket_hook_models(nil, -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
-                _autogun_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001))
-            ),
-            autogun_p2_m1 = table.combine(
-                _flashlight_models("barrel", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
-                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
-                _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
-                _sights_models(nil, -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
-                _stock_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, -.2, 0)),
-                _autogun_barrel_models(),
-                _autogun_braced_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _autogun_headhunter_barrel_models(),
-                _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _autogun_muzzle_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _autogun_magazine_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
-                _trinket_hook_models(nil, -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
-                _autogun_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001))
-            ),
-            autogun_p3_m1 = table.combine(
-                _flashlight_models("barrel", -2.5, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, 0, 0), vector3_box(0, .4, -.025)),
-                _grip_models(nil, -.1, vector3_box(-.1, 0, 0), vector3_box(0, -.1, -.1)),
-                _reflex_sights_models("rail", -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
-                _sights_models(nil, -.5, vector3_box(0, 0, -.05), vector3_box(0, -.2, 0)),
-                _stock_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, -.2, 0)),
-                _autogun_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _autogun_braced_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _autogun_headhunter_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _autogun_muzzle_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
-                _autogun_magazine_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
-                _trinket_hook_models(nil, -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _autogun_muzzle_models(nil, -.5, vector3_box(.4, -3, 0), vector3_box(0, .2, 0)),
+                _auto_pistol_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
+                _autogun_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
+                _bolter_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
                 _autogun_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001))
             ),
             lasgun_p1_m1 = table.combine(
@@ -4865,12 +4945,16 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
             mod.attachment_models.stubrevolver_p1_m3 = mod.attachment_models.stubrevolver_p1_m1
             mod.attachment_models.autogun_p1_m2 = mod.attachment_models.autogun_p1_m1
             mod.attachment_models.autogun_p1_m3 = mod.attachment_models.autogun_p1_m1
-            -- mod.attachment_models.autogun_p2_m1 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p2_m2 = mod.attachment_models.autogun_p2_m1
-            mod.attachment_models.autogun_p2_m3 = mod.attachment_models.autogun_p2_m1
-            -- mod.attachment_models.autogun_p3_m1 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p3_m2 = mod.attachment_models.autogun_p3_m1
-            mod.attachment_models.autogun_p3_m3 = mod.attachment_models.autogun_p3_m1
+            -- mod.attachment_models.autogun_p2_m2 = mod.attachment_models.autogun_p2_m1
+            -- mod.attachment_models.autogun_p2_m3 = mod.attachment_models.autogun_p2_m1
+            -- mod.attachment_models.autogun_p3_m2 = mod.attachment_models.autogun_p3_m1
+            -- mod.attachment_models.autogun_p3_m3 = mod.attachment_models.autogun_p3_m1
+            mod.attachment_models.autogun_p2_m1 = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p2_m2 = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p2_m3 = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p3_m1 = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p3_m2 = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p3_m3 = mod.attachment_models.autogun_p1_m1
             mod.attachment_models.lasgun_p1_m2 = mod.attachment_models.lasgun_p1_m1
             mod.attachment_models.lasgun_p1_m3 = mod.attachment_models.lasgun_p1_m1
             mod.attachment_models.lasgun_p2_m2 = mod.attachment_models.lasgun_p2_m1
