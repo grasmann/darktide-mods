@@ -37,6 +37,7 @@ local Breed = mod:original_require("scripts/utilities/breed")
     local matrix4x4_set_translation = Matrix4x4.set_translation
     local matrix4x4_set_scale = Matrix4x4.set_scale
     local vector3_box = Vector3Box
+    local vector3_unbox = vector3_box.unbox
     local vector3 = Vector3
     local vector3_zero = vector3.zero
     local vector3_normalize = vector3.normalize
@@ -152,6 +153,14 @@ mod.acceptable_states = {
     "ledge_vaulting",
 }
 mod.unaccetable_states = {}
+
+mod.colors = {
+    white = vector3_box(1, 1, 1),
+    yellow = vector3_box(5, 5, 0),
+    red = vector3_box(5, 0, 0),
+    green = vector3_box(0, 5, 0),
+    blue = vector3_box(0, 0, 5),
+}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -528,6 +537,29 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                 if not mod.laser_dot then
                     mod.laser_dot = world_create_particles(self._world, LASER_DOT, end_position)
                     world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
+                    if mod.laser_hit then
+                        local first_person_extension = script_unit.extension(unit, "first_person_system")
+                        local first_person_unit = first_person_extension:first_person_unit()
+                        local distance = vector3_distance(unit_world_position(first_person_unit, 1), end_position) - .5
+                        local unit_world_pose = matrix4x4_identity()
+                        matrix4x4_set_translation(unit_world_pose, vector3(0, distance, 0))
+                        matrix4x4_set_scale(unit_world_pose, vector3(1, 1, 1) * mod:get("mod_option_laser_pointer_hit_indicator_size"))
+                        world_link_particles(self._world, mod.laser_dot, first_person_unit, 1, unit_world_pose, "destroy")
+                        if mod.laser_hit_critical then
+                            local color = mod.colors[mod:get("mod_option_laser_pointer_hit_critical_color")] or vector3_box(255, 255, 1)
+                            world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_flash_init", "material_variable_21872256", vector3_unbox(color) * mod:get("mod_option_laser_pointer_hit_indicator_brightness"))
+                            mod.laser_hit_critical = nil
+                        elseif mod.laser_hit_weakspot then
+                            local color = mod.colors[mod:get("mod_option_laser_pointer_hit_weakspot_color")] or vector3_box(255, 1, 1)
+                            world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_flash_init", "material_variable_21872256", vector3_unbox(color) * mod:get("mod_option_laser_pointer_hit_indicator_brightness"))
+                            mod.laser_hit_weakspot = nil
+                        else
+                            local color = mod.colors[mod:get("mod_option_laser_pointer_hit_color")] or vector3_box(1, 1, 1)
+                            world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_flash_init", "material_variable_21872256", vector3_unbox(color) * mod:get("mod_option_laser_pointer_hit_indicator_brightness"))
+                        end
+                    else
+                        world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_flash_init", "material_variable_21872256", vector3(0, 0, 0))
+                    end
                 else
                     local laser_pos = end_position
                     if not mod.use_fallback and not forced_fallback then
@@ -561,7 +593,9 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                             mod.laser_hit = nil
                         end
                     end
-                    world_move_particles(self._world, mod.laser_dot, laser_pos)
+                    if not mod.laser_hit then
+                        world_move_particles(self._world, mod.laser_dot, laser_pos)
+                    end
                 end
 
                 -- Iterate particles

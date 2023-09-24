@@ -52,16 +52,28 @@ return {
 		en = "Play Animations",
 		de = "Animationen Abspielen",
 	},
+	mod_option_weapon_build_animation_tooltip = {
+		en = "Plays building animations when changing weapon components",
+		de = "Spielt Bauanimationen ab wenn Waffenkomponente verändert werden",
+	},
 	mod_option_weapon_build_animation_speed = {
 		en = "Speed",
 		de = "Geschwindigkeit",
 		ru = "Скорость",
 		["zh-cn"] = "速度",
 	},
+	mod_option_weapon_build_animation_speed_tooltip = {
+		en = "Set the speed of the building animations",
+		de = "Lege die Geschwindigkeit der Bauanimationen fest",
+	},
 	mod_option_weapon_build_animation_wobble = {
 		en = "Wobble",
 		de = "Wackeln",
 		ru = "Покачивание",
+	},
+	mod_option_weapon_build_animation_wobble_tooltip = {
+		en = "Plays an unnecessary wobble animation at the end of the build animation",
+		de = "Spielt nach der Bauanimation eine unnötige Wackelanimation ab",
 	},
 	mod_option_weapon_build_animation_speed_unit = {
 		en = "Seconds",
@@ -79,6 +91,10 @@ return {
 		ru = "Тень от фонарика",
 		["zh-cn"] = "手电筒阴影",
 	},
+	mod_option_flashlight_shadows_tooltip = {
+		en = "Sets dynamic shadows for flashlights\nAffects vanilla flashlights too",
+		de = "Legt dynamische Sachatten für Taschenlampen fest\nBetrifft auch vanilla Taschenlampen",
+	},
 	mod_option_flashlight_flicker = {
 		en = "Flashlight Flicker",
 		de = "Taschenlampenflimmern",
@@ -91,6 +107,10 @@ return {
 		ru = "Мерцание при включении",
 		["zh-cn"] = "开启时闪烁",
 	},
+	mod_option_flashlight_flicker_start_tooltip = {
+		en = "Flashlights immediately flicker once when activated",
+		de = "Taschenlampe flimmert direkt beim Einschalten ein Mal",
+	},
 	group_laser_pointer = {
 		en = "Laser Pointer",
 		de = "Laserpointer",
@@ -99,25 +119,104 @@ return {
 		en = "Deactivate Crosshair",
 		de = "Zielkreuz Deaktivieren",
 	},
+	mod_option_deactivate_crosshair_tooltip = {
+		en = "Crosshair is automatically hidden when laser pointer is activated",
+		de = "Zielkreuz wird automatisch versteckt wenn Laserpointer angeschaltet wird",
+	},
 	mod_option_laser_pointer_dot_size = {
 		en = "Dot Size",
 		de = "Punktgröße",
+	},
+	mod_option_laser_pointer_dot_size_tooltip = {
+		en = "Sets the size of the dot at the end point of the laser",
+		de = "Legt die Größe des Punktes am Ende des Lasers fest",
 	},
 	mod_option_laser_pointer_wild = {
 		en = "Wild Flickering",
 		de = "Flimmert Wild",
 	},
+	mod_option_laser_pointer_wild_tooltip = {
+		en = "The flashlight of the laser pointer constantly flickers",
+		de = "Die Taschenlampe des Laserpointers flimmert kontinuierlich",
+	},
 	mod_option_laser_pointer_weapon_dot = {
 		en = "Weapon Shine Effect",
 		de = "Waffen Scheineffekt",
+	},
+	mod_option_laser_pointer_weapon_dot_tooltip = {
+		en = "Sets if there is a shine effect at the laser pointer",
+		de = "Legt fest ob am Laserpointer ein Scheineffekt ist",
 	},
 	mod_option_laser_pointer_hit_indicator = {
 		en = "Hit Indicator Flash",
 		de = "Trefferindikator Blitz",
 	},
+	mod_option_laser_pointer_hit_indicator_tooltip = {
+		en = "Use laser dot as a flashing hit indicator",
+		de = "Benutzt Laserpunkt als blitzenden Trefferindikator",
+	},
+	mod_option_laser_pointer_hit_color = {
+		en = "Normal Hit Color",
+		de = "Normale Trefferfarbe",
+	},
+	mod_option_laser_pointer_hit_color_tooltip = {
+		en = "Sets color for normal hits",
+		de = "Legt Farbe für normale Treffer fest",
+	},
+	mod_option_laser_pointer_hit_weakspot_color = {
+		en = "Weakspot Hit Color",
+		de = "Schwachstelle Trefferfarbe",
+	},
+	mod_option_laser_pointer_hit_weakspot_color_tooltip = {
+		en = "Sets color for weakspot hits",
+		de = "Legt Farbe für Schwachstellen-Treffer fest",
+	},
+	mod_option_laser_pointer_hit_critical_color = {
+		en = "Critical Hit Color",
+		de = "Kritische Trefferfarbe",
+	},
+	mod_option_laser_pointer_hit_critical_color_tooltip = {
+		en = "Sets color for critical hits",
+		de = "Legt Farbe für kritische Treffer fest",
+	},
+	mod_option_laser_pointer_hit_indicator_brightness = {
+		en = "Brightness",
+		de = "Helligkeit",
+	},
+	mod_option_laser_pointer_hit_indicator_brightness_tooltip = {
+		en = "Sets brightness of hit indicators",
+		de = "Legt Helligkeit der Trefferindikatoren fest",
+	},
+	mod_option_laser_pointer_hit_indicator_size = {
+		en = "Size",
+		de = "Größe",
+	},
+	mod_option_laser_pointer_hit_indicator_size_tooltip = {
+		en = "Sets size of hit indicators",
+		de = "Legt Größe der Trefferindikatoren fest",
+	},
+	mod_option_laser_pointer_hit_color_white = {
+		en = "{#color(255,255,255)}{#reset()}",
+	},
+	mod_option_laser_pointer_hit_color_yellow = {
+		en = "{#color(255,255,0)}{#reset()}",
+	},
+	mod_option_laser_pointer_hit_color_red = {
+		en = "{#color(255,0,0)}{#reset()}",
+	},
+	mod_option_laser_pointer_hit_color_green = {
+		en = "{#color(0,255,0)}{#reset()}",
+	},
+	mod_option_laser_pointer_hit_color_blue = {
+		en = "{#color(0,0,255)}{#reset()}",
+	},
 	mod_option_camera_zoom = {
 		en = "Camera Zoom",
 		de = "Kamera Zoom",
+	},
+	mod_option_camera_zoom_tooltip = {
+		en = "Plays a camera zoom animation during build animation",
+		de = "Spielt während der Bauanimation eine Kamera-Zoomanimation ab",
 	},
 	loc_weapon_inventory_reset_button = {
 		en = "Reset All",
