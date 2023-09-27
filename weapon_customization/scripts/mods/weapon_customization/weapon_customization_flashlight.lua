@@ -87,14 +87,15 @@ local _flashlight_template = {
 				near = 0
 			}
 		}
-	}
+	},
+	flicker = FlashlightTemplates.assault.flicker,
 }
 
 mod.flashlight_templates = {
-	flashlight_01 = table_clone(_flashlight_template),
-	flashlight_02 = table_clone(_flashlight_template),
-	flashlight_03 = table_clone(_flashlight_template),
-	flashlight_04 = table_clone(_flashlight_template),
+	flashlight_01 = table_clone(FlashlightTemplates.assault),
+	flashlight_02 = table_clone(FlashlightTemplates.default),
+	flashlight_03 = table_clone(FlashlightTemplates.assault),
+	flashlight_04 = table_clone(FlashlightTemplates.default),
 	-- laser_pointer = table_clone(FlashlightTemplates.assault),
 	laser_pointer = {
 		light = {
