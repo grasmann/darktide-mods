@@ -10,6 +10,7 @@ local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
 local Recoil = mod:original_require("scripts/utilities/recoil")
 local Sway = mod:original_require("scripts/utilities/sway")
 local Breed = mod:original_require("scripts/utilities/breed")
+local AttackSettings = mod:original_require("scripts/settings/damage/attack_settings")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -65,7 +66,6 @@ local Breed = mod:original_require("scripts/utilities/breed")
 
 local LASER_PARTICLE_EFFECT = "content/fx/particles/enemies/sniper_laser_sight"
 local LASER_DOT = "content/fx/particles/enemies/red_glowing_eyes"
-local LASER_LENGTH_VARIABLE_NAME = "hit_distance"
 local MAX_DISTANCE = 1000
 local INTERVAL = .1
 local TIME = .5
@@ -87,6 +87,8 @@ local LINE_EFFECT = {
         },
     },
 }
+local attack_types = AttackSettings.attack_types
+local attack_results = AttackSettings.attack_results
 
 mod._laser_pointer_template = {
     spot_reflector = false,
@@ -195,8 +197,17 @@ mod._has_laser_pointer_attachment = function(self, item)
 	if attachments then
         -- Check laser pointer
 		local laser_pointer = self:_recursive_find_attachment_name(attachments, "laser_pointer")
+        if laser_pointer then
+            laser_pointer = "laser_pointer"
+        end
 		return laser_pointer
 	end
+end
+
+mod.has_laser_pointer = function(self, item)
+	local gear_id = self:get_gear_id(item)
+    local laser_pointer = gear_id and self:get_gear_setting(gear_id, "flashlight")
+	return laser_pointer and laser_pointer == "laser_pointer"
 end
 
 -- Get laser pointer unit of wielded weapon
@@ -222,8 +233,9 @@ mod.get_laser_pointer_unit = function(self)
                 unit_1p = self:_get_laser_pointer_unit(weapon.weapon_unit),
                 unit_3p = self:_get_laser_pointer_unit(weapon_3p),
             }
-            self:set_flashlight_template(self.attached_laser_pointers[gear_id].unit_1p, self._laser_pointer_template)
-            self:set_flashlight_template(self.attached_laser_pointers[gear_id].unit_3p, self._laser_pointer_template)
+            -- self:set_flashlight_template(self.attached_laser_pointers[gear_id].unit_1p, true, self._laser_pointer_template)
+            -- self:set_flashlight_template(self.attached_laser_pointers[gear_id].unit_3p, false, self._laser_pointer_template)
+            self:set_flashlight_template(self.attached_laser_pointers[gear_id])
 		end
 		-- Return cached unit
 		return self.attached_laser_pointers[gear_id].unit_1p, self.attached_laser_pointers[gear_id].unit_3p
@@ -360,9 +372,9 @@ mod.toggle_laser = function(self, retain, optional_value)
                 self:despawn_all_lasers()
                 if not retain then self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.player_unit, 1) end
                 if self:get("mod_option_laser_pointer_wild") and laser_pointer_state == 2 then
-                    self:set_flicker_template(self.laser_pointer_flicker)
+                    -- self:set_flicker_template(self.laser_pointer_flicker)
                 else
-                    self:set_flicker_template(self._flicker_settings)
+                    -- self:set_flicker_template(self._flicker_settings)
                 end
             else
                 if not retain then self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_off", false, self.player_unit, 1) end
@@ -520,7 +532,7 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                 local position, end_position, direction, forced_fallback, camera_hit_distance, hit_actor = mod:calculate_laser_end_position()
                 -- Set distance
                 local distance = vector3_distance(position, end_position)
-                local variable_index = world_find_particles_variable(self._world, LASER_PARTICLE_EFFECT, LASER_LENGTH_VARIABLE_NAME)
+                local variable_index = world_find_particles_variable(self._world, LASER_PARTICLE_EFFECT, "hit_distance")
                 -- Dot
                 local laser_position = unit_world_position(laser_pointer, 1)
                 local weapon_dot_position = laser_position + direction * .05
@@ -545,7 +557,11 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                         matrix4x4_set_translation(unit_world_pose, vector3(0, distance, 0))
                         matrix4x4_set_scale(unit_world_pose, vector3(1, 1, 1) * mod:get("mod_option_laser_pointer_hit_indicator_size"))
                         world_link_particles(self._world, mod.laser_dot, first_person_unit, 1, unit_world_pose, "destroy")
-                        if mod.laser_hit_critical then
+                        if mod.laser_kill then
+                            local color = mod.colors[mod:get("mod_option_laser_pointer_kill_color")] or vector3_box(255, 255, 1)
+                            world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_flash_init", "material_variable_21872256", vector3_unbox(color) * mod:get("mod_option_laser_pointer_hit_indicator_brightness"))
+                            mod.laser_kill = nil
+                        elseif mod.laser_hit_critical then
                             local color = mod.colors[mod:get("mod_option_laser_pointer_hit_critical_color")] or vector3_box(255, 255, 1)
                             world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_flash_init", "material_variable_21872256", vector3_unbox(color) * mod:get("mod_option_laser_pointer_hit_indicator_brightness"))
                             mod.laser_hit_critical = nil
@@ -640,6 +656,15 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_create_particles_wrapper", function(func
             effect_id = effect_id,
             end_time = mod.time_manager:time("gameplay") + TIME,
         }
+
+        -- World.set_particles_material_vector3(world, effect_id, "beam", "material_variable_21872256", vector3(0, 255, 0))
+
+        -- World.set_particles_material_color(world, effect_id, "beam", vector3(0, 255, 0))
+        -- World.set_particles_material_color(world, effect_id, "beam", Color(0, 255, 0))
+        -- World.set_particles_material_color(world, effect_id, "beam", Color(255, 0, 255, 0))
+        -- World.set_particles_material_color(world, effect_id, "beam", Color.light_green(255, true))
+        -- World.set_particles_material_color(world, effect_id, "beam", Quaternion.from_euler_angles_xyz(0, 255, 0))
+        -- World.set_particles_material_color(world, effect_id, Color.light_green(255, true))
     end
     return effect_id
 end)
@@ -696,21 +721,22 @@ mod:hook(CLASS.AttackReportManager, "add_attack_result", function(func, self, da
 	attack_result, attack_type, damage_efficiency, ...)
 	-- local player = mod:player_from_unit(attacking_unit)
 	if attacking_unit == mod.player_unit and mod:get("mod_option_laser_pointer_hit_indicator") then
-		local unit_data_extension = script_unit.has_extension(attacked_unit, "unit_data_system")
-		local breed_or_nil = unit_data_extension and unit_data_extension:breed()
-		local target_is_minion = breed_or_nil and Breed.is_minion(breed_or_nil)
+        if attack_type == attack_types.ranged and (attack_result == attack_results.damaged or attack_result == attack_results.died) then
+            local unit_data_extension = script_unit.has_extension(attacked_unit, "unit_data_system")
+            local breed_or_nil = unit_data_extension and unit_data_extension:breed()
+            local target_is_minion = breed_or_nil and Breed.is_minion(breed_or_nil)
 
-        if target_is_minion then
-            if mod.laser_dot then
-                world_destroy_particles(mod:world(), mod.laser_dot)
-                mod.laser_dot = nil
-                mod.laser_hit = mod.time_manager:time("gameplay") + HIT_TIME
-
-                local player_unit_data_extension = ScriptUnit.has_extension(attacking_unit, "unit_data_system")
-                local critical_strike_component = player_unit_data_extension:read_component("critical_strike")
-                mod.laser_hit_critical = critical_strike_component.is_active
-
-                mod.laser_hit_weakspot = hit_weakspot
+            if target_is_minion then
+                if mod.laser_dot then
+                    world_destroy_particles(mod:world(), mod.laser_dot)
+                    mod.laser_dot = nil
+                    mod.laser_hit = mod.time_manager:time("gameplay") + HIT_TIME
+                    local player_unit_data_extension = ScriptUnit.has_extension(attacking_unit, "unit_data_system")
+                    local critical_strike_component = player_unit_data_extension:read_component("critical_strike")
+                    mod.laser_hit_critical = critical_strike_component.is_active
+                    mod.laser_hit_weakspot = hit_weakspot
+                    mod.laser_kill = attack_result == attack_results.died
+                end
             end
         end
     end

@@ -1142,25 +1142,6 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                 rail_01 =       {model = "content/items/weapons/player/ranged/rails/lasgun_rifle_rail_01",  type = type, parent = tv(parent, 2), angle = angle, move = move, remove = remove},
             }
         end
-        local _laspistol_receiver_attachments = function()
-            return {
-                {id = "laspistol_receiver_default", name = "Default",               sounds = {_receiver_sound}},
-                {id = "laspistol_receiver_01",      name = "Laspistol Receiver 1",  sounds = {_receiver_sound}},
-                {id = "laspistol_receiver_02",      name = "Laspistol Receiver 2",  sounds = {_receiver_sound}},
-                {id = "laspistol_receiver_03",      name = "Laspistol Receiver 3",  sounds = {_receiver_sound}},
-            }
-        end
-        local _laspistol_receiver_models = function(parent, angle, move, remove)
-            local angle = angle or 0
-            local move = move or vector3_box(0, 0, 0)
-            local remove = remove or vector3_box(0, 0, 0)
-            return {
-                laspistol_receiver_default =    {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
-                laspistol_receiver_01 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
-                laspistol_receiver_02 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_02", type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
-                laspistol_receiver_03 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03", type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
-            }
-        end
     --#endregion
     --#region Autoguns
         local _autogun_braced_barrel_attachments = function()
@@ -1720,6 +1701,25 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
             end
         --#endregion
         --#region Laspistol
+            local _laspistol_receiver_attachments = function()
+                return {
+                    {id = "laspistol_receiver_default", name = "Default",               sounds = {_receiver_sound}},
+                    {id = "laspistol_receiver_01",      name = "Laspistol Receiver 1",  sounds = {_receiver_sound}},
+                    {id = "laspistol_receiver_02",      name = "Laspistol Receiver 2",  sounds = {_receiver_sound}},
+                    {id = "laspistol_receiver_03",      name = "Laspistol Receiver 3",  sounds = {_receiver_sound}},
+                }
+            end
+            local _laspistol_receiver_models = function(parent, angle, move, remove)
+                local angle = angle or 0
+                local move = move or vector3_box(0, 0, 0)
+                local remove = remove or vector3_box(0, 0, 0)
+                return {
+                    laspistol_receiver_default =    {model = "",                                                                        type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove},
+                    laspistol_receiver_01 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_01", type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove},
+                    laspistol_receiver_02 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_02", type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove},
+                    laspistol_receiver_03 =         {model = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03", type = "receiver", parent = tv(parent, 4), angle = angle, move = move, remove = remove},
+                }
+            end
             local _laspistol_magazine_attachments = function()
                 return {
                     {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip}},
@@ -3681,7 +3681,7 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
                 shaft = {
-                    {id = "2h_power_maul_shaft_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
+                    {id = "2h_power_maul_shaft_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
                     {id = "2h_power_maul_shaft_01", name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
                     {id = "2h_power_maul_shaft_02", name = "Shaft 2", sounds = {UISoundEvents.weapons_swap}},
                     {id = "2h_power_maul_shaft_03", name = "Shaft 3", sounds = {UISoundEvents.weapons_swap}},
@@ -3947,11 +3947,11 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
             loc_weapon_cosmetics_customization_stock = "loc_weapon_cosmetics_customization_ventilation",
         },
     }
-    mod.default_overwrite = {
-        laspistol_p1_m1 = {
-            receiver = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03",
-        }
-    }
+    -- mod.default_overwrite = {
+    --     laspistol_p1_m1 = {
+    --         receiver = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03",
+    --     }
+    -- }
     mod.automatic_slots = {
         "rail",
     }

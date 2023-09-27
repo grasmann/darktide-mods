@@ -12,6 +12,7 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
+local ViewElementProfilePresets = mod:original_require("scripts/ui/view_elements/view_element_profile_presets/view_element_profile_presets")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -299,11 +300,12 @@ mod.resolve_auto_equips = function(self, item)
 								parameters[1] = string_gsub(parameters[1], "!", "")
 								local attachments = item.attachments or item.__master_item and item.__master_item.attachments
 								if attachments then
-									local attachment_data = self:_recursive_find_attachment(attachments, auto_type)
-									if attachment_data then
-										if attachment_data and negative and attachment_data.attachment_name ~= parameters[1] then
+									-- local attachment_data = self:_recursive_find_attachment(attachments, auto_type)
+									local attachment_name = self:get_gear_setting(self.cosmetics_view._gear_id, auto_type, item)
+									if attachment_name then
+										if negative and attachment_name ~= parameters[1] then
 											self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[2])
-										elseif attachment_data and not negative and attachment_data.attachment_name == parameters[1] then
+										elseif not negative and attachment_name == parameters[1] then
 											self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[2])
 										end
 									else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
@@ -398,6 +400,8 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 		end
 
 		if not no_update then
+			self:resolve_auto_equips(self.cosmetics_view._presentation_item)
+
 			self.cosmetics_view._presentation_item = MasterItems.create_preview_item_instance(self.cosmetics_view._selected_item)
 
 			if self.cosmetics_view._previewed_element then
@@ -406,7 +410,6 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 				self.cosmetics_view:_preview_item(self.cosmetics_view._presentation_item)
 			end
 
-			self:resolve_auto_equips(self.cosmetics_view._presentation_item)
 			self:resolve_no_support(self.cosmetics_view._presentation_item)
 
 			self.cosmetics_view._slot_info_id = self:get_slot_info_id(self.cosmetics_view._presentation_item)
@@ -703,7 +706,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				end
 
 				if detach_done == count and mod.weapon_part_animation_update then
-					if entries and #entries > 0 and entries[1] and string_find(entries[1].new, "default") then
+					if entries and #entries > 0 and entries[1] and entries[1].new and string_find(entries[1].new, "default") then
 						mod:start_weapon_move()
 						mod.new_rotation = 0
 						mod.do_rotation = true
@@ -1630,6 +1633,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 	self._item_name = mod:item_name_from_content_string(self._selected_item.name)
 	self._gear_id = mod:get_gear_id(self._presentation_item)
 	self._slot_info_id = mod:get_slot_info_id(self._presentation_item)
+	-- Profiles
+	-- self._weapon_presets_element = self:_add_element(ViewElementProfilePresets, "weapon_presets", 60, nil, "weapon_presets_pivot")
 	-- Overwrite draw elements function
 	-- Make view legend inputs visible when UI gets hidden
 	self._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
@@ -2022,6 +2027,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			alignment = "right_alignment"
 		}
 	end
+
+	-- instance.scenegraph_definition.weapon_presets_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "screen",
+	-- 	horizontal_alignment = "right",
+	-- 	size = {0, 0},
+	-- 	position = {-60, 94, 62}
+	-- }
 
 	instance.always_visible_widget_names.background = true
 

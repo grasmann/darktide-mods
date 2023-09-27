@@ -398,7 +398,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 								local hide_unit = mod.attachment_slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
 								if hide_unit and unit_alive(hide_unit) then
 									for i = 2, #hide_entry do
-										mod:echo("hide mesh: "..tostring(hide_entry[i]))
 										local mesh_index = hide_entry[i]
 										unit_set_mesh_visibility(hide_unit, mesh_index, false)
 									end

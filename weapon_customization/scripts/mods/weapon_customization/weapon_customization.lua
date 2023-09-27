@@ -53,6 +53,7 @@ end
 -- Update loop
 function mod.update(main_dt)
 	mod:update_flicker()
+	mod:update_battery()
 end
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -94,7 +95,7 @@ mod:hook(CLASS.Flashlight, "update_first_person_mode", function(func, self, firs
 	func(self, first_person_mode, ...)
 	if mod.initialized then
 		-- Update flashlight
-		if mod:has_flashlight_attachment() then mod:update_flashlight() end
+		if mod:has_flashlight_attachment() then mod:update_flashlight_view() end
 		if mod:has_laser_pointer_attachment() then mod:update_laser_pointer() end
 		mod.was_third_person = mod:_is_in_third_person()
 		mod.last_character_state = mod:_character_state()
@@ -226,6 +227,15 @@ mod.get_wielded_weapon = function(self)
 	local inventory_component = self.weapon_extension._inventory_component
 	local weapons = self.weapon_extension._weapons
 	return self.weapon_extension:_wielded_weapon(inventory_component, weapons)
+end
+
+mod.get_wielded_slot = function(self)
+	local inventory_component = self.weapon_extension._inventory_component
+	return inventory_component.wielded_slot
+end
+
+mod.get_wielded_weapon_3p = function(self)
+	return self.visual_loadout_extension:unit_3p_from_slot("slot_secondary")
 end
 
 -- Get equipped weapon from gear id

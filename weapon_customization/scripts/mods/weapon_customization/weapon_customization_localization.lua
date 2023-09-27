@@ -179,6 +179,14 @@ return {
 		en = "Sets color for critical hits",
 		de = "Legt Farbe für kritische Treffer fest",
 	},
+	mod_option_laser_pointer_kill_color = {
+		en = "Kill Color",
+		de = "Tötungsfarbe",
+	},
+	mod_option_laser_pointer_kill_color_tooltip = {
+		en = "Sets color for hits that kill an enemy",
+		de = "Legt Farbe für Treffer fest die einen Gegner töten",
+	},
 	mod_option_laser_pointer_hit_indicator_brightness = {
 		en = "Brightness",
 		de = "Helligkeit",
@@ -209,6 +217,13 @@ return {
 	},
 	mod_option_laser_pointer_hit_color_blue = {
 		en = "{#color(0,0,255)}{#reset()}",
+	},
+	mod_option_laser_pointer_hit_color_gold = {
+		en = "{#color(171,141,63)}{#reset()}",
+	},
+	mod_hud_display_name_battery = {
+		en = "Battery",
+		de = "Batterie",
 	},
 	mod_option_camera_zoom = {
 		en = "Camera Zoom",

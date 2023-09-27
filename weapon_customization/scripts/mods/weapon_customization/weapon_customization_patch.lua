@@ -276,25 +276,26 @@ mod._overwrite_attachments = function(self, item_data, attachments)
                     end
                 end
             else
-                -- Default overwrite
-                if self.default_overwrite[item_name] and self.default_overwrite[item_name][attachment_slot] then
-                    self:_recursive_set_attachment(attachments, attachment, attachment_slot, self.default_overwrite[item_name][attachment_slot])
-                else -- Default
-                    -- Get original master items
-                    local MasterItemsCached = MasterItems.get_cached()
-                    -- Get master item
-                    local master_item = MasterItemsCached[item_data.name]
-                    -- Get attachment data
-                    local attachment_data = self:_recursive_find_attachment(master_item.attachments, attachment_slot)
-                    -- Get attachment
-                    local attachment = self:get_gear_setting(gear_id, attachment_slot, item_data)
-                    -- -- Get fixes
-                    -- attachment_data = self:_apply_anchor_fixes(item_data, attachment_slot) or attachment_data
-                    -- Set attachment
-                    if attachment_data then
-                        self:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment_data.item)
-                    end
+                -- -- Default overwrite
+                -- if self.default_overwrite[item_name] and self.default_overwrite[item_name][attachment_slot] then
+                --     self:_recursive_set_attachment(attachments, attachment, attachment_slot, self.default_overwrite[item_name][attachment_slot])
+                -- else
+                -- Default
+                -- Get original master items
+                local MasterItemsCached = MasterItems.get_cached()
+                -- Get master item
+                local master_item = MasterItemsCached[item_data.name]
+                -- Get attachment data
+                local attachment_data = self:_recursive_find_attachment(master_item.attachments, attachment_slot)
+                -- Get attachment
+                local attachment = self:get_gear_setting(gear_id, attachment_slot, item_data)
+                -- -- Get fixes
+                -- attachment_data = self:_apply_anchor_fixes(item_data, attachment_slot) or attachment_data
+                -- Set attachment
+                if attachment_data then
+                    self:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment_data.item)
                 end
+                -- end
             end
         else -- Handle trinket
             -- Get master item instance
@@ -328,10 +329,12 @@ mod._overwrite_attachments = function(self, item_data, attachments)
             local negative = string_find(parameters[1], "!")
             parameters[1] = string_gsub(parameters[1], "!", "")
             local attachment_data = self:_recursive_find_attachment(attachments, auto_attachment_entry.type)
-            if attachment_data and negative and attachment_data.attachment_name ~= parameters[1] then
-                auto_attachment = parameters[2]
-            elseif attachment_data and not negative and attachment_data.attachment_name == parameters[1] then
-                auto_attachment = parameters[2]
+            if attachment_data then
+                if negative and attachment_data.attachment_name ~= parameters[1] then
+                    auto_attachment = parameters[2]
+                elseif not negative and attachment_data.attachment_name == parameters[1] then
+                    auto_attachment = parameters[2]
+                end
             end
         else
             auto_attachment = parameters[1]
@@ -367,17 +370,14 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
             instance.processing_item = nil
         end
-
         instance.__resolve_item_packages_recursive(attachments, items_dictionary, result)
     end
 
     if not instance._compile_item_instance_dependencies then instance._compile_item_instance_dependencies = instance.compile_item_instance_dependencies end
     instance.compile_item_instance_dependencies = function(item, items_dictionary, out_result, optional_mission_template)
-
         if item and item.__master_item then
             instance.processing_item = item
         end
-
         return instance._compile_item_instance_dependencies(item, items_dictionary, out_result, optional_mission_template)
     end
 
@@ -387,100 +387,73 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├┬┘├┤ └┐┌┘│├┤ │││└─┐ ##########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘└─┘ ##########################################################################
 
-mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
+-- mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
 
-    local attachments = item.__master_item and item.__master_item.attachments
-    if item and attachments then
-        local gear_id = mod:get_gear_id(item)
-        if gear_id then
-            mod:setup_item_definitions()
-             -- Bulwark
-            if mod:get_gear_setting(gear_id, "left", item) == "bulwark_shield_01" then
-                self._item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
-            end
+--     local attachments = item.__master_item and item.__master_item.attachments
+--     if item and attachments then
+--         local gear_id = mod:get_gear_id(item)
+--         if gear_id then
+--             mod:setup_item_definitions()
+--              -- Bulwark
+--             if mod:get_gear_setting(gear_id, "left", item) == "bulwark_shield_01" then
+--                 self._item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
+--             end
 
-            -- Add flashlight slot
-            mod:_add_custom_attachments(item, attachments)
+--             -- Add flashlight slot
+--             mod:_add_custom_attachments(item, attachments)
             
-            -- Overwrite attachments
-            mod:_overwrite_attachments(item, attachments)
-        end
-    end
+--             -- Overwrite attachments
+--             mod:_overwrite_attachments(item, attachments)
+--         end
+--     end
 
-    func(self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
+--     func(self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
 
-end)
+-- end)
 
 mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, is_equipped, on_present_callback, ...)
-    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
-    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
+    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
 	func(self, item, is_equipped, on_present_callback, ...)
-	mod.previewed_weapon_flashlight = nil
-    mod.previewed_weapon_laser_pointer = nil
+    mod.previewed_weapon = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponActions, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
-    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
+    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
 	func(self, item, ...)
-	mod.previewed_weapon_flashlight = nil
-    mod.previewed_weapon_laser_pointer = nil
+	mod.previewed_weapon = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponInfo, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
-    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
+    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
 	func(self, item, ...)
-	mod.previewed_weapon_flashlight = nil
-    mod.previewed_weapon_laser_pointer = nil
+	mod.previewed_weapon = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponPatterns, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
-    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
+    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
 	func(self, item, ...)
-	mod.previewed_weapon_flashlight = nil
-    mod.previewed_weapon_laser_pointer = nil
+	mod.previewed_weapon = nil
 end)
 
 mod:hook(CLASS.ViewElementWeaponActionsExtended, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
-    mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
+    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
 	func(self, item, ...)
-	mod.previewed_weapon_flashlight = nil
-    mod.previewed_weapon_laser_pointer = nil
+	mod.previewed_weapon = nil
 end)
 
--- mod:hook(CLASS.WeaponStats, "init", function(func, self, item, ...)
---     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(item)
---     mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(item)
--- 	func(self, item, ...)
--- 	mod.previewed_weapon_flashlight = nil
---     mod.previewed_weapon_laser_pointer = nil
--- end)
-
--- mod:hook(CLASS.WeaponStats, "get_compairing_stats", function(func, self, ...)
---     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(self._item)
---     mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(self._item)
--- 	local values = func(self, ...)
--- 	mod.previewed_weapon_flashlight = nil
---     mod.previewed_weapon_laser_pointer = nil
---     return values
--- end)
-
--- mod:hook(CLASS.ItemGridViewBase, "_preview_element", function(func, self, element, ...)
---     local gear_id = mod:get_gear_id(element.item)
---     local _, weapon = mod:get_weapon_from_gear_id(gear_id)
---     if weapon and weapon.item then element.real_item = weapon.item end
---     func(self, element, ...)
--- end)
+mod:hook(CLASS.WeaponStats, "get_compairing_stats", function(func, self, ...)
+    mod.previewed_weapon = {f = mod:has_flashlight(self._item), l = mod:has_laser_pointer(self._item)}
+	local values = func(self, ...)
+	mod.previewed_weapon = nil
+    return values
+end)
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐┌─┐ ##############################################################
 -- ##### │││├┤ ├─┤├─┘│ ││││   │ ├┤ │││├─┘│  ├─┤ │ ├┤ └─┐ ##############################################################
 -- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘└─┘ ##############################################################
 
 mod.template_add_torch = function(self, orig_weapon_template)
-    if self.previewed_weapon_flashlight or self.previewed_weapon_laser_pointer then
+    if self.previewed_weapon then
         if not self.weapon_templates[orig_weapon_template.name] then
             self.weapon_templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
         end
@@ -490,13 +463,13 @@ mod.template_add_torch = function(self, orig_weapon_template)
             weapon_template.displayed_weapon_stats_table.damage[3] = nil
         end
 
-        if self.previewed_weapon_laser_pointer then
+        if self.previewed_weapon.l then
             weapon_template.displayed_attacks.special = {
                 type = "vent",
                 display_name = "loc_weapon_special_laser_pointer",
                 desc = "loc_stats_special_action_laser_pointer_desc",
             }
-        elseif self.previewed_weapon_flashlight then
+        elseif self.previewed_weapon.f then
             weapon_template.displayed_attacks.special = {
                 desc = "loc_stats_special_action_flashlight_desc",
                 display_name = "loc_weapon_special_flashlight",
@@ -515,16 +488,6 @@ mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
 		local weapon_template = instance._weapon_template(template_name)
 		return mod:template_add_torch(weapon_template)
 	end
-    -- instance.weapon_template_from_item = instance._weapon_template_from_item
-    -- if not instance._weapon_template_from_item then instance._weapon_template_from_item = instance.weapon_template_from_item end
-    -- instance.weapon_template_from_item = function(weapon_item)
-    --     mod.previewed_weapon_flashlight = mod:_has_flashlight_attachment(weapon_item)
-    --     mod.previewed_weapon_laser_pointer = mod:_has_laser_pointer_attachment(weapon_item)
-    --     local template = instance._weapon_template_from_item(weapon_item)
-    --     mod.previewed_weapon_flashlight = nil
-    --     mod.previewed_weapon_laser_pointer = nil
-    --     return template
-    -- end
 end)
 
 mod:hook_require("scripts/settings/equipment/flashlight_templates", function(instance)
@@ -543,7 +506,7 @@ mod:hook(CLASS.InputService, "get", function(func, self, action_name, ...)
     if mod.initialized then
         local has_flashlight = mod:has_flashlight_attachment()
         local has_laser_pointer = mod:has_laser_pointer_attachment()
-        if table_contains(mod.special_actions, action_name) and (has_flashlight or has_laser_pointer) then
+        if action_name == "weapon_extra_pressed" and (has_flashlight or has_laser_pointer) then
             if pressed and has_flashlight then
                 mod:toggle_flashlight()
             end

@@ -111,6 +111,7 @@ return {
 									{text = "mod_option_laser_pointer_hit_color_red", value = "red"},
 									{text = "mod_option_laser_pointer_hit_color_green", value = "green"},
 									{text = "mod_option_laser_pointer_hit_color_blue", value = "blue"},
+									{text = "mod_option_laser_pointer_hit_color_gold", value = "gold"},
 								}
 							},
 							{["setting_id"] = "mod_option_laser_pointer_hit_weakspot_color",
@@ -123,6 +124,7 @@ return {
 									{text = "mod_option_laser_pointer_hit_color_red", value = "red"},
 									{text = "mod_option_laser_pointer_hit_color_green", value = "green"},
 									{text = "mod_option_laser_pointer_hit_color_blue", value = "blue"},
+									{text = "mod_option_laser_pointer_hit_color_gold", value = "gold"},
 								}
 							},
 							{["setting_id"] = "mod_option_laser_pointer_hit_critical_color",
@@ -135,6 +137,20 @@ return {
 									{text = "mod_option_laser_pointer_hit_color_red", value = "red"},
 									{text = "mod_option_laser_pointer_hit_color_green", value = "green"},
 									{text = "mod_option_laser_pointer_hit_color_blue", value = "blue"},
+									{text = "mod_option_laser_pointer_hit_color_gold", value = "gold"},
+								}
+							},
+							{["setting_id"] = "mod_option_laser_pointer_kill_color",
+								["type"] = "dropdown",
+								["default_value"] = "gold",
+								["tooltip"] = "mod_option_laser_pointer_kill_color_tooltip",
+								["options"] = {
+									{text = "mod_option_laser_pointer_hit_color_white", value = "white"},
+									{text = "mod_option_laser_pointer_hit_color_yellow", value = "yellow"},
+									{text = "mod_option_laser_pointer_hit_color_red", value = "red"},
+									{text = "mod_option_laser_pointer_hit_color_green", value = "green"},
+									{text = "mod_option_laser_pointer_hit_color_blue", value = "blue"},
+									{text = "mod_option_laser_pointer_hit_color_gold", value = "gold"},
 								}
 							},
 						},
