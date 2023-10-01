@@ -115,7 +115,8 @@ end
 
 mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 	if unit and unit_alive(unit) then
-		local gear_info = self.attachment_slot_infos[slot_info_id]
+		local slot_infos = self:persistent_table("weapon_customization").attachment_slot_infos
+		local gear_info = slot_infos[slot_info_id]
 		local mesh_move = gear_info and gear_info.unit_mesh_move[unit]
 		local unit_and_meshes = mesh_move == "both" or false
 		local root_unit = gear_info and gear_info.attachment_slot_to_unit["root"] or unit
@@ -231,18 +232,19 @@ end
 
 
 mod.draw_equipment_lines = function(self, dt, t)
-	if self.cosmetics_view and self.attachment_slot_infos then
+	local slot_infos = self:persistent_table("weapon_customization").attachment_slot_infos
+	if self.cosmetics_view and slot_infos then
 		local gear_id = self.cosmetics_view._gear_id
 		local slot_info_id = self.cosmetics_view._slot_info_id
 		local item = self.cosmetics_view._selected_item
 		local gui = self.cosmetics_view._ui_forward_renderer.gui
 		local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
 		local attachments = item.attachments
-		if attachments and #self.weapon_part_animation_entries == 0 and self.attachment_slot_infos[slot_info_id] then
+		if attachments and #self.weapon_part_animation_entries == 0 and slot_infos[slot_info_id] then
 			local found_attachment_slots = self:get_item_attachment_slots(item)
 			if #found_attachment_slots > 0 then
 				for _, attachment_slot in pairs(found_attachment_slots) do
-					local unit = self.attachment_slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
 					if unit and unit_alive(unit) then
 						local box = Unit.box(unit, false)
 						local center_position = Matrix4x4.translation(box)
@@ -566,7 +568,8 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 					local gear_id = mod.cosmetics_view._gear_id
 					local slot_info_id = mod.cosmetics_view._slot_info_id
-					local gear_info = mod.attachment_slot_infos[slot_info_id]
+					local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+					local gear_info = slot_infos[slot_info_id]
 					local attachment = mod:get_gear_setting(gear_id, entry.slot, mod.cosmetics_view._selected_item)
 
 					local attachment_data = attachment and mod.attachment_models[item_name][attachment]
@@ -818,18 +821,8 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 			mod:set_light_positions(self)
 		end
 
-		mod.attachment_slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position["root"] = vector3_box(unit_local_position(weapon_spawn_data.item_unit_3p, 1))
-
-		-- local rail = mod.attachment_slot_infos[mod.cosmetics_view._gear_id].attachment_slot_to_unit["rail"]
-		-- if rail then
-		-- 	-- mod:echo("lol")
-		-- 	-- Unit.set_scalar_for_materials(barrel, "health_value", .5, false)
-		-- 	local meshes = unit_num_meshes(rail)
-		-- 	mod:echo(tostring(meshes))
-		-- 	local index = 4
-		-- 	local mesh = unit_mesh(rail, index)
-		-- 	mesh_set_local_position(mesh, rail, vector3(0, 0, .2))
-		-- end
+		local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position["root"] = vector3_box(unit_local_position(weapon_spawn_data.item_unit_3p, 1))
 	end
 end)
 
@@ -2044,15 +2037,19 @@ end)
 -- ##### ├─┤├┤ │  ├─┘ #################################################################################################
 -- ##### ┴ ┴└─┘┴─┘┴   #################################################################################################
 
-mod._recursive_get_child_units = function(self, unit, out_units)
-	local attachment_slot_info = self.attachment_slot_infos[self.cosmetics_view._slot_info_id]
-	local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]
-	local text = attachment_slot and attachment_slot or unit
-	out_units[text] = {}
-	local children = unit_get_child_units(unit)
-	if children then
-		for _, child in pairs(children) do
-			self:_recursive_get_child_units(child, out_units[text])
+mod._recursive_get_child_units = function(self, unit, slot_info_id, out_units)
+	local slot_info_id = slot_info_id or self.cosmetics_view._slot_info_id
+	local slot_infos = self:persistent_table("weapon_customization").attachment_slot_infos
+	local attachment_slot_info = slot_infos[slot_info_id]
+	if attachment_slot_info then
+		local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]
+		local text = attachment_slot and attachment_slot or unit
+		out_units[text] = {}
+		local children = unit_get_child_units(unit)
+		if children then
+			for _, child in pairs(children) do
+				self:_recursive_get_child_units(child, out_units[text])
+			end
 		end
 	end
 end

@@ -21,6 +21,8 @@ mod:persistent_table("weapon_customization", {
 	spawned_lasers = {},
 	item_definitions = nil,
 	player_equipment = {},
+	attachment_slot_infos = {},
+	loaded_packages = {},
 })
 mod.was_third_person = nil
 
@@ -46,6 +48,9 @@ function mod.on_setting_changed(setting_id)
 	end
 	if setting_id == "mod_option_laser_pointer_wild" or setting_id == "mod_option_laser_pointer_weapon_dot" or setting_id == "mod_option_laser_pointer_weapon_flash" then
 		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
+	end
+	if setting_id == "mod_option_visible_equipment" then
+		mod:update_equipment_visibility()
 	end
 	-- Debug
 	mod._debug = mod:get("mod_option_debug")

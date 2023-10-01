@@ -51,12 +51,32 @@ return {
 		de = "Sichtbare Ausrüstung",
 	},
 	mod_option_visible_equipment = {
-		en = "Active",
-		de = "Aktiv",
+		en = "Visible Equipment",
+		de = "Sichtbare Ausrüstung",
 	},
 	mod_option_visible_equipment_tooltip = {
 		en = "Shows currently unwielded equipment on player characters",
 		de = "Zeigt die nicht genutzte Ausrüstung der Spielercharaktere",
+	},
+	mod_option_visible_equipment_sounds = {
+		en = "Weapon Sounds",
+		de = "Waffen Geräusche",
+	},
+	mod_option_visible_equipment_sounds_tooltip = {
+		en = "Plays sound effects for weapons when walking",
+		de = "Spielt beim Gehen Soundeffekte für Waffen ab",
+	},
+	mod_option_visible_equipment_sounds_all = {
+		en = "Self and Teammates",
+		de = "Selbst und Gruppenmitglieder",
+	},
+	mod_option_visible_equipment_sounds_others = {
+		en = "Teammates",
+		de = "Gruppenmitglieder",
+	},
+	mod_option_visible_equipment_sounds_off = {
+		en = "Off",
+		de = "Aus",
 	},
 	group_weapon_animation = {
 		en = "Weapon Animations",

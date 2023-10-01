@@ -14,6 +14,16 @@ return {
 						["default_value"] = true,
 						["tooltip"] = "mod_option_visible_equipment_tooltip",
 					},
+					{["setting_id"] = "mod_option_visible_equipment_sounds",
+						["type"] = "dropdown",
+						["default_value"] = "others",
+						["tooltip"] = "mod_option_visible_equipment_sounds_tooltip",
+						["options"] = {
+							{text = "mod_option_visible_equipment_sounds_all", value = "all"},
+							{text = "mod_option_visible_equipment_sounds_others", value = "others"},
+							{text = "mod_option_visible_equipment_sounds_off", value = "off"},
+						}
+					},
 				},
 			},
 			{["setting_id"] = "group_weapon_animation",
