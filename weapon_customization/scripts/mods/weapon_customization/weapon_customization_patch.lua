@@ -453,7 +453,7 @@ end)
 -- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘└─┘ ##############################################################
 
 mod.template_add_torch = function(self, orig_weapon_template)
-    if self.previewed_weapon then
+    if self.previewed_weapon and orig_weapon_template then
         if not self.weapon_templates[orig_weapon_template.name] then
             self.weapon_templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
         end

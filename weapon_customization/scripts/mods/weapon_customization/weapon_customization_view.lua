@@ -161,9 +161,9 @@ mod.detach_attachment = function(self, item, attachment_slot, attachment, new_at
 	self:do_weapon_part_animation(item, attachment_slot, "detach", new_attachment, no_children)
 	local attachment_data = self.attachment_models[item_name][new_attachment]
 	if attachment then
-		attachment_data = self.attachment_models[item_name][attachment]
+		attachment_data = self.attachment_models[item_name][attachment] or attachment_data
 	end
-	local movement = attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
+	local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
 	if not self:vector3_equal(movement, vector3_zero()) then
 		self:play_attachment_sound(item, attachment_slot, attachment)
 	end

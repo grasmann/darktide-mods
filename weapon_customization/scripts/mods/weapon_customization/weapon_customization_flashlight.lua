@@ -203,6 +203,8 @@ mod.update_battery = function(self)
 					-- Charge battery
 					self.battery = self.battery + self._active_flashlight_template.battery.charge
 				end
+				-- Clamp value
+				self.battery = math_clamp(self.battery, 0, self._active_flashlight_template.battery.max)
 				-- Set battery time
 				self.battery_timer = t + self._active_flashlight_template.battery.interval
 			end
@@ -217,8 +219,6 @@ mod.update_battery = function(self)
 					self:toggle_laser(false, 1)
 				end
 			end
-			-- Clamp value
-			self.battery = math_clamp(self.battery, 0, self._active_flashlight_template.battery.max)
 		end
 	end
 end

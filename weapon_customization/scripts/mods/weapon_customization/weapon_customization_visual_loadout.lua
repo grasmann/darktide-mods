@@ -1,11 +1,5 @@
 local mod = get_mod("weapon_customization")
 
--- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
--- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
--- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
-
-local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
-
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -39,6 +33,8 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 	local unit_num_meshes = Unit.num_meshes
 	local unit_mesh = Unit.mesh
 	local unit_set_mesh_visibility = Unit.set_mesh_visibility
+	local unit_set_unit_visibility = Unit.set_unit_visibility
+	local unit_flow_event = Unit.flow_event
 	local mesh_local_position = Mesh.local_position
 	local mesh_set_local_position = Mesh.set_local_position
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
@@ -62,6 +58,8 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 	local type = type
 	local tonumber = tonumber
 	local visibility_contexts = VisibilityContexts
+	local CLASS = CLASS
+	local script_unit = ScriptUnit
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -361,6 +359,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 							if not anchor.offset then
 								world_unlink_unit(attach_settings.world, unit)
 								world_link_unit(attach_settings.world, unit, 1, parent, parent_node)
+							-- else
+								-- local offset = Unit.world_position(unit, 1) - Unit.world_position(item_unit, 1)
+								-- world_unlink_unit(attach_settings.world, unit)
+								-- world_link_unit(attach_settings.world, unit, 1, item_unit, 1, true)
+								-- unit_set_local_position(unit, 1, offset)
 							end
 
 							-- Set position ( with meshes )
@@ -378,6 +381,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					end
 				end
 			end
+
+			-- local all_children = {}
+			-- mod:_recursive_get_all_children(item_unit, all_children)
+			-- mod:dtf(all_children, "all_children", 10)
+			-- mod:dtf(attachment_units, "attachment_units", 10)
 
 			for _, unit in pairs(attachment_units) do
 				local unit_name = unit_debug_name(unit)

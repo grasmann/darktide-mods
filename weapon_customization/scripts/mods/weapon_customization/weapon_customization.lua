@@ -20,6 +20,7 @@ mod:persistent_table("weapon_customization", {
 	laser_pointer_on = 0,
 	spawned_lasers = {},
 	item_definitions = nil,
+	player_equipment = {},
 })
 mod.was_third_person = nil
 
@@ -54,6 +55,7 @@ end
 function mod.update(main_dt)
 	mod:update_flicker()
 	mod:update_battery()
+	mod:update_equipment(main_dt)
 end
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -312,6 +314,7 @@ mod.init = function(self)
 end
 
 -- Import mod files
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visible_equipment")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_laser_pointer")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")

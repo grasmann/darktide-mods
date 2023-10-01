@@ -6,6 +6,16 @@ return {
 	is_togglable = false,
 	options = {
 		widgets = {
+			{["setting_id"] = "group_visible_equipment",
+  				["type"] = "group",
+				["sub_widgets"] = {
+					{["setting_id"] = "mod_option_visible_equipment",
+						["type"] = "checkbox",
+						["default_value"] = true,
+						["tooltip"] = "mod_option_visible_equipment_tooltip",
+					},
+				},
+			},
 			{["setting_id"] = "group_weapon_animation",
   				["type"] = "group",
 				["sub_widgets"] = {
