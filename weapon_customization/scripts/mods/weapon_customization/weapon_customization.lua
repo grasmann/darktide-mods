@@ -92,8 +92,10 @@ end)
 
 -- Player visual extension destroyed
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
-	-- Set reinitialization
-	mod.initialized = false
+	if self._unit == mod.player_unit then
+		-- Set reinitialization
+		mod.initialized = false
+	end
 	return func(self, ...)
 end)
 

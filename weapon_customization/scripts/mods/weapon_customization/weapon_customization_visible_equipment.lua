@@ -91,10 +91,41 @@ mod.visible_equipment_offsets = {
         },
     },
     --#region Ogryn Guns
+        ogryn_heavystubber_p1_m1 = {
+            dummy_function = function(slot)
+                local slot_info_id = mod:get_slot_info_id(slot.item)
+                local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+                local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
+                if attachment_slot_info then
+                    local receiver = attachment_slot_info.attachment_slot_to_unit["receiver"]
+                    if receiver and unit_alive(receiver) then
+                        local node_index = 17
+                        local rot = vector3(0, 0, 90)
+                        local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
+                        unit_set_local_rotation(receiver, node_index, rotation)
+                    end
+                end
+            end,
+        },
         ogryn_rippergun_p1_m1 = {
             default = {position = vector3_box(.5, .6, .4), rotation = vector3_box(200, 0, 90)},
             backpack = {position = vector3_box(-.2, .6, .6), rotation = vector3_box(200, 60, 70)},
             step_sounds = {SoundEventAliases.sfx_ads_up.events.default},
+            dummy_function = function(slot)
+                -- Get slot info
+                local slot_info_id = mod:get_slot_info_id(slot.item)
+                local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+                local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
+                if attachment_slot_info then
+                    local handle = attachment_slot_info.attachment_slot_to_unit["handle"]
+                    if handle and unit_alive(handle) then
+                        local node_index = 6
+                        local rot = vector3(0, 0, 90)
+                        local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
+                        unit_set_local_rotation(handle, node_index, rotation)
+                    end
+                end
+            end,
         },
         ogryn_gauntlet_p1_m1 = {
             default = {position = vector3_box(0, .6, .2), rotation = vector3_box(200, 0, 90)},
@@ -117,10 +148,10 @@ mod.visible_equipment_offsets = {
         },
         ogryn_powermaul_slabshield_p1_m1 = {
             default = {position = vector3_box(.5, .5, -.2), rotation = vector3_box(160, -90, 90),
-                position2 = vector3_box(.2, .6, .1), rotation2 = vector3_box(0, 90, 90),
+                position2 = vector3_box(.2, .45, -.2), rotation2 = vector3_box(0, 90, 70),
                 step_move2 = vector3_box(-.1, .05, 0), step_rotation2 = vector3_box(5, -5, 0)},
             backpack = {position = vector3_box(.9, .5, .6), rotation = vector3_box(180, -30, 135),
-                position2 = vector3_box(.2, .6, .1), rotation2 = vector3_box(0, 90, 90),
+                position2 = vector3_box(.2, .45, -.2), rotation2 = vector3_box(0, 90, 70),
                 step_move2 = vector3_box(-.1, .05, 0), step_rotation2 = vector3_box(5, -5, 0)},
             step_sounds2 = {
                 SoundEventAliases.sfx_weapon_foley_left_hand_01.events.ogryn_powermaul_slabshield_p1_m1,
@@ -129,15 +160,17 @@ mod.visible_equipment_offsets = {
             -- step_sounds2 = {SoundEventAliases.sfx_ads_up.events.default},
         },
     --#endregion
-    forcestaff_p1_m1 = {
-        default = {position = vector3_box(.3, .2, .075), rotation = vector3_box(180, 80, 90)},
-        backpack = {position = vector3_box(.3, .25, .2), rotation = vector3_box(160, 90, 90)},
-    }
+    --#region Guns
+        forcestaff_p1_m1 = {
+            default = {position = vector3_box(.3, .2, .075), rotation = vector3_box(180, 80, 90)},
+            backpack = {position = vector3_box(.3, .25, .2), rotation = vector3_box(160, 90, 90)},
+        }
+    --#endregion
 }
 --#region Copies
     --#region Ogryn Guns
-        -- mod.visible_equipment_offsets.ogryn_heavystubber_p1_m2 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1
-        -- mod.visible_equipment_offsets.ogryn_heavystubber_p1_m3 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1
+        mod.visible_equipment_offsets.ogryn_heavystubber_p1_m2 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1
+        mod.visible_equipment_offsets.ogryn_heavystubber_p1_m3 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1
         mod.visible_equipment_offsets.ogryn_rippergun_p1_m2 = mod.visible_equipment_offsets.ogryn_rippergun_p1_m1
         mod.visible_equipment_offsets.ogryn_rippergun_p1_m3 = mod.visible_equipment_offsets.ogryn_rippergun_p1_m1
         mod.visible_equipment_offsets.ogryn_thumper_p1_m2 = mod.visible_equipment_offsets.ogryn_thumper_p1_m1
@@ -159,9 +192,12 @@ mod.visible_equipment_offsets = {
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+-- Load a package
 mod.load_package = function(self, package_name)
-    if not managers.package:package_is_known(package_name) then
-        managers.package:load(package_name, "weapon_customization")
+    if managers.package:package_is_known(package_name) then
+        if not managers.package:has_loaded(package_name) and not managers.package:is_loading(package_name) then
+            managers.package:load(package_name, "weapon_customization")
+        end
     end
 end
 
@@ -169,8 +205,6 @@ end
 mod.has_backpack = function(self, player, player_unit)
     -- Get profile
 	local profile = player and player:profile()
-    -- -- Check profile and get local player profile if necessary ( meat grinder )
-	-- if not profile then profile = managers.player:local_player(1):profile() end
     -- Get cosmetic extra slot gear
 	local extra = profile and profile.loadout_item_data.slot_gear_extra_cosmetic
     -- Cosmetic view
@@ -181,8 +215,6 @@ mod.has_backpack = function(self, player, player_unit)
         profile = inventory_cosmetics_view and inventory_cosmetics_view._presentation_profile or profile
         presentation_item = profile.loadout.slot_gear_extra_cosmetic
         presentation_item = presentation_item and presentation_item.name
-        -- player_unit = inventory_cosmetics_view._preview_player.player_unit
-        -- self._character_spawn_data
     end
     -- Get extra gear id
     local real_item = extra and extra.id
@@ -197,6 +229,7 @@ mod.has_backpack = function(self, player, player_unit)
 	return not item or item ~= "content/items/characters/player/human/backpacks/empty_backpack"
 end
 
+-- Get equipment data for a slot
 mod.get_equipment_data = function(self, slot)
     -- Get item type
     local item = slot.item and slot.item.__master_item
@@ -225,121 +258,91 @@ mod.get_equipment_data = function(self, slot)
         step_move2 = item_equipment_data and item_equipment_data.step_move2 or base_equipment_data.step_move,
         step_rotation = item_equipment_data and item_equipment_data.step_rotation or base_equipment_data.step_rotation,
         step_rotation2 = item_equipment_data and item_equipment_data.step_rotation2 or base_equipment_data.step_rotation,
-        -- dummy_function = item_data and item_data.dummy_function,
+        dummy_function = item_data and item_data.dummy_function,
     }
     
     return equipment_data, sounds, sounds2
 end
 
+-- Position equipment of a slot
 mod.position_equipment = function(self, slot)
     local node_name = nil
+    -- Get item
     local item = slot.item and slot.item.__master_item
     local item_name = item and self:item_name_from_content_string(item.name)
+    -- Get player breed
     local player = self:player_from_unit(slot.player_unit)
     local profile = player and player:profile()
     local breed = profile and profile.archetype.breed
-    local player_name = player and player:name()
-    -- mod:echo(tostring(player_name).." = "..tostring(breed))
+    -- local player_name = player and player:name()
 
+    -- Get attachment node
     if unit_has_node(slot.player_unit, "j_backpackattach") then
         node_name = "j_backpackattach"
     elseif unit_has_node(slot.player_unit, "j_backpackoffset") then
         node_name = "j_backpackoffset"
     end
 
+    -- Attach to node
     if node_name and unit_has_node(slot.player_unit, node_name) then
         local node_index = unit_node(slot.player_unit, node_name)
-
+        -- Get list of units ( Slab shield )
         local units = {slot.dummy}
         if item_name == "ogryn_powermaul_slabshield_p1_m1" then
             units = {slot.dummy_attachments[3], slot.dummy_attachments[1]}
         end
-
+        -- Iterate units
         for i, unit in pairs(units) do
             if unit and unit_alive(unit) then
+                -- Property names
                 local add = i == 1 and "" or tostring(i)
                 local position_name = "position"..add
                 local rotation_name = "rotation"..add
                 local scale_name = "scale"..add
                 local dummy_name = "dummy"..tostring(i)
-
+                -- Link unit to attachment node
                 world_unlink_unit(slot.world, unit)
                 world_link_unit(slot.world, unit, 1, slot.player_unit, node_index, true)
-
+                -- Get attachment data
                 local equipment_data = self:get_equipment_data(slot)
-                -- if equipment_data.dummy_function then
-                --     local slot_info_id = self:get_slot_info_id(slot.item)
-                --     equipment_data.dummy_function(unit, slot_info_id)
-                -- end
-
+                -- Position equipment
                 unit_set_local_position(unit, 1, vector3_unbox(equipment_data[position_name]))
+                -- Rotate equipment
                 local rot = vector3_unbox(equipment_data[rotation_name])
                 local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
                 unit_set_local_rotation(unit, 1, rotation)
+                -- Scale equipment
                 unit_set_local_scale(unit, 1, vector3_unbox(equipment_data[scale_name]))
-
+                -- Default property names
                 local default_position_name = "default_position"..add
                 local default_rotation_name = "default_rotation"..add
-
+                -- Set default values
                 slot[default_position_name] = equipment_data[position_name]
                 slot[default_rotation_name] = equipment_data[rotation_name]
-
+                -- Save unit reference
                 slot[dummy_name] = unit
             end
         end
     end
 end
 
--- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
--- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
--- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
-
-mod:hook(CLASS.EquipmentComponent, "unequip_item", function(func, self, slot, ...)
-	-- Check slot dummy
-	if slot.dummy then
-		-- Get unit spawner
-		local unit_spawner = self._unit_spawner
-		-- Mark attachment units for deletion
-		if slot.dummy_attachments then
-			for _, unit in pairs(slot.dummy_attachments) do
-				unit_spawner:mark_for_deletion(unit)
-			end
-		end
-		-- Mark base unit for deletion
-		unit_spawner:mark_for_deletion(slot.dummy)
-		-- Delete references
-		slot.dummy_attachments = nil
-		slot.dummy = nil
-	end
-	-- Original function
-	func(self, slot, ...)
-end)
-
-mod:hook_require("scripts/utilities/footstep", function(instance)
-    
-    if not instance._trigger_material_footstep then instance._trigger_material_footstep = instance.trigger_material_footstep end
-    instance.trigger_material_footstep = function(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter)
-        if mod:get("mod_option_visible_equipment") then
-            local equipment = mod:persistent_table("weapon_customization").player_equipment
-            if equipment[unit] and sound_alias then
-                equipment[unit].trigger = true
-                local locomotion_ext = script_unit.extension(unit, "locomotion_system")
-                equipment[unit].speed = locomotion_ext:move_speed() * .25
-            end
-        end
-        return instance._trigger_material_footstep(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter)
-    end
-
-end)
-
+-- Register player equipment for slot
 mod.register_player_equipment = function(self, player_unit, slot)
+    -- Get persistent table
     local equipment = mod:persistent_table("weapon_customization").player_equipment
+    -- Set equipment
     equipment[player_unit] = equipment[player_unit] or {}
     equipment[player_unit][slot] = equipment[player_unit][slot] or {}
     equipment[player_unit].equipment = equipment[player_unit].equipment or {}
     equipment[player_unit].equipment[slot.name] = slot
+    -- -- Dummy function
+    -- local equipment_data = self:get_equipment_data(slot)
+    -- if equipment_data.dummy_function then
+    --     equipment_data.dummy_function(slot)
+    -- end
 end
 
+-- Update equipment visibility
 mod.update_equipment_visibility = function(self)
     -- Get registered equipments
     local registered_equipment = self:persistent_table("weapon_customization").player_equipment
@@ -366,6 +369,7 @@ mod.update_equipment_visibility = function(self)
                 if unit and unit_alive(unit) then
                     -- Get visibility
                     local visible = self:get("mod_option_visible_equipment") and slot_name ~= wielded_slot
+                        and (slot.player_unit ~= self.player_unit or self:is_in_third_person())
                     -- Set equipment visibility
                     unit_set_unit_visibility(unit, visible, true)
                 end
@@ -374,6 +378,7 @@ mod.update_equipment_visibility = function(self)
     end
 end
 
+-- Update equipment animations
 mod.update_equipment = function(self, dt)
     if self:get("mod_option_visible_equipment") then
         -- Get game time
@@ -587,6 +592,7 @@ mod.player_from_unit = function(self, unit)
     return managers.player:local_player(1)
 end
 
+-- Initialize equipment slot
 mod.initialize_equipment_slot = function(self, slot, player, world, player_unit, attach_settings, optional_mission_template)
     -- Check item
 	local item = slot.item and slot.item.__master_item
@@ -602,65 +608,135 @@ mod.initialize_equipment_slot = function(self, slot, player, world, player_unit,
 		VisualLoadoutCustomization.add_extensions(nil, slot.dummy_attachments, attach_settings)
         -- Unwield flow event
         unit_flow_event(slot.dummy, "lua_unwield")
-        -- Get equipment
-        self:position_equipment(slot)
         -- Step animation
         self:register_player_equipment(player_unit, slot)
+        -- Get equipment
+        self:position_equipment(slot)
     elseif item and (item.item_type == "WEAPON_MELEE" or item.item_type == "WEAPON_RANGED") and slot.dummy then
         -- Get equipment
         self:position_equipment(slot)
     end
 end
 
+-- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
+-- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
+-- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
+
+-- Delete dummy equipment units
+mod:hook(CLASS.EquipmentComponent, "unequip_item", function(func, self, slot, ...)
+	-- Check slot dummy
+	if slot.dummy then
+		-- Get unit spawner
+		local unit_spawner = self._unit_spawner
+		-- Mark attachment units for deletion
+		if slot.dummy_attachments then
+			for _, unit in pairs(slot.dummy_attachments) do
+				unit_spawner:mark_for_deletion(unit)
+			end
+		end
+		-- Mark base unit for deletion
+		unit_spawner:mark_for_deletion(slot.dummy)
+		-- Delete references
+		slot.dummy_attachments = nil
+		slot.dummy = nil
+	end
+	-- Original function
+	func(self, slot, ...)
+end)
+
+-- Capture footsteps for equipment animation
+mod:hook_require("scripts/utilities/footstep", function(instance)
+    -- Backup original function
+    if not instance._trigger_material_footstep then instance._trigger_material_footstep = instance.trigger_material_footstep end
+    -- Hook
+    instance.trigger_material_footstep = function(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter)
+        -- Check mod option
+        if mod:get("mod_option_visible_equipment") then
+            -- Check equipment
+            local equipment = mod:persistent_table("weapon_customization").player_equipment
+            if equipment[unit] and sound_alias then
+                -- Trigger step
+                equipment[unit].trigger = true
+                -- Set speed
+                local locomotion_ext = script_unit.extension(unit, "locomotion_system")
+                equipment[unit].speed = locomotion_ext:move_speed() * .25
+            end
+        end
+        -- Original function
+        return instance._trigger_material_footstep(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter)
+    end
+end)
+
+-- Load dummy equipment units
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, unit, dt, t, ...)
     func(self, unit, dt, t, ...)
+    -- Iterate slots
     for slot_name, slot in pairs(self._equipment) do
+        -- Get item
         local item = slot.item and slot.item.__master_item
+        -- Check item and dummy
         if item and (item.item_type == "WEAPON_MELEE" or item.item_type == "WEAPON_RANGED") and not slot.dummy then
+            -- Get attach settings
             local attach_settings = self._equipment_component:_attach_settings()
             self._equipment_component:_fill_attach_settings_3p(attach_settings, slot)
+            -- Initialize slot
             mod:initialize_equipment_slot(slot, self._player, self._equipment_component._world, unit, attach_settings, nil)
+            -- Update visibility
             self:force_update_item_visibility()
         end
     end
 end)
 
+-- Load dummy equipment units
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, unit, dt, t, ...)
     func(self, unit, dt, t, ...)
+    -- Iterate slots
     for slot_name, slot in pairs(self._equipment) do
+        -- Get item
         local item = slot.item and slot.item.__master_item
+        -- Check item and dummy
         if item and (item.item_type == "WEAPON_MELEE" or item.item_type == "WEAPON_RANGED") and not slot.dummy then
+            -- Get attach settings
             local attach_settings = self._equipment_component:_attach_settings()
             self._equipment_component:_fill_attach_settings_3p(attach_settings, slot)
+            -- Initialize slot
             mod:initialize_equipment_slot(slot, self._player, self._equipment_component._world, unit, attach_settings, nil)
+            -- Update visibility
             self:force_update_item_visibility()
         end
     end
 end)
 
+-- Load dummy equipment on equip
 mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
     func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
-
+    -- Get attach settings
     local attach_settings = self:_attach_settings()
     self:_fill_attach_settings_3p(attach_settings, slot)
+    -- Initialize slot
     mod:initialize_equipment_slot(slot, self._player, self._world, unit_3p, attach_settings, optional_mission_template)
 end)
 
+-- Load dummy equipment
 mod:hook(CLASS.EquipmentComponent, "_spawn_item_units", function(func, self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, ...)
     func(self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, ...)
-
+    -- Get attach settings
     self:_fill_attach_settings_3p(attach_settings, slot)
+    -- Initialize slot
     mod:initialize_equipment_slot(slot, self._player, self._world, unit_3p, attach_settings, optional_mission_template)
 end)
 
+-- Load dummy equipment
 mod:hook(CLASS.EquipmentComponent, "_spawn_attachments", function(func, self, slot, optional_mission_template, ...)
     func(self, slot, optional_mission_template, ...)
-
+    -- Get attach settings
     local attach_settings = self:_attach_settings()
     self:_fill_attach_settings_3p(attach_settings, slot)
+    -- Initialize slot
     mod:initialize_equipment_slot(slot, self._player, self._world, slot.parent_unit_3p, attach_settings, optional_mission_template)
 end)
 
+-- Update dummy equipment visibility
 mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
 	func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
     -- Managed slots
@@ -671,25 +747,33 @@ mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equi
         local slot = equipment[slot_name]
         -- Check slot
         if slot and slot.dummy then
+            -- Get item
             local item = slot.item and slot.item.__master_item
             local item_name = item and mod:item_name_from_content_string(item.name)
-
-            -- Units
+            -- Get units ( Slab shield )
             local units = {slot.dummy}
             if item_name == "ogryn_powermaul_slabshield_p1_m1" then
                 units = {slot.dummy1, slot.dummy2}
             end
-
+            -- Iterate units
             for i, unit in pairs(units) do
                 if unit and unit_alive(unit) then
                     local visible = mod:get("mod_option_visible_equipment") and slot_name ~= wielded_slot
+                        and (slot.player_unit ~= mod.player_unit or mod:is_in_third_person())
                     -- Set equipment visibility
                     unit_set_unit_visibility(unit, visible, true)
                 end
             end
             -- Position equipment
             mod:position_equipment(slot)
-            -- Trigger
+
+            -- Dummy function
+            local equipment_data = mod:get_equipment_data(slot)
+            if equipment_data.dummy_function then
+                equipment_data.dummy_function(slot)
+            end
+
+            -- Trigger equipment animation
             local equipment = mod:persistent_table("weapon_customization").player_equipment
             local player_equipment = equipment[unit_3p]
             if player_equipment and player_equipment.last_wield ~= wielded_slot then
