@@ -91,6 +91,34 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #########################################################################
 
+local LOADING_STATES = table.enum("loading", "ready_to_load", "loaded", "dirty")
+
+mod:hook(CLASS.PackageSynchronizerClient, "_get_loaded_packages_from_package_data", function(func, self, package_data, input_array, ...)
+    if package_data.state ~= LOADING_STATES.ready_to_load then
+		for package_name, id in pairs(package_data.dependencies) do
+            -- Name of package to be unloaded
+            local unload_name = mod:item_name_from_content_string(package_name)
+            -- Check if trinket hook is used by player
+            local package_used = false
+            if mod.initialized and string_find(unload_name, "trinket_hook") then
+                local weapons = mod.weapon_extension._weapons
+                for slot_name, weapon in pairs(weapons) do
+                    local attachments = weapon.item and weapon.item.attachments
+                    if attachments then
+                        if mod:_recursive_find_attachment_name(attachments, unload_name) then
+                            package_used = true
+                        end
+                    end
+                end
+            end
+            -- Unload if possible
+            if not package_used then
+                input_array[#input_array + 1] = id
+            end
+		end
+	end
+end)
+
 mod:hook(CLASS.UIUnitSpawner, "_world_delete_units", function(func, self, world, units_list, num_units, ...)
 	for i = 1, num_units do
 		local unit = units_list[i]
@@ -98,8 +126,6 @@ mod:hook(CLASS.UIUnitSpawner, "_world_delete_units", function(func, self, world,
         if unit_is_alive then
             Unit.flow_event(unit, "unit_despawned")
             World.destroy_unit(world, unit)
-        else
-            mod:echo("crash prevented")
         end
 	end
 end)
@@ -170,11 +196,8 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         slot_animation_emote_3 = "content/items/animations/emotes/emote_human_greeting_001_wave_01",
         slot_body_skin_color = "content/items/characters/player/skin_colors/skin_color_pale_01",
         slot_pocketable = "content/items/pocketable/empty_pocketable",
-        slot_attachment_1 = "content/items/characters/player/human/attachments_default/slot_attachment",
         slot_body_face_scar = "content/items/characters/player/human/attachments_default/slot_body_face",
-        slot_attachment_2 = "content/items/characters/player/human/attachments_default/slot_attachment",
         slot_trinket_1 = "content/items/weapons/player/trinkets/empty_trinket",
-        slot_attachment_3 = "content/items/characters/player/human/attachments_default/slot_attachment",
         slot_body_face_implant = "content/items/characters/player/human/attachments_default/slot_body_face",
         slot_gear_upperbody = "content/items/characters/player/human/attachments_default/slot_gear_torso",
         slot_body_face_hair = "content/items/characters/player/human/attachments_default/slot_body_face",
@@ -222,12 +245,6 @@ mod:hook_require("scripts/backend/master_items", function(instance)
     
         local slot = gear.slots and gear.slots[1]
         local fallback_name = slot and FALLBACK_ITEMS_BY_SLOT[slot]
-    
-        if not fallback_name then
-            log_error("MasterItemCache", string_format("No fallback item found for %s in slot %s", instance_id, slot))
-    
-            return nil
-        end
     
         log_warning("MasterItemCache", string_format("Using fallback with name %s", fallback_name))
     
@@ -314,7 +331,7 @@ mod:hook_require("scripts/backend/master_items", function(instance)
             rawset(item_instance, "set_temporary_overrides", function (self, new_temp_overrides)
                 rawset(item_instance, "__temp_overrides", new_temp_overrides)
     
-                return _update_master_data(item_instance)
+                _update_master_data(item_instance)
             end)
     
             return true
@@ -361,13 +378,7 @@ mod:hook_require("scripts/backend/master_items", function(instance)
                     return nil
                 end
     
-                local field_value = master_item[field_name]
-    
-                if field_name == "rarity" and field_value == -1 then
-                    return nil
-                end
-    
-                return field_value
+                return master_item[field_name]
             end,
             __newindex = function (t, field_name, value)
                 if is_preview_item then

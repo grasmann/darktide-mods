@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
+local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -23,8 +24,25 @@ mod:persistent_table("weapon_customization", {
 	player_equipment = {},
 	attachment_slot_infos = {},
 	loaded_packages = {},
+	input_hooked = false,
 })
 mod.was_third_person = nil
+
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+--#region local functions
+	local string_gsub = string.gsub
+	local string_find = string.find
+	local math_floor = math.floor
+	local tostring = tostring
+	local pairs = pairs
+	local game_parameters = GameParameters
+	local script_unit = ScriptUnit
+	local managers = Managers
+	local CLASS = CLASS
+--#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ###############################################################################
 -- ##### ││││ │ ││  ├┤ └┐┌┘├┤ │││ │ └─┐ ###############################################################################
@@ -63,22 +81,6 @@ function mod.update(main_dt)
 	mod:update_equipment(main_dt)
 end
 
--- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
--- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
--- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
-
---#region local functions
-	local string_gsub = string.gsub
-	local string_find = string.find
-	local math_floor = math.floor
-	local tostring = tostring
-	local pairs = pairs
-	local game_parameters = GameParameters
-	local script_unit = ScriptUnit
-	local managers = Managers
-	local CLASS = CLASS
---#endregion
-
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
@@ -103,9 +105,10 @@ end)
 mod:hook(CLASS.Flashlight, "update_first_person_mode", function(func, self, first_person_mode, ...)
 	func(self, first_person_mode, ...)
 	if mod.initialized then
-		-- Update flashlight
+		-- Update flashlight / laser pointer
 		if mod:has_flashlight_attachment() then mod:update_flashlight_view() end
 		if mod:has_laser_pointer_attachment() then mod:update_laser_pointer() end
+		-- Cache values
 		mod.was_third_person = mod:_is_in_third_person()
 		mod.last_character_state = mod:_character_state()
 	end
@@ -197,20 +200,16 @@ mod.get_actual_default_attachment = function(self, item, attachment_slot)
 	end
 end
 
--- Extract item name from model string
-mod.item_name_from_content_string = function(self, content_string)
-	return string_gsub(content_string, '.*[%/%\\]', '')
-end
-
 -- Redo weapon attachments by unequipping and reequipping weapon
 mod.redo_weapon_attachments = function(self, item)
 	local gear_id = mod:get_gear_id(item)
 	local slot_name, weapon = self:get_weapon_from_gear_id(gear_id)
 	if weapon then
 		-- Get latest frame
-		local fixed_time_step = game_parameters.fixed_time_step
+		-- local fixed_time_step = game_parameters.fixed_time_step
 		local gameplay_time = self.time_manager:time("gameplay")
-		local latest_frame = math_floor(gameplay_time / fixed_time_step)
+		-- local latest_frame = math_floor(gameplay_time / fixed_time_step)
+		local latest_frame = FixedFrame.get_latest_fixed_time()
 		-- Reset flashlight cache
 		self.attached_flashlights[gear_id] = {}
 		self:persistent_table("weapon_customization").flashlight_on = false
@@ -229,68 +228,6 @@ mod.redo_weapon_attachments = function(self, item)
 		-- Trigger flashlight update
 		self._update_flashlight = true
 	else self:print("redo_weapon_attachments - weapon is nil") end
-end
-
--- Get currently wielded weapon
-mod.get_wielded_weapon = function(self)
-	local inventory_component = self.weapon_extension._inventory_component
-	local weapons = self.weapon_extension._weapons
-	return self.weapon_extension:_wielded_weapon(inventory_component, weapons)
-end
-
-mod.get_wielded_slot = function(self)
-	local inventory_component = self.weapon_extension._inventory_component
-	return inventory_component.wielded_slot
-end
-
-mod.get_wielded_weapon_3p = function(self)
-	return self.visual_loadout_extension:unit_3p_from_slot("slot_secondary")
-end
-
--- Get equipped weapon from gear id
-mod.get_weapon_from_gear_id = function(self, from_gear_id)
-	if self.weapon_extension and self.weapon_extension._weapons then
-		-- Iterate equipped itemslots
-		for slot_name, weapon in pairs(self.weapon_extension._weapons) do
-			-- Check gear id
-			local gear_id = mod:get_gear_id(weapon.item)
-			if from_gear_id == gear_id then
-				-- Check weapon unit
-				if weapon.weapon_unit then
-					return slot_name, weapon
-				end
-			end
-		end
-	end
-end
-
-mod.is_in_third_person = function(self)
-	local is_third_person = self:_is_in_third_person()
-	local changed = false
-	if self.was_third_person == nil then self.was_third_person = is_third_person end
-	if self.was_third_person ~= is_third_person then
-		changed = true
-	end
-    return is_third_person, changed
-end
-
-mod._is_in_third_person = function(self)
-	local first_person_extension = ScriptUnit.extension(self.player_unit, "first_person_system")
-	local first_person = first_person_extension and first_person_extension:is_in_first_person_mode()
-	return not first_person
-end
-
-mod.character_state_changed = function(self)
-	local changed = false
-	local character_state = self:_character_state()
-	if character_state ~= self.last_character_state then
-		changed = true
-	end
-	return changed
-end
-
-mod._character_state = function(self)
-	return self.character_state_machine_extension:current_state()
 end
 
 -- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐ #######################################################################################
@@ -321,6 +258,7 @@ mod.init = function(self)
 end
 
 -- Import mod files
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visible_equipment")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_laser_pointer")

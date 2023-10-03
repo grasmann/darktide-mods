@@ -13,6 +13,7 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
 
 --#region local functions
     local unit_alive = Unit.alive
+    local unit_world_position = Unit.world_position
     local unit_set_local_position = Unit.set_local_position
     local unit_set_local_rotation = Unit.set_local_rotation
     local unit_set_local_scale = Unit.set_local_scale
@@ -27,6 +28,7 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
     local math_ease_out_elastic = math.ease_out_elastic
     local math_easeInCubic = math.easeInCubic
 	local math_easeOutCubic = math.easeOutCubic
+    local math_random = math.random
     local vector3_lerp = Vector3.lerp
     local vector3 = Vector3
     local vector3_box = Vector3Box
@@ -35,12 +37,14 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
     local vector3_zero = vector3.zero
     local world_unlink_unit = World.unlink_unit
     local world_link_unit = World.link_unit
+    local world_destroy_unit = World.destroy_unit
     local pairs = pairs
     local ipairs = ipairs
     local CLASS = CLASS
     local script_unit = ScriptUnit
     local managers = Managers
     local table = table
+    local tostring = tostring
     table.multi = function(v, c)
         local t = {}
         for i = 1, c do
@@ -231,16 +235,32 @@ mod.has_backpack = function(self, player, player_unit)
 	return not item or item ~= "content/items/characters/player/human/backpacks/empty_backpack"
 end
 
+mod.hide_bullets = function(self, slot)
+    -- Get slot info
+    local slot_info_id = mod:get_slot_info_id(slot.item)
+    local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+    local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
+    if attachment_slot_info then
+        for i = 1, 5 do
+            local bullet_add = i == 1 and "" or "_0"..tostring(i)
+            local bullet = attachment_slot_info.attachment_slot_to_unit["bullet"..bullet_add]
+            if bullet then
+                world_destroy_unit(slot.world, bullet)
+            end
+        end
+    end
+end
+
 -- Get equipment data for a slot
 mod.get_equipment_data = function(self, slot)
     -- Get item type
     local item = slot.item and slot.item.__master_item
     local item_type = item and item.item_type == "WEAPON_MELEE" and "melee" or "ranged"
     local item_name = item and self:item_name_from_content_string(item.name)
-    -- Get breed
-    local player = self:player_from_unit(slot.player_unit)
-    local profile = player and player:profile()
-    local breed = profile and profile.archetype.breed or "human"
+    -- Get persistent table
+    local equipment = mod:persistent_table("weapon_customization").player_equipment
+    local player = equipment[slot.player_unit].player
+    local breed = equipment[slot.player_unit].breed
     -- Check if has backpack
     local data_type = self:has_backpack(player, slot.player_unit) and "backpack" or "default"
     -- Get default data
@@ -272,19 +292,12 @@ mod.position_equipment = function(self, slot)
     -- Get item
     local item = slot.item and slot.item.__master_item
     local item_name = item and self:item_name_from_content_string(item.name)
-    -- Get player breed
-    local player = self:player_from_unit(slot.player_unit)
-    local profile = player and player:profile()
-    local breed = profile and profile.archetype.breed
-    -- local player_name = player and player:name()
-
     -- Get attachment node
     if unit_has_node(slot.player_unit, "j_backpackattach") then
         node_name = "j_backpackattach"
     elseif unit_has_node(slot.player_unit, "j_backpackoffset") then
         node_name = "j_backpackoffset"
     end
-
     -- Attach to node
     if node_name and unit_has_node(slot.player_unit, node_name) then
         local node_index = unit_node(slot.player_unit, node_name)
@@ -337,11 +350,23 @@ mod.register_player_equipment = function(self, player_unit, slot)
     equipment[player_unit][slot] = equipment[player_unit][slot] or {}
     equipment[player_unit].equipment = equipment[player_unit].equipment or {}
     equipment[player_unit].equipment[slot.name] = slot
-    -- -- Dummy function
-    -- local equipment_data = self:get_equipment_data(slot)
-    -- if equipment_data.dummy_function then
-    --     equipment_data.dummy_function(slot)
-    -- end
+    -- Get breed
+    local player = self:player_from_unit(slot.player_unit)
+    local player_name = player:name()
+    local profile = player and player:profile()
+    local breed = profile and profile.archetype.breed or "human"
+    equipment[player_unit].name = equipment[player_unit].name or player_name
+    equipment[player_unit].player = equipment[player_unit].player or player
+    equipment[player_unit].breed = equipment[player_unit].breed or breed
+    -- Dummy function
+    local equipment_data = self:get_equipment_data(slot)
+    if equipment_data.dummy_function then
+        equipment_data.dummy_function(slot)
+    end
+    -- Hide bullets
+    self:hide_bullets(slot)
+    -- Position equipment
+    mod:position_equipment(slot)
 end
 
 -- Update equipment visibility
@@ -376,6 +401,8 @@ mod.update_equipment_visibility = function(self)
                     unit_set_unit_visibility(unit, visible, true)
                 end
             end
+            -- Position equipment
+            mod:position_equipment(slot)
         end
     end
 end
@@ -443,7 +470,7 @@ mod.update_equipment = function(self, dt)
                             
                             -- Play sound
                             local fx_extension = script_unit.extension(player_unit, "fx_system")
-                            local player_position = Unit.world_position(player_unit, 1)
+                            local player_position = unit_world_position(player_unit, 1)
 
                             for i, unit in pairs(units) do
                                 local add = i == 1 and "" or tostring(i)
@@ -467,12 +494,12 @@ mod.update_equipment = function(self, dt)
                                 if fx_extension and item_name and play_sound and slot_name ~= wielded_slot then
                                     local sounds = i == 1 and slot_sounds or slot_sounds2
                                     if item.item_type == "WEAPON_RANGED" then
-                                        local rnd = sounds and math.random(1, #sounds)
+                                        local rnd = sounds and math_random(1, #sounds)
                                         sound = sounds and sounds[rnd]
                                         sound = sound or SoundEventAliases.sfx_weapon_up.events[item_name]
                                             or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
                                     elseif item.item_type == "WEAPON_MELEE" then
-                                        local rnd = sounds and math.random(1, #sounds)
+                                        local rnd = sounds and math_random(1, #sounds)
                                         sound = sounds and sounds[rnd]
                                         sound = sound or SoundEventAliases.sfx_weapon_up.events[item_name]
                                             or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
@@ -624,20 +651,44 @@ end
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
 
+mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, unit_3p, ...)
+    func(self, unit_3p, ...)
+    if self._character_spawn_data and self._character_spawn_data.profile then
+        -- Get persistent table
+        local equipment = mod:persistent_table("weapon_customization").player_equipment
+        -- Set breed
+        local profile = self._character_spawn_data.profile
+        equipment[unit_3p] = equipment[unit_3p] or {}
+        equipment[unit_3p].name = profile.name
+        local archetype = profile.archetype
+        local breed_name = archetype and archetype.breed or profile.breed
+        equipment[unit_3p].breed = breed_name
+    end
+end)
+
 -- Delete dummy equipment units
 mod:hook(CLASS.EquipmentComponent, "unequip_item", function(func, self, slot, ...)
 	-- Check slot dummy
 	if slot.dummy then
 		-- Get unit spawner
 		local unit_spawner = self._unit_spawner
+        local extension_manager = managers.state.extension
 		-- Mark attachment units for deletion
 		if slot.dummy_attachments then
 			for _, unit in pairs(slot.dummy_attachments) do
-                world_unlink_unit(self._world, unit)
-				unit_spawner:mark_for_deletion(unit)
+                if unit and unit_alive(unit) then
+                    if extension_manager then
+                        extension_manager:unregister_unit(unit)
+                    end
+                    world_unlink_unit(self._world, unit)
+                    unit_spawner:mark_for_deletion(unit)
+                end
 			end
 		end
 		-- Mark base unit for deletion
+        if extension_manager then
+            extension_manager:unregister_unit(slot.dummy)
+        end
 		unit_spawner:mark_for_deletion(slot.dummy)
 		-- Delete references
 		slot.dummy_attachments = nil
@@ -770,15 +821,15 @@ mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equi
             -- Position equipment
             mod:position_equipment(slot)
 
-            -- Dummy function
-            local equipment_data = mod:get_equipment_data(slot)
-            if equipment_data.dummy_function then
-                equipment_data.dummy_function(slot)
-            end
+            -- -- Dummy function
+            -- local equipment_data = mod:get_equipment_data(slot)
+            -- if equipment_data.dummy_function then
+            --     equipment_data.dummy_function(slot)
+            -- end
 
             -- Trigger equipment animation
-            local equipment = mod:persistent_table("weapon_customization").player_equipment
-            local player_equipment = equipment[unit_3p]
+            local equipment_ = mod:persistent_table("weapon_customization").player_equipment
+            local player_equipment = equipment_[unit_3p]
             if player_equipment and player_equipment.last_wield ~= wielded_slot then
                 player_equipment.trigger = true
                 player_equipment.last_wield = wielded_slot

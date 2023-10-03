@@ -7,6 +7,9 @@ local mod = get_mod("weapon_customization")
 local MasterItems = mod:original_require("scripts/backend/master_items")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
+local InputUtils = mod:original_require("scripts/managers/input/input_utils")
+-- local InputService = mod:original_require("scripts/managers/input/input_service")
+-- mod:dtf(InputService, "InputService", 10)
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -107,26 +110,11 @@ end
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
 -- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
 
--- mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
---     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
---     if mod.weapon_changed then
-
---         self:_spawn_profile(self._presentation_profile)
-
--- 		managers.ui:item_icon_updated(mod.changed_weapon)
--- 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
--- 		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
-
---         mod.weapon_changed = nil
---     end
---     return pass_input, pass_draw
--- end)
-
-mod:hook(CLASS.InventoryBackgroundView, "_check_profile_changes", function(func, self, ...)
-    func(self, ...)
+mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
+    local pass_input, pass_draw = func(self, dt, t, input_service, ...)
     if mod.weapon_changed then
 
-        self:_update_equipped_items()
+        self:_spawn_profile(self._presentation_profile)
 
 		managers.ui:item_icon_updated(mod.changed_weapon)
 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
@@ -134,7 +122,22 @@ mod:hook(CLASS.InventoryBackgroundView, "_check_profile_changes", function(func,
 
         mod.weapon_changed = nil
     end
+    return pass_input, pass_draw
 end)
+
+-- mod:hook(CLASS.InventoryBackgroundView, "_check_profile_changes", function(func, self, ...)
+--     func(self, ...)
+--     if mod.weapon_changed then
+
+--         self:_update_equipped_items()
+
+-- 		managers.ui:item_icon_updated(mod.changed_weapon)
+-- 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
+-- 		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
+
+--         mod.weapon_changed = nil
+--     end
+-- end)
 
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ###########################################################
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┘├─┤ │ │  ├─┤ ###########################################################
@@ -515,23 +518,29 @@ end)
 -- ##### ││││├─┘│ │ │  ################################################################################################
 -- ##### ┴┘└┘┴  └─┘ ┴  ################################################################################################
 
-mod:hook(CLASS.InputService, "get", function(func, self, action_name, ...)
-	local pressed = func(self, action_name, ...)
-    if mod.initialized then
-        local has_flashlight = mod:has_flashlight_attachment()
-        local has_laser_pointer = mod:has_laser_pointer_attachment()
-        if action_name == "weapon_extra_pressed" and (has_flashlight or has_laser_pointer) then
-            if pressed and has_flashlight then
-                mod:toggle_flashlight()
+mod:hook(CLASS.InputService, "update", function(func, self, dt, t, ...)
+	func(self, dt, t, ...)
+    if not self.is_hooked then
+        mod:hook(self, "get", function(func, self, action_name, ...)
+            local pressed = func(self, action_name, ...)
+            if mod.initialized then
+                local has_flashlight = mod:has_flashlight_attachment()
+                local has_laser_pointer = mod:has_laser_pointer_attachment()
+                if action_name == "weapon_extra_pressed" and (has_flashlight or has_laser_pointer) then
+                    if pressed and has_flashlight then
+                        mod:toggle_flashlight()
+                    end
+                    if pressed and has_laser_pointer then
+                        mod:toggle_laser()
+                    end
+                    return self:get_default(action_name)
+                end
+                if action_name == "weapon_extra_hold" and (has_flashlight or has_laser_pointer) then
+                    return self:get_default(action_name)
+                end
             end
-            if pressed and has_laser_pointer then
-                mod:toggle_laser()
-            end
-            return self:get_default(action_name)
-        end
-        if action_name == "weapon_extra_hold" and (has_flashlight or has_laser_pointer) then
-            return self:get_default(action_name)
-        end
-	end
-	return pressed
+            return pressed
+        end)
+        self.is_hooked = true
+    end
 end)

@@ -4,6 +4,7 @@ return {
 	name = mod:localize("mod_title"),
 	description = mod:localize("mod_description"),
 	is_togglable = false,
+	allow_rehooking = true,
 	options = {
 		widgets = {
 			{["setting_id"] = "group_visible_equipment",

@@ -208,7 +208,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		HAIR = 3
 	}
 
-	instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
+	instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 		local item_name = mod:item_name_from_content_string(item_data.name)
 		local attachments = item_data.attachments
 		local gear_id = mod:get_gear_id(item_data)
@@ -233,11 +233,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		-- mod:debug_attachments(item_data, attachments, {"bolter_p1_m1", "laspistol_p1_m1", "plasmagun_p1_m1"}, nil, true)
 
 		--#region Original
-			local attachment_units, attachment_units_bind_poses = nil, nil
+			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
 			local attachments = item_data.attachments
 		
 			if item_unit and attachments then
-				attachment_units_bind_poses = optional_extract_attachment_units_bind_poses and {} or nil
+				attachment_name_to_unit = optional_map_attachment_name_to_unit and {}
+				attachment_units_bind_poses = optional_extract_attachment_units_bind_poses and {}
 				attachment_units = {}
 				local attachment_names = table_keys(attachments)
 		
@@ -255,7 +256,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				for i = 1, #attachment_names do
 					local name = attachment_names[i]
 					local attachment_slot_data = attachments[name]
-					attachment_units, attachment_units_bind_poses = instance._attach_hierarchy(attachment_slot_data, override_lookup, attach_settings, item_unit, attachment_units, attachment_units_bind_poses, optional_mission_template, attachment_slot_info, item_name)
+					attachment_units, attachment_name_to_unit, attachment_units_bind_poses = instance._attach_hierarchy(attachment_slot_data, override_lookup, attach_settings, item_unit, attachment_units, name, attachment_name_to_unit, attachment_units_bind_poses, optional_mission_template, attachment_slot_info, item_name)
 				end
 			end
 		--#endregion Original
@@ -419,14 +420,14 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 	
 		-- Return original values
-		return attachment_units, attachment_units_bind_poses
+		return attachment_units, attachment_name_to_unit, attachment_units_bind_poses
 	end
 
-	instance.attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, attachment_slot_info, item_name)
-		return instance._attach_hierarchy(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, attachment_slot_info, item_name)
+	instance.attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
+		return instance._attach_hierarchy(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 	end
 
-	instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
+	instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 		local weapon_skin = instance._validate_item_name(item_data.slot_weapon_skin)
 
 		if type(weapon_skin) == "string" then
@@ -435,7 +436,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	
 		local item_unit, bind_pose = instance.spawn_base_unit(item_data, attach_settings, parent_unit, optional_mission_template)
 		local skin_overrides = instance.generate_attachment_overrides_lookup(item_data, weapon_skin)
-		local attachment_units, attachment_units_bind_poses = instance.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
+		local attachment_units, attachment_name_to_unit, attachment_units_bind_poses = instance.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 	
 		instance.apply_material_overrides(item_data, item_unit, parent_unit, attach_settings)
 	
@@ -446,14 +447,14 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		instance.add_extensions(item_unit, attachment_units, attach_settings)
 		instance.play_item_on_spawn_anim_event(item_data, parent_unit)
 	
-		return item_unit, attachment_units, bind_pose, attachment_units_bind_poses
+		return item_unit, attachment_units, bind_pose, attachment_name_to_unit, attachment_units_bind_poses
 	end
 
 	instance.spawn_base_unit = function(item_data, attach_settings, parent_unit, optional_mission_template)
 		return instance._spawn_attachment(item_data, attach_settings, parent_unit, optional_mission_template)
 	end
 
-	instance._attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
+	instance._attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 		local item_name_ = attachment_slot_data.item
 		local item = instance._validate_item_name(item_name_)
 		local override_item = override_lookup[attachment_slot_data]
@@ -464,7 +465,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 	
 		if not item then
-			return attached_units, attached_units_bind_poses_or_nil
+			return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
 		end
 	
 		local attachment_unit, bind_pose = instance._spawn_attachment(item, settings, parent_unit, optional_mission_template, attachment_slot_info, attachment_slot_data.attachment_type, attachment_slot_data.attachment_name, item_name)
@@ -472,14 +473,18 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		if attachment_unit then
 			attached_units[#attached_units + 1] = attachment_unit
 	
+			if attachment_name_to_unit_or_nil and attachment_name_or_nil then
+				attachment_name_to_unit_or_nil[attachment_name_or_nil] = attachment_unit
+			end
+
 			if attached_units_bind_poses_or_nil then
 				attached_units_bind_poses_or_nil[attachment_unit] = matrix4x4_box(bind_pose)
 			end
 	
 			local attachments = item and item.attachments
-			attached_units = instance._attach_hierarchy_children(attachments, override_lookup, settings, attachment_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
+			attached_units = instance._attach_hierarchy_children(attachments, override_lookup, settings, attachment_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 			local children = attachment_slot_data.children
-			attached_units = instance._attach_hierarchy_children(children, override_lookup, settings, attachment_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
+			attached_units = instance._attach_hierarchy_children(children, override_lookup, settings, attachment_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 			local material_overrides = {}
 			local item_material_overrides = item.material_overrides
 	
@@ -502,17 +507,17 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			end
 		end
 	
-		return attached_units, attached_units_bind_poses_or_nil
+		return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
 	end
 
-	instance._attach_hierarchy_children = function(children, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
+	instance._attach_hierarchy_children = function(children, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 		if children then
 			for name, child_attachment_slot_data in pairs(children) do
-				attached_units, attached_units_bind_poses_or_nil = instance._attach_hierarchy(child_attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
+				attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil = instance._attach_hierarchy(child_attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, attachment_slot_info, item_name)
 			end
 		end
 	
-		return attached_units, attached_units_bind_poses_or_nil
+		return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
 	end
 
 	instance._validate_item_name = function(item)
