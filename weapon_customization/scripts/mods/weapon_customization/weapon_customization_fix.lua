@@ -22,6 +22,7 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local unit_set_local_position = Unit.set_local_position
     local unit_local_position = Unit.local_position
     local unit_world_position = Unit.world_position
+    local unit_alive = Unit.alive
     local level_units = Level.units
     local vector3 = Vector3
     local vector3_box = Vector3Box
@@ -89,6 +90,19 @@ end)
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐┌─┐ #########################################################################
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #########################################################################
+
+mod:hook(CLASS.UIUnitSpawner, "_world_delete_units", function(func, self, world, units_list, num_units, ...)
+	for i = 1, num_units do
+		local unit = units_list[i]
+		local unit_is_alive = unit_alive(unit)
+        if unit_is_alive then
+            Unit.flow_event(unit, "unit_despawned")
+            World.destroy_unit(world, unit)
+        else
+            mod:echo("crash prevented")
+        end
+	end
+end)
 
 mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
 end)

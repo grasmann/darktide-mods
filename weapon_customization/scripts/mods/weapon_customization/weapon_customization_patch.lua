@@ -107,11 +107,26 @@ end
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
 -- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
 
-mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
-    local pass_input, pass_draw = func(self, dt, t, input_service, ...)
+-- mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
+--     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
+--     if mod.weapon_changed then
+
+--         self:_spawn_profile(self._presentation_profile)
+
+-- 		managers.ui:item_icon_updated(mod.changed_weapon)
+-- 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
+-- 		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
+
+--         mod.weapon_changed = nil
+--     end
+--     return pass_input, pass_draw
+-- end)
+
+mod:hook(CLASS.InventoryBackgroundView, "_check_profile_changes", function(func, self, ...)
+    func(self, ...)
     if mod.weapon_changed then
 
-        self:_spawn_profile(self._presentation_profile)
+        self:_update_equipped_items()
 
 		managers.ui:item_icon_updated(mod.changed_weapon)
 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
@@ -119,7 +134,6 @@ mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, in
 
         mod.weapon_changed = nil
     end
-    return pass_input, pass_draw
 end)
 
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ###########################################################

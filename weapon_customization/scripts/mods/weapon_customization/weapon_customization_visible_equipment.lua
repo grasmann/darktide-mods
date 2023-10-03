@@ -118,8 +118,10 @@ mod.visible_equipment_offsets = {
                 local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
                 if attachment_slot_info then
                     local handle = attachment_slot_info.attachment_slot_to_unit["handle"]
+                    local attachment = attachment_slot_info.unit_to_attachment_name[handle]
                     if handle and unit_alive(handle) then
                         local node_index = 6
+                        if attachment == "handle_04" then node_index = 3 end
                         local rot = vector3(0, 0, 90)
                         local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
                         unit_set_local_rotation(handle, node_index, rotation)
@@ -631,6 +633,7 @@ mod:hook(CLASS.EquipmentComponent, "unequip_item", function(func, self, slot, ..
 		-- Mark attachment units for deletion
 		if slot.dummy_attachments then
 			for _, unit in pairs(slot.dummy_attachments) do
+                world_unlink_unit(self._world, unit)
 				unit_spawner:mark_for_deletion(unit)
 			end
 		end
