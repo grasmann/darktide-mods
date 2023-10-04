@@ -18,14 +18,15 @@ local bar_size = HudElementBatterySettings.bar_size
 local area_size = HudElementBatterySettings.area_size
 local glow_size = HudElementBatterySettings.glow_size
 local center_offset = HudElementBatterySettings.center_offset
+local position = HudElementBatterySettings.position
 local scenegraph_definition = {
 	screen = UIWorkspaceSettings.screen,
 	area = {
 		vertical_alignment = "center",
 		parent = "screen",
-		horizontal_alignment = "center",
+		horizontal_alignment = "right",
 		size = area_size,
-		position = {0, center_offset, 0}
+		position = {-55, 0, 0}
 	},
 	gauge = {
 		vertical_alignment = "top",

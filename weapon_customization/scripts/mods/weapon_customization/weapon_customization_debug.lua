@@ -63,6 +63,15 @@ mod.inc_test_index = function()
 	mod:echo(tostring(mod.test_index))
 end
 
+--  Debug
+mod._debug = mod:get("mod_option_debug")
+mod._debug_skip_some = true
+
+-- Debug print
+mod.print = function(self, message, skip)
+	if self._debug and not skip then self:echo(message) end
+end
+
 mod.reposition_attachments = function(self)
 	if #self.debug_selected_unit > 0 then
 		for _, unit in pairs(self.debug_selected_unit) do

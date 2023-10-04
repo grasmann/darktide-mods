@@ -229,8 +229,6 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 	end
 end
 
-
-
 mod.draw_equipment_lines = function(self, dt, t)
 	local slot_infos = self:persistent_table("weapon_customization").attachment_slot_infos
 	if self.cosmetics_view and slot_infos then
@@ -1818,22 +1816,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 		func(self, ...)
 	end
 end)
-
--- mod:hook(CLASS.InventoryWeaponCosmeticsView, "_equip_weapon_cosmetics", function(func, self, ...)
--- 	if self._presentation_item.__master_item.original_attachments then
--- 		self._selected_item.__master_item.attachments = table_clone(self._presentation_item.__master_item.original_attachments)
--- 	end
--- 	return func(self, ...)
--- end)
-
--- mod:hook(CLASS.ItemUtils, "equip_weapon_trinket", function(func, weapon_item, trinket_item, optional_path, ...)
--- 	if weapon_item.__master_item.original_attachments then
--- 		weapon_item.__master_item.attachments = table_clone(weapon_item.__master_item.original_attachments)
--- 		weapon_item.__master_item.original_attachments = nil
--- 		mod:dtf(weapon_item, "weapon_item", 10)
--- 	end
--- 	return func(weapon_item, trinket_item, optional_path, ...)
--- end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_forward_gui", function(func, self, ...)
 	local ui_manager = Managers.ui

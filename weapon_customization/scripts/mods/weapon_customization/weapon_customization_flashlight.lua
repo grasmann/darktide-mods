@@ -531,10 +531,10 @@ mod:hook(CLASS.UIHud, "_setup_elements", function(func, self, element_definition
 	local visible_elements = visibility_group.visible_elements
 	visible_elements[class_name] = true
 
-	-- Add to communication wheel visibility group
-	local visibility_group = visibility_groups_lookup["communication_wheel"]
-	visibility_group.visible_elements = visibility_group.visible_elements or {}
-	local visible_elements = visibility_group.visible_elements
-	visible_elements[class_name] = true
+	-- -- Add to communication wheel visibility group
+	-- local visibility_group = visibility_groups_lookup["communication_wheel"]
+	-- visibility_group.visible_elements = visibility_group.visible_elements or {}
+	-- local visible_elements = visibility_group.visible_elements
+	-- visible_elements[class_name] = true
 end)
 

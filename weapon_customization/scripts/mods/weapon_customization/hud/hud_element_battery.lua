@@ -67,17 +67,6 @@ HudElementBattery.update = function (self, dt, t, ui_renderer, render_settings, 
 end
 
 HudElementBattery._update_charge_amount = function (self)
-	-- local charge_amount = 0
-	-- local charge_amount_ceiled = 0
-	local parent = self._parent
-
-	-- local flashlight_template = mod:get_flashlight_template()
-	-- if flashlight_template and flashlight_template.battery then
-	-- 	local current, max = mod.battery or flashlight_template.battery.max, flashlight_template.battery.max
-	-- 	charge_amount = max
-	-- 	charge_amount_ceiled = math_ceil(max)
-	-- end
-
 	local current = mod:get_battery_charge()
 	local max = mod:get_battery_charge_max()
 	local charge_amount = max or 0
@@ -114,16 +103,8 @@ HudElementBattery.on_resolution_modified = function (self)
 end
 
 HudElementBattery._update_visibility = function (self, dt)
-	local parent = self._parent
-	
-	-- local flashlight_template = mod:get_flashlight_template()
-	-- if flashlight_template and flashlight_template.battery then
-	-- 	local current, max = mod.battery or flashlight_template.battery.max, flashlight_template.battery.max
-	-- 	local charge_fraction = current / max
-	-- 	if charge_fraction < 1 then draw = true end
-	-- end
 	local charge_fraction = mod:get_battery_fraction() or 1
-	local draw = charge_fraction < 1
+	local draw = mod:get("mod_option_battery_show") and charge_fraction < mod:get("mod_option_battery_show_threshold")
 
 	local alpha_speed = 3
 	local alpha_multiplier = self._alpha_multiplier or 0
@@ -162,14 +143,7 @@ HudElementBattery._draw_charges = function (self, dt, t, ui_renderer)
 	local bar_size = HudElementBatterySettings.bar_size
 	local max_glow_alpha = HudElementBatterySettings.max_glow_alpha
 	local half_distance = HudElementBatterySettings.half_distance
-	-- local charge_fraction = 1
-	local parent = self._parent
 
-	-- local flashlight_template = mod:get_flashlight_template()
-	-- if flashlight_template and flashlight_template.battery then
-	-- 	local current, max = mod.battery or flashlight_template.battery.max, flashlight_template.battery.max
-	-- 	charge_fraction = current / max
-	-- end
 	local charge_fraction = mod:get_battery_fraction() or 1
 
 	local gauge_widget = self._widgets_by_name.gauge

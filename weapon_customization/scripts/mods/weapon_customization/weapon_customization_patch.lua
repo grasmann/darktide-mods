@@ -5,11 +5,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local MasterItems = mod:original_require("scripts/backend/master_items")
-local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
-local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
-local InputUtils = mod:original_require("scripts/managers/input/input_utils")
--- local InputService = mod:original_require("scripts/managers/input/input_service")
--- mod:dtf(InputService, "InputService", 10)
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -124,20 +119,6 @@ mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, in
     end
     return pass_input, pass_draw
 end)
-
--- mod:hook(CLASS.InventoryBackgroundView, "_check_profile_changes", function(func, self, ...)
---     func(self, ...)
---     if mod.weapon_changed then
-
---         self:_update_equipped_items()
-
--- 		managers.ui:item_icon_updated(mod.changed_weapon)
--- 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
--- 		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
-
---         mod.weapon_changed = nil
---     end
--- end)
 
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ###########################################################
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┘├─┤ │ │  ├─┤ ###########################################################
@@ -404,30 +385,6 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├┬┘├┤ └┐┌┘│├┤ │││└─┐ ##########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘└─┘ ##########################################################################
 
--- mod:hook(CLASS.UIWeaponSpawner, "start_presentation", function(func, self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
-
---     local attachments = item.__master_item and item.__master_item.attachments
---     if item and attachments then
---         local gear_id = mod:get_gear_id(item)
---         if gear_id then
---             mod:setup_item_definitions()
---              -- Bulwark
---             if mod:get_gear_setting(gear_id, "left", item) == "bulwark_shield_01" then
---                 self._item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
---             end
-
---             -- Add flashlight slot
---             mod:_add_custom_attachments(item, attachments)
-            
---             -- Overwrite attachments
---             mod:_overwrite_attachments(item, attachments)
---         end
---     end
-
---     func(self, item, position, rotation, scale, on_spawn_cb, force_highest_mip, ...)
-
--- end)
-
 mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, is_equipped, on_present_callback, ...)
     mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
 	func(self, item, is_equipped, on_present_callback, ...)
@@ -518,29 +475,29 @@ end)
 -- ##### ││││├─┘│ │ │  ################################################################################################
 -- ##### ┴┘└┘┴  └─┘ ┴  ################################################################################################
 
-mod:hook(CLASS.InputService, "update", function(func, self, dt, t, ...)
-	func(self, dt, t, ...)
-    if not self.is_hooked then
-        mod:hook(self, "get", function(func, self, action_name, ...)
-            local pressed = func(self, action_name, ...)
-            if mod.initialized then
-                local has_flashlight = mod:has_flashlight_attachment()
-                local has_laser_pointer = mod:has_laser_pointer_attachment()
-                if action_name == "weapon_extra_pressed" and (has_flashlight or has_laser_pointer) then
-                    if pressed and has_flashlight then
-                        mod:toggle_flashlight()
-                    end
-                    if pressed and has_laser_pointer then
-                        mod:toggle_laser()
-                    end
-                    return self:get_default(action_name)
-                end
-                if action_name == "weapon_extra_hold" and (has_flashlight or has_laser_pointer) then
-                    return self:get_default(action_name)
-                end
+local input_hook = function (func, self, action_name, ...)
+    local pressed = func(self, action_name, ...)
+    if mod.initialized then
+        local has_flashlight = mod:has_flashlight_attachment()
+        local has_laser_pointer = mod:has_laser_pointer_attachment()
+        if action_name == "weapon_extra_pressed" and (has_flashlight or has_laser_pointer) then
+            if pressed and has_flashlight then
+                mod:toggle_flashlight()
             end
-            return pressed
-        end)
-        self.is_hooked = true
+            if pressed and has_laser_pointer then
+                mod:toggle_laser()
+            end
+            return self:get_default(action_name)
+        end
+        if action_name == "weapon_extra_hold" and (has_flashlight or has_laser_pointer) then
+            return self:get_default(action_name)
+        end
     end
-end)
+    return pressed
+end
+  
+-- Detach player movement from camera
+mod:hook(CLASS.InputService, "_get", input_hook)
+
+-- Detach simulated player movement from camera
+mod:hook(CLASS.InputService, "_get_simulate", input_hook)

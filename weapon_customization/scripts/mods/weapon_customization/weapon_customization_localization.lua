@@ -1,5 +1,9 @@
 local mod = get_mod("weapon_customization")
 
+-- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┬  ┌─┐┌─┐┌─┐┬  ┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌ #########################################################
+-- ##### │ ┬│  │ │├┴┐├─┤│    │  │ ││  ├─┤│  │┌─┘├─┤ │ ││ ││││ #########################################################
+-- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘  ┴─┘└─┘└─┘┴ ┴┴─┘┴└─┘┴ ┴ ┴ ┴└─┘┘└┘ #########################################################
+
 mod:add_global_localize_strings({
 	loc_weapon_cosmetics_customization = {
 		en = "Customization",
@@ -20,6 +24,10 @@ mod:add_global_localize_strings({
 		["zh-cn"] = "开启或关闭武器挂载激光指示器。\n同时也可作为手电筒。适合黑暗区域。",
 	}
 })
+
+-- ##### ┬  ┌─┐┌─┐┌─┐┬    ┬  ┌─┐┌─┐┌─┐┬  ┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌ ############################################################
+-- ##### │  │ ││  ├─┤│    │  │ ││  ├─┤│  │┌─┘├─┤ │ ││ ││││ ############################################################
+-- ##### ┴─┘└─┘└─┘┴ ┴┴─┘  ┴─┘└─┘└─┘┴ ┴┴─┘┴└─┘┴ ┴ ┴ ┴└─┘┘└┘ ############################################################
 
 return {
 	mod_title = {
@@ -77,6 +85,14 @@ return {
 	mod_option_visible_equipment_sounds_off = {
 		en = "Off",
 		de = "Aus",
+	},
+	mod_option_visible_equipment_own_sounds_fp = {
+		en = "Sounds in First Person",
+		de = "Geräusche in First Person",
+	},
+	mod_option_visible_equipment_own_sounds_fp_tooltip = {
+		en = "Hear the sounds of your own equipment in first person",
+		de = "Höre die Geräusche deiner eigenen Ausrüstung in first person",
 	},
 	group_weapon_animation = {
 		en = "Weapon Animations",
@@ -317,6 +333,41 @@ return {
 	},
 	mod_option_laser_pointer_hit_color_gold = {
 		en = "{#color(171,141,63)}{#reset()}",
+	},
+	group_battery = {
+		en = "Battery",
+		de = "Batterie",
+	},
+	mod_option_battery_show = {
+		en = "Show Bar",
+		de = "Leiste anzeigen",
+	},
+	mod_option_battery_show_tooltip = {
+		en = "Shows a bar with your current battery charge",
+		de = "Zeigt einen Balken mit deinter aktuellen Batterieladung",
+	},
+	mod_option_battery_show_threshold = {
+		en = "When under",
+		de = "Wenn weniger als",
+	},
+	mod_option_battery_show_threshold_tooltip = {
+		en = "Shows battery bar only when charge is under selected percentage",
+		de = "Zeigt den Batteriebalken nur an, wenn die Ladung unter dem ausgewählten Prozentsatz liegt",
+	},
+	mod_option_battery_show_threshold_10 = {
+		en = "10%%",
+	},
+	mod_option_battery_show_threshold_25 = {
+		en = "25%%",
+	},
+	mod_option_battery_show_threshold_50 = {
+		en = "50%%",
+	},
+	mod_option_battery_show_threshold_75 = {
+		en = "75%%",
+	},
+	mod_option_battery_show_threshold_100 = {
+		en = "100%%",
 	},
 	mod_hud_display_name_battery = {
 		en = "Battery",

@@ -17,12 +17,16 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local table_contains = table.contains
     local table_remove = table.remove
     local table_clone = table.clone
+    local table_enum = table.enum
     local math_uuid = math.uuid
     local unit_debug_name = Unit.debug_name
     local unit_set_local_position = Unit.set_local_position
     local unit_local_position = Unit.local_position
     local unit_world_position = Unit.world_position
     local unit_alive = Unit.alive
+    local unit_flow_event = Unit.flow_event
+    local world_unlink_unit = World.unlink_unit
+    local world_destroy_unit = World.destroy_unit
     local level_units = Level.units
     local vector3 = Vector3
     local vector3_box = Vector3Box
@@ -39,6 +43,12 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local log_error = Log.error
     local log_warning = Log.warning
 --#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local LOADING_STATES = table_enum("loading", "ready_to_load", "loaded", "dirty")
 
 -- ##### ┌─┐┬  ┬┌─┐┬┌─┌─┐┬─┐  ┌─┐┬─┐ ┬ ################################################################################
 -- ##### ├┤ │  ││  ├┴┐├┤ ├┬┘  ├┤ │┌┴┬┘ ################################################################################
@@ -91,8 +101,6 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #########################################################################
 
-local LOADING_STATES = table.enum("loading", "ready_to_load", "loaded", "dirty")
-
 mod:hook(CLASS.PackageSynchronizerClient, "_get_loaded_packages_from_package_data", function(func, self, package_data, input_array, ...)
     if package_data.state ~= LOADING_STATES.ready_to_load then
 		for package_name, id in pairs(package_data.dependencies) do
@@ -130,13 +138,15 @@ mod:hook(CLASS.UIUnitSpawner, "_world_delete_units", function(func, self, world,
 		local unit = units_list[i]
 		local unit_is_alive = unit_alive(unit)
         if unit_is_alive then
-            Unit.flow_event(unit, "unit_despawned")
-            World.destroy_unit(world, unit)
+            world_unlink_unit(world, unit)
+            unit_flow_event(unit, "unit_despawned")
+            world_destroy_unit(world, unit)
         end
 	end
 end)
 
 mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
+    return
 end)
 
 mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)

@@ -114,7 +114,7 @@ mod.visible_equipment_offsets = {
         ogryn_rippergun_p1_m1 = {
             default = {position = vector3_box(.5, .6, .4), rotation = vector3_box(200, 0, 90)},
             backpack = {position = vector3_box(-.2, .6, .6), rotation = vector3_box(200, 60, 70)},
-            step_sounds = {SoundEventAliases.sfx_ads_up.events.default},
+            -- step_sounds = {SoundEventAliases.sfx_ads_up.events.default},
             dummy_function = function(slot)
                 -- Get slot info
                 local slot_info_id = mod:get_slot_info_id(slot.item)
@@ -500,25 +500,28 @@ mod.update_equipment = function(self, dt)
                                 -- Play sound
                                 local sound = nil
                                 local play_sound = (player_unit ~= self.player_unit and mod:get("mod_option_visible_equipment_sounds") ~= "off")
-                                    or (player_unit == self.player_unit and self:is_in_third_person() and mod:get("mod_option_visible_equipment_sounds") == "all")
+                                    or (player_unit == self.player_unit and (self:is_in_third_person() or mod:get("mod_option_visible_equipment_own_sounds_fp")) and mod:get("mod_option_visible_equipment_sounds") == "all")
                                 if fx_extension and item_name and play_sound and slot_name ~= wielded_slot then
                                     local sounds = i == 1 and slot_sounds or slot_sounds2
-                                    if item.item_type == "WEAPON_RANGED" then
-                                        local rnd = sounds and math_random(1, #sounds)
-                                        sound = sounds and sounds[rnd]
-                                        sound = sound or mod:get_sound_effect(item_name)
-                                            -- SoundEventAliases.sfx_weapon_up.events[item_name]
-                                            -- or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
-                                    elseif item.item_type == "WEAPON_MELEE" then
-                                        local rnd = sounds and math_random(1, #sounds)
-                                        sound = sounds and sounds[rnd]
-                                        sound = sound or mod:get_sound_effect(item_name)
-                                            -- SoundEventAliases.sfx_weapon_up.events[item_name]
-                                            -- or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
-                                    end
+                                    local rnd = sounds and math_random(1, #sounds)
+                                    sound = sounds and sounds[rnd]
+                                    sound = sound or mod:get_sound_effect(item_name)
+                                    -- if item.item_type == "WEAPON_RANGED" then
+                                    --     local rnd = sounds and math_random(1, #sounds)
+                                    --     sound = sounds and sounds[rnd]
+                                    --     sound = sound or mod:get_sound_effect(item_name)
+                                    --         -- SoundEventAliases.sfx_weapon_up.events[item_name]
+                                    --         -- or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
+                                    -- elseif item.item_type == "WEAPON_MELEE" then
+                                    --     local rnd = sounds and math_random(1, #sounds)
+                                    --     sound = sounds and sounds[rnd]
+                                    --     sound = sound or mod:get_sound_effect(item_name)
+                                    --         -- SoundEventAliases.sfx_weapon_up.events[item_name]
+                                    --         -- or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
+                                    -- end
                                     if sound then
                                         mod:load_package(sound)
-                                        fx_extension:trigger_wwise_event(sound, true, true, player_unit, 1)-- player_position)--, player_unit, 1)--, "foley_speed", step_animation.speed)
+                                        fx_extension:trigger_wwise_event(sound, true, true, player_unit, 1, "foley_speed", step_animation.speed)-- player_position)--, player_unit, 1)--, "foley_speed", step_animation.speed)
                                     end
                                 end
                             end
@@ -832,12 +835,6 @@ mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equi
             end
             -- Position equipment
             mod:position_equipment(slot)
-
-            -- -- Dummy function
-            -- local equipment_data = mod:get_equipment_data(slot)
-            -- if equipment_data.dummy_function then
-            --     equipment_data.dummy_function(slot)
-            -- end
 
             -- Trigger equipment animation
             local equipment_ = mod:persistent_table("weapon_customization").player_equipment
