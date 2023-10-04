@@ -119,6 +119,12 @@ mod:hook(CLASS.PackageSynchronizerClient, "_get_loaded_packages_from_package_dat
 	end
 end)
 
+mod:hook(CLASS.ExtensionManager, "unregister_unit", function(func, self, unit, ...)
+    if unit and unit_alive(unit) then
+        func(self, unit, ...)
+    end
+end)
+
 mod:hook(CLASS.UIUnitSpawner, "_world_delete_units", function(func, self, world, units_list, num_units, ...)
 	for i = 1, num_units do
 		local unit = units_list[i]

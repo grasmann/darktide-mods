@@ -288,54 +288,56 @@ end
 
 -- Position equipment of a slot
 mod.position_equipment = function(self, slot)
-    local node_name = nil
-    -- Get item
-    local item = slot.item and slot.item.__master_item
-    local item_name = item and self:item_name_from_content_string(item.name)
-    -- Get attachment node
-    if unit_has_node(slot.player_unit, "j_backpackattach") then
-        node_name = "j_backpackattach"
-    elseif unit_has_node(slot.player_unit, "j_backpackoffset") then
-        node_name = "j_backpackoffset"
-    end
-    -- Attach to node
-    if node_name and unit_has_node(slot.player_unit, node_name) then
-        local node_index = unit_node(slot.player_unit, node_name)
-        -- Get list of units ( Slab shield )
-        local units = {slot.dummy}
-        if item_name == "ogryn_powermaul_slabshield_p1_m1" then
-            units = {slot.dummy_attachments[3], slot.dummy_attachments[1]}
+    if slot.player_unit and unit_alive(slot.player_unit) then
+        local node_name = nil
+        -- Get item
+        local item = slot.item and slot.item.__master_item
+        local item_name = item and self:item_name_from_content_string(item.name)
+        -- Get attachment node
+        if unit_has_node(slot.player_unit, "j_backpackattach") then
+            node_name = "j_backpackattach"
+        elseif unit_has_node(slot.player_unit, "j_backpackoffset") then
+            node_name = "j_backpackoffset"
         end
-        -- Iterate units
-        for i, unit in pairs(units) do
-            if unit and unit_alive(unit) then
-                -- Property names
-                local add = i == 1 and "" or tostring(i)
-                local position_name = "position"..add
-                local rotation_name = "rotation"..add
-                local scale_name = "scale"..add
-                local dummy_name = "dummy"..tostring(i)
-                -- Link unit to attachment node
-                world_unlink_unit(slot.world, unit)
-                world_link_unit(slot.world, unit, 1, slot.player_unit, node_index, true)
-                -- Get attachment data
-                local equipment_data = self:get_equipment_data(slot)
-                -- Position equipment
-                unit_set_local_position(unit, 1, vector3_unbox(equipment_data[position_name]))
-                -- Rotate equipment
-                local rot = vector3_unbox(equipment_data[rotation_name])
-                local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
-                unit_set_local_rotation(unit, 1, rotation)
-                -- Scale equipment
-                unit_set_local_scale(unit, 1, vector3_unbox(equipment_data[scale_name]))
-                -- Default property names
-                local default_position_name = "default_position"..add
-                local default_rotation_name = "default_rotation"..add
-                -- Set default values
-                slot[default_position_name] = equipment_data[position_name]
-                slot[default_rotation_name] = equipment_data[rotation_name]
-                -- Save unit reference
-                slot[dummy_name] = unit
+        -- Attach to node
+        if node_name and unit_has_node(slot.player_unit, node_name) then
+            local node_index = unit_node(slot.player_unit, node_name)
+            -- Get list of units ( Slab shield )
+            local units = {slot.dummy}
+            if item_name == "ogryn_powermaul_slabshield_p1_m1" then
+                units = {slot.dummy_attachments[3], slot.dummy_attachments[1]}
+            end
+            -- Iterate units
+            for i, unit in pairs(units) do
+                if unit and unit_alive(unit) then
+                    -- Property names
+                    local add = i == 1 and "" or tostring(i)
+                    local position_name = "position"..add
+                    local rotation_name = "rotation"..add
+                    local scale_name = "scale"..add
+                    local dummy_name = "dummy"..tostring(i)
+                    -- Link unit to attachment node
+                    world_unlink_unit(slot.world, unit)
+                    world_link_unit(slot.world, unit, 1, slot.player_unit, node_index, true)
+                    -- Get attachment data
+                    local equipment_data = self:get_equipment_data(slot)
+                    -- Position equipment
+                    unit_set_local_position(unit, 1, vector3_unbox(equipment_data[position_name]))
+                    -- Rotate equipment
+                    local rot = vector3_unbox(equipment_data[rotation_name])
+                    local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
+                    unit_set_local_rotation(unit, 1, rotation)
+                    -- Scale equipment
+                    unit_set_local_scale(unit, 1, vector3_unbox(equipment_data[scale_name]))
+                    -- Default property names
+                    local default_position_name = "default_position"..add
+                    local default_rotation_name = "default_rotation"..add
+                    -- Set default values
+                    slot[default_position_name] = equipment_data[position_name]
+                    slot[default_rotation_name] = equipment_data[rotation_name]
+                    -- Save unit reference
+                    slot[dummy_name] = unit
+                end
             end
         end
     end
@@ -369,6 +371,12 @@ mod.register_player_equipment = function(self, player_unit, slot)
     mod:position_equipment(slot)
 end
 
+mod.get_sound_effect = function(self, item_name)
+    return SoundEventAliases.sfx_ads_up.events[item_name]
+        or SoundEventAliases.sfx_ads_down.events[item_name]
+        or SoundEventAliases.sfx_equip.events.default
+end
+
 -- Update equipment visibility
 mod.update_equipment_visibility = function(self)
     -- Get registered equipments
@@ -377,32 +385,34 @@ mod.update_equipment_visibility = function(self)
     for player_unit, step_animation in pairs(registered_equipment) do
         -- Get equipment
         local equipment = step_animation.equipment
-        -- Get wielded slot
-        local loadout_extension = script_unit.extension(player_unit, "visual_loadout_system")
-        local inventory_component = loadout_extension and loadout_extension._inventory_component
-        local wielded_slot = inventory_component and inventory_component.wielded_slot or "slot_unarmed"
-        -- Iterate slots
-        for slot_name, slot in pairs(equipment) do
-            -- Get item name
-            local item = slot.item and slot.item.__master_item
-            local item_name = item and self:item_name_from_content_string(item.name)
-            -- Get units
-            local units = {slot.dummy}
-            if item_name == "ogryn_powermaul_slabshield_p1_m1" then
-                units = {slot.dummy1, slot.dummy2}
-            end
-            -- Iterate units
-            for i, unit in pairs(units) do
-                if unit and unit_alive(unit) then
-                    -- Get visibility
-                    local visible = self:get("mod_option_visible_equipment") and slot_name ~= wielded_slot
-                        and (slot.player_unit ~= self.player_unit or self:is_in_third_person())
-                    -- Set equipment visibility
-                    unit_set_unit_visibility(unit, visible, true)
+        if equipment then
+            -- Get wielded slot
+            local loadout_extension = script_unit.extension(player_unit, "visual_loadout_system")
+            local inventory_component = loadout_extension and loadout_extension._inventory_component
+            local wielded_slot = inventory_component and inventory_component.wielded_slot or "slot_unarmed"
+            -- Iterate slots
+            for slot_name, slot in pairs(equipment) do
+                -- Get item name
+                local item = slot.item and slot.item.__master_item
+                local item_name = item and self:item_name_from_content_string(item.name)
+                -- Get units
+                local units = {slot.dummy}
+                if item_name == "ogryn_powermaul_slabshield_p1_m1" then
+                    units = {slot.dummy1, slot.dummy2}
                 end
+                -- Iterate units
+                for i, unit in pairs(units) do
+                    if unit and unit_alive(unit) then
+                        -- Get visibility
+                        local visible = self:get("mod_option_visible_equipment") and slot_name ~= wielded_slot
+                            and (slot.player_unit ~= self.player_unit or self:is_in_third_person())
+                        -- Set equipment visibility
+                        unit_set_unit_visibility(unit, visible, true)
+                    end
+                end
+                -- Position equipment
+                mod:position_equipment(slot)
             end
-            -- Position equipment
-            mod:position_equipment(slot)
         end
     end
 end
@@ -496,17 +506,19 @@ mod.update_equipment = function(self, dt)
                                     if item.item_type == "WEAPON_RANGED" then
                                         local rnd = sounds and math_random(1, #sounds)
                                         sound = sounds and sounds[rnd]
-                                        sound = sound or SoundEventAliases.sfx_weapon_up.events[item_name]
-                                            or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
+                                        sound = sound or mod:get_sound_effect(item_name)
+                                            -- SoundEventAliases.sfx_weapon_up.events[item_name]
+                                            -- or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
                                     elseif item.item_type == "WEAPON_MELEE" then
                                         local rnd = sounds and math_random(1, #sounds)
                                         sound = sounds and sounds[rnd]
-                                        sound = sound or SoundEventAliases.sfx_weapon_up.events[item_name]
-                                            or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
+                                        sound = sound or mod:get_sound_effect(item_name)
+                                            -- SoundEventAliases.sfx_weapon_up.events[item_name]
+                                            -- or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
                                     end
                                     if sound then
                                         mod:load_package(sound)
-                                        fx_extension:trigger_wwise_event(sound, player_position, player_unit, 1)--, "foley_speed", step_animation.speed)
+                                        fx_extension:trigger_wwise_event(sound, true, true, player_unit, 1)-- player_position)--, player_unit, 1)--, "foley_speed", step_animation.speed)
                                     end
                                 end
                             end
