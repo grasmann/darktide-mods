@@ -230,7 +230,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"bolter_p1_m1", "laspistol_p1_m1", "plasmagun_p1_m1"}, nil, true)
+		-- mod:debug_attachments(item_data, attachments, {"lasgun_p1_m1", "lasgun_p1_m2", "lasgun_p1_m3"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
@@ -378,7 +378,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 							-- Set scale
 							local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_one()
-							unit_set_local_scale(unit, 1, scale)
+							local scale_node = anchor.scale_node or 1
+							unit_set_local_scale(unit, scale_node, scale)
 						end
 					end
 				end
@@ -401,16 +402,27 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					-- Get fixes
 					local fixes = mod:_apply_anchor_fixes(item_data, unit)
 					hide_mesh = fixes and fixes.hide_mesh or hide_mesh
+					-- Check hide mesh
 					if hide_mesh then
+						-- Iterate hide mesh entries
 						for _, hide_entry in pairs(hide_mesh) do
+							-- Check more than one parameter
 							if #hide_entry > 1 then
+								-- Get attachment name - parameter 1
 								local attachment_slot = hide_entry[1]
+								-- Get attachment unit
 								local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+								-- Check unit
 								if hide_unit and unit_alive(hide_unit) then
+									-- Hide nodes
 									for i = 2, #hide_entry do
 										local mesh_index = hide_entry[i]
 										unit_set_mesh_visibility(hide_unit, mesh_index, false)
 									end
+									-- if attachment_name == "receiver" then
+									-- 	local mesh_index = mod.test_index
+									-- 	unit_set_mesh_visibility(hide_unit, mesh_index, false)
+									-- end
 								end
 							end
 						end

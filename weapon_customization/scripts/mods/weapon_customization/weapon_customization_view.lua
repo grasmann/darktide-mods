@@ -298,8 +298,8 @@ mod.resolve_auto_equips = function(self, item)
 							if #parameters == 2 then
 								local negative = string_find(parameters[1], "!")
 								parameters[1] = string_gsub(parameters[1], "!", "")
-								local attachments = item.attachments or item.__master_item and item.__master_item.attachments
-								if attachments then
+								-- local attachments = item.attachments or item.__master_item and item.__master_item.attachments
+								-- if attachments then
 									-- local attachment_data = self:_recursive_find_attachment(attachments, auto_type)
 									local attachment_name = self:get_gear_setting(self.cosmetics_view._gear_id, auto_type, item)
 									if attachment_name then
@@ -309,7 +309,7 @@ mod.resolve_auto_equips = function(self, item)
 											self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[2])
 										end
 									else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
-								else mod:print("Attachments are nil") end
+								-- else mod:print("Attachments are nil") end
 							else
 								self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[1])
 							end

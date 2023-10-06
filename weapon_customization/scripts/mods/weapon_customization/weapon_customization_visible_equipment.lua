@@ -14,6 +14,7 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
 --#region local functions
     local unit_alive = Unit.alive
     local unit_world_position = Unit.world_position
+    local unit_world_rotation = Unit.world_rotation
     local unit_set_local_position = Unit.set_local_position
     local unit_set_local_rotation = Unit.set_local_rotation
     local unit_set_local_scale = Unit.set_local_scale

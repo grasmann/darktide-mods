@@ -108,7 +108,7 @@ mod:hook(CLASS.PackageSynchronizerClient, "_get_loaded_packages_from_package_dat
             local unload_name = mod:item_name_from_content_string(package_name)
             -- Check if trinket hook is used by player
             local package_used = false
-            if mod.initialized and string_find(unload_name, "trinket_hook") then
+            if mod.initialized and string_find(unload_name, "trinket") then
                 local weapons = mod.weapon_extension._weapons
                 for slot_name, weapon in pairs(weapons) do
                     local attachments = weapon.item and weapon.item.attachments
