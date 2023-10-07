@@ -3010,21 +3010,20 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                         no_scope_offset = {position = vector3_box(0, 0, -.0285), rotation = vector3_box(.1, 0, 0)}},
                     {dependencies = {"autogun_rifle_sight_01"}, -- Lasgun sight
                         sight = {offset = true, position = vector3_box(-.0975, .03, -.075), mesh_position = vector3_box(.0975, 0, .075), scale = vector3_box(.7, 1, 1), scale_node = 5},
-                        sight_3 = {offset = true, position = vector3_box(.056, 0, -.045), scale = vector3_box(.645, .75, 1), scale_node = 5}},
+                        help_sight = {offset = true, position = vector3_box(.056, 0, -.045), scale = vector3_box(.645, .75, 1), scale_node = 5}},
                     {dependencies = {"autogun_rifle_sight_01"}, -- Infantry sight
                         no_scope_offset = {position = vector3_box(0, 0, -.011), rotation = vector3_box(.3, 0, 0)}},
                     {dependencies = {"autogun_rifle_ak_sight_01"}, -- Lasgun sight
                         sight = {offset = true, position = vector3_box(0, .0225, 0), mesh_position = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), scale_node = 1},
-                        sight_3 = {offset = true, position = vector3_box(.056, 0, -.046), scale = vector3_box(.645, .75, 1), scale_node = 5}},
+                        help_sight = {offset = true, position = vector3_box(.056, 0, -.046), scale = vector3_box(.645, .75, 1), scale_node = 5}},
                     {dependencies = {"autogun_rifle_ak_sight_01"}, -- Infantry sight
                         no_scope_offset = {position = vector3_box(0, 0, -.0135), rotation = vector3_box(0, 0, 0)}},
                     {dependencies = {"autogun_rifle_killshot_sight_01"}, -- Lasgun sight
                         sight = {offset = true, position = vector3_box(0, .0225, 0), mesh_position = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), scale_node = 1},
-                        sight_3 = {offset = true, position = vector3_box(.056, 0, -.046), scale = vector3_box(.645, .75, 1), scale_node = 5}},
-                    {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"}, -- Lasgun sight
-                        sight_3 = {offset = true, position = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0), scale_node = 5}},
+                        help_sight = {offset = true, position = vector3_box(.056, 0, -.046), scale = vector3_box(.645, .75, 1), scale_node = 5}},
                     {dependencies = {"autogun_rifle_killshot_sight_01"}, -- Infantry sight
                         no_scope_offset = {position = vector3_box(0, 0, -.012), rotation = vector3_box(.4, 0, 0)}},
+                    {help_sight = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0), scale_node = 5}},
                     {dependencies = {"barrel_01", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_01", "autogun_bayonet_02"}, -- Bayonet 1
@@ -3432,12 +3431,12 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                 bayonet = _bayonet_attachments(),
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
-                sight_3 = _bolter_sight_attachments(),
                 sight = table.icombine(
                     {{id = "sight_default", name = "Default", sounds = {_magazine_sound}}},
                     _reflex_sights_attachments(),
                     _sights_attachments()
                 ),
+                help_sight = _bolter_sight_attachments(),
                 receiver = _lasgun_infantry_receiver_attachments(),
                 stock = table.icombine(
                     {{id = "stock_default", name = "Default", sounds = {_magazine_sound}}},
@@ -4041,7 +4040,7 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
         emblem_left = "emblems_left",
         emblem_right = "emblems_right",
         sight_2 = "reflex_sights",
-        sight_3 = "bolter_sight",
+        help_sight = "help_sights",
         muzzle = "muzzles",
         trinket_hook = "trinket_hooks",
         slot_trinket_1 = "slot_trinket_1",
@@ -4096,13 +4095,13 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
     --         receiver = "content/items/weapons/player/ranged/recievers/lasgun_pistol_receiver_03",
     --     }
     -- }
-    mod.bolter_sight = {
-        -- "sight_default",
-        "bolter_sight_01",
+    mod.help_sights = {
+        "sight_default",
+        "boltgun_rifle_sight_01",
     }
     mod.automatic_slots = {
         "rail",
-        "sight_3",
+        "help_sight",
     }
     mod.reflex_sights = {
         "reflex_sight_01",
@@ -4257,7 +4256,7 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
         "rail",
         "sight",
         "sight_2",
-        "sight_3",
+        "help_sight",
         "grip",
         "stock",
         "stock_2",
@@ -4641,21 +4640,20 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                 _lasgun_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _lasgun_muzzle_models(nil, -.5, vector3_box(.4, -3, 0), vector3_box(0, .2, 0)),
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _bolter_sight_models("receiver", .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_3", {}, {}),
                 _reflex_sights_models("rail", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
-                    {rail = "rail_default", sight_3 = "sight_default"},
-                    {rail = "rail_01", sight_3 = "sight_default"},
-                    {rail = "rail_01", sight_3 = "sight_default"},
-                    {rail = "rail_01", sight_3 = "sight_default"},
+                    {rail = "rail_default", help_sight = "sight_default"},
+                    {rail = "rail_01", help_sight = "sight_default"},
+                    {rail = "rail_01", help_sight = "sight_default"},
+                    {rail = "rail_01", help_sight = "sight_default"},
                 }, {
                     {{"receiver", 5}},
                 }),
                 _sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
-                    {rail = "rail_default", sight_3 = "sight_default"},
-                    {rail = "rail_01", sight_3 = "bolter_sight_01"},
-                    {rail = "rail_default", sight_3 = "bolter_sight_01"},
-                    {rail = "rail_01", sight_3 = "bolter_sight_01"},
-                    {rail = "rail_default", sight_3 = "sight_default"},
+                    {rail = "rail_default", help_sight = "sight_default"},
+                    {rail = "rail_01", help_sight = "bolter_sight_01"},
+                    {rail = "rail_default", help_sight = "bolter_sight_01"},
+                    {rail = "rail_01", help_sight = "bolter_sight_01"},
+                    {rail = "rail_default", help_sight = "sight_default"},
                 }, {
                     {{"receiver", 5}},
                     {{"receiver", 5}},
@@ -4663,6 +4661,7 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                     {{"receiver", 5}},
                     {{"receiver", 5}, {"sight", 1}},
                 }),
+                _bolter_sight_models("receiver", .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "help_sight", {}, {}, {}),
                 _stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
                 _trinket_hook_models("barrel", 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _slot_trinket_1_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),

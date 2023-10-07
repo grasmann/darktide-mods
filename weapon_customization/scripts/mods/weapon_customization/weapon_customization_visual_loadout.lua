@@ -84,6 +84,7 @@ mod._add_custom_attachments = function(self, item, attachments)
 			local attachment = self:_recursive_find_attachment(attachments, attachment_slot)
 			if attachment_slot == "slot_trinket_1" then attachment_setting = "slot_trinket_1" end
 			if attachment_slot == "slot_trinket_2" then attachment_setting = "slot_trinket_2" end
+			if attachment_slot == "help_sight" then attachment_setting = "bolter_sight_01" end
 			if table_contains(self[attachment_table], attachment_setting) then
 				-- Get attachment data
 				local attachment_data = self.attachment_models[item_name] and self.attachment_models[item_name][attachment_setting]

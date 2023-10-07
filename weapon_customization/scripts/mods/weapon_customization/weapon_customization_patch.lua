@@ -265,8 +265,8 @@ mod._overwrite_attachments = function(self, item_data, attachments)
                 -- Auto equips
                 automatic_equip = fixes and fixes.automatic_equip or automatic_equip
                 -- Handle automatic equips
-                if attachment_data.automatic_equip then
-                    for auto_type, auto_attachment_string in pairs(attachment_data.automatic_equip) do
+                if automatic_equip then
+                    for auto_type, auto_attachment_string in pairs(automatic_equip) do
                         automatic_equip_entries[#automatic_equip_entries+1] = {
                             auto_attachment_string = auto_attachment_string,
                             type = auto_type,

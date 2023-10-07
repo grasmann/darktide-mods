@@ -362,8 +362,6 @@ mod._has_flashlight_attachment = function(self, item)
 			end
         end
 		return flashlight
-	else
-		mod:echo("rofl")
 	end
 end
 
