@@ -121,19 +121,32 @@ mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 		local unit_and_meshes = mesh_move == "both" or false
 		local root_unit = gear_info and gear_info.attachment_slot_to_unit["root"] or unit
 		local mesh_position = gear_info and gear_info.unit_mesh_position[unit] and vector3_unbox(gear_info.unit_mesh_position[unit])
+		local mesh_index = gear_info and gear_info.unit_mesh_index[unit]
 
 		local num_meshes = unit_num_meshes(unit)
 		if (mesh_move or unit_and_meshes or mesh_position) and num_meshes > 0 then
-			for i = 1, num_meshes do
-				local mesh = unit_mesh(unit, i)
-				local unit_data = self.mesh_positions[unit]
-				local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
-				local mesh_position = mesh_position or vector3_zero()
-				local position = mesh_default + mesh_position
-				if mesh_move or unit_and_meshes then
-					position = position + movement
+			if mesh_position and not mesh_index then
+				for i = 1, num_meshes do
+					local mesh = unit_mesh(unit, i)
+					local unit_data = self.mesh_positions[unit]
+					local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
+					local mesh_position = mesh_position or vector3_zero()
+					local position = mesh_default + mesh_position
+					if mesh_move or unit_and_meshes then
+						position = position + movement
+					end
+					mesh_set_local_position(mesh, unit, position)
 				end
-				mesh_set_local_position(mesh, unit, position)
+			elseif mesh_position and mesh_index then
+				for i = mesh_index, mesh_index do
+					local mesh = unit_mesh(unit, i)
+					local unit_data = self.mesh_positions[unit]
+					local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
+					local mesh_position = mesh_position or vector3_zero()
+					local position = mesh_default + mesh_position
+					position = position + movement
+					mesh_set_local_position(mesh, unit, position)
+				end
 			end
 		end
 
@@ -820,6 +833,7 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 		end
 
 		local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position = slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position or {}
 		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position["root"] = vector3_box(unit_local_position(weapon_spawn_data.item_unit_3p, 1))
 	end
 end)

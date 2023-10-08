@@ -50,6 +50,7 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
     local world_find_particles_variable = World.find_particles_variable
     local world_set_particles_variable = World.set_particles_variable
     local world_set_particles_material_vector3 = World.set_particles_material_vector3
+    local world_set_particles_use_custom_fov = World.set_particles_use_custom_fov
     local world_link_particles = World.link_particles
     local world_move_particles = World.move_particles
     local physics_world_raycast = PhysicsWorld.raycast
@@ -382,6 +383,7 @@ mod.toggle_laser = function(self, retain, optional_value)
             end
             self:toggle_laser_light(laser_pointer_state, retain)
             self:persistent_table("weapon_customization").laser_pointer_on = laser_pointer_state
+            self:despawn_dots()
         end
     end
 end
@@ -484,6 +486,21 @@ mod.update_laser_pointer = function(self)
     end
 end
 
+mod.check_weapon_fov = function(self)
+    return get_mod("weapon_fov")
+end
+
+mod.check_weapon_fov_changes = function(self)
+    local weapon_fov = self:check_weapon_fov()
+    if weapon_fov then
+        local current_fov_mode = weapon_fov:get("fov_mode")
+        if current_fov_mode ~= self.weapon_fov_last_mode then
+            self:despawn_dots()
+            self.weapon_fov_last_mode = current_fov_mode
+        end
+    end
+end
+
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
@@ -536,16 +553,27 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                 -- Dot
                 local laser_position = unit_world_position(laser_pointer, 1)
                 local weapon_dot_position = laser_position + direction * .05
+
+                -- Weapon Fov compatibility
+                mod:check_weapon_fov_changes()
+
                 if not mod.weapon_dot and mod:get("mod_option_laser_pointer_weapon_dot") then
                     mod.weapon_dot = world_create_particles(self._world, LASER_DOT, vector3_zero(), quaternion_identity())
-                end
-                if mod.weapon_dot then
+                    world_set_particles_material_vector3(self._world, mod.weapon_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
                     local unit_world_pose = matrix4x4_identity()
 	                matrix4x4_set_translation(unit_world_pose, vector3(0, .065, 0))
                     matrix4x4_set_scale(unit_world_pose, vector3(.5, .5, .5))
                     world_link_particles(self._world, mod.weapon_dot, laser_pointer, 2, unit_world_pose, "destroy")
-                    world_set_particles_material_vector3(self._world, mod.weapon_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
+                    if mod:check_weapon_fov() and not mod:is_in_third_person() then
+                        world_set_particles_use_custom_fov(self._world, mod.weapon_dot, false)
+                    end
                 end
+                -- if mod.weapon_dot then
+                --     -- local unit_world_pose = matrix4x4_identity()
+	            --     -- matrix4x4_set_translation(unit_world_pose, vector3(0, .065, 0))
+                --     -- matrix4x4_set_scale(unit_world_pose, vector3(.5, .5, .5))
+                --     -- world_link_particles(self._world, mod.weapon_dot, laser_pointer, 2, unit_world_pose, "destroy")
+                -- end
                 if not mod.laser_dot then
                     mod.laser_dot = world_create_particles(self._world, LASER_DOT, end_position)
                     world_set_particles_material_vector3(self._world, mod.laser_dot, "eye_glow", "trail_color", vector3(0, 0, 0))
@@ -622,6 +650,10 @@ mod:hook(CLASS.PlayerUnitFxExtension, "post_update", function(func, self, unit, 
                         mod:despawn_laser(particle.effect_id)
                         table_remove(mod:persistent_table("weapon_customization").spawned_lasers, i)
                     else
+                        -- Weapon fov compatibility
+                        if mod:check_weapon_fov() and not mod:is_in_third_person() then
+                            world_set_particles_use_custom_fov(self._world, particle.effect_id, false)
+                        end
                         -- Update particle effect
                         world_set_particles_variable(self._world, particle.effect_id, variable_index, vector3(.1, distance, distance))
                         -- Update end position
@@ -656,15 +688,6 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_create_particles_wrapper", function(func
             effect_id = effect_id,
             end_time = mod.time_manager:time("gameplay") + TIME,
         }
-
-        -- World.set_particles_material_vector3(world, effect_id, "beam", "material_variable_21872256", vector3(0, 255, 0))
-
-        -- World.set_particles_material_color(world, effect_id, "beam", vector3(0, 255, 0))
-        -- World.set_particles_material_color(world, effect_id, "beam", Color(0, 255, 0))
-        -- World.set_particles_material_color(world, effect_id, "beam", Color(255, 0, 255, 0))
-        -- World.set_particles_material_color(world, effect_id, "beam", Color.light_green(255, true))
-        -- World.set_particles_material_color(world, effect_id, "beam", Quaternion.from_euler_angles_xyz(0, 255, 0))
-        -- World.set_particles_material_color(world, effect_id, Color.light_green(255, true))
     end
     return effect_id
 end)

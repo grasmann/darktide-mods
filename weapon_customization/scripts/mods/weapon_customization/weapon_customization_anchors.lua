@@ -1173,6 +1173,44 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                 magazine_01 =       {model = "content/items/weapons/player/ranged/magazines/lasgun_rifle_magazine_01",  type = "magazine", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
             }
         end
+        local _helbore_receiver_attachments = function()
+            return {
+                {id = "receiver_default",   name = "Default",       sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_01",        name = "Receiver 1",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_02",        name = "Receiver 2",    sounds = {UISoundEvents.weapons_equip_weapon}},
+                {id = "receiver_03",        name = "Receiver 3",    sounds = {UISoundEvents.weapons_equip_weapon}},
+            }
+        end
+        local _helbore_receiver_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                receiver_default =  {model = "", type = "receiver"},
+                receiver_01 =       {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_01", type = "receiver", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                receiver_02 =       {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_02", type = "receiver", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                receiver_03 =       {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_04", type = "receiver", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+            }
+        end
+        local _helbore_stock_attachments = function()
+            return {
+                {id = "stock_default",  name = "Default", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "stock_01",       name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "stock_02",       name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
+                {id = "stock_03",       name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
+            }
+        end
+        local _helbore_stock_models = function(parent, angle, move, remove)
+            local angle = angle or 0
+            local move = move or vector3_box(0, 0, 0)
+            local remove = remove or vector3_box(0, 0, 0)
+            return {
+                stock_default = {model = "", type = "stock", angle = .5},
+                stock_01 =      {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_01", type = "stock", parent = tv(parent, 1), angle = angle, move = move, remove = remove, mesh_move = false},
+                stock_02 =      {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_02", type = "stock", parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false},
+                stock_03 =      {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_04", type = "stock", parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false},
+            }
+        end
     --#endregion
     --#region Autoguns
         local _autogun_braced_barrel_attachments = function()
@@ -3001,6 +3039,7 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
             },
             lasgun_p1_m1 = {
                 no_scope_offset = {position = vector3_box(0, 0, -.0455)},
+                -- help_sight = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0), scale_node = 5},
                 fixes = {
                     {dependencies = {"emblem_left_02"}, -- Emblem
                         emblem_left = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, -1, 1)}},
@@ -3026,76 +3065,80 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                     {help_sight = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0), scale_node = 5}},
                     {dependencies = {"barrel_01", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_01", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_01", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_02", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_02", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_02", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_03", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .195, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_03", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_03", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .195, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_04", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_04", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_04", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_05", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_05", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_05", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_06", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "muzzle", position = vector3_box(0, .065, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_06", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_06", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "muzzle", position = vector3_box(0, .065, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_07", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "muzzle", position = vector3_box(0, .065, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_07", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_07", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "muzzle", position = vector3_box(0, .065, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_08", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_08", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_08", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_09", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .36, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_09", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_09", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .36, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_10", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .495, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_10", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_10", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .495, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_11", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .42, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_11", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_11", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .42, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_12", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .36, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_12", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_12", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .36, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_13", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .35, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_13", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_13", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .35, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_14", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .18, -.042), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_14", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_14", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .18, -.042), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_15", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .17, -.06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_15", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_15", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .17, -.06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_16", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .19, -.042), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_16", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_16", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .19, -.042), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_17", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .18, -.043), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_17", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_17", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .18, -.043), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_18", "autogun_bayonet_01"}, -- Bayonet 1
                         bayonet = {parent = "barrel", position = vector3_box(0, .18, -.043), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                    {dependencies = {"barrel_18", "autogun_bayonet_02"}, -- Bayonet 1
+                    {dependencies = {"barrel_18", "autogun_bayonet_02"}, -- Bayonet 2
                         bayonet = {parent = "barrel", position = vector3_box(0, .18, -.043), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+                    {dependencies = {"autogun_bayonet_03", "muzzle_07|muzzle_08|muzzle_09"}, -- Bayonet 3
+                        bayonet = {parent = "muzzle", position = vector3_box(0, .05, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
                     {dependencies = {"barrel_17"}, -- Trinket hook
                         trinket_hook = {parent = "barrel", position = vector3_box(0, .075, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"barrel_18"}, -- Trinket hook
@@ -3104,6 +3147,115 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
             },
             lasgun_p2_m1 = {
                 scope_offset = {position = vector3_box(0, 0, .0275)},
+                fixes = {
+                    {dependencies = {"emblem_left_02", "receiver_02"}, -- Emblem
+                        emblem_left = {offset = true, position = vector3_box(0, -.005, -.0475), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, -.5, .5)}},
+                    {dependencies = {"receiver_02"}, -- Emblems
+                        emblem_left = {offset = true, position = vector3_box(0, -.005, -.0475), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)},
+                        emblem_right = {offset = true, position = vector3_box(0, .005, -.0475), rotation = vector3_box(0, 0, 0), scale = vector3_box(.5, .5, .5)}},
+                    {dependencies = {"emblem_left_02", "receiver_01"}, -- Emblem
+                        emblem_left = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, -1, 1)}},
+                    {dependencies = {"lasgun_rifle_sight_01"}, -- Lasgun sight
+                        sight = {offset = true, position = vector3_box(0, -.005, .04), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1), scale_node = 6}},
+                    {dependencies = {"lasgun_rifle_sight_01"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, .0065), rotation = vector3_box(0, 0, 0)}},
+                    {dependencies = {"autogun_rifle_sight_01"}, -- Lasgun sight
+                        sight = {offset = true, position = vector3_box(0, -.02, -.0025), mesh_position = vector3_box(0, .06, 0), mesh_index = 8, scale = vector3_box(.7, 1, 1), scale_node = 5}},
+                    {dependencies = {"autogun_rifle_sight_01"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, .0112), rotation = vector3_box(.8, 0, 0)}},
+                    {dependencies = {"autogun_rifle_ak_sight_01"}, -- Lasgun sight
+                        sight = {offset = true, position = vector3_box(0, .0225, 0), mesh_position = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), scale_node = 1}},
+                    {dependencies = {"autogun_rifle_ak_sight_01"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, .0135), rotation = vector3_box(1, 0, 0)}},
+                    {dependencies = {"autogun_rifle_killshot_sight_01"}, -- Lasgun sight
+                        sight = {offset = true, position = vector3_box(0, .0225, -.002), mesh_position = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), scale_node = 1}},
+                    {dependencies = {"autogun_rifle_killshot_sight_01"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, .0135), rotation = vector3_box(1, 0, 0)}},
+
+                    {dependencies = {"barrel_10"}, -- Bayonet 1
+                        muzzle = {offset = true, position = vector3_box(0, .05, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+                    {dependencies = {"barrel_01", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_01", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_02", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_02", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_03", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .195, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_03", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .195, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_04", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_04", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_05", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_05", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_06", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "muzzle", position = vector3_box(0, .065, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_06", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "muzzle", position = vector3_box(0, .065, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_07", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "muzzle", position = vector3_box(0, .065, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_07", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "muzzle", position = vector3_box(0, .065, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_08", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_08", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_09", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .36, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_09", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .36, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_10", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .495, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_10", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .495, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_11", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .42, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_11", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .42, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_12", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .36, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_12", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .36, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_13", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .35, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_13", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .35, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_14", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .18, -.042), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_14", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .18, -.042), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_15", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .17, -.06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_15", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .17, -.06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_16", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .19, -.042), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_16", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .19, -.042), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_17", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .18, -.043), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_17", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .18, -.043), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_18", "autogun_bayonet_01"}, -- Bayonet 1
+                        bayonet = {parent = "barrel", position = vector3_box(0, .18, -.043), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_18", "autogun_bayonet_02"}, -- Bayonet 2
+                        bayonet = {parent = "barrel", position = vector3_box(0, .18, -.043), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+                    {dependencies = {"autogun_bayonet_03", "muzzle_07|muzzle_08|muzzle_09"}, -- Bayonet 3
+                        bayonet = {parent = "muzzle", position = vector3_box(0, .05, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+                    {dependencies = {"barrel_17"}, -- Trinket hook
+                        trinket_hook = {parent = "barrel", position = vector3_box(0, .075, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_18"}, -- Trinket hook
+                        trinket_hook = {parent = "barrel", position = vector3_box(0, .075, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
+                }
             },
             lasgun_p3_m1 = {
                 scope_offset = {position = vector3_box(0, 0, .0275)},
@@ -3449,7 +3601,7 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
             lasgun_p2_m1 = {
                 flashlight = _flashlights_attachments(),
                 bayonet = _bayonet_attachments(),
-                rail = _lasgun_rail_attachments(),
+                -- rail = _lasgun_rail_attachments(),
                 barrel = _lasgun_barrel_attachments(),
                 muzzle = _lasgun_muzzle_attachments(),
                 emblem_right = _emblem_right_attachments(),
@@ -3459,22 +3611,9 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                     _reflex_sights_attachments(),
                     _sights_attachments()
                 ),
-                receiver = {
-                    {id = "receiver_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "receiver_01", name = "Receiver 1", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_02", name = "Receiver 2", sounds = {UISoundEvents.weapons_equip_weapon}},
-                    {id = "receiver_03", name = "Receiver 3", sounds = {UISoundEvents.weapons_equip_weapon}},
-                },
-                stock = {
-                    {id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_02", name = "Stock 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "stock_03", name = "Stock 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                magazine = {
-                    {id = "magazine_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "magazine_01", name = "Magazine 1", sounds = {UISoundEvents.apparel_equip}},
-                },
+                receiver = _helbore_receiver_attachments(),
+                stock = _helbore_stock_attachments(),
+                magazine = _lasgun_magazine_attachments(),
             },
             lasgun_p3_m1 = {
                 flashlight = _flashlights_attachments(),
@@ -4096,8 +4235,8 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
     --     }
     -- }
     mod.help_sights = {
-        "sight_default",
-        "boltgun_rifle_sight_01",
+        -- "sight_default",
+        "bolter_sight_01",
     }
     mod.automatic_slots = {
         "rail",
@@ -4668,28 +4807,25 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                 _lasgun_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))
             ),
             lasgun_p2_m1 = table.combine(
-                _flashlight_models(),
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _bayonet_models(),
-                _grip_models(),
-                _lasgun_barrel_models(),
-                _lasgun_muzzle_models(),
-                _lasgun_rail_models(),
-                _reflex_sights_models(),
-                _sights_models(),
-                {
-                    receiver_default = {model = "", type = "receiver"},
-                    receiver_01 = {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_01", type = "receiver"},
-                    receiver_02 = {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_02", type = "receiver"},
-                    receiver_03 = {model = "content/items/weapons/player/ranged/recievers/lasgun_rifle_krieg_receiver_04", type = "receiver"},
-                    stock_default = {model = "", type = "stock", angle = .5},
-                    stock_01 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_01", type = "stock", angle = .5},
-                    stock_02 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_02", type = "stock", angle = .5},
-                    stock_03 = {model = "content/items/weapons/player/ranged/stocks/lasgun_rifle_krieg_stock_04", type = "stock", angle = .5},
-                    magazine_default = {model = "", type = "magazine"},
-                    magazine_01 = {model = "content/items/weapons/player/ranged/magazines/lasgun_rifle_magazine_01", type = "magazine"},
-                }
+                _helbore_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
+                _flashlight_models(nil, -2.5, vector3_box(-.5, -3, -.05), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
+                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
+                _lasgun_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
+                _lasgun_muzzle_models(nil, -.5, vector3_box(.4, -3, 0), vector3_box(0, .2, 0)),
+                -- _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+                _reflex_sights_models(nil, .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
+                _sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {}, {
+                    {},
+                    {},
+                    {},
+                    {},
+                    {{"sight", 1}},
+                }),
+                _helbore_stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
+                _lasgun_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))
             ),
             lasgun_p3_m1 = table.combine(
                 _flashlight_models(),

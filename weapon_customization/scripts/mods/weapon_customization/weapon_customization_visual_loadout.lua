@@ -62,6 +62,8 @@ local mod = get_mod("weapon_customization")
 	local script_unit = ScriptUnit
 --#endregion
 
+local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
@@ -111,6 +113,8 @@ mod._add_custom_attachments = function(self, item, attachments)
 					parent[attachment_slot] = {
 						children = original_children,
 						item = original_value or attachment_data.model,
+						attachment_type = attachment_slot,
+            			attachment_name = attachment_setting,
 					}
 				end
 			end
@@ -231,7 +235,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"lasgun_p1_m1", "lasgun_p1_m2", "lasgun_p1_m3"}, nil, true)
+		-- mod:debug_attachments(item_data, attachments, {"lasgun_p2_m1", "lasgun_p2_m2", "lasgun_p2_m3"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
@@ -269,14 +273,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
 			slot_infos[slot_info_id] = attachment_slot_info
 
-			slot_infos[slot_info_id].attachment_slot_to_unit = slot_infos[slot_info_id].attachment_slot_to_unit or {}
-			slot_infos[slot_info_id].unit_to_attachment_slot = slot_infos[slot_info_id].unit_to_attachment_slot or {}
-			slot_infos[slot_info_id].unit_to_attachment_name = slot_infos[slot_info_id].unit_to_attachment_name or {}
-			slot_infos[slot_info_id].unit_root_movement =      slot_infos[slot_info_id].unit_root_movement or {}
-			slot_infos[slot_info_id].unit_mesh_move =        	 slot_infos[slot_info_id].unit_mesh_move or {}
-			slot_infos[slot_info_id].unit_root_position =		 slot_infos[slot_info_id].unit_root_position or {}
-			slot_infos[slot_info_id].unit_mesh_position =		 slot_infos[slot_info_id].unit_mesh_position or {}
-			slot_infos[slot_info_id].unit_default_position = 	 slot_infos[slot_info_id].unit_default_position or {}
+			slot_infos[slot_info_id].attachment_slot_to_unit = 	slot_infos[slot_info_id].attachment_slot_to_unit or {}
+			slot_infos[slot_info_id].unit_to_attachment_slot = 	slot_infos[slot_info_id].unit_to_attachment_slot or {}
+			slot_infos[slot_info_id].unit_to_attachment_name = 	slot_infos[slot_info_id].unit_to_attachment_name or {}
+			slot_infos[slot_info_id].unit_root_movement =      	slot_infos[slot_info_id].unit_root_movement or {}
+			slot_infos[slot_info_id].unit_mesh_move =        	slot_infos[slot_info_id].unit_mesh_move or {}
+			slot_infos[slot_info_id].unit_root_position =		slot_infos[slot_info_id].unit_root_position or {}
+			slot_infos[slot_info_id].unit_mesh_position =		slot_infos[slot_info_id].unit_mesh_position or {}
+			slot_infos[slot_info_id].unit_mesh_index = 			slot_infos[slot_info_id].unit_mesh_index or {}
+			slot_infos[slot_info_id].unit_default_position = 	slot_infos[slot_info_id].unit_default_position or {}
 			slot_infos[slot_info_id].attachment_slot_to_unit["root"] = item_unit
 			slot_infos[slot_info_id].unit_to_attachment_slot[item_unit] = "root"
 			slot_infos[slot_info_id].unit_to_attachment_name[item_unit] = "root"
@@ -352,6 +357,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					-- Setup data
 					slot_infos[slot_info_id].unit_mesh_move[unit] = mesh_move
 					slot_infos[slot_info_id].unit_mesh_position[unit] = anchor and anchor.mesh_position
+					slot_infos[slot_info_id].unit_mesh_index[unit] = anchor and anchor.mesh_index
 					slot_infos[slot_info_id].unit_root_position[unit] = anchor and anchor.root_position
 
 					-- Anchor found?
@@ -420,10 +426,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 										local mesh_index = hide_entry[i]
 										unit_set_mesh_visibility(hide_unit, mesh_index, false)
 									end
-									-- if attachment_name == "receiver" then
-									-- 	local mesh_index = mod.test_index
-									-- 	unit_set_mesh_visibility(hide_unit, mesh_index, false)
-									-- end
+									if attachment_slot == "charge_display" then
+										local mesh_index = mod.test_index
+										mod:echo("charge_display: "..tostring(mesh_index))
+										unit_set_mesh_visibility(hide_unit, mesh_index, false)
+									end
 								end
 							end
 						end
@@ -748,6 +755,66 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 	
 		return override_lookup
+	end
+
+	instance.apply_material_override = function (unit, parent_unit, apply_to_parent, material_override, in_editor)
+		if material_override and material_override ~= "" then
+			local material_override_data = nil
+	
+			if in_editor then
+				material_override_data = rawget(ItemMaterialOverrides, material_override)
+	
+				if material_override_data == nil then
+					Log.info("VisualLoadoutCustomization", "Material override %s does not exist.", material_override)
+				end
+			else
+				material_override_data = ItemMaterialOverrides[material_override]
+			end
+	
+			if material_override_data then
+				if apply_to_parent then
+					instance._apply_material_override(parent_unit, material_override_data)
+				else
+					instance._apply_material_override(unit, material_override_data)
+				end
+			end
+		end
+	end
+
+	local _apply_material_override = nil
+	local Unit = Unit
+	local Unit_set_scalar_for_materials = Unit.set_scalar_for_materials
+	local Unit_set_vector2_for_materials = Unit.set_vector2_for_materials
+	local Unit_set_vector3_for_materials = Unit.set_vector3_for_materials
+	local Unit_set_vector4_for_materials = Unit.set_vector4_for_materials
+	local Unit_set_texture_for_materials = Unit.set_texture_for_materials
+
+	instance._apply_material_override = function(unit, material_override_data)
+		if material_override_data.property_overrides ~= nil then
+			for property_name, property_override_data in pairs(material_override_data.property_overrides) do
+				if type(property_override_data) == "number" then
+					Unit_set_scalar_for_materials(unit, property_name, property_override_data, true)
+				else
+					local property_override_data_num = #property_override_data
+	
+					if property_override_data_num == 1 then
+						Unit_set_scalar_for_materials(unit, property_name, property_override_data[1], true)
+					elseif property_override_data_num == 2 then
+						Unit_set_vector2_for_materials(unit, property_name, Vector2(property_override_data[1], property_override_data[2]), true)
+					elseif property_override_data_num == 3 then
+						Unit_set_vector3_for_materials(unit, property_name, Vector3(property_override_data[1], property_override_data[2], property_override_data[3]), true)
+					elseif property_override_data_num == 4 then
+						Unit_set_vector4_for_materials(unit, property_name, Color(property_override_data[1], property_override_data[2], property_override_data[3], property_override_data[4]), true)
+					end
+				end
+			end
+		end
+	
+		if material_override_data.texture_overrides ~= nil then
+			for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+				Unit_set_texture_for_materials(unit, texture_slot, texture_override_data.resource, true)
+			end
+		end
 	end
 
 end)

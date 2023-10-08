@@ -84,9 +84,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
 	return func(self, ...)
 end)
 
--- Update flashlight state
-mod:hook(CLASS.Flashlight, "update_first_person_mode", function(func, self, first_person_mode, ...)
-	func(self, first_person_mode, ...)
+mod:hook(CLASS.PlayerUnitFirstPersonExtension, "_update_first_person_mode", function(func, self, t, ...)
+	local show_1p_equipment, wants_1p_camera = func(self, t, ...)
 	if mod.initialized then
 		-- Update flashlight / laser pointer
 		if mod:has_flashlight_attachment() then mod:update_flashlight_view() end
@@ -95,7 +94,21 @@ mod:hook(CLASS.Flashlight, "update_first_person_mode", function(func, self, firs
 		mod.was_third_person = mod:_is_in_third_person()
 		mod.last_character_state = mod:_character_state()
 	end
+	return show_1p_equipment, wants_1p_camera
 end)
+
+-- -- Update flashlight state
+-- mod:hook(CLASS.Flashlight, "update_first_person_mode", function(func, self, first_person_mode, ...)
+-- 	func(self, first_person_mode, ...)
+-- 	if mod.initialized then
+-- 		-- Update flashlight / laser pointer
+-- 		if mod:has_flashlight_attachment() then mod:update_flashlight_view() end
+-- 		if mod:has_laser_pointer_attachment() then mod:update_laser_pointer() end
+-- 		-- Cache values
+-- 		mod.was_third_person = mod:_is_in_third_person()
+-- 		mod.last_character_state = mod:_character_state()
+-- 	end
+-- end)
 
 -- Update flashlight state
 mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)

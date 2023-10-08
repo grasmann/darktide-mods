@@ -56,6 +56,7 @@ local LOADING_STATES = table_enum("loading", "ready_to_load", "loaded", "dirty")
 
 mod:hook(CLASS.UIWorldSpawner, "_create_world", function(func, self, world_name, layer, timer_name, optional_view_name, optional_flags, ...)
     optional_flags = {
+        -- Application.ENABLE_MOC,
 		Application.ENABLE_VOLUMETRICS,
         Application.ENABLE_RAY_TRACING,
     }
