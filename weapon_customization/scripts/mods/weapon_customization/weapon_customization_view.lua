@@ -13,6 +13,8 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
 local ViewElementProfilePresets = mod:original_require("scripts/ui/view_elements/view_element_profile_presets/view_element_profile_presets")
+local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
+local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -107,7 +109,101 @@ end
 	local utf8_upper = Utf8.upper
 	local localize = Localize
 	local callback = callback
+	local script_unit = ScriptUnit
 --#endregion
+
+-- ##### ┌─┐┌─┐┬ ┬┌┐┌┌┬┐ ##############################################################################################
+-- ##### └─┐│ ││ ││││ ││ ##############################################################################################
+-- ##### └─┘└─┘└─┘┘└┘─┴┘ ##############################################################################################
+
+mod.get_equipment_sound_effect = function(self, item, attachment_slot, type)
+	if item.item_type == "WEAPON_RANGED" then
+		if attachment_slot == "magazine" then
+			if type == "detach" then
+				return {SoundEventAliases.sfx_magazine_eject.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_magazine_eject.default}
+			else
+				return {SoundEventAliases.sfx_magazine_insert.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_magazine_insert.default}
+			end
+		elseif attachment_slot == "receiver" or attachment_slot == "body" then
+			return {SoundEventAliases.sfx_equip.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_equip.default}
+		elseif attachment_slot == "bayonet" then
+			if type == "detach" then
+				return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_pull.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_reload_lever_pull.default}
+			else
+				return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_release.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_reload_lever_release.default}
+			end
+		elseif attachment_slot == "muzzle" or attachment_slot == "flashlight" or attachment_slot == "sight" then
+			return {SoundEventAliases.sfx_inspect.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_inspect.default}
+		else
+			if type == "detach" then
+				return {SoundEventAliases.sfx_weapon_down.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_weapon_down.default}
+			else
+				return {SoundEventAliases.sfx_weapon_up.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_weapon_up.default}
+			end
+		end
+	end
+end
+
+mod.play_attachment_sound = function(self, item, attachment_slot, attachment, type)
+	local item_name = self.cosmetics_view._item_name
+	if attachment == "default" then
+		attachment = self:get_actual_default_attachment(item, attachment_slot)
+	end
+	local sounds = self:get_equipment_sound_effect(item, attachment_slot, type)
+	if sounds then
+		local ui_manager = managers.ui
+		local slot_info_id = self.cosmetics_view._slot_info_id
+		local slot_infos = slot_info_id and self:persistent_table("weapon_customization").attachment_slot_infos
+		local gear_info = slot_infos and slot_infos[slot_info_id]
+		local unit = gear_info and gear_info.attachment_slot_to_unit[attachment_slot]
+
+		if unit then
+			for _, sound in pairs(sounds) do
+				ui_manager:play_unit_sound(sound, unit, 1)
+			end
+		end
+	else
+		if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
+			for _, data in pairs(self.attachment[item_name][attachment_slot]) do
+				if data.id == attachment and data.sounds then
+					for _, sound in pairs(data.sounds) do
+						self.cosmetics_view:_play_sound(sound)
+					end
+				end
+			end
+		end
+	end
+end
+
+mod.load_attachment_sounds = function(self, item)
+	local packages = mod:persistent_table("weapon_customization").loaded_packages
+	local attachments = self:get_item_attachment_slots(item)
+	for _, attachment_slot in pairs(attachments) do
+		local detach_sounds = self:get_equipment_sound_effect(item, attachment_slot, "detach")
+		if detach_sounds then
+			for _, detach_sound in pairs(detach_sounds) do
+				if not packages[detach_sound] then
+					packages[detach_sound] = managers.package:load(detach_sound, "weapon_customization")
+				end
+			end
+		end
+		local attach_sounds = self:get_equipment_sound_effect(item, attachment_slot, "attach")
+		if attach_sounds then
+			for _, attach_sound in pairs(attach_sounds) do
+				if not packages[attach_sound] then
+					packages[attach_sound] = managers.package:load(attach_sound, "weapon_customization")
+				end
+			end
+		end
+	end
+end
+
+mod.release_attachment_sounds = function(self)
+	for _, package_id in pairs(mod:persistent_table("weapon_customization").loaded_packages) do
+		managers.package:release(package_id)
+	end
+	mod:persistent_table("weapon_customization").loaded_packages = {}
+end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -125,28 +221,20 @@ mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 
 		local num_meshes = unit_num_meshes(unit)
 		if (mesh_move or unit_and_meshes or mesh_position) and num_meshes > 0 then
-			if mesh_position and not mesh_index then
-				for i = 1, num_meshes do
-					local mesh = unit_mesh(unit, i)
-					local unit_data = self.mesh_positions[unit]
-					local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
-					local mesh_position = mesh_position or vector3_zero()
-					local position = mesh_default + mesh_position
-					if mesh_move or unit_and_meshes then
-						position = position + movement
-					end
-					mesh_set_local_position(mesh, unit, position)
-				end
-			elseif mesh_position and mesh_index then
-				for i = mesh_index, mesh_index do
-					local mesh = unit_mesh(unit, i)
-					local unit_data = self.mesh_positions[unit]
-					local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
-					local mesh_position = mesh_position or vector3_zero()
-					local position = mesh_default + mesh_position
+			local mesh_start, mesh_end = 1, num_meshes
+			if (mesh_position and not (mesh_move or unit_and_meshes)) and mesh_index then
+				mesh_start, mesh_end = mesh_index, mesh_index
+			end
+			for i = mesh_start, mesh_end do
+				local mesh = unit_mesh(unit, i)
+				local unit_data = self.mesh_positions[unit]
+				local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
+				local mesh_position = mesh_position or vector3_zero()
+				local position = mesh_default + mesh_position
+				if mesh_move or unit_and_meshes then
 					position = position + movement
-					mesh_set_local_position(mesh, unit, position)
 				end
+				mesh_set_local_position(mesh, unit, position)
 			end
 		end
 
@@ -179,7 +267,7 @@ mod.detach_attachment = function(self, item, attachment_slot, attachment, new_at
 	end
 	local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
 	if not self:vector3_equal(movement, vector3_zero()) then
-		self:play_attachment_sound(item, attachment_slot, attachment)
+		self:play_attachment_sound(item, attachment_slot, attachment, "detach")
 	end
 end
 
@@ -277,22 +365,6 @@ end
 -- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###################################
 -- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├┤ │ │││││   │ ││ ││││└─┐ ###################################
 -- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ###################################
-
-mod.play_attachment_sound = function(self, item, attachment_slot, attachment)
-	local item_name = self.cosmetics_view._item_name
-	if attachment == "default" then
-		attachment = self:get_actual_default_attachment(item, attachment_slot)
-	end
-	if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
-		for _, data in pairs(self.attachment[item_name][attachment_slot]) do
-			if data.id == attachment and data.sounds then
-				for _, sound in pairs(data.sounds) do
-					self.cosmetics_view:_play_sound(sound)
-				end
-			end
-		end
-	end
-end
 
 mod.resolve_auto_equips = function(self, item)
 	for _, attachment_slot in pairs(self.attachment_slots) do
@@ -672,7 +744,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								end
 							elseif entry.type == "attach" then
 								if not mod:vector3_equal(movement, vector3_zero()) or entry.new ~= entry.old and unit then
-									mod:play_attachment_sound(mod.cosmetics_view._selected_item, entry.slot, entry.new)
+									mod:play_attachment_sound(mod.cosmetics_view._selected_item, entry.slot, entry.new, "attach")
 								end
 								if unit_good then
 									mod:unit_set_local_position_mesh(slot_info_id, unit, default_position)
@@ -747,6 +819,16 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				mod:update_randomize_button()
 			end
 		end
+
+		-- if weapon_spawn_data and weapon_spawn_data.link_unit and unit_alive(weapon_spawn_data.link_unit) then
+		-- 	local wwise_world = managers.world:wwise_world(self._world)
+		-- 	-- local pose = Camera.world_pose(self._camera)
+		-- 	local pose = Unit.world_pose(weapon_spawn_data.link_unit, 1)
+		-- 	WwiseWorld.set_listener(wwise_world, 1, pose)
+		-- end
+		-- local wwise_world = managers.world:wwise_world(self._world)
+		-- local pose = Camera.world_pose(self._camera)
+		-- WwiseWorld.set_listener(wwise_world, 0, pose)
 	end
 end)
 
@@ -1565,7 +1647,7 @@ mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
 				self:detach_attachment(self.cosmetics_view._presentation_item, attachment_slot, attachment, new_value)
 			else
 				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, new_value)
-				self:play_attachment_sound(self.cosmetics_view._selected_item, attachment_slot, new_value)
+				self:play_attachment_sound(self.cosmetics_view._selected_item, attachment_slot, new_value, "attach")
 			end
 
 			local weapon_attachments = self.attachment_models[item_name]
@@ -1629,6 +1711,10 @@ end
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
 	-- Fetch instance
 	mod.cosmetics_view = self
+	-- Settings
+	settings.wwise_states = {
+		options = WwiseGameSyncSettings.state_groups.options.none
+	}
 	-- Original function
 	func(self, settings, context, ...)
 	-- Custom attributes
@@ -1678,6 +1764,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
     mod:hide_custom_widgets(true)
 	mod:resolve_no_support(self._selected_item)
+	mod:load_attachment_sounds(self._selected_item)
 	-- mod:resolve_auto_equips(self._selected_item)
 
 end)
@@ -1777,6 +1864,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 	end
 
 	mod:check_unsaved_changes(true)
+	mod:release_attachment_sounds()
 
 	func(self, ...)
 

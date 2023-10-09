@@ -13,7 +13,9 @@ mod:persistent_table("weapon_customization", {
 	player_equipment = {},
 	attachment_slot_infos = {},
 	loaded_packages = {},
+	used_packages = {},
 	input_hooked = false,
+	weapon_templates = {},
 })
 mod.was_third_person = nil
 

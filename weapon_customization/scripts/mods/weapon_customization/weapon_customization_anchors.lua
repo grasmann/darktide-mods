@@ -309,7 +309,7 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                 autogun_rifle_ak_sight_01 =         {model = "content/items/weapons/player/ranged/sights/autogun_rifle_ak_sight_01",          type = type, parent = tv(parent, 2), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 2), no_support = tv(no_support, 2), hide_mesh = tv(hide_mesh, 2)},
                 autogun_rifle_sight_01 =            {model = "content/items/weapons/player/ranged/sights/autogun_rifle_sight_01",             type = type, parent = tv(parent, 3), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 3), no_support = tv(no_support, 3), hide_mesh = tv(hide_mesh, 3)},
                 autogun_rifle_killshot_sight_01 =   {model = "content/items/weapons/player/ranged/sights/autogun_rifle_killshot_sight_01",    type = type, parent = tv(parent, 4), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 4), no_support = tv(no_support, 4), hide_mesh = tv(hide_mesh, 4)},
-                lasgun_rifle_sight_01 =             {model = "content/items/weapons/player/ranged/sights/lasgun_rifle_sight_01",              type = type, parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = "both", automatic_equip = tv(automatic_equip, 5), no_support = tv(no_support, 5), hide_mesh = tv(hide_mesh, 5)},
+                lasgun_rifle_sight_01 =             {model = "content/items/weapons/player/ranged/sights/lasgun_rifle_sight_01",              type = type, parent = tv(parent, 5), angle = angle, move = move, remove = remove, mesh_move = false, automatic_equip = tv(automatic_equip, 5), no_support = tv(no_support, 5), hide_mesh = tv(hide_mesh, 5)},
             }
         end
         local _stock_attachments = function()
@@ -2058,10 +2058,10 @@ local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
                 flashlight_02 =    {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
                 flashlight_03 =    {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
                 flashlight_04 =    {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)},
-                bayonet_blade_01 = {parent = "body", parent_node = 7, position = vector3_box(0, .75, -.275), rotation = vector3_box(-90, 0, 0), scale = vector3_box(1.5, 1.5, 1.5)},
-                bayonet_01 =       {parent = "body", parent_node = 7, position = vector3_box(0, .65, -.275), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
-                bayonet_02 =       {parent = "body", parent_node = 7, position = vector3_box(0, .65, -.275), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
-                bayonet_03 =       {parent = "body", parent_node = 7, position = vector3_box(0, .65, -.275), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_blade_01 = {parent = "body", parent_node = 12, position = vector3_box(0, .4, 0), rotation = vector3_box(-90, 0, 0), scale = vector3_box(1.5, 1.5, 1.5)},
+                bayonet_01 =       {parent = "body", parent_node = 12, position = vector3_box(0, .4, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_02 =       {parent = "body", parent_node = 12, position = vector3_box(0, .4, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                bayonet_03 =       {parent = "body", parent_node = 12, position = vector3_box(0, .4, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
                     {dependencies = {"laser_pointer"}, -- Laser Pointer
                         flashlight = {position = vector3_box(.12, .33, .11), rotation = vector3_box(0, 360, 0), scale = vector3_box(2, 2, 2)}},

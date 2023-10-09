@@ -42,6 +42,7 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local Application = Application
     local log_error = Log.error
     local log_warning = Log.warning
+    local managers = Managers
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -105,19 +106,17 @@ end)
 mod:hook(CLASS.PackageSynchronizerClient, "_get_loaded_packages_from_package_data", function(func, self, package_data, input_array, ...)
     if package_data.state ~= LOADING_STATES.ready_to_load then
 		for package_name, id in pairs(package_data.dependencies) do
-            -- Name of package to be unloaded
-            local unload_name = mod:item_name_from_content_string(package_name)
-            -- Check if trinket hook is used by player
+            -- Get modded packages
+            mod:get_modded_packages()
+            -- Check if package is used
             local package_used = false
-            if mod.initialized and string_find(unload_name, "trinket") then
-                local weapons = mod.weapon_extension._weapons
-                for slot_name, weapon in pairs(weapons) do
-                    local attachments = weapon.item and weapon.item.attachments
-                    if attachments then
-                        if mod:_recursive_find_attachment_name(attachments, unload_name) then
-                            package_used = true
-                        end
+            for used_package_name, _ in pairs(mod:persistent_table("weapon_customization").used_packages) do
+                if used_package_name == package_name then
+                    package_used = true
+                    if mod.last_prevent ~= package_name then
+                        mod.last_prevent = package_name
                     end
+                    break
                 end
             end
             -- Unload if possible

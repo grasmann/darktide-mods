@@ -101,6 +101,35 @@ mod.setup_item_definitions = function(self)
     end
 end
 
+mod.get_modded_packages = function(self)
+    self:setup_item_definitions()
+    local packages = self:persistent_table("weapon_customization").used_packages
+    if self.weapon_extension then
+        local weapons = self.weapon_extension._weapons
+        for slot_name, weapon in pairs(weapons) do
+            if weapon and weapon.item then
+                self:get_modded_item_packages(weapon.item, packages)
+            end
+        end
+    end
+end
+
+mod.get_modded_item_packages = function(self, item, packages)
+    local found_attachments = {}
+    self:_recursive_get_attachments(item.attachments, found_attachments, true)
+    for _, attachment_data in pairs(found_attachments) do
+        local item_string = attachment_data.item
+        if item_string and item_string ~= "" then
+            local item_definition = self:persistent_table("weapon_customization").item_definitions[item_string]
+            if item_definition and item_definition.resource_dependencies then
+                for package_name, _ in pairs(item_definition.resource_dependencies) do
+                    packages[package_name] = true
+                end
+            end
+        end
+    end
+end
+
 -- ##### ┬┌┐┌┬  ┬┌─┐┌┐┌┌┬┐┌─┐┬─┐┬ ┬ ###################################################################################
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
 -- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
@@ -428,10 +457,11 @@ end)
 
 mod.template_add_torch = function(self, orig_weapon_template)
     if self.previewed_weapon and orig_weapon_template then
-        if not self.weapon_templates[orig_weapon_template.name] then
-            self.weapon_templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
+        local templates = self:persistent_table("weapon_customization").weapon_templates
+        if not templates[orig_weapon_template.name] then
+            templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
         end
-        local weapon_template = self.weapon_templates[orig_weapon_template.name]
+        local weapon_template = templates[orig_weapon_template.name]
             
         if weapon_template.displayed_weapon_stats_table and weapon_template.displayed_weapon_stats_table.damage[3] then
             weapon_template.displayed_weapon_stats_table.damage[3] = nil

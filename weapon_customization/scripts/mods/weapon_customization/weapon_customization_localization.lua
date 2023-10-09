@@ -57,42 +57,52 @@ return {
 	group_visible_equipment = {
 		en = "Visible Equipment",
 		de = "Sichtbare Ausrüstung",
+		["zh-cn"] = "装备可见",
 	},
 	mod_option_visible_equipment = {
 		en = "Visible Equipment",
 		de = "Sichtbare Ausrüstung",
+		["zh-cn"] = "装备可见",
 	},
 	mod_option_visible_equipment_tooltip = {
 		en = "Shows currently unwielded equipment on player characters",
 		de = "Zeigt die nicht genutzte Ausrüstung der Spielercharaktere",
+		["zh-cn"] = "在玩家角色上显示当前未手持的装备",
 	},
 	mod_option_visible_equipment_sounds = {
 		en = "Weapon Sounds",
 		de = "Waffen Geräusche",
+		["zh-cn"] = "武器声音",
 	},
 	mod_option_visible_equipment_sounds_tooltip = {
 		en = "Plays sound effects for weapons when walking",
 		de = "Spielt beim Gehen Soundeffekte für Waffen ab",
+		["zh-cn"] = "行走时播放武器音效",
 	},
 	mod_option_visible_equipment_sounds_all = {
 		en = "Self and Teammates",
 		de = "Selbst und Gruppenmitglieder",
+		["zh-cn"] = "自己和队友",
 	},
 	mod_option_visible_equipment_sounds_others = {
 		en = "Teammates",
 		de = "Gruppenmitglieder",
+		["zh-cn"] = "队友",
 	},
 	mod_option_visible_equipment_sounds_off = {
 		en = "Off",
 		de = "Aus",
+		["zh-cn"] = "关闭",
 	},
 	mod_option_visible_equipment_own_sounds_fp = {
 		en = "Sounds in First Person",
 		de = "Geräusche in First Person",
+		["zh-cn"] = "第一人称声音",
 	},
 	mod_option_visible_equipment_own_sounds_fp_tooltip = {
 		en = "Hear the sounds of your own equipment in first person",
 		de = "Höre die Geräusche deiner eigenen Ausrüstung in first person",
+		["zh-cn"] = "在第一人称下能听到自己装备的声音",
 	},
 	group_weapon_animation = {
 		en = "Weapon Animations",
@@ -337,22 +347,27 @@ return {
 	group_battery = {
 		en = "Battery",
 		de = "Batterie",
+		["zh-cn"] = "电池",
 	},
 	mod_option_battery_show = {
 		en = "Show Bar",
 		de = "Leiste anzeigen",
+		["zh-cn"] = "显示状态条",
 	},
 	mod_option_battery_show_tooltip = {
 		en = "Shows a bar with your current battery charge",
 		de = "Zeigt einen Balken mit deinter aktuellen Batterieladung",
+		["zh-cn"] = "显示当前电池充能的状态指示条",
 	},
 	mod_option_battery_show_threshold = {
 		en = "When under",
 		de = "Wenn weniger als",
+		["zh-cn"] = "仅当低于",
 	},
 	mod_option_battery_show_threshold_tooltip = {
 		en = "Shows battery bar only when charge is under selected percentage",
 		de = "Zeigt den Batteriebalken nur an, wenn die Ladung unter dem ausgewählten Prozentsatz liegt",
+		["zh-cn"] = "仅在充能低于所选百分比时显示电池状态条",
 	},
 	mod_option_battery_show_threshold_10 = {
 		en = "10%%",
