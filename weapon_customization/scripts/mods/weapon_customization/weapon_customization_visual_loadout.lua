@@ -74,9 +74,9 @@ mod._add_custom_attachments = function(self, item, attachments)
 		-- Get item name
 		local item_name = self:item_name_from_content_string(item.name)
 		-- Save original attachments
-		if (item.preview_item or self.cosmetics_view) and item.__master_item and not item.__master_item.original_attachments then
+		if item.__master_item and not item.__master_item.original_attachments then
 			item.__master_item.original_attachments = table_clone(attachments)
-		elseif (item.preview_item or self.cosmetics_view) and not item.original_attachments then
+		elseif not item.original_attachments then
 			item.original_attachments = table_clone(attachments)
 		end
 		-- Iterate custom attachment slots

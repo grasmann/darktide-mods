@@ -153,6 +153,11 @@ mod._active_flashlight_template = nil
 -- ##### ├┴┐├─┤ │  │ ├┤ ├┬┘└┬┘ ########################################################################################
 -- ##### └─┘┴ ┴ ┴  ┴ └─┘┴└─ ┴  ########################################################################################
 
+mod.recharge_battery = function(self)
+	local flashlight_template = self:get_flashlight_template()
+	self.battery = flashlight_template and flashlight_template.battery.max
+end
+
 -- Get current battery charge
 mod.get_battery_charge = function(self)
 	return self.battery or self._active_flashlight_template and self._active_flashlight_template.battery and self._active_flashlight_template.battery.max or 0
@@ -196,9 +201,11 @@ mod.update_battery = function(self)
 				-- Check if flashlight is switched on
 				local flashlight_on = self:persistent_table("weapon_customization").flashlight_on
 				local laser_pointer_on = self:persistent_table("weapon_customization").laser_pointer_on == 2
-				if (flashlight_on or laser_pointer_on) and self:get_wielded_slot() == "slot_secondary" then
+				local only_pointer = self:persistent_table("weapon_customization").laser_pointer_on == 1
+				if (flashlight_on or laser_pointer_on or only_pointer) and self:get_wielded_slot() == "slot_secondary" then
 					-- Drain battery
-					self.battery = self.battery - self._active_flashlight_template.battery.drain
+					local drain = only_pointer and self._active_flashlight_template.battery.drain * .3 or self._active_flashlight_template.battery.drain
+					self.battery = self.battery - drain * (self.battery_drain_multiplier or 1)
 				else
 					-- Charge battery
 					self.battery = self.battery + self._active_flashlight_template.battery.charge
@@ -216,7 +223,7 @@ mod.update_battery = function(self)
 					self:toggle_flashlight(false, false)
 				elseif self:persistent_table("weapon_customization").laser_pointer_on == 2 then
 					-- Switch off laser pointer light
-					self:toggle_laser(false, 1)
+					self:toggle_laser(false, 0)
 				end
 			end
 		end
@@ -395,7 +402,7 @@ mod.update_flicker = function(self)
 		if light_unit and state then
 			local t = self.time_manager:time("gameplay")
 			local settings = self._active_flashlight_template.flicker
-			if self:get("mod_option_laser_pointer_wild") and self:persistent_table("weapon_customization").laser_pointer_on == 2 then
+			if (self:get("mod_option_laser_pointer_wild") and self:persistent_table("weapon_customization").laser_pointer_on == 2) or self.flicker_wild then
 				settings = self.laser_pointer_flicker_wild
 			end
 

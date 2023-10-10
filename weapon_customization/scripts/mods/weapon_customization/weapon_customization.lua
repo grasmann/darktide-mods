@@ -38,6 +38,7 @@ function mod.on_game_state_changed(status, state_name)
 	-- Reset flashlight state
 	mod:persistent_table("weapon_customization").flashlight_on = false
 	mod:reset_laser_pointer()
+	mod:recharge_battery()
 end
 
 -- Mod settings changed
@@ -92,6 +93,7 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "_update_first_person_mode", func
 		-- Update flashlight / laser pointer
 		if mod:has_flashlight_attachment() then mod:update_flashlight_view() end
 		if mod:has_laser_pointer_attachment() then mod:update_laser_pointer() end
+		mod:daemon_host_update(t)
 		-- Cache values
 		mod.was_third_person = mod:_is_in_third_person()
 		mod.last_character_state = mod:_character_state()
@@ -155,6 +157,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_cus
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visible_equipment")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_laser_pointer")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_daemon_host")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_fix")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")

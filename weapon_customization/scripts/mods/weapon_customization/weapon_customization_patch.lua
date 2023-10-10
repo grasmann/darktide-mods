@@ -107,16 +107,19 @@ mod.get_modded_packages = function(self)
     if self.weapon_extension then
         local weapons = self.weapon_extension._weapons
         for slot_name, weapon in pairs(weapons) do
-            if weapon and weapon.item then
-                self:get_modded_item_packages(weapon.item, packages)
+            if weapon and weapon.item and weapon.item.attachments then
+                self:get_modded_item_packages(weapon.item.attachments, packages)
+                if weapon.item.original_attachments then
+                    self:get_modded_item_packages(weapon.item.original_attachments, packages)
+                end
             end
         end
     end
 end
 
-mod.get_modded_item_packages = function(self, item, packages)
+mod.get_modded_item_packages = function(self, attachments, packages)
     local found_attachments = {}
-    self:_recursive_get_attachments(item.attachments, found_attachments, true)
+    self:_recursive_get_attachments(attachments, found_attachments, true)
     for _, attachment_data in pairs(found_attachments) do
         local item_string = attachment_data.item
         if item_string and item_string ~= "" then

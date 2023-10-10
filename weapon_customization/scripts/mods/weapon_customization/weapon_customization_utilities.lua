@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+    local world_physics_world = World.physics_world
     local string_gsub = string.gsub
     local string_find = string.find
     local math_floor = math.floor
@@ -91,4 +92,12 @@ end
 -- Check character state
 mod._character_state = function(self)
 	return self.character_state_machine_extension:current_state()
+end
+
+mod.world = function(self)
+    return managers.world:world("level_world")
+end
+
+mod.physics_world = function(self)
+    return world_physics_world(self:world())
 end

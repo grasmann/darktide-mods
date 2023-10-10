@@ -103,29 +103,61 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #########################################################################
 
-mod:hook(CLASS.PackageSynchronizerClient, "_get_loaded_packages_from_package_data", function(func, self, package_data, input_array, ...)
-    if package_data.state ~= LOADING_STATES.ready_to_load then
-		for package_name, id in pairs(package_data.dependencies) do
-            -- Get modded packages
-            mod:get_modded_packages()
-            -- Check if package is used
-            local package_used = false
-            for used_package_name, _ in pairs(mod:persistent_table("weapon_customization").used_packages) do
-                if used_package_name == package_name then
-                    package_used = true
-                    if mod.last_prevent ~= package_name then
-                        mod.last_prevent = package_name
-                    end
-                    break
-                end
-            end
-            -- Unload if possible
-            if not package_used then
-                input_array[#input_array + 1] = id
-            end
-		end
-	end
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)
+    func(self, item, slot_name, optional_existing_unit_3p, t, ...)
+    if self._unit == mod.player_unit then
+        -- Reset used packages
+        mod:persistent_table("weapon_customization").used_packages = {}
+        -- Get modded packages
+        mod:get_modded_packages()
+    end
 end)
+
+mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
+	local load_call_item = self._load_call_data[id]
+	local package_name = load_call_item.package_name
+    -- -- Get modded packages
+    mod:get_modded_packages()
+    -- Check if package is used
+    local package_used = false
+    for used_package_name, _ in pairs(mod:persistent_table("weapon_customization").used_packages) do
+        if used_package_name == package_name then
+            package_used = true
+            if mod.last_prevent ~= package_name then
+                mod.last_prevent = package_name
+            end
+            break
+        end
+    end
+    -- Unload if possible
+    if not package_used then
+        func(self, id, ...)
+    end
+end)
+
+-- mod:hook(CLASS.PackageSynchronizerClient, "_get_loaded_packages_from_package_data", function(func, self, package_data, input_array, ...)
+--     if package_data.state ~= LOADING_STATES.ready_to_load then
+-- 		for package_name, id in pairs(package_data.dependencies) do
+--             -- Get modded packages
+--             mod:get_modded_packages()
+--             -- Check if package is used
+--             local package_used = false
+--             for used_package_name, _ in pairs(mod:persistent_table("weapon_customization").used_packages) do
+--                 if used_package_name == package_name then
+--                     package_used = true
+--                     if mod.last_prevent ~= package_name then
+--                         mod.last_prevent = package_name
+--                     end
+--                     break
+--                 end
+--             end
+--             -- Unload if possible
+--             if not package_used then
+--                 input_array[#input_array + 1] = id
+--             end
+-- 		end
+-- 	end
+-- end)
 
 mod:hook(CLASS.ExtensionManager, "unregister_unit", function(func, self, unit, ...)
     if unit and unit_alive(unit) then

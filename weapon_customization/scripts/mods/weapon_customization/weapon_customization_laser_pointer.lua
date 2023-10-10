@@ -388,10 +388,6 @@ mod.toggle_laser = function(self, retain, optional_value)
     end
 end
 
-mod.world = function(self)
-    return Managers.world:world("level_world")
-end
-
 mod.despawn_dots = function(self)
     if self.weapon_dot then
         world_destroy_particles(self:world(), self.weapon_dot)
@@ -458,7 +454,10 @@ mod.check_fx_spawner = function(self)
         self.fx_extension._vfx_spawners["slot_primary_laser_pointer_3p"] = nil
         spawner = nil
     end
-    local laser_pointer_1p, laser_pointer_3p = mod:get_laser_pointer_unit()
+    local laser_pointer_1p, laser_pointer_3p = self:get_laser_pointer_unit()
+    if not laser_pointer_1p or not laser_pointer_3p then
+        laser_pointer_1p, laser_pointer_3p = self:get_flashlight_unit()
+    end
     if laser_pointer_1p and laser_pointer_3p then
         -- Register spawner if necessary
         if not spawner then
