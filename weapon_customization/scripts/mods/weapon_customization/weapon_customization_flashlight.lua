@@ -154,8 +154,7 @@ mod._active_flashlight_template = nil
 -- ##### └─┘┴ ┴ ┴  ┴ └─┘┴└─ ┴  ########################################################################################
 
 mod.recharge_battery = function(self)
-	local flashlight_template = self:get_flashlight_template()
-	self.battery = flashlight_template and flashlight_template.battery.max
+	self.battery = self._active_flashlight_template and self._active_flashlight_template.battery and self._active_flashlight_template.battery.max
 end
 
 -- Get current battery charge
@@ -305,6 +304,7 @@ mod.set_flashlight_template = function(self, flashlight_units)
 		self:_set_light_values(flashlight_units.unit_1p, flashlight_template.light.first_person)
 		self:_set_light_values(flashlight_units.unit_3p, flashlight_template.light.third_person)
 		self._active_flashlight_template = flashlight_template
+		self:recharge_battery()
 	end
 end
 
@@ -383,6 +383,10 @@ mod.update_flashlight_view = function(self)
     if changed or self:character_state_changed() then
         self:toggle_flashlight(true)
     end
+end
+
+mod.reset_flashlight = function(self)
+	self:persistent_table("weapon_customization").flashlight_on = false
 end
 
 -- Update flashlight flicker
@@ -536,10 +540,10 @@ mod:hook(CLASS.UIHud, "_setup_elements", function(func, self, element_definition
 	local visible_elements = visibility_group.visible_elements
 	visible_elements[class_name] = true
 
-	-- -- Add to communication wheel visibility group
-	-- local visibility_group = visibility_groups_lookup["communication_wheel"]
-	-- visibility_group.visible_elements = visibility_group.visible_elements or {}
-	-- local visible_elements = visibility_group.visible_elements
-	-- visible_elements[class_name] = true
+	-- Add to communication wheel visibility group
+	local visibility_group = visibility_groups_lookup["tactical_overlay"]
+	visibility_group.visible_elements = visibility_group.visible_elements or {}
+	local visible_elements = visibility_group.visible_elements
+	visible_elements[class_name] = true
 end)
 

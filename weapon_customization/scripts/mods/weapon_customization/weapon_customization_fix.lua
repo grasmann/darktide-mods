@@ -123,14 +123,11 @@ mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
     for used_package_name, _ in pairs(mod:persistent_table("weapon_customization").used_packages) do
         if used_package_name == package_name then
             package_used = true
-            if mod.last_prevent ~= package_name then
-                mod.last_prevent = package_name
-            end
             break
         end
     end
     -- Unload if possible
-    if not package_used then
+    if not package_used or self._shutdown_has_started then
         func(self, id, ...)
     end
 end)
@@ -454,6 +451,77 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         return item_instance
     end
 
+    local function _store_item_plus_overrides(data)
+        local item_instance = {
+            __data = data,
+            __gear = {
+                masterDataInstance = {
+                    id = data.id,
+                    overrides = data.overrides
+                }
+            },
+            __gear_id = data.gear_id or data.gearId
+        }
+    
+        setmetatable(item_instance, {
+            __index = function (t, field_name)
+                local master_ver = rawget(item_instance, "__master_ver")
+    
+                if master_ver ~= MasterItems.get_cached_version() then
+                    local success = _update_master_data(item_instance)
+    
+                    if not success then
+                        log_error("MasterItems", "[_store_item_plus_overrides][1] could not update master data with %s; %s", data.id, data.gear_id)
+    
+                        return nil
+                    end
+                end
+    
+                if field_name == "gear_id" then
+                    return rawget(item_instance, "__gear_id")
+                end
+    
+                if field_name == "gear" then
+                    return rawget(item_instance, "__gear")
+                end
+    
+                local master_item = rawget(item_instance, "__master_item")
+    
+                if not master_item then
+                    log_warning("MasterItemCache", string_format("No master data for item with id %s", item_instance.__asset_id))
+    
+                    return nil
+                end
+    
+                local field_value = master_item[field_name]
+    
+                if field_name == "rarity" and field_value == -1 then
+                    return nil
+                end
+    
+                return field_value
+            end,
+            __newindex = function (t, field_name, value)
+                -- ferror("Not allowed to modify inventory items - %s[%s]", rawget(item_instance, "__gear_id"), field_name)
+            end,
+            __tostring = function (t)
+                local master_item = rawget(item_instance, "__master_item")
+    
+                return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
+            end
+        })
+    
+        local success = _update_master_data(item_instance)
+    
+        if not success then
+            log_error("MasterItems", "[_store_item_plus_overrides][2] could not update master data with %s; %s", data.id, data.gear_id)
+    
+            return nil
+        end
+    
+        return item_instance
+    end
+
     instance.get_item_instance = function (gear, gear_id)
         if not gear then
             log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
@@ -462,5 +530,9 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         else
             return _item_plus_overrides(gear, gear_id)
         end
+    end
+
+    instance.get_store_item_instance = function (description)
+        return _store_item_plus_overrides(description)
     end
 end)

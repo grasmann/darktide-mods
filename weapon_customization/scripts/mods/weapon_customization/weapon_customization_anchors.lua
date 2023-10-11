@@ -1011,7 +1011,7 @@ local _item_minion = "content/items/weapons/minions"
                 return {
                     {id = "left_default",       name = "Default",           sounds = {_receiver_sound}},
                     {id = "left_01",            name = "Slab Shield",       sounds = {_receiver_sound}},
-                    {id = "bulwark_shield_01",  name = "Bulwark Shield",    sounds = {_receiver_sound}},
+                    -- {id = "bulwark_shield_01",  name = "Bulwark Shield",    sounds = {_receiver_sound}},
                 }
             end
             local _ogryn_shield_models = function(parent, angle, move, remove)
@@ -1021,7 +1021,8 @@ local _item_minion = "content/items/weapons/minions"
                 return {
                     left_default =      {model = "",                                                     type = "left", parent = tv(parent, 1), angle = a, move = m, remove = r},
                     left_01 =           {model = _item_melee.."/ogryn_slabshield_p1_m1",                 type = "left", parent = tv(parent, 2), angle = a, move = m, remove = r},
-                    bulwark_shield_01 = {model = _item_minion.."/shields/chaos_ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
+                    bulwark_shield_01 = {model = _item_melee.."/ogryn_slabshield_p1_m1",                 type = "left", parent = tv(parent, 2), angle = a, move = m, remove = r},
+                    -- bulwark_shield_01 = {model = _item_minion.."/shields/chaos_ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
                 }
             end
         --#endregion
@@ -1273,6 +1274,23 @@ local _item_minion = "content/items/weapons/minions"
             return {
                 magazine_default = {model = "",                                                    type = "magazine", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
                 magazine_01 =      {model = _item_ranged.."/magazines/lasgun_elysian_magazine_01", type = "magazine", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+            }
+        end
+        local _recon_sight_attachments = function()
+            return {
+                -- {id = "elysian_sight_default", name = "Default",      sounds = {UISoundEvents.apparel_equip}},
+                {id = "elysian_sight_01",      name = "Recon Lasgun", sounds = {UISoundEvents.apparel_equip}},
+                {id = "elysian_sight_02",      name = "Recon Lasgun", sounds = {UISoundEvents.apparel_equip}},
+            }
+        end
+        local _recon_sight_models = function(parent, angle, move, remove)
+            local a = angle or 0
+            local m = move or vector3_box(0, 0, 0)
+            local r = remove or vector3_box(0, 0, 0)
+            return {
+                elysian_sight_default = {model = "",                                                    type = "sight", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                elysian_sight_01 =      {model = _item_ranged.."/sights/lasgun_rifle_elysian_sight_01", type = "sight", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                elysian_sight_02 =      {model = _item_ranged.."/sights/lasgun_rifle_elysian_sight_02", type = "sight", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             }
         end
     --#endregion
@@ -3324,18 +3342,43 @@ local _item_minion = "content/items/weapons/minions"
             lasgun_p3_m1 = {
                 scope_offset = {position = vector3_box(0, 0, .0275)},
                 fixes = {
-                    {dependencies = {"receiver_01"}, -- Rail
+                    {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"}, -- Muzzle
+                        sight = {offset = true, position = vector3_box(0, .01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+                    {dependencies = {"lasgun_rifle_sight_01"}, -- Lasgun sight
+                        sight = {offset = true, position = vector3_box(0, 0, 0), mesh_position = vector3_box(.007, 0, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(.825, 1, 1), scale_node = 6}},
+                    {dependencies = {"lasgun_rifle_sight_01"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.0285), rotation = vector3_box(.1, 0, 0)}},
+                    {dependencies = {"autogun_rifle_sight_01"}, -- Lasgun sight
+                        sight = {offset = true, position = vector3_box(0, .0265, 0), mesh_position = vector3_box(0, .0265, 0), mesh_index = 8, scale = vector3_box(.765, 1, 1), scale_node = 5},
+                        help_sight = {offset = true, position = vector3_box(0, -.055, .0065), scale = vector3_box(.7, .75, 1), scale_node = 5}},
+                    {dependencies = {"autogun_rifle_sight_01"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, .0155), rotation = vector3_box(1, 0, 0)}},
+                    {dependencies = {"autogun_rifle_ak_sight_01"}, -- Lasgun sight
+                        sight = {offset = true, position = vector3_box(0, .045, 0), scale = vector3_box(1, 1, 1), scale_node = 1},
+                        help_sight = {offset = true, position = vector3_box(0, -.055, .0065), scale = vector3_box(.7, .75, 1), scale_node = 5}},
+                    {dependencies = {"autogun_rifle_ak_sight_01"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, .0134), rotation = vector3_box(.6, 0, 0)}},
+                    {dependencies = {"autogun_rifle_killshot_sight_01"}, -- Lasgun sight
+                        sight = {offset = true, position = vector3_box(0, .0225, 0), mesh_position = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), scale_node = 1},
+                        help_sight = {offset = true, position = vector3_box(.056, 0, -.046), scale = vector3_box(.645, .75, 1), scale_node = 5}},
+                    {dependencies = {"autogun_rifle_killshot_sight_01"}, -- Infantry sight
+                        no_scope_offset = {position = vector3_box(0, 0, -.012), rotation = vector3_box(.4, 0, 0)}},
+                    {help_sight = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0), scale_node = 5}},
+
+                    {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03|autogun_rifle_ak_sight_01", "receiver_01"}, -- Rail
                         rail = {parent = "receiver", position = vector3_box(0, .0325, .18), rotation = vector3_box(0, 0, 0), scale = vector3_box(.68, .975, 1)}},
-                    {dependencies = {"receiver_02"}, -- Rail
+                    {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03|autogun_rifle_ak_sight_01", "receiver_02"}, -- Rail
                         rail = {parent = "receiver", position = vector3_box(0, .035, .18), rotation = vector3_box(0, 0, 0), scale = vector3_box(.68, 1.22, 1)}},
-                    {dependencies = {"receiver_03"}, -- Rail
+                    {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03|autogun_rifle_ak_sight_01", "receiver_03"}, -- Rail
                         rail = {parent = "receiver", position = vector3_box(0, .0325, .18), rotation = vector3_box(0, 0, 0), scale = vector3_box(.68, 1.075, 1)}},
-                    {dependencies = {"receiver_04"}, -- Rail
+                    {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03|autogun_rifle_ak_sight_01", "receiver_04"}, -- Rail
                         rail = {parent = "receiver", position = vector3_box(0, .0325, .18), rotation = vector3_box(0, 0, 0), scale = vector3_box(.68, .975, 1)}},
-                    {dependencies = {"receiver_05"}, -- Rail
+                    {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03|autogun_rifle_ak_sight_01", "receiver_05"}, -- Rail
                         rail = {parent = "receiver", position = vector3_box(0, .0325, .18), rotation = vector3_box(0, 0, 0), scale = vector3_box(.68, .975, 1)}},
-                    {dependencies = {"receiver_06"}, -- Rail
+                    {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03|autogun_rifle_ak_sight_01", "receiver_06"}, -- Rail
                         rail = {parent = "receiver", position = vector3_box(0, .0325, .18), rotation = vector3_box(0, 0, 0), scale = vector3_box(.68, .975, 1)}},
+                    {rail = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
 
                     {dependencies = {"barrel_10"}, -- Muzzle
                         muzzle = {offset = true, position = vector3_box(0, .05, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
@@ -3787,10 +3830,13 @@ local _item_minion = "content/items/weapons/minions"
                 emblem_right = _emblem_right_attachments(),
                 emblem_left = _emblem_left_attachments(),
                 sight = table.icombine(
-                    {{id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
+                    -- {{id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
+                    {{id = "elysian_sight_default", name = "Default",      sounds = {UISoundEvents.apparel_equip}}},
+                    _recon_sight_attachments(),
                     _reflex_sights_attachments(),
                     _sights_attachments()
                 ),
+                help_sight = _bolter_sight_attachments(),
                 receiver = _recon_receiver_attachments(),
                 stock = _recon_stock_attachments(),
                 magazine = _recon_magazine_attachments(),
@@ -4976,19 +5022,18 @@ local _item_minion = "content/items/weapons/minions"
                 _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1)),
                 _lasgun_barrel_models(nil, -.3, vector3_box(0, -2, 0), vector3_box(0, .2, 0)),
                 _lasgun_muzzle_models(nil, -.5, vector3_box(.1, -3, 0), vector3_box(0, .2, 0)),
-                _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
                 _reflex_sights_models(nil, .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
-                    {rail = "rail_default"},
-                    {rail = "rail_01"},
-                    {rail = "rail_01"},
-                    {rail = "rail_01"},
+                    {rail = "rail_default", help_sight = "sight_default"},
+                    {rail = "rail_01", help_sight = "sight_default"},
+                    {rail = "rail_01", help_sight = "sight_default"},
+                    {rail = "rail_01", help_sight = "sight_default"},
                 }),
                 _sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
-                    {rail = "rail_default"},
-                    {rail = "rail_01"},
-                    {rail = "rail_default"},
-                    {rail = "rail_01"},
-                    {rail = "rail_default"},
+                    {rail = "rail_default", help_sight = "sight_default"},
+                    {rail = "rail_01", help_sight = "bolter_sight_01"},
+                    {rail = "rail_default", help_sight = "bolter_sight_01"},
+                    {rail = "rail_01", help_sight = "bolter_sight_01"},
+                    {rail = "rail_default", help_sight = "sight_default"},
                 }, {
                     {},
                     {},
@@ -4996,6 +5041,11 @@ local _item_minion = "content/items/weapons/minions"
                     {},
                     {{"sight", 1}},
                 }),
+                _recon_sight_models(nil, .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                    {rail = "rail_default", help_sight = "sight_default"},
+                }),
+                _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+                _bolter_sight_models("receiver", .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "help_sight", {}, {}, {}),
                 _recon_stock_models(nil, .5, vector3_box(-.5, -4, 0), vector3_box(0, -.4, -.11)),
                 _recon_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _recon_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))

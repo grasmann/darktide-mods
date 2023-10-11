@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local table = table
 	local table_contains = table.contains
 	local table_keys = table.keys
 	local table_sort = table.sort
@@ -13,6 +14,7 @@ local mod = get_mod("weapon_customization")
 	local table_append = table.append
 	local table_set_readonly = table.set_readonly
 	local table_clone = table.clone
+	local Unit = Unit
 	local unit_debug_name = Unit.debug_name
 	local unit_alive = Unit.alive
 	local unit_set_local_position = Unit.set_local_position
@@ -35,31 +37,44 @@ local mod = get_mod("weapon_customization")
 	local unit_set_mesh_visibility = Unit.set_mesh_visibility
 	local unit_set_unit_visibility = Unit.set_unit_visibility
 	local unit_flow_event = Unit.flow_event
+	local Unit_set_scalar_for_materials = Unit.set_scalar_for_materials
+	local Unit_set_vector2_for_materials = Unit.set_vector2_for_materials
+	local Unit_set_vector3_for_materials = Unit.set_vector3_for_materials
+	local Unit_set_vector4_for_materials = Unit.set_vector4_for_materials
+	local Unit_set_texture_for_materials = Unit.set_texture_for_materials
+	local Mesh = Mesh
 	local mesh_local_position = Mesh.local_position
 	local mesh_set_local_position = Mesh.set_local_position
+	local Quaternion = Quaternion
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
 	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+	local string = string
 	local string_sub = string.sub
 	local string_gsub = string.gsub
 	local string_find = string.find
 	local string_split = string.split
+	local vector2 = Vector2
 	local vector3 = Vector3
 	local vector3_box = Vector3Box
 	local vector3_unbox = vector3_box.unbox
-	local vector3_zero = Vector3.zero
-	local vector3_one = Vector3.one
+	local vector3_zero = vector3.zero
+	local vector3_one = vector3.one
 	local matrix4x4_box = Matrix4x4Box
+	local World = World
 	local world_unlink_unit = World.unlink_unit
 	local world_link_unit = World.link_unit
 	local world_spawn_unit_ex = World.spawn_unit_ex
 	local lod_group_add_lod_object = LODGroup.add_lod_object
 	local lod_object_set_static_select = LODObject.set_static_select
+	local log_info = Log.info
 	local pairs = pairs
 	local type = type
 	local tonumber = tonumber
 	local visibility_contexts = VisibilityContexts
 	local CLASS = CLASS
 	local script_unit = ScriptUnit
+	local color = Color
+	local rawget = rawget
 --#endregion
 
 local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
@@ -306,16 +321,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			        mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
 			    end
 
-				-- -- Find anchor
-				-- if mod.attachment_units[unit_name] then
-				-- 	local attachment = mod.attachment_units[unit_name]
-				-- 	if attachment then
-				-- 		if mod.anchors[item_name] and mod.anchors[item_name][attachment] then
-				-- 			anchor = mod.anchors[item_name][attachment]
-				-- 		end
-				-- 	end
-				-- end
-
 				-- Bulwark shield
 				if unit_name == "#ID[bc25db1df0670d2a]" then
 					unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 0, -.065))
@@ -368,11 +373,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 							if not anchor.offset then
 								world_unlink_unit(attach_settings.world, unit)
 								world_link_unit(attach_settings.world, unit, 1, parent, parent_node)
-							-- else
-								-- local offset = Unit.world_position(unit, 1) - Unit.world_position(item_unit, 1)
-								-- world_unlink_unit(attach_settings.world, unit)
-								-- world_link_unit(attach_settings.world, unit, 1, item_unit, 1, true)
-								-- unit_set_local_position(unit, 1, offset)
 							end
 
 							-- Set position ( with meshes )
@@ -392,13 +392,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				end
 			end
 
-			-- local all_children = {}
-			-- mod:_recursive_get_all_children(item_unit, all_children)
-			-- mod:dtf(all_children, "all_children", 10)
-			-- mod:dtf(attachment_units, "attachment_units", 10)
-
 			for _, unit in pairs(attachment_units) do
-				local unit_name = unit_debug_name(unit)
 				local anchor = nil
 				-- Handle positioning and setup infos
 				if slot_infos[slot_info_id] then
@@ -424,11 +418,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 									-- Hide nodes
 									for i = 2, #hide_entry do
 										local mesh_index = hide_entry[i]
-										unit_set_mesh_visibility(hide_unit, mesh_index, false)
-									end
-									if attachment_slot == "charge_display" then
-										local mesh_index = mod.test_index
-										mod:echo("charge_display: "..tostring(mesh_index))
 										unit_set_mesh_visibility(hide_unit, mesh_index, false)
 									end
 								end
@@ -765,7 +754,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				material_override_data = rawget(ItemMaterialOverrides, material_override)
 	
 				if material_override_data == nil then
-					Log.info("VisualLoadoutCustomization", "Material override %s does not exist.", material_override)
+					log_info("VisualLoadoutCustomization", "Material override %s does not exist.", material_override)
 				end
 			else
 				material_override_data = ItemMaterialOverrides[material_override]
@@ -781,14 +770,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 	end
 
-	local _apply_material_override = nil
-	local Unit = Unit
-	local Unit_set_scalar_for_materials = Unit.set_scalar_for_materials
-	local Unit_set_vector2_for_materials = Unit.set_vector2_for_materials
-	local Unit_set_vector3_for_materials = Unit.set_vector3_for_materials
-	local Unit_set_vector4_for_materials = Unit.set_vector4_for_materials
-	local Unit_set_texture_for_materials = Unit.set_texture_for_materials
-
 	instance._apply_material_override = function(unit, material_override_data)
 		if material_override_data.property_overrides ~= nil then
 			for property_name, property_override_data in pairs(material_override_data.property_overrides) do
@@ -800,11 +781,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					if property_override_data_num == 1 then
 						Unit_set_scalar_for_materials(unit, property_name, property_override_data[1], true)
 					elseif property_override_data_num == 2 then
-						Unit_set_vector2_for_materials(unit, property_name, Vector2(property_override_data[1], property_override_data[2]), true)
+						Unit_set_vector2_for_materials(unit, property_name, vector2(property_override_data[1], property_override_data[2]), true)
 					elseif property_override_data_num == 3 then
-						Unit_set_vector3_for_materials(unit, property_name, Vector3(property_override_data[1], property_override_data[2], property_override_data[3]), true)
+						Unit_set_vector3_for_materials(unit, property_name, vector3(property_override_data[1], property_override_data[2], property_override_data[3]), true)
 					elseif property_override_data_num == 4 then
-						Unit_set_vector4_for_materials(unit, property_name, Color(property_override_data[1], property_override_data[2], property_override_data[3], property_override_data[4]), true)
+						Unit_set_vector4_for_materials(unit, property_name, color(property_override_data[1], property_override_data[2], property_override_data[3], property_override_data[4]), true)
 					end
 				end
 			end

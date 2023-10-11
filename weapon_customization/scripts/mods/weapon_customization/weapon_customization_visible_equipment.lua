@@ -12,6 +12,7 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+    local Unit = Unit
     local unit_alive = Unit.alive
     local unit_world_position = Unit.world_position
     local unit_world_rotation = Unit.world_rotation
@@ -23,19 +24,24 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
     local unit_flow_event = Unit.flow_event
     local unit_set_unit_visibility = Unit.set_unit_visibility
     local unit_get_child_units = Unit.get_child_units
+    local Quaternion = Quaternion
     local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+    local QuaternionBox = QuaternionBox
     local quaternion_box = QuaternionBox
     local quaternion_unbox = QuaternionBox.unbox
+    local math = math
     local math_ease_out_elastic = math.ease_out_elastic
     local math_easeInCubic = math.easeInCubic
 	local math_easeOutCubic = math.easeOutCubic
     local math_random = math.random
-    local vector3_lerp = Vector3.lerp
     local vector3 = Vector3
+    local vector3_lerp = vector3.lerp
+    local vector3 = vector3
     local vector3_box = Vector3Box
     local vector3_unbox = vector3_box.unbox
     local vector3_one = vector3.one
     local vector3_zero = vector3.zero
+    local World = World
     local world_unlink_unit = World.unlink_unit
     local world_link_unit = World.link_unit
     local world_destroy_unit = World.destroy_unit
@@ -115,7 +121,6 @@ mod.visible_equipment_offsets = {
         ogryn_rippergun_p1_m1 = {
             default = {position = vector3_box(.5, .6, .4), rotation = vector3_box(200, 0, 90)},
             backpack = {position = vector3_box(-.2, .6, .6), rotation = vector3_box(200, 60, 70)},
-            -- step_sounds = {SoundEventAliases.sfx_ads_up.events.default},
             dummy_function = function(slot)
                 -- Get slot info
                 local slot_info_id = mod:get_slot_info_id(slot.item)
@@ -164,7 +169,6 @@ mod.visible_equipment_offsets = {
                 SoundEventAliases.sfx_weapon_foley_left_hand_01.events.ogryn_powermaul_slabshield_p1_m1,
                 SoundEventAliases.sfx_weapon_foley_left_hand_02.events.ogryn_powermaul_slabshield_p1_m1,
             },
-            -- step_sounds2 = {SoundEventAliases.sfx_ads_up.events.default},
         },
     --#endregion
     --#region Guns

@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local wwise_wwise_world = Wwise.wwise_world
     local world_physics_world = World.physics_world
     local string_gsub = string.gsub
     local string_find = string.find
@@ -20,6 +21,19 @@ local mod = get_mod("weapon_customization")
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+mod.load_needed_packages = function(self)
+    local needed_packages = {
+        "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
+    }
+    for _, package_name in pairs(needed_packages) do
+        if not managers.package:has_loaded(package_name) and not managers.package:is_loading(package_name) then
+            local packages = mod:persistent_table("weapon_customization").loaded_packages
+            packages[package_name] = managers.package:load(package_name, "weapon_customization")
+        end
+        mod:persistent_table("weapon_customization").used_packages[package_name] = true
+    end
+end
 
 -- Extract item name from model string
 mod.item_name_from_content_string = function(self, content_string)
@@ -100,4 +114,8 @@ end
 
 mod.physics_world = function(self)
     return world_physics_world(self:world())
+end
+
+mod.wwise_world = function(self)
+	return wwise_wwise_world(self:world())
 end

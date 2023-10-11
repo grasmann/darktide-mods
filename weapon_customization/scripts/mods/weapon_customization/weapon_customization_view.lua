@@ -929,6 +929,20 @@ mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(fun
 	end
 end)
 
+mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
+	local weapon_spawn_data = self._weapon_spawn_data
+	if weapon_spawn_data then
+		local item_unit_3p = weapon_spawn_data.item_unit_3p
+		local attachment_units_3p = weapon_spawn_data.attachment_units_3p
+		for i = #attachment_units_3p, 1, -1 do
+			local unit = attachment_units_3p[i]
+			world_unlink_unit(self._world, unit)
+		end
+		world_unlink_unit(self._world, item_unit_3p)
+	end
+	func(self, ...)
+end)
+
 -- ##### ┌─┐┌─┐┌┬┐┌┬┐┬┌┐┌┌─┐┌─┐ #######################################################################################
 -- ##### └─┐├┤  │  │ │││││ ┬└─┐ #######################################################################################
 -- ##### └─┘└─┘ ┴  ┴ ┴┘└┘└─┘└─┘ #######################################################################################

@@ -92,17 +92,24 @@ end
 
 mod.setup_item_definitions = function(self)
     if self:persistent_table("weapon_customization").item_definitions == nil then
-        self:persistent_table("weapon_customization").item_definitions = table_clone_instance(MasterItems.get_cached())
+        local master_items = MasterItems.get_cached()
+        if master_items then
+            self:persistent_table("weapon_customization").item_definitions = table_clone_instance(master_items)
+        end
     end
     if self:persistent_table("weapon_customization").bulwark_item_definitions == nil then
-        self:persistent_table("weapon_customization").bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
-        self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
-        self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+        local master_items = MasterItems.get_cached()
+        if master_items then
+            self:persistent_table("weapon_customization").bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
+            self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+            self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+        end
     end
 end
 
 mod.get_modded_packages = function(self)
     self:setup_item_definitions()
+    self:load_needed_packages()
     local packages = self:persistent_table("weapon_customization").used_packages
     if self.weapon_extension then
         local weapons = self.weapon_extension._weapons
