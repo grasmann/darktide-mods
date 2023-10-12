@@ -11,16 +11,20 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
+    local table = table
     local table_contains = table.contains
     local table_clone_instance = table.clone_instance
     local table_clone = table.clone
+    local table_size = table.size
     local vector3_box = Vector3Box
     local vector3_unbox = vector3_box.unbox
     local quaternion_matrix4x4 = Quaternion.matrix4x4
     local matrix4x4_transform = Matrix4x4.transform
+    local Camera = Camera
     local camera_local_position = Camera.local_position
-    local Camera_local_rotation = Camera.local_rotation
+    local camera_local_rotation = Camera.local_rotation
     local math_random_array_entry = math.random_array_entry
+    local string = string
     local string_find = string.find
     local string_gsub = string.gsub
 	local string_split = string.split
@@ -107,24 +111,33 @@ mod.setup_item_definitions = function(self)
     end
 end
 
+mod.update_modded_packages = function(self)
+    -- Reset used packages
+    self:persistent_table("weapon_customization").used_packages = {}
+    -- Get modded packages
+    self:get_modded_packages()
+end
+
 mod.get_modded_packages = function(self)
-    self:setup_item_definitions()
-    self:load_needed_packages()
-    local packages = self:persistent_table("weapon_customization").used_packages
-    if self.weapon_extension then
-        local weapons = self.weapon_extension._weapons
-        for slot_name, weapon in pairs(weapons) do
-            if weapon and weapon.item and weapon.item.attachments then
-                self:get_modded_item_packages(weapon.item.attachments, packages)
-                if weapon.item.original_attachments then
-                    self:get_modded_item_packages(weapon.item.original_attachments, packages)
+    if table_size(self:persistent_table("weapon_customization").used_packages) == 0 then
+        self:setup_item_definitions()
+        self:load_needed_packages()
+        -- local packages = self:persistent_table("weapon_customization").used_packages
+        if self.weapon_extension then
+            local weapons = self.weapon_extension._weapons
+            for slot_name, weapon in pairs(weapons) do
+                if weapon and weapon.item and weapon.item.attachments then
+                    self:get_modded_item_packages(weapon.item.attachments)
+                    if weapon.item.original_attachments then
+                        self:get_modded_item_packages(weapon.item.original_attachments)
+                    end
                 end
             end
         end
     end
 end
 
-mod.get_modded_item_packages = function(self, attachments, packages)
+mod.get_modded_item_packages = function(self, attachments)
     local found_attachments = {}
     self:_recursive_get_attachments(attachments, found_attachments, true)
     for _, attachment_data in pairs(found_attachments) do
@@ -133,7 +146,7 @@ mod.get_modded_item_packages = function(self, attachments, packages)
             local item_definition = self:persistent_table("weapon_customization").item_definitions[item_string]
             if item_definition and item_definition.resource_dependencies then
                 for package_name, _ in pairs(item_definition.resource_dependencies) do
-                    packages[package_name] = true
+                    self:persistent_table("weapon_customization").used_packages[package_name] = true
                 end
             end
         end

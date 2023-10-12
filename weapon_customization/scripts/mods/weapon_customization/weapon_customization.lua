@@ -76,6 +76,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(fu
 	func(self, world, unit, ...)
 	-- Initialize
 	mod:init()
+	-- Update used packages
+    mod:update_modded_packages()
 end)
 
 -- Player visual extension destroyed

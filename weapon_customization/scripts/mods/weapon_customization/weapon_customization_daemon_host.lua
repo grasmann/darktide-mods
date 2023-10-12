@@ -13,6 +13,7 @@ local MinionPerception = mod:original_require("scripts/utilities/minion_percepti
 
 --#region Local functions
 	local wwiseWorld_stop_event = WwiseWorld.stop_event
+	local Unit = Unit
     local unit_world_position = Unit.world_position
     local unit_world_rotation = Unit.world_rotation
     local unit_node = Unit.node
@@ -20,6 +21,7 @@ local MinionPerception = mod:original_require("scripts/utilities/minion_percepti
     local actor_unit = Actor.unit
     local quaternion_forward = Quaternion.forward
     local physics_world_raycast = PhysicsWorld.raycast
+	local table = table
     local table_clear = table.clear
 	local table_remove = table.remove
     local HEALTH_ALIVE = HEALTH_ALIVE

@@ -103,13 +103,21 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #########################################################################
 
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)
-    func(self, item, slot_name, optional_existing_unit_3p, t, ...)
-    if self._unit == mod.player_unit then
-        -- Reset used packages
-        mod:persistent_table("weapon_customization").used_packages = {}
-        -- Get modded packages
-        mod:get_modded_packages()
+-- mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)
+--     func(self, item, slot_name, optional_existing_unit_3p, t, ...)
+--     if self._unit == mod.player_unit then
+--         -- Reset used packages
+--         mod:persistent_table("weapon_customization").used_packages = {}
+--         -- Get modded packages
+--         mod:get_modded_packages()
+--     end
+-- end)
+
+mod:hook(CLASS.InventoryWeaponsView, "_equip_item", function(func, self, slot_name, item, ...)
+    func(self, slot_name, item, ...)
+    if not self._equip_button_disabled and (slot_name == "slot_primary" or slot_name == "slot_secondary") then
+        -- Update used packages
+        mod:update_modded_packages()
     end
 end)
 
@@ -126,6 +134,8 @@ mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
             break
         end
     end
+    -- Temp trinket fix
+    if string_find(package_name, "trinkets") then package_used = true end
     -- Unload if possible
     if not package_used or self._shutdown_has_started then
         func(self, id, ...)

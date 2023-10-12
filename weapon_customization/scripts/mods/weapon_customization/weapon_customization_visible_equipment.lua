@@ -757,6 +757,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
             mod:initialize_equipment_slot(slot, self._player, self._equipment_component._world, unit, attach_settings, nil)
             -- Update visibility
             self:force_update_item_visibility()
+            -- mod:update_equipment_visibility()
         end
     end
 end)
@@ -777,6 +778,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
             mod:initialize_equipment_slot(slot, self._player, self._equipment_component._world, unit, attach_settings, nil)
             -- Update visibility
             self:force_update_item_visibility()
+            -- mod:update_equipment_visibility()
         end
     end
 end)
@@ -813,6 +815,8 @@ end)
 -- Update dummy equipment visibility
 mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
 	func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
+    -- -- Update equipment visibility
+    -- mod:update_equipment_visibility()
     -- Managed slots
     local slots = {"slot_primary", "slot_secondary"}
     -- Iterate slots

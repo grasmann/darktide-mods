@@ -7,6 +7,7 @@ local mod = get_mod("weapon_customization")
 --#region local functions
 	local wwise_wwise_world = Wwise.wwise_world
     local world_physics_world = World.physics_world
+	local string = string
     local string_gsub = string.gsub
     local string_find = string.find
     local math_floor = math.floor

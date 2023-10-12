@@ -39,7 +39,7 @@ return {
 	mod_description = {
 		en = "Extends weapon customizations",
 		de = "Erweitert Waffenanpassungen",
-		ru = "Extended Weapon Customization – значительно расширяет возможности настройки внешнего вида оружия.",
+		ru = "Extended Weapon Customization – значительно расширяет возможности настройки внешнего вида оружия и добавляет дополнительный обвес: лазерную указку, фонарики и прицелы.",
 		["zh-cn"] = "武器自定义扩展",
 	},
 	group_debug = {
@@ -51,57 +51,67 @@ return {
 	mod_option_debug = {
 		en = "Debug",
 		de = "Debug",
-		ru = "Отладка",
+		ru = "Включить отладку",
 		["zh-cn"] = "调试",
 	},
 	group_visible_equipment = {
 		en = "Visible Equipment",
 		de = "Sichtbare Ausrüstung",
+		ru = "Видимое снаряжение",
 		["zh-cn"] = "装备可见",
 	},
 	mod_option_visible_equipment = {
 		en = "Visible Equipment",
 		de = "Sichtbare Ausrüstung",
+		ru = "Показывать снаряжение",
 		["zh-cn"] = "装备可见",
 	},
 	mod_option_visible_equipment_tooltip = {
 		en = "Shows currently unwielded equipment on player characters",
 		de = "Zeigt die nicht genutzte Ausrüstung der Spielercharaktere",
+		ru = "Показывает неиспользуемое в данный момент снаряжение на персонажах игроков.",
 		["zh-cn"] = "在玩家角色上显示当前未手持的装备",
 	},
 	mod_option_visible_equipment_sounds = {
 		en = "Weapon Sounds",
 		de = "Waffen Geräusche",
+		ru = "Звуки оружия слышны",
 		["zh-cn"] = "武器声音",
 	},
 	mod_option_visible_equipment_sounds_tooltip = {
 		en = "Plays sound effects for weapons when walking",
 		de = "Spielt beim Gehen Soundeffekte für Waffen ab",
+		ru = "Воспроизводятся звуковые эффекты оружия при ходьбе.",
 		["zh-cn"] = "行走时播放武器音效",
 	},
 	mod_option_visible_equipment_sounds_all = {
 		en = "Self and Teammates",
 		de = "Selbst und Gruppenmitglieder",
+		ru = "Себе и команде",
 		["zh-cn"] = "自己和队友",
 	},
 	mod_option_visible_equipment_sounds_others = {
 		en = "Teammates",
 		de = "Gruppenmitglieder",
+		ru = "Команде",
 		["zh-cn"] = "队友",
 	},
 	mod_option_visible_equipment_sounds_off = {
 		en = "Off",
 		de = "Aus",
+		ru = "Никому",
 		["zh-cn"] = "关闭",
 	},
 	mod_option_visible_equipment_own_sounds_fp = {
 		en = "Sounds in First Person",
 		de = "Geräusche in First Person",
+		ru = "Звуки от первого лица",
 		["zh-cn"] = "第一人称声音",
 	},
 	mod_option_visible_equipment_own_sounds_fp_tooltip = {
 		en = "Hear the sounds of your own equipment in first person",
 		de = "Höre die Geräusche deiner eigenen Ausrüstung in first person",
+		ru = "Вы будете слышать звуки собственного снаряжения от первого лица",
 		["zh-cn"] = "在第一人称下能听到自己装备的声音",
 	},
 	group_weapon_animation = {
@@ -215,7 +225,7 @@ return {
 	mod_option_laser_pointer_dot_size_tooltip = {
 		en = "Sets the size of the dot at the end point of the laser",
 		de = "Legt die Größe des Punktes am Ende des Lasers fest",
-		ru = "Устанавливает размер точки в конечной точке лазера.",
+		ru = "Устанавливает размер точки на конце лазера.",
 		["zh-cn"] = "设置激光末端圆点的大小",
 	},
 	mod_option_laser_pointer_wild = {
@@ -227,13 +237,13 @@ return {
 	mod_option_laser_pointer_wild_tooltip = {
 		en = "The flashlight of the laser pointer constantly flickers",
 		de = "Die Taschenlampe des Laserpointers flimmert kontinuierlich",
-		ru = "Фонарик лазерной указки постоянно мерцает",
+		ru = "Фонарик лазерной указки будет постоянно мерцать.",
 		["zh-cn"] = "激光指示器的手电筒持续闪烁",
 	},
 	mod_option_laser_pointer_weapon_dot = {
 		en = "Weapon Shine Effect",
 		de = "Waffen Scheineffekt",
-		ru = "Эффект блеска оружия",
+		ru = "Эффект блеска на оружии",
 		["zh-cn"] = "武器闪光效果",
 	},
 	mod_option_laser_pointer_weapon_dot_tooltip = {
@@ -245,13 +255,13 @@ return {
 	mod_option_laser_pointer_hit_indicator = {
 		en = "Hit Indicator Flash",
 		de = "Trefferindikator Blitz",
-		ru = "Мигающий индикатор попаданий",
+		ru = "Вспышка при попадании",
 		["zh-cn"] = "命中指示器闪光",
 	},
 	mod_option_laser_pointer_hit_indicator_tooltip = {
 		en = "Use laser dot as a flashing hit indicator",
 		de = "Benutzt Laserpunkt als blitzenden Trefferindikator",
-		ru = "Используйте лазерную точку в качестве мигающего индикатора попадания.",
+		ru = "Используйте лазерную точку в качестве вспыхивающего индикатора попаданий.",
 		["zh-cn"] = "以激光圆点作为闪光的命中指示器",
 	},
 	mod_option_laser_pointer_hit_color = {
@@ -263,7 +273,7 @@ return {
 	mod_option_laser_pointer_hit_color_tooltip = {
 		en = "Sets color for normal hits",
 		de = "Legt Farbe für normale Treffer fest",
-		ru = "Устанавливает цвет для обычных попаданий",
+		ru = "Устанавливает цвет для обычных попаданий.",
 		["zh-cn"] = "设置普通命中的颜色",
 	},
 	mod_option_laser_pointer_hit_weakspot_color = {
@@ -275,7 +285,7 @@ return {
 	mod_option_laser_pointer_hit_weakspot_color_tooltip = {
 		en = "Sets color for weakspot hits",
 		de = "Legt Farbe für Schwachstellen-Treffer fest",
-		ru = "Устанавливает цвет для попаданий в уязвимые места",
+		ru = "Устанавливает цвет для попаданий в уязвимые места.",
 		["zh-cn"] = "设置弱点命中的颜色",
 	},
 	mod_option_laser_pointer_hit_critical_color = {
@@ -287,7 +297,7 @@ return {
 	mod_option_laser_pointer_hit_critical_color_tooltip = {
 		en = "Sets color for critical hits",
 		de = "Legt Farbe für kritische Treffer fest",
-		ru = "Цвет критического попадания",
+		ru = "Устанавливает цвет для критических попаданий.",
 		["zh-cn"] = "设置暴击命中的颜色",
 	},
 	mod_option_laser_pointer_kill_color = {
@@ -299,7 +309,7 @@ return {
 	mod_option_laser_pointer_kill_color_tooltip = {
 		en = "Sets color for hits that kill an enemy",
 		de = "Legt Farbe für Treffer fest die einen Gegner töten",
-		ru = "Устанавливает цвет для ударов при убийстве врагов.",
+		ru = "Устанавливает цвет для убийства врагов.",
 		["zh-cn"] = "设置击杀敌人时的颜色",
 	},
 	mod_option_laser_pointer_hit_indicator_brightness = {
@@ -311,7 +321,7 @@ return {
 	mod_option_laser_pointer_hit_indicator_brightness_tooltip = {
 		en = "Sets brightness of hit indicators",
 		de = "Legt Helligkeit der Trefferindikatoren fest",
-		ru = "Устанавливает яркость индикаторов попадания",
+		ru = "Устанавливает яркость вспышки индикатора попаданий.",
 		["zh-cn"] = "设置命中指示器的亮度",
 	},
 	mod_option_laser_pointer_hit_indicator_size = {
@@ -323,7 +333,7 @@ return {
 	mod_option_laser_pointer_hit_indicator_size_tooltip = {
 		en = "Sets size of hit indicators",
 		de = "Legt Größe der Trefferindikatoren fest",
-		ru = "Устанавливает размер индикаторов попадания",
+		ru = "Устанавливает размер вспышки индикатора попаданий.",
 		["zh-cn"] = "设置命中指示器的大小",
 	},
 	mod_option_laser_pointer_hit_color_white = {
@@ -348,26 +358,31 @@ return {
 		en = "Battery",
 		de = "Batterie",
 		["zh-cn"] = "电池",
+		ru = "Батарея",
 	},
 	mod_option_battery_show = {
 		en = "Show Bar",
 		de = "Leiste anzeigen",
 		["zh-cn"] = "显示状态条",
+		ru = "Показывать полоску",
 	},
 	mod_option_battery_show_tooltip = {
 		en = "Shows a bar with your current battery charge",
 		de = "Zeigt einen Balken mit deinter aktuellen Batterieladung",
 		["zh-cn"] = "显示当前电池充能的状态指示条",
+		ru = "Показывает полоску с текущим зарядом аккумулятора.",
 	},
 	mod_option_battery_show_threshold = {
 		en = "When under",
 		de = "Wenn weniger als",
 		["zh-cn"] = "仅当低于",
+		ru = "Когда заряд ниже",
 	},
 	mod_option_battery_show_threshold_tooltip = {
 		en = "Shows battery bar only when charge is under selected percentage",
 		de = "Zeigt den Batteriebalken nur an, wenn die Ladung unter dem ausgewählten Prozentsatz liegt",
 		["zh-cn"] = "仅在充能低于所选百分比时显示电池状态条",
+		ru = "Показывает полоску заряда батареи только тогда, когда уровень заряда ниже выбранного процента.",
 	},
 	mod_option_battery_show_threshold_10 = {
 		en = "10%%",

@@ -53,16 +53,22 @@ end
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local vector2 = Vector2
 	local vector3 = Vector3
 	local vector3_box = Vector3Box
 	local vector3_unbox = vector3_box.unbox
-	local vector3_zero = Vector3.zero
-	local vector3_lerp = Vector3.lerp
+	local vector3_zero = vector3.zero
+	local vector3_lerp = vector3.lerp
+	local Quaternion = Quaternion
 	local quaternion_matrix_4x4 = Quaternion.matrix4x4
 	local quaternion_axis_angle = Quaternion.axis_angle
 	local quaternionbox_unbox = QuaternionBox.unbox
 	local quaternion_multiply = Quaternion.multiply
+	local Matrix4x4 = Matrix4x4
 	local matrix4x4_transform = Matrix4x4.transform
+	local matrix4x4_translation = Matrix4x4.translation
+	local camera_world_to_screen = Camera.world_to_screen
+	local Unit = Unit
 	local unit_alive = Unit.alive
 	local unit_set_local_position = Unit.set_local_position
 	local unit_set_local_rotation = Unit.set_local_rotation
@@ -72,6 +78,7 @@ end
 	local unit_num_meshes = Unit.num_meshes
 	local unit_set_unit_visibility = Unit.set_unit_visibility
 	local unit_debug_name = Unit.debug_name
+	local Mesh = Mesh
 	local mesh_set_local_position = Mesh.set_local_position
 	local mesh_local_rotation = Mesh.local_rotation
 	local unit_mesh = Unit.mesh
@@ -81,8 +88,10 @@ end
 	local unit_world_position = Unit.world_position
 	local unit_world_rotation = Unit.world_rotation
 	local level_units = Level.units
+	local World = World
 	local world_unlink_unit = World.unlink_unit
 	local world_link_unit = World.link_unit
+	local math = math
 	local math_round_with_precision = math.round_with_precision
 	local math_easeInCubic = math.easeInCubic
 	local math_easeOutCubic = math.easeOutCubic
@@ -93,15 +102,18 @@ end
 	local math_sin = math.sin
 	local math_pi = math.pi
 	local math_ceil = math.ceil
+	local table = table
 	local table_size = table.size
 	local table_find = table.find
 	local table_contains = table.contains
 	local table_clone = table.clone
 	local table_reverse = table.reverse
 	local table_remove = table.remove
+	local string = string
 	local string_gsub = string.gsub
 	local string_find = string.find
 	local string_split = string.split
+	local Color = Color
 	local pairs = pairs
 	local tostring = tostring
 	local CLASS = CLASS
@@ -346,11 +358,11 @@ mod.draw_equipment_lines = function(self, dt, t)
 					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
 					if unit and unit_alive(unit) then
 						local box = Unit.box(unit, false)
-						local center_position = Matrix4x4.translation(box)
-						local world_to_screen, distance = Camera.world_to_screen(camera, center_position)
+						local center_position = matrix4x4_translation(box)
+						local world_to_screen, distance = camera_world_to_screen(camera, center_position)
 						local saved_origin = self.dropdown_positions[attachment_slot]
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then
-							local origin = Vector2(saved_origin[1], saved_origin[2])
+							local origin = vector2(saved_origin[1], saved_origin[2])
 							local color = Color(255, 49, 62, 45)
 							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 4, Color(255, 106, 121, 100))
 							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
