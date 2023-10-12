@@ -22,7 +22,7 @@ mod:add_global_localize_strings({
 		de = "Schalte den an der Waffe montierten Laserpointer ein oder aus.\nFunktioniert auch als Taschenlampe. Nützlich in dunklen Bereichen.",
 		ru = "Включите или выключите установленный на оружии лазерный указатель.\nТакже работает как фонарик. Полезно в тёмных местах.",
 		["zh-cn"] = "开启或关闭武器挂载激光指示器。\n同时也可作为手电筒。适合黑暗区域。",
-	}
+	},
 })
 
 -- ##### ┬  ┌─┐┌─┐┌─┐┬    ┬  ┌─┐┌─┐┌─┐┬  ┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌ ############################################################
@@ -626,5 +626,11 @@ return {
 		de = "Trinket Haken",
 		ru = "Кольцо для брелка",
 		["zh-cn"] = "饰品钩",
+	},
+	loc_inventory_menu_weapon_preset_intro_text_1 = {
+		en = "Weapon Presets"
+	},
+	loc_inventory_menu_weapon_preset_intro_text_2 = {
+		en = "Weapon Presets Description"
 	},
 }

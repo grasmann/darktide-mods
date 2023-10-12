@@ -1,5 +1,5 @@
-local view_element_profile_presets_settings = {
-	max_profile_presets = 5,
+local view_element_weapon_presets_settings = {
+	max_weapon_presets = 5,
 	optional_preset_icon_reference_keys = {
 		"icon_01",
 		"icon_02",
@@ -56,4 +56,4 @@ local view_element_profile_presets_settings = {
 	}
 }
 
-return settings("ViewElementProfilePresetsSettings", view_element_profile_presets_settings)
+return settings("ViewElementWeaponPresetsSettings", view_element_weapon_presets_settings)

@@ -24,7 +24,7 @@ local scenegraph_definition = {
 			1
 		}
 	},
-	profile_preset_button_panel = {
+	weapon_preset_button_panel = {
 		vertical_alignment = "top",
 		parent = "screen",
 		horizontal_alignment = "right",
@@ -38,9 +38,9 @@ local scenegraph_definition = {
 			100
 		}
 	},
-	profile_preset_add_button = {
+	weapon_preset_add_button = {
 		vertical_alignment = "center",
-		parent = "profile_preset_button_panel",
+		parent = "weapon_preset_button_panel",
 		horizontal_alignment = "right",
 		size = {
 			32,
@@ -52,9 +52,9 @@ local scenegraph_definition = {
 			1
 		}
 	},
-	profile_preset_button_pivot = {
+	weapon_preset_button_pivot = {
 		vertical_alignment = "center",
-		parent = "profile_preset_button_panel",
+		parent = "weapon_preset_button_panel",
 		horizontal_alignment = "right",
 		size = {
 			44,
@@ -66,9 +66,9 @@ local scenegraph_definition = {
 			1
 		}
 	},
-	profile_preset_tooltip = {
+	weapon_preset_tooltip = {
 		vertical_alignment = "top",
-		parent = "profile_preset_button_panel",
+		parent = "weapon_preset_button_panel",
 		horizontal_alignment = "right",
 		size = {
 			300,
@@ -80,9 +80,9 @@ local scenegraph_definition = {
 			1
 		}
 	},
-	profile_preset_tooltip_grid = {
+	weapon_preset_tooltip_grid = {
 		vertical_alignment = "top",
-		parent = "profile_preset_tooltip",
+		parent = "weapon_preset_tooltip",
 		horizontal_alignment = "left",
 		size = {
 			225,
@@ -96,14 +96,14 @@ local scenegraph_definition = {
 	}
 }
 local widget_definitions = {
-	profile_preset_button_panel = UIWidget.create_definition({
+	weapon_preset_button_panel = UIWidget.create_definition({
 		{
 			value = "content/ui/materials/frames/presets/main",
 			value_id = "texture",
 			pass_type = "texture"
 		}
-	}, "profile_preset_button_panel"),
-	profile_preset_tooltip = UIWidget.create_definition({
+	}, "weapon_preset_button_panel"),
+	weapon_preset_tooltip = UIWidget.create_definition({
 		{
 			pass_type = "hotspot",
 			content_id = "hotspot",
@@ -148,8 +148,8 @@ local widget_definitions = {
 				}
 			}
 		}
-	}, "profile_preset_tooltip"),
-	profile_preset_add_button = UIWidget.create_definition({
+	}, "weapon_preset_tooltip"),
+	weapon_preset_add_button = UIWidget.create_definition({
 		{
 			pass_type = "hotspot",
 			content_id = "hotspot",
@@ -221,9 +221,9 @@ local widget_definitions = {
 				color[1] = 150 * math.min(alpha_progress)
 			end
 		}
-	}, "profile_preset_add_button")
+	}, "weapon_preset_add_button")
 }
-local profile_preset_button = UIWidget.create_definition({
+local weapon_preset_button = UIWidget.create_definition({
 	{
 		value_id = "arrow",
 		pass_type = "rotated_texture",
@@ -365,7 +365,7 @@ local profile_preset_button = UIWidget.create_definition({
 			ColorUtilities.color_lerp(default_color, hover_color, math.max(focus_progress, select_progress), color, ignore_alpha)
 		end
 	}
-}, "profile_preset_button_pivot")
+}, "weapon_preset_button_pivot")
 
 local function icon_change_function(content, style)
 	local hotspot = content.hotspot
@@ -384,7 +384,7 @@ local function icon_change_function(content, style)
 	ColorUtilities.color_lerp(default_color, hover_color, input_progress, color, ignore_alpha)
 end
 
-local profile_preset_grid_blueprints = {
+local weapon_preset_grid_blueprints = {
 	dynamic_spacing = {
 		size_function = function (parent, element, ui_renderer)
 			local size = element.size
@@ -776,6 +776,6 @@ local profile_preset_grid_blueprints = {
 return {
 	widget_definitions = widget_definitions,
 	scenegraph_definition = scenegraph_definition,
-	profile_preset_button = profile_preset_button,
-	profile_preset_grid_blueprints = profile_preset_grid_blueprints
+	weapon_preset_button = weapon_preset_button,
+	weapon_preset_grid_blueprints = weapon_preset_grid_blueprints
 }

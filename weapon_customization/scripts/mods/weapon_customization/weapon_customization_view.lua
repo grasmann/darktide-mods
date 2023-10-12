@@ -12,9 +12,10 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
-local ViewElementProfilePresets = mod:original_require("scripts/ui/view_elements/view_element_profile_presets/view_element_profile_presets")
 local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
 local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
+
+-- local ViewElementWeaponPresets = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/view_elements/view_element_weapon_presets")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -103,12 +104,14 @@ end
 	local math_pi = math.pi
 	local math_ceil = math.ceil
 	local table = table
+	local table_insert = table.insert
 	local table_size = table.size
 	local table_find = table.find
 	local table_contains = table.contains
 	local table_clone = table.clone
 	local table_reverse = table.reverse
 	local table_remove = table.remove
+	local table_sort = table.sort
 	local string = string
 	local string_gsub = string.gsub
 	local string_find = string.find
@@ -291,22 +294,30 @@ mod.weapon_part_animation_exists = function(self, attachment_slot)
 	end
 end
 
+local _children_sort_function = function(entry_1, entry_2)
+	local distance_1 = entry_1.children or (entry_1.slot == "rail" and 1) or 0
+	local distance_2 = entry_2.children or (entry_1.slot == "rail" and 1) or 0
+
+	return distance_1 < distance_2
+end
+
 mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_type, new_attachment, no_children)
 	local existing_animation = self:weapon_part_animation_exists(attachment_slot)
 	if not existing_animation then
+		local modified_attachment_slot = self:_recursive_find_attachment(item.attachments, attachment_slot)
 		-- Main animation
 		self.weapon_part_animation_entries[#self.weapon_part_animation_entries+1] = {
 			slot = attachment_slot,
 			type = attachment_type,
 			new = new_attachment,
 			old = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item),
+			children = modified_attachment_slot.children and #modified_attachment_slot.children or 0,
 		}
 		self.cosmetics_view._visibility_toggled_on = true
 		self.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
 		-- -- Get auto equipy
 		-- local auto_equips = self:get_auto_equips(item, attachment_slot, new_attachment)
 		-- Get modified attachment slot
-		local modified_attachment_slot = self:_recursive_find_attachment(item.attachments, attachment_slot)
 		local children = {}
 
 		-- Trigger move
@@ -327,11 +338,13 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 				-- Iterate children
 				for _, child in pairs(children) do
 					if not self:weapon_part_animation_exists(child.slot) then
+						local modified_child_attachment_slot = self:_recursive_find_attachment(item.attachments, child.slot)
 						self.weapon_part_animation_entries[#self.weapon_part_animation_entries+1] = {
 							slot = child.slot,
 							type = attachment_type,
 							new = self:get_gear_setting(self.cosmetics_view._gear_id, child.slot),
 							old = self:get_gear_setting(self.cosmetics_view._gear_id, child.slot, item),
+							children = modified_child_attachment_slot.children and #modified_child_attachment_slot.children or 0,
 						}
 					end
 				end
@@ -340,6 +353,17 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 	elseif existing_animation and existing_animation.new == existing_animation.old and new_attachment ~= existing_animation.new then
 		existing_animation.new = new_attachment
 	end
+	-- Attachment order
+	table_sort(self.weapon_part_animation_entries, _children_sort_function)
+	-- if #self.weapon_part_animation_entries > 0 then
+	-- 	for i, entry in pairs(self.weapon_part_animation_entries) do
+	-- 		local modified_attachment_slot = self:_recursive_find_attachment(item.attachments, entry.slot)
+	-- 		if (modified_attachment_slot.children and #modified_attachment_slot.children > 0) or entry.slot == "rail" then
+	-- 			table_remove(self.weapon_part_animation_entries, i)
+	-- 			table_insert(self.weapon_part_animation_entries, 1, entry)
+	-- 		end
+	-- 	end
+	-- end
 end
 
 mod.draw_equipment_lines = function(self, dt, t)
@@ -676,6 +700,11 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 					local root_default_position = root_default and vector3_unbox(root_default) or vector3_zero()
 					local unit = gear_info.attachment_slot_to_unit[entry.slot]
 					local unit_good = unit and unit_alive(unit)
+					local environment_extension = nil
+					-- if unit_good then
+					-- 	environment_extension = script_unit.fetch_component_extension(unit, "shading_environment_system")
+					-- 	environment_extension._fade_in_distance = .5
+					-- end
 					local wobble = mod:get("mod_option_weapon_build_animation_wobble")
 
 					local anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment]
@@ -691,6 +720,8 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 					if not mod.weapon_spawning then
 
+						local index_time_multiplier = animation_time * (index / 10)
+
 						if not entry.end_time then
 							if attachment then
 								local attachment = entry.old == "default" and mod:get_actual_default_attachment(mod.cosmetics_view._selected_item, entry.slot) or entry.old
@@ -701,7 +732,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								if (entry.type == "detach" or entry.type == "wobble") then
 									entry.end_time = t + animation_time / animation_speed
 								else
-									entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
+									entry.end_time = t + (animation_time + index_time_multiplier) / animation_speed
 								end
 							else
 								entry.end_time = t
@@ -719,7 +750,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 									end
 								end
 							elseif entry.type == "attach" then
-								local progress = (entry.end_time - t) / ((animation_time + (animation_time * (index / 10))) / animation_speed)
+								local progress = (entry.end_time - t) / ((animation_time + index_time_multiplier) / animation_speed)
 								local anim_progress = math_easeInCubic(1 - progress)
 								local lerp_position = vector3_lerp(movement, default_position, anim_progress)
 								if unit_good then
@@ -747,7 +778,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								local no_animation = attachment_data and attachment_data.no_animation
 
 								if not no_animation then
-									entry.end_time = t + (animation_time + (animation_time * (index / 10))) / animation_speed
+									entry.end_time = t + (animation_time + index_time_multiplier) / animation_speed
 									entry.type = "attach"
 								else
 									entry.end_time = t
@@ -775,8 +806,6 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								entry.finished = true
 							end
 						end
-
-						index = index + 1
 					else
 						if mod.weapon_spawning then
 							if unit_good then
@@ -785,6 +814,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 							if entry.end_time then entry.end_time = entry.end_time + dt end
 						end
 					end
+					index = index + 1
 				end
 
 				local count = #entries
@@ -1750,8 +1780,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 	self._item_name = mod:item_name_from_content_string(self._selected_item.name)
 	self._gear_id = mod:get_gear_id(self._presentation_item)
 	self._slot_info_id = mod:get_slot_info_id(self._presentation_item)
-	-- Profiles
-	-- self._weapon_presets_element = self:_add_element(ViewElementProfilePresets, "weapon_presets", 60, nil, "weapon_presets_pivot")
+	-- Presets
+	-- self._weapon_presets = self:_add_element(ViewElementWeaponPresets, "weapon_presets", 90, nil, "weapon_presets_pivot", {gear_id = self._gear_id})
 	-- Overwrite draw elements function
 	-- Make view legend inputs visible when UI gets hidden
 	self._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
@@ -2131,13 +2161,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		}
 	end
 
-	-- instance.scenegraph_definition.weapon_presets_pivot = {
-	-- 	vertical_alignment = "top",
-	-- 	parent = "screen",
-	-- 	horizontal_alignment = "right",
-	-- 	size = {0, 0},
-	-- 	position = {-60, 94, 62}
-	-- }
+	instance.scenegraph_definition.weapon_presets_pivot = {
+		vertical_alignment = "top",
+		parent = "screen",
+		horizontal_alignment = "right",
+		size = {0, 0},
+		position = {-60, 94, 62}
+	}
 
 	instance.always_visible_widget_names.background = true
 
