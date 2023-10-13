@@ -68,7 +68,9 @@ end
 	local Matrix4x4 = Matrix4x4
 	local matrix4x4_transform = Matrix4x4.transform
 	local matrix4x4_translation = Matrix4x4.translation
+	local Camera = Camera
 	local camera_world_to_screen = Camera.world_to_screen
+	local camera_local_position = Camera.local_position
 	local Unit = Unit
 	local unit_alive = Unit.alive
 	local unit_set_local_position = Unit.set_local_position
@@ -311,7 +313,7 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 			type = attachment_type,
 			new = new_attachment,
 			old = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item),
-			children = modified_attachment_slot.children and #modified_attachment_slot.children or 0,
+			children = modified_attachment_slot and modified_attachment_slot.children and #modified_attachment_slot.children or 0,
 		}
 		self.cosmetics_view._visibility_toggled_on = true
 		self.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
@@ -344,7 +346,7 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 							type = attachment_type,
 							new = self:get_gear_setting(self.cosmetics_view._gear_id, child.slot),
 							old = self:get_gear_setting(self.cosmetics_view._gear_id, child.slot, item),
-							children = modified_child_attachment_slot.children and #modified_child_attachment_slot.children or 0,
+							children = modified_child_attachment_slot and modified_child_attachment_slot.children and #modified_child_attachment_slot.children or 0,
 						}
 					end
 				end
@@ -391,6 +393,15 @@ mod.draw_equipment_lines = function(self, dt, t)
 							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 4, Color(255, 106, 121, 100))
 							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
 						end
+						-- local player_unit = Managers.player:local_player_safe(1).player_unit
+						-- local fade_system = Fade.init() --Managers.state.extension:system("fade_system")
+						-- if fade_system then
+						-- 	fade_system:set_min_fade(unit, 0.5)
+						-- end
+						-- if self.cosmetics_view._fade_system then
+						-- 	Fade.set_min_fade(self.cosmetics_view._fade_system, unit, .5)
+						-- 	-- self.cosmetics_view._fade_system:set_min_fade(unit, 0.5)
+						-- end
 					end
 				end
 			end
@@ -568,6 +579,13 @@ mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, wor
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
+
+	local weapon_spawn_data = self._weapon_spawn_data
+	if weapon_spawn_data and weapon_spawn_data.streaming_complete then
+		if not weapon_spawn_data.visible then
+			mod.weapon_spawning = nil
+		end
+	end
 
 	func(self, dt, t, input_service, ...)
 
@@ -862,6 +880,12 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			end
 		end
 
+		-- if mod.cosmetics_view then
+		-- 	local camera_manager = managers.state.camera
+		-- 	local fade_position = camera_local_position(self._camera)
+		-- 	Fade.update(mod.cosmetics_view._fade_system, fade_position or vector3_zero())
+		-- end
+
 		-- if weapon_spawn_data and weapon_spawn_data.link_unit and unit_alive(weapon_spawn_data.link_unit) then
 		-- 	local wwise_world = managers.world:wwise_world(self._world)
 		-- 	-- local pose = Camera.world_pose(self._camera)
@@ -872,6 +896,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 		-- local pose = Camera.world_pose(self._camera)
 		-- WwiseWorld.set_listener(wwise_world, 0, pose)
 	end
+
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "_update_input_rotation", function(func, self, dt, ...)
@@ -895,6 +920,14 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 		mod.weapon_spawning = true
 
 		unit_set_unit_visibility(weapon_spawn_data.item_unit_3p, true, true)
+
+		-- if mod.cosmetics_view then
+		-- 	local attachment_units_3p = weapon_spawn_data.attachment_units_3p
+		-- 	for i = #attachment_units_3p, 1, -1 do
+		-- 		local unit = attachment_units_3p[i]
+		-- 		Fade.register_unit(mod.cosmetics_view._fade_system, unit, .5, .7, 1)
+		-- 	end
+		-- end
 
 		local link_unit = weapon_spawn_data.link_unit
 
@@ -979,6 +1012,9 @@ mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
 		for i = #attachment_units_3p, 1, -1 do
 			local unit = attachment_units_3p[i]
 			world_unlink_unit(self._world, unit)
+			-- if mod.cosmetics_view then
+			-- 	Fade.unregister_unit(mod.cosmetics_view._fade_system, unit)
+			-- end
 		end
 		world_unlink_unit(self._world, item_unit_3p)
 	end
@@ -1780,6 +1816,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 	self._item_name = mod:item_name_from_content_string(self._selected_item.name)
 	self._gear_id = mod:get_gear_id(self._presentation_item)
 	self._slot_info_id = mod:get_slot_info_id(self._presentation_item)
+	-- self._fade_system = Fade.init()
 	-- Presets
 	-- self._weapon_presets = self:_add_element(ViewElementWeaponPresets, "weapon_presets", 90, nil, "weapon_presets_pivot", {gear_id = self._gear_id})
 	-- Overwrite draw elements function
@@ -1921,6 +1958,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 
 	mod:check_unsaved_changes(true)
 	mod:release_attachment_sounds()
+
+	-- Fade.destroy(self._fade_system)
 
 	func(self, ...)
 

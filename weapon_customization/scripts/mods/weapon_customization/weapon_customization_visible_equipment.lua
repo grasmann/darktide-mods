@@ -165,6 +165,7 @@ mod.visible_equipment_offsets = {
             backpack = {position = vector3_box(.9, .5, .6), rotation = vector3_box(180, -30, 135),
                 position2 = vector3_box(.2, .45, -.2), rotation2 = vector3_box(0, 90, 70),
                 step_move2 = vector3_box(-.1, .05, 0), step_rotation2 = vector3_box(5, -5, 0)},
+            step_sounds = {SoundEventAliases.sfx_equip.events.default},
             step_sounds2 = {
                 SoundEventAliases.sfx_weapon_foley_left_hand_01.events.ogryn_powermaul_slabshield_p1_m1,
                 SoundEventAliases.sfx_weapon_foley_left_hand_02.events.ogryn_powermaul_slabshield_p1_m1,
@@ -175,7 +176,10 @@ mod.visible_equipment_offsets = {
         forcestaff_p1_m1 = {
             default = {position = vector3_box(.3, .2, .075), rotation = vector3_box(180, 80, 90)},
             backpack = {position = vector3_box(.3, .25, .2), rotation = vector3_box(160, 90, 90)},
-        }
+        },
+        flamer_p1_m1 = {
+            step_sounds = {SoundEventAliases.sfx_weapon_locomotion.events.flamer_p1_m1},
+        },
     --#endregion
 }
 --#region Copies
@@ -377,13 +381,10 @@ mod.register_player_equipment = function(self, player_unit, slot)
 end
 
 mod.get_sound_effects = function(self, item_name)
-    if item_name == "flamer_p1_m1" then
-        return {SoundEventAliases.sfx_equip.events.default, SoundEventAliases.sfx_weapon_locomotion.events[item_name]}
-    end
     local sound = SoundEventAliases.sfx_ads_up.events[item_name]
         or SoundEventAliases.sfx_ads_down.events[item_name]
         or SoundEventAliases.sfx_equip.events.default
-    return {sound}
+    return sound
 end
 
 -- Update equipment visibility
@@ -507,14 +508,20 @@ mod.update_equipment = function(self, dt)
                                 end
 
                                 -- Play sound
-                                -- local sound = nil
+                                local sound = nil
                                 local play_sound = (player_unit ~= self.player_unit and mod:get("mod_option_visible_equipment_sounds") ~= "off")
                                     or (player_unit == self.player_unit and (self:is_in_third_person() or mod:get("mod_option_visible_equipment_own_sounds_fp")) and mod:get("mod_option_visible_equipment_sounds") == "all")
                                 if fx_extension and item_name and play_sound and slot_name ~= wielded_slot then
-                                    -- local sounds = i == 1 and slot_sounds or slot_sounds2
-                                    -- local rnd = sounds and math_random(1, #sounds)
-                                    -- sound = sounds and sounds[rnd]
-                                    local sounds = mod:get_sound_effects(item_name)
+                                    local sounds = i == 1 and slot_sounds or slot_sounds2
+                                    -- local sounds2 = i == 1 and slot_sounds2
+                                    local rnd = sounds and math_random(1, #sounds)
+                                    -- local rnd2 = sounds2 and math_random(1, #sounds2)
+                                    
+                                    -- sounds = sounds and {sounds[rnd]} or mod:get_sound_effects(item_name)
+                                    sound = sounds and sounds[rnd] or mod:get_sound_effects(item_name)
+                                    -- local sound2 = sounds2 and sounds2[rnd2]
+                                    -- local sounds = {sound1, sound2}
+                                    -- local sounds = mod:get_sound_effects(item_name)
                                     -- if item.item_type == "WEAPON_RANGED" then
                                     --     local rnd = sounds and math_random(1, #sounds)
                                     --     sound = sounds and sounds[rnd]
@@ -528,12 +535,8 @@ mod.update_equipment = function(self, dt)
                                     --         -- SoundEventAliases.sfx_weapon_up.events[item_name]
                                     --         -- or SoundEventAliases.sfx_grab_clip.events[item_name] or SoundEventAliases.sfx_weapon_up.events.default
                                     -- end
-                                    if sounds then
-                                        for _, sound in pairs(sounds) do
-                                            mod:load_package(sound)
-                                            fx_extension:trigger_wwise_event(sound, true, true, player_unit, 1, "foley_speed", step_animation.speed)
-                                        end
-                                    end
+                                    mod:load_package(sound)
+                                    fx_extension:trigger_wwise_event(sound, true, true, player_unit, 1, "foley_speed", step_animation.speed)
                                 end
                             end
                             

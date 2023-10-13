@@ -6,7 +6,7 @@ local mod = get_mod("weapon_customization")
 
 local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
 local PerlinNoise = mod:original_require("scripts/utilities/perlin_noise")
-local HudElementBattery = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/hud/hud_element_battery")
+-- local HudElementBattery = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/hud/hud_element_battery")
 local UIHud = mod:original_require("scripts/managers/ui/ui_hud")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -24,6 +24,8 @@ local UIHud = mod:original_require("scripts/managers/ui/ui_hud")
 	local table_contains = table.contains
 	local table_size = table.size
 	local table_clone = table.clone
+	local table_insert = table.insert
+	local table_find_by_key = table.find_by_key
 	local math_random = math.random
 	local math_random_seed = math.random_seed
 	local math_max = math.max
@@ -148,6 +150,10 @@ mod.battery_timer = 0
 mod.battery = nil
 mod.attached_flashlights = {}
 mod._active_flashlight_template = nil
+
+local hud_element_script = "weapon_customization/scripts/mods/weapon_customization/hud/hud_element_battery"
+local hud_element_class = "HudElementBattery"
+mod:add_require_path(hud_element_script)
 
 -- ##### ┌┐ ┌─┐┌┬┐┌┬┐┌─┐┬─┐┬ ┬ ########################################################################################
 -- ##### ├┴┐├─┤ │  │ ├┤ ├┬┘└┬┘ ########################################################################################
@@ -514,36 +520,34 @@ end
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
 
--- Setup battery hud element
-mod:hook(CLASS.UIHud, "_setup_elements", function(func, self, element_definitions, ...)
-	func(self, element_definitions, ...)
-
-	-- Add element to hud ui
-	local class_name = "HudElementBattery"
-	self._elements_hud_scale_lookup[class_name] = true
-	local hud_scale = UIHud:_hud_scale() or RESOLUTION_LOOKUP.scale
-	local element = HudElementBattery:new(self, 0, hud_scale)
-	self._elements[class_name] = element
-	local id = #self._elements_array + 1
-	self._elements_array[id] = element
-
-	-- Get visibility groups
-	local visibility_groups_lookup = {}
-	for _, settings in ipairs(self._visibility_groups) do
-		local name = settings.name
-		visibility_groups_lookup[name] = settings
+mod.recreate_hud = function(self)
+	local ui_manager = managers.ui
+	if ui_manager then
+		local hud = ui_manager._hud
+		if hud then
+			local player = managers.player:local_player(1)
+			local peer_id = player:peer_id()
+			local local_player_id = player:local_player_id()
+			local elements = hud._element_definitions
+			local visibility_groups = hud._visibility_groups
+			hud:destroy()
+			ui_manager:create_player_hud(peer_id, local_player_id, elements, visibility_groups)
+		end
 	end
+end
 
-	-- Add to alive visibility group
-	local visibility_group = visibility_groups_lookup["alive"]
-	visibility_group.visible_elements = visibility_group.visible_elements or {}
-	local visible_elements = visibility_group.visible_elements
-	visible_elements[class_name] = true
-
-	-- Add to communication wheel visibility group
-	local visibility_group = visibility_groups_lookup["tactical_overlay"]
-	visibility_group.visible_elements = visibility_group.visible_elements or {}
-	local visible_elements = visibility_group.visible_elements
-	visible_elements[class_name] = true
+-- Setup battery hud element
+mod:hook(CLASS.UIHud, "init", function(func, self, elements, visibility_groups, params, ...)
+	if not table_find_by_key(elements, "class_name", hud_element_class) then
+		table_insert(elements, {
+			filename = hud_element_script,
+			class_name = hud_element_class,
+			visibility_groups = {
+				"alive",
+				"tactical_overlay",
+			},
+		})
+	end
+	return func(self, elements, visibility_groups, params, ...)
 end)
 

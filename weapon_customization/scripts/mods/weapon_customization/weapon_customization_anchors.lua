@@ -1021,7 +1021,6 @@ local _item_minion = "content/items/weapons/minions"
                 return {
                     left_default =      {model = "",                                                     type = "left", parent = tv(parent, 1), angle = a, move = m, remove = r},
                     left_01 =           {model = _item_melee.."/ogryn_slabshield_p1_m1",                 type = "left", parent = tv(parent, 2), angle = a, move = m, remove = r},
-                    bulwark_shield_01 = {model = _item_melee.."/ogryn_slabshield_p1_m1",                 type = "left", parent = tv(parent, 2), angle = a, move = m, remove = r},
                     -- bulwark_shield_01 = {model = _item_minion.."/shields/chaos_ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
                 }
             end
@@ -3505,25 +3504,13 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             flamer_p1_m1 = {
-                ["flashlight_01"] = {
-                    position = vector3_box(.04075, .42, 0),
-                    rotation = vector3_box(0, 45, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["flashlight_02"] = {
-                    position = vector3_box(.04075, .42, 0),
-                    rotation = vector3_box(0, 45, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["flashlight_03"] = {
-                    position = vector3_box(.04075, .42, 0),
-                    rotation = vector3_box(0, 45, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-                ["flashlight_04"] = {
-                    position = vector3_box(.04075, .42, 0),
-                    rotation = vector3_box(0, 45, 0),
-                    scale = vector3_box(1, 1, 1),
+                flashlight_01 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
+                flashlight_02 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
+                flashlight_03 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
+                flashlight_04 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
+                fixes = {
+                    {dependencies = {"laser_pointer"}, -- Laser Pointer
+                        flashlight = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)}},
                 },
             },
         --#endregion
@@ -4607,7 +4594,7 @@ local _item_minion = "content/items/weapons/minions"
         ["#ID[55a01ebb60937e94]"] = "stock_03",
         ["#ID[d607b405027432d9]"] = "stock_04",
         ["#ID[891692deb6c77ef1]"] = "stock_05",
-        ["#ID[bc25db1df0670d2a]"] = "bulwark_shield_01",
+        -- ["#ID[bc25db1df0670d2a]"] = "bulwark_shield_01",
     }
     mod.attachment_slots = {
         "flashlight",
@@ -5100,11 +5087,11 @@ local _item_minion = "content/items/weapons/minions"
                 _recon_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))
             ),
             flamer_p1_m1 = table.combine(
-                _flashlight_models(),
-                _emblem_right_models(),
-                _emblem_left_models(),
-                -- _grip_models(),
-                _trinket_hook_models(),
+                _flashlight_models("receiver", -2.5, vector3_box(-.3, -3, -.05), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _emblem_left_models("receiver", 0, vector3_box(0, -3, 0), vector3_box(-.2, 0, 0)),
+                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1)),
+                _trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 {
                     receiver_default = {model = "", type = "receiver"},
                     receiver_01 = {model = "content/items/weapons/player/ranged/recievers/flamer_rifle_receiver_01", type = "receiver"},

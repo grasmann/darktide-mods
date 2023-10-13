@@ -237,10 +237,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 		if item_unit and attachments and gear_id then
 			mod:setup_item_definitions()
-			-- Bulwark
-			if mod:get_gear_setting(gear_id, "left", item_data) == "bulwark_shield_01" then
-				attach_settings.item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
-			end
+			-- -- Bulwark
+			-- if mod:get_gear_setting(gear_id, "left", item_data) == "bulwark_shield_01" then
+			-- 	attach_settings.item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
+			-- end
 
 			-- Add flashlight slot
 			mod:_add_custom_attachments(item_data, attachments)
