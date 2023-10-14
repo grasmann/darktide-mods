@@ -78,6 +78,11 @@ local mod = get_mod("weapon_customization")
 --#endregion
 
 local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
+local attachment_setting_overwrite = {
+	slot_trinket_1 = "slot_trinket_1",
+	slot_trinket_2 = "slot_trinket_2",
+	help_sight = "bolter_sight_01",
+}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -99,9 +104,13 @@ mod._add_custom_attachments = function(self, item, attachments)
 			-- Get weapon setting for attachment slot
 			local attachment_setting = self:get_gear_setting(gear_id, attachment_slot, item)
 			local attachment = self:_recursive_find_attachment(attachments, attachment_slot)
-			if attachment_slot == "slot_trinket_1" then attachment_setting = "slot_trinket_1" end
-			if attachment_slot == "slot_trinket_2" then attachment_setting = "slot_trinket_2" end
-			if attachment_slot == "help_sight" then attachment_setting = "bolter_sight_01" end
+			-- Overwrite specific attachment settings
+			if table_contains(attachment_setting_overwrite, attachment_slot) then
+				attachment_setting = attachment_setting_overwrite[attachment_slot]
+			end
+			-- if attachment_slot == "slot_trinket_1" then attachment_setting = "slot_trinket_1" end
+			-- if attachment_slot == "slot_trinket_2" then attachment_setting = "slot_trinket_2" end
+			-- if attachment_slot == "help_sight" then attachment_setting = "bolter_sight_01" end
 			if table_contains(self[attachment_table], attachment_setting) then
 				-- Get attachment data
 				local attachment_data = self.attachment_models[item_name] and self.attachment_models[item_name][attachment_setting]

@@ -164,17 +164,24 @@ mod.trigger_flashlight_daemon_host_reaction = function(self, t, intensity)
 end
 
 mod.check_daemon_host_packages = function(self)
-    if not mod:persistent_table("weapon_customization").loaded_packages[SPARK_SOUND] then
-        mod:persistent_table("weapon_customization").loaded_packages[SPARK_SOUND] = managers.package:load(SPARK_SOUND, "weapon_customization")
+	local packages = mod:persistent_table("weapon_customization").loaded_packages
+	local used = mod:persistent_table("weapon_customization").used_packages
+	packages.needed = packages.needed or {}
+    if not packages.needed[SPARK_SOUND] then
+        packages.needed[SPARK_SOUND] = managers.package:load(SPARK_SOUND, "weapon_customization")
+		used[SPARK_SOUND] = true
     end
-	if not mod:persistent_table("weapon_customization").loaded_packages[SPARK_SOUND_STOP] then
-        mod:persistent_table("weapon_customization").loaded_packages[SPARK_SOUND_STOP] = managers.package:load(SPARK_SOUND_STOP, "weapon_customization")
+	if not packages.needed[SPARK_SOUND_STOP] then
+        packages.needed[SPARK_SOUND_STOP] = managers.package:load(SPARK_SOUND_STOP, "weapon_customization")
+		used[SPARK_SOUND_STOP] = true
     end
-	if not mod:persistent_table("weapon_customization").loaded_packages[SPARKS_SMOKE_PARTICLE] then
-        mod:persistent_table("weapon_customization").loaded_packages[SPARKS_SMOKE_PARTICLE] = managers.package:load(SPARKS_SMOKE_PARTICLE, "weapon_customization")
+	if not packages.needed[SPARKS_SMOKE_PARTICLE] then
+        packages.needed[SPARKS_SMOKE_PARTICLE] = managers.package:load(SPARKS_SMOKE_PARTICLE, "weapon_customization")
+		used[SPARKS_SMOKE_PARTICLE] = true
     end
-	if not mod:persistent_table("weapon_customization").loaded_packages[SPARKS_PARTICLE] then
-        mod:persistent_table("weapon_customization").loaded_packages[SPARKS_PARTICLE] = managers.package:load(SPARKS_PARTICLE, "weapon_customization")
+	if not packages.needed[SPARKS_PARTICLE] then
+        packages.needed[SPARKS_PARTICLE] = managers.package:load(SPARKS_PARTICLE, "weapon_customization")
+		used[SPARKS_PARTICLE] = true
     end
 end
 

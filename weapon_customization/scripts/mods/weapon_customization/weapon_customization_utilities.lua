@@ -27,12 +27,14 @@ mod.load_needed_packages = function(self)
     local needed_packages = {
         "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
     }
+	local packages = self:persistent_table("weapon_customization").loaded_packages
+	local used = self:persistent_table("weapon_customization").used_packages
     for _, package_name in pairs(needed_packages) do
         if not managers.package:has_loaded(package_name) and not managers.package:is_loading(package_name) then
-            local packages = mod:persistent_table("weapon_customization").loaded_packages
-            packages[package_name] = managers.package:load(package_name, "weapon_customization")
+			packages.needed = packages.needed or {}
+            packages.needed[package_name] = managers.package:load(package_name, "weapon_customization")
         end
-        mod:persistent_table("weapon_customization").used_packages[package_name] = true
+        used[package_name] = true
     end
 end
 

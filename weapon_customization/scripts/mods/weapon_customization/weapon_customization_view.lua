@@ -118,6 +118,7 @@ end
 	local string_gsub = string.gsub
 	local string_find = string.find
 	local string_split = string.split
+	local Fade = Fade
 	local Color = Color
 	local pairs = pairs
 	local tostring = tostring
@@ -149,8 +150,8 @@ mod.get_equipment_sound_effect = function(self, item, attachment_slot, type)
 			else
 				return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_release.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_reload_lever_release.default}
 			end
-		elseif attachment_slot == "muzzle" or attachment_slot == "flashlight" or attachment_slot == "sight" then
-			return {SoundEventAliases.sfx_inspect.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_inspect.default}
+		-- elseif attachment_slot == "muzzle" or attachment_slot == "flashlight" or attachment_slot == "sight" then
+		-- 	return {SoundEventAliases.sfx_inspect.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_inspect.default}
 		else
 			if type == "detach" then
 				return {SoundEventAliases.sfx_weapon_down.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_weapon_down.default}
@@ -193,22 +194,27 @@ mod.play_attachment_sound = function(self, item, attachment_slot, attachment, ty
 end
 
 mod.load_attachment_sounds = function(self, item)
+	-- mod:persistent_table("weapon_customization").loaded_packages = {}
 	local packages = mod:persistent_table("weapon_customization").loaded_packages
+	local used = mod:persistent_table("weapon_customization").used_packages
+	packages.view_weapon_sounds = packages.view_weapon_sounds or {}
 	local attachments = self:get_item_attachment_slots(item)
 	for _, attachment_slot in pairs(attachments) do
 		local detach_sounds = self:get_equipment_sound_effect(item, attachment_slot, "detach")
 		if detach_sounds then
 			for _, detach_sound in pairs(detach_sounds) do
-				if not packages[detach_sound] then
-					packages[detach_sound] = managers.package:load(detach_sound, "weapon_customization")
+				if not packages.view_weapon_sounds[detach_sound] then
+					used[detach_sound] = true
+					packages.view_weapon_sounds[detach_sound] = managers.package:load(detach_sound, "weapon_customization")
 				end
 			end
 		end
 		local attach_sounds = self:get_equipment_sound_effect(item, attachment_slot, "attach")
 		if attach_sounds then
 			for _, attach_sound in pairs(attach_sounds) do
-				if not packages[attach_sound] then
-					packages[attach_sound] = managers.package:load(attach_sound, "weapon_customization")
+				if not packages.view_weapon_sounds[attach_sound] then
+					used[attach_sound] = true
+					packages.view_weapon_sounds[attach_sound] = managers.package:load(attach_sound, "weapon_customization")
 				end
 			end
 		end
@@ -216,10 +222,18 @@ mod.load_attachment_sounds = function(self, item)
 end
 
 mod.release_attachment_sounds = function(self)
-	for _, package_id in pairs(mod:persistent_table("weapon_customization").loaded_packages) do
+	local unloaded_sounds = {}
+	local packages = mod:persistent_table("weapon_customization").loaded_packages
+	local used = mod:persistent_table("weapon_customization").used_packages
+	packages.view_weapon_sounds = packages.view_weapon_sounds or {}
+	for sound, package_id in pairs(packages.view_weapon_sounds) do
+		used[sound] = false
+		unloaded_sounds[#unloaded_sounds+1] = package_id
 		managers.package:release(package_id)
 	end
-	mod:persistent_table("weapon_customization").loaded_packages = {}
+	for _, unloaded_sound in pairs(unloaded_sounds) do
+		packages.view_weapon_sounds[unloaded_sound] = nil
+	end
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -334,7 +348,9 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 
 		if modified_attachment_slot and (modified_attachment_slot.children or #children > 0) and not no_children then
 			-- Find attached children
-			self:_recursive_get_attachments(modified_attachment_slot.children, children)
+			if modified_attachment_slot and modified_attachment_slot.children then
+				self:_recursive_get_attachments(modified_attachment_slot.children, children)
+			end
 			-- Has children?
 			if children and #children > 0 then
 				-- Iterate children
@@ -383,6 +399,15 @@ mod.draw_equipment_lines = function(self, dt, t)
 				for _, attachment_slot in pairs(found_attachment_slots) do
 					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
 					if unit and unit_alive(unit) then
+						if self.cosmetics_view._fade_system then
+							-- Fade.set_min_fade(self.cosmetics_view._fade_system, unit, .1)
+							-- self.cosmetics_view._fade_system:set_min_fade(unit, 0.5)
+						end
+					end
+				end
+				for _, attachment_slot in pairs(found_attachment_slots) do
+					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+					if unit and unit_alive(unit) then
 						local box = Unit.box(unit, false)
 						local center_position = matrix4x4_translation(box)
 						local world_to_screen, distance = camera_world_to_screen(camera, center_position)
@@ -392,15 +417,15 @@ mod.draw_equipment_lines = function(self, dt, t)
 							local color = Color(255, 49, 62, 45)
 							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 4, Color(255, 106, 121, 100))
 							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
+							if self.cosmetics_view._fade_system then
+								-- Fade.set_min_fade(self.cosmetics_view._fade_system, unit, .05)
+								-- self.cosmetics_view._fade_system:set_min_fade(unit, 0.5)
+							end
 						end
 						-- local player_unit = Managers.player:local_player_safe(1).player_unit
 						-- local fade_system = Fade.init() --Managers.state.extension:system("fade_system")
 						-- if fade_system then
 						-- 	fade_system:set_min_fade(unit, 0.5)
-						-- end
-						-- if self.cosmetics_view._fade_system then
-						-- 	Fade.set_min_fade(self.cosmetics_view._fade_system, unit, .5)
-						-- 	-- self.cosmetics_view._fade_system:set_min_fade(unit, 0.5)
 						-- end
 					end
 				end
@@ -581,9 +606,10 @@ end)
 mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
 
 	local weapon_spawn_data = self._weapon_spawn_data
-	if weapon_spawn_data and weapon_spawn_data.streaming_complete then
+	if weapon_spawn_data then
 		if not weapon_spawn_data.visible then
 			mod.weapon_spawning = nil
+			weapon_spawn_data.streaming_complete = true
 		end
 	end
 
@@ -880,8 +906,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			end
 		end
 
-		-- if mod.cosmetics_view then
-		-- 	local camera_manager = managers.state.camera
+		-- if mod.cosmetics_view and mod.cosmetics_view._fade_system and self._camera then
 		-- 	local fade_position = camera_local_position(self._camera)
 		-- 	Fade.update(mod.cosmetics_view._fade_system, fade_position or vector3_zero())
 		-- end
@@ -921,11 +946,13 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 
 		unit_set_unit_visibility(weapon_spawn_data.item_unit_3p, true, true)
 
-		-- if mod.cosmetics_view then
+		-- if mod.cosmetics_view and mod.cosmetics_view._fade_system then
 		-- 	local attachment_units_3p = weapon_spawn_data.attachment_units_3p
 		-- 	for i = #attachment_units_3p, 1, -1 do
 		-- 		local unit = attachment_units_3p[i]
-		-- 		Fade.register_unit(mod.cosmetics_view._fade_system, unit, .5, .7, 1)
+		-- 		if unit and unit_alive(unit) then
+		-- 			Fade.register_unit(mod.cosmetics_view._fade_system, unit, .00000005, .00000007, 1)
+		-- 		end
 		-- 	end
 		-- end
 
@@ -1011,12 +1038,16 @@ mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
 		local attachment_units_3p = weapon_spawn_data.attachment_units_3p
 		for i = #attachment_units_3p, 1, -1 do
 			local unit = attachment_units_3p[i]
-			world_unlink_unit(self._world, unit)
-			-- if mod.cosmetics_view then
-			-- 	Fade.unregister_unit(mod.cosmetics_view._fade_system, unit)
-			-- end
+			if unit and unit_alive(unit) then
+				world_unlink_unit(self._world, unit)
+				-- if mod.cosmetics_view and mod.cosmetics_view._fade_system then
+				-- 	Fade.unregister_unit(mod.cosmetics_view._fade_system, unit)
+				-- end
+			end
 		end
-		world_unlink_unit(self._world, item_unit_3p)
+		if item_unit_3p and unit_alive(item_unit_3p) then
+			world_unlink_unit(self._world, item_unit_3p)
+		end
 	end
 	func(self, ...)
 end)

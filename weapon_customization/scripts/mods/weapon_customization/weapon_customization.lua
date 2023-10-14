@@ -39,6 +39,7 @@ function mod.on_game_state_changed(status, state_name)
 	mod:reset_flashlight()
 	mod:reset_laser_pointer()
 	mod:recharge_battery()
+	mod:release_slot_packages()
 end
 
 -- Mod settings changed
