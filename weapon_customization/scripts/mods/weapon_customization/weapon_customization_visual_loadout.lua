@@ -1,5 +1,11 @@
 local mod = get_mod("weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -22,6 +28,8 @@ local mod = get_mod("weapon_customization")
 	local unit_set_local_scale = Unit.set_local_scale
 	local unit_local_position = Unit.local_position
 	local unit_local_rotation = Unit.local_rotation
+	local unit_world_position = Unit.world_position
+	local unit_world_rotation = Unit.world_rotation
 	local unit_local_pose = Unit.local_pose
 	local unit_has_node = Unit.has_node
 	local unit_node = Unit.node
@@ -48,6 +56,8 @@ local mod = get_mod("weapon_customization")
 	local Quaternion = Quaternion
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
 	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+	local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local matrix4x4_transform = Matrix4x4.transform
 	local string = string
 	local string_sub = string.sub
 	local string_gsub = string.gsub
@@ -77,7 +87,11 @@ local mod = get_mod("weapon_customization")
 	local rawget = rawget
 --#endregion
 
-local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local REFERENCE = "weapon_customization"
 local attachment_setting_overwrite = {
 	slot_trinket_1 = "slot_trinket_1",
 	slot_trinket_2 = "slot_trinket_2",
@@ -149,7 +163,7 @@ end
 mod._apply_anchor_fixes = function(self, item, unit_or_name)
 	if item and item.attachments then
 		local gear_id = self:get_gear_id(item)
-		local slot_infos = self:persistent_table("weapon_customization").attachment_slot_infos
+		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
 		local slot_info_id = self:get_slot_info_id(item)
 		local item_name = self:item_name_from_content_string(item.name)
 		local attachments = item.attachments
@@ -248,8 +262,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			mod:setup_item_definitions()
 			-- -- Bulwark
 			-- if mod:get_gear_setting(gear_id, "left", item_data) == "bulwark_shield_01" then
-			-- 	attach_settings.item_definitions = mod:persistent_table("weapon_customization").bulwark_item_definitions
+			-- 	attach_settings.item_definitions = mod:persistent_table(REFERENCE).bulwark_item_definitions
 			-- end
+			-- local _items_dictionary = mod:persistent_table(REFERENCE).item_definitions or attach_settings.item_definitions
+			-- attach_settings.item_definitions = _items_dictionary
 
 			-- Add flashlight slot
 			mod:_add_custom_attachments(item_data, attachments)
@@ -294,7 +310,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 		if attachment_units and item_unit and attachments and gear_id then
 
-			local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+			local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 			slot_infos[slot_info_id] = attachment_slot_info
 
 			slot_infos[slot_info_id].attachment_slot_to_unit = 	slot_infos[slot_info_id].attachment_slot_to_unit or {}
@@ -347,6 +363,31 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					local parent_name = attachment_data and attachment_data.parent and attachment_data.parent
 					local parent_node = attachment_data and attachment_data.parent_node and attachment_data.parent_node or 1
 
+					-- if attachment_name == "scope" then
+					-- 	local num_meshes = unit_num_meshes(unit)
+					-- 	-- mod:echo("scope - "..tostring(num_meshes))
+					-- 	if unit and unit_alive(unit) then
+					-- 		unit_set_mesh_visibility(unit, 1, false)
+					-- 		unit_set_mesh_visibility(unit, 2, false)
+					-- 		unit_set_mesh_visibility(unit, 3, false)
+					-- 		unit_set_mesh_visibility(unit, 5, false)
+					-- 		unit_set_mesh_visibility(unit, 6, false)
+					-- 		unit_set_mesh_visibility(unit, 7, false)
+					-- 		local check_groups = {"receiver", "main", "barrel", "scope", "a", "front_walls"}
+					-- 		for _, group in pairs(check_groups) do
+					-- 			if Unit.has_visibility_group(unit, group) then
+					-- 				mod:echo(group)
+					-- 			end
+					-- 		end
+					-- 		-- local childs = Unit.get_child_units(unit)
+					-- 		-- if childs then
+					-- 		-- 	mod:echo("childs "..tostring(#childs))
+					-- 		-- end
+					-- 	end
+					-- 	-- unit_set_local_position(unit, mod.test_index, vector3(0, 0, .1))
+					-- 	-- unit_set_local_scale(unit, 38, vector3(3, 3, 3))
+					-- end
+
 					-- Root movement
 					local root_movement = attachment_data and attachment_data.move_root or false
 					slot_infos[slot_info_id].unit_root_movement[unit] = root_movement
@@ -396,10 +437,45 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 							local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_one()
 							local scale_node = anchor.scale_node or 1
 							unit_set_local_scale(unit, scale_node, scale)
+
+							unit_set_unit_visibility(unit, true, true)
 						end
 					end
 				end
 			end
+
+			-- if mod.cosmetics_view and mod.cosmetics_view._fade_system then
+			-- 	local unit_item_offsets = {}
+			-- 	-- for _, unit in pairs(attachment_units) do
+			-- 	for i = #attachment_units, 1, -1 do
+			-- 		local unit = attachment_units[i]
+			-- 		world_unlink_unit(attach_settings.world, unit, true)
+			-- 		local offset = unit_world_position(item_unit, 1) - unit_world_position(unit, 1)
+			-- 		local unit_rotation = unit_world_rotation(item_unit, 1)
+			-- 		local mat = quaternion_matrix4x4(unit_rotation)
+			-- 		local rotated_offset = Matrix4x4.transform(mat, offset)
+			-- 		unit_item_offsets[unit] = rotated_offset
+			-- 	end
+			-- 	for _, unit in pairs(attachment_units) do
+			-- 		-- local offset = unit_world_position(item_unit, 1) - unit_world_position(unit, 1)
+			-- 		local offset = unit_item_offsets[unit]
+			-- 		-- local unit_rotation = unit_world_rotation(item_unit, 1)
+			-- 		-- local mat = quaternion_matrix4x4(unit_rotation)
+			-- 		-- local rotated_offset = Matrix4x4.transform(mat, offset)
+			-- 		-- world_unlink_unit(attach_settings.world, unit)
+			-- 		world_link_unit(attach_settings.world, unit, 1, item_unit, 1)
+			-- 		unit_set_local_position(unit, 1, offset)
+			-- 		-- mod:unit_set_local_position_mesh(slot_info_id, unit, offset)
+					
+			-- 		slot_infos[slot_info_id].unit_default_position[unit] = vector3_box(unit_local_position(unit, 1))
+			-- 		-- Set unit mesh default positions
+			-- 		mod.mesh_positions[unit] = mod.mesh_positions[unit] or {}
+			-- 		local num_meshes = unit_num_meshes(unit)
+			-- 		for i = 1, num_meshes do
+			-- 			mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
+			-- 		end
+			-- 	end
+			-- end
 
 			for _, unit in pairs(attachment_units) do
 				local anchor = nil

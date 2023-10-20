@@ -6,6 +6,9 @@ local mod = get_mod("weapon_customization")
 
 local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
 
+
+local REFERENCE = "weapon_customization"
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -67,7 +70,7 @@ mod.get_actual_default_attachment = function(self, item, attachment_slot)
 		-- Setup master items backup
 		self:setup_item_definitions()
 		-- Get original item
-		local original_item = self:persistent_table("weapon_customization").item_definitions[item.name]
+		local original_item = self:persistent_table(REFERENCE).item_definitions[item.name]
 		local item_name = self:item_name_from_content_string(item.name)
 		-- Check item
 		if original_item and original_item.attachments then
@@ -100,7 +103,7 @@ mod.redo_weapon_attachments = function(self, item)
 		local latest_frame = FixedFrame.get_latest_fixed_time()
 		-- Reset flashlight cache
 		self.attached_flashlights[gear_id] = {}
-		self:persistent_table("weapon_customization").flashlight_on = false
+		self:persistent_table(REFERENCE).flashlight_on = false
 		-- Reset laser pointer cache
 		self:reset_laser_pointer()
 		self.attached_laser_pointers[gear_id] = {}

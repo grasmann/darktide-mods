@@ -12,19 +12,28 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
+    local string = string
     local string_find = string.find
     local string_format = string.format
+    local table = table
     local table_contains = table.contains
     local table_remove = table.remove
     local table_clone = table.clone
     local table_enum = table.enum
     local math_uuid = math.uuid
+    local Unit = Unit
+    local unit_has_node = Unit.has_node
+    local unit_node = Unit.node
     local unit_debug_name = Unit.debug_name
     local unit_set_local_position = Unit.set_local_position
+    local unit_set_local_rotation = Unit.set_local_rotation
     local unit_local_position = Unit.local_position
     local unit_world_position = Unit.world_position
     local unit_alive = Unit.alive
     local unit_flow_event = Unit.flow_event
+    local unit_light = Unit.light
+    local unit_num_lights = Unit.num_lights
+    local light_set_intensity = Light.set_intensity
     local world_unlink_unit = World.unlink_unit
     local world_destroy_unit = World.destroy_unit
     local level_units = Level.units
@@ -45,24 +54,67 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local managers = Managers
 --#endregion
 
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+local REFERENCE = "weapon_customization"
 
-local LOADING_STATES = table_enum("loading", "ready_to_load", "loaded", "dirty")
+-- ##### ┌┐┌┌─┐┌┬┐┌─┐  ┌─┐┬─┐┬─┐┌─┐┬─┐ ################################################################################
+-- ##### ││││ │ ││├┤   ├┤ ├┬┘├┬┘│ │├┬┘ ################################################################################
+-- ##### ┘└┘└─┘─┴┘└─┘  └─┘┴└─┴└─└─┘┴└─ ################################################################################
+
+mod._register_vfx_spawner_from_attachments = function(self, parent_unit, attachments, node_name, spawner_name)
+	local num_attachments = #attachments
+    -- Search node in attachments
+	for ii = 1, num_attachments do
+		local unit = attachments[ii]
+		if unit_has_node(unit, node_name) then
+			local node = unit_node(unit, node_name)
+			local spawner = {unit = unit, node = node}
+			return spawner
+		end
+	end
+    -- Search node in parent unit
+	if unit_has_node(parent_unit, node_name) then
+		local node = unit_node(parent_unit, node_name)
+		local spawner = {unit = parent_unit, node = node}
+		return spawner
+	end
+    -- Fallback node
+	local fallback_spawner = {node = 1, unit = parent_unit}
+	return fallback_spawner
+end
+
+mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
+	if attachments then
+        -- Replacement without error logging
+		local spawner = mod:_register_vfx_spawner_from_attachments(parent_unit, attachments, node_name, spawner_name)
+		spawners[spawner_name] = spawner
+	else
+        -- Original function
+		return func(self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
+	end
+end)
 
 -- ##### ┌─┐┬  ┬┌─┐┬┌─┌─┐┬─┐  ┌─┐┬─┐ ┬ ################################################################################
 -- ##### ├┤ │  ││  ├┴┐├┤ ├┬┘  ├┤ │┌┴┬┘ ################################################################################
 -- ##### └  ┴─┘┴└─┘┴ ┴└─┘┴└─  └  ┴┴ └─ ################################################################################
 
-mod:hook(CLASS.UIWorldSpawner, "_create_world", function(func, self, world_name, layer, timer_name, optional_view_name, optional_flags, ...)
-    optional_flags = {
-        -- Application.ENABLE_MOC,
-		Application.ENABLE_VOLUMETRICS,
-        Application.ENABLE_RAY_TRACING,
-    }
-    return func(self, world_name, layer, timer_name, optional_view_name, optional_flags, ...)
-end)
+-- mod:hook(CLASS.UIWorldSpawner, "_create_world", function(func, self, world_name, layer, timer_name, optional_view_name, optional_flags, ...)
+--     if mod:get("mod_option_misc_flicker_fix") then
+--         optional_flags = { Application.ENABLE_VOLUMETRICS }
+--     end
+--     return func(self, world_name, layer, timer_name, optional_view_name, optional_flags, ...)
+-- end)
+
+-- mod:hook(CLASS.UIWorldSpawner, "_shading_callback", function(func, self, world, shading_env, viewport, default_shading_environment_name, ...)
+--     func(self, world, shading_env, viewport, default_shading_environment_name, ...)
+--     if string_find(self._world_name, "ViewElementInventoryWeaponPreview") then
+--         local gamma = Application.user_setting("gamma") or 0
+--         ShadingEnvironment.set_scalar(shading_env, "exposure_compensation", ShadingEnvironment.scalar(shading_env, "exposure_compensation") + gamma)
+--         -- ShadingEnvironment.set_scalar(shading_env, "grey_scale_enabled", 0)
+--         ShadingEnvironment.set_scalar(shading_env, "exposure_snap", 1)
+--         ShadingEnvironment.set_scalar(shading_env, "ui_bloom_enabled", 1)
+-- 		-- ShadingEnvironment.set_scalar(shading_env, "ui_enable_hdr_layer", 1)
+--     end
+-- end)
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┬─┐┌─┐┬  ┬┬┌─┐┬ ┬ #####################################################################
 -- ##### │││├┤ ├─┤├─┘│ ││││  ├─┘├┬┘├┤ └┐┌┘│├┤ │││ #####################################################################
@@ -103,16 +155,6 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #########################################################################
 
--- mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)
---     func(self, item, slot_name, optional_existing_unit_3p, t, ...)
---     if self._unit == mod.player_unit then
---         -- Reset used packages
---         mod:persistent_table("weapon_customization").used_packages = {}
---         -- Get modded packages
---         mod:get_modded_packages()
---     end
--- end)
-
 mod:hook(CLASS.InventoryWeaponsView, "_equip_item", function(func, self, slot_name, item, ...)
     func(self, slot_name, item, ...)
     if not self._equip_button_disabled and (slot_name == "slot_primary" or slot_name == "slot_secondary") then
@@ -128,11 +170,14 @@ mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
     mod:get_modded_packages()
     -- Check if package is used
     local package_used = false
-    for used_package_name, _ in pairs(mod:persistent_table("weapon_customization").used_packages) do
-        if used_package_name == package_name then
-            package_used = true
-            break
+    for _, USED_PACKAGES in pairs(mod:persistent_table(REFERENCE).used_packages) do
+        for used_package_name, _ in pairs(USED_PACKAGES) do
+            if used_package_name == package_name then
+                package_used = true
+                break
+            end
         end
+        if package_used then break end
     end
     -- Temp trinket fix
     if string_find(package_name, "trinkets") then package_used = true end
@@ -141,30 +186,6 @@ mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
         func(self, id, ...)
     end
 end)
-
--- mod:hook(CLASS.PackageSynchronizerClient, "_get_loaded_packages_from_package_data", function(func, self, package_data, input_array, ...)
---     if package_data.state ~= LOADING_STATES.ready_to_load then
--- 		for package_name, id in pairs(package_data.dependencies) do
---             -- Get modded packages
---             mod:get_modded_packages()
---             -- Check if package is used
---             local package_used = false
---             for used_package_name, _ in pairs(mod:persistent_table("weapon_customization").used_packages) do
---                 if used_package_name == package_name then
---                     package_used = true
---                     if mod.last_prevent ~= package_name then
---                         mod.last_prevent = package_name
---                     end
---                     break
---                 end
---             end
---             -- Unload if possible
---             if not package_used then
---                 input_array[#input_array + 1] = id
---             end
--- 		end
--- 	end
--- end)
 
 mod:hook(CLASS.ExtensionManager, "unregister_unit", function(func, self, unit, ...)
     if unit and unit_alive(unit) then

@@ -39,6 +39,8 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local REFERENCE = "weapon_customization"
+
 mod.weapon_templates = {}
 
 mod.get_item_attachment_slots = function(self, item)
@@ -95,34 +97,53 @@ mod.randomize_weapon = function(self, item)
 end
 
 mod.setup_item_definitions = function(self)
-    if self:persistent_table("weapon_customization").item_definitions == nil then
+    if self:persistent_table(REFERENCE).item_definitions == nil then
         local master_items = MasterItems.get_cached()
         if master_items then
-            self:persistent_table("weapon_customization").item_definitions = table_clone_instance(master_items)
+            self:persistent_table(REFERENCE).item_definitions = table_clone_instance(master_items)
         end
     end
-    -- if self:persistent_table("weapon_customization").bulwark_item_definitions == nil then
+    local definitions = self:persistent_table(REFERENCE).item_definitions
+    -- if not definitions["content/items/weapons/player/ranged/sights/scope_01"] then
+        definitions["content/items/weapons/player/ranged/sights/scope_01"] = table_clone(definitions["content/items/weapons/minions/ranged/renegade_sniper_rifle"])
+        local scope = definitions["content/items/weapons/player/ranged/sights/scope_01"]
+        scope.reset_scene_graph_on_unlink = nil
+        scope.item_list_faction = "Player"
+        scope.show_in_1p = true
+        scope.attach_node = "ap_sight_01"
+        scope.attachments = {
+            zzz_shared_material_overrides = {
+              children = {},
+              item = "",
+            }
+        }
+        scope.name = "content/items/weapons/player/ranged/sights/scope_01"
+        scope.fx_sources = nil
+        scope.material_overrides = nil
+        scope.wielded_attach_node = nil
+        scope.unwielded_attach_node = nil
+    -- end
+    -- if self:persistent_table(REFERENCE).bulwark_item_definitions == nil then
     --     local master_items = MasterItems.get_cached()
     --     if master_items then
-    --         self:persistent_table("weapon_customization").bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
-    --         self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
-    --         self:persistent_table("weapon_customization").bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+    --         self:persistent_table(REFERENCE).bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
+    --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+    --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
     --     end
     -- end
 end
 
 mod.update_modded_packages = function(self)
     -- Reset used packages
-    self:persistent_table("weapon_customization").used_packages = {}
+    self:persistent_table(REFERENCE).used_packages.attachments = {}
     -- Get modded packages
     self:get_modded_packages()
 end
 
 mod.get_modded_packages = function(self)
-    if table_size(self:persistent_table("weapon_customization").used_packages) == 0 then
+    if table_size(self:persistent_table(REFERENCE).used_packages.attachments) == 0 then
         self:setup_item_definitions()
-        self:load_needed_packages()
-        -- local packages = self:persistent_table("weapon_customization").used_packages
+        -- self:load_needed_packages()
         if self.weapon_extension then
             local weapons = self.weapon_extension._weapons
             for slot_name, weapon in pairs(weapons) do
@@ -143,10 +164,10 @@ mod.get_modded_item_packages = function(self, attachments)
     for _, attachment_data in pairs(found_attachments) do
         local item_string = attachment_data.item
         if item_string and item_string ~= "" then
-            local item_definition = self:persistent_table("weapon_customization").item_definitions[item_string]
+            local item_definition = self:persistent_table(REFERENCE).item_definitions[item_string]
             if item_definition and item_definition.resource_dependencies then
                 for package_name, _ in pairs(item_definition.resource_dependencies) do
-                    self:persistent_table("weapon_customization").used_packages[package_name] = true
+                    self:persistent_table(REFERENCE).used_packages.attachments[package_name] = true
                 end
             end
         end
@@ -408,8 +429,10 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
                 mod:setup_item_definitions()
                 -- -- Bulwark
                 -- if mod:get_gear_setting(gear_id, "left", instance.processing_item) == "bulwark_shield_01" then
-                --     items_dictionary = mod:persistent_table("weapon_customization").bulwark_item_definitions
+                --     items_dictionary = mod:persistent_table(REFERENCE).bulwark_item_definitions
                 -- end
+                -- local _items_dictionary = mod:persistent_table(REFERENCE).item_definitions or items_dictionary
+                -- items_dictionary = _items_dictionary
 
                 -- Add flashlight slot
                 mod:_add_custom_attachments(instance.processing_item, attachments)
@@ -480,7 +503,7 @@ end)
 
 mod.template_add_torch = function(self, orig_weapon_template)
     if self.previewed_weapon and orig_weapon_template then
-        local templates = self:persistent_table("weapon_customization").weapon_templates
+        local templates = self:persistent_table(REFERENCE).weapon_templates
         if not templates[orig_weapon_template.name] then
             templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
         end

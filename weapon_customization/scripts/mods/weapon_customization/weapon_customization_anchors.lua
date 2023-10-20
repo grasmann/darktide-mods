@@ -275,6 +275,7 @@ local _item_minion = "content/items/weapons/minions"
                 {id = "reflex_sight_01", name = "Reflex Sight 1", sounds = {_magazine_sound}},
                 {id = "reflex_sight_02", name = "Reflex Sight 2", sounds = {_magazine_sound}},
                 {id = "reflex_sight_03", name = "Reflex Sight 3", sounds = {_magazine_sound}},
+                -- {id = "scope", name = "Scope", sounds = {_magazine_sound}},
             }
         end
         local _reflex_sights_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
@@ -294,6 +295,11 @@ local _item_minion = "content/items/weapons/minions"
                 reflex_sight_02 = {model = _item_ranged.."/sights/reflex_sight_02", type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 3), no_support = tv(n, 3), hide_mesh = tv(h, 3)},
                 reflex_sight_03 = {model = _item_ranged.."/sights/reflex_sight_03", type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 4), no_support = tv(n, 4), hide_mesh = tv(h, 4)},
                 sight_none =      {model = "",                                      type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 5), no_support = tv(n, 5), hide_mesh = tv(h, 5)},
+                -- scope =           {model = _item_ranged.."/sights/scope_01", type = t, parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 6), no_support = tv(n, 6),
+                --     hide_mesh = table.icombine(
+                --         tv(h, 6),
+                --         {"sight", 1}
+                --     )},
             }
         end
         local _sights_attachments = function()
@@ -2037,18 +2043,21 @@ local _item_minion = "content/items/weapons/minions"
                     {id = "barrel_06",      name = "Flamer 6", sounds = {UISoundEvents.weapons_equip_gadget}},
                 }
             end
-            local _flamer_barrel_models = function(parent, angle, move, remove)
+            local _flamer_barrel_models = function(parent, angle, move, remove, no_support, automatic_equip, hide_mesh)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
+                local n = no_support or {{"rail"}}
+                local ae = automatic_equip or {}
+                local h = hide_mesh or {}
                 return {
-                    barrel_default = {model = "",                                              type = "barrel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-                    barrel_01 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false},
-                    barrel_02 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_02", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
-                    barrel_03 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_03", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false},
-                    barrel_04 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_04", type = "barrel", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false},
-                    barrel_05 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_05", type = "barrel", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = false},
-                    barrel_06 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_06", type = "barrel", parent = tv(parent, 7), angle = a, move = m, remove = r, mesh_move = false},
+                    barrel_default = {model = "",                                              type = "barrel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 1), no_support = tv(n, 1)},
+                    barrel_01 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 2), no_support = tv(n, 2)},
+                    barrel_02 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_02", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 3), no_support = tv(n, 3)},
+                    barrel_03 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_03", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 4), no_support = tv(n, 4)},
+                    barrel_04 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_04", type = "barrel", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 5), no_support = tv(n, 5)},
+                    barrel_05 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_05", type = "barrel", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 6), no_support = tv(n, 6)},
+                    barrel_06 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_06", type = "barrel", parent = tv(parent, 7), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 7), no_support = tv(n, 7)},
                 }
             end
         --#endregion
@@ -3609,6 +3618,18 @@ local _item_minion = "content/items/weapons/minions"
                 flashlight_03 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
                 flashlight_04 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
                 fixes = {
+                    {dependencies = {"barrel_01"}, -- Emblems
+                        flashlight = {position = vector3_box(.035, .425, 0), rotation = vector3_box(0, 35, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_02"}, -- Emblems
+                        flashlight = {position = vector3_box(.035, .46, 0), rotation = vector3_box(0, 35, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_03"}, -- Emblems
+                        flashlight = {position = vector3_box(.035, .44, .005), rotation = vector3_box(0, 35, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_04"}, -- Emblems
+                        flashlight = {position = vector3_box(.04, .44, .005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_05"}, -- Emblems
+                        flashlight = {position = vector3_box(.05, .32, .08), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    {dependencies = {"barrel_06"}, -- Emblems
+                        flashlight = {position = vector3_box(.04, .42, .005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     {dependencies = {"receiver_02|receiver_04|receiver_05|receiver_06", "barrel_06"}, -- Emblems
                         emblem_left = {parent = "barrel", position = vector3_box(-.0525, .215, .005), rotation = vector3_box(5, 10, 180), scale = vector3_box(1.1, -1.1, 1.1)}},
                     {dependencies = {"receiver_02|receiver_04|receiver_05|receiver_06", "barrel_06"}, -- Emblems
@@ -4566,6 +4587,7 @@ local _item_minion = "content/items/weapons/minions"
         "reflex_sight_01",
         "reflex_sight_02",
         "reflex_sight_03",
+        -- "scope",
     }
     mod.sights = {
         "lasgun_rifle_elysian_sight_01",
@@ -4744,8 +4766,9 @@ local _item_minion = "content/items/weapons/minions"
     mod.attachment_models = {
         --#region Ogryn Guns
             ogryn_heavystubber_p1_m1 = table.combine( -- Done 5.9.2023
+                -- {customization_default_position = vector3_box(.2, -1, .075)},
                 _flashlight_models("receiver", -2.25, vector3_box(0, -3, -.2), vector3_box(.4, 0, .4)),
-                _emblem_right_models("receiver", -3, vector3_box(.3, -6, -.1), vector3_box(.2, 0, 0)),
+                _emblem_right_models("receiver", -3, vector3_box(.1, -6, -.1), vector3_box(.2, 0, 0)),
                 _emblem_left_models("receiver", 0, vector3_box(-.3, -6, -.1), vector3_box(-.2, 0, 0)),
                 _ogryn_bayonet_models("receiver", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
                 _stubber_barrel_models("receiver", -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0)),
@@ -5210,7 +5233,23 @@ local _item_minion = "content/items/weapons/minions"
                 _trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _flamer_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _flamer_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
-                _flamer_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
+                _flamer_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), {
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook"},
+                    {"trinket_hook_empty"},
+                    {"trinket_hook_empty"},
+                }, {
+                    {trinket_hook = "trinket_hook_empty|trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty|trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty|trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty|trinket_hook_05_carbon"},
+                    {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
+                    {trinket_hook = "trinket_hook_empty|trinket_hook_05_carbon"},
+                    {trinket_hook = "trinket_hook_empty|trinket_hook_05_carbon"},
+                }),
                 _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1))
             ),
             forcestaff_p1_m1 = {

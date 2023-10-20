@@ -4,16 +4,27 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local REFERENCE = "weapon_customization"
+
 -- Persistent values
-mod:persistent_table("weapon_customization", {
+mod:persistent_table(REFERENCE, {
 	flashlight_on = false,
 	laser_pointer_on = 0,
 	spawned_lasers = {},
 	item_definitions = nil,
 	player_equipment = {},
 	attachment_slot_infos = {},
-	loaded_packages = {},
-	used_packages = {},
+	loaded_packages = {
+		visible_equipment = {},
+		view_weapon_sounds = {},
+		needed = {},
+	},
+	used_packages = {
+		visible_equipment = {},
+		view_weapon_sounds = {},
+		needed = {},
+		attachments = {},
+	},
 	input_hooked = false,
 	weapon_templates = {},
 })
@@ -39,7 +50,8 @@ function mod.on_game_state_changed(status, state_name)
 	mod:reset_flashlight()
 	mod:reset_laser_pointer()
 	mod:recharge_battery()
-	mod:release_slot_packages()
+	-- mod:release_slot_packages()
+	mod:release_non_essential_packages()
 end
 
 -- Mod settings changed
@@ -56,6 +68,15 @@ function mod.on_setting_changed(setting_id)
 	end
 	if setting_id == "mod_option_visible_equipment" then
 		mod:update_equipment_visibility()
+	end
+	if setting_id == "mod_option_visible_equipment" then
+		mod.visible_equipment = mod:get("mod_option_visible_equipment")
+	end
+	if setting_id == "mod_option_visible_equipment_sounds" then
+		mod.visible_equipment_sounds = mod:get("mod_option_visible_equipment_sounds")
+	end
+	if setting_id == "mod_option_visible_equipment_own_sounds_fp" then
+		mod.visible_equipment_sounds_fp = mod:get("mod_option_visible_equipment_own_sounds_fp")
 	end
 	-- Debug
 	mod._debug = mod:get("mod_option_debug")
@@ -164,4 +185,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_cus
 -- Reinitialize on mod reload
 if managers and managers.player._game_state ~= nil then
 	mod:init()
+	mod:setup_item_definitions()
 end
+
+mod:load_needed_packages()

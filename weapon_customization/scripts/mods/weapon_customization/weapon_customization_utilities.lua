@@ -19,22 +19,42 @@ local mod = get_mod("weapon_customization")
     local CLASS = CLASS
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local REFERENCE = "weapon_customization"
+local COSMETIC_VIEW = "inventory_cosmetics_view"
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+mod.release_non_essential_packages = function(self)
+	-- Release all non-essential packages
+	local unloaded_packages = {}
+	local lists = {"visible_equipment", "view_weapon_sounds"}
+	for _, list in pairs(lists) do
+		for package_name, package_id in pairs(self:persistent_table(REFERENCE).loaded_packages[list]) do
+			unloaded_packages[package_name] = package_id
+			self:persistent_table(REFERENCE).used_packages[list][package_name] = nil
+		end
+		self:persistent_table(REFERENCE).loaded_packages[list] = {}
+	end
+	for package_name, package_id in pairs(unloaded_packages) do
+		managers.package:release(package_id)
+	end
+end
+
 mod.load_needed_packages = function(self)
-    local needed_packages = {
+    local _needed_packages = {
         "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
     }
-	local packages = self:persistent_table("weapon_customization").loaded_packages
-	local used = self:persistent_table("weapon_customization").used_packages
-    for _, package_name in pairs(needed_packages) do
-        if not managers.package:has_loaded(package_name) and not managers.package:is_loading(package_name) then
-			packages.needed = packages.needed or {}
-            packages.needed[package_name] = managers.package:load(package_name, "weapon_customization")
+    for _, package_name in pairs(_needed_packages) do
+		if not self:persistent_table(REFERENCE).loaded_packages.needed[package_name] then
+			self:persistent_table(REFERENCE).used_packages.needed[package_name] = true
+            self:persistent_table(REFERENCE).loaded_packages.needed[package_name] = managers.package:load(package_name, REFERENCE)
         end
-        used[package_name] = true
     end
 end
 
@@ -119,6 +139,11 @@ mod.physics_world = function(self)
     return world_physics_world(self:world())
 end
 
-mod.wwise_world = function(self)
-	return wwise_wwise_world(self:world())
+mod.wwise_world = function(self, world)
+	local world = world or self:world()
+	return wwise_wwise_world(world)
+end
+
+mod.get_cosmetic_view = function(self)
+    return managers.ui:view_active(COSMETIC_VIEW) and managers.ui:view_instance(COSMETIC_VIEW) or nil
 end

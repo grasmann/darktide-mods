@@ -14,6 +14,7 @@ local UIHud = mod:original_require("scripts/managers/ui/ui_hud")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local vector3_zero = Vector3.zero
 	local vector3_box = Vector3Box
 	local vector3_unbox = vector3_box.unbox
 	local unit_alive = Unit.alive
@@ -54,6 +55,8 @@ local UIHud = mod:original_require("scripts/managers/ui/ui_hud")
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local REFERENCE = "weapon_customization"
 
 local _flashlight_template = {
 	light = {
@@ -139,8 +142,8 @@ mod.flashlight_templates = {
 		battery = {
 			max = 10,
 			interval = 1,
-			drain = .01,
-			charge = .02,
+			drain = .03,
+			charge = .04,
 		},
 		flicker = FlashlightTemplates.assault.flicker,
 	},
@@ -204,9 +207,9 @@ mod.update_battery = function(self)
 			-- Battery interval
 			if t > self.battery_timer then
 				-- Check if flashlight is switched on
-				local flashlight_on = self:persistent_table("weapon_customization").flashlight_on
-				local laser_pointer_on = self:persistent_table("weapon_customization").laser_pointer_on == 2
-				local only_pointer = self:persistent_table("weapon_customization").laser_pointer_on == 1
+				local flashlight_on = self:persistent_table(REFERENCE).flashlight_on
+				local laser_pointer_on = self:persistent_table(REFERENCE).laser_pointer_on == 2
+				local only_pointer = self:persistent_table(REFERENCE).laser_pointer_on == 1
 				if (flashlight_on or laser_pointer_on or only_pointer) and self:get_wielded_slot() == "slot_secondary" then
 					-- Drain battery
 					local drain = only_pointer and self._active_flashlight_template.battery.drain * .3 or self._active_flashlight_template.battery.drain
@@ -223,10 +226,10 @@ mod.update_battery = function(self)
 			-- Battery empty
 			if self.battery <= 0 then
 				-- Check battery or laser pointer
-				if self:persistent_table("weapon_customization").flashlight_on then
+				if self:persistent_table(REFERENCE).flashlight_on then
 					-- Switch off flashlight
 					self:toggle_flashlight(false, false)
-				elseif self:persistent_table("weapon_customization").laser_pointer_on == 2 then
+				elseif self:persistent_table(REFERENCE).laser_pointer_on == 2 then
 					-- Switch off laser pointer light
 					self:toggle_laser(false, 0)
 				end
@@ -241,34 +244,36 @@ end
 
 -- Get flashlight unit of wielded weapon
 mod.get_flashlight_unit = function(self)
-    -- Get wielded weapon
-	local weapon = self:get_wielded_weapon()
-    -- Check weapon and flashlight
-	if weapon and self:has_flashlight_attachment() then
-		-- Get weapon gear id
-		local gear_id = self:get_gear_id(weapon.item)
-		-- Check flashlight unit cache
-        self.attached_flashlights[gear_id] = self.attached_flashlights[gear_id] or {}
-		-- Check if unit set but not alive
-		if table_size(self.attached_flashlights[gear_id]) > 0 then
-			if not unit_alive(self.attached_flashlights[gear_id].unit_1p) or not unit_alive(self.attached_flashlights[gear_id].unit_3p) then
-				self.attached_flashlights[gear_id] = {}
-				self:print("get_flashlight_unit - flashlight unit destroyed", self._debug_skip_some)
+	if self.initialized then
+		-- Get wielded weapon
+		local weapon = self:get_wielded_weapon()
+		-- Check weapon and flashlight
+		if weapon and self:has_flashlight_attachment() then
+			-- Get weapon gear id
+			local gear_id = self:get_gear_id(weapon.item)
+			-- Check flashlight unit cache
+			self.attached_flashlights[gear_id] = self.attached_flashlights[gear_id] or {}
+			-- Check if unit set but not alive
+			if table_size(self.attached_flashlights[gear_id]) > 0 then
+				if not unit_alive(self.attached_flashlights[gear_id].unit_1p) or not unit_alive(self.attached_flashlights[gear_id].unit_3p) then
+					self.attached_flashlights[gear_id] = {}
+					self:print("get_flashlight_unit - flashlight unit destroyed", self._debug_skip_some)
+				end
 			end
-		end
-		-- Search for flashlight unit
-		if table_size(self.attached_flashlights[gear_id]) == 0 then
-			-- Set flashlight units
-            self.attached_flashlights[gear_id] = {
-                unit_1p = self:_get_flashlight_unit(weapon.weapon_unit),
-                unit_3p = self:_get_flashlight_unit(self:get_wielded_weapon_3p()),
-            }
-			-- Set flashlight template
-			self:set_flashlight_template(self.attached_flashlights[gear_id])
-		end
-		-- Return cached unit
-		return self.attached_flashlights[gear_id].unit_1p, self.attached_flashlights[gear_id].unit_3p
-	else self:print("get_flashlight_unit - weapon is nil", self._debug_skip_some) end
+			-- Search for flashlight unit
+			if table_size(self.attached_flashlights[gear_id]) == 0 then
+				-- Set flashlight units
+				self.attached_flashlights[gear_id] = {
+					unit_1p = self:_get_flashlight_unit(weapon.weapon_unit),
+					unit_3p = self:_get_flashlight_unit(self:get_wielded_weapon_3p()),
+				}
+				-- Set flashlight template
+				self:set_flashlight_template(self.attached_flashlights[gear_id])
+			end
+			-- Return cached unit
+			return self.attached_flashlights[gear_id].unit_1p, self.attached_flashlights[gear_id].unit_3p
+		else self:print("get_flashlight_unit - weapon is nil", self._debug_skip_some) end
+	end
 end
 
 -- Get flashlight unit of specified weapon unit
@@ -298,8 +303,8 @@ end
 -- ##### └  ┴─┘┴ ┴└─┘┴ ┴┴─┘┴└─┘┴ ┴ ┴    ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘ #######################################################
 
 -- Get flashlight template from current equipment
-mod.get_flashlight_template = function(self)
-	local flashlight = self:has_flashlight_attachment() or self:has_laser_pointer_attachment()
+mod.get_flashlight_template = function(self, optional_flashlight_name)
+	local flashlight = optional_flashlight_name or (self:has_flashlight_attachment() or self:has_laser_pointer_attachment())
 	if flashlight then return self.flashlight_templates[flashlight] end
 end
 
@@ -392,7 +397,7 @@ mod.update_flashlight_view = function(self)
 end
 
 mod.reset_flashlight = function(self)
-	self:persistent_table("weapon_customization").flashlight_on = false
+	self:persistent_table(REFERENCE).flashlight_on = false
 end
 
 -- Update flashlight flicker
@@ -408,11 +413,11 @@ mod.update_flicker = function(self)
 		local light_template = self._active_flashlight_template.light.first_person
 		if is_in_third_person then light_template = self._active_flashlight_template.light.third_person end
         -- Check flashlight unit and state
-        local state = self:persistent_table("weapon_customization").flashlight_on or self:persistent_table("weapon_customization").laser_pointer_on
+        local state = self:persistent_table(REFERENCE).flashlight_on or self:persistent_table(REFERENCE).laser_pointer_on
 		if light_unit and state then
 			local t = self.time_manager:time("gameplay")
 			local settings = self._active_flashlight_template.flicker
-			if (self:get("mod_option_laser_pointer_wild") and self:persistent_table("weapon_customization").laser_pointer_on == 2) or self.flicker_wild then
+			if (self:get("mod_option_laser_pointer_wild") and self:persistent_table(REFERENCE).laser_pointer_on == 2) or self.flicker_wild then
 				settings = self.laser_pointer_flicker_wild
 			end
 
@@ -476,9 +481,9 @@ mod.update_flicker = function(self)
 end
 
 -- Toggle equipped flashlight
-mod.toggle_flashlight = function(self, retain, optional_value)
+mod.toggle_flashlight = function(self, retain, optional_value, optional_flashlight_unit, optional_world)
     -- Initialized?
-	if self.initialized then
+	if self.initialized and not optional_flashlight_unit then
         -- Get and check flashlight unit
 		local flashlight_unit_1p, flashlight_unit_3p = self:get_flashlight_unit()
         if not flashlight_unit_1p or not flashlight_unit_3p then
@@ -486,8 +491,9 @@ mod.toggle_flashlight = function(self, retain, optional_value)
         end
         local flashlight_unit = flashlight_unit_1p
         if self:is_in_third_person() then flashlight_unit = flashlight_unit_3p end
+		flashlight_unit = optional_flashlight_unit or flashlight_unit
         if flashlight_unit and unit_alive(flashlight_unit) then
-            local flashlight_state = not self:persistent_table("weapon_customization").flashlight_on
+            local flashlight_state = not self:persistent_table(REFERENCE).flashlight_on
             -- Check retain ( flashlight update )
             if retain then flashlight_state = not flashlight_state end
             -- Optional overwrite value
@@ -498,6 +504,8 @@ mod.toggle_flashlight = function(self, retain, optional_value)
                 -- Set values
                 light_set_enabled(light, flashlight_state)
                 light_set_casts_shadows(light, self:get("mod_option_flashlight_shadows"))
+				local color = flashlight_state and light_color_with_intensity(light) or vector3_zero()
+				unit_set_vector3_for_materials(flashlight_unit, "light_color", color)
             end
 
             -- Check flicker
@@ -511,9 +519,25 @@ mod.toggle_flashlight = function(self, retain, optional_value)
             end
 
             -- Set state
-            self:persistent_table("weapon_customization").flashlight_on = flashlight_state
+            self:persistent_table(REFERENCE).flashlight_on = flashlight_state
         end
-	else self:print("toggle_flashlight - mod not initialized", self._debug_skip_some) end
+	elseif optional_flashlight_unit and optional_world then
+		local light = unit_light(optional_flashlight_unit, 1)
+		if light then
+			-- Set values
+			light_set_enabled(light, optional_value)
+			light_set_casts_shadows(light, self:get("mod_option_flashlight_shadows"))
+			local color = optional_value and light_color_with_intensity(light) or vector3_zero()
+			unit_set_vector3_for_materials(optional_flashlight_unit, "light_color", color)
+		end
+		if not retain then
+			local wwise_world = self:wwise_world(optional_world)
+			local source_id = WwiseWorld.make_auto_source(wwise_world, optional_flashlight_unit, 1)
+			local sound = "wwise/events/player/play_foley_gear_flashlight_on"
+			if not optional_value then sound = "wwise/events/player/play_foley_gear_flashlight_off" end
+			WwiseWorld.trigger_resource_event(wwise_world, sound, source_id)
+		end
+	end
 end
 
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################

@@ -4,6 +4,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
 local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
@@ -26,9 +27,10 @@ local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.e
 local grid_width = grid_size[1] + edge_padding
 local button_width = grid_width * 0.3
 local edge = edge_padding * 0.5
-local label_height = 35
-local dropdown_height = 50
+local label_height = 30
+local dropdown_height = 32
 local DROPDOWN_BUTTON_MARGIN = 30
+local REFERENCE = "weapon_customization"
 
 mod.added_cosmetics_scenegraphs = {}
 mod.original_weapon_settings = {}
@@ -63,14 +65,15 @@ end
 	local Quaternion = Quaternion
 	local quaternion_matrix_4x4 = Quaternion.matrix4x4
 	local quaternion_axis_angle = Quaternion.axis_angle
-	local quaternionbox_unbox = QuaternionBox.unbox
+	local quaternion_box = QuaternionBox
+	local quaternion_unbox = quaternion_box.unbox
 	local quaternion_multiply = Quaternion.multiply
 	local Matrix4x4 = Matrix4x4
 	local matrix4x4_transform = Matrix4x4.transform
 	local matrix4x4_translation = Matrix4x4.translation
 	local Camera = Camera
 	local camera_world_to_screen = Camera.world_to_screen
-	local camera_local_position = Camera.local_position
+	local camera_world_position = Camera.world_position
 	local Unit = Unit
 	local unit_alive = Unit.alive
 	local unit_set_local_position = Unit.set_local_position
@@ -134,46 +137,83 @@ end
 -- ##### └─┐│ ││ ││││ ││ ##############################################################################################
 -- ##### └─┘└─┘└─┘┘└┘─┴┘ ##############################################################################################
 
-mod.get_equipment_sound_effect = function(self, item, attachment_slot, type)
+-- SoundEventAliases.sfx_equip_02.events.ogryn_gauntlet_p1_m1
+-- SoundEventAliases.sfx_equip_02.events.bolter_p1_m1
+-- SoundEventAliases.sfx_equip_02.events.lasgun_p3_m1
+-- SoundEventAliases.sfx_equip_02.events.lasgun_p2_m1
+-- SoundEventAliases.sfx_equip_02.events.autogun_p1_m1
+-- SoundEventAliases.sfx_grab_clip.events.lasgun_p1_m1
+-- SoundEventAliases.sfx_grab_weapon.events.bolter_p1_m1
+
+-- SoundEventAliases.sfx_grab_clip.events.flamer_p1_m1 ?
+-- SoundEventAliases.sfx_grab_weapon.events.autopistol_p1_m1 ?
+-- SoundEventAliases.sfx_grab_weapon.events.lasgun_p3_m1 ?
+
+mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachment_name, type, load)
+	-- local sound = "wwise/events/weapon/play_bolter_reload_hand"
+	-- return {sound}
+	local load = load or false
+	local item_name = self.cosmetics_view._item_name
 	if item.item_type == "WEAPON_RANGED" then
-		if attachment_slot == "magazine" then
-			if type == "detach" then
-				return {SoundEventAliases.sfx_magazine_eject.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_magazine_eject.default}
-			else
-				return {SoundEventAliases.sfx_magazine_insert.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_magazine_insert.default}
-			end
+		if attachment_slot == "magazine" or attachment_slot == "magazine2" then
+			if type == "detach" then return {SoundEventAliases.sfx_magazine_eject.events[item_name] or SoundEventAliases.sfx_magazine_eject.default}
+			else return {SoundEventAliases.sfx_magazine_insert.events[item_name] or SoundEventAliases.sfx_magazine_insert.default} end
+
 		elseif attachment_slot == "receiver" or attachment_slot == "body" then
-			return {SoundEventAliases.sfx_equip.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_equip.default}
+			return {SoundEventAliases.sfx_equip.events[item_name] or SoundEventAliases.sfx_equip.default}
+
 		elseif attachment_slot == "bayonet" then
-			if type == "detach" then
-				return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_pull.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_reload_lever_pull.default}
-			else
-				return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_release.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_reload_lever_release.default}
+			if type == "detach" then return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_pull.events[item_name] or SoundEventAliases.sfx_reload_lever_pull.default}
+			else return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_release.events[item_name] or SoundEventAliases.sfx_reload_lever_release.default} end
+
+		elseif attachment_slot == "muzzle" then
+			return {SoundEventAliases.sfx_weapon_foley_heavy.events.bolter_p1_m1}
+
+		elseif attachment_slot == "flashlight" or attachment_slot == "rail" or attachment_slot == "trinket_hook" then
+			return {SoundEventAliases.sfx_grab_clip.events.lasgun_p1_m1, "wwise/events/player/play_foley_gear_flashlight_on", "wwise/events/player/play_foley_gear_flashlight_off"}
+
+		elseif attachment_slot == "grip" or attachment_slot == "handle" or attachment_slot == "underbarrel" then
+			return {SoundEventAliases.sfx_grab_weapon.events.bolter_p1_m1}
+
+		elseif attachment_slot == "sight" or attachment_slot == "sight_2" or attachment_slot == "emblem_right" or attachment_slot == "emblem_left" then
+			if load then
+				if type == "detach" then return {SoundEventAliases.sfx_grab_weapon.events.lasgun_p3_m1, SoundEventAliases.sfx_vent_rattle.events.plasmagun_p1_m1}
+				else return {SoundEventAliases.sfx_equip_02.events.lasgun_p2_m1, SoundEventAliases.sfx_vent_rattle.events.plasmagun_p1_m1} end
 			end
-		-- elseif attachment_slot == "muzzle" or attachment_slot == "flashlight" or attachment_slot == "sight" then
-		-- 	return {SoundEventAliases.sfx_inspect.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_inspect.default}
+			if table_contains(self.reflex_sights, attachment_name) then
+				if type == "detach" then return {SoundEventAliases.sfx_grab_weapon.events.lasgun_p3_m1}
+				else return {SoundEventAliases.sfx_equip_02.events.lasgun_p2_m1} end
+			end
+			return {SoundEventAliases.sfx_vent_rattle.events.plasmagun_p1_m1}
+		elseif attachment_slot == "stock" or attachment_slot == "stock_2" or attachment_slot == "stock_3" then
+			return {SoundEventAliases.sfx_equip_02.events.bolter_p1_m1}
+
+		elseif attachment_slot == "barrel" then
+			return {SoundEventAliases.sfx_equip_02.events.autogun_p1_m1}
+
 		else
 			if type == "detach" then
-				return {SoundEventAliases.sfx_weapon_down.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_weapon_down.default}
+				return {SoundEventAliases.sfx_weapon_down.events[item_name] or SoundEventAliases.sfx_weapon_down.default}
 			else
-				return {SoundEventAliases.sfx_weapon_up.events[self.cosmetics_view._item_name] or SoundEventAliases.sfx_weapon_up.default}
+				return {SoundEventAliases.sfx_weapon_up.events[item_name] or SoundEventAliases.sfx_weapon_up.default}
 			end
 		end
 	end
 end
 
-mod.play_attachment_sound = function(self, item, attachment_slot, attachment, type)
+mod.play_attachment_sound = function(self, item, attachment_slot, attachment_name, type)
 	local item_name = self.cosmetics_view._item_name
-	if attachment == "default" then
-		attachment = self:get_actual_default_attachment(item, attachment_slot)
+	if attachment_name == "default" then
+		attachment_name = self:get_actual_default_attachment(item, attachment_slot)
 	end
-	local sounds = self:get_equipment_sound_effect(item, attachment_slot, type)
+	local sounds = self:get_equipment_sound_effect(item, attachment_slot, attachment_name, type)
 	if sounds then
 		local ui_manager = managers.ui
 		local slot_info_id = self.cosmetics_view._slot_info_id
-		local slot_infos = slot_info_id and self:persistent_table("weapon_customization").attachment_slot_infos
+		local slot_infos = slot_info_id and mod:persistent_table(REFERENCE).attachment_slot_infos
 		local gear_info = slot_infos and slot_infos[slot_info_id]
-		local unit = gear_info and gear_info.attachment_slot_to_unit[attachment_slot]
+		local player_unit = self.player_unit and unit_alive(self.player_unit) and self.player_unit
+		local unit = player_unit or gear_info and gear_info.attachment_slot_to_unit[attachment_slot]
 
 		if unit then
 			for _, sound in pairs(sounds) do
@@ -183,7 +223,7 @@ mod.play_attachment_sound = function(self, item, attachment_slot, attachment, ty
 	else
 		if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
 			for _, data in pairs(self.attachment[item_name][attachment_slot]) do
-				if data.id == attachment and data.sounds then
+				if data.id == attachment_name and data.sounds then
 					for _, sound in pairs(data.sounds) do
 						self.cosmetics_view:_play_sound(sound)
 					end
@@ -194,27 +234,24 @@ mod.play_attachment_sound = function(self, item, attachment_slot, attachment, ty
 end
 
 mod.load_attachment_sounds = function(self, item)
-	-- mod:persistent_table("weapon_customization").loaded_packages = {}
-	local packages = mod:persistent_table("weapon_customization").loaded_packages
-	local used = mod:persistent_table("weapon_customization").used_packages
-	packages.view_weapon_sounds = packages.view_weapon_sounds or {}
 	local attachments = self:get_item_attachment_slots(item)
 	for _, attachment_slot in pairs(attachments) do
-		local detach_sounds = self:get_equipment_sound_effect(item, attachment_slot, "detach")
+		local attachment_name = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item)
+		local detach_sounds = self:get_equipment_sound_effect(item, attachment_slot, attachment_name, "detach", true)
 		if detach_sounds then
 			for _, detach_sound in pairs(detach_sounds) do
-				if not packages.view_weapon_sounds[detach_sound] then
-					used[detach_sound] = true
-					packages.view_weapon_sounds[detach_sound] = managers.package:load(detach_sound, "weapon_customization")
+				if not self:persistent_table(REFERENCE).loaded_packages.view_weapon_sounds[detach_sound] then
+					self:persistent_table(REFERENCE).used_packages.view_weapon_sounds[detach_sound] = true
+					self:persistent_table(REFERENCE).loaded_packages.view_weapon_sounds[detach_sound] = managers.package:load(detach_sound, REFERENCE)
 				end
 			end
 		end
-		local attach_sounds = self:get_equipment_sound_effect(item, attachment_slot, "attach")
+		local attach_sounds = self:get_equipment_sound_effect(item, attachment_slot, attachment_name, "attach", true)
 		if attach_sounds then
 			for _, attach_sound in pairs(attach_sounds) do
-				if not packages.view_weapon_sounds[attach_sound] then
-					used[attach_sound] = true
-					packages.view_weapon_sounds[attach_sound] = managers.package:load(attach_sound, "weapon_customization")
+				if not self:persistent_table(REFERENCE).loaded_packages.view_weapon_sounds[attach_sound] then
+					self:persistent_table(REFERENCE).used_packages.view_weapon_sounds[attach_sound] = true
+					self:persistent_table(REFERENCE).loaded_packages.view_weapon_sounds[attach_sound] = managers.package:load(attach_sound, REFERENCE)
 				end
 			end
 		end
@@ -222,17 +259,14 @@ mod.load_attachment_sounds = function(self, item)
 end
 
 mod.release_attachment_sounds = function(self)
-	local unloaded_sounds = {}
-	local packages = mod:persistent_table("weapon_customization").loaded_packages
-	local used = mod:persistent_table("weapon_customization").used_packages
-	packages.view_weapon_sounds = packages.view_weapon_sounds or {}
-	for sound, package_id in pairs(packages.view_weapon_sounds) do
-		used[sound] = false
-		unloaded_sounds[#unloaded_sounds+1] = package_id
+	local unloaded_packages = {}
+	for sound, package_id in pairs(self:persistent_table(REFERENCE).loaded_packages.view_weapon_sounds) do
+		unloaded_packages[#unloaded_packages+1] = sound
+		self:persistent_table(REFERENCE).used_packages.view_weapon_sounds[sound] = nil
 		managers.package:release(package_id)
 	end
-	for _, unloaded_sound in pairs(unloaded_sounds) do
-		packages.view_weapon_sounds[unloaded_sound] = nil
+	for _, package in pairs(unloaded_packages) do
+		self:persistent_table(REFERENCE).loaded_packages.view_weapon_sounds[package] = nil
 	end
 end
 
@@ -242,7 +276,7 @@ end
 
 mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 	if unit and unit_alive(unit) then
-		local slot_infos = self:persistent_table("weapon_customization").attachment_slot_infos
+		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
 		local gear_info = slot_infos[slot_info_id]
 		local mesh_move = gear_info and gear_info.unit_mesh_move[unit]
 		local unit_and_meshes = mesh_move == "both" or false
@@ -385,7 +419,7 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 end
 
 mod.draw_equipment_lines = function(self, dt, t)
-	local slot_infos = self:persistent_table("weapon_customization").attachment_slot_infos
+	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 	if self.cosmetics_view and slot_infos then
 		local gear_id = self.cosmetics_view._gear_id
 		local slot_info_id = self.cosmetics_view._slot_info_id
@@ -396,15 +430,7 @@ mod.draw_equipment_lines = function(self, dt, t)
 		if attachments and #self.weapon_part_animation_entries == 0 and slot_infos[slot_info_id] then
 			local found_attachment_slots = self:get_item_attachment_slots(item)
 			if #found_attachment_slots > 0 then
-				for _, attachment_slot in pairs(found_attachment_slots) do
-					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
-					if unit and unit_alive(unit) then
-						if self.cosmetics_view._fade_system then
-							-- Fade.set_min_fade(self.cosmetics_view._fade_system, unit, .1)
-							-- self.cosmetics_view._fade_system:set_min_fade(unit, 0.5)
-						end
-					end
-				end
+
 				for _, attachment_slot in pairs(found_attachment_slots) do
 					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
 					if unit and unit_alive(unit) then
@@ -417,18 +443,40 @@ mod.draw_equipment_lines = function(self, dt, t)
 							local color = Color(255, 49, 62, 45)
 							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 4, Color(255, 106, 121, 100))
 							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
-							if self.cosmetics_view._fade_system then
-								-- Fade.set_min_fade(self.cosmetics_view._fade_system, unit, .05)
-								-- self.cosmetics_view._fade_system:set_min_fade(unit, 0.5)
-							end
 						end
-						-- local player_unit = Managers.player:local_player_safe(1).player_unit
-						-- local fade_system = Fade.init() --Managers.state.extension:system("fade_system")
-						-- if fade_system then
-						-- 	fade_system:set_min_fade(unit, 0.5)
-						-- end
 					end
 				end
+
+				-- local any_active = false
+				-- for _, data in pairs(self.dropdown_positions) do
+				-- 	if data[3] == true then
+				-- 		any_active = true
+				-- 		break
+				-- 	end
+				-- end
+				-- for _, attachment_slot in pairs(found_attachment_slots) do
+				-- 	local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+				-- 	if unit and unit_alive(unit) then
+				-- 		local saved_origin = self.dropdown_positions[attachment_slot]
+				-- 		local unit_position = unit_world_position(unit, 1)
+				-- 		local camera_position = camera_world_position(self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera)
+				-- 		local distance = vector3.distance(unit_position, camera_position)
+				-- 		if (saved_origin and saved_origin[3] and saved_origin[3] == true) then
+				-- 			if self.cosmetics_view._fade_system then
+				-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, 0)
+				-- 			end
+				-- 		elseif any_active then
+				-- 			if self.cosmetics_view._fade_system then
+				-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, distance * .1)
+				-- 			end
+				-- 		else
+				-- 			if self.cosmetics_view._fade_system then
+				-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, 0)
+				-- 			end
+				-- 		end
+				-- 	end
+				-- end
+
 			end
 		end
 	end
@@ -591,6 +639,23 @@ mod.set_light_positions = function(self, ui_weapon_spawner)
 	end
 end
 
+mod.preview_flashlight = function(self, state, play_sound, world, unit, attachment_name)
+	-- Flashlight
+	if table_contains(self.flashlights, attachment_name) then
+		local flashlight_template = self:get_flashlight_template(attachment_name)
+		if flashlight_template and state ~= self.preview_flashlight_state then
+			self.preview_flashlight_state = state
+			local fl_temp = table_clone(flashlight_template)
+			fl_temp.light.third_person.volumetric_intensity = 10
+			self:_set_light_values(unit, fl_temp.light.third_person)
+			self:toggle_flashlight(not play_sound, self.preview_flashlight_state, unit, world)
+			if attachment_name == "laser_pointer" then
+				self:toggle_laser(true, self.preview_flashlight_state and 1 or 0, unit, world)
+			end
+		end
+	end
+end
+
 -- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################
 -- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├─┤│ ││ │├┴┐└─┐ #############################################
 -- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################
@@ -608,8 +673,9 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 	local weapon_spawn_data = self._weapon_spawn_data
 	if weapon_spawn_data then
 		if not weapon_spawn_data.visible then
-			mod.weapon_spawning = nil
-			weapon_spawn_data.streaming_complete = true
+			-- mod.weapon_spawning = nil
+			-- weapon_spawn_data.streaming_complete = true
+			self:cb_on_unit_3p_streaming_complete(weapon_spawn_data.item_unit_3p)
 		end
 	end
 
@@ -731,7 +797,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 					local gear_id = mod.cosmetics_view._gear_id
 					local slot_info_id = mod.cosmetics_view._slot_info_id
-					local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+					local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 					local gear_info = slot_infos[slot_info_id]
 					local attachment = mod:get_gear_setting(gear_id, entry.slot, mod.cosmetics_view._selected_item)
 
@@ -745,10 +811,6 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 					local unit = gear_info.attachment_slot_to_unit[entry.slot]
 					local unit_good = unit and unit_alive(unit)
 					local environment_extension = nil
-					-- if unit_good then
-					-- 	environment_extension = script_unit.fetch_component_extension(unit, "shading_environment_system")
-					-- 	environment_extension._fade_in_distance = .5
-					-- end
 					local wobble = mod:get("mod_option_weapon_build_animation_wobble")
 
 					local anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment]
@@ -772,6 +834,10 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								local attachment_data = mod.attachment_models[mod.cosmetics_view._item_name][attachment]
 								local no_animation = attachment_data and attachment_data.no_animation
 								entry.no_detach_animation = no_animation
+
+								if entry.type == "detach" and unit_good then
+									mod:preview_flashlight(false, false, self._world, unit, attachment)
+								end
 
 								if (entry.type == "detach" or entry.type == "wobble") then
 									entry.end_time = t + animation_time / animation_speed
@@ -835,6 +901,20 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 								end
 								if unit_good then
 									mod:unit_set_local_position_mesh(slot_info_id, unit, default_position)
+									-- Flashlight
+									mod:preview_flashlight(true, true, self._world, unit, attachment)
+									-- if table_contains(mod.flashlights, attachment) then
+									-- 	local flashlight_template = mod:get_flashlight_template(attachment)
+									-- 	if flashlight_template then
+									-- 		local fl_temp = table_clone(flashlight_template)
+									-- 		fl_temp.light.third_person.volumetric_intensity = 10
+									-- 		mod:_set_light_values(unit, fl_temp.light.third_person)
+									-- 		mod:toggle_flashlight(false, true, unit)
+									-- 		if attachment == "laser_pointer" then
+									-- 			mod:toggle_laser(false, 1, unit, self._world)
+									-- 		end
+									-- 	end
+									-- end
 								end
 								if wobble then
 									entry.end_time = t + animation_time / animation_speed
@@ -907,19 +987,9 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 		end
 
 		-- if mod.cosmetics_view and mod.cosmetics_view._fade_system and self._camera then
-		-- 	local fade_position = camera_local_position(self._camera)
+		-- 	local fade_position = camera_world_position(self._camera)
 		-- 	Fade.update(mod.cosmetics_view._fade_system, fade_position or vector3_zero())
 		-- end
-
-		-- if weapon_spawn_data and weapon_spawn_data.link_unit and unit_alive(weapon_spawn_data.link_unit) then
-		-- 	local wwise_world = managers.world:wwise_world(self._world)
-		-- 	-- local pose = Camera.world_pose(self._camera)
-		-- 	local pose = Unit.world_pose(weapon_spawn_data.link_unit, 1)
-		-- 	WwiseWorld.set_listener(wwise_world, 1, pose)
-		-- end
-		-- local wwise_world = managers.world:wwise_world(self._world)
-		-- local pose = Camera.world_pose(self._camera)
-		-- WwiseWorld.set_listener(wwise_world, 0, pose)
 	end
 
 end)
@@ -941,6 +1011,7 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 	local weapon_spawn_data = self._weapon_spawn_data
 	if weapon_spawn_data and mod.cosmetics_view and self._reference_name ~= "WeaponIconUI" then
 		local item_name = mod.cosmetics_view._item_name
+		local link_unit = weapon_spawn_data.link_unit
 
 		mod.weapon_spawning = true
 
@@ -951,12 +1022,10 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 		-- 	for i = #attachment_units_3p, 1, -1 do
 		-- 		local unit = attachment_units_3p[i]
 		-- 		if unit and unit_alive(unit) then
-		-- 			Fade.register_unit(mod.cosmetics_view._fade_system, unit, .00000005, .00000007, 1)
+		-- 			Fade.register_unit(mod.cosmetics_view._fade_system, unit, 0, 0, 0)
 		-- 		end
 		-- 	end
 		-- end
-
-		local link_unit = weapon_spawn_data.link_unit
 
 		local t = managers.time:time("main")
 		local start_seed = self._auto_spin_random_seed
@@ -973,7 +1042,7 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 		local rotation = quaternion_axis_angle(vector3(0, auto_tilt_angle, 1), -(auto_turn_angle + start_angle))
 		if link_unit then
 
-			local initial_rotation = weapon_spawn_data.rotation and quaternionbox_unbox(weapon_spawn_data.rotation)
+			local initial_rotation = weapon_spawn_data.rotation and quaternion_unbox(weapon_spawn_data.rotation)
 
 			if initial_rotation then
 				rotation = quaternion_multiply(rotation, initial_rotation)
@@ -1016,7 +1085,7 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 			mod:set_light_positions(self)
 		end
 
-		local slot_infos = mod:persistent_table("weapon_customization").attachment_slot_infos
+		local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position = slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position or {}
 		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position["root"] = vector3_box(unit_local_position(weapon_spawn_data.item_unit_3p, 1))
 	end
@@ -1024,14 +1093,41 @@ end)
 
 mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
 	func(self, item_unit_3p, ...)
+	mod.preview_flashlight_state = false
 	local weapon_spawn_data = self._weapon_spawn_data
 	if weapon_spawn_data and mod.cosmetics_view and self._reference_name ~= "WeaponIconUI" then
 		mod.weapon_spawning = nil
+		weapon_spawn_data.streaming_complete = true
 		-- mod:map_out_unit(item_unit_3p)
+		if not mod:weapon_part_animation_exists("flashlight") then
+			local attachment_units_3p = weapon_spawn_data.attachment_units_3p
+			local slot_info_id = mod.cosmetics_view._slot_info_id
+			local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+			local gear_info = slot_infos[slot_info_id]
+			for i = #attachment_units_3p, 1, -1 do
+				local unit = attachment_units_3p[i]
+				if unit and unit_alive(unit) then
+					local attachment_name = gear_info.unit_to_attachment_name[unit]
+					mod:preview_flashlight(true, false, self._world, unit, attachment_name)
+				end
+			end
+		end
 	end
 end)
 
+mod:hook(CLASS.UIWeaponSpawner, "_despawn_current_weapon", function(func, self, ...)
+	-- if mod.preview_laser then
+	-- 	World.destroy_particles(self._world, mod.preview_laser)
+	-- 	mod.preview_laser = nil
+	-- end
+	func(self, ...)
+end)
+
 mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
+	-- if mod.preview_laser then
+	-- 	World.destroy_particles(self._world, mod.preview_laser)
+	-- 	mod.preview_laser = nil
+	-- end
 	local weapon_spawn_data = self._weapon_spawn_data
 	if weapon_spawn_data then
 		local item_unit_3p = weapon_spawn_data.item_unit_3p
@@ -1039,10 +1135,10 @@ mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
 		for i = #attachment_units_3p, 1, -1 do
 			local unit = attachment_units_3p[i]
 			if unit and unit_alive(unit) then
-				world_unlink_unit(self._world, unit)
 				-- if mod.cosmetics_view and mod.cosmetics_view._fade_system then
 				-- 	Fade.unregister_unit(mod.cosmetics_view._fade_system, unit)
 				-- end
+				world_unlink_unit(self._world, unit)
 			end
 		end
 		if item_unit_3p and unit_alive(item_unit_3p) then
@@ -1468,7 +1564,7 @@ end
 mod.validate_item_model = function(self, model)
 	self:setup_item_definitions()
 	if model ~= "" then
-		local definition = self:persistent_table("weapon_customization").item_definitions[model]
+		local definition = mod:persistent_table(REFERENCE).item_definitions[model]
 		if definition then
 			if definition.workflow_state ~= "RELEASABLE" then
 				return false
@@ -1626,7 +1722,7 @@ mod.get_dropdown_positions = function(self)
 				else
 					entry[1] = scenegraph_entry.world_position[1] + grid_size[1]
 				end
-				entry[2] = scenegraph_entry.position[2] + dropdown_height * 1.5
+				entry[2] = scenegraph_entry.position[2] + dropdown_height * 2
 				entry[3] = entry[3] or false
 				self.dropdown_positions[attachment_slot] = entry
 			end
@@ -1671,20 +1767,7 @@ mod.reset_stuff = function(self)
 	self.mesh_positions = {}
 	self.weapon_part_animation_update = nil
 	self.weapon_part_animation_entries = {}
-end
-
-mod.label_template = function(self, text, scenegraph_id)
-	local style = table_clone(UIFontSettings.grid_title)
-	style.offset = {0, 15, 1}
-    return UIWidget.create_definition({
-        {
-            value_id = "text",
-            style_id = "text",
-            pass_type = "text",
-            value = self:localize(text),
-            style = style,
-        }
-    }, scenegraph_id)
+	self.preview_flashlight_state = false
 end
 
 mod.generate_label = function(self, scenegraph, attachment_slot, item)
@@ -1692,7 +1775,7 @@ mod.generate_label = function(self, scenegraph, attachment_slot, item)
 	-- local weapon_name = self:item_name_from_content_string(item.name)
 	local item_name = self.cosmetics_view._item_name
 	local style = table_clone(UIFontSettings.grid_title)
-	style.offset = {0, 15, 1}
+	style.offset = {0, 0, 1}
 	local text = "loc_weapon_cosmetics_customization_"..attachment_slot
 
 	if self.text_overwrite[item_name] then
@@ -1990,11 +2073,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 	mod:check_unsaved_changes(true)
 	mod:release_attachment_sounds()
 
-	-- Fade.destroy(self._fade_system)
-
 	func(self, ...)
 
 	mod.cosmetics_view = nil
+	-- Fade.destroy(self._fade_system)
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
@@ -2116,7 +2198,7 @@ end)
 
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions", function(instance)
 
-	local top = 85
+	local top = 115
 	local z = 1
 
 	local y = top - edge
@@ -2243,13 +2325,17 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 end)
 
+mod:hook_require("scripts/ui/view_elements/view_element_inventory_weapon_preview/view_element_inventory_weapon_preview_settings", function(instance)
+	instance.shading_environment = "content/shading_environments/ui/ui_item_preview"
+end)
+
 -- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################
 -- ##### ├─┤├┤ │  ├─┘ #################################################################################################
 -- ##### ┴ ┴└─┘┴─┘┴   #################################################################################################
 
 mod._recursive_get_child_units = function(self, unit, slot_info_id, out_units)
 	local slot_info_id = slot_info_id or self.cosmetics_view._slot_info_id
-	local slot_infos = self:persistent_table("weapon_customization").attachment_slot_infos
+	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 	local attachment_slot_info = slot_infos[slot_info_id]
 	if attachment_slot_info then
 		local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]

@@ -54,6 +54,26 @@ return {
 		ru = "Включить отладку",
 		["zh-cn"] = "调试",
 	},
+	group_misc = {
+		en = "Miscellaneous",
+		de = "Verschiedenes",
+	},
+	mod_option_misc_cover_on_crouch = {
+		en = "Cover on Crouch",
+		de = "Deckung beim Ducken",
+	},
+	mod_option_misc_cover_on_crouch_tooltip = {
+		en = "Plays the cover animation when crouching",
+		de = "Spielt beim Ducken die Cover-Animation ab",
+	},
+	mod_option_misc_flicker_fix = {
+		en = "Item Preview Flicker Fix",
+		de = "Item-Vorschau Flimmer-Fix",
+	},
+	mod_option_misc_flicker_fix_tooltip = {
+		en = "Fixes the black flickering when zooming in item preview with some graphics cards",
+		de = "Behebt das schwarze Flackern beim Zoomen in der Item-Vorschau bei einigen Grafikkarten",
+	},
 	group_visible_equipment = {
 		en = "Visible Equipment",
 		de = "Sichtbare Ausrüstung",

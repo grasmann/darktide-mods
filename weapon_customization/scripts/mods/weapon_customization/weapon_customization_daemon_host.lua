@@ -28,6 +28,8 @@ local MinionPerception = mod:original_require("scripts/utilities/minion_percepti
     local CLASS = CLASS
     local managers = Managers
     local script_unit = ScriptUnit
+	local tostring = tostring
+	local pairs = pairs
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -50,6 +52,8 @@ local SPARKS_SMOKE_PARTICLE = "content/fx/particles/weapons/swords/chainsword/ch
 local SPARKS_PARTICLE = "content/fx/particles/impacts/weapons/chainsword/chainsword_grinding_sparks_loop_01"
 local SPARK_SOUND = "wwise/events/weapon/play_psyker_chain_lightning"
 local SPARK_SOUND_STOP = "wwise/events/weapon/stop_psyker_chain_lightning"
+local DAEMONHOST_PACKAGES = {SPARK_SOUND, SPARK_SOUND_STOP, SPARKS_SMOKE_PARTICLE, SPARKS_PARTICLE}
+local REFERENCE = "weapon_customization"
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -164,25 +168,12 @@ mod.trigger_flashlight_daemon_host_reaction = function(self, t, intensity)
 end
 
 mod.check_daemon_host_packages = function(self)
-	local packages = mod:persistent_table("weapon_customization").loaded_packages
-	local used = mod:persistent_table("weapon_customization").used_packages
-	packages.needed = packages.needed or {}
-    if not packages.needed[SPARK_SOUND] then
-        packages.needed[SPARK_SOUND] = managers.package:load(SPARK_SOUND, "weapon_customization")
-		used[SPARK_SOUND] = true
-    end
-	if not packages.needed[SPARK_SOUND_STOP] then
-        packages.needed[SPARK_SOUND_STOP] = managers.package:load(SPARK_SOUND_STOP, "weapon_customization")
-		used[SPARK_SOUND_STOP] = true
-    end
-	if not packages.needed[SPARKS_SMOKE_PARTICLE] then
-        packages.needed[SPARKS_SMOKE_PARTICLE] = managers.package:load(SPARKS_SMOKE_PARTICLE, "weapon_customization")
-		used[SPARKS_SMOKE_PARTICLE] = true
-    end
-	if not packages.needed[SPARKS_PARTICLE] then
-        packages.needed[SPARKS_PARTICLE] = managers.package:load(SPARKS_PARTICLE, "weapon_customization")
-		used[SPARKS_PARTICLE] = true
-    end
+	for _, package in pairs(DAEMONHOST_PACKAGES) do
+		if not self:persistent_table(REFERENCE).loaded_packages.needed[package] then
+			self:persistent_table(REFERENCE).used_packages.needed[package] = true
+			self:persistent_table(REFERENCE).loaded_packages.needed[package] = managers.package:load(package, REFERENCE)
+		end
+	end
 end
 
 mod.daemon_host_update = function(self, t)
@@ -191,9 +182,9 @@ mod.daemon_host_update = function(self, t)
         self:check_daemon_host_packages()
 		-- Get values
         local time_since_aggro = t - (self._last_aggro_time or 0)
-        local flashlight_on = self:persistent_table("weapon_customization").flashlight_on
-        local laser_pointer_on = self:persistent_table("weapon_customization").laser_pointer_on == 1
-        local laser_pointer_full = self:persistent_table("weapon_customization").laser_pointer_on == 2
+        local flashlight_on = self:persistent_table(REFERENCE).flashlight_on
+        local laser_pointer_on = self:persistent_table(REFERENCE).laser_pointer_on == 1
+        local laser_pointer_full = self:persistent_table(REFERENCE).laser_pointer_on == 2
 		-- Execute aggro process
         if (flashlight_on or laser_pointer_on or laser_pointer_full) and HEALTH_ALIVE[self.player_unit] and AGGRO_CHECK_INTERVAL < time_since_aggro then
             local intensity = laser_pointer_full and .4 or (flashlight_on or laser_pointer_on) and .2 or 0
