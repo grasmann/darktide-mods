@@ -66,14 +66,14 @@ return {
 		en = "Plays the cover animation when crouching",
 		de = "Spielt beim Ducken die Cover-Animation ab",
 	},
-	mod_option_misc_flicker_fix = {
-		en = "Item Preview Flicker Fix",
-		de = "Item-Vorschau Flimmer-Fix",
-	},
-	mod_option_misc_flicker_fix_tooltip = {
-		en = "Fixes the black flickering when zooming in item preview with some graphics cards",
-		de = "Behebt das schwarze Flackern beim Zoomen in der Item-Vorschau bei einigen Grafikkarten",
-	},
+	-- mod_option_misc_flicker_fix = {
+	-- 	en = "Item Preview Flicker Fix",
+	-- 	de = "Item-Vorschau Flimmer-Fix",
+	-- },
+	-- mod_option_misc_flicker_fix_tooltip = {
+	-- 	en = "Fixes the black flickering when zooming in item preview with some graphics cards",
+	-- 	de = "Behebt das schwarze Flackern beim Zoomen in der Item-Vorschau bei einigen Grafikkarten",
+	-- },
 	group_visible_equipment = {
 		en = "Visible Equipment",
 		de = "Sichtbare Ausrüstung",
