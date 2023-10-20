@@ -103,34 +103,34 @@ mod.setup_item_definitions = function(self)
             self:persistent_table(REFERENCE).item_definitions = table_clone_instance(master_items)
         end
     end
-    local definitions = self:persistent_table(REFERENCE).item_definitions
-    -- if not definitions["content/items/weapons/player/ranged/sights/scope_01"] then
-        definitions["content/items/weapons/player/ranged/sights/scope_01"] = table_clone(definitions["content/items/weapons/minions/ranged/renegade_sniper_rifle"])
-        local scope = definitions["content/items/weapons/player/ranged/sights/scope_01"]
-        scope.reset_scene_graph_on_unlink = nil
-        scope.item_list_faction = "Player"
-        scope.show_in_1p = true
-        scope.attach_node = "ap_sight_01"
-        scope.attachments = {
-            zzz_shared_material_overrides = {
-              children = {},
-              item = "",
-            }
-        }
-        scope.name = "content/items/weapons/player/ranged/sights/scope_01"
-        scope.fx_sources = nil
-        scope.material_overrides = nil
-        scope.wielded_attach_node = nil
-        scope.unwielded_attach_node = nil
-    -- end
-    -- if self:persistent_table(REFERENCE).bulwark_item_definitions == nil then
-    --     local master_items = MasterItems.get_cached()
-    --     if master_items then
-    --         self:persistent_table(REFERENCE).bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
-    --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
-    --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
-    --     end
-    -- end
+    -- local definitions = self:persistent_table(REFERENCE).item_definitions
+    -- -- if not definitions["content/items/weapons/player/ranged/sights/scope_01"] then
+    --     definitions["content/items/weapons/player/ranged/sights/scope_01"] = table_clone(definitions["content/items/weapons/minions/ranged/renegade_sniper_rifle"])
+    --     local scope = definitions["content/items/weapons/player/ranged/sights/scope_01"]
+    --     scope.reset_scene_graph_on_unlink = nil
+    --     scope.item_list_faction = "Player"
+    --     scope.show_in_1p = true
+    --     scope.attach_node = "ap_sight_01"
+    --     scope.attachments = {
+    --         zzz_shared_material_overrides = {
+    --           children = {},
+    --           item = "",
+    --         }
+    --     }
+    --     scope.name = "content/items/weapons/player/ranged/sights/scope_01"
+    --     scope.fx_sources = nil
+    --     scope.material_overrides = nil
+    --     scope.wielded_attach_node = nil
+    --     scope.unwielded_attach_node = nil
+    -- -- end
+    -- -- if self:persistent_table(REFERENCE).bulwark_item_definitions == nil then
+    -- --     local master_items = MasterItems.get_cached()
+    -- --     if master_items then
+    -- --         self:persistent_table(REFERENCE).bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
+    -- --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+    -- --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+    -- --     end
+    -- -- end
 end
 
 mod.update_modded_packages = function(self)
