@@ -21,6 +21,8 @@ local _item_minion = "content/items/weapons/minions"
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+    local string = string
+    local string_find = string.find
     local vector3_box = Vector3Box
     local table = table
     local pairs = pairs
@@ -67,8 +69,8 @@ local _item_minion = "content/items/weapons/minions"
 --#endregion
 
 --#region Table functions
-    --#region Common
-        local _flashlights_attachments = function()
+    local _common_functions = {
+        flashlights_attachments = function()
             return {
                 {id = "default",       name = "Default",      sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
                 {id = "flashlight_01", name = "Flashlight 1", sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
@@ -77,8 +79,8 @@ local _item_minion = "content/items/weapons/minions"
                 {id = "flashlight_04", name = "Flashlight 4", sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
                 {id = "laser_pointer", name = "Laser Pointer", sounds = {UISoundEvents.smart_tag_pickup_default_enter}},
             }
-        end
-        local _flashlight_models = function(parent, angle, move, remove, mesh_move)
+        end,
+        flashlight_models = function(parent, angle, move, remove, mesh_move)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -90,8 +92,8 @@ local _item_minion = "content/items/weapons/minions"
                 flashlight_04 = {model = _item_ranged.."/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 5), angle = a, move = tv(m, 5), remove = tv(r, 5), mesh_move = false},
                 laser_pointer = {model = _item_ranged.."/flashlights/flashlight_05", type = "flashlight", parent = tv(parent, 6), angle = a, move = tv(m, 6), remove = tv(r, 6), mesh_move = false},
             }
-        end
-        local _emblem_right_attachments = function()
+        end,
+        emblem_right_attachments = function()
             return {
                 {id = "emblem_right_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                 {id = "emblem_right_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
@@ -116,8 +118,8 @@ local _item_minion = "content/items/weapons/minions"
                 {id = "emblem_right_20", name = "Emblem 20", sounds = {UISoundEvents.apparel_equip_small}},
                 {id = "emblem_right_21", name = "Emblem 21", sounds = {UISoundEvents.apparel_equip_small}},
             }
-        end
-        local _emblem_right_models = function(parent, angle, move, remove)
+        end,
+        emblem_right_models = function(parent, angle, move, remove)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -145,8 +147,8 @@ local _item_minion = "content/items/weapons/minions"
                 emblem_right_20 =      {model = _item_ranged.."/emblems/emblemright_09e", type = "emblem_right", parent = tv(parent, 21), angle = a, move = m, remove = r, mesh_move = false},
                 emblem_right_21 =      {model = _item_ranged.."/emblems/emblemright_10",  type = "emblem_right", parent = tv(parent, 22), angle = a, move = m, remove = r, mesh_move = false},
             }
-        end
-        local _emblem_left_attachments = function()
+        end,
+        emblem_left_attachments = function()
             return {
                 {id = "emblem_left_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                 {id = "emblem_left_01", name = "Emblem 1", sounds = {UISoundEvents.apparel_equip_small}},
@@ -162,8 +164,8 @@ local _item_minion = "content/items/weapons/minions"
                 {id = "emblem_left_11", name = "Emblem 11", sounds = {UISoundEvents.apparel_equip_small}},
                 {id = "emblem_left_12", name = "Emblem 12", sounds = {UISoundEvents.apparel_equip_small}},
             }
-        end
-        local _emblem_left_models = function(parent, angle, move, remove)
+        end,
+        emblem_left_models = function(parent, angle, move, remove)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -182,8 +184,8 @@ local _item_minion = "content/items/weapons/minions"
                 emblem_left_11 =      {model = _item_ranged.."/emblems/emblemleft_06",  type = "emblem_left", parent = tv(parent, 12), angle = a, move = m, remove = r, mesh_move = false},
                 emblem_left_12 =      {model = _item_ranged.."/emblems/emblemleft_10",  type = "emblem_left", parent = tv(parent, 13), angle = a, move = m, remove = r, mesh_move = false},
             }
-        end
-        local _grip_attachments = function()
+        end,
+        grip_attachments = function()
             return {
                 {id = "grip_default", name = "Default", sounds = {_grip_sound}},
                 {id = "grip_01", name = "Grip 1", sounds = {_grip_sound}},
@@ -213,8 +215,8 @@ local _item_minion = "content/items/weapons/minions"
                 {id = "grip_28", name = "Flamer 2", sounds = {_grip_sound}},
                 {id = "grip_29", name = "Flamer 3", sounds = {_grip_sound}},
             }
-        end
-        local _grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
+        end,
+        grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -250,16 +252,16 @@ local _item_minion = "content/items/weapons/minions"
                 grip_28 =      {model = _item_ranged.."/grips/flamer_rifle_grip_02",           type = t, parent = tv(parent, 26), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 26), no_support = tv(n, 26)},
                 grip_29 =      {model = _item_ranged.."/grips/flamer_rifle_grip_03",           type = t, parent = tv(parent, 27), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 27), no_support = tv(n, 27)},
             }
-        end
-        local _bayonet_attachments = function()
+        end,
+        bayonet_attachments = function()
             return {
                 {id = "autogun_bayonet_default",    name = "Default",   sounds = {_knife_sound}},
                 {id = "autogun_bayonet_01",         name = "Bayonet 1", sounds = {_knife_sound}},
                 {id = "autogun_bayonet_02",         name = "Bayonet 2", sounds = {_knife_sound}},
                 {id = "autogun_bayonet_03",         name = "Bayonet 3", sounds = {_knife_sound}},
             }
-        end
-        local _bayonet_models = function(parent, angle, move, remove)
+        end,
+        bayonet_models = function(parent, angle, move, remove)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -269,16 +271,16 @@ local _item_minion = "content/items/weapons/minions"
                 autogun_bayonet_02 =      {model = _item_ranged.."/bayonets/bayonet_02", type = "bayonet", parent = tv(parent, 3), angle = a, move = m, remove = tv(r, 3), mesh_move = false},
                 autogun_bayonet_03 =      {model = _item_ranged.."/bayonets/bayonet_03", type = "bayonet", parent = tv(parent, 4), angle = a, move = m, remove = tv(r, 4), mesh_move = false},
             }
-        end
-        local _reflex_sights_attachments = function()
+        end,
+        reflex_sights_attachments = function()
             return {
                 {id = "reflex_sight_01", name = "Reflex Sight 1", sounds = {_magazine_sound}},
                 {id = "reflex_sight_02", name = "Reflex Sight 2", sounds = {_magazine_sound}},
                 {id = "reflex_sight_03", name = "Reflex Sight 3", sounds = {_magazine_sound}},
                 -- {id = "scope", name = "Scope", sounds = {_magazine_sound}},
             }
-        end
-        local _reflex_sights_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
+        end,
+        reflex_sights_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -301,16 +303,16 @@ local _item_minion = "content/items/weapons/minions"
                 --         {"sight", 1}
                 --     )},
             }
-        end
-        local _sights_attachments = function()
+        end,
+        sights_attachments = function()
             return {
                 {id = "autogun_rifle_sight_01", name = "Autogun", sounds = {_magazine_sound}},
                 {id = "autogun_rifle_ak_sight_01", name = "Braced Autogun", sounds = {_magazine_sound}},
                 {id = "autogun_rifle_killshot_sight_01", name = "Headhunter Autogun", sounds = {_magazine_sound}},
                 {id = "lasgun_rifle_sight_01", name = "Lasgun", sounds = {_magazine_sound}},
             }
-        end
-        local _sights_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
+        end,
+        sights_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -328,8 +330,8 @@ local _item_minion = "content/items/weapons/minions"
                 autogun_rifle_killshot_sight_01 = {model = _item_ranged.."/sights/autogun_rifle_killshot_sight_01", type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 4), no_support = tv(n, 4), hide_mesh = tv(h, 4)},
                 lasgun_rifle_sight_01 =           {model = _item_ranged.."/sights/lasgun_rifle_sight_01",           type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 5), no_support = tv(n, 5), hide_mesh = tv(h, 5)},
             }
-        end
-        local _stock_attachments = function()
+        end,
+        stock_attachments = function()
             return {
                 {id = "no_stock", name = "No Stock", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                 {id = "stock_01", name = "Stock 1", sounds = {UISoundEvents.weapons_equip_gadget}},
@@ -350,8 +352,8 @@ local _item_minion = "content/items/weapons/minions"
                 {id = "lasgun_stock_02", name = "Infantry Lasgun 2", sounds = {UISoundEvents.weapons_equip_gadget}},
                 {id = "lasgun_stock_03", name = "Infantry Lasgun 3", sounds = {UISoundEvents.weapons_equip_gadget}},
             }
-        end
-        local _stock_models = function(parent, angle, move, remove, type)
+        end,
+        stock_models = function(parent, angle, move, remove, type)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -377,8 +379,8 @@ local _item_minion = "content/items/weapons/minions"
                 lasgun_stock_02 =        {model = _item_ranged.."/stocks/lasgun_rifle_stock_02",           type = t, parent = tv(parent, 18), angle = a, move = m, remove = r, mesh_move = false},
                 lasgun_stock_03 =        {model = _item_ranged.."/stocks/lasgun_rifle_stock_03",           type = t, parent = tv(parent, 19), angle = a, move = m, remove = r, mesh_move = false},
             }
-        end
-        local _trinket_hook_attachments = function()
+        end,
+        trinket_hook_attachments = function()
             return {
                 {id = "trinket_hook_default",       name = "Default",                   sounds = {UISoundEvents.apparel_equip}},
                 {id = "trinket_hook_empty",         name = "No Trinket Hook",           sounds = {UISoundEvents.apparel_equip}},
@@ -406,8 +408,8 @@ local _item_minion = "content/items/weapons/minions"
                 {id = "trinket_hook_05_gold",       name = "Trinket Hook 5 Gold",       sounds = {UISoundEvents.apparel_equip}},
                 {id = "trinket_hook_05_gold_v",     name = "Trinket Hook 5 Gold V",     sounds = {UISoundEvents.apparel_equip}},
             }
-        end
-        local _trinket_hook_models = function(parent, angle, move, remove)
+        end,
+        trinket_hook_models = function(parent, angle, move, remove)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
@@ -438,68 +440,66 @@ local _item_minion = "content/items/weapons/minions"
                 trinket_hook_05_steel =    {model = _item.."/trinkets/trinket_hook_05_steel",    type = "trinket_hook", parent = tv(parent, 24), angle = a, move = m, remove = tv(r, 24), mesh_move = false},
                 trinket_hook_04_coated_v = {model = _item.."/trinkets/trinket_hook_04_coated_v", type = "trinket_hook", parent = tv(parent, 25), angle = a, move = m, remove = tv(r, 25), mesh_move = false},
             }
-        end
-        local _slot_trinket_1_attachments = function()
+        end,
+        slot_trinket_1_attachments = function()
             return {
                 {id = "slot_trinket_1", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             }
-        end
-        local _slot_trinket_1_models = function(parent, angle, move, remove)
+        end,
+        slot_trinket_1_models = function(parent, angle, move, remove)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
             return {
                 slot_trinket_1 = {model = _item.."/trinkets/empty_trinket", type = "slot_trinket_1", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1), mesh_move = false, no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "trinket_hook_empty"}},
             }
-        end
-        local _slot_trinket_2_attachments = function()
+        end,
+        slot_trinket_2_attachments = function()
             return {
                 {id = "slot_trinket_2", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
             }
-        end
-        local _slot_trinket_2_models = function(parent, angle, move, remove)
+        end,
+        slot_trinket_2_models = function(parent, angle, move, remove)
             local a = angle or 0
             local m = move or vector3_box(0, 0, 0)
             local r = remove or vector3_box(0, 0, 0)
             return {
                 slot_trinket_2 = {model = _item.."/trinkets/empty_trinket", type = "slot_trinket_2", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1), mesh_move = false, no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "trinket_hook_empty"}},
             }
+        end,
+        ogryn_bayonet_attachments = function()
+            return {
+                {id = "bayonet_default",    name = "Default",   sounds = {_knife_sound}},
+                {id = "bayonet_01",         name = "Bayonet 1", sounds = {_knife_sound}},
+                {id = "bayonet_02",         name = "Bayonet 2", sounds = {_knife_sound}},
+                {id = "bayonet_03",         name = "Bayonet 3", sounds = {_knife_sound}},
+                {id = "bayonet_blade_01",   name = "Blade",     sounds = {_knife_sound}},
+            }
+        end,
+        ogryn_bayonet_models = function(parent, angle, move, remove)
+            local a = angle or 0
+            local m = move or vector3_box(0, 0, 0)
+            local r = remove or vector3_box(0, 0, 0)
+            return {
+                bayonet_default =  {model = "",                                                   type = "bayonet", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1), mesh_move = false},
+                bayonet_01 =       {model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = a, move = m, remove = tv(r, 2), mesh_move = false},
+                bayonet_02 =       {model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_02", type = "bayonet", parent = tv(parent, 3), angle = a, move = m, remove = tv(r, 3), mesh_move = false},
+                bayonet_03 =       {model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_03", type = "bayonet", parent = tv(parent, 4), angle = a, move = m, remove = tv(r, 4), mesh_move = false},
+                bayonet_blade_01 = {model = _item_melee.."/blades/combat_sword_blade_01",         type = "bayonet", parent = tv(parent, 5), angle = a, move = m, remove = tv(r, 5), mesh_move = false},
+            }
         end
-    --#endregion
+    }
     --#region Ogryn Guns
-        --#region Common
-            local _ogryn_bayonet_attachments = function()
-                return {
-                    {id = "bayonet_default",    name = "Default",   sounds = {_knife_sound}},
-                    {id = "bayonet_01",         name = "Bayonet 1", sounds = {_knife_sound}},
-                    {id = "bayonet_02",         name = "Bayonet 2", sounds = {_knife_sound}},
-                    {id = "bayonet_03",         name = "Bayonet 3", sounds = {_knife_sound}},
-                    {id = "bayonet_blade_01",   name = "Blade",     sounds = {_knife_sound}},
-                }
-            end
-            local _ogryn_bayonet_models = function(parent, angle, move, remove)
-                local a = angle or 0
-                local m = move or vector3_box(0, 0, 0)
-                local r = remove or vector3_box(0, 0, 0)
-                return {
-                    bayonet_default =  {model = "",                                                   type = "bayonet", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1), mesh_move = false},
-                    bayonet_01 =       {model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_01", type = "bayonet", parent = tv(parent, 2), angle = a, move = m, remove = tv(r, 2), mesh_move = false},
-                    bayonet_02 =       {model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_02", type = "bayonet", parent = tv(parent, 3), angle = a, move = m, remove = tv(r, 3), mesh_move = false},
-                    bayonet_03 =       {model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_03", type = "bayonet", parent = tv(parent, 4), angle = a, move = m, remove = tv(r, 4), mesh_move = false},
-                    bayonet_blade_01 = {model = _item_melee.."/blades/combat_sword_blade_01",         type = "bayonet", parent = tv(parent, 5), angle = a, move = m, remove = tv(r, 5), mesh_move = false},
-                }
-            end
-        --#endregion
-        --#region Stubber
-            local _stubber_barrel_attachments = function()
+        local _ogryn_heavystubber_p1_m1 = {
+            barrel_attachments = function()
                 return {
                     {id = "barrel_default", name = "Default",   sounds = {_barrel_sound}},
                     {id = "barrel_01",      name = "Barrel 1",  sounds = {_barrel_sound}},
                     {id = "barrel_02",      name = "Barrel 2",  sounds = {_barrel_sound}},
                     {id = "barrel_03",      name = "Barrel 3",  sounds = {_barrel_sound}},
                 }
-            end
-            local _stubber_barrel_models = function(parent, angle, move, remove)
+            end,
+            barrel_models = function(parent, angle, move, remove)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
@@ -509,16 +509,16 @@ local _item_minion = "content/items/weapons/minions"
                     barrel_02 =      {model = _item_ranged.."/barrels/stubgun_heavy_ogryn_barrel_02", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r},
                     barrel_03 =      {model = _item_ranged.."/barrels/stubgun_heavy_ogryn_barrel_03", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r},
                 }
-            end
-            local _stubber_receiver_attachments = function()
+            end,
+            receiver_attachments = function()
                 return {
                     {id = "receiver_default",   name = "Default",       sounds = {_receiver_sound}},
                     {id = "receiver_01",        name = "Receiver 1",    sounds = {_receiver_sound}},
                     {id = "receiver_02",        name = "Receiver 2",    sounds = {_receiver_sound}},
                     {id = "receiver_03",        name = "Receiver 3",    sounds = {_receiver_sound}},
                 }
-            end
-            local _stubber_receiver_models = function(parent, angle, move, remove)
+            end,
+            receiver_models = function(parent, angle, move, remove)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
@@ -528,16 +528,16 @@ local _item_minion = "content/items/weapons/minions"
                     receiver_02 =      {model = _item_ranged.."/recievers/stubgun_heavy_ogryn_receiver_02", type = "receiver", parent = tv(parent, 3), angle = a, move = m, remove = r},
                     receiver_03 =      {model = _item_ranged.."/recievers/stubgun_heavy_ogryn_receiver_03", type = "receiver", parent = tv(parent, 4), angle = a, move = m, remove = r},
                 }
-            end
-            local _stubber_magazine_attachments = function()
+            end,
+            magazine_attachments = function()
                 return {
                     {id = "magazine_default",   name = "Default",       sounds = {_magazine_sound}},
                     {id = "magazine_01",        name = "Magazine 1",    sounds = {_magazine_sound}},
                     {id = "magazine_02",        name = "Magazine 2",    sounds = {_magazine_sound}},
                     {id = "magazine_03",        name = "Magazine 3",    sounds = {_magazine_sound}},
                 }
-            end
-            local _stubber_magazine_models = function(parent, angle, move, remove)
+            end,
+            magazine_models = function(parent, angle, move, remove)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
@@ -547,16 +547,16 @@ local _item_minion = "content/items/weapons/minions"
                     magazine_02 =      {model = _item_ranged.."/magazines/stubgun_heavy_ogryn_magazine_02", type = "magazine", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
                     magazine_03 =      {model = _item_ranged.."/magazines/stubgun_heavy_ogryn_magazine_03", type = "magazine", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false},
                 }
-            end
-            local _stubber_grip_attachments = function()
+            end,
+            grip_attachments = function()
                 return {
                     {id = "grip_default",   name = "Default",   sounds = {_grip_sound}},
                     {id = "grip_01",        name = "Grip 1",    sounds = {_grip_sound}},
                     {id = "grip_02",        name = "Grip 2",    sounds = {_grip_sound}},
                     {id = "grip_03",        name = "Grip 3",    sounds = {_grip_sound}},
                 }
-            end
-            local _stubber_grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
+            end,
+            grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
@@ -569,10 +569,10 @@ local _item_minion = "content/items/weapons/minions"
                     grip_02 =      {model = _item_ranged.."/grips/stubgun_heavy_ogryn_grip_02", type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, automatic_equip = tv(ae, 3), no_support = tv(n, 3), mesh_move = false},
                     grip_03 =      {model = _item_ranged.."/grips/stubgun_heavy_ogryn_grip_03", type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, automatic_equip = tv(ae, 4), no_support = tv(n, 4), mesh_move = false},
                 }
-            end
-        --#endregion
-        --#region Ripper
-            local _ripper_barrel_attachments = function()
+            end,
+        }
+        local _ogryn_rippergun_p1_m1 = {
+            barrel_attachments = function()
                 return {
                     -- {id = "barrel_default", name = "Default",   sounds = {_barrel_sound}},
                     {id = "barrel_01",      name = "Ripper Barrel A",  sounds = {_barrel_sound}},
@@ -582,8 +582,8 @@ local _item_minion = "content/items/weapons/minions"
                     {id = "barrel_05",      name = "Ripper Barrel E",  sounds = {_barrel_sound}},
                     {id = "barrel_06",      name = "Ripper Barrel F",  sounds = {_barrel_sound}},
                 }
-            end
-            local _ripper_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
+            end,
+            barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
@@ -597,8 +597,8 @@ local _item_minion = "content/items/weapons/minions"
                     barrel_05 =      {model = _item_ranged.."/barrels/rippergun_rifle_barrel_05", type = t, parent = tv(parent, 6), angle = a, move = m, remove = tv(r, 6), mesh_move = false},
                     barrel_06 =      {model = _item_ranged.."/barrels/rippergun_rifle_barrel_06", type = t, parent = tv(parent, 7), angle = a, move = m, remove = tv(r, 7), mesh_move = false},
                 }
-            end
-            local _ripper_receiver_attachments = function()
+            end,
+            receiver_attachments = function()
                 return {
                     {id = "receiver_default",   name = "Default",       sounds = {_receiver_sound}},
                     {id = "receiver_01",        name = "Receiver 1",    sounds = {_receiver_sound}},
@@ -608,8 +608,8 @@ local _item_minion = "content/items/weapons/minions"
                     {id = "receiver_05",        name = "Receiver 5",    sounds = {_receiver_sound}},
                     {id = "receiver_06",        name = "Receiver 6",    sounds = {_receiver_sound}},
                 }
-            end
-            local _ripper_receiver_models = function(parent, angle, move, remove)
+            end,
+            receiver_models = function(parent, angle, move, remove)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
@@ -622,8 +622,8 @@ local _item_minion = "content/items/weapons/minions"
                     receiver_05 =      {model = _item_ranged.."/recievers/rippergun_rifle_receiver_05", type = "receiver", parent = tv(parent, 6), angle = a, move = m, remove = tv(r, 6), no_support = {"trinket_hook_empty"}},
                     receiver_06 =      {model = _item_ranged.."/recievers/rippergun_rifle_receiver_06", type = "receiver", parent = tv(parent, 7), angle = a, move = m, remove = tv(r, 7), no_support = {"trinket_hook_empty"}},
                 }
-            end
-            local _ripper_magazine_attachments = function()
+            end,
+            magazine_attachments = function()
                 return {
                     {id = "magazine_default",   name = "Default",       sounds = {_magazine_sound}},
                     {id = "magazine_01",        name = "Magazine 1",    sounds = {_magazine_sound}},
@@ -633,8 +633,8 @@ local _item_minion = "content/items/weapons/minions"
                     {id = "magazine_05",        name = "Magazine 5",    sounds = {_magazine_sound}},
                     {id = "magazine_06",        name = "Magazine 6",    sounds = {_magazine_sound}},
                 }
-            end
-            local _ripper_magazine_models = function(parent, angle, move, remove)
+            end,
+            magazine_models = function(parent, angle, move, remove)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
@@ -647,8 +647,8 @@ local _item_minion = "content/items/weapons/minions"
                     magazine_05 =      {model = _item_ranged.."/magazines/rippergun_rifle_magazine_05", type = "magazine", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1)},
                     magazine_06 =      {model = _item_ranged.."/magazines/rippergun_rifle_magazine_06", type = "magazine", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1)},
                 }
-            end
-            local _ripper_handle_attachments = function()
+            end,
+            handle_attachments = function()
                 return {
                     {id = "handle_default", name = "Default",   sounds = {_grip_sound}},
                     {id = "handle_01",      name = "Handle 1",  sounds = {_grip_sound}},
@@ -656,8 +656,8 @@ local _item_minion = "content/items/weapons/minions"
                     {id = "handle_03",      name = "Handle 3",  sounds = {_grip_sound}},
                     {id = "handle_04",      name = "Handle 4",  sounds = {_grip_sound}},
                 }
-            end
-            local _ripper_handle_models = function(parent, angle, move, remove)
+            end,
+            handle_models = function(parent, angle, move, remove)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
@@ -668,8 +668,8 @@ local _item_minion = "content/items/weapons/minions"
                     handle_03 =      {model = _item_ranged.."/handles/rippergun_rifle_handle_03", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1)},
                     handle_04 =      {model = _item_ranged.."/handles/rippergun_rifle_handle_04", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1)},
                 }
-            end
-        --#endregion
+            end,
+        }
         --#region Thumber
             local _thumper_grip_attachments = function()
                 return {
@@ -811,19 +811,25 @@ local _item_minion = "content/items/weapons/minions"
                     {id = "head_03",      name = "Head 3",  sounds = {_knife_sound}},
                     {id = "head_04",      name = "Head 4",  sounds = {_knife_sound}},
                     {id = "head_05",      name = "Head 5",  sounds = {_knife_sound}},
+                    {id = "head_06",      name = "Krieg",  sounds = {_knife_sound}},
                 }
             end
-            local _ogryn_shovel_head_models = function(parent, angle, move, remove)
+            local _ogryn_shovel_head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
+                local t = type or "barrel"
+                local n = no_support or {}
+                local ae = automatic_equip or {}
+                local h = hide_mesh or {}
                 return {
-                    head_default = {model = "",                                         type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                    head_01 =      {model = _item_melee.."/heads/shovel_ogryn_head_01", type = "head", parent = tv(parent, 2), angle = a, move = m, remove = r, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                    head_02 =      {model = _item_melee.."/heads/shovel_ogryn_head_02", type = "head", parent = tv(parent, 3), angle = a, move = m, remove = r, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                    head_03 =      {model = _item_melee.."/heads/shovel_ogryn_head_03", type = "head", parent = tv(parent, 4), angle = a, move = m, remove = r, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                    head_04 =      {model = _item_melee.."/heads/shovel_ogryn_head_04", type = "head", parent = tv(parent, 5), angle = a, move = m, remove = r, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
-                    head_05 =      {model = _item_melee.."/heads/shovel_ogryn_head_05", type = "head", parent = tv(parent, 6), angle = a, move = m, remove = r, trigger_move = {"grip", "pommel"}, mesh_move = "both", no_support = {"trinket_hook_empty"}},
+                    head_default = {model = "",                                         type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 1), no_support = tv(n, 1), hide_mesh = tv(h, 1), special_resolve = special_resolve},
+                    head_01 =      {model = _item_melee.."/heads/shovel_ogryn_head_01", type = "head", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 2), no_support = tv(n, 2), hide_mesh = tv(h, 2), special_resolve = special_resolve},
+                    head_02 =      {model = _item_melee.."/heads/shovel_ogryn_head_02", type = "head", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 3), no_support = tv(n, 3), hide_mesh = tv(h, 3), special_resolve = special_resolve},
+                    head_03 =      {model = _item_melee.."/heads/shovel_ogryn_head_03", type = "head", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 4), no_support = tv(n, 4), hide_mesh = tv(h, 4), special_resolve = special_resolve},
+                    head_04 =      {model = _item_melee.."/heads/shovel_ogryn_head_04", type = "head", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 5), no_support = tv(n, 5), hide_mesh = tv(h, 5), special_resolve = special_resolve},
+                    head_05 =      {model = _item_melee.."/heads/shovel_ogryn_head_05", type = "head", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 6), no_support = tv(n, 6), hide_mesh = tv(h, 6), special_resolve = special_resolve},
+                    head_06 =      {model = _item_melee.."/full/krieg_shovel_ogryn_full_01", type = "head", parent = tv(parent, 7), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 7), no_support = tv(n, 7), hide_mesh = tv(h, 7), special_resolve = special_resolve}
                 }
             end
             local _ogryn_shovel_grip_attachments = function()
@@ -836,17 +842,21 @@ local _item_minion = "content/items/weapons/minions"
                     {id = "grip_05",      name = "Grip 5",  sounds = {_grip_sound}},
                 }
             end
-            local _ogryn_shovel_grip_models = function(parent, angle, move, remove)
+            local _ogryn_shovel_grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
+                local t = type or "barrel"
+                local n = no_support or {}
+                local ae = automatic_equip or {}
+                local h = hide_mesh or {}
                 return {
-                    grip_default = {model = "",                                         type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r},
-                    grip_01 =      {model = _item_melee.."/grips/shovel_ogryn_grip_01", type = "grip", parent = tv(parent, 2), angle = a, move = m, remove = r},
-                    grip_02 =      {model = _item_melee.."/grips/shovel_ogryn_grip_02", type = "grip", parent = tv(parent, 3), angle = a, move = m, remove = r},
-                    grip_03 =      {model = _item_melee.."/grips/shovel_ogryn_grip_03", type = "grip", parent = tv(parent, 4), angle = a, move = m, remove = r},
-                    grip_04 =      {model = _item_melee.."/grips/shovel_ogryn_grip_04", type = "grip", parent = tv(parent, 5), angle = a, move = m, remove = r},
-                    grip_05 =      {model = _item_melee.."/grips/shovel_ogryn_grip_05", type = "grip", parent = tv(parent, 6), angle = a, move = m, remove = r},
+                    grip_default = {model = "",                                         type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, automatic_equip = tv(ae, 1), no_support = tv(n, 1), hide_mesh = tv(h, 1), special_resolve = special_resolve},
+                    grip_01 =      {model = _item_melee.."/grips/shovel_ogryn_grip_01", type = "grip", parent = tv(parent, 2), angle = a, move = m, remove = r, automatic_equip = tv(ae, 2), no_support = tv(n, 2), hide_mesh = tv(h, 2), special_resolve = special_resolve},
+                    grip_02 =      {model = _item_melee.."/grips/shovel_ogryn_grip_02", type = "grip", parent = tv(parent, 3), angle = a, move = m, remove = r, automatic_equip = tv(ae, 3), no_support = tv(n, 3), hide_mesh = tv(h, 3), special_resolve = special_resolve},
+                    grip_03 =      {model = _item_melee.."/grips/shovel_ogryn_grip_03", type = "grip", parent = tv(parent, 4), angle = a, move = m, remove = r, automatic_equip = tv(ae, 4), no_support = tv(n, 4), hide_mesh = tv(h, 4), special_resolve = special_resolve},
+                    grip_04 =      {model = _item_melee.."/grips/shovel_ogryn_grip_04", type = "grip", parent = tv(parent, 5), angle = a, move = m, remove = r, automatic_equip = tv(ae, 5), no_support = tv(n, 5), hide_mesh = tv(h, 5), special_resolve = special_resolve},
+                    grip_05 =      {model = _item_melee.."/grips/shovel_ogryn_grip_05", type = "grip", parent = tv(parent, 6), angle = a, move = m, remove = r, automatic_equip = tv(ae, 6), no_support = tv(n, 6), hide_mesh = tv(h, 6), special_resolve = special_resolve},
                 }
             end
             local _ogryn_shovel_pommel_attachments = function()
@@ -859,17 +869,21 @@ local _item_minion = "content/items/weapons/minions"
                     {id = "pommel_05",      name = "Pommel 5", sounds = {UISoundEvents.weapons_equip_gadget}},
                 }
             end
-            local _ogryn_shovel_pommel_models = function(parent, angle, move, remove)
+            local _ogryn_shovel_pommel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
                 local a = angle or 0
                 local m = move or vector3_box(0, 0, 0)
                 local r = remove or vector3_box(0, 0, 0)
+                local t = type or "barrel"
+                local n = no_support or {}
+                local ae = automatic_equip or {}
+                local h = hide_mesh or {}
                 return {
-                    pommel_default = {model = "",                                             type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = "both"},
-                    pommel_01 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_01", type = "pommel", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = "both"},
-                    pommel_02 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_02", type = "pommel", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = "both"},
-                    pommel_03 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_03", type = "pommel", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = "both"},
-                    pommel_04 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_04", type = "pommel", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = "both"},
-                    pommel_05 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_05", type = "pommel", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = "both"},
+                    pommel_default = {model = "",                                             type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 1), no_support = tv(n, 1), hide_mesh = tv(h, 1), special_resolve = special_resolve},
+                    pommel_01 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_01", type = "pommel", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 2), no_support = tv(n, 2), hide_mesh = tv(h, 2), special_resolve = special_resolve},
+                    pommel_02 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_02", type = "pommel", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 3), no_support = tv(n, 3), hide_mesh = tv(h, 3), special_resolve = special_resolve},
+                    pommel_03 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_03", type = "pommel", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 4), no_support = tv(n, 4), hide_mesh = tv(h, 4), special_resolve = special_resolve},
+                    pommel_04 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_04", type = "pommel", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 5), no_support = tv(n, 5), hide_mesh = tv(h, 5), special_resolve = special_resolve},
+                    pommel_05 =      {model = _item_melee.."/pommels/shovel_ogryn_pommel_05", type = "pommel", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = "both", automatic_equip = tv(ae, 6), no_support = tv(n, 6), hide_mesh = tv(h, 6), special_resolve = special_resolve},
                 }
             end
         --#endregion
@@ -2061,8 +2075,195 @@ local _item_minion = "content/items/weapons/minions"
                 }
             end
         --#endregion
+        --#region Staffs
+            local _staff_functions = {
+                staff_head_attachments = function()
+                    return {
+                        {id = "head_default", name = "Default", sounds = {UISoundEvents.apparel_equip}},
+                        {id = "head_01",      name = "Head 1",  sounds = {UISoundEvents.apparel_equip}},
+                        {id = "head_02",      name = "Head 2",  sounds = {UISoundEvents.apparel_equip}},
+                        {id = "head_03",      name = "Head 3",  sounds = {UISoundEvents.apparel_equip}},
+                        {id = "head_04",      name = "Head 4",  sounds = {UISoundEvents.apparel_equip}},
+                        {id = "head_05",      name = "Head 5",  sounds = {UISoundEvents.apparel_equip}},
+                        {id = "head_06",      name = "Head 6",  sounds = {UISoundEvents.apparel_equip}},
+                        {id = "head_07",      name = "Head 7",  sounds = {UISoundEvents.apparel_equip}},
+                    }
+                end,
+                staff_head_models = function(parent, angle, move, remove)
+                    local a = angle or 0
+                    local m = move or vector3_box(0, 0, 0)
+                    local r = remove or vector3_box(0, 0, 0)
+                    return {
+                        head_default = {model = "",                                        type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        head_01 =      {model = _item_melee.."/heads/force_staff_head_01", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        head_02 =      {model = _item_melee.."/heads/force_staff_head_02", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        head_03 =      {model = _item_melee.."/heads/force_staff_head_03", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        head_04 =      {model = _item_melee.."/heads/force_staff_head_04", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        head_05 =      {model = _item_melee.."/heads/force_staff_head_05", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        head_06 =      {model = _item_melee.."/heads/force_staff_head_06", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        head_07 =      {model = _item_melee.."/heads/force_staff_head_07", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                    }
+                end,
+                staff_body_attachments = function()
+                    return {
+                        {id = "body_default", name = "Default", sounds = {UISoundEvents.weapons_equip_gadget}},
+                        {id = "body_01",      name = "Body 1",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                        {id = "body_02",      name = "Body 2",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                        {id = "body_03",      name = "Body 3",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                        {id = "body_04",      name = "Body 4",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                        {id = "body_05",      name = "Body 5",  sounds = {UISoundEvents.weapons_equip_gadget}},
+                    }
+                end,
+                staff_body_models = function(parent, angle, move, remove)
+                    local a = angle or 0
+                    local m = move or vector3_box(0, 0, 0)
+                    local r = remove or vector3_box(0, 0, 0)
+                    return {
+                        body_default = {model = "",                                       type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
+                        body_01 =      {model = _item_melee.."/full/force_staff_full_01", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
+                        body_02 =      {model = _item_melee.."/full/force_staff_full_02", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
+                        body_03 =      {model = _item_melee.."/full/force_staff_full_03", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
+                        body_04 =      {model = _item_melee.."/full/force_staff_full_04", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
+                        body_05 =      {model = _item_melee.."/full/force_staff_full_05", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
+                    }
+                end,
+                staff_shaft_upper_attachments = function()
+                    return {
+                        {id = "shaft_upper_default", name = "Default",       sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shaft_upper_01",      name = "Upper Shaft 1", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shaft_upper_02",      name = "Upper Shaft 2", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shaft_upper_03",      name = "Upper Shaft 3", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shaft_upper_04",      name = "Upper Shaft 4", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shaft_upper_05",      name = "Upper Shaft 5", sounds = {UISoundEvents.weapons_swap}},
+                    }
+                end,
+                staff_shaft_upper_models = function(parent, angle, move, remove)
+                    local a = angle or 0
+                    local m = move or vector3_box(0, 0, 0)
+                    local r = remove or vector3_box(0, 0, 0)
+                    return {
+                        shaft_upper_default = {model = "",                                                 type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_upper_01 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_01", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_upper_02 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_02", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_upper_03 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_03", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_upper_04 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_04", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_upper_05 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_05", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                    }
+                end,
+                staff_shaft_lower_attachments = function()
+                    return {
+                        {id = "shaft_lower_default", name = "Default",       sounds = {UISoundEvents.apparel_equip_small}},
+                        {id = "shaft_lower_01",      name = "Lower Shaft 1", sounds = {UISoundEvents.apparel_equip_small}},
+                        {id = "shaft_lower_02",      name = "Lower Shaft 2", sounds = {UISoundEvents.apparel_equip_small}},
+                        {id = "shaft_lower_03",      name = "Lower Shaft 3", sounds = {UISoundEvents.apparel_equip_small}},
+                        {id = "shaft_lower_04",      name = "Lower Shaft 4", sounds = {UISoundEvents.apparel_equip_small}},
+                        {id = "shaft_lower_05",      name = "Lower Shaft 5", sounds = {UISoundEvents.apparel_equip_small}},
+                    }
+                end,
+                staff_shaft_lower_models = function(parent, angle, move, remove)
+                    local a = angle or 0
+                    local m = move or vector3_box(0, 0, 0)
+                    local r = remove or vector3_box(0, 0, 0)
+                    return {
+                        shaft_lower_default = {model = "",                                                 type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_lower_01 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_01", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_lower_02 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_02", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_lower_03 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_03", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_lower_04 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_04", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                        shaft_lower_05 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_05", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+                    }
+                end,
+            }
+        --#endregion
     --#endregion
     --#region Melee
+        --#region Shovel
+            local _shovel_functions = {
+                shovel_head_attachments = function()
+                    return {
+                        {id = "shovel_head_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_head_01",      name = "Head 1",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_head_02",      name = "Head 2",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_head_03",      name = "Head 3",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_head_04",      name = "Head 4",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_head_05",      name = "Head 5",  sounds = {UISoundEvents.weapons_swap}},
+                    }
+                end,
+                shovel_head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
+                    local a = angle or 0
+                    local m = move or vector3_box(0, 0, 0)
+                    local r = remove or vector3_box(0, 0, 0)
+                    local t = type or "head"
+                    local n = no_support or {}
+                    local ae = automatic_equip or {}
+                    local h = hide_mesh or {}
+                    return {
+                        shovel_head_default =   {model = "",                                        type = t, parent = tv(parent, 1), angle = a, move = m, remove = r, automatic_equip = tv(ae, 1), no_support = tv(n, 1), special_resolve = special_resolve},
+                        shovel_head_01 =        {model = _item_melee.."/heads/shovel_head_01",      type = t, parent = tv(parent, 2), angle = a, move = m, remove = r, automatic_equip = tv(ae, 2), no_support = tv(n, 2), special_resolve = special_resolve},
+                        shovel_head_02 =        {model = _item_melee.."/heads/shovel_head_02",      type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, automatic_equip = tv(ae, 3), no_support = tv(n, 3), special_resolve = special_resolve},
+                        shovel_head_03 =        {model = _item_melee.."/heads/shovel_head_03",      type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, automatic_equip = tv(ae, 4), no_support = tv(n, 4), special_resolve = special_resolve},
+                        shovel_head_04 =        {model = _item_melee.."/heads/shovel_head_04",      type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, automatic_equip = tv(ae, 5), no_support = tv(n, 5), special_resolve = special_resolve},
+                        shovel_head_05 =        {model = _item_melee.."/heads/shovel_head_05",      type = t, parent = tv(parent, 6), angle = a, move = m, remove = r, automatic_equip = tv(ae, 6), no_support = tv(n, 6), special_resolve = special_resolve},
+                    }
+                end,
+                shovel_grip_attachments = function()
+                    return {
+                        {id = "shovel_grip_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_grip_01",      name = "Grip 1",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_grip_02",      name = "Grip 2",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_grip_03",      name = "Grip 3",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_grip_04",      name = "Grip 4",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_grip_05",      name = "Grip 5",  sounds = {UISoundEvents.weapons_swap}},
+                    }
+                end,
+                shovel_grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
+                    local a = angle or 0
+                    local m = move or vector3_box(0, 0, 0)
+                    local r = remove or vector3_box(0, 0, 0)
+                    local t = type or "grip"
+                    local n = no_support or {}
+                    local ae = automatic_equip or {}
+                    local h = hide_mesh or {}
+                    return {
+                        shovel_grip_default =   {model = "",                                   type = t, parent = tv(parent, 1), angle = a, move = m, remove = r, automatic_equip = tv(ae, 1), no_support = tv(n, 1), special_resolve = special_resolve},
+                        shovel_grip_01 =        {model = _item_melee.."/grips/shovel_grip_01", type = t, parent = tv(parent, 2), angle = a, move = m, remove = r, automatic_equip = tv(ae, 2), no_support = tv(n, 2), special_resolve = special_resolve},
+                        shovel_grip_02 =        {model = _item_melee.."/grips/shovel_grip_02", type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, automatic_equip = tv(ae, 3), no_support = tv(n, 3), special_resolve = special_resolve},
+                        shovel_grip_03 =        {model = _item_melee.."/grips/shovel_grip_03", type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, automatic_equip = tv(ae, 4), no_support = tv(n, 4), special_resolve = special_resolve},
+                        shovel_grip_04 =        {model = _item_melee.."/grips/shovel_grip_04", type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, automatic_equip = tv(ae, 5), no_support = tv(n, 5), special_resolve = special_resolve},
+                        shovel_grip_05 =        {model = _item_melee.."/grips/shovel_grip_05", type = t, parent = tv(parent, 6), angle = a, move = m, remove = r, automatic_equip = tv(ae, 6), no_support = tv(n, 6), special_resolve = special_resolve},
+                    }
+                end,
+                shovel_pommel_attachments = function()
+                    return {
+                        {id = "shovel_pommel_default", name = "Default",  sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_pommel_01",      name = "Pommel 1", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_pommel_02",      name = "Pommel 2", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_pommel_03",      name = "Pommel 3", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_pommel_04",      name = "Pommel 4", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_pommel_05",      name = "Pommel 5", sounds = {UISoundEvents.weapons_swap}},
+                        {id = "shovel_pommel_06",      name = "Krieg",    sounds = {UISoundEvents.weapons_swap}},
+                    }
+                end,
+                shovel_pommel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
+                    local a = angle or 0
+                    local m = move or vector3_box(0, 0, 0)
+                    local r = remove or vector3_box(0, 0, 0)
+                    local t = type or "pommel"
+                    local n = no_support or {}
+                    local ae = automatic_equip or {}
+                    local h = hide_mesh or {}
+                    return {
+                        shovel_pommel_default = {model = "",                                        type = t, parent = tv(parent, 1), angle = a, move = m, remove = r, automatic_equip = tv(ae, 1), no_support = tv(n, 1), special_resolve = special_resolve},
+                        shovel_pommel_01 =      {model = _item_melee.."/pommels/shovel_pommel_01",  type = t, parent = tv(parent, 2), angle = a, move = m, remove = r, automatic_equip = tv(ae, 2), no_support = tv(n, 2), special_resolve = special_resolve},
+                        shovel_pommel_02 =      {model = _item_melee.."/pommels/shovel_pommel_02",  type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, automatic_equip = tv(ae, 3), no_support = tv(n, 3), special_resolve = special_resolve},
+                        shovel_pommel_03 =      {model = _item_melee.."/pommels/shovel_pommel_03",  type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, automatic_equip = tv(ae, 4), no_support = tv(n, 4), special_resolve = special_resolve},
+                        shovel_pommel_04 =      {model = _item_melee.."/pommels/shovel_pommel_04",  type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, automatic_equip = tv(ae, 5), no_support = tv(n, 5), special_resolve = special_resolve},
+                        shovel_pommel_05 =      {model = _item_melee.."/pommels/shovel_pommel_05",  type = t, parent = tv(parent, 6), angle = a, move = m, remove = r, automatic_equip = tv(ae, 6), no_support = tv(n, 6), special_resolve = special_resolve},
+                        shovel_pommel_06 =      {model = _item_melee.."/full/krieg_shovel_full_01", type = t, parent = tv(parent, 7), angle = a, move = m, remove = r, automatic_equip = tv(ae, 7), no_support = tv(n, 7), special_resolve = special_resolve},
+                    }
+                end
+            }
+        --#endregion
         local _axe_grip_attachments = function()
             return {
                 {id = "axe_grip_01", name = "Combat Axe 1", sounds = {_grip_sound}},
@@ -2270,6 +2471,7 @@ local _item_minion = "content/items/weapons/minions"
         --#endregion
         --#region Ogryn Melee
             ogryn_club_p1_m1 = { -- Done 10.9.2023 Additional custom positions for paper thing emblems?
+                
                 fixes = {
                     {dependencies = {"head_01", "grip_01"}, -- Emblems
                         emblem_left = {parent = "grip", position = vector3_box(.0375, -.2, .85), rotation = vector3_box(90, -5, 183), scale = vector3_box(2, 2, 2)},
@@ -2335,6 +2537,14 @@ local _item_minion = "content/items/weapons/minions"
                     {dependencies = {"head_05"}, -- Emblems
                         emblem_left = {parent = "grip", position = vector3_box(.04, 0, .77), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, 2, 2)},
                         emblem_right = {parent = "grip", position = vector3_box(.115, 0, .525), rotation = vector3_box(90, 0, 0), scale = vector3_box(3, 3, 3)}},
+
+                    {dependencies = {"head_06"}, -- Emblems
+                        emblem_left = {parent = "grip", position = vector3_box(-.01, -.2, .82), rotation = vector3_box(90, -17.5, 180), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.09, 0, .8075), rotation = vector3_box(90, 0, 3), scale = vector3_box(2.5, 2.5, 2.5)}},
+
+                    {emblem_left = {parent = "grip", position = vector3_box(.005, -.2, .82), rotation = vector3_box(90, -10, 183), scale = vector3_box(2, 2, 2)},
+                        emblem_right = {parent = "grip", position = vector3_box(.0975, 0, .8075), rotation = vector3_box(90, 0, 3), scale = vector3_box(2.5, 2.5, 2.5)}},
+
                     {dependencies = {"head_01", "grip_02"}, -- Grip
                         head = {offset = true, position = vector3_box(0, 0, -.185), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                         grip = {offset = true, position = vector3_box(0, 0, .185), mesh_position = vector3_box(0, 0, -.370), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
@@ -3612,7 +3822,7 @@ local _item_minion = "content/items/weapons/minions"
                         trinket_hook = {parent = "barrel", position = vector3_box(0, .075, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},
                 },
             },
-            flamer_p1_m1 = {
+            flamer_p1_m1 = { -- Done 16.10.2023
                 flashlight_01 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
                 flashlight_02 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
                 flashlight_03 = {position = vector3_box(.04075, .42, 0), rotation = vector3_box(0, 45, 0), scale = vector3_box(1, 1, 1)},
@@ -3729,48 +3939,48 @@ local _item_minion = "content/items/weapons/minions"
     mod.attachment = {
         --#region Ogryn Guns
             ogryn_heavystubber_p1_m1 = { -- Done 5.9.2023
-                flashlight = _flashlights_attachments(),
-                bayonet = _ogryn_bayonet_attachments(),
-                barrel = _stubber_barrel_attachments(),
-                receiver = _stubber_receiver_attachments(),
-                magazine = _stubber_magazine_attachments(),
-                grip = _stubber_grip_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
+                bayonet = _common_functions.ogryn_bayonet_attachments(),
+                barrel = _ogryn_heavystubber_p1_m1.barrel_attachments(),
+                receiver = _ogryn_heavystubber_p1_m1.receiver_attachments(),
+                magazine = _ogryn_heavystubber_p1_m1.magazine_attachments(),
+                grip = _ogryn_heavystubber_p1_m1.grip_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
             ogryn_rippergun_p1_m1 = { -- Done 8.9.2023
-                flashlight = _flashlights_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                bayonet = _ogryn_bayonet_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                bayonet = _common_functions.ogryn_bayonet_attachments(),
                 barrel = table.icombine(
                     {{id = "barrel_default", name = "Default",   sounds = {_barrel_sound}}},
-                    _ripper_barrel_attachments()
+                    _ogryn_rippergun_p1_m1.barrel_attachments()
                 ),
-                receiver = _ripper_receiver_attachments(),
-                magazine = _ripper_magazine_attachments(),
-                handle = _ripper_handle_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                receiver = _ogryn_rippergun_p1_m1.receiver_attachments(),
+                magazine = _ogryn_rippergun_p1_m1.magazine_attachments(),
+                handle = _ogryn_rippergun_p1_m1.handle_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
             ogryn_thumper_p1_m1 = { -- Done 8.9.2023
-                flashlight = _flashlights_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                bayonet = _ogryn_bayonet_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                bayonet = _common_functions.ogryn_bayonet_attachments(),
                 sight = _thumper_sight_attachments(),
                 grip = _thumper_grip_attachments(),
                 body = _thumper_body_attachments()
             },
             ogryn_gauntlet_p1_m1 = { -- Done 8.9.2023
-                flashlight = _flashlights_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                bayonet = _ogryn_bayonet_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                bayonet = _common_functions.ogryn_bayonet_attachments(),
                 barrel = _gauntlet_barrel_attachments(),
                 body = _gauntlet_body_attachments(),
                 magazine = _gauntlet_magazine_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
         --#endregion
         --#region Ogryn Melee
@@ -3778,51 +3988,51 @@ local _item_minion = "content/items/weapons/minions"
                 grip = _ogryn_shovel_grip_attachments(),
                 pommel = _ogryn_shovel_pommel_attachments(),
                 head = _ogryn_shovel_head_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
             ogryn_combatblade_p1_m1 = { -- Done 10.9.2023
                 blade = _combat_blade_blade_attachments(),
                 grip = _combat_blade_grip_attachments(),
                 handle = _combat_blade_handle_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
             ogryn_powermaul_p1_m1 = { -- Done 11.9.2023
                 shaft = _power_maul_shaft_attachments(),
                 head = _power_maul_head_attachments(),
                 pommel = _power_maul_pommel_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
             ogryn_powermaul_slabshield_p1_m1 = { -- Done 11.9.2023
                 shaft = _power_maul_shaft_attachments(),
                 head = _power_maul_head_attachments(),
                 pommel = _power_maul_pommel_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
                 left = _ogryn_shield_attachments(),
             },
             ogryn_club_p2_m1 = { -- Done 12.9.2023
                 body = _ogryn_club_body_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
         --#endregion
         --#region Guns
             autopistol_p1_m1 = { -- Done 12.9.2023
-                flashlight = _flashlights_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
-                grip = _grip_attachments(),
-                stock = _stock_attachments(),
-                bayonet = _bayonet_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                grip = _common_functions.grip_attachments(),
+                stock = _common_functions.stock_attachments(),
+                bayonet = _common_functions.bayonet_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 receiver = _auto_pistol_receiver_attachments(),
                 barrel = _auto_pistol_barrel_attachments(),
                 magazine = table.icombine(
@@ -3834,29 +4044,29 @@ local _item_minion = "content/items/weapons/minions"
                 sight_2 = table.icombine(
                     {{id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}}},
                     _auto_pistol_sight_attachments(),
-                    _reflex_sights_attachments(),
-                    _sights_attachments()
+                    _common_functions.reflex_sights_attachments(),
+                    _common_functions.sights_attachments()
                 ),
             },
             shotgun_p1_m1 = { -- Done 13.9.2023
-                flashlight = _flashlights_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
                 receiver = _shotgun_receiver_attachments(),
                 stock = _shotgun_stock_attachments(),
                 sight_2 = table.icombine(
                     {{id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}}},
-                    _reflex_sights_attachments()
+                    _common_functions.reflex_sights_attachments()
                 ),
                 barrel = _shotgun_barrel_attachments(),
                 underbarrel = _shotgun_underbarrel_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
             },
             bolter_p1_m1 = { -- Done 13.9.2023
-                flashlight = _flashlights_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
                 receiver = _bolter_receiver_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
-                -- slot_trinket_2 = _slot_trinket_2_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                -- slot_trinket_2 = _common_functions.slot_trinket_2_attachments(),
                 magazine = table.icombine(
                     {{id = "magazine_default", name = "Default", sounds = {_magazine_sound}}},
                     _bolter_magazine_attachments(),
@@ -3865,40 +4075,40 @@ local _item_minion = "content/items/weapons/minions"
                 ),
                 barrel = _bolter_barrel_attachments(),
                 underbarrel = _bolter_underbarrel_attachments(),
-                grip = _grip_attachments(),
+                grip = _common_functions.grip_attachments(),
                 sight = table.icombine(
                     {{id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}}},
                     _bolter_sight_attachments(),
-                    _reflex_sights_attachments()
+                    _common_functions.reflex_sights_attachments()
                 ),
-                stock = _stock_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                stock = _common_functions.stock_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 rail = _lasgun_rail_attachments(),
-                bayonet = _bayonet_attachments(),
+                bayonet = _common_functions.bayonet_attachments(),
                 muzzle = table.icombine(
                     _auto_pistol_muzzle_attachments(),
-                    _ripper_barrel_attachments()
+                    _ogryn_rippergun_p1_m1.barrel_attachments()
                 ),
             },
             stubrevolver_p1_m1 = { -- Done 13.9.2023
-                flashlight = _flashlights_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
                 body = _revolver_body_attachments(),
                 barrel = _revolver_barrel_attachments(),
                 -- rail = _revolver_rail_attachments(),
                 sight_2 = table.icombine(
                     {{id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}}},
-                    _reflex_sights_attachments()
+                    _common_functions.reflex_sights_attachments()
                 ),
                 rail = _lasgun_rail_attachments(),
                 stock_3 = _shotgun_stock_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
             },
             plasmagun_p1_m1 = { -- Done 14.9.2023
                 sight_2 = table.icombine(
                     {{id = "sight_default",  name = "Default", sounds = {UISoundEvents.weapons_swap}}},
-                    _reflex_sights_attachments()
+                    _common_functions.reflex_sights_attachments()
                 ),
                 receiver = _plasma_receiver_attachments(),
                 magazine = _plasma_magazine_attachments(),
@@ -3906,24 +4116,24 @@ local _item_minion = "content/items/weapons/minions"
                 grip = _plasma_grip_attachments(),
                 stock = _plasma_stock_attachments(),
                 rail = _lasgun_rail_attachments(),
-                stock_2 = _stock_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+                stock_2 = _common_functions.stock_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
             laspistol_p1_m1 = { -- Done 22.9.2023
-                flashlight = _flashlights_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
                 receiver = _laspistol_receiver_attachments(),
-                bayonet = _bayonet_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
-                slot_trinket_1 = _slot_trinket_1_attachments(),
-                grip = _grip_attachments(),
+                bayonet = _common_functions.bayonet_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                slot_trinket_1 = _common_functions.slot_trinket_1_attachments(),
+                grip = _common_functions.grip_attachments(),
                 sight = table.icombine(
                     {{id = "sight_default", name = "Default",   sounds = {UISoundEvents.weapons_swap}}},
                     {{id = "sight_none",    name = "No Sight"}},
-                    _reflex_sights_attachments()
+                    _common_functions.reflex_sights_attachments()
                 ),
                 magazine = _laspistol_magazine_attachments(),
                 barrel = _laspistol_barrel_attachments(),
@@ -3933,12 +4143,12 @@ local _item_minion = "content/items/weapons/minions"
                 stock_3 = _shotgun_stock_attachments(),
             },
             autogun_p1_m1 = { -- Done 24.9.2023
-                flashlight = _flashlights_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
                 rail = _lasgun_rail_attachments(),
-                grip = _grip_attachments(),
+                grip = _common_functions.grip_attachments(),
                 stock = table.icombine(
                     {{id = "stock_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _stock_attachments()
+                    _common_functions.stock_attachments()
                 ),
                 magazine = table.icombine(
                     {{id = "magazine_default", name = "Default", sounds = {_magazine_sound}}},
@@ -3946,7 +4156,7 @@ local _item_minion = "content/items/weapons/minions"
                     _bolter_magazine_attachments(),
                     _auto_pistol_magazine_attachments()
                 ),
-                trinket_hook = _trinket_hook_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
                 barrel = table.icombine(
                     {{id = "barrel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
                     _autogun_barrel_attachments(),
@@ -3956,50 +4166,50 @@ local _item_minion = "content/items/weapons/minions"
                 muzzle = _autogun_muzzle_attachments(),
                 sight = table.icombine(
                     {{id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _reflex_sights_attachments(),
-                    _sights_attachments()
+                    _common_functions.reflex_sights_attachments(),
+                    _common_functions.sights_attachments()
                 ),
                 receiver = _autogun_receiver_attachments(),
-                bayonet = _bayonet_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                bayonet = _common_functions.bayonet_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
             },
             lasgun_p1_m1 = { -- Done 6.10.2023
-                flashlight = _flashlights_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
                 rail = _lasgun_rail_attachments(),
-                grip = _grip_attachments(),
+                grip = _common_functions.grip_attachments(),
                 barrel = _lasgun_barrel_attachments(),
                 muzzle = _lasgun_muzzle_attachments(),
-                bayonet = _bayonet_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                bayonet = _common_functions.bayonet_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 sight = table.icombine(
                     {{id = "sight_default", name = "Default", sounds = {_magazine_sound}}},
-                    _reflex_sights_attachments(),
-                    _sights_attachments()
+                    _common_functions.reflex_sights_attachments(),
+                    _common_functions.sights_attachments()
                 ),
                 help_sight = _bolter_sight_attachments(),
                 receiver = _lasgun_infantry_receiver_attachments(),
                 stock = table.icombine(
                     {{id = "stock_default", name = "Default", sounds = {_magazine_sound}}},
-                    _stock_attachments()
+                    _common_functions.stock_attachments()
                 ),
                 magazine = _lasgun_magazine_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
-                slot_trinket_1 = _slot_trinket_1_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                slot_trinket_1 = _common_functions.slot_trinket_1_attachments(),
             },
             lasgun_p2_m1 = { -- Done 8.10.2023
-                flashlight = _flashlights_attachments(),
-                bayonet = _bayonet_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
+                bayonet = _common_functions.bayonet_attachments(),
                 -- rail = _lasgun_rail_attachments(),
                 barrel = _lasgun_barrel_attachments(),
                 muzzle = _lasgun_muzzle_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 sight = table.icombine(
                     {{id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _reflex_sights_attachments(),
-                    _sights_attachments()
+                    _common_functions.reflex_sights_attachments(),
+                    _common_functions.sights_attachments()
                 ),
                 help_sight = _bolter_sight_attachments(),
                 receiver = _helbore_receiver_attachments(),
@@ -4007,78 +4217,51 @@ local _item_minion = "content/items/weapons/minions"
                 magazine = _lasgun_magazine_attachments(),
             },
             lasgun_p3_m1 = { -- Done 12.10.2023
-                flashlight = _flashlights_attachments(),
-                bayonet = _bayonet_attachments(),
+                flashlight = _common_functions.flashlights_attachments(),
+                bayonet = _common_functions.bayonet_attachments(),
                 rail = _lasgun_rail_attachments(),
-                grip = _grip_attachments(),
+                grip = _common_functions.grip_attachments(),
                 barrel = _lasgun_barrel_attachments(),
                 muzzle = _lasgun_muzzle_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 sight = table.icombine(
                     {{id = "sight_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
                     -- {{id = "elysian_sight_default", name = "Default",      sounds = {UISoundEvents.apparel_equip}}},
                     _recon_sight_attachments(),
-                    _reflex_sights_attachments(),
-                    _sights_attachments()
+                    _common_functions.reflex_sights_attachments(),
+                    _common_functions.sights_attachments()
                 ),
                 help_sight = _bolter_sight_attachments(),
                 receiver = _recon_receiver_attachments(),
                 stock = _recon_stock_attachments(),
                 magazine = _recon_magazine_attachments(),
             },
-            flamer_p1_m1 = {
-                flashlight = _flashlights_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                trinket_hook = _trinket_hook_attachments(),
+            flamer_p1_m1 = { -- Done 16.10.2023
+                flashlight = _common_functions.flashlights_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
                 receiver = _flamer_receiver_attachments(),
                 magazine = _flamer_magazine_attachments(),
                 barrel = _flamer_barrel_attachments(),
-                grip = _grip_attachments(),
+                grip = _common_functions.grip_attachments(),
             },
             forcestaff_p1_m1 = {
-                shaft_lower = {
-                    {id = "shaft_lower_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "shaft_lower_01", name = "Lower Shaft 1", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "shaft_lower_02", name = "Lower Shaft 2", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "shaft_lower_03", name = "Lower Shaft 3", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "shaft_lower_04", name = "Lower Shaft 4", sounds = {UISoundEvents.apparel_equip_small}},
-                    {id = "shaft_lower_05", name = "Lower Shaft 5", sounds = {UISoundEvents.apparel_equip_small}},
-                },
-                shaft_upper = {
-                    {id = "shaft_upper_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "shaft_upper_01", name = "Upper Shaft 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shaft_upper_02", name = "Upper Shaft 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shaft_upper_03", name = "Upper Shaft 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shaft_upper_04", name = "Upper Shaft 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shaft_upper_05", name = "Upper Shaft 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                body = {
-                    {id = "body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "body_01", name = "Body 1", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "body_02", name = "Body 2", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "body_03", name = "Body 3", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "body_04", name = "Body 4", sounds = {UISoundEvents.weapons_equip_gadget}},
-                    {id = "body_05", name = "Body 5", sounds = {UISoundEvents.weapons_equip_gadget}},
-                },
-                head = {
-                    {id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "head_01", name = "Head 1", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "head_02", name = "Head 2", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "head_03", name = "Head 3", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "head_04", name = "Head 4", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "head_05", name = "Head 5", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "head_06", name = "Head 6", sounds = {UISoundEvents.apparel_equip}},
-                    {id = "head_07", name = "Head 7", sounds = {UISoundEvents.apparel_equip}},
-                },
+                shaft_lower = _staff_functions.staff_shaft_lower_attachments(),
+                shaft_upper = _staff_functions.staff_shaft_upper_attachments(),
+                body = _staff_functions.staff_body_attachments(),
+                head = _staff_functions.staff_head_attachments(),
+                -- emblem_right = _common_functions.emblem_right_attachments(),
+                -- emblem_left = _common_functions.emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
             },
         --#endregion
         --#region Melee
             combataxe_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = table.icombine(
                     {{id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
                     _axe_grip_attachments()
@@ -4093,9 +4276,9 @@ local _item_minion = "content/items/weapons/minions"
                 ),
             },
             combataxe_p2_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = table.icombine(
                     {{id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
                     _axe_grip_attachments()
@@ -4110,9 +4293,9 @@ local _item_minion = "content/items/weapons/minions"
                 ),
             },
             combatknife_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "knife_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "knife_grip_01", name = "Combat Knife 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4133,9 +4316,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             powersword_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "power_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "power_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4163,9 +4346,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             chainaxe_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "chain_axe_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "chain_axe_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4196,9 +4379,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             chainsword_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "chain_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "chain_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4222,32 +4405,17 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             combataxe_p3_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
-                head = {
-                    {id = "shovel_head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "shovel_head_01", name = "Head 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_head_02", name = "Head 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_head_03", name = "Head 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_head_04", name = "Head 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_head_05", name = "Head 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                pommel = {
-                    {id = "shovel_pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "shovel_pommel_01", name = "Pommel 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_pommel_02", name = "Pommel 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_pommel_03", name = "Pommel 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_pommel_04", name = "Pommel 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_pommel_05", name = "Pommel 5", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_pommel_06", name = "Pommel 6", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "shovel_pommel_07", name = "Pommel 7", sounds = {UISoundEvents.weapons_swap}},
-                },
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
+                head = _shovel_functions.shovel_head_attachments(),
+                pommel = _shovel_functions.shovel_pommel_attachments(),
+                grip = _shovel_functions.shovel_grip_attachments(),
             },
             combatsword_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "combat_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "combat_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4267,9 +4435,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             thunderhammer_2h_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 shaft = {
                     {id = "thunder_hammer_shaft_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "thunder_hammer_shaft_01", name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4304,9 +4472,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             powermaul_2h_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 shaft = {
                     {id = "2h_power_maul_shaft_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
                     {id = "2h_power_maul_shaft_01", name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4341,9 +4509,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             chainsword_2h_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "2h_chain_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "2h_chain_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4362,9 +4530,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             combatsword_p2_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "falchion_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "falchion_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4383,9 +4551,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             forcesword_p1_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "force_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "force_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4421,9 +4589,9 @@ local _item_minion = "content/items/weapons/minions"
                 },
             },
             combatsword_p3_m1 = {
-                trinket_hook = _trinket_hook_attachments(),
-                emblem_right = _emblem_right_attachments(),
-                emblem_left = _emblem_left_attachments(),
+                trinket_hook = _common_functions.trinket_hook_attachments(),
+                emblem_right = _common_functions.emblem_right_attachments(),
+                emblem_left = _common_functions.emblem_left_attachments(),
                 grip = {
                     {id = "sabre_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
                     {id = "sabre_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
@@ -4767,14 +4935,14 @@ local _item_minion = "content/items/weapons/minions"
         --#region Ogryn Guns
             ogryn_heavystubber_p1_m1 = table.combine( -- Done 5.9.2023
                 -- {customization_default_position = vector3_box(.2, -1, .075)},
-                _flashlight_models("receiver", -2.25, vector3_box(0, -3, -.2), vector3_box(.4, 0, .4)),
-                _emblem_right_models("receiver", -3, vector3_box(.1, -6, -.1), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(-.3, -6, -.1), vector3_box(-.2, 0, 0)),
-                _ogryn_bayonet_models("receiver", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
-                _stubber_barrel_models("receiver", -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0)),
-                _stubber_receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
-                _stubber_magazine_models("receiver", 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
-                _stubber_grip_models("receiver", .3, vector3_box(-.4, -3, 0), vector3_box(0, -.2, 0), "grip", {
+                _common_functions.flashlight_models("receiver", -2.25, vector3_box(0, -3, -.2), vector3_box(.4, 0, .4)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(.1, -6, -.1), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(-.3, -6, -.1), vector3_box(-.2, 0, 0)),
+                _common_functions.ogryn_bayonet_models("receiver", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
+                _ogryn_heavystubber_p1_m1.barrel_models("receiver", -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0)),
+                _ogryn_heavystubber_p1_m1.receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
+                _ogryn_heavystubber_p1_m1.magazine_models("receiver", 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
+                _ogryn_heavystubber_p1_m1.grip_models("receiver", .3, vector3_box(-.4, -3, 0), vector3_box(0, -.2, 0), "grip", {
                     {},
                     {"trinket_hook"},
                     {"trinket_hook"},
@@ -4785,52 +4953,84 @@ local _item_minion = "content/items/weapons/minions"
                     {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
                 }),
-                _trinket_hook_models("grip", .3, vector3_box(-.6, -5, .1), vector3_box(0, -.1, -.1))
+                _common_functions.trinket_hook_models("grip", .3, vector3_box(-.6, -5, .1), vector3_box(0, -.1, -.1))
             ),
             ogryn_rippergun_p1_m1 = table.combine( -- Done 8.9.2023
-                _flashlight_models("receiver", -2.25, vector3_box(-.2, -3, -.1), vector3_box(.4, 0, .4)),
-                _emblem_right_models("receiver", -3, vector3_box(-.2, -6, -.1), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(-.1, -6, -.1), vector3_box(.2, 0, 0)),
-                _ogryn_bayonet_models({"", "", "", "", "receiver"}, -.5, vector3_box(.2, -2, 0), vector3_box(0, .4, 0)),
-                _ripper_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .6, 0)),
-                _ripper_receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
-                _ripper_magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
-                _ripper_handle_models(nil, -.75, vector3_box(-.2, -4, -.1), vector3_box(-.2, 0, 0)),
-                _trinket_hook_models(nil, -.3, vector3_box(.15, -5, .1), vector3_box(0, 0, -.2))
+                _common_functions.flashlight_models("receiver", -2.25, vector3_box(-.2, -3, -.1), vector3_box(.4, 0, .4)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(-.2, -6, -.1), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(-.1, -6, -.1), vector3_box(.2, 0, 0)),
+                _common_functions.ogryn_bayonet_models({"", "", "", "", "receiver"}, -.5, vector3_box(.2, -2, 0), vector3_box(0, .4, 0)),
+                _ogryn_rippergun_p1_m1.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .6, 0)),
+                _ogryn_rippergun_p1_m1.receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
+                _ogryn_rippergun_p1_m1.magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
+                _ogryn_rippergun_p1_m1.handle_models(nil, -.75, vector3_box(-.2, -4, -.1), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models(nil, -.3, vector3_box(.15, -5, .1), vector3_box(0, 0, -.2))
             ),
             ogryn_thumper_p1_m1 = table.combine( -- Done 8.9.2023
-                _flashlight_models("receiver", -2.25, vector3_box(0, -3, 0), vector3_box(.4, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(-.3, -6, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(-.1, -6, 0), vector3_box(-.2, 0, 0)),
-                _ogryn_bayonet_models("body", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
+                _common_functions.flashlight_models("receiver", -2.25, vector3_box(0, -3, 0), vector3_box(.4, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(-.3, -6, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(-.1, -6, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.ogryn_bayonet_models("body", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
                 _thumper_grip_models(nil, 0, vector3_box(-.3, -3, 0), vector3_box(0, -.2, 0)),
                 _thumper_sight_models(nil, -.5, vector3_box(.2, -3, 0), vector3_box(0, 0, .2)),
                 _thumper_body_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001))
             ),
             ogryn_gauntlet_p1_m1 = table.combine( -- Done 8.9.2023
-                _flashlight_models("receiver", -2.25, vector3_box(0, -3, 0), vector3_box(.4, 0, 0)),
-                _emblem_right_models(nil, -3, vector3_box(0, -2, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models(nil, 0, vector3_box(0, -2, 0), vector3_box(.2, 0, 0)),
-                _ogryn_bayonet_models("barrel", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
+                _common_functions.flashlight_models("receiver", -2.25, vector3_box(0, -3, 0), vector3_box(.4, 0, 0)),
+                _common_functions.emblem_right_models(nil, -3, vector3_box(0, -2, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models(nil, 0, vector3_box(0, -2, 0), vector3_box(.2, 0, 0)),
+                _common_functions.ogryn_bayonet_models("barrel", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
                 _gauntlet_barrel_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 1.5, 0)),
                 _gauntlet_body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _gauntlet_magazine_models(nil, 0, vector3_box(-.8, -4, 0), vector3_box(0, -.6, 0)),
-                _trinket_hook_models("barrel", -.3, vector3_box(.25, -5, .1), vector3_box(-.2, 0, 0))
+                _common_functions.trinket_hook_models("barrel", -.3, vector3_box(.25, -5, .1), vector3_box(-.2, 0, 0))
             ),
         --#endregion
         --#region Ogryn Melee
             ogryn_club_p1_m1 = table.combine( -- Done 10.9.2023
-                _emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
-                _trinket_hook_models("head", 0, vector3_box(.05, -4, 0), vector3_box(0, 0, -.2)),
-                _ogryn_shovel_head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4)),
-                _ogryn_shovel_grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0)),
-                _ogryn_shovel_pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3))
+                _common_functions.emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models("head", 0, vector3_box(.05, -4, 0), vector3_box(0, 0, -.2)),
+                _ogryn_shovel_head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), "head", {
+                    {"trinket_hook_empty"},
+                }, {}, {}, function(gear_id, item, attachment)
+                    local changes = {}
+                    if string_find(attachment, "default") or string_find(attachment, "head_06") then
+                        if mod:get_gear_setting(gear_id, "grip", item) ~= "grip_default" then changes["grip"] = "grip_default" end
+                        if mod:get_gear_setting(gear_id, "pommel", item) ~= "pommel_default" then changes["pommel"] = "pommel_default" end
+                    else
+                        if mod:get_gear_setting(gear_id, "grip", item) == "grip_default" then changes["grip"] = "grip_01" end
+                        if mod:get_gear_setting(gear_id, "pommel", item) == "pommel_default" then changes["pommel"] = "pommel_01" end
+                    end
+                    return changes
+                end),
+                _ogryn_shovel_grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), "grip", {}, {}, {}, function(gear_id, item, attachment)
+                    local changes = {}
+                    if string_find(attachment, "default") then
+                        if mod:get_gear_setting(gear_id, "head", item) ~= "head_default" then changes["head"] = "head_default" end
+                        if mod:get_gear_setting(gear_id, "pommel", item) ~= "pommel_default" then changes["pommel"] = "pommel_default" end
+                    else
+                        if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = "head_01" end
+                        if mod:get_gear_setting(gear_id, "pommel", item) == "pommel_default" then changes["pommel"] = "pommel_01" end
+                    end
+                    return changes
+                end),
+                _ogryn_shovel_pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), "pommel", {}, {}, {}, function(gear_id, item, attachment)
+                    local changes = {}
+                    if string_find(attachment, "default") then
+                        if mod:get_gear_setting(gear_id, "head", item) ~= "head_default" then changes["head"] = "head_default" end
+                        if mod:get_gear_setting(gear_id, "grip", item) ~= "grip_default" then changes["grip"] = "grip_default" end
+                    else
+                        if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = "head_01" end
+                        if mod:get_gear_setting(gear_id, "grip", item) == "grip_default" then changes["grip"] = "grip_01" end
+                    end
+                    return changes
+                end)
             ),
             ogryn_combatblade_p1_m1 = table.combine( -- Done 10.9.2023
-                _emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
-                _trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
+                _common_functions.emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
                 _combat_blade_blade_models(nil, 0, vector3_box(.1, -3, -.1), vector3_box(0, 0, .2)),
                 _combat_blade_grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, .2, 0)),
                 _combat_blade_handle_models(nil, 0, vector3_box(-.15, -5, .2), vector3_box(0, 0, -.2))
@@ -4838,68 +5038,68 @@ local _item_minion = "content/items/weapons/minions"
             ogryn_powermaul_p1_m1 = table.combine( -- Done 11.9.2023
                 {customization_default_position = vector3_box(0, 2, 0)},
                 _power_maul_shaft_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0)),
-                _emblem_right_models("head", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("head", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
-                _trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
+                _common_functions.emblem_right_models("head", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("head", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
                 _power_maul_head_models(nil, 0, vector3_box(.3, -3, -.3), vector3_box(0, 0, .2)),
                 _power_maul_pommel_models(nil, 0, vector3_box(-.25, -5, .4), vector3_box(0, 0, -.2))
             ),
             ogryn_powermaul_slabshield_p1_m1 = table.combine( -- Done 11.9.2023
                 -- {customization_default_position = vector3_box(.2, 0, 0)},
                 _power_maul_shaft_models(nil, -2.5, vector3_box(0, -5, -.15), vector3_box(0, 0, 0)),
-                _emblem_right_models("head", 0, vector3_box(0, -5, -.4), vector3_box(.2, 0, 0)),
-                _emblem_left_models("head", -3, vector3_box(0, -5, -.4), vector3_box(-.2, 0, 0)),
-                _trinket_hook_models(nil, -2.5, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
+                _common_functions.emblem_right_models("head", 0, vector3_box(0, -5, -.4), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("head", -3, vector3_box(0, -5, -.4), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models(nil, -2.5, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
                 _power_maul_head_models(nil, -2.5, vector3_box(0, -5, -.4), vector3_box(0, 0, .2)),
                 _power_maul_pommel_models(nil, -2.5, vector3_box(0, -6, .1), vector3_box(0, 0, -.2)),
                 _ogryn_shield_models(nil, 0, vector3_box(-.15, -2, .1), vector3_box(0, 0, -.2))
             ),
             ogryn_club_p2_m1 = table.combine( -- Done 12.9.2023
                 _ogryn_club_body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
-                _emblem_right_models("body", -2.5, vector3_box(0, -4, -.2), vector3_box(.2, 0, 0)),
-                _emblem_left_models("body", 0, vector3_box(.1, -4, -.2), vector3_box(-.2, 0, 0)),
-                _trinket_hook_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2))
+                _common_functions.emblem_right_models("body", -2.5, vector3_box(0, -4, -.2), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("body", 0, vector3_box(.1, -4, -.2), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2))
             ),
         --#endregion
         --#region Guns
             autopistol_p1_m1 = table.combine( -- Done 12.9.2023
-                _flashlight_models(nil, -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, -.034)),
-                _grip_models(nil, -.1, vector3_box(-.3, -4, 0), vector3_box(0, -.1, -.1)),
-                _stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
-                _trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _common_functions.flashlight_models(nil, -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, -.034)),
+                _common_functions.grip_models(nil, -.1, vector3_box(-.3, -4, 0), vector3_box(0, -.1, -.1)),
+                _common_functions.stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
+                _common_functions.trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _auto_pistol_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _auto_pistol_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _auto_pistol_magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
                 _auto_pistol_muzzle_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _auto_pistol_sight_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
-                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
+                _common_functions.reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                 }),
                 _autogun_magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
-                _sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0))
+                _common_functions.sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0))
             ),
             shotgun_p1_m1 = table.combine( -- Done 13.9.2023
-                _flashlight_models(nil, -2.5, vector3_box(-.3, -3, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(-.4, -5, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, -5, 0), vector3_box(-.2, 0, 0)),
-                _trinket_hook_models(nil, -.2, vector3_box(.3, -4, .1), vector3_box(0, 0, -.2)),
-                _reflex_sights_models("sight", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2"),
+                _common_functions.flashlight_models(nil, -2.5, vector3_box(-.3, -3, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(-.4, -5, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -5, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models(nil, -.2, vector3_box(.3, -4, .1), vector3_box(0, 0, -.2)),
+                _common_functions.reflex_sights_models("sight", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2"),
                 _shotgun_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _shotgun_stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
                 _shotgun_barrel_models(nil, -.5, vector3_box(.1, -4, 0), vector3_box(0, .2, 0)),
                 _shotgun_underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2))
             ),
             bolter_p1_m1 = table.combine( -- Done 13.9.2023
-                _flashlight_models("receiver", -2.5, vector3_box(-.3, -3, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1), "grip", {
+                _common_functions.flashlight_models("receiver", -2.5, vector3_box(-.3, -3, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1), "grip", {
                     {"trinket_hook_empty"},
                     {"trinket_hook"},
                     {"trinket_hook"},
@@ -4950,13 +5150,13 @@ local _item_minion = "content/items/weapons/minions"
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty"},
                 }),
-                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                 }),
-                _stock_models("receiver", 0, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0)),
+                _common_functions.stock_models("receiver", 0, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0)),
                 _bolter_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _auto_pistol_magazine_models(nil, 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
                 _autogun_magazine_models(nil, 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
@@ -4965,23 +5165,23 @@ local _item_minion = "content/items/weapons/minions"
                 _bolter_underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
                 _bolter_sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _bayonet_models("barrel", -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, 0)),
+                _common_functions.bayonet_models("barrel", -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, 0)),
                 _auto_pistol_muzzle_models("barrel", -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
-                _trinket_hook_models("grip", -.2, vector3_box(-.1, -4, .2), vector3_box(0, 0, -.2)),
-                -- _slot_trinket_2_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
-                _ripper_barrel_models("receiver", -.5, vector3_box(.2, -2, 0), vector3_box(0, .3, 0), "muzzle")
+                _common_functions.trinket_hook_models("grip", -.2, vector3_box(-.1, -4, .2), vector3_box(0, 0, -.2)),
+                -- _common_functions.slot_trinket_2_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
+                _ogryn_rippergun_p1_m1.barrel_models("receiver", -.5, vector3_box(.2, -2, 0), vector3_box(0, .3, 0), "muzzle")
             ),
             stubrevolver_p1_m1 = table.combine( -- Done 13.9.2023
                 {customization_default_position = vector3_box(-.2, 0, 0)},
-                _flashlight_models("body", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("body", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("body", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.flashlight_models("body", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_right_models("body", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("body", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
                 _shotgun_stock_models("body", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, -.11), "stock_3"),
                 _revolver_body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _revolver_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 -- _revolver_rail_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
                 _lasgun_rail_models("body", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _reflex_sights_models("body", -.5, vector3_box(0, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
+                _common_functions.reflex_sights_models("body", -.5, vector3_box(0, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
@@ -4994,16 +5194,16 @@ local _item_minion = "content/items/weapons/minions"
                 })
             ),
             plasmagun_p1_m1 = table.combine( -- Done 14.9.2023
-                _reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
+                _common_functions.reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                 }),
-                _stock_models("receiver", .5, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0), "stock_2"),
+                _common_functions.stock_models("receiver", .5, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0), "stock_2"),
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
                 _plasma_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _plasma_magazine_models(nil, .1, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
                 _plasma_barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), "barrel", {
@@ -5013,17 +5213,17 @@ local _item_minion = "content/items/weapons/minions"
                     "trinket_hook_empty",
                 }),
                 _plasma_stock_models(nil, .75, vector3_box(-.3, -4, -.1), vector3_box(0, -.015, .1)),
-                _trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _common_functions.trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _plasma_grip_models(nil, .2, vector3_box(-.3, -4, .1), vector3_box(0, -.1, -.1))
             ),
             laspistol_p1_m1 = table.combine( -- Done 22.9.2023
-                _flashlight_models("receiver", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -4, 0), vector3_box(0, .4, -.025)),
-                _trinket_hook_models("grip", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
-                _slot_trinket_1_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
-                _grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1), "grip", {
+                _common_functions.flashlight_models("receiver", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -4, 0), vector3_box(0, .4, -.025)),
+                _common_functions.trinket_hook_models("grip", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _common_functions.slot_trinket_1_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
+                _common_functions.grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1), "grip", {
                     {"trinket_hook_empty"},
                     {"trinket_hook"},
                     {"trinket_hook"},
@@ -5074,7 +5274,7 @@ local _item_minion = "content/items/weapons/minions"
                     {trinket_hook = "trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty"},
                 }),
-                _reflex_sights_models("rail", -.5, vector3_box(-.1, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.reflex_sights_models("rail", -.5, vector3_box(-.1, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
@@ -5089,20 +5289,20 @@ local _item_minion = "content/items/weapons/minions"
                 _shotgun_stock_models("grip", 0, vector3_box(-.6, -4, .2), vector3_box(0, -.4, -.11), "stock_3")
             ),
             autogun_p1_m1 = table.combine( -- Done 24.9.2023
-                _emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
-                _flashlight_models(nil, -2.5, vector3_box(-.6, -3, 0), vector3_box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
-                _emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(-.2, 0, 0)),
-                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
-                _reflex_sights_models("rail", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.flashlight_models(nil, -2.5, vector3_box(-.6, -3, 0), vector3_box(.2, 0, 0)),
+                _common_functions.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
+                _common_functions.reflex_sights_models("rail", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                     {rail = "rail_01"},
                 }),
-                _sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
-                _stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
-                _trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _common_functions.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
+                _common_functions.stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
+                _common_functions.trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 {barrel_default = {model = "", type = "barrel"}},
                 _autogun_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {
                     {"trinket_hook_empty"},
@@ -5123,16 +5323,16 @@ local _item_minion = "content/items/weapons/minions"
                 _autogun_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001))
             ),
             lasgun_p1_m1 = table.combine( -- Done 6.10.2023
-                _flashlight_models(nil, -2.5, vector3_box(-.4, -3, 0), vector3_box(.2, 0, 0)),
+                _common_functions.flashlight_models(nil, -2.5, vector3_box(-.4, -3, 0), vector3_box(.2, 0, 0)),
                 _lasgun_infantry_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
-                _emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
-                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
+                _common_functions.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
                 _lasgun_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _lasgun_muzzle_models(nil, -.5, vector3_box(.4, -3, 0), vector3_box(0, .2, 0)),
                 _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _reflex_sights_models("rail", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.reflex_sights_models("rail", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default", help_sight = "sight_default"},
                     {rail = "rail_01", help_sight = "sight_default"},
                     {rail = "rail_01", help_sight = "sight_default"},
@@ -5140,7 +5340,7 @@ local _item_minion = "content/items/weapons/minions"
                 }, {
                     {{"receiver", 5}},
                 }),
-                _sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default", help_sight = "sight_default"},
                     {rail = "rail_01", help_sight = "bolter_sight_01"},
                     {rail = "rail_default", help_sight = "bolter_sight_01"},
@@ -5154,28 +5354,28 @@ local _item_minion = "content/items/weapons/minions"
                     {{"receiver", 5}, {"sight", 1}},
                 }),
                 _bolter_sight_models("receiver", .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "help_sight", {}, {}, {}),
-                _stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
-                _trinket_hook_models("barrel", 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
-                _slot_trinket_1_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
+                _common_functions.stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
+                _common_functions.trinket_hook_models("barrel", 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+                _common_functions.slot_trinket_1_models("trinket_hook", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
                 _lasgun_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))
             ),
             lasgun_p2_m1 = table.combine( -- Done 8.10.2023
                 _helbore_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
-                _flashlight_models(nil, -2.5, vector3_box(-.5, -3, -.05), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -3, 0), vector3_box(0, .4, -.034)),
-                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
+                _common_functions.flashlight_models(nil, -2.5, vector3_box(-.5, -3, -.05), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -3, 0), vector3_box(0, .4, -.034)),
+                _common_functions.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
                 _lasgun_barrel_models(nil, -.3, vector3_box(0, -2, 0), vector3_box(0, .2, 0)),
                 _lasgun_muzzle_models(nil, -.5, vector3_box(.1, -3, 0), vector3_box(0, .2, 0)),
                 -- _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-                _reflex_sights_models(nil, .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.reflex_sights_models(nil, .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {help_sight = "sight_default"},
                     {help_sight = "sight_default"},
                     {help_sight = "sight_default"},
                     {help_sight = "sight_default"},
                 }, {}),
-                _sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {help_sight = "sight_default"},
                     {help_sight = "bolter_sight_01"},
                     {help_sight = "bolter_sight_01"},
@@ -5193,20 +5393,20 @@ local _item_minion = "content/items/weapons/minions"
                 _lasgun_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))
             ),
             lasgun_p3_m1 = table.combine( -- Done 12.10.2023
-                _flashlight_models(nil, -2.5, vector3_box(-.3, -3, -.05), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, -3, 0), vector3_box(-.2, 0, 0)),
-                _bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
-                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1)),
+                _common_functions.flashlight_models(nil, -2.5, vector3_box(-.3, -3, -.05), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -3, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
+                _common_functions.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1)),
                 _lasgun_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
                 _lasgun_muzzle_models(nil, -.5, vector3_box(.3, -3, 0), vector3_box(0, .2, 0)),
-                _reflex_sights_models("nil", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.reflex_sights_models("nil", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default", help_sight = "sight_default"},
                     {rail = "rail_01", help_sight = "sight_default"},
                     {rail = "rail_01", help_sight = "sight_default"},
                     {rail = "rail_01", help_sight = "sight_default"},
                 }),
-                _sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                _common_functions.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     {rail = "rail_default", help_sight = "sight_default"},
                     {rail = "rail_01", help_sight = "bolter_sight_01"},
                     {rail = "rail_default", help_sight = "bolter_sight_01"},
@@ -5225,12 +5425,12 @@ local _item_minion = "content/items/weapons/minions"
                 _recon_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _recon_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))
             ),
-            flamer_p1_m1 = table.combine(
-                _flashlight_models("receiver", -2.5, vector3_box(-.3, -3, -.05), vector3_box(.2, 0, 0)),
-                _emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _emblem_left_models("receiver", 0, vector3_box(0, -3, 0), vector3_box(-.2, 0, 0)),
-                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1)),
-                _trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+            flamer_p1_m1 = table.combine( -- Done 16.10.2023
+                _common_functions.flashlight_models("receiver", -2.5, vector3_box(-.3, -3, -.05), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -3, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1)),
+                _common_functions.trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
                 _flamer_receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
                 _flamer_magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
                 _flamer_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), {
@@ -5249,60 +5449,40 @@ local _item_minion = "content/items/weapons/minions"
                     {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
                     {trinket_hook = "trinket_hook_empty|trinket_hook_05_carbon"},
                     {trinket_hook = "trinket_hook_empty|trinket_hook_05_carbon"},
-                }),
-                _grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1))
+                })
             ),
-            forcestaff_p1_m1 = {
-                customization_default_position = vector3_box(0, 8, .75),
-                shaft_lower_default = {model = "", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
-                shaft_lower_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_01", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
-                shaft_lower_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_02", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
-                shaft_lower_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_03", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
-                shaft_lower_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_04", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
-                shaft_lower_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_lower_05", type = "shaft_lower", move = vector3_box(-.75, -4, .5)},
-                shaft_upper_default = {model = "", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
-                shaft_upper_01 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_01", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
-                shaft_upper_02 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_02", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
-                shaft_upper_03 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_03", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
-                shaft_upper_04 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_04", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
-                shaft_upper_05 = {model = "content/items/weapons/player/ranged/shafts/force_staff_shaft_upper_05", type = "shaft_upper", move = vector3_box(-.25, -5.5, -.4)},
-                body_default = {model = "", type = "body", move = vector3_box(.1, -7, -.65)},
-                body_01 = {model = "content/items/weapons/player/melee/full/force_staff_full_01", type = "body", move = vector3_box(.1, -7, -.65)},
-                body_02 = {model = "content/items/weapons/player/melee/full/force_staff_full_02", type = "body", move = vector3_box(.1, -7, -.65)},
-                body_03 = {model = "content/items/weapons/player/melee/full/force_staff_full_03", type = "body", move = vector3_box(.1, -7, -.65)},
-                body_04 = {model = "content/items/weapons/player/melee/full/force_staff_full_04", type = "body", move = vector3_box(.1, -7, -.65)},
-                body_05 = {model = "content/items/weapons/player/melee/full/force_staff_full_05", type = "body", move = vector3_box(.1, -7, -.65)},
-                head_default = {model = "", type = "head", move = vector3_box(.15, -8.5, -.8)},
-                head_01 = {model = "content/items/weapons/player/melee/heads/force_staff_head_01", type = "head", move = vector3_box(.15, -8.5, -.8)},
-                head_02 = {model = "content/items/weapons/player/melee/heads/force_staff_head_02", type = "head", move = vector3_box(.15, -8.5, -.8)},
-                head_03 = {model = "content/items/weapons/player/melee/heads/force_staff_head_03", type = "head", move = vector3_box(.15, -8.5, -.8)},
-                head_04 = {model = "content/items/weapons/player/melee/heads/force_staff_head_04", type = "head", move = vector3_box(.15, -8.5, -.8)},
-                head_05 = {model = "content/items/weapons/player/melee/heads/force_staff_head_05", type = "head", move = vector3_box(.15, -8.5, -.8)},
-                head_06 = {model = "content/items/weapons/player/melee/heads/force_staff_head_06", type = "head", move = vector3_box(.15, -8.5, -.8)},
-                head_07 = {model = "content/items/weapons/player/melee/heads/force_staff_head_07", type = "head", move = vector3_box(.15, -8.5, -.8)},
-            },
+            forcestaff_p1_m1 = table.combine(
+                {customization_default_position = vector3_box(0, 8, .75)},
+                _staff_functions.staff_head_models(nil, 0, vector3_box(.15, -8.5, -.8), vector3_box(0, 0, .4)),
+                _staff_functions.staff_body_models(nil, 0, vector3_box(.1, -7, -.65), vector3_box(0, 0, .2)),
+                _staff_functions.staff_shaft_upper_models(nil, 0, vector3_box(-.25, -5.5, -.4), vector3_box(0, 0, .1)),
+                _staff_functions.staff_shaft_lower_models(nil, 0, vector3_box(-.75, -4, .5), vector3_box(0, 0, -.1)),
+                -- _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                -- _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -3, 0), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2))
+            ),
         --#endregion
         --#region Melee
             combataxe_p1_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 _axe_grip_models(),
                 _axe_head_models(),
                 _pommel_models()
             ),
             combataxe_p2_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 _axe_grip_models(),
                 _axe_head_models(),
                 _pommel_models()
             ),
             combatknife_p1_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     knife_grip_default = {model = "", type = "grip"},
                     knife_grip_01 = {model = "content/items/weapons/player/melee/grips/combat_knife_grip_01", type = "grip"},
@@ -5321,9 +5501,9 @@ local _item_minion = "content/items/weapons/minions"
                 }
             ),
             powersword_p1_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     power_sword_grip_default = {model = "", type = "grip"},
                     power_sword_grip_01 = {model = "content/items/weapons/player/melee/grips/power_sword_grip_01", type = "grip"},
@@ -5347,9 +5527,9 @@ local _item_minion = "content/items/weapons/minions"
                 }
             ),
             chainaxe_p1_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     chain_axe_teeth_default = {model = "", type = "teeth"},
                     chain_axe_teeth_01 = {model = "content/items/weapons/player/melee/chains/chain_axe_chain_01", type = "teeth"},
@@ -5374,9 +5554,9 @@ local _item_minion = "content/items/weapons/minions"
                 }
             ),
             chainsword_p1_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     chain_sword_grip_default = {model = "", type = "grip"},
                     chain_sword_grip_01 = {model = "content/items/weapons/player/melee/grips/chain_sword_grip_01", type = "grip"},
@@ -5396,30 +5576,49 @@ local _item_minion = "content/items/weapons/minions"
                 }
             ),
             combataxe_p3_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
-                {
-                    shovel_head_default = {model = "", type = "head"},
-                    shovel_head_01 = {model = "content/items/weapons/player/melee/heads/shovel_head_01", type = "head"},
-                    shovel_head_02 = {model = "content/items/weapons/player/melee/heads/shovel_head_02", type = "head"},
-                    shovel_head_03 = {model = "content/items/weapons/player/melee/heads/shovel_head_03", type = "head"},
-                    shovel_head_04 = {model = "content/items/weapons/player/melee/heads/shovel_head_04", type = "head"},
-                    shovel_head_05 = {model = "content/items/weapons/player/melee/heads/shovel_head_05", type = "head"},
-                    shovel_pommel_default = {model = "", type = "pommel"},
-                    shovel_pommel_01 = {model = "content/items/weapons/player/melee/full/prologue_shovel_full_01", type = "pommel", automatic_equip = {head = "shovel_head_default"}},
-                    shovel_pommel_02 = {model = "content/items/weapons/player/melee/full/krieg_shovel_full_01", type = "pommel", automatic_equip = {head = "shovel_head_default"}},
-                    shovel_pommel_03 = {model = "content/items/weapons/player/melee/pommels/shovel_pommel_01", type = "pommel"},
-                    shovel_pommel_04 = {model = "content/items/weapons/player/melee/pommels/shovel_pommel_02", type = "pommel"},
-                    shovel_pommel_05 = {model = "content/items/weapons/player/melee/pommels/shovel_pommel_03", type = "pommel"},
-                    shovel_pommel_06 = {model = "content/items/weapons/player/melee/pommels/shovel_pommel_04", type = "pommel"},
-                    shovel_pommel_07 = {model = "content/items/weapons/player/melee/pommels/shovel_pommel_05", type = "pommel"},
-                }
+                _common_functions.emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+                _common_functions.emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
+                _common_functions.trinket_hook_models(nil, 0, vector3_box(.05, -4, 0), vector3_box(0, 0, -.2)),
+                _shovel_functions.shovel_head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), "head", {
+                    -- {"trinket_hook_empty"},
+                }, {}, {}, function(gear_id, item, attachment)
+                    local changes = {}
+                    if string_find(attachment, "default") then
+                        if mod:get_gear_setting(gear_id, "grip", item) ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
+                        if mod:get_gear_setting(gear_id, "pommel", item) ~= "shovel_pommel_default" then changes["pommel"] = "shovel_pommel_default" end
+                    else
+                        if mod:get_gear_setting(gear_id, "grip", item) == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
+                        if mod:get_gear_setting(gear_id, "pommel", item) == "shovel_pommel_default" then changes["pommel"] = "shovel_pommel_01" end
+                    end
+                    return changes
+                end),
+                _shovel_functions.shovel_grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), "grip", {}, {}, {}, function(gear_id, item, attachment)
+                    local changes = {}
+                    if string_find(attachment, "default") then
+                        if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
+                        if mod:get_gear_setting(gear_id, "pommel", item) ~= "shovel_pommel_default" then changes["pommel"] = "shovel_pommel_default" end
+                    else
+                        if mod:get_gear_setting(gear_id, "head", item) == "shovel_head_default" then changes["head"] = "shovel_head_01" end
+                        if mod:get_gear_setting(gear_id, "pommel", item) == "shovel_pommel_default" then changes["pommel"] = "shovel_pommel_01" end
+                    end
+                    return changes
+                end),
+                _shovel_functions.shovel_pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), "pommel", {}, {}, {}, function(gear_id, item, attachment)
+                    local changes = {}
+                    if string_find(attachment, "default") or string_find(attachment, "shovel_pommel_06") then
+                        if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
+                        if mod:get_gear_setting(gear_id, "grip", item) ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
+                    else
+                        if mod:get_gear_setting(gear_id, "head", item) == "shovel_head_default" then changes["head"] = "shovel_head_01" end
+                        if mod:get_gear_setting(gear_id, "grip", item) == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
+                    end
+                    return changes
+                end)
             ),
             combatsword_p1_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     combat_sword_grip_default = {model = "", type = "grip"},
                     combat_sword_grip_01 = {model = "content/items/weapons/player/melee/grips/combat_sword_grip_01", type = "grip"},
@@ -5438,9 +5637,9 @@ local _item_minion = "content/items/weapons/minions"
             ),
             thunderhammer_2h_p1_m1 = table.combine(
                 {customization_default_position = vector3_box(0, 3, .35)},
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     thunder_hammer_shaft_default = {model = "", type = "shaft", move = vector3_box(-.5, -3, .3)},
                     thunder_hammer_shaft_01 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_01", type = "shaft", move = vector3_box(-.5, -3, .3)},
@@ -5470,9 +5669,9 @@ local _item_minion = "content/items/weapons/minions"
             ),
             powermaul_2h_p1_m1 = table.combine(
                 {customization_default_position = vector3_box(0, 2, .35)},
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     ["2h_power_maul_shaft_default"] = {model = "", type = "shaft", move = vector3_box(-.3, -3, .2)},
                     ["2h_power_maul_shaft_01"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_01", type = "shaft", move = vector3_box(-.3, -3, .2)},
@@ -5502,9 +5701,9 @@ local _item_minion = "content/items/weapons/minions"
             ),
             chainsword_2h_p1_m1 = table.combine(
                 -- {customization_default_position = vector3_box(0, 2, .35)},
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     ["2h_chain_sword_grip_default"] = {model = "", type = "grip"},
                     ["2h_chain_sword_grip_01"] = {model = "content/items/weapons/player/melee/grips/2h_chain_sword_grip_01", type = "grip"},
@@ -5519,9 +5718,9 @@ local _item_minion = "content/items/weapons/minions"
                 }
             ),
             combatsword_p2_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     falchion_grip_default = {model = "", type = "grip"},
                     falchion_grip_01 = {model = "content/items/weapons/player/melee/grips/falchion_grip_01", type = "grip"},
@@ -5538,9 +5737,9 @@ local _item_minion = "content/items/weapons/minions"
                 }
             ),
             forcesword_p1_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     force_sword_grip_default = {model = "", type = "grip"},
                     force_sword_grip_01 = {model = "content/items/weapons/player/melee/grips/force_sword_grip_01", type = "grip"},
@@ -5570,9 +5769,9 @@ local _item_minion = "content/items/weapons/minions"
                 }
             ),
             combatsword_p3_m1 = table.combine(
-                _emblem_right_models(),
-                _emblem_left_models(),
-                _trinket_hook_models(),
+                _common_functions.emblem_right_models(),
+                _common_functions.emblem_left_models(),
+                _common_functions.trinket_hook_models(),
                 {
                     sabre_grip_default = {model = "", type = "grip"},
                     sabre_grip_01 = {model = "content/items/weapons/player/melee/grips/sabre_grip_01", type = "grip"},

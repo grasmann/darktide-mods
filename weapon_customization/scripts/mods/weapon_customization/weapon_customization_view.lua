@@ -344,6 +344,15 @@ mod.weapon_part_animation_exists = function(self, attachment_slot)
 	end
 end
 
+mod.remove_weapon_part_animation = function(self, attachment_slot)
+	for index, weapon_part_animation in pairs(self.weapon_part_animation_entries) do
+		if weapon_part_animation.slot == attachment_slot then
+			table_remove(self.weapon_part_animation_entries, index)
+			break
+		end
+	end
+end
+
 local _children_sort_function = function(entry_1, entry_2)
 	local distance_1 = entry_1.children or (entry_1.slot == "rail" and 1) or 0
 	local distance_2 = entry_2.children or (entry_1.slot == "rail" and 1) or 0
@@ -488,41 +497,48 @@ end
 
 mod.resolve_auto_equips = function(self, item)
 	for _, attachment_slot in pairs(self.attachment_slots) do
-		local attachment = item and self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item)
-		if attachment then
-			if self.attachment_models[self.cosmetics_view._item_name] and self.attachment_models[self.cosmetics_view._item_name][attachment] then
-				local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
-				if attachment_data then
-					local automatic_equip = attachment_data.automatic_equip
-					local fixes = self:_apply_anchor_fixes(item, attachment_slot)
-					automatic_equip = fixes and fixes.automatic_equip or automatic_equip
-					if automatic_equip then
-						for auto_type, auto_attachment in pairs(automatic_equip) do
-							local parameters = string_split(auto_attachment, "|")
-
-							if #parameters == 2 then
-								local negative = string_find(parameters[1], "!")
-								parameters[1] = string_gsub(parameters[1], "!", "")
-								-- local attachments = item.attachments or item.__master_item and item.__master_item.attachments
-								-- if attachments then
-									-- local attachment_data = self:_recursive_find_attachment(attachments, auto_type)
-									local attachment_name = self:get_gear_setting(self.cosmetics_view._gear_id, auto_type, item)
-									if attachment_name then
-										if negative and attachment_name ~= parameters[1] then
-											self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[2])
-										elseif not negative and attachment_name == parameters[1] then
-											self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[2])
+		-- if table_contains(self.just_changed, attachment_slot) then
+			local attachment = item and self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item)
+			if attachment then
+				if self.attachment_models[self.cosmetics_view._item_name] and self.attachment_models[self.cosmetics_view._item_name][attachment] then
+					local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
+					if attachment_data then
+						local automatic_equip = attachment_data.automatic_equip
+						local fixes = self:_apply_anchor_fixes(item, attachment_slot)
+						automatic_equip = fixes and fixes.automatic_equip or automatic_equip
+						if automatic_equip then
+							for auto_type, auto_attachment in pairs(automatic_equip) do
+								-- if not table_contains(self.just_changed, auto_type) then
+									-- local sets = string_split(auto_attachment, ",")
+									-- for _, set in pairs(sets) do
+										local parameters = string_split(auto_attachment, "|")
+										if #parameters == 2 then
+											local negative = string_find(parameters[1], "!")
+											parameters[1] = string_gsub(parameters[1], "!", "")
+											-- local attachments = item.attachments or item.__master_item and item.__master_item.attachments
+											-- if attachments then
+												-- local attachment_data = self:_recursive_find_attachment(attachments, auto_type)
+												local attachment_name = self:get_gear_setting(self.cosmetics_view._gear_id, auto_type, item)
+												if attachment_name then
+													-- mod:echo(tostring(auto_type).." = "..tostring(attachment_name))
+													if negative and attachment_name ~= parameters[1] then
+														self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[2])
+													elseif attachment_name == parameters[1] then
+														self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[2])
+													end
+												else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
+											-- else mod:print("Attachments are nil") end
+										else
+											self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[1])
 										end
-									else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
-								-- else mod:print("Attachments are nil") end
-							else
-								self:set_gear_setting(self.cosmetics_view._gear_id, auto_type, parameters[1])
+								-- 	end
+								-- end
 							end
-						end
-					else mod:print("Automatic equip for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil", true) end
-				else mod:print("Attachment data for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil") end
-			else mod:print("Models for "..tostring(attachment).." in slot "..tostring(attachment_slot).." not found") end
-		end
+						else mod:print("Automatic equip for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil", true) end
+					else mod:print("Attachment data for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil") end
+				else mod:print("Models for "..tostring(attachment).." in slot "..tostring(attachment_slot).." not found") end
+			end
+		-- end
 	end
 end
 
@@ -590,6 +606,29 @@ mod.resolve_no_support = function(self, item)
 	end
 end
 
+mod.resolve_special_changes = function(self, attachment)
+	local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
+	if attachment_data and attachment_data.special_resolve then
+		local special_changes = attachment_data.special_resolve(self.cosmetics_view._gear_id, self.cosmetics_view._presentation_item, attachment)
+		if special_changes then
+			for special_slot, special_attachment in pairs(special_changes) do
+
+				if not self.original_weapon_settings[special_slot] and not table_contains(self.automatic_slots, special_slot) then
+					if not self:get_gear_setting(self.cosmetics_view._gear_id, special_slot) then
+						self.original_weapon_settings[special_slot] = "default"
+					else
+						self.original_weapon_settings[special_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, special_slot)
+					end
+				end
+
+				self:remove_weapon_part_animation(special_slot)
+
+				self:set_gear_setting(self.cosmetics_view._gear_id, special_slot, special_attachment)
+			end
+		end
+	end
+end
+
 mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_update)
 	if self.cosmetics_view._gear_id then
 		if attachment_slot and attachment then
@@ -602,6 +641,26 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 			end
 
 			self:set_gear_setting(self.cosmetics_view._gear_id, attachment_slot, attachment)
+
+			self:resolve_special_changes(attachment)
+			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
+			-- if attachment_data and attachment_data.special_resolve then
+			-- 	local special_changes = attachment_data.special_resolve(self.cosmetics_view._gear_id, self.cosmetics_view._presentation_item, attachment)
+			-- 	if special_changes then
+			-- 		for special_slot, special_attachment in pairs(special_changes) do
+
+			-- 			if not self.original_weapon_settings[special_slot] and not table_contains(self.automatic_slots, special_slot) then
+			-- 				if not self:get_gear_setting(self.cosmetics_view._gear_id, special_slot) then
+			-- 					self.original_weapon_settings[special_slot] = "default"
+			-- 				else
+			-- 					self.original_weapon_settings[special_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, special_slot)
+			-- 				end
+			-- 			end
+
+			-- 			self:set_gear_setting(self.cosmetics_view._gear_id, special_slot, special_attachment)
+			-- 		end
+			-- 	end
+			-- end
 		end
 
 		if not no_update then
@@ -1223,6 +1282,9 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, value, index < table_size(random_attachments))
 			end
 			index = index + 1
+		end
+		for attachment_slot, value in pairs(random_attachments) do
+			self:resolve_special_changes(value)
 		end
 		if not skip_animation then self.weapon_part_animation_update = true end
 	end
@@ -2082,6 +2144,7 @@ end)
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
 	if self._selected_tab_index == 3 then
 		mod.original_weapon_settings = {}
+		mod.just_changed = {}
 		mod:update_equip_button()
 
 		mod:attachment_package_snapshot(self._selected_item)

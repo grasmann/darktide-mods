@@ -87,6 +87,7 @@ function mod.update(main_dt)
 	mod:update_flicker()
 	mod:update_battery()
 	mod:update_equipment(main_dt)
+	-- mod:update_crouch_aim()
 end
 
 function mod.on_all_mods_loaded()
@@ -167,6 +168,7 @@ mod.init = function(self)
 end
 
 -- Import mod files
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_crouch_aim")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_gear")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visible_equipment")

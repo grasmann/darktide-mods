@@ -177,33 +177,36 @@ mod._apply_anchor_fixes = function(self, item, unit_or_name)
 					local no_dependencies = false
 					if fix_data.dependencies then
 						for _, dependency_entry in pairs(fix_data.dependencies) do
+							-- local sets = string_split(dependency_entry, ",")
+							-- for _, set in pairs(sets) do
+							-- if not string_find(dependency_entry, ",") then
+								local dependency_possibilities = string_split(dependency_entry, "|")
+								local has_dependency_possibility = false
 
-							local dependency_possibilities = string_split(dependency_entry, "|")
-							local has_dependency_possibility = false
-
-							for _, dependency_possibility in pairs(dependency_possibilities) do
-								local negative = string_find(dependency_possibility, "!")
-								dependency_possibility = string_gsub(dependency_possibility, "!", "")
-								if self.attachment_models[item_name] and self.attachment_models[item_name][dependency_possibility] then
-									-- local model_string = self.attachment_models[item_name][dependency].model
-									if negative then
-										has_dependency_possibility = not self:_recursive_find_attachment_name(attachments, dependency_possibility)
-									else
-										has_dependency_possibility = self:_recursive_find_attachment_name(attachments, dependency_possibility)
+								for _, dependency_possibility in pairs(dependency_possibilities) do
+									local negative = string_find(dependency_possibility, "!")
+									dependency_possibility = string_gsub(dependency_possibility, "!", "")
+									if self.attachment_models[item_name] and self.attachment_models[item_name][dependency_possibility] then
+										-- local model_string = self.attachment_models[item_name][dependency].model
+										if negative then
+											has_dependency_possibility = not self:_recursive_find_attachment_name(attachments, dependency_possibility)
+										else
+											has_dependency_possibility = self:_recursive_find_attachment_name(attachments, dependency_possibility)
+										end
+										if has_dependency_possibility then break end
+									elseif table_contains(self.attachment_slots, dependency_possibility) then
+										if negative then
+											has_dependency_possibility = not self:_recursive_find_attachment(attachments, dependency_possibility)
+										else
+											has_dependency_possibility = self:_recursive_find_attachment(attachments, dependency_possibility)
+										end
+										if has_dependency_possibility then break end
 									end
-									if has_dependency_possibility then break end
-								elseif table_contains(self.attachment_slots, dependency_possibility) then
-									if negative then
-										has_dependency_possibility = not self:_recursive_find_attachment(attachments, dependency_possibility)
-									else
-										has_dependency_possibility = self:_recursive_find_attachment(attachments, dependency_possibility)
-									end
-									if has_dependency_possibility then break end
 								end
-							end
 
-							has_dependencies = has_dependency_possibility
-							if not has_dependencies then break end
+								has_dependencies = has_dependency_possibility
+								if not has_dependencies then break end
+							-- end
 						end
 					else
 						no_dependencies = true
@@ -257,6 +260,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local gear_id = mod:get_gear_id(item_data)
 		local slot_info_id = mod:get_slot_info_id(item_data)
 		local attachment_slot_info = {}
+
+		-- if not mod.test then
+		-- 	mod:dtf(attach_settings, "attach_settings", 2)
+		-- 	mod.test = true
+		-- end
 
 		if item_unit and attachments and gear_id then
 			mod:setup_item_definitions()

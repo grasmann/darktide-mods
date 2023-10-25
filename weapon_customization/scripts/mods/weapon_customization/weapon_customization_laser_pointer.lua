@@ -538,14 +538,14 @@ end
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
 
-mod:hook(CLASS.InventoryWeaponsView, "_equip_item", function(func, self, slot_name, item, ...)
-    func(self, slot_name, item, ...)
-    local ITEM_TYPES = UISettings.ITEM_TYPES
-	local item_type = item.item_type
-    if item_type == ITEM_TYPES.WEAPON_RANGED then
-        mod:reset_laser_pointer()
-    end
-end)
+-- mod:hook(CLASS.InventoryWeaponsView, "_equip_item", function(func, self, slot_name, item, ...)
+--     func(self, slot_name, item, ...)
+--     local ITEM_TYPES = UISettings.ITEM_TYPES
+-- 	local item_type = item.item_type
+--     if item_type == ITEM_TYPES.WEAPON_RANGED then
+--         mod:reset_laser_pointer()
+--     end
+-- end)
 
 mod:hook(CLASS.PlayerUnitFxExtension, "update", function(func, self, unit, dt, t, ...)
     if mod.initialized and unit == mod.player_unit then

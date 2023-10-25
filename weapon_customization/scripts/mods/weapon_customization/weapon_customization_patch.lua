@@ -394,28 +394,32 @@ mod._overwrite_attachments = function(self, item_data, attachments)
     end
     -- Handle automatic equips
     for _, auto_attachment_entry in pairs(automatic_equip_entries) do
-        local parameters = string_split(auto_attachment_entry.auto_attachment_string, "|")
-        local auto_attachment = nil
-        if #parameters == 2 then
-            local negative = string_find(parameters[1], "!")
-            parameters[1] = string_gsub(parameters[1], "!", "")
-            local attachment_data = self:_recursive_find_attachment(attachments, auto_attachment_entry.type)
-            if attachment_data then
-                if negative and attachment_data.attachment_name ~= parameters[1] then
-                    auto_attachment = parameters[2]
-                elseif not negative and attachment_data.attachment_name == parameters[1] then
-                    auto_attachment = parameters[2]
+        -- local sets = string_split(auto_attachment_entry.auto_attachment_string, ",")
+		-- for _, set in pairs(sets) do
+        -- if not string_find(auto_attachment_entry.auto_attachment_string, ",") then
+            local parameters = string_split(auto_attachment_entry.auto_attachment_string, "|")
+            local auto_attachment = nil
+            if #parameters == 2 then
+                local negative = string_find(parameters[1], "!")
+                parameters[1] = string_gsub(parameters[1], "!", "")
+                local attachment_data = self:_recursive_find_attachment(attachments, auto_attachment_entry.type)
+                if attachment_data then
+                    if negative and attachment_data.attachment_name ~= parameters[1] then
+                        auto_attachment = parameters[2]
+                    elseif attachment_data.attachment_name == parameters[1] then
+                        auto_attachment = parameters[2]
+                    end
                 end
+            else
+                auto_attachment = parameters[1]
             end
-        else
-            auto_attachment = parameters[1]
-        end
-        if auto_attachment and self.attachment_models[item_name][auto_attachment] then
-            -- Get model
-            local auto_model = self.attachment_models[item_name][auto_attachment].model
-            -- Set attachment
-            self:_recursive_set_attachment(attachments, auto_attachment, auto_attachment_entry.type, auto_model, true)
-        end
+            if auto_attachment and self.attachment_models[item_name][auto_attachment] then
+                -- Get model
+                local auto_model = self.attachment_models[item_name][auto_attachment].model
+                -- Set attachment
+                self:_recursive_set_attachment(attachments, auto_attachment, auto_attachment_entry.type, auto_model, true)
+            end
+        -- end
     end
 end
 

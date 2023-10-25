@@ -6,6 +6,7 @@ local mod = get_mod("weapon_customization")
 
 local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 local MasterItems = mod:original_require("scripts/backend/master_items")
+local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -60,37 +61,35 @@ local REFERENCE = "weapon_customization"
 -- ##### ││││ │ ││├┤   ├┤ ├┬┘├┬┘│ │├┬┘ ################################################################################
 -- ##### ┘└┘└─┘─┴┘└─┘  └─┘┴└─┴└─└─┘┴└─ ################################################################################
 
-mod._register_vfx_spawner_from_attachments = function(self, parent_unit, attachments, node_name, spawner_name)
-	local num_attachments = #attachments
+mod.find_node_in_attachments = function(self, parent_unit, node_name, attachments)
+    local num_attachments = #attachments
     -- Search node in attachments
 	for ii = 1, num_attachments do
 		local unit = attachments[ii]
 		if unit_has_node(unit, node_name) then
-			local node = unit_node(unit, node_name)
-			local spawner = {unit = unit, node = node}
-			return spawner
+            return true
 		end
 	end
     -- Search node in parent unit
 	if unit_has_node(parent_unit, node_name) then
-		local node = unit_node(parent_unit, node_name)
-		local spawner = {unit = parent_unit, node = node}
-		return spawner
+        return true
 	end
-    -- Fallback node
-	local fallback_spawner = {node = 1, unit = parent_unit}
-	return fallback_spawner
 end
 
+mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments, node_name, ...)
+    local _attachments = nil
+    if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
+        _attachments = attachments
+    end
+    return func(self, sources, source_name, parent_unit, _attachments, node_name, ...)
+end)
+
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
-	if attachments then
-        -- Replacement without error logging
-		local spawner = mod:_register_vfx_spawner_from_attachments(parent_unit, attachments, node_name, spawner_name)
-		spawners[spawner_name] = spawner
-	else
-        -- Original function
-		return func(self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
-	end
+    local _attachments = nil
+    if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
+        _attachments = attachments
+    end
+    return func(self, spawners, spawner_name, parent_unit, _attachments, node_name, should_add_3p_node, ...)
 end)
 
 -- ##### ┌─┐┬  ┬┌─┐┬┌─┌─┐┬─┐  ┌─┐┬─┐ ┬ ################################################################################
@@ -160,6 +159,12 @@ mod:hook(CLASS.InventoryWeaponsView, "_equip_item", function(func, self, slot_na
     if not self._equip_button_disabled and (slot_name == "slot_primary" or slot_name == "slot_secondary") then
         -- Update used packages
         mod:update_modded_packages()
+    end
+    -- Laser pointer
+    local ITEM_TYPES = UISettings.ITEM_TYPES
+	local item_type = item.item_type
+    if item_type == ITEM_TYPES.WEAPON_RANGED then
+        mod:reset_laser_pointer()
     end
 end)
 

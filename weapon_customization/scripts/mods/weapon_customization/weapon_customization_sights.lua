@@ -242,13 +242,19 @@ end)
 mod.camera_position_reset = function(self, dt, t)
     if mod.do_camera_position_reset then
         local has_scope = mod.do_camera_position_reset.has_scope
+        local has_sight = mod.do_camera_position_reset.has_sight
         local scope_offset = mod.do_camera_position_reset.scope_offset
+        local sight_offset = mod.do_camera_position_reset.sight_offset
         local is_local_unit = mod.do_camera_position_reset.is_local_unit
         local time_in_action = 1 - (mod.do_camera_position_reset.end_time - t)
         if time_in_action < 1 then
             if is_local_unit and has_scope then
                 local progress = time_in_action / 1
                 local position = vector3_unbox(scope_offset.position) * (1 - progress)
+                mod.camera_position = vector3_box(position)
+            elseif is_local_unit and has_sight then
+                local progress = time_in_action / 1
+                local position = vector3_unbox(sight_offset.position) * (1 - progress)
                 mod.camera_position = vector3_box(position)
             end
         else
@@ -258,6 +264,37 @@ mod.camera_position_reset = function(self, dt, t)
     end
 end
 
+local _abort_camera_aim = function(func, self, action_settings, t, ...)
+    if self._is_local_unit and self._weapon and self._weapon.item and self._weapon.item.__master_item then
+        local sight = mod:get_sight(self._weapon.item)
+        if sight and sight.item and sight.item ~= "" then
+            mod.do_camera_position_reset = {
+                has_scope = mod:is_scope(sight),
+                has_sight = mod:is_sight(sight),
+                scope_offset = mod:get_sight_offset(self._weapon) or default_sight_offset,
+                is_local_unit = mod:get_sight_offset(self._weapon, "no_scope_offset") or default_sight_offset,
+                end_time = t + 1,
+            }
+        end
+    end
+    func(self, action_settings, t, ...)
+end
+
+mod:hook(CLASS.ActionAimProjectile, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionChainLightning, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionSmiteTargeting, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionExplosion, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionVentOverheat, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionVentWarpCharge, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionPlaceForceField, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionActivateSpecial, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionInspect, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionOverloadExplosion, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionReloadShotgunSpecial, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionReloadShotgun, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionReloadState, "start", _abort_camera_aim)
+mod:hook(CLASS.ActionUnwield, "start", _abort_camera_aim)
+
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
@@ -266,11 +303,6 @@ mod:hook(CLASS.CameraManager, "update", function(func, self, dt, t, viewport_nam
     mod:camera_position_reset(dt, t)
     func(self, dt, t, viewport_name, yaw, pitch, roll, ...)
 end)
-
--- mod:hook(CLASS.PlayerUnitFirstPersonExtension, "_update_rotation", function(func, self, unit, dt, t, ...)
---     func(self, unit, dt, t, ...)
-    
--- end)
 
 mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(func, self, unit, dt, t, ...)
     func(self, unit, dt, t, ...)
@@ -298,6 +330,12 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
         local is_crouching = movement_state_component and movement_state_component.is_crouching
         local first_person_unit = self._first_person_unit
         if is_crouching then
+            local first_person_unit = self._first_person_unit
+            local childs = unit_get_child_units(first_person_unit) -- 7
+            if childs then
+                local rotation = unit_local_rotation(childs[1], 1)
+                mod:echo("rotation: "..tostring(rotation))
+            end
             if Unit.has_animation_event(first_person_unit, "to_cover") and not self.crouch_braced then
                 Unit.animation_event(first_person_unit, "to_cover")
                 self.crouch_braced = true
