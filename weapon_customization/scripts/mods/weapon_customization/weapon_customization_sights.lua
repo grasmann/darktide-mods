@@ -23,6 +23,8 @@ local Recoil = mod:original_require("scripts/utilities/recoil")
     local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
     local quaternion_multiply = Quaternion.multiply
     local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local quaternion_to_elements = Quaternion.to_elements
+    local quaternion_from_elements = Quaternion.from_elements
     local matrix4x4_transform = Matrix4x4.transform
     local Camera = Camera
     local camera_local_position = Camera.local_position
@@ -330,12 +332,6 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
         local is_crouching = movement_state_component and movement_state_component.is_crouching
         local first_person_unit = self._first_person_unit
         if is_crouching then
-            local first_person_unit = self._first_person_unit
-            local childs = unit_get_child_units(first_person_unit) -- 7
-            if childs then
-                local rotation = unit_local_rotation(childs[1], 1)
-                mod:echo("rotation: "..tostring(rotation))
-            end
             if Unit.has_animation_event(first_person_unit, "to_cover") and not self.crouch_braced then
                 Unit.animation_event(first_person_unit, "to_cover")
                 self.crouch_braced = true

@@ -57,22 +57,27 @@ return {
 	group_misc = {
 		en = "Miscellaneous",
 		de = "Verschiedenes",
+		ru = "Разное",
 	},
 	mod_option_misc_cover_on_crouch = {
 		en = "Cover on Crouch",
 		de = "Deckung beim Ducken",
+		ru = "Прятаться при приседании",
 	},
 	mod_option_misc_cover_on_crouch_tooltip = {
 		en = "Plays the cover animation when crouching",
 		de = "Spielt beim Ducken die Cover-Animation ab",
+		ru = "При приседании воспроизводится анимация использования прикрытия.",
 	},
 	-- mod_option_misc_flicker_fix = {
 	-- 	en = "Item Preview Flicker Fix",
 	-- 	de = "Item-Vorschau Flimmer-Fix",
+	-- 	ru = "Исправление мерцания при просмотре",
 	-- },
 	-- mod_option_misc_flicker_fix_tooltip = {
 	-- 	en = "Fixes the black flickering when zooming in item preview with some graphics cards",
 	-- 	de = "Behebt das schwarze Flackern beim Zoomen in der Item-Vorschau bei einigen Grafikkarten",
+	-- 	ru = "Исправляет на некоторых видеокартах чёрное мерцание при масштабировании осматриваемого предмета.",
 	-- },
 	group_visible_equipment = {
 		en = "Visible Equipment",
@@ -648,9 +653,11 @@ return {
 		["zh-cn"] = "饰品钩",
 	},
 	loc_inventory_menu_weapon_preset_intro_text_1 = {
-		en = "Weapon Presets"
+		en = "Weapon Presets",
+		ru = "Предустановки оружия",
 	},
 	loc_inventory_menu_weapon_preset_intro_text_2 = {
-		en = "Weapon Presets Description"
+		en = "Weapon Presets Description",
+		ru = "Описание предустановок оружия",
 	},
 }
