@@ -4,7 +4,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -47,11 +47,31 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     body_attachments = function()
         return {
-            {id = "body_default",   name = "Default"},
+            {id = "body_default",   name = mod:localize("mod_attachment_default")},
             {id = "body_01",        name = "Body 1"},
             {id = "body_02",        name = "Body 2"},
             {id = "body_03",        name = "Body 3"},
@@ -79,15 +99,15 @@ return table.combine(
     {
         attachments = { -- Done 12.9.2023
             body = functions.body_attachments(),
-            emblem_right = _common_functions.emblem_right_attachments(),
-            emblem_left = _common_functions.emblem_left_attachments(),
-            trinket_hook = _common_functions.trinket_hook_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
+            trinket_hook = _common.trinket_hook_attachments(),
         },
         models = table.combine( -- Done 12.9.2023
             functions.body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
-            _common_functions.emblem_right_models("body", -2.5, vector3_box(0, -4, -.2), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_left_models("body", 0, vector3_box(.1, -4, -.2), vector3_box(-.2, 0, 0)),
-            _common_functions.trinket_hook_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2))
+            _common.emblem_right_models("body", -2.5, vector3_box(0, -4, -.2), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("body", 0, vector3_box(.1, -4, -.2), vector3_box(-.2, 0, 0)),
+            _common.trinket_hook_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2))
         ),
         anchors = { -- Done 12.9.2023 Additional custom positions for paper thing emblems?
             fixes = {

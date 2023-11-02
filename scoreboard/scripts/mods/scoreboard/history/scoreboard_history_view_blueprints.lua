@@ -9,7 +9,7 @@ local grid_size = OptionsViewSettings.grid_size
 local grid_width = grid_size[1]
 local settings_grid_width = 1000
 local settings_value_width = 500
-local settings_value_height = 64
+local settings_value_height = 75
 
 local list_button_hotspot_default_style = {
 	anim_hover_speed = 8,
@@ -38,7 +38,7 @@ local list_button_with_icon_icon_style = {
 }
 local list_button_with_icon_text_style2 = table.clone(UIFontSettings.list_button_second_row)
 list_button_with_icon_text_style2.offset[1] = 10
-
+list_button_with_icon_text_style2.offset[2] = 22
 local blueprints = {
 	settings_button = {
 		size = {

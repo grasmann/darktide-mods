@@ -18,38 +18,7 @@ local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_
 
 -- local ViewElementWeaponPresets = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/view_elements/view_element_weapon_presets")
 
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
-local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
-local grid_width = grid_size[1] + edge_padding
-local button_width = grid_width * 0.3
-local edge = edge_padding * 0.5
-local label_height = 30
-local dropdown_height = 32
-local DROPDOWN_BUTTON_MARGIN = 30
-local REFERENCE = "weapon_customization"
-
-mod.added_cosmetics_scenegraphs = {}
-mod.original_weapon_settings = {}
-mod.changed_weapon_settings = {}
-mod.move_duration_out = .5
-mod.move_duration_in = 1
-mod.reset_wait_time = 5
-mod.weapon_changed = nil
-mod.sound_duration = .5
-mod.weapon_part_animation_entries = {}
-mod.weapon_part_animation_time = .75
-mod.cosmetics_view = nil
-mod.mesh_positions = {}
-mod.dropdown_positions = {}
-
-for _, attachment_slot in pairs(mod.attachment_slots) do
-	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
-	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
-end
+local WeaponCustomizationLocalization = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_localization")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -121,6 +90,7 @@ end
 	local string_gsub = string.gsub
 	local string_find = string.find
 	local string_split = string.split
+	local string_len = string.len
 	local Fade = Fade
 	local Color = Color
 	local pairs = pairs
@@ -131,7 +101,54 @@ end
 	local localize = Localize
 	local callback = callback
 	local script_unit = ScriptUnit
+	local Localize = Localize
+	local Application = Application
+	local function string_trim(s)
+		return (s:gsub("^%s*(.-)%s*$", "%1"))
+	end
+	local function string_cap(str)
+		return (str:gsub("^%l", string.upper))
+	end
 --#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
+local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
+local grid_width = grid_size[1] + edge_padding
+local button_width = grid_width * 0.3
+local edge = edge_padding * 0.5
+local label_height = 30
+local dropdown_height = 32
+local DROPDOWN_BUTTON_MARGIN = 30
+local REFERENCE = "weapon_customization"
+local WEAPON_SKIN = "WEAPON_SKIN"
+local SKIP = "++"
+local LOCALIZATION_NOT_FOUND = "<mod_attachment_remove>"
+local LANGUAGE_ID = Application.user_setting("language_id")
+local MK = mod:localize("mod_attachment_mk")
+local KASR = mod:localize("mod_attachment_kasr")
+
+mod.added_cosmetics_scenegraphs = {}
+mod.original_weapon_settings = {}
+mod.changed_weapon_settings = {}
+mod.move_duration_out = .5
+mod.move_duration_in = 1
+mod.reset_wait_time = 5
+mod.weapon_changed = nil
+mod.sound_duration = .5
+mod.weapon_part_animation_entries = {}
+mod.weapon_part_animation_time = .75
+mod.cosmetics_view = nil
+mod.mesh_positions = {}
+mod.dropdown_positions = {}
+
+for _, attachment_slot in pairs(mod.attachment_slots) do
+	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
+	mod.added_cosmetics_scenegraphs[#mod.added_cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
+end
 
 -- ##### ┌─┐┌─┐┬ ┬┌┐┌┌┬┐ ##############################################################################################
 -- ##### └─┐│ ││ ││││ ││ ##############################################################################################
@@ -149,12 +166,103 @@ end
 -- SoundEventAliases.sfx_grab_weapon.events.autopistol_p1_m1 ?
 -- SoundEventAliases.sfx_grab_weapon.events.lasgun_p3_m1 ?
 
+mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachment_name)
+	if mod:get("mod_option_misc_attachment_names") and WeaponCustomizationLocalization.mod_attachment_remove[LANGUAGE_ID] then
+		self.found_names = self.found_names or {}
+		local name = nil
+		if attachment_slot ~= "trinket_hook" and attachment_slot ~= "emblem_left" and attachment_slot ~= "emblem_right" and attachment_slot ~= "flashlight" and attachment_name ~= "no_stock" then
+			self:setup_item_definitions()
+			local item_name = self:item_name_from_content_string(item.name)
+			local attachment_data = self.attachment_models[item_name][attachment_name]
+			if attachment_data and attachment_data.model ~= "" then
+				local item_definitions = self:persistent_table(REFERENCE).item_definitions
+				-- Search only weapons
+				for _, entry in pairs(item_definitions) do
+					if entry.attachments and entry.item_type ~= WEAPON_SKIN and entry.display_name ~= "" and entry.display_name ~= "n/a" then
+						local data = self:_recursive_find_attachment_item_string(entry.attachments, attachment_data.model)
+						if data then
+							name = Localize(entry.display_name)
+							-- mod:warning(name)
+							if string_find(name, "unlocalized") then
+								name = nil
+							else
+								if string_find(entry.display_name, "_desc") and entry.description then
+									name = Localize(entry.description)
+								end
+							end
+							if name and string_find(name, SKIP) then
+								name = nil
+							elseif name then
+								break
+							end
+						end
+					end
+				end
+				if not name then
+					-- Search only skins
+					for _, entry in pairs(item_definitions) do
+						if entry.attachments and entry.item_type == WEAPON_SKIN and entry.display_name ~= "" and entry.display_name ~= "n/a" then
+							local data = self:_recursive_find_attachment_item_string(entry.attachments, attachment_data.model)
+							if data then
+								name = Localize(entry.display_name)
+								-- mod:warning(name)
+								if string_find(name, "unlocalized") then
+									name = nil
+								else
+									if string_find(entry.display_name, "_desc") and entry.description then
+										name = Localize(entry.description)
+									end
+								end
+								if name and string_find(name, SKIP) then
+									name = nil
+								elseif name then
+									break
+								end
+							end
+						end
+					end
+				end
+			end
+			local company_name = mod:localize("mod_attachment_names_company")
+			if not name and not string_find(attachment_name, "default") then
+				name = company_name
+			end
+			if name then
+				local replace = string_split(mod:localize("mod_attachment_remove"), "|")
+				if replace and #replace > 0 then
+					for _, rep in pairs(replace) do
+						name = string.gsub(name, rep, "")
+					end
+				end
+				name = string_trim(name)
+				name = string_cap(name)
+				local additions = {MK.."I", MK.."II", MK.."III", MK.."IV", MK.."V", MK.."VI", MK.."VII", MK.."VIII"}
+				local add_name = name
+				if add_name == company_name or add_name == KASR then
+					add_name = add_name.." "..additions[1]
+				end
+				local add_index = 1
+				while table_contains(self.found_names, add_name) do
+					add_name = name.." "..additions[add_index]
+					add_index = add_index + 1
+					if add_index > 7 then
+						break
+					end
+				end
+				name = add_name
+				self.found_names[#self.found_names+1] = name
+			end
+		end
+		return name
+	end
+end
+
 mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachment_name, type, load)
 	-- local sound = "wwise/events/weapon/play_bolter_reload_hand"
 	-- return {sound}
 	local load = load or false
 	local item_name = self.cosmetics_view._item_name
-	if item.item_type == "WEAPON_RANGED" then
+	-- if item.item_type == "WEAPON_RANGED" then
 		if attachment_slot == "magazine" or attachment_slot == "magazine2" then
 			if type == "detach" then return {SoundEventAliases.sfx_magazine_eject.events[item_name] or SoundEventAliases.sfx_magazine_eject.default}
 			else return {SoundEventAliases.sfx_magazine_insert.events[item_name] or SoundEventAliases.sfx_magazine_insert.default} end
@@ -169,13 +277,13 @@ mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachmen
 		elseif attachment_slot == "muzzle" then
 			return {SoundEventAliases.sfx_weapon_foley_heavy.events.bolter_p1_m1}
 
-		elseif attachment_slot == "flashlight" or attachment_slot == "rail" or attachment_slot == "trinket_hook" then
+		elseif attachment_slot == "flashlight" or attachment_slot == "rail" or attachment_slot == "trinket_hook" or attachment_slot == "head" then
 			return {SoundEventAliases.sfx_grab_clip.events.lasgun_p1_m1, "wwise/events/player/play_foley_gear_flashlight_on", "wwise/events/player/play_foley_gear_flashlight_off"}
 
 		elseif attachment_slot == "grip" or attachment_slot == "handle" or attachment_slot == "underbarrel" then
 			return {SoundEventAliases.sfx_grab_weapon.events.bolter_p1_m1}
 
-		elseif attachment_slot == "sight" or attachment_slot == "sight_2" or attachment_slot == "emblem_right" or attachment_slot == "emblem_left" then
+		elseif attachment_slot == "sight" or attachment_slot == "sight_2" or attachment_slot == "emblem_right" or attachment_slot == "emblem_left" or attachment_slot == "pommel" then
 			if load then
 				if type == "detach" then return {SoundEventAliases.sfx_grab_weapon.events.lasgun_p3_m1, SoundEventAliases.sfx_vent_rattle.events.plasmagun_p1_m1}
 				else return {SoundEventAliases.sfx_equip_02.events.lasgun_p2_m1, SoundEventAliases.sfx_vent_rattle.events.plasmagun_p1_m1} end
@@ -198,7 +306,7 @@ mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachmen
 				return {SoundEventAliases.sfx_weapon_up.events[item_name] or SoundEventAliases.sfx_weapon_up.default}
 			end
 		end
-	end
+	-- end
 end
 
 mod.play_attachment_sound = function(self, item, attachment_slot, attachment_name, type)
@@ -641,6 +749,8 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 			end
 
 			self:set_gear_setting(self.cosmetics_view._gear_id, attachment_slot, attachment)
+
+			-- self:get_attachment_weapon_name(item, attachment_slot, attachment)
 
 			self:resolve_special_changes(attachment)
 			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
@@ -1513,6 +1623,12 @@ mod.update_dropdown = function(self, widget, input_service, dt, t)
 		style[outline_style_id].size[1] = not option.disabled and entry_length or 0
 		style[outline_style_id].visible = not option.disabled
 		style[option_text_id].size[1] = not option.disabled and size[1] or 0
+		style["text"].size[1] = size[1]
+		-- style["text"].horizontal_alignment = "left"
+		-- style["text"].text_horizontal_alignment = "right"
+		-- style["text"].size[1] = size[1] * 1.2
+		style["text"].offset[1] = size[1] * .025
+		style["text"].offset[3] = 20
 		option_index = option_index + 1
 	end
 
@@ -1868,10 +1984,12 @@ mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
 	local item_name = self.cosmetics_view._item_name
     local options = {}
     if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
+		self.found_names = nil
         for _, data in pairs(self.attachment[item_name][attachment_slot]) do
 			local model = self.attachment_models[item_name][data.id] and self.attachment_models[item_name][data.id].model
 			if model and self:validate_item_model(model) then
-            	options[#options+1] = self:generate_dropdown_option(data.id, data.name, data.sounds)
+				local attachment_name = self:get_attachment_weapon_name(item, attachment_slot, data.id) or data.name
+            	options[#options+1] = self:generate_dropdown_option(data.id, attachment_name, data.sounds)
 			end
         end
     end

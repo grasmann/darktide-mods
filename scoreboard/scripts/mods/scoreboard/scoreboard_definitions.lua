@@ -14,6 +14,15 @@ local iteration_types = {
             return new_value, math.max(new_value - old_value, 0)
         end,
     },
+    ADD_IF_ZERO = {
+        value = function(add_value, old_value)
+            if old_value == 0 then
+                return old_value + add_value, add_value
+            else
+                return old_value, 0
+            end
+        end,
+    },
 }
 local base_validation_types = {
     highest = function(data, account_id)
@@ -62,6 +71,14 @@ local validation_types = {
             local best_value = data[best].score or 0
             local score = data[account_id].score or 0
             return (best_value - score) + worst_value
+        end,
+    },
+    BLANK = {
+        is_best = base_validation_types.highest,
+        is_worst = base_validation_types.lowest,
+        score = function(self, data, account_id)
+            local score = data[account_id].score or 0
+            return score
         end,
     },
 }

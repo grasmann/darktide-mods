@@ -1,6 +1,11 @@
 local mod = get_mod("scoreboard")
 mod.name = "scoreboard"
 
+local DMF = get_mod("DMF")
+local _os = DMF:persistent_table("_os")
+_os.initialized = _os.initialized or false
+if not _os.initialized then _os = DMF.deepcopy(Mods.lua.os) end
+
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
 -- ##### ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗ ############################################################################
 -- ##### ██║  ██║███████║   ██║   ███████║ ############################################################################
@@ -152,6 +157,18 @@ end
 
 mod.set_mission_name = function(self, mission_name)
 	self.mission_name = mission_name
+end
+mod.set_mission_circumstance = function(self, mission_circumstance)
+	self.mission_circumstance = mission_circumstance
+end
+mod.set_mission_challenge = function(self, mission_challenge)
+	self.mission_challenge = mission_challenge
+end
+mod.set_victory_defeat = function(self, victory_defeat)
+	self.victory_defeat = victory_defeat
+end
+mod.initialize_timer = function(self)
+	self.timer = _os.time()
 end
 
 mod.load_package = function(self, package_name)
@@ -321,6 +338,14 @@ end
 mod:hook(CLASS.StateGameplay, "on_enter", function(func, self, parent, params, creation_context, ...)
 	func(self, parent, params, creation_context, ...)
 	mod:set_mission_name(params.mission_name)
+	mod:set_mission_circumstance(params.mechanism_data.circumstance_name)
+	mod:set_mission_challenge(params.mechanism_data.challenge)
+	mod:initialize_timer()
+end)
+
+mod:hook(CLASS.GameModeManager, "_set_end_conditions_met", function(func, self, outcome, ...)
+	func(self, outcome,...)
+	mod:set_victory_defeat(outcome)
 end)
 
 mod:hook(CLASS.EndView, "on_enter", function(func, self, ...)

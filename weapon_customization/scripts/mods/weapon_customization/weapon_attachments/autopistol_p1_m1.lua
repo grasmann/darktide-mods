@@ -4,7 +4,8 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -47,15 +48,35 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     receiver_attachments = function()
         return {
-            {id = "receiver_default",   name = "Default"},
+            {id = "receiver_default",   name = mod:localize("mod_attachment_default")},
             {id = "receiver_01",        name = "Receiver 1"},
-            -- {id = "receiver_02",     name = "Receiver 2"},
-            -- {id = "receiver_03",     name = "Receiver 3"},
-            -- {id = "receiver_04",     name = "Receiver 4"},
+            {id = "receiver_02",        name = "Receiver 2"},
+            {id = "receiver_03",        name = "Receiver 3"},
+            {id = "receiver_04",        name = "Receiver 4"},
             {id = "receiver_05",        name = "Receiver 2"},
         }
     end,
@@ -66,15 +87,15 @@ local functions = {
         return {
             receiver_default = {model = "",                                                    type = "receiver", parent = tv(parent, 1), angle = a, move = m, remove = r},
             receiver_01 =      {model = _item_ranged.."/recievers/autogun_pistol_receiver_01", type = "receiver", parent = tv(parent, 2), angle = a, move = m, remove = r},
-            -- receiver_02 =      {model = _item_ranged.."/recievers/autogun_pistol_receiver_02", type = "receiver", parent = tv(parent, 3), angle = a, move = m, remove = r},
-            -- receiver_03 =      {model = _item_ranged.."/recievers/autogun_pistol_receiver_03", type = "receiver", parent = tv(parent, 4), angle = a, move = m, remove = r},
-            -- receiver_04 =      {model = _item_ranged.."/recievers/autogun_pistol_receiver_04", type = "receiver", parent = tv(parent, 5), angle = a, move = m, remove = r},
             receiver_05 =      {model = _item_ranged.."/recievers/autogun_pistol_receiver_05", type = "receiver", parent = tv(parent, 3), angle = a, move = m, remove = r},
+            receiver_02 =      {model = _item_ranged.."/recievers/autogun_pistol_receiver_02", type = "receiver", parent = tv(parent, 4), angle = a, move = m, remove = r},
+            receiver_03 =      {model = _item_ranged.."/recievers/autogun_pistol_receiver_03", type = "receiver", parent = tv(parent, 5), angle = a, move = m, remove = r},
+            receiver_04 =      {model = _item_ranged.."/recievers/autogun_pistol_receiver_04", type = "receiver", parent = tv(parent, 6), angle = a, move = m, remove = r},
         }
     end,
     barrel_attachments = function()
         return {
-            {id = "barrel_default", name = "Default"},
+            {id = "barrel_default", name = mod:localize("mod_attachment_default")},
             {id = "barrel_01",      name = "Barrel 1"},
             {id = "barrel_02",      name = "Barrel 2"},
             {id = "barrel_03",      name = "Barrel 3"},
@@ -97,7 +118,7 @@ local functions = {
     end,
     magazine_attachments = function()
         return {
-            -- {id = "magazine_default",   name = "Default",       sounds = {UISoundEvents.apparel_equip}},
+            -- {id = "magazine_default",   name = mod:localize("mod_attachment_default"),       sounds = {UISoundEvents.apparel_equip}},
             {id = "auto_pistol_magazine_01",        name = "Magazine 1"},
         }
     end,
@@ -112,7 +133,7 @@ local functions = {
     end,
     muzzle_attachments = function()
         return {
-            {id = "muzzle_default", name = "Default"},
+            {id = "muzzle_default", name = mod:localize("mod_attachment_default")},
             {id = "muzzle_01",      name = "Autopistol Muzzle A"},
             {id = "muzzle_02",      name = "Autopistol Muzzle B"},
             {id = "muzzle_03",      name = "Autopistol Muzzle C"},
@@ -154,48 +175,48 @@ return table.combine(
     functions,
     {
         attachments = { -- Done 12.9.2023
-            flashlight = _common_functions.flashlights_attachments(),
-            trinket_hook = _common_functions.trinket_hook_attachments(),
-            grip = _common_functions.grip_attachments(),
-            stock = _common_functions.stock_attachments(),
-            bayonet = _common_functions.bayonet_attachments(),
-            emblem_right = _common_functions.emblem_right_attachments(),
-            emblem_left = _common_functions.emblem_left_attachments(),
+            flashlight = _common_ranged.flashlights_attachments(),
+            trinket_hook = _common.trinket_hook_attachments(),
+            grip = _common_ranged.grip_attachments(),
+            stock = _common_ranged.stock_attachments(),
+            bayonet = _common_ranged.bayonet_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
             receiver = functions.receiver_attachments(),
             barrel = functions.barrel_attachments(),
             magazine = table.icombine(
-                {{id = "magazine_default", name = "Default"}},
-                _common_functions.magazine_attachments()
+                {{id = "magazine_default", name = mod:localize("mod_attachment_default")}},
+                _common_ranged.magazine_attachments()
             ),
             muzzle = functions.muzzle_attachments(),
             sight_2 = table.icombine(
-                _common_functions.sight_default(),
+                _common_ranged.sight_default(),
                 functions.sight_attachments(),
-                _common_functions.reflex_sights_attachments(),
-                _common_functions.sights_attachments()
+                _common_ranged.reflex_sights_attachments(),
+                _common_ranged.sights_attachments()
             ),
         },
         models = table.combine( -- Done 12.9.2023
-            _common_functions.flashlight_models(nil, -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
-            _common_functions.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, -.034)),
-            _common_functions.grip_models(nil, -.1, vector3_box(-.3, -4, 0), vector3_box(0, -.1, -.1)),
-            _common_functions.stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
-            _common_functions.trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+            _common_ranged.flashlight_models(nil, -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
+            _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, -.034)),
+            _common_ranged.grip_models(nil, -.1, vector3_box(-.3, -4, 0), vector3_box(0, -.1, -.1)),
+            _common_ranged.stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
+            _common.trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
             functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
             functions.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
             -- functions.magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
             functions.muzzle_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
             functions.sight_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
-            _common_functions.reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
+            _common_ranged.reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
                 {rail = "rail_default"},
                 {rail = "rail_01"},
                 {rail = "rail_01"},
                 {rail = "rail_01"},
             }),
-            _common_functions.magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
-            _common_functions.sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0))
+            _common_ranged.magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
+            _common_ranged.sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0))
         ),
         anchors = { -- Done 12.9.2023
             fixes = {

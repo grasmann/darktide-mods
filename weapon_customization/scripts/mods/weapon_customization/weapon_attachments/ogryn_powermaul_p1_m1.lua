@@ -4,7 +4,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -47,11 +47,31 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     shaft_attachments = function()
         return {
-            {id = "shaft_default",  name = "Default"},
+            {id = "shaft_default",  name = mod:localize("mod_attachment_default")},
             {id = "shaft_01",       name = "Shaft 1"},
             {id = "shaft_02",       name = "Shaft 2"},
             {id = "shaft_03",       name = "Shaft 3"},
@@ -74,7 +94,7 @@ local functions = {
     end,
     head_attachments = function()
         return {
-            {id = "head_default",   name = "Default"},
+            {id = "head_default",   name = mod:localize("mod_attachment_default")},
             {id = "head_01",        name = "Head 1"},
             {id = "head_02",        name = "Head 2"},
             {id = "head_03",        name = "Head 3"},
@@ -97,7 +117,7 @@ local functions = {
     end,
     pommel_attachments = function()
         return {
-            {id = "pommel_default", name = "Default"},
+            {id = "pommel_default", name = mod:localize("mod_attachment_default")},
             {id = "pommel_01",      name = "Pommel 1"},
             {id = "pommel_02",      name = "Pommel 2"},
             {id = "pommel_03",      name = "Pommel 3"},
@@ -127,16 +147,16 @@ return table.combine(
             shaft = functions.shaft_attachments(),
             head = functions.head_attachments(),
             pommel = functions.pommel_attachments(),
-            emblem_right = _common_functions.emblem_right_attachments(),
-            emblem_left = _common_functions.emblem_left_attachments(),
-            trinket_hook = _common_functions.trinket_hook_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
+            trinket_hook = _common.trinket_hook_attachments(),
         },
         models = table.combine( -- Done 11.9.2023
             {customization_default_position = vector3_box(0, 2, 0)},
             functions.shaft_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0)),
-            _common_functions.emblem_right_models("head", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_left_models("head", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
-            _common_functions.trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
+            _common.emblem_right_models("head", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("head", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
+            _common.trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
             functions.head_models(nil, 0, vector3_box(.3, -3, -.3), vector3_box(0, 0, .2)),
             functions.pommel_models(nil, 0, vector3_box(-.25, -5, .4), vector3_box(0, 0, -.2))
         ),

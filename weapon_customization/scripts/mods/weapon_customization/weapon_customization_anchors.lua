@@ -4,30 +4,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _ogryn_heavystubber_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_heavystubber_p1_m1")
-local _ogryn_rippergun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_rippergun_p1_m1")
-local _ogryn_thumper_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_thumper_p1_m1")
-local _ogryn_gauntlet_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_gauntlet_p1_m1")
-local _ogryn_club_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_club_p1_m1")
-local _ogryn_combatblade_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_combatblade_p1_m1")
-local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_p1_m1")
-local _ogryn_powermaul_slabshield_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_slabshield_p1_m1")
-local _ogryn_club_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_club_p2_m1")
-local _lasgun_common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_common")
-local _lasgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p1_m1")
-local _lasgun_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p2_m1")
-local _lasgun_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p3_m1")
-local _autogun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autogun_p1_m1")
-local _autopistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autopistol_p1_m1")
-local _shotgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/shotgun_p1_m1")
-local _bolter_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/bolter_p1_m1")
-local _stubrevolver_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/stubrevolver_p1_m1")
-local _plasmagun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/plasmagun_p1_m1")
-local _laspistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/laspistol_p1_m1")
-local _flamer_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/flamer_p1_m1")
-local _forcestaff_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/forcestaff_p1_m1")
-
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local _barrel_sound = UISoundEvents.talents_equip_talent
 local _receiver_sound = UISoundEvents.weapons_equip_weapon
@@ -52,7 +28,6 @@ local _item_minion = "content/items/weapons/minions"
     local string = string
     local string_find = string.find
     local vector3_box = Vector3Box
-    local table = table
     local pairs = pairs
     local ipairs = ipairs
     local type = type
@@ -76,7 +51,7 @@ local _item_minion = "content/items/weapons/minions"
         end
         return combined
     end
-    local tv = function(t, i)
+    table.tv = function(t, i)
         local res = nil
         if type(t) == "table" then
             if #t >= i then
@@ -94,216 +69,75 @@ local _item_minion = "content/items/weapons/minions"
         end
         return res
     end
+    table.model_table = function(content, parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        local angle = angle or 0
+        local move = move or vector3_box(0, 0, 0)
+        local remove = remove or vector3_box(0, 0, 0)
+        local type = type or "none"
+        local no_support = no_support or {}
+        local automatic_equip = automatic_equip or {}
+        local hide_mesh = hide_mesh or {}
+        if mesh_move == nil then mesh_move = true end
+        -- Build table
+        local _table = {}
+        local i = 1
+        for name, model in pairs(content) do
+            _table[name] = {
+                model = model,
+                type = table.tv(type, i),
+                parent = table.tv(parent, i),
+                angle = table.tv(angle, i),
+                move = table.tv(move, i),
+                remove = table.tv(remove, i),
+                mesh_move = table.tv(mesh_move, i),
+                no_support = table.tv(no_support, i),
+                automatic_equip = table.tv(automatic_equip, i),
+                hide_mesh = table.tv(hide_mesh, i),
+            }
+            i = i + 1
+        end
+        return _table
+    end
+    local table = table
 --#endregion
 
---#region Table functions
-    --#region Melee
-        --#region Shovel
-            local _shovel_functions = {
-                shovel_head_attachments = function()
-                    return {
-                        {id = "shovel_head_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_head_01",      name = "Head 1",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_head_02",      name = "Head 2",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_head_03",      name = "Head 3",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_head_04",      name = "Head 4",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_head_05",      name = "Head 5",  sounds = {UISoundEvents.weapons_swap}},
-                    }
-                end,
-                shovel_head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
-                    local a = angle or 0
-                    local m = move or vector3_box(0, 0, 0)
-                    local r = remove or vector3_box(0, 0, 0)
-                    local t = type or "head"
-                    local n = no_support or {}
-                    local ae = automatic_equip or {}
-                    local h = hide_mesh or {}
-                    return {
-                        shovel_head_default =   {model = "",                                        type = t, parent = tv(parent, 1), angle = a, move = m, remove = r, automatic_equip = tv(ae, 1), no_support = tv(n, 1), special_resolve = special_resolve},
-                        shovel_head_01 =        {model = _item_melee.."/heads/shovel_head_01",      type = t, parent = tv(parent, 2), angle = a, move = m, remove = r, automatic_equip = tv(ae, 2), no_support = tv(n, 2), special_resolve = special_resolve},
-                        shovel_head_02 =        {model = _item_melee.."/heads/shovel_head_02",      type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, automatic_equip = tv(ae, 3), no_support = tv(n, 3), special_resolve = special_resolve},
-                        shovel_head_03 =        {model = _item_melee.."/heads/shovel_head_03",      type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, automatic_equip = tv(ae, 4), no_support = tv(n, 4), special_resolve = special_resolve},
-                        shovel_head_04 =        {model = _item_melee.."/heads/shovel_head_04",      type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, automatic_equip = tv(ae, 5), no_support = tv(n, 5), special_resolve = special_resolve},
-                        shovel_head_05 =        {model = _item_melee.."/heads/shovel_head_05",      type = t, parent = tv(parent, 6), angle = a, move = m, remove = r, automatic_equip = tv(ae, 6), no_support = tv(n, 6), special_resolve = special_resolve},
-                    }
-                end,
-                shovel_grip_attachments = function()
-                    return {
-                        {id = "shovel_grip_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_grip_01",      name = "Grip 1",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_grip_02",      name = "Grip 2",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_grip_03",      name = "Grip 3",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_grip_04",      name = "Grip 4",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_grip_05",      name = "Grip 5",  sounds = {UISoundEvents.weapons_swap}},
-                    }
-                end,
-                shovel_grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
-                    local a = angle or 0
-                    local m = move or vector3_box(0, 0, 0)
-                    local r = remove or vector3_box(0, 0, 0)
-                    local t = type or "grip"
-                    local n = no_support or {}
-                    local ae = automatic_equip or {}
-                    local h = hide_mesh or {}
-                    return {
-                        shovel_grip_default =   {model = "",                                   type = t, parent = tv(parent, 1), angle = a, move = m, remove = r, automatic_equip = tv(ae, 1), no_support = tv(n, 1), special_resolve = special_resolve},
-                        shovel_grip_01 =        {model = _item_melee.."/grips/shovel_grip_01", type = t, parent = tv(parent, 2), angle = a, move = m, remove = r, automatic_equip = tv(ae, 2), no_support = tv(n, 2), special_resolve = special_resolve},
-                        shovel_grip_02 =        {model = _item_melee.."/grips/shovel_grip_02", type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, automatic_equip = tv(ae, 3), no_support = tv(n, 3), special_resolve = special_resolve},
-                        shovel_grip_03 =        {model = _item_melee.."/grips/shovel_grip_03", type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, automatic_equip = tv(ae, 4), no_support = tv(n, 4), special_resolve = special_resolve},
-                        shovel_grip_04 =        {model = _item_melee.."/grips/shovel_grip_04", type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, automatic_equip = tv(ae, 5), no_support = tv(n, 5), special_resolve = special_resolve},
-                        shovel_grip_05 =        {model = _item_melee.."/grips/shovel_grip_05", type = t, parent = tv(parent, 6), angle = a, move = m, remove = r, automatic_equip = tv(ae, 6), no_support = tv(n, 6), special_resolve = special_resolve},
-                    }
-                end,
-                shovel_pommel_attachments = function()
-                    return {
-                        {id = "shovel_pommel_default", name = "Default",  sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_pommel_01",      name = "Pommel 1", sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_pommel_02",      name = "Pommel 2", sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_pommel_03",      name = "Pommel 3", sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_pommel_04",      name = "Pommel 4", sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_pommel_05",      name = "Pommel 5", sounds = {UISoundEvents.weapons_swap}},
-                        {id = "shovel_pommel_06",      name = "Krieg",    sounds = {UISoundEvents.weapons_swap}},
-                    }
-                end,
-                shovel_pommel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, special_resolve)
-                    local a = angle or 0
-                    local m = move or vector3_box(0, 0, 0)
-                    local r = remove or vector3_box(0, 0, 0)
-                    local t = type or "pommel"
-                    local n = no_support or {}
-                    local ae = automatic_equip or {}
-                    local h = hide_mesh or {}
-                    return {
-                        shovel_pommel_default = {model = "",                                        type = t, parent = tv(parent, 1), angle = a, move = m, remove = r, automatic_equip = tv(ae, 1), no_support = tv(n, 1), special_resolve = special_resolve},
-                        shovel_pommel_01 =      {model = _item_melee.."/pommels/shovel_pommel_01",  type = t, parent = tv(parent, 2), angle = a, move = m, remove = r, automatic_equip = tv(ae, 2), no_support = tv(n, 2), special_resolve = special_resolve},
-                        shovel_pommel_02 =      {model = _item_melee.."/pommels/shovel_pommel_02",  type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, automatic_equip = tv(ae, 3), no_support = tv(n, 3), special_resolve = special_resolve},
-                        shovel_pommel_03 =      {model = _item_melee.."/pommels/shovel_pommel_03",  type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, automatic_equip = tv(ae, 4), no_support = tv(n, 4), special_resolve = special_resolve},
-                        shovel_pommel_04 =      {model = _item_melee.."/pommels/shovel_pommel_04",  type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, automatic_equip = tv(ae, 5), no_support = tv(n, 5), special_resolve = special_resolve},
-                        shovel_pommel_05 =      {model = _item_melee.."/pommels/shovel_pommel_05",  type = t, parent = tv(parent, 6), angle = a, move = m, remove = r, automatic_equip = tv(ae, 6), no_support = tv(n, 6), special_resolve = special_resolve},
-                        shovel_pommel_06 =      {model = _item_melee.."/full/krieg_shovel_full_01", type = t, parent = tv(parent, 7), angle = a, move = m, remove = r, automatic_equip = tv(ae, 7), no_support = tv(n, 7), special_resolve = special_resolve},
-                    }
-                end
-            }
-        --#endregion
-        local _axe_grip_attachments = function()
-            return {
-                {id = "axe_grip_01", name = "Combat Axe 1", sounds = {_grip_sound}},
-                {id = "axe_grip_02", name = "Combat Axe 2", sounds = {_grip_sound}},
-                {id = "axe_grip_03", name = "Combat Axe 3", sounds = {_grip_sound}},
-                {id = "axe_grip_04", name = "Combat Axe 4", sounds = {_grip_sound}},
-                {id = "axe_grip_05", name = "Combat Axe 5", sounds = {_grip_sound}},
-                {id = "axe_grip_06", name = "Combat Axe 6", sounds = {_grip_sound}},
-                {id = "hatchet_grip_01", name = "Tactical Axe 1", sounds = {_grip_sound}},
-                {id = "hatchet_grip_02", name = "Tactical Axe 2", sounds = {_grip_sound}},
-                {id = "hatchet_grip_03", name = "Tactical Axe 3", sounds = {_grip_sound}},
-                {id = "hatchet_grip_04", name = "Tactical Axe 4", sounds = {_grip_sound}},
-                {id = "hatchet_grip_05", name = "Tactical Axe 5", sounds = {_grip_sound}},
-                {id = "hatchet_grip_06", name = "Tactical Axe 6", sounds = {_grip_sound}},
-            }
-        end
-        local _axe_grip_models = function()
-            return {
-                grip_default =    {model = "",                                    type = "grip"},
-                axe_grip_01 =     {model = _item_melee.."/grips/axe_grip_01",     type = "grip"},
-                axe_grip_02 =     {model = _item_melee.."/grips/axe_grip_02",     type = "grip"},
-                axe_grip_03 =     {model = _item_melee.."/grips/axe_grip_03",     type = "grip"},
-                axe_grip_04 =     {model = _item_melee.."/grips/axe_grip_04",     type = "grip"},
-                axe_grip_05 =     {model = _item_melee.."/grips/axe_grip_05",     type = "grip"},
-                axe_grip_06 =     {model = _item_melee.."/grips/axe_grip_06",     type = "grip"},
-                hatchet_grip_01 = {model = _item_melee.."/grips/hatchet_grip_01", type = "grip"},
-                hatchet_grip_02 = {model = _item_melee.."/grips/hatchet_grip_02", type = "grip"},
-                hatchet_grip_03 = {model = _item_melee.."/grips/hatchet_grip_03", type = "grip"},
-                hatchet_grip_04 = {model = _item_melee.."/grips/hatchet_grip_04", type = "grip"},
-                hatchet_grip_05 = {model = _item_melee.."/grips/hatchet_grip_05", type = "grip"},
-                hatchet_grip_06 = {model = _item_melee.."/grips/hatchet_grip_06", type = "grip"},
-            }
-        end
-        local _axe_head_attachments = function()
-            return {
-                {id = "axe_head_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_head_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_head_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_head_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_head_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_head_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_head_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_head_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_head_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_head_05", name = "Tactical Axe 5", sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _axe_head_models = function()
-            return {
-                head_default =    {model = "",                                    type = "head"},
-                axe_head_01 =     {model = _item_melee.."/heads/axe_head_01",     type = "head"},
-                axe_head_02 =     {model = _item_melee.."/heads/axe_head_02",     type = "head"},
-                axe_head_03 =     {model = _item_melee.."/heads/axe_head_03",     type = "head"},
-                axe_head_04 =     {model = _item_melee.."/heads/axe_head_04",     type = "head"},
-                axe_head_05 =     {model = _item_melee.."/heads/axe_head_05",     type = "head"},
-                hatchet_head_01 = {model = _item_melee.."/heads/hatchet_head_01", type = "head"},
-                hatchet_head_02 = {model = _item_melee.."/heads/hatchet_head_02", type = "head"},
-                hatchet_head_03 = {model = _item_melee.."/heads/hatchet_head_03", type = "head"},
-                hatchet_head_04 = {model = _item_melee.."/heads/hatchet_head_04", type = "head"},
-                hatchet_head_05 = {model = _item_melee.."/heads/hatchet_head_05", type = "head"},
-            }
-        end
-        local _ogryn_pommel_attachments = function()
-            return {
-                {id = "shovel_pommel_01", name = "Shovel 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shovel_pommel_02", name = "Shovel 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shovel_pommel_03", name = "Shovel 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shovel_pommel_04", name = "Shovel 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "shovel_pommel_05", name = "Shovel 5", sounds = {UISoundEvents.weapons_swap}},
-                {id = "power_maul_pommel_01", name = "Power Maul 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "power_maul_pommel_02", name = "Power Maul 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "power_maul_pommel_03", name = "Power Maul 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "power_maul_pommel_04", name = "Power Maul 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "power_maul_pommel_05", name = "Power Maul 5", sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _ogryn_pommel_models = function()
-            return {
-                shovel_pommel_01 =     {model = _item_melee.."/pommels/shovel_ogryn_pommel_01", type = "pommel"},
-                shovel_pommel_02 =     {model = _item_melee.."/pommels/shovel_ogryn_pommel_02", type = "pommel"},
-                shovel_pommel_03 =     {model = _item_melee.."/pommels/shovel_ogryn_pommel_03", type = "pommel"},
-                shovel_pommel_04 =     {model = _item_melee.."/pommels/shovel_ogryn_pommel_04", type = "pommel"},
-                shovel_pommel_05 =     {model = _item_melee.."/pommels/shovel_ogryn_pommel_05", type = "pommel"},
-                power_maul_pommel_01 = {model = _item_melee.."/pommels/power_maul_pommel_01",   type = "pommel"},
-                power_maul_pommel_02 = {model = _item_melee.."/pommels/power_maul_pommel_02",   type = "pommel"},
-                power_maul_pommel_03 = {model = _item_melee.."/pommels/power_maul_pommel_03",   type = "pommel"},
-                power_maul_pommel_04 = {model = _item_melee.."/pommels/power_maul_pommel_04",   type = "pommel"},
-                power_maul_pommel_05 = {model = _item_melee.."/pommels/power_maul_pommel_05",   type = "pommel"},
-            }
-        end
-        local _pommel_attachments = function()
-            return {
-                {id = "axe_pommel_01", name = "Combat Axe 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_pommel_02", name = "Combat Axe 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_pommel_03", name = "Combat Axe 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_pommel_04", name = "Combat Axe 4", sounds = {UISoundEvents.weapons_swap}},
-                {id = "axe_pommel_05", name = "Combat Axe 5", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_pommel_01", name = "Tactical Axe 1", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_pommel_02", name = "Tactical Axe 2", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_pommel_03", name = "Tactical Axe 3", sounds = {UISoundEvents.weapons_swap}},
-                {id = "hatchet_pommel_04", name = "Tactical Axe 4", sounds = {UISoundEvents.weapons_swap}},
-            }
-        end
-        local _pommel_models = function()
-            return {
-                pommel_default =    {model = "",                                        type = "pommel"},
-                axe_pommel_01 =     {model = _item_melee.."/pommels/axe_pommel_01",     type = "pommel"},
-                axe_pommel_02 =     {model = _item_melee.."/pommels/axe_pommel_02",     type = "pommel"},
-                axe_pommel_03 =     {model = _item_melee.."/pommels/axe_pommel_03",     type = "pommel"},
-                axe_pommel_04 =     {model = _item_melee.."/pommels/axe_pommel_04",     type = "pommel"},
-                axe_pommel_05 =     {model = _item_melee.."/pommels/axe_pommel_05",     type = "pommel"},
-                hatchet_pommel_01 = {model = _item_melee.."/pommels/hatchet_pommel_01", type = "pommel"},
-                hatchet_pommel_02 = {model = _item_melee.."/pommels/hatchet_pommel_02", type = "pommel"},
-                hatchet_pommel_03 = {model = _item_melee.."/pommels/hatchet_pommel_03", type = "pommel"},
-                hatchet_pommel_04 = {model = _item_melee.."/pommels/hatchet_pommel_04", type = "pommel"},
-            }
-        end
-    --#endregion
---#endregion
+local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _ogryn_heavystubber_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_heavystubber_p1_m1")
+local _ogryn_rippergun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_rippergun_p1_m1")
+local _ogryn_thumper_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_thumper_p1_m1")
+local _ogryn_gauntlet_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_gauntlet_p1_m1")
+local _ogryn_club_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_club_p1_m1")
+local _ogryn_combatblade_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_combatblade_p1_m1")
+local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_p1_m1")
+local _ogryn_powermaul_slabshield_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_slabshield_p1_m1")
+local _ogryn_club_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_club_p2_m1")
+local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
+local _lasgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p1_m1")
+local _lasgun_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p2_m1")
+local _lasgun_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p3_m1")
+local _autogun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autogun_p1_m1")
+local _autopistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autopistol_p1_m1")
+local _shotgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/shotgun_p1_m1")
+local _bolter_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/bolter_p1_m1")
+local _stubrevolver_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/stubrevolver_p1_m1")
+local _plasmagun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/plasmagun_p1_m1")
+local _laspistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/laspistol_p1_m1")
+local _flamer_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/flamer_p1_m1")
+local _forcestaff_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/forcestaff_p1_m1")
+local _combataxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p1_m1")
+local _combataxe_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p2_m1")
+local _combatknife_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatknife_p1_m1")
+local _powersword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powersword_p1_m1")
+local _chainaxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainaxe_p1_m1")
+local _chainsword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainsword_p1_m1")
+local _combataxe_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p3_m1")
+local _combatsword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p1_m1")
+local _thunderhammer_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/thunderhammer_2h_p1_m1")
+local _powermaul_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powermaul_2h_p1_m1")
+local _chainsword_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainsword_2h_p1_m1")
+local _combatsword_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p2_m1")
+local _forcesword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/forcesword_p1_m1")
+local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p3_m1")
 
 --#region Anchors
     mod.anchors = {
@@ -332,12 +166,23 @@ local _item_minion = "content/items/weapons/minions"
             lasgun_p2_m1 = _lasgun_p2_m1.anchors,
             lasgun_p3_m1 = _lasgun_p3_m1.anchors,
             flamer_p1_m1 = _flamer_p1_m1.anchors,
+            forcestaff_p1_m1 = _forcestaff_p1_m1.anchors,
         --#endregion
         --#region Melee
-            combataxe_p1_m1 = {
-            },
-            combatknife_p1_m1 = {  
-            },
+            combataxe_p1_m1 = _combataxe_p1_m1.anchors,
+            combataxe_p2_m1 = _combataxe_p2_m1.anchors,
+            combatknife_p1_m1 = _combatknife_p1_m1.anchors,
+            powersword_p1_m1 = _powersword_p1_m1.anchors,
+            chainaxe_p1_m1 = _chainaxe_p1_m1.anchors,
+            chainsword_p1_m1 = _chainsword_p1_m1.anchors,
+            combataxe_p3_m1 = _combataxe_p3_m1.anchors,
+            combatsword_p1_m1 = _combatsword_p1_m1.anchors,
+            thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.anchors,
+            powermaul_2h_p1_m1 = _powermaul_2h_p1_m1.anchors,
+            chainsword_2h_p1_m1 = _chainsword_2h_p1_m1.anchors,
+            combatsword_p2_m1 = _combatsword_p2_m1.anchors,
+            forcesword_p1_m1 = _forcesword_p1_m1.anchors,
+            combatsword_p3_m1 = _combatsword_p3_m1.anchors,
         --#endregion
     }
     --#region Copies
@@ -361,10 +206,6 @@ local _item_minion = "content/items/weapons/minions"
             mod.anchors.bolter_p1_m3 = mod.anchors.bolter_p1_m1
             mod.anchors.autogun_p1_m2 = mod.anchors.autogun_p1_m1
             mod.anchors.autogun_p1_m3 = mod.anchors.autogun_p1_m1
-            -- mod.anchors.autogun_p2_m2 = mod.anchors.autogun_p2_m1
-            -- mod.anchors.autogun_p2_m3 = mod.anchors.autogun_p2_m1
-            -- mod.anchors.autogun_p3_m2 = mod.anchors.autogun_p3_m1
-            -- mod.anchors.autogun_p3_m3 = mod.anchors.autogun_p3_m1
             mod.anchors.autogun_p2_m1 = mod.anchors.autogun_p1_m1
             mod.anchors.autogun_p2_m2 = mod.anchors.autogun_p1_m1
             mod.anchors.autogun_p2_m3 = mod.anchors.autogun_p1_m1
@@ -381,6 +222,18 @@ local _item_minion = "content/items/weapons/minions"
         --#region Melee
             mod.anchors.combataxe_p1_m2 = mod.anchors.combataxe_p1_m1
             mod.anchors.combataxe_p1_m3 = mod.anchors.combataxe_p1_m1
+            mod.anchors.combataxe_p2_m2 = mod.anchors.combataxe_p2_m1
+            mod.anchors.combataxe_p2_m3 = mod.anchors.combataxe_p2_m1
+            mod.anchors.powersword_p1_m2 = mod.anchors.powersword_p1_m1
+            mod.anchors.combatsword_p1_m2 = mod.anchors.combatsword_p1_m1
+            mod.anchors.combatsword_p1_m3 = mod.anchors.combatsword_p1_m1
+            mod.anchors.thunderhammer_2h_p1_m2 = mod.anchors.thunderhammer_2h_p1_m1
+            mod.anchors.combatsword_p2_m2 = mod.anchors.combatsword_p2_m1
+            mod.anchors.combatsword_p2_m3 = mod.anchors.combatsword_p2_m1
+            mod.anchors.forcesword_p1_m2 = mod.anchors.forcesword_p1_m1
+            mod.anchors.forcesword_p1_m3 = mod.anchors.forcesword_p1_m1
+            mod.anchors.combatsword_p3_m2 = mod.anchors.combatsword_p3_m1
+            mod.anchors.combatsword_p3_m3 = mod.anchors.combatsword_p3_m1
         --#endregion
     --#endregion
 --#endregion
@@ -415,360 +268,22 @@ local _item_minion = "content/items/weapons/minions"
             forcestaff_p1_m1 = _forcestaff_p1_m1.attachments,
         --#endregion
         --#region Melee
-            combataxe_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = table.icombine(
-                    {{id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _axe_grip_attachments()
-                ),
-                head = table.icombine(
-                    {{id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _axe_head_attachments()
-                ),
-                pommel = table.icombine(
-                    {{id = "pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _pommel_attachments()
-                ),
-            },
-            combataxe_p2_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = table.icombine(
-                    {{id = "grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _axe_grip_attachments()
-                ),
-                head = table.icombine(
-                    {{id = "head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _axe_head_attachments()
-                ),
-                pommel = table.icombine(
-                    {{id = "pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}}},
-                    _pommel_attachments()
-                ),
-            },
-            combatknife_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "knife_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "knife_grip_01", name = "Combat Knife 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_grip_02", name = "Combat Knife 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_grip_03", name = "Combat Knife 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_grip_04", name = "Combat Knife 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_grip_05", name = "Combat Knife 5", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_grip_06", name = "Combat Knife 6", sounds = {UISoundEvents.weapons_swap}},
-                },
-                body = {
-                    {id = "knife_body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "knife_body_01", name = "Combat Knife 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_body_02", name = "Combat Knife 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_body_03", name = "Combat Knife 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_body_04", name = "Combat Knife 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_body_05", name = "Combat Knife 5", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "knife_body_06", name = "Combat Knife 6", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            powersword_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "power_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "power_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_grip_06", name = "Grip 6", sounds = {UISoundEvents.weapons_swap}},
-                },
-                pommel = {
-                    {id = "power_sword_pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "power_sword_pommel_01", name = "Pommel 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_pommel_02", name = "Pommel 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_pommel_03", name = "Pommel 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_pommel_04", name = "Pommel 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_pommel_05", name = "Pommel 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                blade = {
-                    {id = "power_sword_blade_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "power_sword_blade_01", name = "Blade 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_blade_02", name = "Blade 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_blade_03", name = "Blade 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_blade_04", name = "Blade 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "power_sword_blade_05", name = "Blade 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            chainaxe_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "chain_axe_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "chain_axe_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                shaft = {
-                    {id = "chain_axe_shaft_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "chain_axe_shaft_01", name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_shaft_02", name = "Shaft 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_shaft_03", name = "Shaft 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_shaft_04", name = "Shaft 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_shaft_05", name = "Shaft 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                blade = {
-                    {id = "chain_axe_blade_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "chain_axe_blade_01", name = "Blade 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_blade_02", name = "Blade 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_blade_03", name = "Blade 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_blade_04", name = "Blade 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_axe_blade_05", name = "Blade 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                teeth = {
-                    {id = "chain_axe_teeth_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "chain_axe_teeth_01", name = "Chain 1", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            chainsword_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "chain_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "chain_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_sword_grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_sword_grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_sword_grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_sword_grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                body = {
-                    {id = "chain_sword_body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "chain_sword_body_01", name = "Body 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_sword_body_02", name = "Body 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "chain_sword_body_03", name = "Body 3", sounds = {UISoundEvents.weapons_swap}},
-                    -- {id = "chain_sword_body_04", name = "Body 4", sounds = {UISoundEvents.weapons_swap}}, --buggy
-                    -- {id = "chain_sword_body_05", name = "Body 5", sounds = {UISoundEvents.weapons_swap}}, --buggy
-                    {id = "chain_sword_body_06", name = "Body 6", sounds = {UISoundEvents.weapons_swap}},
-                },
-                chain = {
-                    {id = "chain_sword_chain_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "chain_sword_chain_01", name = "Chain 1", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            combataxe_p3_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                head = _shovel_functions.shovel_head_attachments(),
-                pommel = _shovel_functions.shovel_pommel_attachments(),
-                grip = _shovel_functions.shovel_grip_attachments(),
-            },
-            combatsword_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "combat_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "combat_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                body = {
-                    {id = "combat_sword_blade_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "combat_sword_blade_01", name = "Blade 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_blade_02", name = "Blade 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_blade_03", name = "Blade 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_blade_04", name = "Blade 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_blade_05", name = "Blade 5", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "combat_sword_blade_06", name = "Blade 6", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            thunderhammer_2h_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                shaft = {
-                    {id = "thunder_hammer_shaft_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "thunder_hammer_shaft_01", name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_shaft_02", name = "Shaft 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_shaft_03", name = "Shaft 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_shaft_04", name = "Shaft 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_shaft_05", name = "Shaft 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                pommel = {
-                    {id = "thunder_hammer_pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "thunder_hammer_pommel_01", name = "Pommel 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_pommel_02", name = "Pommel 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_pommel_03", name = "Pommel 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_pommel_04", name = "Pommel 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_pommel_05", name = "Pommel 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                connector = {
-                    {id = "thunder_hammer_connector_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "thunder_hammer_connector_01", name = "Connector 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_connector_02", name = "Connector 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_connector_03", name = "Connector 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_connector_04", name = "Connector 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_connector_05", name = "Connector 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                head = {
-                    {id = "thunder_hammer_head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "thunder_hammer_head_01", name = "Head 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_head_02", name = "Head 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_head_03", name = "Head 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_head_04", name = "Head 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "thunder_hammer_head_05", name = "Head 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            powermaul_2h_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                shaft = {
-                    {id = "2h_power_maul_shaft_default", name = "Default", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_shaft_01", name = "Shaft 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_shaft_02", name = "Shaft 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_shaft_03", name = "Shaft 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_shaft_04", name = "Shaft 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_shaft_05", name = "Shaft 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                pommel = {
-                    {id = "2h_power_maul_pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "2h_power_maul_pommel_01", name = "Pommel 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_pommel_02", name = "Pommel 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_pommel_03", name = "Pommel 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_pommel_04", name = "Pommel 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_pommel_05", name = "Pommel 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                connector = {
-                    {id = "2h_power_maul_connector_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "2h_power_maul_connector_01", name = "Connector 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_connector_02", name = "Connector 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_connector_03", name = "Connector 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_connector_04", name = "Connector 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_connector_05", name = "Connector 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                head = {
-                    {id = "2h_power_maul_head_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "2h_power_maul_head_01", name = "Head 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_head_02", name = "Head 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_head_03", name = "Head 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_head_04", name = "Head 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_power_maul_head_05", name = "Head 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            chainsword_2h_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "2h_chain_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "2h_chain_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_chain_sword_grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_chain_sword_grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                },
-                body = {
-                    {id = "2h_chain_sword_body_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "2h_chain_sword_body_01", name = "Body 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_chain_sword_body_02", name = "Body 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "2h_chain_sword_body_03", name = "Body 3", sounds = {UISoundEvents.weapons_swap}},
-                },
-                chain = {
-                    {id = "2h_chain_sword_chain_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "2h_chain_sword_chain_01", name = "Chain 1", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            combatsword_p2_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "falchion_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "falchion_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "falchion_grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "falchion_grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "falchion_grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "falchion_grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                body = {
-                    {id = "falchion_blade_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "falchion_blade_01", name = "Blade 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "falchion_blade_02", name = "Blade 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "falchion_blade_03", name = "Blade 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "falchion_blade_04", name = "Blade 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "falchion_blade_05", name = "Blade 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            forcesword_p1_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "force_sword_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "force_sword_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                pommel = {
-                    {id = "force_sword_pommel_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "force_sword_pommel_01", name = "Pommel 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_pommel_02", name = "Pommel 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_pommel_03", name = "Pommel 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_pommel_04", name = "Pommel 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_pommel_05", name = "Pommel 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                hilt = {
-                    {id = "force_sword_hilt_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "force_sword_hilt_01", name = "Hilt 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_hilt_02", name = "Hilt 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_hilt_03", name = "Hilt 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_hilt_04", name = "Hilt 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_hilt_05", name = "Hilt 5", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_hilt_06", name = "Hilt 6", sounds = {UISoundEvents.weapons_swap}},
-                },
-                blade = {
-                    {id = "force_sword_blade_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "force_sword_blade_01", name = "Blade 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_blade_02", name = "Blade 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_blade_03", name = "Blade 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_blade_04", name = "Blade 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "force_sword_blade_05", name = "Blade 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
-            combatsword_p3_m1 = {
-                trinket_hook = _common_functions.trinket_hook_attachments(),
-                emblem_right = _common_functions.emblem_right_attachments(),
-                emblem_left = _common_functions.emblem_left_attachments(),
-                grip = {
-                    {id = "sabre_grip_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "sabre_grip_01", name = "Grip 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sabre_grip_02", name = "Grip 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sabre_grip_03", name = "Grip 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sabre_grip_04", name = "Grip 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sabre_grip_05", name = "Grip 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-                body = {
-                    {id = "sabre_blade_default", name = "Default", sounds = {UISoundEvents.end_screen_summary_currency_icon_out}},
-                    {id = "sabre_blade_01", name = "Blade 1", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sabre_blade_02", name = "Blade 2", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sabre_blade_03", name = "Blade 3", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sabre_blade_04", name = "Blade 4", sounds = {UISoundEvents.weapons_swap}},
-                    {id = "sabre_blade_05", name = "Blade 5", sounds = {UISoundEvents.weapons_swap}},
-                },
-            },
+            combataxe_p1_m1 = _combataxe_p1_m1.attachments,
+            combataxe_p2_m1 = _combataxe_p2_m1.attachments,
+            combatknife_p1_m1 = _combatknife_p1_m1.attachments,
+            powersword_p1_m1 = _powersword_p1_m1.attachments,
+            chainaxe_p1_m1 = _chainaxe_p1_m1.attachments,
+            chainsword_p1_m1 = _chainsword_p1_m1.attachments,
+            combataxe_p3_m1 = _combataxe_p3_m1.attachments,
+            combatsword_p1_m1 = _combatsword_p1_m1.attachments,
+            thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.attachments,
+            powermaul_2h_p1_m1 = _powermaul_2h_p1_m1.attachments,
+            chainsword_2h_p1_m1 = _chainsword_2h_p1_m1.attachments,
+            combatsword_p2_m1 = _combatsword_p2_m1.attachments,
+            forcesword_p1_m1 = _forcesword_p1_m1.attachments,
+            combatsword_p3_m1 = _combatsword_p3_m1.attachments,
         --#endregion
     }
-
     --#region Copies
         --#region Ogryn Guns
             mod.attachment.ogryn_heavystubber_p1_m2 = mod.attachment.ogryn_heavystubber_p1_m1
@@ -780,7 +295,6 @@ local _item_minion = "content/items/weapons/minions"
         --#region Ogryn Melee
             mod.attachment.ogryn_combatblade_p1_m2 = mod.attachment.ogryn_combatblade_p1_m1
             mod.attachment.ogryn_combatblade_p1_m3 = mod.attachment.ogryn_combatblade_p1_m1
-            -- mod.attachment.ogryn_powermaul_slabshield_p1_m1 = mod.attachment.ogryn_powermaul_p1_m1
             mod.attachment.ogryn_club_p2_m2 = mod.attachment.ogryn_club_p2_m1
             mod.attachment.ogryn_club_p2_m3 = mod.attachment.ogryn_club_p2_m1
         --#endregion
@@ -793,10 +307,6 @@ local _item_minion = "content/items/weapons/minions"
             mod.attachment.stubrevolver_p1_m3 = mod.attachment.stubrevolver_p1_m1
             mod.attachment.autogun_p1_m2 = mod.attachment.autogun_p1_m1
             mod.attachment.autogun_p1_m3 = mod.attachment.autogun_p1_m1
-            -- mod.attachment.autogun_p2_m2 = mod.attachment.autogun_p2_m1
-            -- mod.attachment.autogun_p2_m3 = mod.attachment.autogun_p2_m1
-            -- mod.attachment.autogun_p3_m2 = mod.attachment.autogun_p3_m1
-            -- mod.attachment.autogun_p3_m3 = mod.attachment.autogun_p3_m1
             mod.attachment.autogun_p2_m1 = mod.attachment.autogun_p1_m1
             mod.attachment.autogun_p2_m2 = mod.attachment.autogun_p1_m1
             mod.attachment.autogun_p2_m3 = mod.attachment.autogun_p1_m1
@@ -855,6 +365,25 @@ local _item_minion = "content/items/weapons/minions"
         trinket_hook = "trinket_hooks",
         slot_trinket_1 = "slot_trinket_1",
         slot_trinket_2 = "slot_trinket_2",
+        decal_right = "decals_right",
+        decal_left = "decals_left",
+        hilt = "hilts",
+    }
+    mod.hilts = {
+        "power_sword_hilt_01",
+        "force_sword_hilt_07",
+        "force_sword_hilt_08",
+        "force_sword_hilt_09",
+    }
+    mod.decals_right = {
+        "decal_right_01",
+        "decal_right_02",
+        "decal_right_03",
+    }
+    mod.decals_left = {
+        "decal_left_01",
+        "decal_left_02",
+        "decal_left_03",
     }
     mod.slot_trinket_1 = {
         "slot_trinket_1",
@@ -923,6 +452,7 @@ local _item_minion = "content/items/weapons/minions"
         "autogun_rifle_killshot_sight_01",
         "lasgun_rifle_sight_01",
         "sight_01",
+        "shotgun_double_barrel_sight_01",
     }
     mod.all_sights = table.combine(
         mod.reflex_sights,
@@ -1000,6 +530,7 @@ local _item_minion = "content/items/weapons/minions"
         "bayonet_01",
         "bayonet_02",
         "bayonet_03",
+        "bayonet_04",
     }
     mod.stocks = {
         "autogun_rifle_stock_01",
@@ -1059,6 +590,9 @@ local _item_minion = "content/items/weapons/minions"
         "receiver",
         "magazine",
         "magazine2",
+        "bullet",
+        "ammo",
+        "ammo_used",
         "rail",
         "sight",
         "sight_2",
@@ -1079,6 +613,8 @@ local _item_minion = "content/items/weapons/minions"
         "left",
         "emblem_right",
         "emblem_left",
+        "decal_right",
+        "decal_left",
         "shaft_lower",
         "shaft_upper",
         "trinket_hook",
@@ -1117,333 +653,22 @@ local _item_minion = "content/items/weapons/minions"
             forcestaff_p1_m1 = _forcestaff_p1_m1.models,
         --#endregion
         --#region Melee
-            combataxe_p1_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                _axe_grip_models(),
-                _axe_head_models(),
-                _pommel_models()
-            ),
-            combataxe_p2_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                _axe_grip_models(),
-                _axe_head_models(),
-                _pommel_models()
-            ),
-            combatknife_p1_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    knife_grip_default = {model = "", type = "grip"},
-                    knife_grip_01 = {model = "content/items/weapons/player/melee/grips/combat_knife_grip_01", type = "grip"},
-                    knife_grip_02 = {model = "content/items/weapons/player/melee/grips/combat_knife_grip_02", type = "grip"},
-                    knife_grip_03 = {model = "content/items/weapons/player/melee/grips/combat_knife_grip_03", type = "grip"},
-                    knife_grip_04 = {model = "content/items/weapons/player/melee/grips/combat_knife_grip_04", type = "grip"},
-                    knife_grip_05 = {model = "content/items/weapons/player/melee/grips/combat_knife_grip_05", type = "grip"},
-                    knife_grip_06 = {model = "content/items/weapons/player/melee/grips/combat_knife_grip_06", type = "grip"},
-                    knife_body_default = {model = "", type = "body"},
-                    knife_body_01 = {model = "content/items/weapons/player/melee/blades/combat_knife_blade_01", type = "body"},
-                    knife_body_02 = {model = "content/items/weapons/player/melee/blades/combat_knife_blade_02", type = "body"},
-                    knife_body_03 = {model = "content/items/weapons/player/melee/blades/combat_knife_blade_03", type = "body"},
-                    knife_body_04 = {model = "content/items/weapons/player/melee/blades/combat_knife_blade_04", type = "body"},
-                    knife_body_05 = {model = "content/items/weapons/player/melee/blades/combat_knife_blade_05", type = "body"},
-                    knife_body_06 = {model = "content/items/weapons/player/melee/blades/combat_knife_blade_06", type = "body"},
-                }
-            ),
-            powersword_p1_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    power_sword_grip_default = {model = "", type = "grip"},
-                    power_sword_grip_01 = {model = "content/items/weapons/player/melee/grips/power_sword_grip_01", type = "grip"},
-                    power_sword_grip_02 = {model = "content/items/weapons/player/melee/grips/power_sword_grip_02", type = "grip"},
-                    power_sword_grip_03 = {model = "content/items/weapons/player/melee/grips/power_sword_grip_03", type = "grip"},
-                    power_sword_grip_04 = {model = "content/items/weapons/player/melee/grips/power_sword_grip_04", type = "grip"},
-                    power_sword_grip_05 = {model = "content/items/weapons/player/melee/grips/power_sword_grip_05", type = "grip"},
-                    power_sword_grip_06 = {model = "content/items/weapons/player/melee/grips/power_sword_grip_06", type = "grip"},
-                    power_sword_pommel_default = {model = "", type = "pommel"},
-                    power_sword_pommel_01 = {model = "content/items/weapons/player/melee/pommels/power_sword_pommel_01", type = "pommel"},
-                    power_sword_pommel_02 = {model = "content/items/weapons/player/melee/pommels/power_sword_pommel_02", type = "pommel"},
-                    power_sword_pommel_03 = {model = "content/items/weapons/player/melee/pommels/power_sword_pommel_03", type = "pommel"},
-                    power_sword_pommel_04 = {model = "content/items/weapons/player/melee/pommels/power_sword_pommel_05", type = "pommel"},
-                    power_sword_pommel_05 = {model = "content/items/weapons/player/melee/pommels/power_sword_pommel_06", type = "pommel"},
-                    power_sword_blade_default = {model = "", type = "blade"},
-                    power_sword_blade_01 = {model = "content/items/weapons/player/melee/blades/power_sword_blade_01", type = "blade"},
-                    power_sword_blade_02 = {model = "content/items/weapons/player/melee/blades/power_sword_blade_02", type = "blade"},
-                    power_sword_blade_03 = {model = "content/items/weapons/player/melee/blades/power_sword_blade_03", type = "blade"},
-                    power_sword_blade_04 = {model = "content/items/weapons/player/melee/blades/power_sword_blade_05", type = "blade"},
-                    power_sword_blade_05 = {model = "content/items/weapons/player/melee/blades/power_sword_blade_06", type = "blade"},
-                }
-            ),
-            chainaxe_p1_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    chain_axe_teeth_default = {model = "", type = "teeth"},
-                    chain_axe_teeth_01 = {model = "content/items/weapons/player/melee/chains/chain_axe_chain_01", type = "teeth"},
-                    chain_axe_blade_default = {model = "", type = "blade"},
-                    chain_axe_blade_01 = {model = "content/items/weapons/player/melee/blades/chain_axe_blade_01", type = "blade"},
-                    chain_axe_blade_02 = {model = "content/items/weapons/player/melee/blades/chain_axe_blade_02", type = "blade"},
-                    chain_axe_blade_03 = {model = "content/items/weapons/player/melee/blades/chain_axe_blade_03", type = "blade"},
-                    chain_axe_blade_04 = {model = "content/items/weapons/player/melee/blades/chain_axe_blade_04", type = "blade"},
-                    chain_axe_blade_05 = {model = "content/items/weapons/player/melee/blades/chain_axe_blade_05", type = "blade"},
-                    chain_axe_grip_default = {model = "", type = "grip"},
-                    chain_axe_grip_01 = {model = "content/items/weapons/player/melee/grips/chain_axe_grip_01", type = "grip"},
-                    chain_axe_grip_02 = {model = "content/items/weapons/player/melee/grips/chain_axe_grip_02", type = "grip"},
-                    chain_axe_grip_03 = {model = "content/items/weapons/player/melee/grips/chain_axe_grip_03", type = "grip"},
-                    chain_axe_grip_04 = {model = "content/items/weapons/player/melee/grips/chain_axe_grip_04", type = "grip"},
-                    chain_axe_grip_05 = {model = "content/items/weapons/player/melee/grips/chain_axe_grip_05", type = "grip"},
-                    chain_axe_shaft_default = {model = "", type = "shaft"},
-                    chain_axe_shaft_01 = {model = "content/items/weapons/player/ranged/shafts/chain_axe_shaft_01", type = "shaft"},
-                    chain_axe_shaft_02 = {model = "content/items/weapons/player/ranged/shafts/chain_axe_shaft_02", type = "shaft"},
-                    chain_axe_shaft_03 = {model = "content/items/weapons/player/ranged/shafts/chain_axe_shaft_03", type = "shaft"},
-                    chain_axe_shaft_04 = {model = "content/items/weapons/player/ranged/shafts/chain_axe_shaft_04", type = "shaft"},
-                    chain_axe_shaft_05 = {model = "content/items/weapons/player/ranged/shafts/chain_axe_shaft_05", type = "shaft"},
-                }
-            ),
-            chainsword_p1_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    chain_sword_grip_default = {model = "", type = "grip"},
-                    chain_sword_grip_01 = {model = "content/items/weapons/player/melee/grips/chain_sword_grip_01", type = "grip"},
-                    chain_sword_grip_02 = {model = "content/items/weapons/player/melee/grips/chain_sword_grip_02", type = "grip"},
-                    chain_sword_grip_03 = {model = "content/items/weapons/player/melee/grips/chain_sword_grip_03", type = "grip"},
-                    chain_sword_grip_04 = {model = "content/items/weapons/player/melee/grips/chain_sword_grip_04", type = "grip"},
-                    chain_sword_grip_05 = {model = "content/items/weapons/player/melee/grips/chain_sword_grip_05", type = "grip"},
-                    chain_sword_body_default = {model = "", type = "body"},
-                    chain_sword_body_01 = {model = "content/items/weapons/player/melee/full/chain_sword_full_01", type = "body"},
-                    chain_sword_body_02 = {model = "content/items/weapons/player/melee/full/chain_sword_full_02", type = "body"},
-                    chain_sword_body_03 = {model = "content/items/weapons/player/melee/full/chain_sword_full_03", type = "body"},
-                    -- chain_sword_body_04 = {model = "content/items/weapons/player/melee/full/chain_sword_full_04", type = "body"}, --buggy
-                    -- chain_sword_body_05 = {model = "content/items/weapons/player/melee/full/chain_sword_full_05", type = "body"}, --buggy
-                    chain_sword_body_06 = {model = "content/items/weapons/player/melee/full/chain_sword_full_06", type = "body"},
-                    chain_sword_chain_default = {model = "", type = "chain"},
-                    chain_sword_chain_01 = {model = "content/items/weapons/player/melee/chains/chain_sword_chain_01", type = "chain"},
-                }
-            ),
-            combataxe_p3_m1 = table.combine(
-                _common_functions.emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-                _common_functions.emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
-                _common_functions.trinket_hook_models(nil, 0, vector3_box(.05, -4, 0), vector3_box(0, 0, -.2)),
-                _shovel_functions.shovel_head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), "head", {
-                    -- {"trinket_hook_empty"},
-                }, {}, {}, function(gear_id, item, attachment)
-                    local changes = {}
-                    if string_find(attachment, "default") then
-                        if mod:get_gear_setting(gear_id, "grip", item) ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
-                        if mod:get_gear_setting(gear_id, "pommel", item) ~= "shovel_pommel_default" then changes["pommel"] = "shovel_pommel_default" end
-                    else
-                        if mod:get_gear_setting(gear_id, "grip", item) == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
-                        if mod:get_gear_setting(gear_id, "pommel", item) == "shovel_pommel_default" then changes["pommel"] = "shovel_pommel_01" end
-                    end
-                    return changes
-                end),
-                _shovel_functions.shovel_grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), "grip", {}, {}, {}, function(gear_id, item, attachment)
-                    local changes = {}
-                    if string_find(attachment, "default") then
-                        if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
-                        if mod:get_gear_setting(gear_id, "pommel", item) ~= "shovel_pommel_default" then changes["pommel"] = "shovel_pommel_default" end
-                    else
-                        if mod:get_gear_setting(gear_id, "head", item) == "shovel_head_default" then changes["head"] = "shovel_head_01" end
-                        if mod:get_gear_setting(gear_id, "pommel", item) == "shovel_pommel_default" then changes["pommel"] = "shovel_pommel_01" end
-                    end
-                    return changes
-                end),
-                _shovel_functions.shovel_pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), "pommel", {}, {}, {}, function(gear_id, item, attachment)
-                    local changes = {}
-                    if string_find(attachment, "default") or string_find(attachment, "shovel_pommel_06") then
-                        if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
-                        if mod:get_gear_setting(gear_id, "grip", item) ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
-                    else
-                        if mod:get_gear_setting(gear_id, "head", item) == "shovel_head_default" then changes["head"] = "shovel_head_01" end
-                        if mod:get_gear_setting(gear_id, "grip", item) == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
-                    end
-                    return changes
-                end)
-            ),
-            combatsword_p1_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    combat_sword_grip_default = {model = "", type = "grip"},
-                    combat_sword_grip_01 = {model = "content/items/weapons/player/melee/grips/combat_sword_grip_01", type = "grip"},
-                    combat_sword_grip_02 = {model = "content/items/weapons/player/melee/grips/combat_sword_grip_02", type = "grip"},
-                    combat_sword_grip_03 = {model = "content/items/weapons/player/melee/grips/combat_sword_grip_03", type = "grip"},
-                    combat_sword_grip_04 = {model = "content/items/weapons/player/melee/grips/combat_sword_grip_04", type = "grip"},
-                    combat_sword_grip_05 = {model = "content/items/weapons/player/melee/grips/combat_sword_grip_05", type = "grip"},
-                    combat_sword_blade_default = {model = "", type = "body"},
-                    combat_sword_blade_01 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_01", type = "body"},
-                    combat_sword_blade_02 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_02", type = "body"},
-                    combat_sword_blade_03 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_03", type = "body"},
-                    combat_sword_blade_04 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_04", type = "body"},
-                    combat_sword_blade_05 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_05", type = "body"},
-                    combat_sword_blade_06 = {model = "content/items/weapons/player/melee/blades/combat_sword_blade_06", type = "body"},
-                }
-            ),
-            thunderhammer_2h_p1_m1 = table.combine(
-                {customization_default_position = vector3_box(0, 3, .35)},
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    thunder_hammer_shaft_default = {model = "", type = "shaft", move = vector3_box(-.5, -3, .3)},
-                    thunder_hammer_shaft_01 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_01", type = "shaft", move = vector3_box(-.5, -3, .3)},
-                    thunder_hammer_shaft_02 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_02", type = "shaft", move = vector3_box(-.5, -3, .3)},
-                    thunder_hammer_shaft_03 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_03", type = "shaft", move = vector3_box(-.5, -3, .3)},
-                    thunder_hammer_shaft_04 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_04", type = "shaft", move = vector3_box(-.5, -3, .3)},
-                    thunder_hammer_shaft_05 = {model = "content/items/weapons/player/ranged/shafts/thunder_hammer_shaft_05", type = "shaft", move = vector3_box(-.5, -3, .3)},
-                    thunder_hammer_pommel_default = {model = "", type = "pommel", move = vector3_box(-.75, -4, .5)},
-                    thunder_hammer_pommel_01 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_01", type = "pommel", move = vector3_box(-.75, -4, .5)},
-                    thunder_hammer_pommel_02 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_05", type = "pommel", move = vector3_box(-.75, -4, .5)},
-                    thunder_hammer_pommel_03 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_03", type = "pommel", move = vector3_box(-.75, -4, .5)},
-                    thunder_hammer_pommel_04 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_04", type = "pommel", move = vector3_box(-.75, -4, .5)},
-                    thunder_hammer_pommel_05 = {model = "content/items/weapons/player/melee/pommels/thunder_hammer_pommel_05", type = "pommel", move = vector3_box(-.75, -4, .5)},
-                    thunder_hammer_connector_default = {model = "", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    thunder_hammer_connector_01 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_01", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    thunder_hammer_connector_02 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_02", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    thunder_hammer_connector_03 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_03", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    thunder_hammer_connector_04 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_04", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    thunder_hammer_connector_05 = {model = "content/items/weapons/player/melee/connectors/thunder_hammer_connector_05", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    thunder_hammer_head_default = {model = "", type = "head", move = vector3_box(.15, -6.5, -.4)},
-                    thunder_hammer_head_01 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_01", type = "head", move = vector3_box(.15, -6.5, -.4)},
-                    thunder_hammer_head_02 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_02", type = "head", move = vector3_box(.15, -6.5, -.4)},
-                    thunder_hammer_head_03 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_03", type = "head", move = vector3_box(.15, -6.5, -.4)},
-                    thunder_hammer_head_04 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_04", type = "head", move = vector3_box(.15, -6.5, -.4)},
-                    thunder_hammer_head_05 = {model = "content/items/weapons/player/melee/heads/thunder_hammer_head_05", type = "head", move = vector3_box(.15, -6.5, -.4)},
-                }
-            ),
-            powermaul_2h_p1_m1 = table.combine(
-                {customization_default_position = vector3_box(0, 2, .35)},
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    ["2h_power_maul_shaft_default"] = {model = "", type = "shaft", move = vector3_box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_01"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_01", type = "shaft", move = vector3_box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_02"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_02", type = "shaft", move = vector3_box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_03"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_03", type = "shaft", move = vector3_box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_04"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_04", type = "shaft", move = vector3_box(-.3, -3, .2)},
-                    ["2h_power_maul_shaft_05"] = {model = "content/items/weapons/player/melee/shafts/2h_power_maul_shaft_05", type = "shaft", move = vector3_box(-.3, -3, .2)},
-                    ["2h_power_maul_pommel_default"] = {model = "", type = "pommel", move = vector3_box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_01"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_01", type = "pommel", move = vector3_box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_02"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_05", type = "pommel", move = vector3_box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_03"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_03", type = "pommel", move = vector3_box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_04"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_04", type = "pommel", move = vector3_box(-.5, -4, .5)},
-                    ["2h_power_maul_pommel_05"] = {model = "content/items/weapons/player/melee/pommels/2h_power_maul_pommel_05", type = "pommel", move = vector3_box(-.5, -4, .5)},
-                    ["2h_power_maul_connector_default"] = {model = "", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_01"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_01", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_02"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_02", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_03"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_03", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_04"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_04", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    ["2h_power_maul_connector_05"] = {model = "content/items/weapons/player/melee/connectors/2h_power_maul_connector_05", type = "connector", move = vector3_box(0, -5.5, -.4)},
-                    ["2h_power_maul_head_default"] = {model = "", type = "head", move = vector3_box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_01"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_01", type = "head", move = vector3_box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_02"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_02", type = "head", move = vector3_box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_03"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_03", type = "head", move = vector3_box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_04"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_04", type = "head", move = vector3_box(.05, -4.5, -.5)},
-                    ["2h_power_maul_head_05"] = {model = "content/items/weapons/player/melee/heads/2h_power_maul_head_05", type = "head", move = vector3_box(.05, -4.5, -.5)},
-                }
-            ),
-            chainsword_2h_p1_m1 = table.combine(
-                -- {customization_default_position = vector3_box(0, 2, .35)},
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    ["2h_chain_sword_grip_default"] = {model = "", type = "grip"},
-                    ["2h_chain_sword_grip_01"] = {model = "content/items/weapons/player/melee/grips/2h_chain_sword_grip_01", type = "grip"},
-                    ["2h_chain_sword_grip_02"] = {model = "content/items/weapons/player/melee/grips/2h_chain_sword_grip_02", type = "grip"},
-                    ["2h_chain_sword_grip_03"] = {model = "content/items/weapons/player/melee/grips/2h_chain_sword_grip_03", type = "grip"},
-                    ["2h_chain_sword_body_default"] = {model = "", type = "body"},
-                    ["2h_chain_sword_body_01"] = {model = "content/items/weapons/player/melee/full/2h_chain_sword_body_01", type = "body"},
-                    ["2h_chain_sword_body_02"] = {model = "content/items/weapons/player/melee/full/2h_chain_sword_body_02", type = "body"},
-                    ["2h_chain_sword_body_03"] = {model = "content/items/weapons/player/melee/full/2h_chain_sword_body_03", type = "body"},
-                    ["2h_chain_sword_chain_default"] = {model = "", type = "chain"},
-                    ["2h_chain_sword_chain_01"] = {model = "content/items/weapons/player/melee/chains/2h_chain_sword_chain_01", type = "chain"},
-                }
-            ),
-            combatsword_p2_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    falchion_grip_default = {model = "", type = "grip"},
-                    falchion_grip_01 = {model = "content/items/weapons/player/melee/grips/falchion_grip_01", type = "grip"},
-                    falchion_grip_02 = {model = "content/items/weapons/player/melee/grips/falchion_grip_02", type = "grip"},
-                    falchion_grip_03 = {model = "content/items/weapons/player/melee/grips/falchion_grip_03", type = "grip"},
-                    falchion_grip_04 = {model = "content/items/weapons/player/melee/grips/falchion_grip_04", type = "grip"},
-                    falchion_grip_05 = {model = "content/items/weapons/player/melee/grips/falchion_grip_05", type = "grip"},
-                    falchion_blade_default = {model = "", type = "body"},
-                    falchion_blade_01 = {model = "content/items/weapons/player/melee/blades/falchion_blade_01", type = "body"},
-                    falchion_blade_02 = {model = "content/items/weapons/player/melee/blades/falchion_blade_02", type = "body"},
-                    falchion_blade_03 = {model = "content/items/weapons/player/melee/blades/falchion_blade_03", type = "body"},
-                    falchion_blade_04 = {model = "content/items/weapons/player/melee/blades/falchion_blade_04", type = "body"},
-                    falchion_blade_05 = {model = "content/items/weapons/player/melee/blades/falchion_blade_05", type = "body"},
-                }
-            ),
-            forcesword_p1_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    force_sword_grip_default = {model = "", type = "grip"},
-                    force_sword_grip_01 = {model = "content/items/weapons/player/melee/grips/force_sword_grip_01", type = "grip"},
-                    force_sword_grip_02 = {model = "content/items/weapons/player/melee/grips/force_sword_grip_02", type = "grip"},
-                    force_sword_grip_03 = {model = "content/items/weapons/player/melee/grips/force_sword_grip_03", type = "grip"},
-                    force_sword_grip_04 = {model = "content/items/weapons/player/melee/grips/force_sword_grip_04", type = "grip"},
-                    force_sword_grip_05 = {model = "content/items/weapons/player/melee/grips/force_sword_grip_05", type = "grip"},
-                    force_sword_pommel_default = {model = "", type = "pommel"},
-                    force_sword_pommel_01 = {model = "content/items/weapons/player/melee/pommels/force_sword_pommel_01", type = "pommel"},
-                    force_sword_pommel_02 = {model = "content/items/weapons/player/melee/pommels/force_sword_pommel_02", type = "pommel"},
-                    force_sword_pommel_03 = {model = "content/items/weapons/player/melee/pommels/force_sword_pommel_03", type = "pommel"},
-                    force_sword_pommel_04 = {model = "content/items/weapons/player/melee/pommels/force_sword_pommel_04", type = "pommel"},
-                    force_sword_pommel_05 = {model = "content/items/weapons/player/melee/pommels/force_sword_pommel_05", type = "pommel"},
-                    force_sword_hilt_default = {model = "", type = "hilt"},
-                    force_sword_hilt_01 = {model = "content/items/weapons/player/melee/hilts/force_sword_hilt_01", type = "hilt"},
-                    force_sword_hilt_02 = {model = "content/items/weapons/player/melee/hilts/force_sword_hilt_02", type = "hilt"},
-                    force_sword_hilt_03 = {model = "content/items/weapons/player/melee/hilts/force_sword_hilt_03", type = "hilt"},
-                    force_sword_hilt_04 = {model = "content/items/weapons/player/melee/hilts/force_sword_hilt_04", type = "hilt"},
-                    force_sword_hilt_05 = {model = "content/items/weapons/player/melee/hilts/force_sword_hilt_05", type = "hilt"},
-                    force_sword_hilt_06 = {model = "content/items/weapons/player/melee/hilts/force_sword_hilt_06", type = "hilt"},
-                    force_sword_blade_default = {model = "", type = "blade"},
-                    force_sword_blade_01 = {model = "content/items/weapons/player/melee/blades/force_sword_blade_01", type = "blade"},
-                    force_sword_blade_02 = {model = "content/items/weapons/player/melee/blades/force_sword_blade_02", type = "blade"},
-                    force_sword_blade_03 = {model = "content/items/weapons/player/melee/blades/force_sword_blade_03", type = "blade"},
-                    force_sword_blade_04 = {model = "content/items/weapons/player/melee/blades/force_sword_blade_04", type = "blade"},
-                    force_sword_blade_05 = {model = "content/items/weapons/player/melee/blades/force_sword_blade_05", type = "blade"},
-                }
-            ),
-            combatsword_p3_m1 = table.combine(
-                _common_functions.emblem_right_models(),
-                _common_functions.emblem_left_models(),
-                _common_functions.trinket_hook_models(),
-                {
-                    sabre_grip_default = {model = "", type = "grip"},
-                    sabre_grip_01 = {model = "content/items/weapons/player/melee/grips/sabre_grip_01", type = "grip"},
-                    sabre_grip_02 = {model = "content/items/weapons/player/melee/grips/sabre_grip_02", type = "grip"},
-                    sabre_grip_03 = {model = "content/items/weapons/player/melee/grips/sabre_grip_03", type = "grip"},
-                    sabre_grip_04 = {model = "content/items/weapons/player/melee/grips/sabre_grip_04", type = "grip"},
-                    sabre_grip_05 = {model = "content/items/weapons/player/melee/grips/sabre_grip_05", type = "grip"},
-                    sabre_blade_default = {model = "", type = "body"},
-                    sabre_blade_01 = {model = "content/items/weapons/player/melee/blades/sabre_blade_01", type = "body"},
-                    sabre_blade_02 = {model = "content/items/weapons/player/melee/blades/sabre_blade_02", type = "body"},
-                    sabre_blade_03 = {model = "content/items/weapons/player/melee/blades/sabre_blade_03", type = "body"},
-                    sabre_blade_04 = {model = "content/items/weapons/player/melee/blades/sabre_blade_04", type = "body"},
-                    sabre_blade_05 = {model = "content/items/weapons/player/melee/blades/sabre_blade_05", type = "body"},
-                }
-            ),
+            combataxe_p1_m1 = _combataxe_p1_m1.models,
+            combataxe_p2_m1 = _combataxe_p2_m1.models,
+            combatknife_p1_m1 = _combatknife_p1_m1.models,
+            powersword_p1_m1 = _powersword_p1_m1.models,
+            chainaxe_p1_m1 = _chainaxe_p1_m1.models,
+            chainsword_p1_m1 = _chainsword_p1_m1.models,
+            combataxe_p3_m1 = _combataxe_p3_m1.models,
+            combatsword_p1_m1 = _combatsword_p1_m1.models,
+            thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.models,
+            powermaul_2h_p1_m1 = _powermaul_2h_p1_m1.models,
+            chainsword_2h_p1_m1 = _chainsword_2h_p1_m1.models,
+            combatsword_p2_m1 = _combatsword_p2_m1.models,
+            forcesword_p1_m1 = _forcesword_p1_m1.models,
+            combatsword_p3_m1 = _combatsword_p3_m1.models,
         --#endregion
     }
-
     --#region Copies
         --#region Ogryn Guns
             mod.attachment_models.ogryn_heavystubber_p1_m2 = mod.attachment_models.ogryn_heavystubber_p1_m1
@@ -1455,7 +680,6 @@ local _item_minion = "content/items/weapons/minions"
         --#region Ogryn Melee
             mod.attachment_models.ogryn_combatblade_p1_m2 = mod.attachment_models.ogryn_combatblade_p1_m1
             mod.attachment_models.ogryn_combatblade_p1_m3 = mod.attachment_models.ogryn_combatblade_p1_m1
-            -- mod.attachment_models.ogryn_powermaul_slabshield_p1_m1 = mod.attachment_models.ogryn_powermaul_p1_m1
             mod.attachment_models.ogryn_club_p2_m2 = mod.attachment_models.ogryn_club_p2_m1
             mod.attachment_models.ogryn_club_p2_m3 = mod.attachment_models.ogryn_club_p2_m1
         --#endregion
@@ -1468,10 +692,6 @@ local _item_minion = "content/items/weapons/minions"
             mod.attachment_models.stubrevolver_p1_m3 = mod.attachment_models.stubrevolver_p1_m1
             mod.attachment_models.autogun_p1_m2 = mod.attachment_models.autogun_p1_m1
             mod.attachment_models.autogun_p1_m3 = mod.attachment_models.autogun_p1_m1
-            -- mod.attachment_models.autogun_p2_m2 = mod.attachment_models.autogun_p2_m1
-            -- mod.attachment_models.autogun_p2_m3 = mod.attachment_models.autogun_p2_m1
-            -- mod.attachment_models.autogun_p3_m2 = mod.attachment_models.autogun_p3_m1
-            -- mod.attachment_models.autogun_p3_m3 = mod.attachment_models.autogun_p3_m1
             mod.attachment_models.autogun_p2_m1 = mod.attachment_models.autogun_p1_m1
             mod.attachment_models.autogun_p2_m2 = mod.attachment_models.autogun_p1_m1
             mod.attachment_models.autogun_p2_m3 = mod.attachment_models.autogun_p1_m1

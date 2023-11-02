@@ -204,7 +204,8 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 	end
 
 	-- Mission
-	file:write("#mission;"..tostring(self.mission_name).."\n")
+	local timer = _os.time() - self.timer
+	file:write("#mission;"..tostring(self.mission_name)..";"..tostring(self.mission_challenge)..";"..tostring(self.mission_circumstance)..";"..tostring(self.victory_defeat)..";"..tostring(timer).."\n")
 
 	-- Players
 	local count = 0
@@ -275,7 +276,7 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 				file:write("#row;"..name..";"..index..";"..val_count..";"..text..";"..validation..";"..iteration..";"..visible..";"..group..";"..setting..";"..parent..";"..is_time..";"..summary..";"..normalize..";"..icon..";"..icon_package..";"..icon_width.."\n")
 				if this_row.data and type(this_row.data) == "table" then
 					for account_id, data in pairs(this_row.data) do
-						file:write(account_id..";"..data.score..";"..(data.is_best and "1" or "0")..";"..(data.is_worst and "1" or "0").."\n")
+						file:write(account_id..";"..data.score..";"..(data.is_best and "1" or "0")..";"..(data.is_worst and "1" or "0")..(data.text and ";"..data.text or "").."\n")
 					end
 				end
 				index = index + 1
@@ -344,6 +345,23 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 			-- Read mission info
 			local name = info[2]
 			entry.mission_name = name
+			entry.mission_challenge = ""
+			entry.mission_circumstance = ""
+			entry.victory_defeat = ""
+			entry.timer = ""
+			if info[3] ~= nil then entry.mission_challenge = info[3] end
+			if info[4] ~= nil then entry.mission_circumstance = info[4] end
+			if info[5] ~= nil then entry.victory_defeat = info[5] end
+			if ( info[6] ~= nil and tonumber(info[6]) ~= nil ) then
+				local seconds = tonumber(info[6])
+				local hours = math.floor(seconds / 3600)
+				local minutes = math.floor((seconds / 60) % 60)
+				seconds = seconds % 60
+				if hours < 10 then hours= "0"..tostring(hours) else hours= tostring(hours) end
+				if minutes < 10 then minutes = "0"..tostring(minutes) else minutes = tostring(minutes) end
+				if seconds < 10 then seconds = "0"..tostring(seconds) else seconds = tostring(seconds) end
+				entry.timer = hours..":"..minutes..":"..seconds
+			end
 
 		elseif player_match or reading == "players" then
 			-- Read players
@@ -429,9 +447,14 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 			elseif reading == "row" and count > 0 and row_index > 0 then
 				local val_info = split(line, ";")
 				local score = tostring(val_info[2])
+				local text = nil
+				if val_info[5] then
+					text = val_info[5]
+				end
 				entry.rows[row_index].data[val_info[1]] = {
 					score = tonumber(score),
 					value = tonumber(score),
+					text_data = text,
 				}
 				count = count - 1
 				if count <= 0 then

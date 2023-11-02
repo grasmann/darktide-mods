@@ -4,7 +4,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -47,11 +47,31 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     staff_head_attachments = function()
         return {
-            {id = "head_default", name = "Default"},
+            {id = "head_default", name = mod:localize("mod_attachment_default")},
             {id = "head_01",      name = "Head 1"},
             {id = "head_02",      name = "Head 2"},
             {id = "head_03",      name = "Head 3"},
@@ -78,7 +98,7 @@ local functions = {
     end,
     staff_body_attachments = function()
         return {
-            {id = "body_default", name = "Default"},
+            {id = "body_default", name = mod:localize("mod_attachment_default")},
             {id = "body_01",      name = "Body 1"},
             {id = "body_02",      name = "Body 2"},
             {id = "body_03",      name = "Body 3"},
@@ -101,7 +121,7 @@ local functions = {
     end,
     staff_shaft_upper_attachments = function()
         return {
-            {id = "shaft_upper_default", name = "Default"},
+            {id = "shaft_upper_default", name = mod:localize("mod_attachment_default")},
             {id = "shaft_upper_01",      name = "Upper Shaft 1"},
             {id = "shaft_upper_02",      name = "Upper Shaft 2"},
             {id = "shaft_upper_03",      name = "Upper Shaft 3"},
@@ -124,7 +144,7 @@ local functions = {
     end,
     staff_shaft_lower_attachments = function()
         return {
-            {id = "shaft_lower_default", name = "Default"},
+            {id = "shaft_lower_default", name = mod:localize("mod_attachment_default")},
             {id = "shaft_lower_01",      name = "Lower Shaft 1"},
             {id = "shaft_lower_02",      name = "Lower Shaft 2"},
             {id = "shaft_lower_03",      name = "Lower Shaft 3"},
@@ -155,19 +175,26 @@ return table.combine(
             shaft_upper = functions.staff_shaft_upper_attachments(),
             body = functions.staff_body_attachments(),
             head = functions.staff_head_attachments(),
-            -- emblem_right = _common_functions.emblem_right_attachments(),
-            -- emblem_left = _common_functions.emblem_left_attachments(),
-            trinket_hook = _common_functions.trinket_hook_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
+            trinket_hook = _common.trinket_hook_attachments(),
         },
         models = table.combine(
-            {customization_default_position = vector3_box(0, 8, .75)},
+            {customization_default_position = vector3_box(-.5, 8, .75)},
             functions.staff_head_models(nil, 0, vector3_box(.15, -8.5, -.8), vector3_box(0, 0, .4)),
             functions.staff_body_models(nil, 0, vector3_box(.1, -7, -.65), vector3_box(0, 0, .2)),
             functions.staff_shaft_upper_models(nil, 0, vector3_box(-.25, -5.5, -.4), vector3_box(0, 0, .1)),
             functions.staff_shaft_lower_models(nil, 0, vector3_box(-.75, -4, .5), vector3_box(0, 0, -.1)),
-            -- _common_functions.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-            -- _common_functions.emblem_left_models("receiver", 0, vector3_box(0, -3, 0), vector3_box(-.2, 0, 0)),
-            _common_functions.trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2))
+            _common.emblem_right_models("body", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("body", 0, vector3_box(0, -3, 0), vector3_box(-.2, 0, 0)),
+            _common.trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2))
         ),
+        anchors = {
+            fixes = {
+                {dependencies = {"body_01"}, -- Emblems
+                    emblem_left = {parent = "body", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                    emblem_right = {parent = "body", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+            }
+        },
     }
 )

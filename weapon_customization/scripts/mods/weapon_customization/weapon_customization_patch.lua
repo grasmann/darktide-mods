@@ -101,6 +101,19 @@ mod.setup_item_definitions = function(self)
         local master_items = MasterItems.get_cached()
         if master_items then
             self:persistent_table(REFERENCE).item_definitions = table_clone_instance(master_items)
+            -- Bulwark shield
+            local definitions = self:persistent_table(REFERENCE).item_definitions
+            -- if not definitions[bulwark_shield_string] then
+                local bulwark_shield_string = "content/items/weapons/player/melee/ogryn_bulwark_shield_01"
+                local bulwark_shield_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+                definitions[bulwark_shield_string] = table_clone(definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"])
+                local bulwark_shield = definitions[bulwark_shield_string]
+                bulwark_shield.name = bulwark_shield_string
+                bulwark_shield.base_unit = bulwark_shield_unit
+                bulwark_shield.resource_dependencies = {
+                    [bulwark_shield_unit] = true,
+                }
+            -- end
         end
     end
     -- local definitions = self:persistent_table(REFERENCE).item_definitions
@@ -431,12 +444,6 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
             local gear_id = mod:get_gear_id(instance.processing_item)
             if gear_id then
                 mod:setup_item_definitions()
-                -- -- Bulwark
-                -- if mod:get_gear_setting(gear_id, "left", instance.processing_item) == "bulwark_shield_01" then
-                --     items_dictionary = mod:persistent_table(REFERENCE).bulwark_item_definitions
-                -- end
-                -- local _items_dictionary = mod:persistent_table(REFERENCE).item_definitions or items_dictionary
-                -- items_dictionary = _items_dictionary
 
                 -- Add flashlight slot
                 mod:_add_custom_attachments(instance.processing_item, attachments)
@@ -464,41 +471,49 @@ end)
 -- ##### │ │ ├┤ │││  ├─┘├┬┘├┤ └┐┌┘│├┤ │││└─┐ ##########################################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘└─┘ ##########################################################################
 
-mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, is_equipped, on_present_callback, ...)
+local present_hook = function(func, self, item, ...)
     mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
-	func(self, item, is_equipped, on_present_callback, ...)
+	local ret = func(self, item, ...)
     mod.previewed_weapon = nil
-end)
+    return ret
+end
 
-mod:hook(CLASS.ViewElementWeaponActions, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
-	func(self, item, ...)
-	mod.previewed_weapon = nil
-end)
+mod:hook(CLASS.ViewElementWeaponStats, "present_item", present_hook) --function(func, self, item, is_equipped, on_present_callback, ...)
+--     mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
+-- 	func(self, item, is_equipped, on_present_callback, ...)
+--     mod.previewed_weapon = nil
+-- end)
 
-mod:hook(CLASS.ViewElementWeaponInfo, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
-	func(self, item, ...)
-	mod.previewed_weapon = nil
-end)
+mod:hook(CLASS.ViewElementWeaponActions, "present_item", present_hook) --function(func, self, item, ...)
+--     mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
+-- 	func(self, item, ...)
+-- 	mod.previewed_weapon = nil
+-- end)
 
-mod:hook(CLASS.ViewElementWeaponPatterns, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
-	func(self, item, ...)
-	mod.previewed_weapon = nil
-end)
+mod:hook(CLASS.ViewElementWeaponInfo, "present_item", present_hook) --function(func, self, item, ...)
+--     mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
+-- 	func(self, item, ...)
+-- 	mod.previewed_weapon = nil
+-- end)
 
-mod:hook(CLASS.ViewElementWeaponActionsExtended, "present_item", function(func, self, item, ...)
-    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
-	func(self, item, ...)
-	mod.previewed_weapon = nil
-end)
+mod:hook(CLASS.ViewElementWeaponPatterns, "present_item", present_hook) --function(func, self, item, ...)
+--     mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
+-- 	func(self, item, ...)
+-- 	mod.previewed_weapon = nil
+-- end)
+
+mod:hook(CLASS.ViewElementWeaponActionsExtended, "present_item", present_hook) --function(func, self, item, ...)
+--     mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
+-- 	func(self, item, ...)
+-- 	mod.previewed_weapon = nil
+-- end)
 
 mod:hook(CLASS.WeaponStats, "get_compairing_stats", function(func, self, ...)
-    mod.previewed_weapon = {f = mod:has_flashlight(self._item), l = mod:has_laser_pointer(self._item)}
-	local values = func(self, ...)
-	mod.previewed_weapon = nil
-    return values
+    -- mod.previewed_weapon = {f = mod:has_flashlight(self._item), l = mod:has_laser_pointer(self._item)}
+	-- local values = func(self, ...)
+	-- mod.previewed_weapon = nil
+    -- return values
+    return present_hook(func, self, self._item, ...)
 end)
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐┌─┐ ##############################################################
@@ -536,10 +551,27 @@ mod.template_add_torch = function(self, orig_weapon_template)
 	return orig_weapon_template
 end
 
+-- mod.template_set_bolt_pistol = function(self, orig_weapon_template)
+--     if orig_weapon_template and orig_weapon_template.anim_state_machine_3p and string_find(orig_weapon_template.anim_state_machine_3p, "bolt_gun") then
+--         local templates = self:persistent_table(REFERENCE).weapon_templates
+--         if not templates[orig_weapon_template.name] then
+--             templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
+--         end
+--         local weapon_template = templates[orig_weapon_template.name]
+
+--         weapon_template.anim_state_machine_3p = "content/characters/player/human/third_person/animations/lasgun_pistol"
+--         weapon_template.anim_state_machine_1p = "content/characters/player/human/first_person/animations/lasgun_pistol"
+
+--         return weapon_template
+--     end
+--     return orig_weapon_template
+-- end
+
 mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
 	if not instance._weapon_template then instance._weapon_template = instance.weapon_template end
 	instance.weapon_template = function(template_name)
 		local weapon_template = instance._weapon_template(template_name)
+        -- local weapon_template = mod:template_set_bolt_pistol(weapon_template)
 		return mod:template_add_torch(weapon_template)
 	end
 end)

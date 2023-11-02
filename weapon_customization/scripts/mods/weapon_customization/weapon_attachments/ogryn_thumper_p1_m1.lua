@@ -4,7 +4,8 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -47,11 +48,31 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     grip_attachments = function()
         return {
-            {id = "grip_default",   name = "Default"},
+            {id = "grip_default",   name = mod:localize("mod_attachment_default")},
             {id = "grip_01",        name = "Grip 1"},
             {id = "grip_02",        name = "Grip 2"},
             {id = "grip_03",        name = "Grip 3"},
@@ -74,7 +95,7 @@ local functions = {
     end,
     sight_attachments = function()
         return {
-            {id = "sight_default",  name = "Default"},
+            {id = "sight_default",  name = mod:localize("mod_attachment_default")},
             {id = "sight_01",       name = "Sight 1"},
             {id = "sight_02",       name = "No Sight"},
             {id = "sight_03",       name = "Sight 3"},
@@ -95,7 +116,7 @@ local functions = {
     end,
     body_attachments = function()
         return {
-            {id = "body_default", name = "Default"},
+            {id = "body_default", name = mod:localize("mod_attachment_default")},
             {id = "body_01",      name = "Body 1"},
             {id = "body_02",      name = "Body 2"},
             {id = "body_03",      name = "Body 3"},
@@ -122,19 +143,19 @@ return table.combine(
     functions,
     {
         attachments = { -- Done 8.9.2023
-            flashlight = _common_functions.flashlights_attachments(),
-            emblem_right = _common_functions.emblem_right_attachments(),
-            emblem_left = _common_functions.emblem_left_attachments(),
-            bayonet = _common_functions.ogryn_bayonet_attachments(),
+            flashlight = _common_ranged.flashlights_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
+            bayonet = _common_ranged.ogryn_bayonet_attachments(),
             sight = functions.sight_attachments(),
             grip = functions.grip_attachments(),
             body = functions.body_attachments()
         },
         models = table.combine( -- Done 8.9.2023
-            _common_functions.flashlight_models("receiver", -2.25, vector3_box(0, -3, 0), vector3_box(.4, 0, 0)),
-            _common_functions.emblem_right_models("receiver", -3, vector3_box(-.3, -6, 0), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_left_models("receiver", 0, vector3_box(-.1, -6, 0), vector3_box(-.2, 0, 0)),
-            _common_functions.ogryn_bayonet_models("body", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
+            _common_ranged.flashlight_models("receiver", -2.25, vector3_box(0, -3, 0), vector3_box(.4, 0, 0)),
+            _common.emblem_right_models("receiver", -3, vector3_box(-.3, -6, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("receiver", 0, vector3_box(-.1, -6, 0), vector3_box(-.2, 0, 0)),
+            _common_ranged.ogryn_bayonet_models("body", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
             functions.grip_models(nil, 0, vector3_box(-.3, -3, 0), vector3_box(0, -.2, 0)),
             functions.sight_models(nil, -.5, vector3_box(.2, -3, 0), vector3_box(0, 0, .2)),
             functions.body_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001))

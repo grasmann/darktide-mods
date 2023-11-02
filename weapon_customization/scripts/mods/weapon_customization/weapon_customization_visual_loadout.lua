@@ -261,19 +261,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local slot_info_id = mod:get_slot_info_id(item_data)
 		local attachment_slot_info = {}
 
-		-- if not mod.test then
-		-- 	mod:dtf(attach_settings, "attach_settings", 2)
-		-- 	mod.test = true
-		-- end
-
 		if item_unit and attachments and gear_id then
 			mod:setup_item_definitions()
-			-- -- Bulwark
-			-- if mod:get_gear_setting(gear_id, "left", item_data) == "bulwark_shield_01" then
-			-- 	attach_settings.item_definitions = mod:persistent_table(REFERENCE).bulwark_item_definitions
-			-- end
-			-- local _items_dictionary = mod:persistent_table(REFERENCE).item_definitions or attach_settings.item_definitions
-			-- attach_settings.item_definitions = _items_dictionary
 
 			-- Add flashlight slot
 			mod:_add_custom_attachments(item_data, attachments)
@@ -283,7 +272,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"lasgun_p2_m1", "lasgun_p2_m2", "lasgun_p2_m3"}, nil, true)
+		-- mod:debug_attachments(item_data, attachments, {"shotgun_p1_m1", "shotgun_p1_m2", "shotgun_p1_m3"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
@@ -354,15 +343,16 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			        mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
 			    end
 
-				-- Bulwark shield
-				if unit_name == "#ID[bc25db1df0670d2a]" then
-					unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 0, -.065))
-					local x, y, z = quaternion_to_euler_angles_xyz(unit_local_rotation(unit, 1))
-					local rotation = vector3(x, y, z) + vector3(-10, 5, 5)
-					local rotate_quaternion = quaternion_from_euler_angles_xyz(rotation[1], rotation[2], rotation[3])
-					unit_set_local_rotation(unit, 1, rotate_quaternion)
-					unit_set_local_scale(unit, 1, vector3(1, 1, 0.9))
-				end
+				-- -- Bulwark shield
+				-- if unit_name == "#ID[bc25db1df0670d2a]" then
+				-- 	mod:echo("bulwark!")
+				-- 	unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 0, -.065))
+				-- 	local x, y, z = quaternion_to_euler_angles_xyz(unit_local_rotation(unit, 1))
+				-- 	local rotation = vector3(x, y, z) + vector3(-10, 5, 5)
+				-- 	local rotate_quaternion = quaternion_from_euler_angles_xyz(rotation[1], rotation[2], rotation[3])
+				-- 	unit_set_local_rotation(unit, 1, rotate_quaternion)
+				-- 	unit_set_local_scale(unit, 1, vector3(1, 1, 0.9))
+				-- end
 
 				-- Handle positioning and setup infos
 				if slot_infos[slot_info_id] then

@@ -4,8 +4,9 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _lasgun_common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
+local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
 local _shotgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/shotgun_p1_m1")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -49,11 +50,31 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     body_attachments = function()
         return {
-            {id = "body_default",   name = "Default"},
+            {id = "body_default",   name = mod:localize("mod_attachment_default")},
             {id = "body_01",        name = "Body 1"},
         }
     end,
@@ -68,10 +89,12 @@ local functions = {
     end,
     barrel_attachments = function()
         return {
-            {id = "barrel_default", name = "Default"},
+            {id = "barrel_default", name = mod:localize("mod_attachment_default")},
             {id = "barrel_01",      name = "Barrel 1"},
             {id = "barrel_02",      name = "Barrel 2"},
             {id = "barrel_03",      name = "Barrel 3"},
+            {id = "barrel_04",      name = "Barrel 4"},
+            {id = "barrel_05",      name = "Barrel 5"},
         }
     end,
     barrel_models = function(parent, angle, move, remove)
@@ -83,11 +106,13 @@ local functions = {
             barrel_01 =      {model = _item_ranged.."/barrels/stubgun_pistol_barrel_01", type = "barrel", parent = tv(parent, 2), angle = a, move = m, remove = r},
             barrel_02 =      {model = _item_ranged.."/barrels/stubgun_pistol_barrel_02", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r},
             barrel_03 =      {model = _item_ranged.."/barrels/stubgun_pistol_barrel_03", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r},
+            barrel_04 =      {model = _item_ranged.."/barrels/stubgun_pistol_barrel_04", type = "barrel", parent = tv(parent, 5), angle = a, move = m, remove = r},
+            barrel_05 =      {model = _item_ranged.."/barrels/stubgun_pistol_barrel_05", type = "barrel", parent = tv(parent, 6), angle = a, move = m, remove = r},
         }
     end,
     rail_attachments = function()
         return {
-            {id = "rail_default",   name = "Default"},
+            {id = "rail_default",   name = mod:localize("mod_attachment_default")},
             {id = "rail_01",        name = "Rail 1"},
         }
     end,
@@ -106,30 +131,30 @@ return table.combine(
     functions,
     {
         attachments = { -- Done 13.9.2023
-            flashlight = _common_functions.flashlights_attachments(),
+            flashlight = _common_ranged.flashlights_attachments(),
             body = functions.body_attachments(),
             barrel = functions.barrel_attachments(),
             -- rail = functions.rail_attachments(),
             sight_2 = table.icombine(
-                _common_functions.sight_default(),
-                _common_functions.reflex_sights_attachments()
+                _common_ranged.sight_default(),
+                _common_ranged.reflex_sights_attachments()
             ),
-            rail = _lasgun_common.rail_attachments(),
+            rail = _common_lasgun.rail_attachments(),
             stock_3 = _shotgun_p1_m1.stock_attachments(),
-            emblem_right = _common_functions.emblem_right_attachments(),
-            emblem_left = _common_functions.emblem_left_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
         },
         models = table.combine( -- Done 13.9.2023
             {customization_default_position = vector3_box(-.2, 0, 0)},
-            _common_functions.flashlight_models("body", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_right_models("body", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_left_models("body", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
+            _common_ranged.flashlight_models("body", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_right_models("body", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("body", 0, vector3_box(0, -4, 0), vector3_box(-.2, 0, 0)),
             _shotgun_p1_m1.stock_models("body", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, -.11), "stock_3"),
             functions.body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
             functions.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
             -- functions.rail_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-            _lasgun_common.rail_models("body", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-            _common_functions.reflex_sights_models("body", -.5, vector3_box(0, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
+            _common_lasgun.rail_models("body", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+            _common_ranged.reflex_sights_models("body", -.5, vector3_box(0, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
                 {rail = "rail_default"},
                 {rail = "rail_01"},
                 {rail = "rail_01"},

@@ -605,6 +605,7 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
 
     local zero_setting = mod:get("zero_values")
     local worst_setting = mod:get("worst_values")
+    local has_mytext = false
     -- Set row texts
     if not header and #children == 0 then
         local player_num = 1
@@ -621,11 +622,14 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
                 -- Prepare score text
                 local row_data = this_row.data and this_row.data[account_id]
                 local score = row_data and row_data.score or 0
+                local mytext = row_data and row_data.text_data or nil
                 if this_row.is_text then
                     score = (row_data and row_data.text) or "lol"
                     -- mod:echo("text = '"..tostring(row_data.text).."'")
-                end
-                if not this_row.is_text then
+                elseif mytext then
+                    score = mytext
+                    has_mytext = true
+                elseif not this_row.is_text then
                     -- if row_data.text then mod:echo(row_data.text) end
                     local decimals = this_row.decimals or 0
                     decimals = this_row.is_time and 1 or decimals
@@ -765,6 +769,19 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
                 if num_players <= 4 and ui_renderer then
                     local account_id = player:account_id() or player:name()
                     local score = this_row.data[account_id].text
+                    if score == nil then score = "lol" end
+                    if score then
+                        mod:shrink_text(score, widget.style["style_id_"..player_pass_map[num_players]], _settings.scoreboard_column_width, ui_renderer)
+                    end
+                end
+            end
+        elseif has_mytext then
+            local num_players = 0
+            for _, player in pairs(players) do
+                num_players = num_players + 1
+                if num_players <= 4 and ui_renderer then
+                    local account_id = player:account_id() or player:name()
+                    local score = this_row.data[account_id].text_data
                     if score == nil then score = "lol" end
                     if score then
                         mod:shrink_text(score, widget.style["style_id_"..player_pass_map[num_players]], _settings.scoreboard_column_width, ui_renderer)

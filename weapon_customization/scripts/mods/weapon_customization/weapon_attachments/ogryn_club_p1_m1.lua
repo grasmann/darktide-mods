@@ -4,7 +4,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -47,11 +47,31 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     head_attachments = function()
         return {
-            {id = "head_default", name = "Default"},
+            {id = "head_default", name = mod:localize("mod_attachment_default")},
             {id = "head_01",      name = "Head 1"},
             {id = "head_02",      name = "Head 2"},
             {id = "head_03",      name = "Head 3"},
@@ -64,7 +84,7 @@ local functions = {
         local a = angle or 0
         local m = move or vector3_box(0, 0, 0)
         local r = remove or vector3_box(0, 0, 0)
-        local t = type or "barrel"
+        local t = type or "head"
         local n = no_support or {}
         local ae = automatic_equip or {}
         local h = hide_mesh or {}
@@ -80,7 +100,7 @@ local functions = {
     end,
     grip_attachments = function()
         return {
-            {id = "grip_default", name = "Default"},
+            {id = "grip_default", name = mod:localize("mod_attachment_default")},
             {id = "grip_01",      name = "Grip 1"},
             {id = "grip_02",      name = "Grip 2"},
             {id = "grip_03",      name = "Grip 3"},
@@ -92,7 +112,7 @@ local functions = {
         local a = angle or 0
         local m = move or vector3_box(0, 0, 0)
         local r = remove or vector3_box(0, 0, 0)
-        local t = type or "barrel"
+        local t = type or "grip"
         local n = no_support or {}
         local ae = automatic_equip or {}
         local h = hide_mesh or {}
@@ -107,7 +127,7 @@ local functions = {
     end,
     pommel_attachments = function()
         return {
-            {id = "pommel_default", name = "Default"},
+            {id = "pommel_default", name = mod:localize("mod_attachment_default")},
             {id = "pommel_01",      name = "Pommel 1"},
             {id = "pommel_02",      name = "Pommel 2"},
             {id = "pommel_03",      name = "Pommel 3"},
@@ -119,7 +139,7 @@ local functions = {
         local a = angle or 0
         local m = move or vector3_box(0, 0, 0)
         local r = remove or vector3_box(0, 0, 0)
-        local t = type or "barrel"
+        local t = type or "pommel"
         local n = no_support or {}
         local ae = automatic_equip or {}
         local h = hide_mesh or {}
@@ -141,14 +161,14 @@ return table.combine(
             grip = functions.grip_attachments(),
             pommel = functions.pommel_attachments(),
             head = functions.head_attachments(),
-            emblem_right = _common_functions.emblem_right_attachments(),
-            emblem_left = _common_functions.emblem_left_attachments(),
-            trinket_hook = _common_functions.trinket_hook_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
+            trinket_hook = _common.trinket_hook_attachments(),
         },
         models = table.combine( -- Done 10.9.2023
-            _common_functions.emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
-            _common_functions.trinket_hook_models("head", 0, vector3_box(.05, -4, 0), vector3_box(0, 0, -.2)),
+            _common.emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
+            _common.trinket_hook_models("head", 0, vector3_box(.05, -4, 0), vector3_box(0, 0, -.2)),
             functions.head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), "head", {
                 {"trinket_hook_empty"},
             }, {}, {}, function(gear_id, item, attachment)

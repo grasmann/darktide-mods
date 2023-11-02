@@ -169,6 +169,7 @@ end
 
 -- Import mod files
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_crouch_aim")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_bolt_pistol")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_gear")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visible_equipment")
@@ -191,3 +192,4 @@ if managers and managers.player._game_state ~= nil then
 end
 
 mod:load_needed_packages()
+-- mod:find_attachment_entries()

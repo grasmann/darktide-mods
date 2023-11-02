@@ -58,16 +58,95 @@ return {
 		en = "Miscellaneous",
 		de = "Verschiedenes",
 		ru = "Разное",
+		["zh-cn"] = "杂项",
 	},
 	mod_option_misc_cover_on_crouch = {
 		en = "Cover on Crouch",
 		de = "Deckung beim Ducken",
 		ru = "Прятаться при приседании",
+		["zh-cn"] = "蹲伏时掩蔽",
 	},
 	mod_option_misc_cover_on_crouch_tooltip = {
 		en = "Plays the cover animation when crouching",
 		de = "Spielt beim Ducken die Cover-Animation ab",
 		ru = "При приседании воспроизводится анимация использования прикрытия.",
+		["zh-cn"] = "蹲伏时播放被掩体遮蔽的动画",
+	},
+	mod_option_misc_attachment_names = {
+		en = "Attachment Names",
+		ru = "Названия обвесов",
+		["zh-cn"] = "附件名称",
+	},
+	mod_option_misc_attachment_names_tooltip = {
+		en = "Replace attachment names",
+		ru = "Заменяет названия всех обвесов для оружия.",
+		["zh-cn"] = "替换附件名称",
+	},
+	mod_attachment_names_company = {
+		en = "Flakmark",
+		de = "Flakmark",
+		ru = "Флакмарк",
+		["zh-cn"] = "机密型号",
+	},
+	mod_attachment_flashlight_01 = {
+		en = "Omnissiah's Glow",
+		de = "Omnissiah's Glanz",
+		ru = "Сияние Омниссии",
+		["zh-cn"] = "欧姆尼塞亚的圣光",
+	},
+	mod_attachment_flashlight_02 = {
+		en = "Lumen Imperialis",
+		de = "Imperiales Licht",
+		ru = "Люмен Империалис",
+		["zh-cn"] = "帝国之流明",
+	},
+	mod_attachment_flashlight_03 = {
+		en = "Deathwatch Radiant",
+		de = "Todeswacht Strahl",
+		ru = "Сияние Караула Смерти",
+		["zh-cn"] = "死亡守望光辉",
+	},
+	mod_attachment_flashlight_04 = {
+		en = "Chaosbane Luminary",
+		de = "Chaosbann Leuchte",
+		ru = "Светило Погибели Хаоса",
+		["zh-cn"] = "混沌祸根发光灵体",
+	},
+	mod_attachment_laser_pointer = {
+		en = "Sanctified Targeter",
+		de = "Geheiligter Zielerfasser",
+		ru = "Освящённый целеуказатель",
+		["zh-cn"] = "圣化指向仪",
+	},
+	mod_attachment_default = {
+		en = "Default",
+		de = "Standard",
+		ru = "Стандартный",
+		["zh-cn"] = "默认",
+	},
+	mod_attachment_no_stock = {
+		en = "No Stock",
+		de = "Kein Schaft",
+		ru = "Без приклада",
+		["zh-cn"] = "无枪托",
+	},
+	mod_attachment_mk = {
+		en = "Mk ",
+		de = "Mk ",
+		ru = "Мод ",
+		["zh-cn"] = "Mk.",
+	},
+	mod_attachment_kasr = {
+		en = "Kasr",
+		de = "Kasr",
+		ru = "Каср",
+		["zh-cn"] = "壁垒",
+	},
+	mod_attachment_remove = {
+		en = "Twin.Linked Heavy Stubber|Ripper Gun|Rumbler|Kickback|Ogryn Thumper|Grenadier Gauntlet|Cleaver|Power Maul|Battle Maul & Mk III Slab Shield|Battle Maul & Mk 3 Slab Shield|Bully Club|Shredder Autopistol|Helbore Lasgun|Laspistol|Infantry Autogun|Headhunter Autogun|Braced Autogun|Spearhead Boltgun|Boltgun|Infantry Lasgun| pattern lasgun|Heavy|Autogun|Recon Lasgun| Purgation Flamer|Flamer| pattern flamer|Combat Shotgun|Stub Revolver|Stubrevolver|Plasma Gun|Force Staff|Duelling Sword|Blaze Force Sword|Force Sword|Power Sword|Sword|Combat Axe|Tactical Axe|Assault Chainsword|Chainsword|Combat Blade|Model Powersword|Assault Chainaxe|Chainaxe|pattern|unknown manufacture|Sapper Shovel|Thunder Hammer|Crusher|Model Powermaul|Eviscerator|Camo|[()]",
+		de = "-Rippergun|-Schwert|Doppelläufiges|-Maschinengewehr|-Tarnung|[():]|Rippergun|-Camo|-Rückschlag|-Prügel|Rückschlag|-Grenadierhandschuh|Grenadierhandschuh|-Hackmesser|Hackmesser|-Energiestreitkolben|.Kampf.Streitkolben|& Orox.Klotzschild Mk III|& Orox.Klotzschild Mk 3|-Schlägerkeule|-Kampfaxt|Kampfaxt| Taktische Axt|.Sturm.Kettenschwert|Sturm.Kettenschwert|.Kampfklinge|Kampfklinge|.Energieschwert|Energieschwert|Pionierspaten|.Sturm.Kettenaxt|.Helbore.Lasergewehr|Infanterie.Lasergewehr|.Kundschafter.Lasergewehr| Schwere Laserpistole|.Muster.Lasergewehr|.Infanterie.Sturmgewehr|.Stabilisation.Sturmgewehr|.Kopfjäger.Sturmgewehr|.Sturmgewehr|.Schredder.Maschinenpistole|Speerspitze.Boltpistole|Schwere Laserpistole|.Läuterungs.Flammenwerfer|Läuterungs.Flammenwerfer|.Einsatzschrotflinte|Einsatzschrotflinte|Infanterie|Sturmgewehr|Schredder.Maschinenpistole|.Speerspitze.Boltpistole|.Plasmagewehr|.Stub.Revolver|Stub.Revolver|.Purgatus.Psistab|Purgatus.Psistab|Leerenschlag.Psistab|.Trauma.Psistab|.Welle.Psistab|Leerenschlag.|.Psistab|.Glut.Psischwert|Glut.Psischwert|Psischwert|isches Duellschwert|.Donnerhammer|Donnerhammer|.Brecher|Brecher|Schwerer Ausweider|Schwerer|.Ausweider|.Schweres Schwert|.Läuterungsflammenwerfer",
+		ru = "Спаренный тяжёлый стаббер|Дробовик-потрошитель|Гранатомёт|Дробовик|Отбойник огрина|Гренадерская перчатка|Тесак|Силовая булава|Боевая булава и Мод III|Боевая булава и Мод 3|Дубина задиры|Щит-плита|щит-плита|Автопистолет-крошитель|Автопистолет|-крошитель|Хельборовое лазружьё|Тяжёлый лазпистолет|Тяжелый лазпистолет|Пехотный автомат|Автомат-головострел|Усиленный автомат|Пронзающий болтер|Болтер|Лазвинтовка пехоты| образец лазгана|Тяжёлый|Автомат|-головострел|Лазвинтовка разведки|Лазган|Пехотный лазган| Огнемёт очищения|Огнемет чистки|Огнемёт| образец огнемёта|Боевой дробовик|Стаб-револьвер|Плазменная винтовка|Психосиловой|посох|чистки|пустотный|Силовой посох|Силовой|Травма|Молния|Пургатус|Пустотный|Дуэльный меч|Пламенный силовой меч|Силовой меч|Силовой меч|Меч|Боевой топор|Тактический топор|Штурмовой пиломеч|Пиломеч|Боевой клинок|Мод Силовой меч|Штурмовой пилотопор|Пилотопор|образец|неизвестный производитель|Сапёрная лопата|Громовой молот|Крушитель|Мод Силовая булава|Потрошитель|Камуфляж|камуфляж|Стаб|-револьвер|быстрый|«Коготь дьявола»|пылающий|Пламенный психосиловой|оперативник|Штурмовой цепной|Тяжелый эвисцератор|меч|Дробитель|подлатанный подручными средствами|-потрошитель|Рубило|Отбойник|Боевая булава|и щит Верзилы мод. III|Палица задиры|Катачанский|Рамблер|Спаренный тяжелый пулемет|топор|цепной|Хелборский лазган|охотника за головами|Разведывательный лазган|Серийный автомат|Скорострельный|стаб|Тяжелый|дуэльный |Огненный психосиловой|очищения|тический психосиловой|Волновой психосиловой|Щит|\"|-плита|[()]|",
+		["zh-cn"] = "等离子枪|步兵激光枪|样式激光枪|地狱钻激光枪|侦察激光枪|侦查激光枪|重型激光手枪|粉碎者自动手枪|步兵自动枪|稳固自动枪|猎头者自动枪|猎颅者自动枪|自动枪|速发左轮枪|左轮枪|战斗霰弹枪|先锋爆矢枪|涤罪火焰喷射器|力场杖|开膛枪|开膛手霰弹枪|低吼者|击退者|双联重机枪|掷弹兵臂铠|砍刀|恶霸棍棒|动力锤|作战大锤|与板砖大盾 Mk.III|与板砖大盾 Mk.3|粉碎者|雷霆锤|战斧|战术斧|战斗利刃|工兵铲|突击链锯剑|链锯剑|突击链锯斧|动力剑|能量剑|决斗剑|炙焰力场剑|力场剑|重剑|重型开膛剑|剑|迷彩|[()]|（|）",
 	},
 	-- mod_option_misc_flicker_fix = {
 	-- 	en = "Item Preview Flicker Fix",
@@ -655,9 +734,11 @@ return {
 	loc_inventory_menu_weapon_preset_intro_text_1 = {
 		en = "Weapon Presets",
 		ru = "Предустановки оружия",
+		["zh-cn"] = "武器预设",
 	},
 	loc_inventory_menu_weapon_preset_intro_text_2 = {
 		en = "Weapon Presets Description",
 		ru = "Описание предустановок оружия",
+		["zh-cn"] = "武器预设描述",
 	},
 }

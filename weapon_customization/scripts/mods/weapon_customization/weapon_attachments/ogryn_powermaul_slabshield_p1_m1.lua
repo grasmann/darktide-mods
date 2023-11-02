@@ -4,7 +4,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
 local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_p1_m1")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -48,13 +48,33 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     shield_attachments = function()
         return {
-            {id = "left_default",       name = "Default"},
-            {id = "left_01",            name = "Slab Shield"},
-            -- {id = "bulwark_shield_01",  name = "Bulwark Shield",    sounds = {_receiver_sound}},
+            {id = "left_default",      name = mod:localize("mod_attachment_default")},
+            {id = "left_01",           name = "Slab Shield"},
+            -- {id = "bulwark_shield_01", name = "Bulwark Shield"},
         }
     end,
     shield_models = function(parent, angle, move, remove)
@@ -62,9 +82,9 @@ local functions = {
         local m = move or vector3_box(0, 0, 0)
         local r = remove or vector3_box(0, 0, 0)
         return {
-            left_default =      {model = "",                                                     type = "left", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            left_01 =           {model = _item_melee.."/ogryn_slabshield_p1_m1",                 type = "left", parent = tv(parent, 2), angle = a, move = m, remove = r},
-            -- bulwark_shield_01 = {model = _item_minion.."/shields/chaos_ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
+            left_default =      {model = "",                                      type = "left", parent = tv(parent, 1), angle = a, move = m, remove = r},
+            left_01 =           {model = _item_melee.."/ogryn_slabshield_p1_m1",  type = "left", parent = tv(parent, 2), angle = a, move = m, remove = r},
+            -- bulwark_shield_01 = {model = _item_melee.."/ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
         }
     end,
 }
@@ -76,17 +96,17 @@ return table.combine(
             shaft = _ogryn_powermaul_p1_m1.shaft_attachments(),
             head = _ogryn_powermaul_p1_m1.head_attachments(),
             pommel = _ogryn_powermaul_p1_m1.pommel_attachments(),
-            emblem_right = _common_functions.emblem_right_attachments(),
-            emblem_left = _common_functions.emblem_left_attachments(),
-            trinket_hook = _common_functions.trinket_hook_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
+            trinket_hook = _common.trinket_hook_attachments(),
             left = functions.shield_attachments(),
         },
         models = table.combine( -- Done 11.9.2023
             -- {customization_default_position = vector3_box(.2, 0, 0)},
             _ogryn_powermaul_p1_m1.shaft_models(nil, -2.5, vector3_box(0, -5, -.15), vector3_box(0, 0, 0)),
-            _common_functions.emblem_right_models("head", 0, vector3_box(0, -5, -.4), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_left_models("head", -3, vector3_box(0, -5, -.4), vector3_box(-.2, 0, 0)),
-            _common_functions.trinket_hook_models(nil, -2.5, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
+            _common.emblem_right_models("head", 0, vector3_box(0, -5, -.4), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("head", -3, vector3_box(0, -5, -.4), vector3_box(-.2, 0, 0)),
+            _common.trinket_hook_models(nil, -2.5, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
             _ogryn_powermaul_p1_m1.head_models(nil, -2.5, vector3_box(0, -5, -.4), vector3_box(0, 0, .2)),
             _ogryn_powermaul_p1_m1.pommel_models(nil, -2.5, vector3_box(0, -6, .1), vector3_box(0, 0, -.2)),
             functions.shield_models(nil, 0, vector3_box(-.15, -2, .1), vector3_box(0, 0, -.2))

@@ -4,8 +4,9 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _lasgun_common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_common")
+local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
+local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
 local _bolter_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/bolter_p1_m1")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -49,11 +50,31 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 local functions = {
     receiver_attachments = function()
         return {
-            {id = "receiver_default",   name = "Default"},
+            {id = "receiver_default",   name = mod:localize("mod_attachment_default")},
             {id = "receiver_01",        name = "Receiver 1"},
             {id = "receiver_02",        name = "Receiver 2"},
             {id = "receiver_03",        name = "Receiver 3"},
@@ -72,7 +93,7 @@ local functions = {
     end,
     stock_attachments = function()
         return {
-            {id = "stock_default",  name = "Default"},
+            {id = "stock_default",  name = mod:localize("mod_attachment_default")},
             {id = "stock_01",       name = "Stock 1"},
             {id = "stock_02",       name = "Stock 2"},
             {id = "stock_03",       name = "Stock 3"},
@@ -95,40 +116,40 @@ return table.combine(
     functions,
     {
         attachments = { -- Done 8.10.2023
-            flashlight = _common_functions.flashlights_attachments(),
-            bayonet = _common_functions.bayonet_attachments(),
+            flashlight = _common_ranged.flashlights_attachments(),
+            bayonet = _common_ranged.bayonet_attachments(),
             -- rail = _lasgun_rail_attachments(),
-            barrel = _lasgun_common.barrel_attachments(),
-            muzzle = _lasgun_common.muzzle_attachments(),
-            emblem_right = _common_functions.emblem_right_attachments(),
-            emblem_left = _common_functions.emblem_left_attachments(),
+            barrel = _common_lasgun.barrel_attachments(),
+            muzzle = _common_lasgun.muzzle_attachments(),
+            emblem_right = _common.emblem_right_attachments(),
+            emblem_left = _common.emblem_left_attachments(),
             sight = table.icombine(
-                _common_functions.sight_default(),
-                _common_functions.reflex_sights_attachments(),
-                _common_functions.sights_attachments()
+                _common_ranged.sight_default(),
+                _common_ranged.reflex_sights_attachments(),
+                _common_ranged.sights_attachments()
             ),
             help_sight = _bolter_p1_m1.sight_attachments(),
             receiver = functions.receiver_attachments(),
             stock = functions.stock_attachments(),
-            magazine = _lasgun_common.magazine_attachments(),
+            magazine = _common_lasgun.magazine_attachments(),
         },
         models = table.combine( -- Done 8.10.2023
             functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
-            _common_functions.flashlight_models(nil, -2.5, vector3_box(-.5, -3, -.05), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
-            _common_functions.emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
-            _common_functions.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -3, 0), vector3_box(0, .4, -.034)),
-            _common_functions.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
-            _lasgun_common.barrel_models(nil, -.3, vector3_box(0, -2, 0), vector3_box(0, .2, 0)),
-            _lasgun_common.muzzle_models(nil, -.5, vector3_box(.1, -3, 0), vector3_box(0, .2, 0)),
+            _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.5, -3, -.05), vector3_box(.2, 0, 0)),
+            _common.emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+            _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -3, 0), vector3_box(0, .4, -.034)),
+            _common_ranged.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
+            _common_lasgun.barrel_models(nil, -.3, vector3_box(0, -2, 0), vector3_box(0, .2, 0)),
+            _common_lasgun.muzzle_models(nil, -.5, vector3_box(.1, -3, 0), vector3_box(0, .2, 0)),
             -- _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-            _common_functions.reflex_sights_models(nil, .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+            _common_ranged.reflex_sights_models(nil, .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                 {help_sight = "sight_default"},
                 {help_sight = "sight_default"},
                 {help_sight = "sight_default"},
                 {help_sight = "sight_default"},
             }, {}),
-            _common_functions.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+            _common_ranged.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                 {help_sight = "sight_default"},
                 {help_sight = "bolter_sight_01"},
                 {help_sight = "bolter_sight_01"},
@@ -143,7 +164,7 @@ return table.combine(
             }),
             _bolter_p1_m1.sight_models("receiver", .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "help_sight", {}, {}, {}),
             functions.stock_models(nil, .5, vector3_box(-.5, -4, 0), vector3_box(0, -.4, -.11)),
-            _lasgun_common.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))
+            _common_lasgun.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2))
         ),
         anchors = { -- Done 8.10.2023
             scope_offset = {position = vector3_box(0, 0, .0275)},

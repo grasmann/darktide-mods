@@ -10,7 +10,9 @@ local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIWidgetGrid = mod:original_require("scripts/ui/widget_logic/ui_widget_grid")
 local ViewElementInputLegend = mod:original_require("scripts/ui/view_elements/view_element_input_legend/view_element_input_legend")
 local CATEGORIES_GRID = 1
-
+local TextUtilities = mod:original_require("scripts/utilities/ui/text")
+local Circumstance = mod:original_require("scripts/settings/circumstance/circumstance_templates")
+local Danger = mod:original_require("scripts/settings/difficulty/danger_settings")
 local ScoreboardHistoryView = class("ScoreboardHistoryView", "BaseView")
 
 -- ##### ██╗███╗   ██╗██╗████████╗ ####################################################################################
@@ -176,16 +178,47 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
         local category_config = config_categories[i]
         -- local category_display_name = category_config.display_name or category_config.name
         local mission_name = ""
+        local mission_subname = ""
         if category_config.mission_name then
             local mission_settings = Missions[category_config.mission_name]
             if mission_settings then
                 mission_name = " | "..Localize(mission_settings.mission_name)
             end
+            if category_config.victory_defeat == "won" then
+                local mytext = TextUtilities.apply_color_to_text("WON", Color.ui_green_light(255, true))
+                mission_name = " | "..mytext..mission_name
+            elseif category_config.victory_defeat == "lost" then
+                local mytext = TextUtilities.apply_color_to_text("LOST", Color.ui_red_light(255, true))
+                mission_name = " | "..mytext..mission_name
+            end
+            if category_config.timer ~= "" then
+                mission_subname = "\n"..category_config.timer
+            end
+            if category_config.mission_challenge ~= "" then
+                local mission_challenge = Danger.by_index[tonumber(category_config.mission_challenge)]
+                if mission_challenge then
+                    if mission_subname == "" then
+                        mission_subname = "\n"..Localize(mission_challenge.display_name)
+                    else
+                        mission_subname = mission_subname.." | "..Localize(mission_challenge.display_name)
+                    end
+                end
+            end
+            if category_config.mission_circumstance ~= "" then
+                local mission_circumstance = Circumstance[category_config.mission_circumstance]
+                if ( mission_circumstance and mission_circumstance.ui ) then
+                    if mission_subname == "" then
+                        mission_subname = "\n"..Localize(mission_circumstance.ui.display_name)
+                    else
+                        mission_subname = mission_subname.." | "..Localize(mission_circumstance.ui.display_name)
+                    end
+                end
+            end
         end
 
         mod:add_global_localize_strings({
             ["loc_scoreboard_history_view_entry_"..tostring(category_config.date)] = {
-                en = tostring(category_config.date)..mission_name,
+                en = tostring(category_config.date)..mission_name..mission_subname,
             },
         })
         local category_display_name = "loc_scoreboard_history_view_entry_"..tostring(category_config.date)

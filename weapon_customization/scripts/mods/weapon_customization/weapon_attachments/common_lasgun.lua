@@ -41,11 +41,31 @@ local tv = function(t, i)
     end
     return res
 end
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
 
 return {
     barrel_attachments = function()
         return {
-            {id = "barrel_default", name = "Default"},
+            {id = "barrel_default", name = mod:localize("mod_attachment_default")},
             {id = "barrel_01", name = "Infantry Lasgun 1"},
             {id = "barrel_02", name = "Infantry Lasgun 2"},
             {id = "barrel_03", name = "Infantry Lasgun 3"},
@@ -94,7 +114,7 @@ return {
     end,
     muzzle_attachments = function()
         return {
-            {id = "muzzle_default", name = "Default"},
+            {id = "muzzle_default", name = mod:localize("mod_attachment_default")},
             {id = "muzzle_01", name = "Infantry Lasgun 1"},
             {id = "muzzle_02", name = "Infantry Lasgun 2"},
             {id = "muzzle_03", name = "Infantry Lasgun 3"},
@@ -125,7 +145,7 @@ return {
     end,
     rail_attachments = function()
         return {
-            {id = "rail_default",   name = "Default"},
+            {id = "rail_default",   name = mod:localize("mod_attachment_default")},
             {id = "rail_01",        name = "Rail 1"},
         }
     end,
@@ -141,7 +161,7 @@ return {
     end,
     magazine_attachments = function()
         return {
-            {id = "magazine_default",   name = "Default"},
+            {id = "magazine_default",   name = mod:localize("mod_attachment_default")},
             {id = "magazine_01",        name = "Magazine 1"},
         }
     end,

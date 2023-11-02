@@ -250,11 +250,11 @@ mod.camera_position_reset = function(self, dt, t)
         local is_local_unit = mod.do_camera_position_reset.is_local_unit
         local time_in_action = 1 - (mod.do_camera_position_reset.end_time - t)
         if time_in_action < 1 then
-            if is_local_unit and has_scope then
+            if is_local_unit and has_scope and scope_offset then
                 local progress = time_in_action / 1
                 local position = vector3_unbox(scope_offset.position) * (1 - progress)
                 mod.camera_position = vector3_box(position)
-            elseif is_local_unit and has_sight then
+            elseif is_local_unit and has_sight and sight_offset then
                 local progress = time_in_action / 1
                 local position = vector3_unbox(sight_offset.position) * (1 - progress)
                 mod.camera_position = vector3_box(position)
@@ -274,7 +274,8 @@ local _abort_camera_aim = function(func, self, action_settings, t, ...)
                 has_scope = mod:is_scope(sight),
                 has_sight = mod:is_sight(sight),
                 scope_offset = mod:get_sight_offset(self._weapon) or default_sight_offset,
-                is_local_unit = mod:get_sight_offset(self._weapon, "no_scope_offset") or default_sight_offset,
+                sight_offset = mod:get_sight_offset(self._weapon, "no_scope_offset") or default_sight_offset,
+                is_local_unit = self._is_local_unit,
                 end_time = t + 1,
             }
         end
