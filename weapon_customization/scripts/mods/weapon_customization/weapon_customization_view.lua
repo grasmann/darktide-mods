@@ -258,6 +258,13 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 end
 
 mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachment_name, type, load)
+
+	if self.attachment_sounds[self.cosmetics_view._item_name] then
+		local attachment_sounds = self.attachment_sounds[self.cosmetics_view._item_name]
+		local sounds = attachment_sounds[attachment_slot] and attachment_sounds[attachment_slot][type]
+		if sounds then return sounds end
+	end
+
 	-- local sound = "wwise/events/weapon/play_bolter_reload_hand"
 	-- return {sound}
 	local load = load or false

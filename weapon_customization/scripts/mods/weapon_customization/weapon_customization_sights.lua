@@ -304,6 +304,7 @@ mod:hook(CLASS.ActionUnwield, "start", _abort_camera_aim)
 
 mod:hook(CLASS.CameraManager, "update", function(func, self, dt, t, viewport_name, yaw, pitch, roll, ...)
     mod:camera_position_reset(dt, t)
+
     func(self, dt, t, viewport_name, yaw, pitch, roll, ...)
 end)
 

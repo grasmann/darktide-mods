@@ -1,16 +1,5 @@
 local mod = get_mod("weapon_customization")
 
--- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
--- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
--- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
-
-local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
-local _barrel_sound = UISoundEvents.talents_equip_talent
-local _receiver_sound = UISoundEvents.weapons_equip_weapon
-local _magazine_sound = UISoundEvents.weapons_trinket_select
-local _grip_sound = UISoundEvents.smart_tag_hud_default
-local _knife_sound = UISoundEvents.end_screen_summary_plasteel_zero
-
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
@@ -20,86 +9,95 @@ local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
 local _item_minion = "content/items/weapons/minions"
 
+-- ##### ┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐  ┌┬┐┌─┐┌┐ ┬  ┌─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###############################################
+-- ##### │  │ │└─┐ │ │ ││││   │ ├─┤├┴┐│  ├┤   ├┤ │ │││││   │ ││ ││││└─┐ ###############################################
+-- ##### └─┘└─┘└─┘ ┴ └─┘┴ ┴   ┴ ┴ ┴└─┘┴─┘└─┘  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ###############################################
+
+table.combine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for name, value in pairs(t) do
+            combined[name] = value
+        end
+    end
+    return combined
+end
+table.icombine = function(...)
+    local arg = {...}
+    local combined = {}
+    for _, t in ipairs(arg) do
+        for _, value in pairs(t) do
+            combined[#combined+1] = value
+        end
+    end
+    return combined
+end
+table.tv = function(t, i)
+    local res = nil
+    if type(t) == "table" then
+        if #t >= i then
+            res = t[i]
+        elseif #t >= 1 then
+            res = t[1]
+        else
+            return nil
+        end
+    else
+        res = t
+    end
+    if res == "" then
+        return nil
+    end
+    return res
+end
+table.model_table = function(content, parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+    local angle = angle or 0
+    local move = move or vector3_box(0, 0, 0)
+    local remove = remove or vector3_box(0, 0, 0)
+    local type = type or "none"
+    local no_support = no_support or {}
+    local automatic_equip = automatic_equip or {}
+    local hide_mesh = hide_mesh or {}
+    if mesh_move == nil then mesh_move = true end
+    -- Build table
+    local _table = {}
+    local i = 1
+    for _, data in pairs(content) do
+        _table[data.name] = {
+            model = data.model,
+            type = table.tv(type, i),
+            parent = table.tv(parent, i),
+            angle = table.tv(angle, i),
+            move = table.tv(move, i),
+            remove = table.tv(remove, i),
+            mesh_move = table.tv(mesh_move, i),
+            no_support = table.tv(no_support, i),
+            automatic_equip = table.tv(automatic_equip, i),
+            hide_mesh = table.tv(hide_mesh, i),
+        }
+        i = i + 1
+    end
+    return _table
+end
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local string = string
-    local string_find = string.find
-    local vector3_box = Vector3Box
-    local pairs = pairs
-    local ipairs = ipairs
-    local type = type
-    table.combine = function(...)
-        local arg = {...}
-        local combined = {}
-        for _, t in ipairs(arg) do
-            for name, value in pairs(t) do
-                combined[name] = value
-            end
-        end
-        return combined
-    end
-    table.icombine = function(...)
-        local arg = {...}
-        local combined = {}
-        for _, t in ipairs(arg) do
-            for _, value in pairs(t) do
-                combined[#combined+1] = value
-            end
-        end
-        return combined
-    end
-    table.tv = function(t, i)
-        local res = nil
-        if type(t) == "table" then
-            if #t >= i then
-                res = t[i]
-            elseif #t >= 1 then
-                res = t[1]
-            else
-                return nil
-            end
-        else
-            res = t
-        end
-        if res == "" then
-            return nil
-        end
-        return res
-    end
-    table.model_table = function(content, parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
-        local angle = angle or 0
-        local move = move or vector3_box(0, 0, 0)
-        local remove = remove or vector3_box(0, 0, 0)
-        local type = type or "none"
-        local no_support = no_support or {}
-        local automatic_equip = automatic_equip or {}
-        local hide_mesh = hide_mesh or {}
-        if mesh_move == nil then mesh_move = true end
-        -- Build table
-        local _table = {}
-        local i = 1
-        for name, model in pairs(content) do
-            _table[name] = {
-                model = model,
-                type = table.tv(type, i),
-                parent = table.tv(parent, i),
-                angle = table.tv(angle, i),
-                move = table.tv(move, i),
-                remove = table.tv(remove, i),
-                mesh_move = table.tv(mesh_move, i),
-                no_support = table.tv(no_support, i),
-                automatic_equip = table.tv(automatic_equip, i),
-                hide_mesh = table.tv(hide_mesh, i),
-            }
-            i = i + 1
-        end
-        return _table
-    end
-    local table = table
+local string = string
+local string_find = string.find
+local vector3_box = Vector3Box
+local pairs = pairs
+local ipairs = ipairs
+local type = type
+local table = table
 --#endregion
+
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
 local _ogryn_heavystubber_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_heavystubber_p1_m1")
@@ -556,6 +554,12 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "shotgun_rifle_stock_02",
         "shotgun_rifle_stock_03",
         "shotgun_rifle_stock_04",
+        "shotgun_rifle_stock_07",
+        "shotgun_rifle_stock_08",
+        "shotgun_rifle_stock_09",
+        "shotgun_rifle_stock_10",
+        "shotgun_rifle_stock_11",
+        "shotgun_rifle_stock_12",
     }
     mod.attachment_units = {
         ["#ID[c54f4d16d170cfdb]"] = "flashlight_01",
@@ -723,6 +727,23 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.attachment_models.forcesword_p1_m3 = mod.attachment_models.forcesword_p1_m1
             mod.attachment_models.combatsword_p3_m2 = mod.attachment_models.combatsword_p3_m1
             mod.attachment_models.combatsword_p3_m3 = mod.attachment_models.combatsword_p3_m1
+        --#endregion
+    --#endregion
+--#endregion
+
+--#region Sounds
+    mod.attachment_sounds = {
+        --#region Ogryn Guns
+            ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.sounds,
+            ogryn_rippergun_p1_m1 = _ogryn_rippergun_p1_m1.sounds,
+        --#endregion
+    }
+    --#region Copies
+        --#region Ogryn Guns
+            mod.attachment_sounds.ogryn_heavystubber_p1_m2 = mod.attachment_sounds.ogryn_heavystubber_p1_m1
+            mod.attachment_sounds.ogryn_heavystubber_p1_m3 = mod.attachment_sounds.ogryn_heavystubber_p1_m1
+            mod.attachment_sounds.ogryn_rippergun_p1_m2 = mod.attachment_sounds.ogryn_rippergun_p1_m1
+            mod.attachment_sounds.ogryn_rippergun_p1_m3 = mod.attachment_sounds.ogryn_rippergun_p1_m1
         --#endregion
     --#endregion
 --#endregion
