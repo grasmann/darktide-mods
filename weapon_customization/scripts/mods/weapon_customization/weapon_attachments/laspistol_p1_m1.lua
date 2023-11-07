@@ -71,9 +71,9 @@ table.icombine = function(...)
 end
 
 local functions = {
-    receiver_attachments = function()
-        return {
-            {id = "laspistol_receiver_default", name = mod:localize("mod_attachment_default")},
+    receiver_attachments = function(default)
+        local attachments = {
+            -- {id = "laspistol_receiver_default", name = mod:localize("mod_attachment_default")},
             {id = "laspistol_receiver_01",      name = "Laspistol Receiver 1"},
             {id = "laspistol_receiver_02",      name = "Laspistol Receiver 2"},
             {id = "laspistol_receiver_03",      name = "Laspistol Receiver 3"},
@@ -81,20 +81,36 @@ local functions = {
             {id = "laspistol_receiver_05",      name = "Laspistol Receiver 5"},
             {id = "laspistol_receiver_06",      name = "Laspistol Receiver 6"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "laspistol_receiver_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    receiver_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            laspistol_receiver_default = {model = "",                                                   type = "receiver", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
-            laspistol_receiver_01 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_01", type = "receiver", parent = tv(parent, 2), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
-            laspistol_receiver_02 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_02", type = "receiver", parent = tv(parent, 3), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
-            laspistol_receiver_03 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_03", type = "receiver", parent = tv(parent, 4), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
-            laspistol_receiver_04 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_04", type = "receiver", parent = tv(parent, 5), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
-            laspistol_receiver_05 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_05", type = "receiver", parent = tv(parent, 6), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
-            laspistol_receiver_06 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_06", type = "receiver", parent = tv(parent, 7), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
-        }
+    receiver_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        -- local a = angle or 0
+        -- local m = move or vector3_box(0, 0, 0)
+        -- local r = remove or vector3_box(0, 0, 0)
+        -- return {
+        --     laspistol_receiver_default = {model = "",                                                   type = "receiver", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
+        --     laspistol_receiver_01 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_01", type = "receiver", parent = tv(parent, 2), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
+        --     laspistol_receiver_02 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_02", type = "receiver", parent = tv(parent, 3), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
+        --     laspistol_receiver_03 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_03", type = "receiver", parent = tv(parent, 4), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
+        --     laspistol_receiver_04 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_04", type = "receiver", parent = tv(parent, 5), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
+        --     laspistol_receiver_05 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_05", type = "receiver", parent = tv(parent, 6), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
+        --     laspistol_receiver_06 =      {model = _item_ranged.."/recievers/lasgun_pistol_receiver_06", type = "receiver", parent = tv(parent, 7), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
+        --     laspistol_receiver_07 =      {model = _item_ranged.."/bot_zola_laspistol", type = "receiver", parent = tv(parent, 8), angle = a, move = m, remove = r, trigger_move = {"magazine"}},
+        -- }
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "laspistol_receiver_default", model = ""},
+            {name = "laspistol_receiver_01",      model = _item_ranged.."/recievers/lasgun_pistol_receiver_01"},
+            {name = "laspistol_receiver_02",      model = _item_ranged.."/recievers/lasgun_pistol_receiver_02"},
+            {name = "laspistol_receiver_03",      model = _item_ranged.."/recievers/lasgun_pistol_receiver_03"},
+            {name = "laspistol_receiver_04",      model = _item_ranged.."/recievers/lasgun_pistol_receiver_04"},
+            {name = "laspistol_receiver_05",      model = _item_ranged.."/recievers/lasgun_pistol_receiver_05"},
+            {name = "laspistol_receiver_06",      model = _item_ranged.."/recievers/lasgun_pistol_receiver_06"},
+        }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     magazine_attachments = function()
         return {

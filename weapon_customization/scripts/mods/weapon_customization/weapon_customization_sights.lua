@@ -65,6 +65,10 @@ mod.get_sight = function(self, item)
     if item and item.__master_item and item.__master_item.attachments then
         local sight = self:_recursive_find_attachment(item.__master_item.attachments, "sight_2")
         if not sight then sight = self:_recursive_find_attachment(item.__master_item.attachments, "sight") end
+        if not sight then
+            local fix = self:_apply_anchor_fixes(item, "no_scope_offset")
+            if fix then sight = {item = "buggy_sight"} end
+        end
         return sight
     end
 end

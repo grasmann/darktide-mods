@@ -51,7 +51,7 @@ table.tv = function(t, i)
     end
     return res
 end
-table.model_table = function(content, parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+table.model_table = function(content, parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     local angle = angle or 0
     local move = move or vector3_box(0, 0, 0)
     local remove = remove or vector3_box(0, 0, 0)
@@ -75,6 +75,7 @@ table.model_table = function(content, parent, angle, move, remove, type, no_supp
             no_support = table.tv(no_support, i),
             automatic_equip = table.tv(automatic_equip, i),
             hide_mesh = table.tv(hide_mesh, i),
+            special_resolve = table.tv(special_resolve, i)
         }
         i = i + 1
     end
@@ -366,6 +367,33 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         decal_right = "decals_right",
         decal_left = "decals_left",
         hilt = "hilts",
+        shaft = "shafts",
+        head = "heads",
+        connector = "connectors",
+    }
+    mod.shafts = {
+        "small_shaft_01",
+        "small_shaft_02",
+        "small_shaft_03",
+        "small_shaft_04",
+        "small_shaft_05",
+        "small_shaft_06",
+    }
+    mod.heads = {
+        "small_head_01",
+        "small_head_02",
+        "small_head_03",
+        "small_head_04",
+        "small_head_05",
+        "small_head_06",
+    }
+    mod.connectors = {
+        "small_connector_01",
+        "small_connector_02",
+        "small_connector_03",
+        "small_connector_04",
+        "small_connector_05",
+        "small_connector_06",
     }
     mod.hilts = {
         "power_sword_hilt_01",
@@ -451,6 +479,7 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "lasgun_rifle_sight_01",
         "sight_01",
         "shotgun_double_barrel_sight_01",
+        "buggy_sight",
     }
     mod.all_sights = table.combine(
         mod.reflex_sights,

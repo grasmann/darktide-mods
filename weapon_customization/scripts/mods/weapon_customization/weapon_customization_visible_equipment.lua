@@ -6,6 +6,7 @@ local mod = get_mod("weapon_customization")
 
 local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
+local InputService = mod:original_require("scripts/managers/input/input_service")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -133,8 +134,10 @@ mod.visible_equipment_offsets = {
                 local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
                 if attachment_slot_info then
                     local receiver = attachment_slot_info.attachment_slot_to_unit["receiver"]
+                    local attachment = attachment_slot_info.unit_to_attachment_name[receiver]
                     if receiver and unit_alive(receiver) then
                         local node_index = 17
+                        if attachment == "receiver_04" then node_index = 21 end
                         local rot = vector3(0, 0, 90)
                         local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
                         unit_set_local_rotation(receiver, node_index, rotation)
@@ -535,13 +538,18 @@ mod.update_equipment = function(self, dt)
 
                     -- Check trigger
                     if step_animation.trigger then
-                        for slot_name, slot in pairs(equipment) do
-                            if step_animation[slot].state ~= STEP_STATE then
-                                local item = slot.item and slot.item.__master_item
-                                local item_type = item and item.item_type == WEAPON_MELEE and ITEM_TYPE_MELEE or ITEM_TYPE_RANGED
-                                step_animation[slot] = step_animation[slot] or {}
-                                step_animation[slot].end_time = t + (item_type == ITEM_TYPE_RANGED and step_animation_time or step_animation_time_melee)
-                                step_animation[slot].state = nil
+                        local input_service = managers.input:get_input_service("Ingame")
+                        local move = input_service:get("move_right") or input_service:get("move_left")
+                            or input_service:get("move_forward") or input_service:get("move_backward")
+                        if move then
+                            for slot_name, slot in pairs(equipment) do
+                                if step_animation[slot].state ~= STEP_STATE then
+                                    local item = slot.item and slot.item.__master_item
+                                    local item_type = item and item.item_type == WEAPON_MELEE and ITEM_TYPE_MELEE or ITEM_TYPE_RANGED
+                                    step_animation[slot] = step_animation[slot] or {}
+                                    step_animation[slot].end_time = t + (item_type == ITEM_TYPE_RANGED and step_animation_time or step_animation_time_melee)
+                                    step_animation[slot].state = nil
+                                end
                             end
                         end
                         step_animation.trigger = nil

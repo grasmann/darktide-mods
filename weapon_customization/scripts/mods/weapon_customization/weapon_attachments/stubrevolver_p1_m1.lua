@@ -165,6 +165,11 @@ return table.combine(
                     emblem_left = {parent = "body", position = vector3_box(-.011, .045, .0095), rotation = vector3_box(0, 0, 180), scale = vector3_box(.65, -.65, .65)}},
                 {emblem_left = {parent = "body", position = vector3_box(-.011, .045, .0095), rotation = vector3_box(0, 0, 180), scale = vector3_box(.65, .65, .65)},
                     emblem_right = {parent = "body", position = vector3_box(.011, .045, .0095), rotation = vector3_box(0, 0, 0), scale = vector3_box(.65, .65, .65)}},
+                -- Aim
+                {dependencies = {"barrel_04"},
+                    barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(1.5, 0, 0), rotation_node = 2, scale = vector3_box(1, 1, 1)}},
+                {dependencies = {"barrel_05"},
+                    barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(1.5, 0, 0), rotation_node = 2, scale = vector3_box(1, 1, 1)}},
                 -- Rail
                 {dependencies = {"barrel_04"},
                     rail = {parent = "barrel", parent_node = 9, position = vector3_box(0, -.08, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(.8, .75, 1)}},

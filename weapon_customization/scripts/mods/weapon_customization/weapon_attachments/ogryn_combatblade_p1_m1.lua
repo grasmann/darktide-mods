@@ -13,7 +13,6 @@ local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customiz
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -29,155 +28,154 @@ local _item_minion = "content/items/weapons/minions"
     local type = type
 --#endregion
 
-local tv = function(t, i)
-    local res = nil
-    if type(t) == "table" then
-        if #t >= i then
-            res = t[i]
-        elseif #t >= 1 then
-            res = t[1]
-        else
-            return nil
-        end
-    else
-        res = t
-    end
-    if res == "" then
-        return nil
-    end
-    return res
-end
-table.combine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for name, value in pairs(t) do
-            combined[name] = value
-        end
-    end
-    return combined
-end
-table.icombine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for _, value in pairs(t) do
-            combined[#combined+1] = value
-        end
-    end
-    return combined
-end
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 local functions = {
-    blade_attachments = function()
-        return {
-            {id = "blade_default",  name = mod:localize("mod_attachment_default")},
-            {id = "blade_01",       name = "Blade 1"},
-            {id = "blade_02",       name = "Blade 2"},
-            {id = "blade_03",       name = "Blade 3"},
-            {id = "blade_04",       name = "Blade 4"},
-            {id = "blade_05",       name = "Blade 5"},
-            {id = "blade_06",       name = "Blade 6"},
-            {id = "blade_07",       name = "Blade 7"},
-            {id = "blade_08",       name = "Blade 8"},
+    blade_attachments = function(default)
+        local attachments = {
+            {id = "blade_01", name = "Blade 1"},
+            {id = "blade_02", name = "Blade 2"},
+            {id = "blade_03", name = "Blade 3"},
+            {id = "blade_04", name = "Blade 4"},
+            {id = "blade_05", name = "Blade 5"},
+            {id = "blade_06", name = "Blade 6"},
+            {id = "blade_07", name = "Blade 7"},
+            {id = "blade_08", name = "Blade 8"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "blade_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    blade_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            blade_default = {model = "",                                           type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-            blade_01 =      {model = _item_melee.."/blades/combat_blade_blade_01", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-            blade_02 =      {model = _item_melee.."/blades/combat_blade_blade_02", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-            blade_03 =      {model = _item_melee.."/blades/combat_blade_blade_03", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-            blade_04 =      {model = _item_melee.."/blades/combat_blade_blade_04", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-            blade_05 =      {model = _item_melee.."/blades/combat_blade_blade_05", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-            blade_06 =      {model = _item_melee.."/blades/combat_blade_blade_06", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-            blade_07 =      {model = _item_melee.."/blades/combat_blade_blade_07", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-            blade_08 =      {model = _item_melee.."/blades/combat_blade_blade_08", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, trigger_move = {"emblem_left", "emblem_right"}},
-        }
+    blade_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "blade_default", model = ""},
+            {name = "blade_01",      model = _item_melee.."/blades/combat_blade_blade_01"},
+            {name = "blade_02",      model = _item_melee.."/blades/combat_blade_blade_02"},
+            {name = "blade_03",      model = _item_melee.."/blades/combat_blade_blade_03"},
+            {name = "blade_04",      model = _item_melee.."/blades/combat_blade_blade_04"},
+            {name = "blade_05",      model = _item_melee.."/blades/combat_blade_blade_05"},
+            {name = "blade_06",      model = _item_melee.."/blades/combat_blade_blade_06"},
+            {name = "blade_07",      model = _item_melee.."/blades/combat_blade_blade_07"},
+            {name = "blade_08",      model = _item_melee.."/blades/combat_blade_blade_08"},
+        }, parent, angle, move, remove, type or "blade", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
-    grip_attachments = function()
-        return {
-            {id = "grip_default",   name = mod:localize("mod_attachment_default")},
-            {id = "grip_01",        name = "Grip 1"},
-            {id = "grip_02",        name = "Grip 2"},
-            {id = "grip_03",        name = "Grip 3"},
-            {id = "grip_04",        name = "Grip 4"},
-            {id = "grip_05",        name = "Grip 5"},
-            {id = "grip_06",        name = "Grip 6"},
-            {id = "grip_07",        name = "Grip 7"},
-            {id = "grip_08",        name = "Grip 8"},
+    grip_attachments = function(default)
+        local attachments = {
+            {id = "grip_01", name = "Grip 1"},
+            {id = "grip_02", name = "Grip 2"},
+            {id = "grip_03", name = "Grip 3"},
+            {id = "grip_04", name = "Grip 4"},
+            {id = "grip_05", name = "Grip 5"},
+            {id = "grip_06", name = "Grip 6"},
+            {id = "grip_07", name = "Grip 7"},
+            {id = "grip_08", name = "Grip 8"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "grip_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    grip_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            grip_default = {model = "",                                         type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            grip_01 =      {model = _item_melee.."/grips/combat_blade_grip_01", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, no_support = {"trinket_hook_empty"}},
-            grip_02 =      {model = _item_melee.."/grips/combat_blade_grip_02", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, no_support = {"trinket_hook_empty"}},
-            grip_03 =      {model = _item_melee.."/grips/combat_blade_grip_03", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, automatic_equip = {trinket_hook = "trinket_hook_default"}, no_support = {"trinket_hook"}},
-            grip_04 =      {model = _item_melee.."/grips/combat_blade_grip_04", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, no_support = {"trinket_hook_empty"}},
-            grip_05 =      {model = _item_melee.."/grips/combat_blade_grip_05", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, no_support = {"trinket_hook_empty"}},
-            grip_06 =      {model = _item_melee.."/grips/combat_blade_grip_06", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, no_support = {"trinket_hook_empty"}},
-            grip_07 =      {model = _item_melee.."/grips/combat_blade_grip_07", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, no_support = {"trinket_hook_empty"}},
-            grip_08 =      {model = _item_melee.."/grips/combat_blade_grip_08", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, no_support = {"trinket_hook_empty"}},
-        }
+    grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "grip_default", model = ""},
+            {name = "grip_01",      model = _item_melee.."/grips/combat_blade_grip_01"},
+            {name = "grip_02",      model = _item_melee.."/grips/combat_blade_grip_02"},
+            {name = "grip_03",      model = _item_melee.."/grips/combat_blade_grip_03"},
+            {name = "grip_04",      model = _item_melee.."/grips/combat_blade_grip_04"},
+            {name = "grip_05",      model = _item_melee.."/grips/combat_blade_grip_05"},
+            {name = "grip_06",      model = _item_melee.."/grips/combat_blade_grip_06"},
+            {name = "grip_07",      model = _item_melee.."/grips/combat_blade_grip_07"},
+            {name = "grip_08",      model = _item_melee.."/grips/combat_blade_grip_08"},
+        }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
-    handle_attachments = function()
-        return {
-            {id = "handle_default", name = mod:localize("mod_attachment_default")},
-            {id = "handle_01",      name = "Handle 1"},
-            {id = "handle_02",      name = "Handle 2"},
-            {id = "handle_03",      name = "Handle 3"},
-            {id = "handle_04",      name = "Handle 4"},
-            {id = "handle_05",      name = "Handle 5"},
-            {id = "handle_06",      name = "Handle 6"},
-            {id = "handle_07",      name = "Handle 7"},
-            {id = "handle_08",      name = "Handle 8"},
+    handle_attachments = function(default)
+        local attachments = {
+            {id = "handle_01", name = "Handle 1"},
+            {id = "handle_02", name = "Handle 2"},
+            {id = "handle_03", name = "Handle 3"},
+            {id = "handle_04", name = "Handle 4"},
+            {id = "handle_05", name = "Handle 5"},
+            {id = "handle_06", name = "Handle 6"},
+            {id = "handle_07", name = "Handle 7"},
+            {id = "handle_08", name = "Handle 8"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "handle_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    handle_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            handle_default = {model = "",                                              type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            handle_01 =      {model = _item_ranged.."/handles/combat_blade_handle_01", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            handle_02 =      {model = _item_ranged.."/handles/combat_blade_handle_02", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            handle_03 =      {model = _item_ranged.."/handles/combat_blade_handle_03", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            handle_04 =      {model = _item_ranged.."/handles/combat_blade_handle_04", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            handle_05 =      {model = _item_ranged.."/handles/combat_blade_handle_05", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            handle_06 =      {model = _item_ranged.."/handles/combat_blade_handle_06", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            handle_07 =      {model = _item_ranged.."/handles/combat_blade_handle_07", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            handle_08 =      {model = _item_ranged.."/handles/combat_blade_handle_08", type = "handle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-        }
+    handle_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "handle_default", model = ""},
+            {name = "handle_01",      model = _item_ranged.."/handles/combat_blade_handle_01"},
+            {name = "handle_02",      model = _item_ranged.."/handles/combat_blade_handle_02"},
+            {name = "handle_03",      model = _item_ranged.."/handles/combat_blade_handle_03"},
+            {name = "handle_04",      model = _item_ranged.."/handles/combat_blade_handle_04"},
+            {name = "handle_05",      model = _item_ranged.."/handles/combat_blade_handle_05"},
+            {name = "handle_06",      model = _item_ranged.."/handles/combat_blade_handle_06"},
+            {name = "handle_07",      model = _item_ranged.."/handles/combat_blade_handle_07"},
+            {name = "handle_08",      model = _item_ranged.."/handles/combat_blade_handle_08"},
+        }, parent, angle, move, remove, type or "handle", no_support, automatic_equip, hide_mesh, mesh_move)
     end
 }
+
+-- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
+-- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
+-- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
     functions,
     {
-        attachments = { -- Done 10.9.2023
+        attachments = {
+            -- Native
             blade = functions.blade_attachments(),
             grip = functions.grip_attachments(),
             handle = functions.handle_attachments(),
+            -- Common
             emblem_right = _common.emblem_right_attachments(),
             emblem_left = _common.emblem_left_attachments(),
             trinket_hook = _common.trinket_hook_attachments(),
         },
-        models = table.combine( -- Done 10.9.2023
+        models = table.combine(
+            -- Native
+            functions.blade_models(nil, 0, vector3_box(.1, -3, -.1), vector3_box(0, 0, .2)),
+            functions.grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, .2, 0), nil, {
+                {},
+                {"trinket_hook_empty"},
+                {"trinket_hook_empty"},
+                {"trinket_hook"},
+                {"trinket_hook_empty"},
+                {"trinket_hook_empty"},
+                {"trinket_hook_empty"},
+                {"trinket_hook_empty"},
+                {"trinket_hook_empty"},
+            }, {
+                {},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
+                {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
+            }),
+            functions.handle_models(nil, 0, vector3_box(-.15, -5, .2), vector3_box(0, 0, -.2)),
+            -- Common
             _common.emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
             _common.emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
-            _common.trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
-            functions.blade_models(nil, 0, vector3_box(.1, -3, -.1), vector3_box(0, 0, .2)),
-            functions.grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, .2, 0)),
-            functions.handle_models(nil, 0, vector3_box(-.15, -5, .2), vector3_box(0, 0, -.2))
+            _common.trinket_hook_models(nil, 0, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2))
         ),
-        anchors = { -- Done 10.9.2023 Additional custom positions for paper thing emblems?
+        anchors = { -- Additional custom positions for paper thing emblems?
             fixes = {
                 {dependencies = {"grip_05", "!handle_05"}, -- Trinket hook
                     trinket_hook = {offset = true, position = vector3_box(0, 0, .055), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},

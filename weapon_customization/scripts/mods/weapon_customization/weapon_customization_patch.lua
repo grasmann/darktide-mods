@@ -28,11 +28,14 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local string_find = string.find
     local string_gsub = string.gsub
 	local string_split = string.split
+    local math = math
+    local math_random = math.random
     local pairs = pairs
     local CLASS = CLASS
     local managers = Managers
     local type = type
     local tostring = tostring
+    local script_unit = ScriptUnit
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -54,6 +57,11 @@ mod.get_item_attachment_slots = function(self, item)
 	return attachment_slots
 end
 
+mod.random_chance = {
+    bayonet = "mod_option_randomization_bayonet",
+    flashlight = "mod_option_randomization_flashlight",
+}
+
 mod.randomize_weapon = function(self, item)
     local random_attachments = {}
     local possible_attachments = {}
@@ -62,21 +70,32 @@ mod.randomize_weapon = function(self, item)
     local attachment_slots = self:get_item_attachment_slots(item)
     for _, attachment_slot in pairs(attachment_slots) do
         if self.attachment[item_name][attachment_slot] and not table_contains(self.automatic_slots, attachment_slot) then
-            for _, data in pairs(self.attachment[item_name][attachment_slot]) do
-                if not string_find(data.id, "default") then
-                    possible_attachments[attachment_slot] = possible_attachments[attachment_slot] or {}
-                    possible_attachments[attachment_slot][#possible_attachments[attachment_slot]+1] = data.id
-                end
+            local chance_success = true
+            if self.random_chance[attachment_slot] then
+                local chance_option = self.random_chance[attachment_slot]
+                local chance = self:get(chance_option)
+                local already_has_attachment = self:get_actual_default_attachment(item, attachment_slot)
+                if already_has_attachment then chance = 100 end
+                local random_chance = math_random(100)
+                chance_success = random_chance <= chance
             end
-            local random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
-            random_attachments[attachment_slot] = random_attachment
-            local attachment_data = self.attachment_models[item_name][random_attachment]
-            local no_support = attachment_data and attachment_data.no_support
-            attachment_data = self:_apply_anchor_fixes(item, attachment_slot) or attachment_data
-            no_support = attachment_data.no_support or no_support
-            if no_support then
-                for _, no_support_entry in pairs(no_support) do
-                    no_support_entries[#no_support_entries+1] = no_support_entry
+            if chance_success then
+                for _, data in pairs(self.attachment[item_name][attachment_slot]) do
+                    if not string_find(data.id, "default") and not data.no_randomize then
+                        possible_attachments[attachment_slot] = possible_attachments[attachment_slot] or {}
+                        possible_attachments[attachment_slot][#possible_attachments[attachment_slot]+1] = data.id
+                    end
+                end
+                local random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
+                random_attachments[attachment_slot] = random_attachment
+                local attachment_data = self.attachment_models[item_name][random_attachment]
+                local no_support = attachment_data and attachment_data.no_support
+                attachment_data = self:_apply_anchor_fixes(item, attachment_slot) or attachment_data
+                no_support = attachment_data.no_support or no_support
+                if no_support then
+                    for _, no_support_entry in pairs(no_support) do
+                        no_support_entries[#no_support_entries+1] = no_support_entry
+                    end
                 end
             end
         end
@@ -146,33 +165,57 @@ mod.setup_item_definitions = function(self)
     -- -- end
 end
 
-mod.update_modded_packages = function(self)
+mod.update_modded_packages = function(self, player_or_nil)
     -- Reset used packages
-    self:persistent_table(REFERENCE).used_packages.attachments = {}
+    local new_used_packages = {}
     -- Get modded packages
-    self:get_modded_packages()
+    local found_packages = self:get_modded_packages(player_or_nil)
+    for _, package_name in pairs(found_packages) do
+        new_used_packages[package_name] = true
+    end
+    -- Set packages
+    self:persistent_table(REFERENCE).used_packages.attachments = new_used_packages
 end
 
-mod.get_modded_packages = function(self)
-    if table_size(self:persistent_table(REFERENCE).used_packages.attachments) == 0 then
+mod.get_modded_packages = function(self, player_or_nil)
+    local found_packages = {}
+    -- if table_size(self:persistent_table(REFERENCE).used_packages.attachments) == 0 then
         self:setup_item_definitions()
         -- self:load_needed_packages()
-        if self.weapon_extension then
-            local weapons = self.weapon_extension._weapons
-            for slot_name, weapon in pairs(weapons) do
-                if weapon and weapon.item and weapon.item.attachments then
-                    self:get_modded_item_packages(weapon.item.attachments)
-                    if weapon.item.original_attachments then
-                        self:get_modded_item_packages(weapon.item.original_attachments)
+        local players = managers.player:players()
+        if player_or_nil then players = {player_or_nil} end
+        for _, player in pairs(players) do
+            local player_unit = player.player_unit
+            -- if self.weapon_extension then
+            local weapon_extension = player_unit and script_unit.extension(player_unit, "weapon_system")
+            if weapon_extension then
+                local weapons = weapon_extension._weapons
+                for slot_name, weapon in pairs(weapons) do
+                    if weapon and weapon.item and weapon.item.attachments then
+                        local packages =self:get_modded_item_packages(weapon.item.attachments)
+                        local original_packages = {}
+                        if weapon.item.original_attachments then
+                            original_packages = self:get_modded_item_packages(weapon.item.original_attachments)
+                        end
+                        for _, package_name in pairs(packages) do
+                            -- self:persistent_table(REFERENCE).used_packages.attachments[package] = true
+                            found_packages[#found_packages+1] = package_name
+                        end
+                        for _, package_name in pairs(original_packages) do
+                            -- self:persistent_table(REFERENCE).used_packages.attachments[package] = true
+                            found_packages[#found_packages+1] = package_name
+                        end
                     end
                 end
             end
         end
-    end
+    -- end
+    return found_packages
 end
 
 mod.get_modded_item_packages = function(self, attachments)
     local found_attachments = {}
+    local found_packages = {}
     self:_recursive_get_attachments(attachments, found_attachments, true)
     for _, attachment_data in pairs(found_attachments) do
         local item_string = attachment_data.item
@@ -180,11 +223,13 @@ mod.get_modded_item_packages = function(self, attachments)
             local item_definition = self:persistent_table(REFERENCE).item_definitions[item_string]
             if item_definition and item_definition.resource_dependencies then
                 for package_name, _ in pairs(item_definition.resource_dependencies) do
-                    self:persistent_table(REFERENCE).used_packages.attachments[package_name] = true
+                    -- self:persistent_table(REFERENCE).used_packages.attachments[package_name] = true
+                    found_packages[#found_packages+1] = package_name
                 end
             end
         end
     end
+    return found_packages
 end
 
 -- ##### ┬┌┐┌┬  ┬┌─┐┌┐┌┌┬┐┌─┐┬─┐┬ ┬ ###################################################################################
@@ -434,7 +479,31 @@ mod._overwrite_attachments = function(self, item_data, attachments)
             end
         -- end
     end
+
 end
+
+mod:hook(CLASS.StoreService, "purchase_item", function(func, self, offer, ...)
+    mod.purchase_gear_id = offer.description.gear_id
+    return func(self, offer, ...)
+end)
+
+mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gear, ...)
+    mod:echo("create gear")
+
+    -- mod:dtf(gear, "purchased_gear", 20)
+    if mod.purchase_gear_id and mod:persistent_table(REFERENCE).temp_gear_settings[mod.purchase_gear_id] then
+        local attachments = table_clone(mod:persistent_table(REFERENCE).temp_gear_settings[mod.purchase_gear_id])
+        mod:persistent_table(REFERENCE).temp_gear_settings[mod.purchase_gear_id] = nil
+
+        mod:echo("purchased_gear "..tostring(mod.purchase_gear_id))
+        mod:echo("set settings for "..tostring(gear_id))
+        for attachment_slot, attachment in pairs(attachments) do
+            mod:set_gear_setting(gear_id, attachment_slot, attachment)
+        end
+        mod.purchase_gear_id = nil
+    end
+    func(self, gear_id, gear, ...)
+end)
 
 mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
 
@@ -442,7 +511,24 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
     instance._resolve_item_packages_recursive = function(attachments, items_dictionary, result)
         if instance.processing_item then
             local gear_id = mod:get_gear_id(instance.processing_item)
-            if gear_id then
+
+            local in_possesion_of_player = mod:item_in_possesion_of_player(instance.processing_item)
+            local in_store = mod:item_in_store(instance.processing_item)
+            -- if in_possesion_of_player and gear_id then
+            --     -- mod:echo("In possesion of player: "..tostring(gear_id))
+            -- end
+            local randomize = (in_store == "store" and mod:get("mod_option_randomization_store"))
+                or (not in_possesion_of_player and mod:get("mod_option_randomization_players"))
+            if randomize and in_store ~= "premium" and gear_id then
+                if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
+                    local master_item = instance.processing_item.__master_item or instance.processing_item
+                    local random_attachments = mod:randomize_weapon(master_item)
+                    mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
+                end
+                -- mod:echo("In store: "..tostring(gear_id).." - "..tostring(in_store))
+            end
+
+            if gear_id and in_store ~= "premium" then
                 mod:setup_item_definitions()
 
                 -- Add flashlight slot

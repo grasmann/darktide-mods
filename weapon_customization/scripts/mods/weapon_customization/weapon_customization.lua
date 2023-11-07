@@ -27,6 +27,7 @@ mod:persistent_table(REFERENCE, {
 	},
 	input_hooked = false,
 	weapon_templates = {},
+	temp_gear_settings = {},
 })
 mod.was_third_person = nil
 
@@ -100,6 +101,7 @@ end
 
 -- Player visual extension initialized
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
+	-- Original function
 	func(self, world, unit, ...)
 	-- Initialize
 	mod:init()
@@ -113,6 +115,9 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
 		-- Set reinitialization
 		mod.initialized = false
 	end
+	-- Update used packages
+    mod:update_modded_packages()
+	-- Original function
 	return func(self, ...)
 end)
 

@@ -12,9 +12,7 @@ local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -30,88 +28,65 @@ local _item_minion = "content/items/weapons/minions"
     local type = type
 --#endregion
 
-local tv = function(t, i)
-    local res = nil
-    if type(t) == "table" then
-        if #t >= i then
-            res = t[i]
-        elseif #t >= 1 then
-            res = t[1]
-        else
-            return nil
-        end
-    else
-        res = t
-    end
-    if res == "" then
-        return nil
-    end
-    return res
-end
-table.combine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for name, value in pairs(t) do
-            combined[name] = value
-        end
-    end
-    return combined
-end
-table.icombine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for _, value in pairs(t) do
-            combined[#combined+1] = value
-        end
-    end
-    return combined
-end
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 local functions = {
-    shield_attachments = function()
-        return {
-            {id = "left_default",      name = mod:localize("mod_attachment_default")},
+    shield_attachments = function(default)
+        local attachments = {
             {id = "left_01",           name = "Slab Shield"},
-            -- {id = "bulwark_shield_01", name = "Bulwark Shield"},
+            -- {id = "left_02", name = "Bulwark Shield"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "left_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    shield_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            left_default =      {model = "",                                      type = "left", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            left_01 =           {model = _item_melee.."/ogryn_slabshield_p1_m1",  type = "left", parent = tv(parent, 2), angle = a, move = m, remove = r},
-            -- bulwark_shield_01 = {model = _item_melee.."/ogryn_bulwark_shield_01", type = "left", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    shield_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "left_default", model = ""},
+            {name = "left_01",      model = _item_melee.."/ogryn_slabshield_p1_m1"},
+            -- {name = "left_02",      model = _item_melee.."/ogryn_bulwark_shield_01"},
+        }, parent, angle, move, remove, type or "left", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 }
+
+-- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
+-- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
+-- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
     functions,
     {
-        attachments = { -- Done 11.9.2023
+        attachments = {
+            -- Native
+            left = functions.shield_attachments(),
+            -- Power Maul
             shaft = _ogryn_powermaul_p1_m1.shaft_attachments(),
             head = _ogryn_powermaul_p1_m1.head_attachments(),
             pommel = _ogryn_powermaul_p1_m1.pommel_attachments(),
+            -- Common
             emblem_right = _common.emblem_right_attachments(),
             emblem_left = _common.emblem_left_attachments(),
             trinket_hook = _common.trinket_hook_attachments(),
-            left = functions.shield_attachments(),
         },
-        models = table.combine( -- Done 11.9.2023
+        models = table.combine(
             -- {customization_default_position = vector3_box(.2, 0, 0)},
-            _ogryn_powermaul_p1_m1.shaft_models(nil, -2.5, vector3_box(0, -5, -.15), vector3_box(0, 0, 0)),
-            _common.emblem_right_models("head", 0, vector3_box(0, -5, -.4), vector3_box(.2, 0, 0)),
-            _common.emblem_left_models("head", -3, vector3_box(0, -5, -.4), vector3_box(-.2, 0, 0)),
-            _common.trinket_hook_models(nil, -2.5, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2)),
+            -- Native
+            functions.shield_models(nil, 0, vector3_box(-.15, -2, .1), vector3_box(0, 0, -.2)),
+            -- Power Maul
             _ogryn_powermaul_p1_m1.head_models(nil, -2.5, vector3_box(0, -5, -.4), vector3_box(0, 0, .2)),
             _ogryn_powermaul_p1_m1.pommel_models(nil, -2.5, vector3_box(0, -6, .1), vector3_box(0, 0, -.2)),
-            functions.shield_models(nil, 0, vector3_box(-.15, -2, .1), vector3_box(0, 0, -.2))
+            _ogryn_powermaul_p1_m1.shaft_models(nil, -2.5, vector3_box(0, -5, -.15), vector3_box(0, 0, 0)),
+            -- Common
+            _common.emblem_right_models("head", 0, vector3_box(0, -5, -.4), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("head", -3, vector3_box(0, -5, -.4), vector3_box(-.2, 0, 0)),
+            _common.trinket_hook_models(nil, -2.5, vector3_box(-.3, -4, .3), vector3_box(0, 0, -.2))
         ),
-        anchors = { -- Done 11.9.2023 Additional custom positions for paper thing emblems?
+        anchors = { -- Additional custom positions for paper thing emblems?
             fixes = {
                 {dependencies = {"pommel_05"}, -- Trinket hook
                     trinket_hook = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.01, .01, .01)}},

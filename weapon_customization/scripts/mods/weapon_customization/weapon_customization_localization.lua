@@ -158,6 +158,42 @@ return {
 	-- 	de = "Behebt das schwarze Flackern beim Zoomen in der Item-Vorschau bei einigen Grafikkarten",
 	-- 	ru = "Исправляет на некоторых видеокартах чёрное мерцание при масштабировании осматриваемого предмета.",
 	-- },
+	group_randomization = {
+		en = "Randomization",
+		de = "Randomisierung",
+	},
+	mod_option_randomization_store = {
+		en = "Store",
+		de = "Geschäft",
+	},
+	mod_option_randomization_store_tooltip = {
+		en = "Randomize weapons in the store",
+		de = "Randomisierung der Waffen im Geschäft",
+	},
+	mod_option_randomization_players = {
+		en = "Players",
+		de = "Spieler",
+	},
+	mod_option_randomization_players_tooltip = {
+		en = "Randomize weapons of other players",
+		de = "Randomisierung der Waffen der anderen Spieler",
+	},
+	mod_option_randomization_bayonet = {
+		en = "Bayonet",
+		de = "Bajonett",
+	},
+	mod_option_randomization_bayonet_tooltip = {
+		en = "Chance for weapons to have a bayonet",
+		de = "Chance dass Waffen ein Bajonett haben",
+	},
+	mod_option_randomization_flashlight = {
+		en = "Flashlight",
+		de = "Taschenlampe",
+	},
+	mod_option_randomization_flashlight_tooltip = {
+		en = "Chance for weapons to have a flashlight",
+		de = "Chance dass Waffen eine Taschenlampe haben",
+	},
 	group_visible_equipment = {
 		en = "Visible Equipment",
 		de = "Sichtbare Ausrüstung",

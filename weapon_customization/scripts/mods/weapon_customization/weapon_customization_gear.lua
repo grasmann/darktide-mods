@@ -5,7 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
-
+local BackendUtilities = mod:original_require("scripts/foundation/managers/backend/utilities/backend_utilities")
 
 local REFERENCE = "weapon_customization"
 
@@ -18,6 +18,8 @@ local REFERENCE = "weapon_customization"
     local math_floor = math.floor
     local tostring = tostring
     local pairs = pairs
+	local ipairs = ipairs
+	local managers = Managers
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -29,17 +31,52 @@ mod.get_gear_id = function(self, item)
 	return item and (item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id)
 end
 
+mod.get_real_gear_id = function(self, item)
+	return item and (item.__original_gear_id or item.__gear and item.__gear.uuid or item.__gear_id or item.gear_id)
+end
+
 -- Get slot info id
 mod.get_slot_info_id = function(self, item)
-	return item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid
+	return item and (item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid)
+end
+
+mod.item_in_possesion_of_player = function(self, item)
+	if managers.data_service and managers.data_service.gear and managers.data_service.gear._cached_gear_list then
+		local gear_id = self:get_gear_id(item)
+		return managers.data_service.gear._cached_gear_list[gear_id] ~= nil
+	end
+end
+
+mod.item_in_store = function(self, item)
+	if not self:item_in_possesion_of_player(item) then
+		local master_item = item.__master_item or item
+		local item_types = {"WEAPON_MELEE", "WEAPON_RANGED"}
+		if master_item.item_type and table.contains(item_types, master_item.item_type) then
+			if item.__gear and item.__gear.characterId then
+				return false
+			end
+			if master_item.gear_id then
+				return "premium"
+			end
+			return "store"
+		end
+	end
 end
 
 -- Set attachment for specified gear id and slot
 mod.set_gear_setting = function(self, gear_id, attachment_slot, optional_attachment_or_nil)
-	if not optional_attachment_or_nil or (optional_attachment_or_nil and (string_find(optional_attachment_or_nil, "default") or optional_attachment_or_nil == "default")) then
-		self:set(tostring(gear_id).."_"..attachment_slot, nil)
+	if self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
+		if not optional_attachment_or_nil or (optional_attachment_or_nil and (string_find(optional_attachment_or_nil, "default") or optional_attachment_or_nil == "default")) then
+			self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot] = nil
+		else
+			self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot] = optional_attachment_or_nil
+		end
 	else
-		self:set(tostring(gear_id).."_"..attachment_slot, optional_attachment_or_nil)
+		if not optional_attachment_or_nil or (optional_attachment_or_nil and (string_find(optional_attachment_or_nil, "default") or optional_attachment_or_nil == "default")) then
+			self:set(tostring(gear_id).."_"..attachment_slot, nil)
+		else
+			self:set(tostring(gear_id).."_"..attachment_slot, optional_attachment_or_nil)
+		end
 	end
 end
 
@@ -47,6 +84,10 @@ end
 -- Optional: Item to get real default attachment
 mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or_nil)
 	local attachment = self:get(tostring(gear_id).."_"..attachment_slot)
+	-- Check temp
+	if not attachment and self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
+		attachment = self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot]
+	end
 	-- Check attachment
 	if not attachment and optional_item_or_nil then
 		-- Get real vanilla attachment
