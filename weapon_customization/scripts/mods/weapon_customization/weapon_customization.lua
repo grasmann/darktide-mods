@@ -24,6 +24,7 @@ mod:persistent_table(REFERENCE, {
 		view_weapon_sounds = {},
 		needed = {},
 		attachments = {},
+		hub = {},
 	},
 	input_hooked = false,
 	weapon_templates = {},
@@ -53,6 +54,11 @@ function mod.on_game_state_changed(status, state_name)
 	mod:recharge_battery()
 	-- mod:release_slot_packages()
 	mod:release_non_essential_packages()
+	mod:persistent_table(REFERENCE).used_packages.hub = {}
+	mod.camera_position = nil
+	mod.camera_rotation = nil
+	mod.keep_all_packages = nil
+	mod.lens_units = nil
 end
 
 -- Mod settings changed
@@ -78,6 +84,10 @@ function mod.on_setting_changed(setting_id)
 	end
 	if setting_id == "mod_option_visible_equipment_own_sounds_fp" then
 		mod.visible_equipment_sounds_fp = mod:get("mod_option_visible_equipment_own_sounds_fp")
+	end
+	if setting_id == "mod_option_randomization_players" or setting_id == "mod_option_randomization_store" then
+		mod.keep_all_packages = true
+		mod:update_modded_packages()
 	end
 	-- Debug
 	mod._debug = mod:get("mod_option_debug")
@@ -109,11 +119,19 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(fu
     mod:update_modded_packages()
 end)
 
+mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
+	-- Original function
+	func(self, world, unit, ...)
+	-- Update used packages
+    mod:update_modded_packages()
+end)
+
 -- Player visual extension destroyed
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
 	if self._unit == mod.player_unit then
 		-- Set reinitialization
 		mod.initialized = false
+		mod.lens_units = nil
 	end
 	-- Update used packages
     mod:update_modded_packages()

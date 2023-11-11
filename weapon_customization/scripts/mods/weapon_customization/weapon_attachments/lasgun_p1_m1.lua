@@ -85,7 +85,7 @@ return table.combine(
                 _common_ranged.stock_attachments()
             ),
             -- Bolter
-            help_sight = _bolter_p1_m1.sight_attachments(),
+            -- help_sight = _bolter_p1_m1.sight_attachments(),
             -- Common
             emblem_right = _common.emblem_right_attachments(),
             emblem_left = _common.emblem_left_attachments(),
@@ -113,11 +113,25 @@ return table.combine(
             _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.4, -3, 0), vector3_box(.2, 0, 0)),
             _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
             _common_ranged.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
-            _common_ranged.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+            _common_ranged.sights_models(nil, .35, vector3_box(-.3, -4, -.2), {
+                vector3_box(-.2, 0, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(-.2, 0, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+            }, "sight", {}, {
                 {rail = "rail_default", help_sight = "sight_default"},
                 {rail = "rail_01", help_sight = "bolter_sight_01"},
                 {rail = "rail_default", help_sight = "bolter_sight_01"},
                 {rail = "rail_01", help_sight = "bolter_sight_01"},
+                {rail = "rail_default", help_sight = "sight_default"},
+                {rail = "rail_default", help_sight = "sight_default", sight_2 = "scope_sight_03", lens = "scope_lens_01", lens_2 = "scope_lens_2_01"},
+                {rail = "rail_default", help_sight = "sight_default", sight_2 = "scope_sight_02", lens = "scope_lens_01", lens_2 = "scope_lens_2_01"},
+                {rail = "rail_default", help_sight = "sight_default", sight_2 = "scope_sight_03", lens = "scope_lens_01", lens_2 = "scope_lens_2_01"},
                 {rail = "rail_default", help_sight = "sight_default"},
             }, {
                 {{"receiver", 5}},
@@ -125,9 +139,32 @@ return table.combine(
                 {{"receiver", 5}},
                 {{"receiver", 5}},
                 {{"receiver", 5}, {"sight", 1}},
+                {{"receiver", 5}},
+                {{"receiver", 5}},
+                {{"receiver", 5}},
+                {{"receiver", 5}},
+            }, {
+                true,
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
             }),
+            _common_ranged.scope_sights_models("sight", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0), "sight_2", {}, {
+                {rail = "rail_default"},
+                {rail = "rail_01"},
+                {rail = "rail_01"},
+                {rail = "rail_01"},
+                {rail = "rail_default"},
+            }),
+            _common_ranged.scope_lens_models("sight_2", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0)),
+            _common_ranged.scope_lens_2_models("sight_2", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0)),
             -- Bolter
-            _bolter_p1_m1.sight_models("receiver", .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "help_sight", {}, {}, {}),
+            _bolter_p1_m1.sight_models("receiver", .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "help_sight"),
             -- Common
             _common.emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
             _common.emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
@@ -138,30 +175,58 @@ return table.combine(
             no_scope_offset = {position = vector3_box(0, 0, -.0455)},
             -- help_sight = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0), scale_node = 5},
             fixes = {
+
+                -- Scope
+                {dependencies = {"scope_01"}, -- Lasgun sight
+                    sight = {offset = true, position = vector3_box(0, -.04, .156), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1)},
+                    lens = {offset = true, position = vector3_box(-.0295, .22, .03675), rotation = vector3_box(0, 0, 0), scale = vector3_box(.495, 1, .505), hide_mesh = {{"lens", 1, 2, 3, 5}}, data = {lens = 1}},
+                    lens_2 = {offset = true, position = vector3_box(-.0295, -.16, .03675), rotation = vector3_box(180, 0, 0), scale = vector3_box(.495, 1, -.505), hide_mesh = {{"lens_2", 1, 2, 3, 5}}, data = {lens = 2}},
+                    sight_2 = {offset = true, position = vector3_box(0, .07, -.0415), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
+                    scope_offset = {position = vector3_box(0, 0, -.0048)},
+                    rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {dependencies = {"scope_02"}, -- Lasgun sight
+                    sight = {offset = true, position = vector3_box(0, -.08, .156), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1)},
+                    lens = {offset = true, position = vector3_box(-.0265, .04, .0355), rotation = vector3_box(0, 0, 0), scale = vector3_box(.45, 1, .48), hide_mesh = {{"lens", 1, 2, 3, 5}}, data = {lens = 1}},
+                    lens_2 = {offset = true, position = vector3_box(-.0295, -.2, .0365), rotation = vector3_box(180, 0, 0), scale = vector3_box(.495, 1, -.505), hide_mesh = {{"lens_2", 1, 2, 3, 5}}, data = {lens = 2}},
+                    sight_2 = {offset = true, position = vector3_box(0, .09, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
+                    scope_offset = {position = vector3_box(0, 0, -.0035)},
+                    rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {dependencies = {"scope_03"}, -- Lasgun sight
+                    sight = {offset = true, position = vector3_box(0, -.05, .156), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                    lens = {offset = true, position = vector3_box(-.0265, .26, .0355), rotation = vector3_box(0, 0, 0), scale = vector3_box(.45, 1, .48), hide_mesh = {{"lens", 1, 2, 3, 5}}, data = {lens = 1}},
+                    lens_2 = {offset = true, position = vector3_box(-.0295, 0, .038), rotation = vector3_box(180, 0, 0), scale = vector3_box(.495, 1, -.505), hide_mesh = {{"lens_2", 1, 2, 3, 5}}, data = {lens = 2}},
+                    sight_2 = {offset = true, position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
+                    scope_offset = {position = vector3_box(0, 0, -.0055)},
+                    rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
                 {dependencies = {"grip_27|grip_28|grip_29"}, -- Grip
                     grip = {offset = true, position = vector3_box(0, .01, -.02), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"emblem_left_02"}, -- Emblem
                     emblem_left = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, -1, 1)}},
                 {dependencies = {"lasgun_rifle_sight_01"}, -- Lasgun sight
-                    sight = {offset = true, position = vector3_box(0, 0, 0), mesh_position = vector3_box(.007, 0, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(.825, 1, 1), scale_node = 6}},
+                    sight = {offset = true, position = vector3_box(0, 0, 0), mesh_position = vector3_box(.007, 0, .015), mesh_index = 5, rotation = vector3_box(0, 0, 0), scale = vector3_box(.825, 1, 1), scale_node = 6}},
                 {dependencies = {"lasgun_rifle_sight_01"}, -- Infantry sight
                     no_scope_offset = {position = vector3_box(0, 0, -.0285), rotation = vector3_box(.1, 0, 0)}},
                 {dependencies = {"autogun_rifle_sight_01"}, -- Lasgun sight
-                    sight = {offset = true, position = vector3_box(-.0975, .03, -.075), mesh_position = vector3_box(.0975, 0, .075), scale = vector3_box(.7, 1, 1), scale_node = 5},
-                    help_sight = {offset = true, position = vector3_box(.056, 0, -.045), scale = vector3_box(.645, .75, 1), scale_node = 5}},
+                    sight = {offset = true, position = vector3_box(0, .03, 0), mesh_position = vector3_box(.1, 0, .075), mesh_index = 4, scale = vector3_box(.765, 1, 1), scale_node = 5},
+                    help_sight = {offset = true, position = vector3_box(0, 0, 0), mesh_position = vector3_box(.055, 0, -.045), mesh_index = 4, scale = vector3_box(.645, .75, 1), scale_node = 5}},
                 {dependencies = {"autogun_rifle_sight_01"}, -- Infantry sight
                     no_scope_offset = {position = vector3_box(0, 0, -.011), rotation = vector3_box(.3, 0, 0)}},
                 {dependencies = {"autogun_rifle_ak_sight_01"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, .0225, 0), mesh_position = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), scale_node = 1},
-                    help_sight = {offset = true, position = vector3_box(.056, 0, -.046), scale = vector3_box(.645, .75, 1), scale_node = 5}},
+                    help_sight = {offset = true, position = vector3_box(0, 0, 0), mesh_position = vector3_box(.055, 0, -.045), mesh_index = 4, scale = vector3_box(.645, .75, 1), scale_node = 5}},
                 {dependencies = {"autogun_rifle_ak_sight_01"}, -- Infantry sight
                     no_scope_offset = {position = vector3_box(0, 0, -.0135), rotation = vector3_box(0, 0, 0)}},
                 {dependencies = {"autogun_rifle_killshot_sight_01"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, .0225, 0), mesh_position = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), scale_node = 1},
-                    help_sight = {offset = true, position = vector3_box(.056, 0, -.046), scale = vector3_box(.645, .75, 1), scale_node = 5}},
+                    help_sight = {offset = true, position = vector3_box(0, 0, 0), mesh_position = vector3_box(.055, 0, -.045), mesh_index = 4, scale = vector3_box(.645, .75, 1), scale_node = 5}},
                 {dependencies = {"autogun_rifle_killshot_sight_01"}, -- Infantry sight
                     no_scope_offset = {position = vector3_box(0, 0, -.012), rotation = vector3_box(.4, 0, 0)}},
                 {help_sight = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0), scale_node = 5}},
+
                 {dependencies = {"barrel_01", "autogun_bayonet_01"}, -- Bayonet 1
                     bayonet = {parent = "barrel", position = vector3_box(0, .27, -.032), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"barrel_01", "autogun_bayonet_02"}, -- Bayonet 2

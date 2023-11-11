@@ -729,40 +729,40 @@ end)
 -- ##### ├┤ │ ││  │  │ ││││  │││├┤ ├─┤├─┘│ ││││ #######################################################################
 -- ##### └  └─┘┴─┘┴─┘└─┘└┴┘  └┴┘└─┘┴ ┴┴  └─┘┘└┘ #######################################################################
 
-mod:hook(CLASS.ActionVentOverheat, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
-    mod.forced_fallback = true
-    func(self, action_settings, t, time_scale, action_start_params, ...)
-end)
+-- mod:hook(CLASS.ActionVentOverheat, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
+--     mod.forced_fallback = true
+--     func(self, action_settings, t, time_scale, action_start_params, ...)
+-- end)
 
 mod:hook(CLASS.ActionVentOverheat, "finish", function(func, self, reason, data, t, time_in_action, ...)
     mod.forced_fallback = false
     func(self, reason, data, t, time_in_action, ...)
 end)
 
-mod:hook(CLASS.ActionReloadShotgun, "start", function(func, self, action_settings, t, time_scale, ...)
-    mod.forced_fallback = true
-    func(self, action_settings, t, time_scale, ...)
-end)
+-- mod:hook(CLASS.ActionReloadShotgun, "start", function(func, self, action_settings, t, time_scale, ...)
+--     mod.forced_fallback = true
+--     func(self, action_settings, t, time_scale, ...)
+-- end)
 
 mod:hook(CLASS.ActionReloadShotgun, "finish", function(func, self, reason, data, t, time_in_action, ...)
     mod.forced_fallback = false
     func(self, reason, data, t, time_in_action, ...)
 end)
 
-mod:hook(CLASS.ActionReloadState, "start", function(func, self, action_settings, t, time_scale, ...)
-    mod.forced_fallback = true
-    func(self, action_settings, t, time_scale, ...)
-end)
+-- mod:hook(CLASS.ActionReloadState, "start", function(func, self, action_settings, t, time_scale, ...)
+--     mod.forced_fallback = true
+--     func(self, action_settings, t, time_scale, ...)
+-- end)
 
 mod:hook(CLASS.ActionReloadState, "finish", function(func, self, reason, data, t, time_in_action, ...)
     mod.forced_fallback = false
     func(self, reason, data, t, time_in_action, ...)
 end)
 
-mod:hook(CLASS.ActionInspect, "start", function(func, self, action_settings, ...)
-    mod.forced_fallback = true
-    func(self, action_settings, ...)
-end)
+-- mod:hook(CLASS.ActionInspect, "start", function(func, self, action_settings, ...)
+--     mod.forced_fallback = true
+--     func(self, action_settings, ...)
+-- end)
 
 mod:hook(CLASS.ActionInspect, "finish", function(func, self, reason, data, t, time_in_action, ...)
     mod.forced_fallback = false

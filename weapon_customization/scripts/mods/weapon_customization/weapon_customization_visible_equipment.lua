@@ -719,7 +719,7 @@ mod.initialize_equipment_slot = function(self, slot, player, world, player_unit,
 		slot.dummy, slot.dummy_attachments = VisualLoadoutCustomization.spawn_item(slot.item, attach_settings, player_unit, nil, optional_mission_template)
 		VisualLoadoutCustomization.add_extensions(nil, slot.dummy_attachments, attach_settings)
         -- Unwield flow event
-        unit_flow_event(slot.dummy, "lua_unwield")
+        -- unit_flow_event(slot.dummy, "lua_unwield")
         -- Step animation
         self:register_player_equipment(player_unit, slot)
         -- Get equipment

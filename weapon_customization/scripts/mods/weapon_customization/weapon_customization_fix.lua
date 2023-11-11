@@ -172,7 +172,7 @@ mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
 	local load_call_item = self._load_call_data[id]
 	local package_name = load_call_item.package_name
     -- -- Get modded packages
-    mod:get_modded_packages()
+    mod:update_modded_packages()
     -- Check if package is used
     local package_used = false
     for _, USED_PACKAGES in pairs(mod:persistent_table(REFERENCE).used_packages) do
@@ -186,6 +186,8 @@ mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
     end
     -- Temp trinket fix
     if string_find(package_name, "trinkets") then package_used = true end
+    -- Tempt random fix
+    if mod.keep_all_packages then package_used = true end
     -- Unload if possible
     if not package_used or self._shutdown_has_started then
         func(self, id, ...)

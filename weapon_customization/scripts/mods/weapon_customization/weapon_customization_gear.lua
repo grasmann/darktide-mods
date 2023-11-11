@@ -14,12 +14,15 @@ local REFERENCE = "weapon_customization"
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local table = table
+	local table_contains = table.contains
     local string_find = string.find
     local math_floor = math.floor
     local tostring = tostring
     local pairs = pairs
 	local ipairs = ipairs
 	local managers = Managers
+	local type = type
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -47,12 +50,16 @@ mod.item_in_possesion_of_player = function(self, item)
 	end
 end
 
+mod.item_in_possesion_of_other_player = function(self, item)
+	return not self:item_in_possesion_of_player(item) and not self:item_in_store(item)
+end
+
 mod.item_in_store = function(self, item)
 	if not self:item_in_possesion_of_player(item) then
 		local master_item = item.__master_item or item
 		local item_types = {"WEAPON_MELEE", "WEAPON_RANGED"}
-		if master_item.item_type and table.contains(item_types, master_item.item_type) then
-			if item.__gear and item.__gear.characterId then
+		if master_item.item_type and table_contains(item_types, master_item.item_type) then
+			if item.__gear and (item.__gear.characterId or item.__gear.slots) then
 				return false
 			end
 			if master_item.gear_id then
@@ -83,7 +90,31 @@ end
 -- Get attachment from specified gear id and slot
 -- Optional: Item to get real default attachment
 mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or_nil)
+	-- Check manual changes
 	local attachment = self:get(tostring(gear_id).."_"..attachment_slot)
+	-- Check skin
+	if not attachment and optional_item_or_nil then
+		local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
+		local weapon_skin = optional_item_or_nil.slot_weapon_skin
+		if type(weapon_skin) == "string" and weapon_skin ~= "" then
+			self:setup_item_definitions()
+			weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
+		end
+		if type(weapon_skin) == "table" then
+			if weapon_skin and weapon_skin.attachments then
+				local attachment_data = self:_recursive_find_attachment(weapon_skin.attachments, attachment_slot)
+				if attachment_data then
+					for attachment_name, data in pairs(self.attachment_models[item_name]) do
+						if data.model == attachment_data.item then
+							-- mod:echo("skin has attachment "..attachment_name)
+							attachment = attachment_name
+							break
+						end
+					end
+				end
+			end
+		end
+	end
 	-- Check temp
 	if not attachment and self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
 		attachment = self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot]
@@ -155,5 +186,6 @@ mod.redo_weapon_attachments = function(self, item)
 		self:print("redo_weapon_attachments - done")
 		-- Trigger flashlight update
 		self._update_flashlight = true
+		self.lens_units = nil
 	else self:print("redo_weapon_attachments - weapon is nil") end
 end

@@ -34,6 +34,7 @@ local WeaponCustomizationLocalization = mod:io_dofile("weapon_customization/scri
 	local Quaternion = Quaternion
 	local quaternion_matrix_4x4 = Quaternion.matrix4x4
 	local quaternion_axis_angle = Quaternion.axis_angle
+	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 	local quaternion_box = QuaternionBox
 	local quaternion_unbox = quaternion_box.unbox
 	local quaternion_multiply = Quaternion.multiply
@@ -55,6 +56,7 @@ local WeaponCustomizationLocalization = mod:io_dofile("weapon_customization/scri
 	local unit_debug_name = Unit.debug_name
 	local Mesh = Mesh
 	local mesh_set_local_position = Mesh.set_local_position
+	local mesh_set_local_rotation = Mesh.set_local_rotation
 	local mesh_local_rotation = Mesh.local_rotation
 	local unit_mesh = Unit.mesh
 	local unit_world_pose = Unit.world_pose
@@ -170,7 +172,8 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 	if mod:get("mod_option_misc_attachment_names") and WeaponCustomizationLocalization.mod_attachment_remove[LANGUAGE_ID] then
 		self.found_names = self.found_names or {}
 		local name = nil
-		if attachment_slot ~= "trinket_hook" and attachment_slot ~= "emblem_left" and attachment_slot ~= "emblem_right" and attachment_slot ~= "flashlight" and attachment_name ~= "no_stock" then
+		if attachment_slot ~= "trinket_hook" and attachment_slot ~= "emblem_left" and attachment_slot ~= "emblem_right" and attachment_slot ~= "flashlight" and attachment_name ~= "no_stock"
+				and attachment_name ~= "no_sight" and attachment_name ~= "scope_01" and attachment_name ~= "scope_02" and attachment_name ~= "scope_03" then
 			self:setup_item_definitions()
 			local item_name = self:item_name_from_content_string(item.name)
 			local attachment_data = self.attachment_models[item_name][attachment_name]
@@ -396,26 +399,59 @@ mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 		local mesh_move = gear_info and gear_info.unit_mesh_move[unit]
 		local unit_and_meshes = mesh_move == "both" or false
 		local root_unit = gear_info and gear_info.attachment_slot_to_unit["root"] or unit
-		local mesh_position = gear_info and gear_info.unit_mesh_position[unit] and vector3_unbox(gear_info.unit_mesh_position[unit])
+		local attachment_slot = gear_info and gear_info.unit_to_attachment_slot[unit]
+		local mesh_position = gear_info and gear_info.unit_mesh_position[unit]
+		local mesh_rotation = gear_info and gear_info.unit_mesh_rotation[unit]
 		local mesh_index = gear_info and gear_info.unit_mesh_index[unit]
 
 		local num_meshes = unit_num_meshes(unit)
 		if (mesh_move or unit_and_meshes or mesh_position) and num_meshes > 0 then
-			local mesh_start, mesh_end = 1, num_meshes
-			if (mesh_position and not (mesh_move or unit_and_meshes)) and mesh_index then
-				mesh_start, mesh_end = mesh_index, mesh_index
+			local mesh_positions = {}
+			local mesh_rotations = {}
+			if mesh_position and mesh_index then
+				if type(mesh_position) == "table" and type(mesh_index) == "table" then
+					for i = 1, #mesh_position do
+						local index = mesh_index[i]
+						mesh_positions[index] = vector3_unbox(mesh_position[i])
+						if mesh_rotation then
+							mesh_rotations[index] = vector3_unbox(mesh_rotation[i])
+						end
+					end
+				else
+					mesh_positions[mesh_index] = vector3_unbox(mesh_position)
+					if mesh_rotation then
+						mesh_rotations[mesh_index] = vector3_unbox(mesh_rotation)
+					end
+				end
 			end
+			local mesh_start, mesh_end = 1, num_meshes
 			for i = mesh_start, mesh_end do
 				local mesh = unit_mesh(unit, i)
 				local unit_data = self.mesh_positions[unit]
 				local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
-				local mesh_position = mesh_position or vector3_zero()
-				local position = mesh_default + mesh_position
+				local mesh_pos = mesh_positions[i] or vector3_zero()
+				local position = mesh_default + mesh_pos
 				if mesh_move or unit_and_meshes then
 					position = position + movement
 				end
+				if mesh_rotations[i] then
+					local rotation = quaternion_from_euler_angles_xyz(mesh_rotations[i][1], mesh_rotations[i][2], mesh_rotations[i][3])
+					mesh_set_local_rotation(mesh, unit, rotation)
+				end
 				mesh_set_local_position(mesh, unit, position)
 			end
+			-- for i = mesh_start, mesh_end do
+			-- for i, mesh_index in pairs(mesh_index) do
+			-- 	local mesh = unit_mesh(unit, i)
+			-- 	local unit_data = self.mesh_positions[unit]
+			-- 	local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
+			-- 	local mesh_position = mesh_position[i] or vector3_zero()
+			-- 	local position = mesh_default + mesh_position
+			-- 	if mesh_move or unit_and_meshes then
+			-- 		position = position + movement
+			-- 	end
+			-- 	mesh_set_local_position(mesh, unit, position)
+			-- end
 		end
 
 		if not mesh_move or unit_and_meshes then
@@ -721,24 +757,40 @@ mod.resolve_no_support = function(self, item)
 	end
 end
 
-mod.resolve_special_changes = function(self, attachment)
-	local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
+mod.resolve_special_changes = function(self, item, attachment)
+	local item_name = self:item_name_from_content_string(item.name)
+	local gear_id = self:get_gear_id(item)
+	local attachment_data = self.attachment_models[item_name][attachment]
 	if attachment_data and attachment_data.special_resolve then
-		local special_changes = attachment_data.special_resolve(self.cosmetics_view._gear_id, self.cosmetics_view._presentation_item, attachment)
+		local special_changes = attachment_data.special_resolve(gear_id, item, attachment)
 		if special_changes then
 			for special_slot, special_attachment in pairs(special_changes) do
 
-				if not self.original_weapon_settings[special_slot] and not table_contains(self.automatic_slots, special_slot) then
-					if not self:get_gear_setting(self.cosmetics_view._gear_id, special_slot) then
-						self.original_weapon_settings[special_slot] = "default"
-					else
-						self.original_weapon_settings[special_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, special_slot)
+				if self.cosmetics_view then
+					if not self.original_weapon_settings[special_slot] and not table_contains(self.automatic_slots, special_slot) then
+						if not self:get_gear_setting(gear_id, special_slot) then
+							self.original_weapon_settings[special_slot] = "default"
+						else
+							self.original_weapon_settings[special_slot] = self:get_gear_setting(gear_id, special_slot)
+						end
 					end
+
+					self:remove_weapon_part_animation(special_slot)
 				end
 
-				self:remove_weapon_part_animation(special_slot)
+				if string_find(special_attachment, "|") then
+					local possibilities = string_split(special_attachment, "|")
+					local rnd = math.random(#possibilities)
+					special_attachment = possibilities[rnd]
+				end
 
-				self:set_gear_setting(self.cosmetics_view._gear_id, special_slot, special_attachment)
+				-- mod:echo("special resolve: "..tostring(special_slot).." = "..tostring(special_attachment))
+				-- self:set_gear_setting(gear_id, special_slot, special_attachment)
+				if self.cosmetics_view then
+					self:do_weapon_part_animation(item, special_slot, "attach", special_attachment)
+				else
+					self:set_gear_setting(gear_id, special_slot, special_attachment)
+				end
 			end
 		end
 	end
@@ -759,7 +811,7 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 
 			-- self:get_attachment_weapon_name(item, attachment_slot, attachment)
 
-			self:resolve_special_changes(attachment)
+			self:resolve_special_changes(self.cosmetics_view._presentation_item, attachment)
 			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
 			-- if attachment_data and attachment_data.special_resolve then
 			-- 	local special_changes = attachment_data.special_resolve(self.cosmetics_view._gear_id, self.cosmetics_view._presentation_item, attachment)
@@ -1385,7 +1437,7 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 	if self.cosmetics_view._gear_id and random_attachments then
 		-- mod:dtf(random_attachments, "random_attachments", 2)
 		local attachment_names = {}
-		table_reverse(random_attachments)
+		-- table_reverse(random_attachments)
 		for attachment_slot, value in pairs(random_attachments) do
 			attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
 		end
@@ -1400,8 +1452,18 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 			end
 			index = index + 1
 		end
+		-- for attachment_slot, value in pairs(random_attachments) do
+		-- 	self:resolve_special_changes(self.cosmetics_view._presentation_item, value)
+		-- end
 		for attachment_slot, value in pairs(random_attachments) do
-			self:resolve_special_changes(value)
+			if mod.add_custom_attachments[attachment_slot] then
+				mod:resolve_special_changes(self.cosmetics_view._presentation_item, value)
+			end
+		end
+		for attachment_slot, value in pairs(random_attachments) do
+			if not mod.add_custom_attachments[attachment_slot] then
+				mod:resolve_special_changes(self.cosmetics_view._presentation_item, value)
+			end
 		end
 		if not skip_animation then self.weapon_part_animation_update = true end
 	end

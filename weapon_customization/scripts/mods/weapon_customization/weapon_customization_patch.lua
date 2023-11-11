@@ -165,11 +165,11 @@ mod.setup_item_definitions = function(self)
     -- -- end
 end
 
-mod.update_modded_packages = function(self, player_or_nil)
+mod.update_modded_packages = function(self)
     -- Reset used packages
     local new_used_packages = {}
     -- Get modded packages
-    local found_packages = self:get_modded_packages(player_or_nil)
+    local found_packages = self:get_modded_packages()
     for _, package_name in pairs(found_packages) do
         new_used_packages[package_name] = true
     end
@@ -177,19 +177,19 @@ mod.update_modded_packages = function(self, player_or_nil)
     self:persistent_table(REFERENCE).used_packages.attachments = new_used_packages
 end
 
-mod.get_modded_packages = function(self, player_or_nil)
+mod.get_modded_packages = function(self)
     local found_packages = {}
     -- if table_size(self:persistent_table(REFERENCE).used_packages.attachments) == 0 then
         self:setup_item_definitions()
         -- self:load_needed_packages()
-        local players = managers.player:players()
-        if player_or_nil then players = {player_or_nil} end
-        for _, player in pairs(players) do
-            local player_unit = player.player_unit
+        -- local players = managers.player:players()
+        -- if player_or_nil then players = {player_or_nil} end
+        -- for _, player in pairs(players) do
+        --     local player_unit = player.player_unit
             -- if self.weapon_extension then
-            local weapon_extension = player_unit and script_unit.extension(player_unit, "weapon_system")
-            if weapon_extension then
-                local weapons = weapon_extension._weapons
+            -- local weapon_extension = self.weapon_extension --player_unit and script_unit.extension(player_unit, "weapon_system")
+            if self.weapon_extension then
+                local weapons = self.weapon_extension._weapons
                 for slot_name, weapon in pairs(weapons) do
                     if weapon and weapon.item and weapon.item.attachments then
                         local packages =self:get_modded_item_packages(weapon.item.attachments)
@@ -208,7 +208,7 @@ mod.get_modded_packages = function(self, player_or_nil)
                     end
                 end
             end
-        end
+        -- end
     -- end
     return found_packages
 end
@@ -488,21 +488,46 @@ mod:hook(CLASS.StoreService, "purchase_item", function(func, self, offer, ...)
 end)
 
 mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gear, ...)
-    mod:echo("create gear")
-
     -- mod:dtf(gear, "purchased_gear", 20)
-    if mod.purchase_gear_id and mod:persistent_table(REFERENCE).temp_gear_settings[mod.purchase_gear_id] then
-        local attachments = table_clone(mod:persistent_table(REFERENCE).temp_gear_settings[mod.purchase_gear_id])
-        mod:persistent_table(REFERENCE).temp_gear_settings[mod.purchase_gear_id] = nil
-
-        mod:echo("purchased_gear "..tostring(mod.purchase_gear_id))
-        mod:echo("set settings for "..tostring(gear_id))
+    local this_gear_id = mod.purchase_gear_id or mod.reward_gear_id
+    -- mod:echo("create gear "..tostring(this_gear_id))
+    if this_gear_id and mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id] then
+        local attachments = table_clone(mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id])
+        mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id] = nil
+        -- mod:echo("purchased_gear "..tostring(this_gear_id))
+        -- mod:echo("set settings for "..tostring(gear_id))
         for attachment_slot, attachment in pairs(attachments) do
             mod:set_gear_setting(gear_id, attachment_slot, attachment)
         end
-        mod.purchase_gear_id = nil
     end
+    mod.purchase_gear_id = nil
+    mod.reward_gear_id = nil
     func(self, gear_id, gear, ...)
+end)
+
+mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...)
+    local item, item_group, rarity, item_level = func(self, card_reward, ...)
+    if mod:get("mod_option_randomization_store") then
+        mod.reward_gear_id = mod:get_gear_id(item) or "reward"
+        -- mod:echo("randomize reward "..tostring(mod.reward_gear_id))
+        if not mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] then
+            local master_item = item.__master_item or item
+            local random_attachments = mod:randomize_weapon(master_item)
+            mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] = random_attachments
+            -- Special resolve
+            for attachment_slot, value in pairs(random_attachments) do
+                if mod.add_custom_attachments[attachment_slot] then
+                    mod:resolve_special_changes(item, value)
+                end
+            end
+            for attachment_slot, value in pairs(random_attachments) do
+                if not mod.add_custom_attachments[attachment_slot] then
+                    mod:resolve_special_changes(item, value)
+                end
+            end
+        end
+    end
+    return item, item_group, rarity, item_level
 end)
 
 mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
@@ -513,19 +538,28 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
             local gear_id = mod:get_gear_id(instance.processing_item)
 
             local in_possesion_of_player = mod:item_in_possesion_of_player(instance.processing_item)
+            local in_possesion_of_other_player = mod:item_in_possesion_of_other_player(instance.processing_item)
             local in_store = mod:item_in_store(instance.processing_item)
-            -- if in_possesion_of_player and gear_id then
-            --     -- mod:echo("In possesion of player: "..tostring(gear_id))
-            -- end
-            local randomize = (in_store == "store" and mod:get("mod_option_randomization_store"))
-                or (not in_possesion_of_player and mod:get("mod_option_randomization_players"))
+            local store = in_store == "store" and mod:get("mod_option_randomization_store")
+            local player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
+            local randomize = store or player
             if randomize and in_store ~= "premium" and gear_id then
                 if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
                     local master_item = instance.processing_item.__master_item or instance.processing_item
                     local random_attachments = mod:randomize_weapon(master_item)
                     mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
+                    -- Special resolve
+                    for attachment_slot, value in pairs(random_attachments) do
+                        if mod.add_custom_attachments[attachment_slot] then
+                            mod:resolve_special_changes(instance.processing_item, value)
+                        end
+                    end
+                    for attachment_slot, value in pairs(random_attachments) do
+                        if not mod.add_custom_attachments[attachment_slot] then
+                            mod:resolve_special_changes(instance.processing_item, value)
+                        end
+                    end
                 end
-                -- mod:echo("In store: "..tostring(gear_id).." - "..tostring(in_store))
             end
 
             if gear_id and in_store ~= "premium" then
@@ -536,6 +570,11 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
                 
                 -- Overwrite attachments
                 mod:_overwrite_attachments(instance.processing_item, attachments)
+
+                local found_packages = mod:get_modded_item_packages(attachments)
+                for _, package_name in pairs(found_packages) do
+                    mod:persistent_table(REFERENCE).used_packages.hub[package_name] = true
+                end
             end
 
             instance.processing_item = nil

@@ -71,8 +71,8 @@ table.icombine = function(...)
 end
 
 local functions = {
-    braced_barrel_attachments = function()
-        return {
+    braced_barrel_attachments = function(default)
+        local attachments = {
             {id = "barrel_07", name = "Braced Autogun 1"},
             {id = "barrel_08", name = "Braced Autogun 2"},
             {id = "barrel_09", name = "Braced Autogun 3"},
@@ -80,49 +80,49 @@ local functions = {
             {id = "barrel_13", name = "Braced Autogun 13"},
             {id = "barrel_14", name = "Braced Autogun 14"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "barrel_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    braced_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        local t = type or "barrel"
-        local n = no_support or {}
-        local ae = automatic_equip or {}
-        local h = hide_mesh or {}
-        return {
-            barrel_07 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_01", type = "barrel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 1), no_support = tv(n, 1), hide_mesh = tv(h, 1)},
-            barrel_08 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_02", type = "barrel", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 2), no_support = tv(n, 2), hide_mesh = tv(h, 2)},
-            barrel_09 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_03", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 3), no_support = tv(n, 3), hide_mesh = tv(h, 3)},
-            barrel_10 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_04", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 4), no_support = tv(n, 4), hide_mesh = tv(h, 4)},
-            barrel_13 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_05", type = "barrel", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 5), no_support = tv(n, 5), hide_mesh = tv(h, 5)},
-            barrel_14 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_06", type = "barrel", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 6), no_support = tv(n, 6), hide_mesh = tv(h, 6)},
-        }
+    braced_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "barrel_default", model = ""},
+            {name = "barrel_07",      model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_01"},
+            {name = "barrel_08",      model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_02"},
+            {name = "barrel_09",      model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_03"},
+            {name = "barrel_10",      model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_04"},
+            {name = "barrel_13",      model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_05"},
+            {name = "barrel_14",      model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_06"},
+        }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    headhunter_barrel_attachments = function()
-        return {
+    headhunter_barrel_attachments = function(default)
+        local attachments = {
             {id = "barrel_11", name = "Headhunter Autogun 11"},
             {id = "barrel_12", name = "Headhunter Autogun 12"},
             {id = "barrel_15", name = "Headhunter Autogun 15"},
             {id = "barrel_16", name = "Headhunter Autogun 16"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "barrel_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    headhunter_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        local t = type or "barrel"
-        local n = no_support or {}
-        local ae = automatic_equip or {}
-        local h = hide_mesh or {}
-        return {
-            barrel_11 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_01", type = "barrel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 1), no_support = tv(n, 1), hide_mesh = tv(h, 1)},
-            barrel_12 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_03", type = "barrel", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 2), no_support = tv(n, 2), hide_mesh = tv(h, 2)},
-            barrel_15 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_04", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 3), no_support = tv(n, 3), hide_mesh = tv(h, 3)},
-            barrel_16 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_05", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 4), no_support = tv(n, 4), hide_mesh = tv(h, 4)},
-        }
+    headhunter_barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "barrel_default", model = ""},
+            {name = "barrel_11",      model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_01"},
+            {name = "barrel_12",      model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_03"},
+            {name = "barrel_15",      model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_04"},
+            {name = "barrel_16",      model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_05"},
+        }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    barrel_attachments = function()
-        return {
+    barrel_attachments = function(default)
+        local attachments = {
             {id = "barrel_01", name = "Infantry Autogun 1"},
             {id = "barrel_02", name = "Infantry Autogun 2"},
             {id = "barrel_03", name = "Infantry Autogun 3"},
@@ -131,28 +131,27 @@ local functions = {
             {id = "barrel_06", name = "Infantry Autogun 6"},
             {id = "barrel_17", name = "Barrel 1"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "barrel_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        local t = type or "barrel"
-        local n = no_support or {}
-        local ae = automatic_equip or {}
-        local h = hide_mesh or {}
-        return {
-            barrel_01 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_01", type = "barrel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 1), no_support = tv(n, 1), hide_mesh = tv(h, 1)},
-            barrel_02 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_02", type = "barrel", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 2), no_support = tv(n, 2), hide_mesh = tv(h, 2)},
-            barrel_03 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_03", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 3), no_support = tv(n, 3), hide_mesh = tv(h, 3)},
-            barrel_04 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_04", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 4), no_support = tv(n, 4), hide_mesh = tv(h, 4)},
-            barrel_05 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_05", type = "barrel", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 5), no_support = tv(n, 5), hide_mesh = tv(h, 5)},
-            barrel_06 = {model = _item_ranged.."/barrels/autogun_rifle_barrel_06", type = "barrel", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 6), no_support = tv(n, 6), hide_mesh = tv(h, 6)},
-            barrel_17 = {model = _item_ranged.."/barrels/barrel_01",               type = "barrel", parent = tv(parent, 7), angle = a, move = m, remove = r, mesh_move = false, automatic_equip = tv(ae, 7), no_support = tv(n, 7), hide_mesh = tv(h, 7)},
-        }
+    barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "barrel_default", model = ""},
+            {name = "barrel_01",      model = _item_ranged.."/barrels/autogun_rifle_barrel_01"},
+            {name = "barrel_02",      model = _item_ranged.."/barrels/autogun_rifle_barrel_02"},
+            {name = "barrel_03",      model = _item_ranged.."/barrels/autogun_rifle_barrel_03"},
+            {name = "barrel_04",      model = _item_ranged.."/barrels/autogun_rifle_barrel_04"},
+            {name = "barrel_05",      model = _item_ranged.."/barrels/autogun_rifle_barrel_05"},
+            {name = "barrel_06",      model = _item_ranged.."/barrels/autogun_rifle_barrel_06"},
+            {name = "barrel_17",      model = _item_ranged.."/barrels/barrel_01"},
+        }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    muzzle_attachments = function()
-        return {
-            {id = "muzzle_default", name = mod:localize("mod_attachment_default")},
+    muzzle_attachments = function(default)
+        local attachments = {
             {id = "muzzle_01", name = "Infantry Autogun 1"},
             {id = "muzzle_02", name = "Infantry Autogun 2"},
             {id = "muzzle_03", name = "Infantry Autogun 3"},
@@ -168,82 +167,97 @@ local functions = {
             {id = "muzzle_13", name = "Headhunter Autogun 3"},
             {id = "muzzle_14", name = "Headhunter Autogun 4"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "muzzle_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    muzzle_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            muzzle_default = {model = "",                                                        type = "muzzle", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            muzzle_01 =      {model = _item_ranged.."/muzzles/autogun_rifle_muzzle_01",          type = "muzzle", parent = tv(parent, 2), angle = a, move = m, remove = r},
-            muzzle_02 =      {model = _item_ranged.."/muzzles/autogun_rifle_muzzle_02",          type = "muzzle", parent = tv(parent, 3), angle = a, move = m, remove = r},
-            muzzle_03 =      {model = _item_ranged.."/muzzles/autogun_rifle_muzzle_03",          type = "muzzle", parent = tv(parent, 4), angle = a, move = m, remove = r},
-            muzzle_04 =      {model = _item_ranged.."/muzzles/autogun_rifle_muzzle_04",          type = "muzzle", parent = tv(parent, 5), angle = a, move = m, remove = r},
-            muzzle_05 =      {model = _item_ranged.."/muzzles/autogun_rifle_muzzle_05",          type = "muzzle", parent = tv(parent, 6), angle = a, move = m, remove = r},
-            muzzle_06 =      {model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_01",       type = "muzzle", parent = tv(parent, 7), angle = a, move = m, remove = r},
-            muzzle_07 =      {model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_02",       type = "muzzle", parent = tv(parent, 8), angle = a, move = m, remove = r},
-            muzzle_08 =      {model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_03",       type = "muzzle", parent = tv(parent, 9), angle = a, move = m, remove = r},
-            muzzle_09 =      {model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_01", type = "muzzle", parent = tv(parent, 10), angle = a, move = m, remove = r},
-            muzzle_10 =      {model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_03", type = "muzzle", parent = tv(parent, 11), angle = a, move = m, remove = r},
-            muzzle_11 =      {model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_04",       type = "muzzle", parent = tv(parent, 12), angle = a, move = m, remove = r},
-            muzzle_12 =      {model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_05",       type = "muzzle", parent = tv(parent, 13), angle = a, move = m, remove = r},
-            muzzle_13 =      {model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_04", type = "muzzle", parent = tv(parent, 14), angle = a, move = m, remove = r},
-            muzzle_14 =      {model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_05", type = "muzzle", parent = tv(parent, 15), angle = a, move = m, remove = r},
-        }
+    muzzle_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "muzzle_default", model = ""},
+            {name = "muzzle_01",      model = _item_ranged.."/muzzles/autogun_rifle_muzzle_01"},
+            {name = "muzzle_02",      model = _item_ranged.."/muzzles/autogun_rifle_muzzle_02"},
+            {name = "muzzle_03",      model = _item_ranged.."/muzzles/autogun_rifle_muzzle_03"},
+            {name = "muzzle_04",      model = _item_ranged.."/muzzles/autogun_rifle_muzzle_04"},
+            {name = "muzzle_05",      model = _item_ranged.."/muzzles/autogun_rifle_muzzle_05"},
+            {name = "muzzle_06",      model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_01"},
+            {name = "muzzle_07",      model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_02"},
+            {name = "muzzle_08",      model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_03"},
+            {name = "muzzle_09",      model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_01"},
+            {name = "muzzle_10",      model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_03"},
+            {name = "muzzle_11",      model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_04"},
+            {name = "muzzle_12",      model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_05"},
+            {name = "muzzle_13",      model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_04"},
+            {name = "muzzle_14",      model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_05"},
+        }, parent, angle, move, remove, type or "muzzle", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    magazine_attachments = function()
-        return {
-            -- {id = "magazine_default", name = mod:localize("mod_attachment_default"), sounds = {UISoundEvents.apparel_equip}},
+    magazine_attachments = function(default)
+        local attachments = {
             {id = "magazine_01", name = "Autogun 1"},
             {id = "magazine_02", name = "Autogun 2"},
             {id = "magazine_03", name = "Autogun 3"},
             {id = "magazine_04", name = "Braced Autogun 4"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "magazine_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    magazine_models = function(parent, angle, move, remove, type)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        local t = type or "magazine"
-        return {
-            magazine_default = {model = "",                                                      type = t, parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            magazine_01 =      {model = _item_ranged.."/magazines/autogun_rifle_magazine_01",    type = t, parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false},
-            magazine_02 =      {model = _item_ranged.."/magazines/autogun_rifle_magazine_02",    type = t, parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
-            magazine_03 =      {model = _item_ranged.."/magazines/autogun_rifle_magazine_03",    type = t, parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false},
-            magazine_04 =      {model = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01", type = t, parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    magazine_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "magazine_default", model = ""},
+            {name = "magazine_01",      model = _item_ranged.."/magazines/autogun_rifle_magazine_01"},
+            {name = "magazine_02",      model = _item_ranged.."/magazines/autogun_rifle_magazine_02"},
+            {name = "magazine_03",      model = _item_ranged.."/magazines/autogun_rifle_magazine_03"},
+            {name = "magazine_04",      model = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01"},
+        }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    receiver_attachments = function()
-        return {
-            {id = "receiver_default",   name = mod:localize("mod_attachment_default")},
+    receiver_attachments = function(default)
+        local attachments = {
             {id = "receiver_01",        name = "Infantry Autogun 1"},
             {id = "receiver_02",        name = "Headhunter Autogun 1"},
             {id = "receiver_03",        name = "Braced Autogun 1"},
             {id = "receiver_04",        name = "Headhunter Autogun 2"},
             {id = "receiver_05",        name = "Headhunter Autogun 3"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "receiver_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    receiver_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            receiver_default = {model = "",                                                            type = "receiver", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            receiver_01 =      {model = _item_ranged.."/recievers/autogun_rifle_receiver_01",          type = "receiver", parent = tv(parent, 2), angle = a, move = m, remove = r},
-            receiver_02 =      {model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_01", type = "receiver", parent = tv(parent, 3), angle = a, move = m, remove = r},
-            receiver_03 =      {model = _item_ranged.."/recievers/autogun_rifle_ak_receiver_01",       type = "receiver", parent = tv(parent, 4), angle = a, move = m, remove = r},
-            receiver_04 =      {model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_02", type = "receiver", parent = tv(parent, 5), angle = a, move = m, remove = r},
-            receiver_05 =      {model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_03", type = "receiver", parent = tv(parent, 6), angle = a, move = m, remove = r},
-        }
+    receiver_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "receiver_default", model = ""},
+            {name = "receiver_01",      model = _item_ranged.."/recievers/autogun_rifle_receiver_01"},
+            {name = "receiver_02",      model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_01"},
+            {name = "receiver_03",      model = _item_ranged.."/recievers/autogun_rifle_ak_receiver_01"},
+            {name = "receiver_04",      model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_02"},
+            {name = "receiver_05",      model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_03"},
+        }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end
 }
 
 return table.combine(
     functions,
     {
-        attachments = { -- Done 24.9.2023
+        attachments = {
+            -- Native
+            receiver = functions.receiver_attachments(),
+            barrel = table.icombine(
+                {{id = "barrel_default", name = mod:localize("mod_attachment_default")}},
+                functions.barrel_attachments(),
+                functions.braced_barrel_attachments(),
+                functions.headhunter_barrel_attachments()
+            ),
+            muzzle = functions.muzzle_attachments(),
+            -- Ranged
             flashlight = _common_ranged.flashlights_attachments(),
-            rail = _common_lasgun.rail_attachments(),
             grip = _common_ranged.grip_attachments(),
             stock = table.icombine(
                 {{id = "stock_default", name = mod:localize("mod_attachment_default")}},
@@ -253,29 +267,37 @@ return table.combine(
                 {{id = "magazine_default", name = mod:localize("mod_attachment_default")}},
                 _common_ranged.magazine_attachments()
             ),
-            trinket_hook = _common.trinket_hook_attachments(),
-            barrel = table.icombine(
-                {{id = "barrel_default", name = mod:localize("mod_attachment_default")}},
-                functions.barrel_attachments(),
-                functions.braced_barrel_attachments(),
-                functions.headhunter_barrel_attachments()
-            ),
-            muzzle = functions.muzzle_attachments(),
             sight = table.icombine(
                 _common_ranged.sight_default(),
                 _common_ranged.reflex_sights_attachments(),
                 _common_ranged.sights_attachments()
             ),
-            receiver = functions.receiver_attachments(),
             bayonet = _common_ranged.bayonet_attachments(),
+            -- Lasgun
+            rail = _common_lasgun.rail_attachments(),
+            -- Common
             emblem_right = _common.emblem_right_attachments(),
             emblem_left = _common.emblem_left_attachments(),
+            trinket_hook = _common.trinket_hook_attachments(),
         },
-        models = table.combine( -- Done 24.9.2023
-            _common.emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+        models = table.combine(
+            -- Native
+            functions.braced_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
+            functions.headhunter_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {
+                {"trinket_hook"},
+            }, {
+                {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
+            }),
+            functions.muzzle_models(nil, -.5, vector3_box(.4, -3, 0), vector3_box(0, .2, 0)),
+            functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
+            functions.barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {
+                {"trinket_hook_empty"},
+            }, {
+                {trinket_hook = "trinket_hook_empty|trinket_hook_02"},
+            }),
+            -- Ranged
             _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.6, -3, 0), vector3_box(.2, 0, 0)),
             _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
-            _common.emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(-.2, 0, 0)),
             _common_ranged.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
             _common_ranged.reflex_sights_models("rail", .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                 {rail = "rail_default"},
@@ -283,27 +305,44 @@ return table.combine(
                 {rail = "rail_01"},
                 {rail = "rail_01"},
                 {rail = "rail_default"},
+            }),
+            _common_ranged.scope_sights_models("sight", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0), "sight_2", {}, {
+                {rail = "rail_default"},
                 {rail = "rail_01"},
+                {rail = "rail_01"},
+                {rail = "rail_01"},
+                {rail = "rail_default"},
             }),
-            _common_ranged.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
+            _common_ranged.scope_lens_models("sight_2", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0)),
+            _common_ranged.scope_lens_2_models("sight_2", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0)),
+            _common_ranged.sights_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), nil, nil, {
+                {sight_2 = "sight_default"},
+                {sight_2 = "sight_default"},
+                {sight_2 = "sight_default"},
+                {sight_2 = "sight_default"},
+                {sight_2 = "sight_default"},
+                {sight_2 = "scope_sight_03", lens = "scope_lens_01", lens_2 = "scope_lens_2_01"},
+                {sight_2 = "scope_sight_02", lens = "scope_lens_01", lens_2 = "scope_lens_2_01"},
+                {sight_2 = "scope_sight_03", lens = "scope_lens_01", lens_2 = "scope_lens_2_01"},
+            }, {
+                {},
+                {},
+                {},
+                {},
+                {{"sight", 1}},
+                {},
+                {},
+                {},
+                {},
+            }),
             _common_ranged.stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
-            _common.trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
-            {barrel_default = {model = "", type = "barrel"}},
-            functions.barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {
-                {"trinket_hook_empty"},
-            }, {
-                {trinket_hook = "trinket_hook_empty|trinket_hook_02"},
-            }),
-            functions.braced_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
-            functions.headhunter_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {
-                {"trinket_hook"},
-            }, {
-                {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
-            }),
-            _common_lasgun.rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-            functions.muzzle_models(nil, -.5, vector3_box(.4, -3, 0), vector3_box(0, .2, 0)),
             _common_ranged.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
-            functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001))
+            -- Lasgun
+            _common_lasgun.rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+            -- Common
+            _common.trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
+            _common.emblem_right_models("receiver", -3, vector3_box(-.2, -4, 0), vector3_box(.2, 0, 0)),
+            _common.emblem_left_models("receiver", 0, vector3_box(-.2, -4, 0), vector3_box(-.2, 0, 0))
         ),
         anchors = { -- Done 24.9.2023
             -- scope_offset = vector3_box(0, 0, .009),
@@ -368,18 +407,42 @@ return table.combine(
                     bayonet = {offset = true, position = vector3_box(0, .09, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"muzzle_10", "autogun_bayonet_03"}, -- Bayonet 3
                     bayonet = {offset = true, position = vector3_box(0, .1, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+                -- Scope
+                {dependencies = {"scope_01"}, -- Lasgun sight
+                    sight = {offset = true, position = vector3_box(0, -.08, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1)},
+                    lens = {offset = true, position = vector3_box(-.0295, .22, .03675), rotation = vector3_box(0, 0, 0), scale = vector3_box(.495, 1, .505), hide_mesh = {{"lens", 1, 2, 3, 5}}, data = {lens = 1}},
+                    lens_2 = {offset = true, position = vector3_box(-.0295, -.16, .03675), rotation = vector3_box(180, 0, 0), scale = vector3_box(.495, 1, -.505), hide_mesh = {{"lens_2", 1, 2, 3, 5}}, data = {lens = 2}},
+                    sight_2 = {offset = true, position = vector3_box(0, .07, -.0415), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
+                    scope_offset = {position = vector3_box(0, 0, .015)}},
+                {dependencies = {"scope_02"}, -- Lasgun sight
+                    sight = {offset = true, position = vector3_box(0, -.1, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1)},
+                    lens = {offset = true, position = vector3_box(-.0265, .04, .0355), rotation = vector3_box(0, 0, 0), scale = vector3_box(.45, 1, .48), hide_mesh = {{"lens", 1, 2, 3, 5}}, data = {lens = 1}},
+                    lens_2 = {offset = true, position = vector3_box(-.0295, -.2, .0365), rotation = vector3_box(180, 0, 0), scale = vector3_box(.495, 1, -.505), hide_mesh = {{"lens_2", 1, 2, 3, 5}}, data = {lens = 2}},
+                    sight_2 = {offset = true, position = vector3_box(0, .09, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
+                    scope_offset = {position = vector3_box(0, 0, .015)}},
+                {dependencies = {"scope_03"}, -- Lasgun sight
+                    sight = {offset = true, position = vector3_box(0, -.09, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                    lens = {offset = true, position = vector3_box(-.0265, .26, .0355), rotation = vector3_box(0, 0, 0), scale = vector3_box(.45, 1, .48), hide_mesh = {{"lens", 1, 2, 3, 5}}, data = {lens = 1}},
+                    lens_2 = {offset = true, position = vector3_box(-.0295, 0, .038), rotation = vector3_box(180, 0, 0), scale = vector3_box(.495, 1, -.505), hide_mesh = {{"lens_2", 1, 2, 3, 5}}, data = {lens = 2}},
+                    sight_2 = {offset = true, position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
+                    scope_offset = {position = vector3_box(0, 0, .015)}},
+                {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
                 -- Sights
                 -- Infantry receiver
                 {dependencies = {"lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, -.028, .0265), rotation = vector3_box(0, 0, 0)}},
                 -- Headhunter receiver
-                {dependencies = {"autogun_rifle_sight_01", "receiver_02"}, -- Infantry sight
+                {dependencies = {"autogun_rifle_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Infantry sight
                     sight = {offset = true, position = vector3_box(0, -.006, -.005), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, 1, 1)}},
-                {dependencies = {"autogun_rifle_ak_sight_01", "receiver_02"}, -- Braced sight
+                {dependencies = {"autogun_rifle_ak_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Braced sight
                     sight = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {dependencies = {"autogun_rifle_killshot_sight_01", "receiver_02"}, -- Headhunter sight
+                {dependencies = {"autogun_rifle_killshot_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Headhunter sight
                     sight = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {dependencies = {"lasgun_rifle_sight_01", "receiver_02"}, -- Headhunter sight
+                {dependencies = {"lasgun_rifle_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Headhunter sight
                     sight = {offset = true, position = vector3_box(0, -.028, .026), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 -- Braced receiver
                 {dependencies = {"autogun_rifle_sight_01", "receiver_03"}, -- Infantry sight
@@ -390,7 +453,7 @@ return table.combine(
                     sight = {offset = true, position = vector3_box(0, .01, .001), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"lasgun_rifle_sight_01", "receiver_03"}, -- Headhunter sight
                     sight = {offset = true, position = vector3_box(0, .015, .026), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {dependencies = {"receiver_02"}, -- Sight
+                {dependencies = {"receiver_02|receiver_04|receiver_05"}, -- Sight
                     sight = {offset = true, position = vector3_box(0, -.045, 0), rotation = vector3_box(0, 0, 0)}},
                 {dependencies = {"receiver_03"}, -- Sight
                     sight = {offset = true, position = vector3_box(0, -.035, 0), rotation = vector3_box(0, 0, 0)}},
@@ -405,7 +468,7 @@ return table.combine(
                 {dependencies = {"rail_01", "receiver_01", "barrel_07|barrel_08|barrel_09|barrel_10"}, -- Rail
                     rail = {offset = true, position = vector3_box(0, -.04, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.15, 1)}},
                 -- Braced / Headhunter receiver
-                {dependencies = {"rail_01", "receiver_02|receiver_03"}, -- Rail
+                {dependencies = {"rail_01", "receiver_02|receiver_04|receiver_05|receiver_03"}, -- Rail
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 -- Sight offsets
                 -- Infantry receiver / Infantry barrels
@@ -432,31 +495,31 @@ return table.combine(
                 {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
                     no_scope_offset = {position = vector3_box(0, 0, -.0075), rotation = vector3_box(-.5, 0, 0)}},
                 -- Headhunter receiver / Infantry barrels
-                {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_sight_01", "receiver_02"}, -- Infantry sight
+                {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Infantry sight
                     no_scope_offset = {position = vector3_box(0, 0, -.0035), rotation = vector3_box(-.1, 0, 0)}},
-                {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_ak_sight_01", "receiver_02"}, -- Braced sight
+                {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_ak_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Braced sight
                     no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.25, 0, 0)}},
-                {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_killshot_sight_01", "receiver_02"}, -- Headhunter sight
+                {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_killshot_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Headhunter sight
                     no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.1, 0, 0)}},
-                {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "lasgun_rifle_sight_01", "receiver_02"}, -- Lasgun sight
+                {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "lasgun_rifle_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Lasgun sight
                     no_scope_offset = {position = vector3_box(0, 0, -.0065), rotation = vector3_box(-.55, 0, 0)}},
                 -- Headhunter receiver / Braced barrels
-                {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_sight_01", "receiver_02"}, -- Infantry sight
+                {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Infantry sight
                     no_scope_offset = {position = vector3_box(0, 0, -.004), rotation = vector3_box(.4, 0, 0)}},
-                {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_ak_sight_01", "receiver_02"}, -- Braced sight
+                {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_ak_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Braced sight
                     no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(.5, 0, 0)}},
-                {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_killshot_sight_01", "receiver_02"}, -- Headhunter sight
+                {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "autogun_rifle_killshot_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Headhunter sight
                     no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(.75, 0, 0)}},
-                {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "lasgun_rifle_sight_01", "receiver_02"}, -- Lasgun sight
+                {dependencies = {"barrel_07|barrel_08|barrel_09|barrel_10", "lasgun_rifle_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Lasgun sight
                     no_scope_offset = {position = vector3_box(0, 0, -.007), rotation = vector3_box(0, 0, 0)}},
                 -- Headhunter receiver / Headhunter barrels
-                {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "autogun_rifle_sight_01", "receiver_02"}, -- Infantry sight
+                {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "autogun_rifle_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Infantry sight
                     no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(-.2, 0, 0)}},
-                {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "autogun_rifle_ak_sight_01", "receiver_02"}, -- Braced sight
+                {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "autogun_rifle_ak_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Braced sight
                     no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.1, 0, 0)}},
-                {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "autogun_rifle_killshot_sight_01", "receiver_02"}, -- Headhunter sight
+                {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "autogun_rifle_killshot_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Headhunter sight
                     no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(0, 0, 0)}},
-                {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "lasgun_rifle_sight_01", "receiver_02"}, -- Lasgun sight
+                {dependencies = {"barrel_11|barrel_12|barrel_15|barrel_16", "lasgun_rifle_sight_01", "receiver_02|receiver_04|receiver_05"}, -- Lasgun sight
                     no_scope_offset = {position = vector3_box(0, 0, -.0065), rotation = vector3_box(-.5, 0, 0)}},
                 -- Braced receiver / Infantry barrels
                 {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06", "autogun_rifle_sight_01", "receiver_03"}, -- Infantry sight
@@ -556,21 +619,21 @@ return table.combine(
                     trinket_hook = {parent = "barrel", position = vector3_box(0, .23, -.11), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
                 {dependencies = {"barrel_12"}, -- Trinket
                     trinket_hook = {parent = "barrel", parent_node = 3, position = vector3_box(.029, 0, 0), rotation = vector3_box(90, 0, -45), scale = vector3_box(1, 1, 1), no_support = {"trinket_hook"}, automatic_equip = {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"}}},
-                {dependencies = {"receiver_02", "auto_pistol_magazine_01"}, -- Magazine
+                {dependencies = {"receiver_02|receiver_04|receiver_05", "auto_pistol_magazine_01"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, .01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.6, 1)}},
                 {dependencies = {"auto_pistol_magazine_01"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, .0025, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.6, 1)}},
-                {dependencies = {"receiver_02", "bolter_magazine_01"}, -- Magazine
+                {dependencies = {"receiver_02|receiver_04|receiver_05", "bolter_magazine_01"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, .005, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
                 {dependencies = {"bolter_magazine_01"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, 0, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
-                {dependencies = {"receiver_02", "bolter_magazine_02"}, -- Magazine
+                {dependencies = {"receiver_02|receiver_04|receiver_05", "bolter_magazine_02"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, .005, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
                 {dependencies = {"bolter_magazine_02"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, 0, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
                 {dependencies = {"receiver_01"}, -- Scope Offset
                     scope_offset = {position = vector3_box(0, 0, .0085)}},
-                {dependencies = {"receiver_02"}, -- Scope Offset
+                {dependencies = {"receiver_02|receiver_04|receiver_05"}, -- Scope Offset
                     scope_offset = {position = vector3_box(0, 0, .01025)}},
                 {dependencies = {"receiver_03"}, -- Scope Offset
                     scope_offset = {position = vector3_box(0, 0, .009)}},

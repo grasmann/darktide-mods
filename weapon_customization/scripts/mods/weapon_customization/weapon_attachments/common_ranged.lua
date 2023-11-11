@@ -181,7 +181,36 @@ return {
         }, parent, angle, move, remove, type or "sight", no_support, automatic_equip or {
             {rail = "rail_default"},
             {rail = "rail_01"},
+            {rail = "rail_01"},
+            {rail = "rail_01"},
+            {rail = "rail_default"},
         }, hide_mesh, mesh_move)
+    end,
+
+    scope_sights_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "scope_sight_01",   model = _item_ranged.."/sights/reflex_sight_01"},
+            {name = "scope_sight_02",   model = _item_ranged.."/sights/reflex_sight_02"},
+            {name = "scope_sight_03",   model = _item_ranged.."/sights/reflex_sight_03"},
+        }, parent, angle, move, remove, type or "sight", no_support, automatic_equip or {
+            {rail = "rail_01"},
+            {rail = "rail_01"},
+            {rail = "rail_01"},
+        }, hide_mesh, mesh_move)
+    end,
+
+    scope_lens_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "scope_lens_01",   model = _item_ranged.."/flashlights/flashlight_01"},
+        }, parent, angle, move, remove, type or "lens", no_support, automatic_equip, hide_mesh, mesh_move)
+    end,
+    scope_lens_2_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "scope_lens_2_01",   model = _item_ranged.."/flashlights/flashlight_01"},
+        }, parent, angle, move, remove, type or "lens_2", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 
     sight_default = function()
@@ -200,6 +229,9 @@ return {
             {id = "autogun_rifle_ak_sight_01",       name = "Braced Autogun"},
             {id = "autogun_rifle_killshot_sight_01", name = "Headhunter Autogun"},
             {id = "lasgun_rifle_sight_01",           name = "Lasgun"},
+            {id = "scope_01",                        name = mod:localize("mod_attachment_scope_01")},
+            {id = "scope_02",                        name = mod:localize("mod_attachment_scope_02")},
+            {id = "scope_03",                        name = mod:localize("mod_attachment_scope_03")},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -215,6 +247,9 @@ return {
             {name = "autogun_rifle_sight_01",          model = _item_ranged.."/sights/autogun_rifle_sight_01"},
             {name = "autogun_rifle_killshot_sight_01", model = _item_ranged.."/sights/autogun_rifle_killshot_sight_01"},
             {name = "lasgun_rifle_sight_01",           model = _item_ranged.."/sights/lasgun_rifle_sight_01"},
+            {name = "scope_01",                        model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_02"},
+            {name = "scope_02",                        model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_04"},
+            {name = "scope_03",                        model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_05"},
             {name = "sight_none",                      model = ""},
         }, parent, angle, move, remove, type or "sight", no_support, automatic_equip or {
             {rail = "rail_default"},

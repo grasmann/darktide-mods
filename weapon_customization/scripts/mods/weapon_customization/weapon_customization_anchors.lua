@@ -370,6 +370,8 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         shaft = "shafts",
         head = "heads",
         connector = "connectors",
+        lens = "lenses",
+        lens_2 = "lenses",
     }
     mod.shafts = {
         "small_shaft_01",
@@ -467,7 +469,10 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "reflex_sight_01",
         "reflex_sight_02",
         "reflex_sight_03",
-        -- "scope",
+        "scope_sight_default",
+        "scope_sight_01",
+        "scope_sight_02",
+        "scope_sight_03",
     }
     mod.sights = {
         "lasgun_rifle_elysian_sight_01",
@@ -480,6 +485,14 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "sight_01",
         "shotgun_double_barrel_sight_01",
         "buggy_sight",
+        "scope_01",
+        "scope_02",
+        "scope_03",
+    }
+    mod.scopes = {
+        "lasgun_rifle_krieg_muzzle_02",
+        "lasgun_rifle_krieg_muzzle_04",
+        "lasgun_rifle_krieg_muzzle_05",
     }
     mod.all_sights = table.combine(
         mod.reflex_sights,
@@ -538,6 +551,15 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "emblem_left_10",
         "emblem_left_11",
         "emblem_left_12",
+    }
+    mod.lenses = {
+        "scope_lens_01",
+        "scope_lens_2_01",
+    }
+    mod.sniper_zoom_levels = {
+        lasgun_rifle_krieg_muzzle_02 = 9,
+        lasgun_rifle_krieg_muzzle_04 = 7,
+        lasgun_rifle_krieg_muzzle_05 = 11,
     }
     mod.flashlights = {
         "flashlight_01",

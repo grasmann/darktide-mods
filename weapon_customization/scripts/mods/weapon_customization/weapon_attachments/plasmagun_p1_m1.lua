@@ -232,7 +232,7 @@ return table.combine(
                     sight_2 = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"reflex_sight_03"}, -- Sight
                     sight_2 = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 1, 1)}},
-                {rail = {parent = "receiver", position = vector3_box(.089, -.02, .129), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, .3, 1)}}, -- Rail
+                {rail = {parent = "receiver", position = vector3_box(-.045, -.005, .15), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, .3, 1)}}, -- Rail
                 {stock_2 = {parent = "receiver", position = vector3_box(0, -0.095, 0.055), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
             },
         },

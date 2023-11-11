@@ -14,6 +14,10 @@ local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_cu
 local _item = "content/items/weapons/player"
 local _item_melee = _item.."/melee"
 
+local _small_shafts = "small_shaft_01|small_shaft_02|small_shaft_03|small_shaft_04|small_shaft_05|small_shaft_06"
+local _small_heads = "small_head_01|small_head_02|small_head_03|small_head_04|small_head_05|small_head_06"
+local _bodies = "body_01|body_02|body_03|body_04|body_05"
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -40,7 +44,6 @@ local functions = {
             {id = "body_03",   name = "Body 3"},
             {id = "body_04",   name = "Body 4"},
             {id = "body_05",   name = "Body 5"},
-            {id = "body_none", name = "Body None", no_randomize = true},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -88,8 +91,8 @@ return table.combine(
                     if mod:get_gear_setting(gear_id, "shaft", item) ~= "shaft_default" then changes["shaft"] = "shaft_default" end
                     if mod:get_gear_setting(gear_id, "head", item) ~= "head_default" then changes["head"] = "head_default" end
                 elseif attachment == "body_none" then
-                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = "small_shaft_01" end
-                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = "small_head_01" end
+                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = _small_shafts end
+                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = _small_heads end
                 end
                 return changes
             end),
@@ -99,9 +102,10 @@ return table.combine(
                 if string_find(attachment, "default") then
                     if mod:get_gear_setting(gear_id, "shaft", item) ~= "shaft_default" then changes["shaft"] = "shaft_default" end
                     if mod:get_gear_setting(gear_id, "head", item) ~= "head_default" then changes["head"] = "head_default" end
+                    if mod:get_gear_setting(gear_id, "body", item) == "body_none" then changes["body"] = _bodies end
                 else
-                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = "small_shaft_01" end
-                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = "small_head_01" end
+                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = _small_shafts end
+                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = _small_heads end
                     if mod:get_gear_setting(gear_id, "body", item) ~= "body_none" then changes["body"] = "body_none" end
                 end
                 return changes
@@ -111,9 +115,10 @@ return table.combine(
                 if string_find(attachment, "default") then
                     if mod:get_gear_setting(gear_id, "shaft", item) ~= "shaft_default" then changes["shaft"] = "shaft_default" end
                     if mod:get_gear_setting(gear_id, "head", item) ~= "head_default" then changes["head"] = "head_default" end
+                    if mod:get_gear_setting(gear_id, "body", item) == "body_none" then changes["body"] = _bodies end
                 else
-                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = "small_shaft_01" end
-                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = "small_head_01" end
+                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = _small_shafts end
+                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = _small_heads end
                     if mod:get_gear_setting(gear_id, "body", item) ~= "body_none" then changes["body"] = "body_none" end
                 end
                 return changes

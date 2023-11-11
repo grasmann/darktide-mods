@@ -21,6 +21,7 @@ local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/i
 	local table_set_readonly = table.set_readonly
 	local table_clone = table.clone
 	local Unit = Unit
+	local unit_set_data = Unit.set_data
 	local unit_debug_name = Unit.debug_name
 	local unit_alive = Unit.alive
 	local unit_set_local_position = Unit.set_local_position
@@ -281,7 +282,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		-- end
 		local attachment_slot_info = {}
 
-		if item_unit and attachments and gear_id and in_store ~= "premium" then
+		if item_unit and attachments and gear_id and (in_store ~= "premium" or in_possesion_of_player) then
 			mod:setup_item_definitions()
 
 			-- Add flashlight slot
@@ -292,7 +293,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"shotgun_p1_m1", "shotgun_p1_m2", "shotgun_p1_m3"}, nil, true)
+		-- mod:debug_attachments(item_data, attachments, {"autopistol_p1_m1"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
@@ -337,6 +338,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			slot_infos[slot_info_id].unit_mesh_move =        	slot_infos[slot_info_id].unit_mesh_move or {}
 			slot_infos[slot_info_id].unit_root_position =		slot_infos[slot_info_id].unit_root_position or {}
 			slot_infos[slot_info_id].unit_mesh_position =		slot_infos[slot_info_id].unit_mesh_position or {}
+			slot_infos[slot_info_id].unit_mesh_rotation =		slot_infos[slot_info_id].unit_mesh_rotation or {}
 			slot_infos[slot_info_id].unit_mesh_index = 			slot_infos[slot_info_id].unit_mesh_index or {}
 			slot_infos[slot_info_id].unit_default_position = 	slot_infos[slot_info_id].unit_default_position or {}
 			slot_infos[slot_info_id].attachment_slot_to_unit["root"] = item_unit
@@ -430,6 +432,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					-- Setup data
 					slot_infos[slot_info_id].unit_mesh_move[unit] = mesh_move
 					slot_infos[slot_info_id].unit_mesh_position[unit] = anchor and anchor.mesh_position
+					slot_infos[slot_info_id].unit_mesh_rotation[unit] = anchor and anchor.mesh_rotation
 					slot_infos[slot_info_id].unit_mesh_index[unit] = anchor and anchor.mesh_index
 					slot_infos[slot_info_id].unit_root_position[unit] = anchor and anchor.root_position
 
@@ -458,6 +461,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 							unit_set_local_scale(unit, scale_node, scale)
 
 							unit_set_unit_visibility(unit, true, true)
+
+							if anchor.data then
+								for name, value in pairs(anchor.data) do
+									unit_set_data(unit, name, value)
+								end
+							end
 						end
 					end
 				end
@@ -522,7 +531,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 									-- Hide nodes
 									for i = 2, #hide_entry do
 										local mesh_index = hide_entry[i]
-										unit_set_mesh_visibility(hide_unit, mesh_index, false)
+										if unit_num_meshes(hide_unit) >= mesh_index then
+											unit_set_mesh_visibility(hide_unit, mesh_index, false)
+										end
 									end
 								end
 							end

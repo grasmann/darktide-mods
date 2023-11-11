@@ -113,9 +113,11 @@ end
 
 -- Get currently wielded weapon
 mod.get_wielded_weapon = function(self)
-	local inventory_component = self.weapon_extension._inventory_component
-	local weapons = self.weapon_extension._weapons
-	return self.weapon_extension:_wielded_weapon(inventory_component, weapons)
+	if self.initialized then
+		local inventory_component = self.weapon_extension._inventory_component
+		local weapons = self.weapon_extension._weapons
+		return self.weapon_extension:_wielded_weapon(inventory_component, weapons)
+	end
 end
 
 -- Get wielded slot
@@ -147,8 +149,8 @@ mod.get_weapon_from_gear_id = function(self, from_gear_id)
 end
 
 -- Check cached third person
-mod.is_in_third_person = function(self)
-	local is_third_person = self:_is_in_third_person()
+mod.is_in_third_person = function(self, player_unit)
+	local is_third_person = self:_is_in_third_person(player_unit)
 	local changed = false
 	if self.was_third_person == nil then self.was_third_person = is_third_person end
 	if self.was_third_person ~= is_third_person then
@@ -158,7 +160,8 @@ mod.is_in_third_person = function(self)
 end
 
 -- Check third person
-mod._is_in_third_person = function(self)
+mod._is_in_third_person = function(self, player_unit)
+	local player_unit = player_unit or self.player_unit
 	local first_person_extension = script_unit.extension(self.player_unit, "first_person_system")
 	local first_person = first_person_extension and first_person_extension:is_in_first_person_mode()
 	return not first_person
