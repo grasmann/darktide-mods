@@ -1,63 +1,72 @@
 local mod = get_mod("weapon_customization")
 
-mod.reposition = {0, 0, 0}
-mod.rerotate = {0, 0, 0}
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
-mod.last_attachment_units = {}
-mod.debug_item_name = ""
-mod.debug_selected_unit = {}
-mod.new_units = {}
+--#region local functions
+	local string = string
+	local string_find = string.find
+	local tostring = tostring
+	local pairs = pairs
+	local managers = Managers
+	local type = type
+--#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local REFERENCE = "weapon_customization"
+local _item = "content/items/weapons/player"
+local _item_ranged = _item.."/ranged"
+local _item_melee = _item.."/melee"
+
+-- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐ ###########################################################
+-- #####  ││├┤ ├┴┐│ ││ ┬  ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐ ###########################################################
+-- ##### ─┴┘└─┘└─┘└─┘└─┘  ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘ ###########################################################
+
+mod.find_attachment_entry_in_mod = function(self, name)
+	for weapon_name, weapon_data in pairs(self.attachment_models) do
+		for attachment_name, attachment_data in pairs(weapon_data) do
+			if attachment_data.model == name then
+				return true
+			end
+		end
+	end
+end
+
+mod.attachment_entry_is_weapon = function(self, name)
+	for weapon_name, weapon_data in pairs(self.attachment_models) do
+		if string_find(name, weapon_name) then
+			return true
+		end
+	end
+end
+
+mod.find_attachment_entries = function(self)
+	self:setup_item_definitions()
+	local ranged_definitions = {}
+	local melee_definitions = {}
+	local item_definitions = self:persistent_table(REFERENCE).item_definitions
+	for name, data in pairs(item_definitions) do
+		if not self:find_attachment_entry_in_mod(name) and not self:attachment_entry_is_weapon(name) then
+			if string_find(name, _item_ranged) then
+				ranged_definitions[name] = data
+			elseif string_find(name, _item_melee) then
+				melee_definitions[name] = data
+			end
+		end
+	end
+	self:dtf(ranged_definitions, "ranged_definitions", 15)
+	self:dtf(melee_definitions, "melee_definitions", 15)
+end
+
+-- ##### ┌┬┐┌─┐┌─┐┌┬┐  ┬┌┐┌┌┬┐┌─┐─┐ ┬ #################################################################################
+-- #####  │ ├┤ └─┐ │   ││││ ││├┤ ┌┴┬┘ #################################################################################
+-- #####  ┴ └─┘└─┘ ┴   ┴┘└┘─┴┘└─┘┴ └─ #################################################################################
+
 mod.test_index = 1
-
-mod.reposition_x_neg = function()
-	mod.reposition[1] = mod.reposition[1] - 0.01
-	mod:reposition_attachments()
-end
-mod.reposition_x_pos = function()
-	mod.reposition[1] = mod.reposition[1] + 0.01
-	mod:reposition_attachments()
-end
-mod.reposition_y_neg = function()
-	mod.reposition[2] = mod.reposition[2] - 0.01
-	mod:reposition_attachments()
-end
-mod.reposition_y_pos = function()
-	mod.reposition[2] = mod.reposition[2] + 0.01
-	mod:reposition_attachments()
-end
-mod.reposition_z_neg = function()
-	mod.reposition[3] = mod.reposition[3] - 0.01
-	mod:reposition_attachments()
-end
-mod.reposition_z_pos = function()
-	mod.reposition[3] = mod.reposition[3] + 0.01
-	mod:reposition_attachments()
-end
-
-mod.rerotate_x_neg = function()
-	mod.rerotate[1] = mod.rerotate[1] - 1
-	mod:reposition_attachments()
-end
-mod.rerotate_x_pos = function()
-	mod.rerotate[1] = mod.rerotate[1] + 1
-	mod:reposition_attachments()
-end
-mod.rerotate_y_neg = function()
-	mod.rerotate[2] = mod.rerotate[2] - 1
-	mod:reposition_attachments()
-end
-mod.rerotate_y_pos = function()
-	mod.rerotate[2] = mod.rerotate[2] + 1
-	mod:reposition_attachments()
-end
-mod.rerotate_z_neg = function()
-	mod.rerotate[3] = mod.rerotate[3] - 1
-	mod:reposition_attachments()
-end
-mod.rerotate_z_pos = function()
-	mod.rerotate[3] = mod.rerotate[3] + 1
-	mod:reposition_attachments()
-end
 mod.inc_test_index = function()
 	mod.test_index = mod.test_index + 1
 	mod:echo(tostring(mod.test_index))
@@ -72,49 +81,13 @@ mod.print = function(self, message, skip)
 	if self._debug and not skip then self:echo(message) end
 end
 
-mod.reposition_attachments = function(self)
-	if #self.debug_selected_unit > 0 then
-		for _, unit in pairs(self.debug_selected_unit) do
-			if unit and Unit.alive(unit) then
-				local unit_name = Unit.debug_name(unit)
-				local attachment = self.attachment_units[unit_name]
-				if attachment then
-					local anchor = self.anchors[self.debug_item_name][attachment]
-					local position = Vector3(0, 0, 0)
-					local rotation_euler = Vector3(0, 0, 0)
-					if anchor then
-						position = Vector3Box.unbox(anchor.position)
-						rotation_euler = Vector3Box.unbox(anchor.rotation)
-					end
-					
-					position[1] = position[1] + self.reposition[1]
-					position[2] = position[2] + self.reposition[2]
-					position[3] = position[3] + self.reposition[3]
-					Unit.set_local_position(unit, 1, position)
-					self:echo("position:"..tostring(position))
-
-					rotation_euler[1] = rotation_euler[1] + self.rerotate[1]
-					rotation_euler[2] = rotation_euler[2] + self.rerotate[2]
-					rotation_euler[3] = rotation_euler[3] + self.rerotate[3]
-					local rotation = Quaternion.from_euler_angles_xyz(rotation_euler[1], rotation_euler[2], rotation_euler[3])
-					Unit.set_local_rotation(unit, 1, rotation)
-					self:echo("rotation:"..tostring(rotation_euler))
-
-				else
-					self:echo("attachment nil")
-				end
-			else
-				self:echo("debug unit nil")
-			end
-		end
-	else
-		self:echo("debug units 0")
-	end
-end
+-- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐  ┬┌┬┐┌─┐┌┬┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐ ###############################################
+-- #####  ││├┤ ├┴┐│ ││ ┬  │ │ ├┤ │││  ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐ ###############################################
+-- ##### ─┴┘└─┘└─┘└─┘└─┘  ┴ ┴ └─┘┴ ┴  ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘ ###############################################
 
 mod.debug_attachments = function(self, item_data, attachments, weapon_name_or_table, overwrite, full, depth)
     if item_data then
-		local time = overwrite and "" or Managers.time:time("main")
+		local time = overwrite and "" or managers.time:time("main")
         local item_name = self:item_name_from_content_string(item_data.name)
 		local debug = full and item_data or attachments
 		local file_name = full and "item_data" or "attachments"

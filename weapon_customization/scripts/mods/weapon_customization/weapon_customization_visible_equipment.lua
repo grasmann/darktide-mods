@@ -839,7 +839,7 @@ mod:hook_require("scripts/utilities/footstep", function(instance)
 end)
 
 -- Load dummy equipment units
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, unit, dt, t, ...)
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "post_update", function(func, self, unit, dt, t, ...)
     func(self, unit, dt, t, ...)
     -- Iterate slots
     for slot_name, slot in pairs(self._equipment) do

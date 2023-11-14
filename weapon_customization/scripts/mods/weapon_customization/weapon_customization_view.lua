@@ -1469,14 +1469,21 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 	end
 end
 
+-- mod.purge_weapon_settings = function(self, gear_id)
+-- 	for _, attachment_slot in pairs(self.attachment_slots) do
+-- 		self:set_gear_setting(gear_id, attachment_slot, nil)
+-- 	end
+-- end
+
 mod.cb_on_reset_pressed = function(self, skip_animation)
 	if self.cosmetics_view._gear_id and table_size(self.changed_weapon_settings) > 0 then
 		local skip_animation = skip_animation or not self:get("mod_option_weapon_build_animation")
 
 		local changed_weapon_settings = table_clone(self.changed_weapon_settings)
 		local attachment_names = {}
-		table_reverse(changed_weapon_settings)
+		-- table_reverse(changed_weapon_settings)
 		for attachment_slot, value in pairs(changed_weapon_settings) do
+		-- for _, attachment_slot in pairs(self.attachment_slots) do
 			attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
 		end
 		local index = 1
@@ -1486,12 +1493,13 @@ mod.cb_on_reset_pressed = function(self, skip_animation)
 			if not skip_animation then
 				self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], "default")
 			else
-				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, "default", index < table_size(changed_weapon_settings))
+				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, "default", index < #self.attachment_slots)
 			end
 			index = index + 1
 		end
 		if not skip_animation then mod.weapon_part_animation_update = true end
 
+		self.reset_weapon = true
 		self:start_weapon_move()
 		self.new_rotation = 0
 		self.do_rotation = true
@@ -2325,6 +2333,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 	func(self, ...)
 
 	mod.cosmetics_view = nil
+	mod.reset_weapon = nil
 	-- Fade.destroy(self._fade_system)
 end)
 
@@ -2359,6 +2368,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 		-- mod:get_dropdown_positions()
 		-- mod:get_changed_weapon_settings()
 		mod:load_new_attachment()
+		if mod.reset_weapon then
+			for _, attachment_slot in pairs(mod.attachment_slots) do
+				mod:set_gear_setting(self._gear_id, attachment_slot, nil)
+			end
+			mod.reset_weapon = nil
+		end
 
 		mod.reset_start = managers.time:time("main")
 	else

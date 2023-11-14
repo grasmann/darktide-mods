@@ -23,6 +23,7 @@ local REFERENCE = "weapon_customization"
 	local ipairs = ipairs
 	local managers = Managers
 	local type = type
+	local script_unit = ScriptUnit
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -128,7 +129,7 @@ mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or
 	if not attachment and optional_item_or_nil then
 		local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
 		-- Get custom slot default
-		if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
+		if self.attachment[item_name] and self.attachment[item_name][attachment_slot] and #self.attachment[item_name][attachment_slot] > 0 then
 			attachment = self.attachment[item_name][attachment_slot][1].id
 		end
 	end
@@ -179,13 +180,16 @@ mod.redo_weapon_attachments = function(self, item)
 		-- Reset laser pointer cache
 		self:reset_laser_pointer()
 		self.attached_laser_pointers[gear_id] = {}
+		-- Sights
+		local sights_extension = script_unit.extension(self.player_unit, "sights_system")
 		-- Unequip
+		sights_extension:on_weapon_unequipped()
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		-- Equip
 		self.visual_loadout_extension:equip_item_to_slot(item, slot_name, nil, gameplay_time)
+		sights_extension:on_weapon_equipped()
 		self:print("redo_weapon_attachments - done")
 		-- Trigger flashlight update
 		self._update_flashlight = true
-		self.lens_units = nil
 	else self:print("redo_weapon_attachments - weapon is nil") end
 end

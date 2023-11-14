@@ -8,12 +8,20 @@ local REFERENCE = "weapon_customization"
 
 -- Persistent values
 mod:persistent_table(REFERENCE, {
+	-- Persistend flashlight values
 	flashlight_on = false,
 	laser_pointer_on = 0,
+	-- Laser particles
 	spawned_lasers = {},
+	-- Items
 	item_definitions = nil,
+	-- Equipment
 	player_equipment = {},
 	attachment_slot_infos = {},
+	weapon_templates = {},
+	temp_gear_settings = {},
+	fade_system = nil,
+	-- Pakcages
 	loaded_packages = {
 		visible_equipment = {},
 		view_weapon_sounds = {},
@@ -26,9 +34,8 @@ mod:persistent_table(REFERENCE, {
 		attachments = {},
 		hub = {},
 	},
+	-- Input
 	input_hooked = false,
-	weapon_templates = {},
-	temp_gear_settings = {},
 })
 mod.was_third_person = nil
 
@@ -40,6 +47,7 @@ mod.was_third_person = nil
 	local script_unit = ScriptUnit
 	local managers = Managers
 	local CLASS = CLASS
+	-- local Fade = Fade
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ###############################################################################
@@ -55,10 +63,8 @@ function mod.on_game_state_changed(status, state_name)
 	-- mod:release_slot_packages()
 	mod:release_non_essential_packages()
 	mod:persistent_table(REFERENCE).used_packages.hub = {}
-	mod.camera_position = nil
-	mod.camera_rotation = nil
+	-- mod:reset_sights(true)
 	mod.keep_all_packages = nil
-	mod.lens_units = nil
 end
 
 -- Mod settings changed
@@ -113,28 +119,33 @@ end
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
 	-- Original function
 	func(self, world, unit, ...)
+
 	-- Initialize
 	mod:init()
 	-- Update used packages
     mod:update_modded_packages()
+	-- mod:reset_sights(true)
 end)
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
 	-- Original function
 	func(self, world, unit, ...)
+
 	-- Update used packages
     mod:update_modded_packages()
 end)
 
 -- Player visual extension destroyed
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
+
 	if self._unit == mod.player_unit then
 		-- Set reinitialization
 		mod.initialized = false
-		mod.lens_units = nil
 	end
+
 	-- Update used packages
     mod:update_modded_packages()
+
 	-- Original function
 	return func(self, ...)
 end)
@@ -187,12 +198,17 @@ mod.init = function(self)
 	self.time_manager = managers.time
 	self.initialized = true
 	self._next_check_at_t = 0
+	-- if self:persistent_table(REFERENCE).fade_system then
+	-- 	Fade.destroy(self:persistent_table(REFERENCE).fade_system)
+	-- end
+	-- self:persistent_table(REFERENCE).fade_system = Fade.init()
 	self:print("Initialized")
 end
 
 -- Import mod files
--- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_crouch_aim")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_crouch")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_bolt_pistol")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_action_hooks")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_gear")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visible_equipment")

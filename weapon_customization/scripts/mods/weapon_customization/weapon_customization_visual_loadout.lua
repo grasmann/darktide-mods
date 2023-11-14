@@ -293,7 +293,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"autopistol_p1_m1"}, nil, true)
+		-- mod:debug_attachments(item_data, attachments, {"stubrevolver_p1_m1"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
@@ -456,6 +456,18 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 							unit_set_local_rotation(unit, rotation_node, rotation)
 
 							-- Set scale
+							-- local scale = {}
+							-- local scale_node = {}
+							-- if anchor.scale and type(anchor.scale) ~= "table" then
+							-- 	scale = {anchor.scale}
+							-- 	scale_node = {anchor.scale_node or 1}
+							-- end
+							-- for s = 1, #scale do
+							-- 	local sscale = scale[s] and vector3_unbox(scale[s]) or vector3_one()
+							-- 	local sscale_node = scale_node[s]
+							-- 	unit_set_local_scale(unit, sscale_node, sscale)
+							-- end
+
 							local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_one()
 							local scale_node = anchor.scale_node or 1
 							unit_set_local_scale(unit, scale_node, scale)

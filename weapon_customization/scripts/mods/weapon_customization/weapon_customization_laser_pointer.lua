@@ -729,10 +729,10 @@ end)
 -- ##### ├┤ │ ││  │  │ ││││  │││├┤ ├─┤├─┘│ ││││ #######################################################################
 -- ##### └  └─┘┴─┘┴─┘└─┘└┴┘  └┴┘└─┘┴ ┴┴  └─┘┘└┘ #######################################################################
 
--- mod:hook(CLASS.ActionVentOverheat, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
---     mod.forced_fallback = true
---     func(self, action_settings, t, time_scale, action_start_params, ...)
--- end)
+mod:hook(CLASS.ActionVentOverheat, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
+    mod.forced_fallback = true
+    func(self, action_settings, t, time_scale, action_start_params, ...)
+end)
 
 mod:hook(CLASS.ActionVentOverheat, "finish", function(func, self, reason, data, t, time_in_action, ...)
     mod.forced_fallback = false

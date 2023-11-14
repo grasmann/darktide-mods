@@ -24,6 +24,9 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local camera_local_position = Camera.local_position
     local camera_local_rotation = Camera.local_rotation
     local math_random_array_entry = math.random_array_entry
+    local Unit = Unit
+    local unit_debug_name = Unit.debug_name
+    local unit_get_child_units = Unit.get_child_units
     local string = string
     local string_find = string.find
     local string_gsub = string.gsub
@@ -81,20 +84,22 @@ mod.randomize_weapon = function(self, item)
             end
             if chance_success then
                 for _, data in pairs(self.attachment[item_name][attachment_slot]) do
-                    if not string_find(data.id, "default") and not data.no_randomize then
+                    if not string_find(data.id, "default") and not data.no_randomize and self.attachment_models[item_name][data.id] then
                         possible_attachments[attachment_slot] = possible_attachments[attachment_slot] or {}
                         possible_attachments[attachment_slot][#possible_attachments[attachment_slot]+1] = data.id
                     end
                 end
-                local random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
-                random_attachments[attachment_slot] = random_attachment
-                local attachment_data = self.attachment_models[item_name][random_attachment]
-                local no_support = attachment_data and attachment_data.no_support
-                attachment_data = self:_apply_anchor_fixes(item, attachment_slot) or attachment_data
-                no_support = attachment_data.no_support or no_support
-                if no_support then
-                    for _, no_support_entry in pairs(no_support) do
-                        no_support_entries[#no_support_entries+1] = no_support_entry
+                if possible_attachments[attachment_slot] then
+                    local random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
+                    random_attachments[attachment_slot] = random_attachment
+                    local attachment_data = self.attachment_models[item_name][random_attachment]
+                    local no_support = attachment_data and attachment_data.no_support
+                    attachment_data = self:_apply_anchor_fixes(item, attachment_slot) or attachment_data
+                    no_support = attachment_data.no_support or no_support
+                    if no_support then
+                        for _, no_support_entry in pairs(no_support) do
+                            no_support_entries[#no_support_entries+1] = no_support_entry
+                        end
                     end
                 end
             end
@@ -254,6 +259,26 @@ end)
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ###########################################################
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┘├─┤ │ │  ├─┤ ###########################################################
 -- ##### ┴ ┴ └─┘┴ ┴  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ###########################################################
+
+mod._recursive_find_unit = function(self, weapon_unit, unit_name, output, output2)
+    local unit = nil
+    local output = output or {}
+    -- Get unit children
+	local children = unit_get_child_units(weapon_unit)
+	if children then
+        -- Iterate children
+		for _, child in pairs(children) do
+            if output2 then
+                output2[#output2+1] = unit_debug_name(child)
+            end
+			if unit_debug_name(child) == unit_name then
+                output[#output+1] = child
+			else
+                self:_recursive_find_unit(child, unit_name, output, output2)
+			end
+		end
+	end
+end
 
 mod._recursive_set_attachment = function(self, attachments, attachment_name, attachment_type, model, auto)
     for attachment_slot, attachment_data in pairs(attachments) do

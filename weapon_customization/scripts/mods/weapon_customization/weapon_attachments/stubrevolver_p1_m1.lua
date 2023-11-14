@@ -111,9 +111,10 @@ return table.combine(
             -- rail = functions.rail_attachments(),
             -- Ranged
             flashlight = _common_ranged.flashlights_attachments(),
-            sight_2 = table.icombine(
+            sight = table.icombine(
                 _common_ranged.sight_default(),
-                _common_ranged.reflex_sights_attachments()
+                _common_ranged.reflex_sights_attachments(),
+                _common_ranged.scopes_attachments()
             ),
             -- Lasgun
             rail = _common_lasgun.rail_attachments(),
@@ -130,11 +131,11 @@ return table.combine(
             functions.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, true),
             -- functions.rail_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             -- Ranged
-            _common_ranged.reflex_sights_models("body", -.5, vector3_box(0, -4, -.2), vector3_box(0, -.2, 0), "sight_2", {}, {
-                {rail = "rail_default"},
-                {rail = "rail_01"},
-                {rail = "rail_01"},
-                {rail = "rail_01"},
+            _common_ranged.reflex_sights_models("rail", -.5, vector3_box(0, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                {rail = "rail_default", sight_2 = "sight_default"},
+                {rail = "rail_01", sight_2 = "sight_default"},
+                {rail = "rail_01", sight_2 = "sight_default"},
+                {rail = "rail_01", sight_2 = "sight_default"},
             }, {
                 {},
                 {{"barrel", 8}},
@@ -142,6 +143,56 @@ return table.combine(
                 {{"barrel", 8}},
             }),
             _common_ranged.flashlight_models("body", -2.5, vector3_box(0, -3, 0), vector3_box(.2, 0, 0)),
+            _common_ranged.sights_models("rail", .35, vector3_box(0, -4, -.2), {
+                vector3_box(-.2, 0, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(-.2, 0, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+                vector3_box(0, -.2, 0),
+            }, "sight", {}, {
+                {rail = "rail_default", sight_2 = "sight_default"},
+                {rail = "rail_01", sight_2 = "sight_default"},
+                {rail = "rail_default", sight_2 = "sight_default"},
+                {rail = "rail_01", sight_2 = "sight_default"},
+                {rail = "rail_default", sight_2 = "scope_sight_03"},
+                {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
+                {rail = "rail_default", sight_2 = "scope_sight_02", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
+                {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
+                {rail = "rail_default", sight_2 = "sight_default"},
+            }, {
+                {},
+                {},
+                {},
+                {},
+                {{"sight", 1}},
+                {{"barrel", 8}},
+                {{"barrel", 8}},
+                {{"barrel", 8}},
+                {},
+            }, {
+                true,
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+            }),
+            _common_ranged.scope_sights_models("rail", .2, vector3_box(0, -4, -.2), vector3_box(0, 0, 0), "sight_2", {}, {
+                {rail = "rail_default"},
+                {rail = "rail_01"},
+                {rail = "rail_01"},
+                {rail = "rail_01"},
+                {rail = "rail_default"},
+            }),
+            _common_ranged.scope_lens_models("sight_2", .2, vector3_box(0, -4, -.2), vector3_box(0, 0, 0)),
+            _common_ranged.scope_lens_2_models("sight_2", .2, vector3_box(0, -4, -.2), vector3_box(0, 0, 0)),
             -- Lasgun
             _common_lasgun.rail_models("body", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             -- Shotgun
@@ -153,6 +204,28 @@ return table.combine(
         anchors = {
             scope_offset = {position = vector3_box(0, .1, .03)},
             fixes = {
+                {dependencies = {"scope_01"}, -- Lasgun sight
+                    sight = {parent = "rail", position = vector3_box(0, -.08, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.2, 1.5, 1)},
+                    lens = {parent = "sight_2", position = vector3_box(0, .12, .031), rotation = vector3_box(0, 0, 0), scale = vector3_box(.64, .6, .7), data = {lens = 1}},
+                    lens_2 = {parent = "sight_2", position = vector3_box(0, .01, .031), rotation = vector3_box(180, 0, 0), scale = vector3_box(.64, .85, .7), data = {lens = 2}},
+                    sight_2 = {parent = "sight", position = vector3_box(0, .07, -.0415), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
+                    scope_offset = {position = vector3_box(0, .25, .035)}},
+                {dependencies = {"scope_02"}, -- Lasgun sight
+                    sight = {parent = "rail", position = vector3_box(0, -.1, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.2, 3, 1)},
+                    lens = {parent = "sight_2", position = vector3_box(0, -.02, .03), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 1}},
+                    lens_2 = {parent = "sight_2", position = vector3_box(0, -.14, .03), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 2}},
+                    sight_2 = {parent = "sight", position = vector3_box(0, .09, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
+                    scope_offset = {position = vector3_box(0, .15, .0365)}},
+                {dependencies = {"scope_03"}, -- Lasgun sight
+                    sight = {parent = "rail", position = vector3_box(0, -.04, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.2, 1, 1)},
+                    lens = {parent = "sight_2", position = vector3_box(0, .08, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
+                    lens_2 = {parent = "sight_2", position = vector3_box(0, .22, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
+                    sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
+                    scope_offset = {position = vector3_box(0, .3, .034)}},
+                {sight_2 = {parent = "rail", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
                 -- Grip
                 {dependencies = {"grip_27|grip_28|grip_29"},
                     grip = {offset = true, position = vector3_box(0, .01, -.02), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
@@ -171,17 +244,19 @@ return table.combine(
                 {dependencies = {"barrel_05"},
                     barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(1.5, 0, 0), rotation_node = 2, scale = vector3_box(1, 1, 1)}},
                 -- Rail
-                {dependencies = {"barrel_04"},
+                {dependencies = {"barrel_04", "scope_01|scope_02|scope_03|reflex_sight_01|reflex_sight_02|reflex_sight_03"},
                     rail = {parent = "barrel", parent_node = 9, position = vector3_box(0, -.08, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(.8, .75, 1)}},
-                {dependencies = {"barrel_05"},
+                {dependencies = {"barrel_05", "scope_01|scope_02|scope_03|reflex_sight_01|reflex_sight_02|reflex_sight_03"},
                     rail = {parent = "barrel", parent_node = 9, position = vector3_box(0, .02, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(.8, .85, 1)}},
-                {rail = {parent = "barrel", parent_node = 9, position = vector3_box(0, .02, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(.8, .75, 1)}},
+                {dependencies = {"scope_01|scope_02|scope_03|reflex_sight_01|reflex_sight_02|reflex_sight_03"},
+                    rail = {parent = "barrel", parent_node = 9, position = vector3_box(0, .02, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(.8, .75, 1)}},
+                {rail = {parent = "barrel", parent_node = 9, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 -- Reflex sights
                 {dependencies = {"barrel_04"},
-                    sight_2 = {parent = "barrel", parent_node = 9, position = vector3_box(0, -.05, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1), hide_mesh = {{"barrel", 9}}}},
+                    sight = {parent = "barrel", parent_node = 9, position = vector3_box(0, -.05, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1), hide_mesh = {{"barrel", 9}}}},
                 {dependencies = {"barrel_05"},
-                    sight_2 = {parent = "barrel", parent_node = 9, position = vector3_box(0, .022, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1)}},
-                {sight_2 = {parent = "barrel", parent_node = 9, position = vector3_box(0, .022, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1)}},
+                    sight = {parent = "barrel", parent_node = 9, position = vector3_box(0, .022, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1)}},
+                {sight = {parent = "barrel", parent_node = 9, position = vector3_box(0, .022, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1)}},
                 -- Stock
                 {stock_3 = {parent = "body", position = vector3_box(0, -.09, -.11), rotation = vector3_box(-10, 0, 0), scale = vector3_box(1, 1, 1)}},
             }

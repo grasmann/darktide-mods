@@ -122,16 +122,19 @@ return {
 		en = "Martyr's Gaze",
 		de = "Blick des Märtyrers",
 		ru = "Взор мученика",
+		["zh-cn"] = "殉道者的凝视",
 	},
 	mod_attachment_scope_02 = {
 		en = "Exterminatus Lens",
 		de = "Exterminatus Linse",
 		ru = "Объектив Экстерминатуса",
+		["zh-cn"] = "灭绝透镜",
 	},
 	mod_attachment_scope_03 = {
 		en = "Ranger's Vigil",
 		de = "Wächter des Rangers",
 		ru = "Бдение рейнджера",
+		["zh-cn"] = "游侠的守灵式",
 	},
 	mod_attachment_default = {
 		en = "Default",
@@ -173,50 +176,79 @@ return {
 	-- 	de = "Behebt das schwarze Flackern beim Zoomen in der Item-Vorschau bei einigen Grafikkarten",
 	-- 	ru = "Исправляет на некоторых видеокартах чёрное мерцание при масштабировании осматриваемого предмета.",
 	-- },
+	group_scopes = {
+		en = "Scopes",
+		de = "Zielfernrohre",
+	},
+	mod_option_scopes_sound = {
+		en = "Sounds",
+		de = "Geräusche",
+	},
+	mod_option_scopes_sound_tooltip = {
+		en = "Plays a sound when activating scope aiming.",
+		de = "Spielt ein Geräusch ab wenn das Zielfernrohr aktiviert wird.",
+	},
+	mod_option_scopes_particle = {
+		en = "Effect",
+		de = "Effekt",
+	},
+	mod_option_scopes_particle_tooltip = {
+		en = "Adds a screen effect to scope aiming.",
+		de = "Fügt einen Bildschirmeffekt zum Zielfernrohr-Zielen hinzu.",
+	},
 	group_randomization = {
 		en = "Randomization",
 		de = "Randomisierung",
 		ru = "Случайные варианты оружия",
+		["zh-cn"] = "随机化",
 	},
 	mod_option_randomization_store = {
 		en = "Store",
 		de = "Geschäft",
 		ru = "Магазин",
+		["zh-cn"] = "商店",
 	},
 	mod_option_randomization_store_tooltip = {
 		en = "Randomize weapons in the store",
 		de = "Randomisierung der Waffen im Geschäft",
 		ru = "Создавать случайные варианты оружия в магазине",
+		["zh-cn"] = "随机化商店中的武器",
 	},
 	mod_option_randomization_players = {
 		en = "Players",
 		de = "Spieler",
 		ru = "Игроки",
+		["zh-cn"] = "玩家",
 	},
 	mod_option_randomization_players_tooltip = {
 		en = "Randomize weapons of other players",
 		de = "Randomisierung der Waffen der anderen Spieler",
 		ru = "Создавать случайные варианты оружия у других игроков",
+		["zh-cn"] = "随机化其他玩家的武器",
 	},
 	mod_option_randomization_bayonet = {
 		en = "Bayonet",
 		de = "Bajonett",
 		ru = "Штык",
+		["zh-cn"] = "刺刀",
 	},
 	mod_option_randomization_bayonet_tooltip = {
 		en = "Chance for weapons to have a bayonet",
 		de = "Chance dass Waffen ein Bajonett haben",
 		ru = "Шанс, что на оружии будет штык",
+		["zh-cn"] = "武器安装刺刀的概率",
 	},
 	mod_option_randomization_flashlight = {
 		en = "Flashlight",
 		de = "Taschenlampe",
 		ru = "Фонарик",
+		["zh-cn"] = "手电筒",
 	},
 	mod_option_randomization_flashlight_tooltip = {
 		en = "Chance for weapons to have a flashlight",
 		de = "Chance dass Waffen eine Taschenlampe haben",
 		ru = "Шанс, что на оружии будет фогнарик",
+		["zh-cn"] = "武器安装手电筒的概率",
 	},
 	group_visible_equipment = {
 		en = "Visible Equipment",

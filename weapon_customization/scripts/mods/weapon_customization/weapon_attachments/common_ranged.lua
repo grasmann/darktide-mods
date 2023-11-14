@@ -204,12 +204,14 @@ return {
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "scope_lens_01",   model = _item_ranged.."/flashlights/flashlight_01"},
+            {name = "scope_lens_02",   model = _item_ranged.."/bullets/rippergun_rifle_bullet_01"},
         }, parent, angle, move, remove, type or "lens", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     scope_lens_2_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "scope_lens_2_01",   model = _item_ranged.."/flashlights/flashlight_01"},
+            {name = "scope_lens_2_02",   model = _item_ranged.."/bullets/rippergun_rifle_bullet_01"},
         }, parent, angle, move, remove, type or "lens_2", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 
@@ -222,6 +224,18 @@ return {
         return {
             {id = "sight_none", name = mod:localize("mod_attachment_none")}
         }
+    end,
+    scopes_attachments = function(default)
+        local attachments = {
+            {id = "scope_01",                        name = mod:localize("mod_attachment_scope_01")},
+            {id = "scope_02",                        name = mod:localize("mod_attachment_scope_02")},
+            {id = "scope_03",                        name = mod:localize("mod_attachment_scope_03")},
+        }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "sight_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
     sights_attachments = function(default)
         local attachments = {

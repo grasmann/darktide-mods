@@ -34,42 +34,6 @@ local _item_melee = _item.."/melee"
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod.find_attachment_entry_in_mod = function(self, name)
-	for weapon_name, weapon_data in pairs(self.attachment_models) do
-		for attachment_name, attachment_data in pairs(weapon_data) do
-			if attachment_data.model == name then
-				return true
-			end
-		end
-	end
-end
-
-mod.attachment_entry_is_weapon = function(self, name)
-	for weapon_name, weapon_data in pairs(self.attachment_models) do
-		if string_find(name, weapon_name) then
-			return true
-		end
-	end
-end
-
-mod.find_attachment_entries = function(self)
-	self:setup_item_definitions()
-	local ranged_definitions = {}
-	local melee_definitions = {}
-	local item_definitions = self:persistent_table(REFERENCE).item_definitions
-	for name, data in pairs(item_definitions) do
-		if not self:find_attachment_entry_in_mod(name) and not self:attachment_entry_is_weapon(name) then
-			if string_find(name, _item_ranged) then
-				ranged_definitions[name] = data
-			elseif string_find(name, _item_melee) then
-				melee_definitions[name] = data
-			end
-		end
-	end
-	self:dtf(ranged_definitions, "ranged_definitions", 15)
-	self:dtf(melee_definitions, "melee_definitions", 15)
-end
-
 mod.release_non_essential_packages = function(self)
 	-- Release all non-essential packages
 	local unloaded_packages = {}
@@ -91,12 +55,14 @@ mod.load_needed_packages = function(self)
         "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
 		"content/fx/particles/enemies/sniper_laser_sight",
 		"content/fx/particles/enemies/red_glowing_eyes",
-		"content/characters/player/human/third_person/animations/lasgun_pistol",
-		"content/characters/player/human/first_person/animations/lasgun_pistol",
-		"content/characters/player/human/third_person/animations/stubgun_pistol",
-		"content/characters/player/human/first_person/animations/stubgun_pistol",
-		"content/characters/player/human/third_person/animations/autogun_pistol",
-		"content/characters/player/human/first_person/animations/autogun_pistol",
+		-- "content/characters/player/human/third_person/animations/lasgun_pistol",
+		-- "content/characters/player/human/first_person/animations/lasgun_pistol",
+		-- "content/characters/player/human/third_person/animations/stubgun_pistol",
+		-- "content/characters/player/human/first_person/animations/stubgun_pistol",
+		-- "content/characters/player/human/third_person/animations/autogun_pistol",
+		-- "content/characters/player/human/first_person/animations/autogun_pistol",
+		"content/fx/particles/screenspace/screen_ogryn_dash",
+		"wwise/events/weapon/play_lasgun_p3_mag_button",
     }
     for _, package_name in pairs(_needed_packages) do
 		if not self:persistent_table(REFERENCE).loaded_packages.needed[package_name] then
@@ -180,6 +146,15 @@ end
 -- Check character state
 mod._character_state = function(self)
 	return self.character_state_machine_extension:current_state()
+end
+
+mod.player_from_viewport = function(self, viewport_name)
+    local players = managers.player:players()
+    for _, player in pairs(players) do
+        if player.viewport_name == viewport_name then
+            return player
+        end
+    end
 end
 
 mod.world = function(self)
