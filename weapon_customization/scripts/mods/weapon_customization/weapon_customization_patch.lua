@@ -91,6 +91,7 @@ mod.randomize_weapon = function(self, item)
                 end
                 if possible_attachments[attachment_slot] then
                     local random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
+                    -- if attachment_slot == "flashlight" then random_attachment = "laser_pointer" end
                     random_attachments[attachment_slot] = random_attachment
                     local attachment_data = self.attachment_models[item_name][random_attachment]
                     local no_support = attachment_data and attachment_data.no_support
@@ -403,8 +404,8 @@ mod._overwrite_attachments = function(self, item_data, attachments)
     local automatic_equip_entries = {}
     for _, attachment_slot in pairs(self.attachment_slots) do
         -- Don't handle trinkets
-        if attachment_slot ~= "slot_trinket_1" and attachment_slot ~= "slot_trinket_2" then
-            local attachment = self:get_gear_setting(gear_id, attachment_slot)--, item_data)
+        if self:not_trinket(attachment_slot) then
+            local attachment = self:get_gear_setting(gear_id, attachment_slot)
             
             -- Customize
             if attachment and self.attachment_models[item_name][attachment] then
@@ -452,27 +453,27 @@ mod._overwrite_attachments = function(self, item_data, attachments)
                 -- end
             end
         else -- Handle trinket
-            -- Get master item instance
-            local master_instance = item_data.__gear and item_data.__gear.masterDataInstance
-            -- Get master attachments
-            local master_attachments = master_instance and master_instance.overrides and master_instance.overrides.attachments
-            if master_attachments then
-                -- Get attachment data
-                local attachment_data = self:_recursive_find_attachment(master_attachments, attachment_slot)
-                -- -- Get fixes
-                -- attachment_data = self:_apply_anchor_fixes(item_data, attachment_slot) or attachment_data
-                if attachment_data and attachment_data.item then
-                    local trinket_name = nil
-                    -- Trinket string or table
-                    if type(attachment_data.item) == "string" then
-                        trinket_name = self:item_name_from_content_string(attachment_data.item)
-                    else
-                        trinket_name = self:item_name_from_content_string(attachment_data.item.__master_item.name)
-                    end
-                    -- Set attachment
-                    self:_recursive_set_attachment(attachments, trinket_name, attachment_slot, attachment_data.item)
-                end
-            end
+            -- -- Get master item instance
+            -- local master_instance = item_data.__gear and item_data.__gear.masterDataInstance
+            -- -- Get master attachments
+            -- local master_attachments = master_instance and master_instance.overrides and master_instance.overrides.attachments
+            -- if master_attachments then
+            --     -- Get attachment data
+            --     local attachment_data = self:_recursive_find_attachment(master_attachments, attachment_slot)
+            --     -- -- Get fixes
+            --     -- attachment_data = self:_apply_anchor_fixes(item_data, attachment_slot) or attachment_data
+            --     if attachment_data and attachment_data.item then
+            --         local trinket_name = nil
+            --         -- Trinket string or table
+            --         if type(attachment_data.item) == "string" then
+            --             trinket_name = self:item_name_from_content_string(attachment_data.item)
+            --         else
+            --             trinket_name = self:item_name_from_content_string(attachment_data.item.__master_item.name)
+            --         end
+            --         -- Set attachment
+            --         self:_recursive_set_attachment(attachments, trinket_name, attachment_slot, attachment_data.item)
+            --     end
+            -- end
         end
     end
     -- Handle automatic equips
@@ -539,6 +540,17 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
             local master_item = item.__master_item or item
             local random_attachments = mod:randomize_weapon(master_item)
             mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] = random_attachments
+            -- Auto equip
+            for attachment_slot, value in pairs(random_attachments) do
+                if not mod.add_custom_attachments[attachment_slot] then
+                    mod:resolve_auto_equips(item, value)
+                end
+            end
+            for attachment_slot, value in pairs(random_attachments) do
+                if mod.add_custom_attachments[attachment_slot] then
+                    mod:resolve_auto_equips(item, value)
+                end
+            end
             -- Special resolve
             for attachment_slot, value in pairs(random_attachments) do
                 if mod.add_custom_attachments[attachment_slot] then
@@ -565,14 +577,25 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
             local in_possesion_of_player = mod:item_in_possesion_of_player(instance.processing_item)
             local in_possesion_of_other_player = mod:item_in_possesion_of_other_player(instance.processing_item)
             local in_store = mod:item_in_store(instance.processing_item)
-            local store = in_store == "store" and mod:get("mod_option_randomization_store")
+            local store = in_store and mod:get("mod_option_randomization_store")
             local player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
             local randomize = store or player
-            if randomize and in_store ~= "premium" and gear_id then
+            if randomize and gear_id then
                 if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
                     local master_item = instance.processing_item.__master_item or instance.processing_item
                     local random_attachments = mod:randomize_weapon(master_item)
                     mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
+                    -- Auto equip
+                    for attachment_slot, value in pairs(random_attachments) do
+                        if not mod.add_custom_attachments[attachment_slot] then
+                            mod:resolve_auto_equips(instance.processing_item, value)
+                        end
+                    end
+                    for attachment_slot, value in pairs(random_attachments) do
+                        if mod.add_custom_attachments[attachment_slot] then
+                            mod:resolve_auto_equips(instance.processing_item, value)
+                        end
+                    end
                     -- Special resolve
                     for attachment_slot, value in pairs(random_attachments) do
                         if mod.add_custom_attachments[attachment_slot] then
@@ -587,7 +610,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
                 end
             end
 
-            if gear_id and in_store ~= "premium" then
+            if gear_id then
                 mod:setup_item_definitions()
 
                 -- Add flashlight slot
@@ -739,19 +762,12 @@ end)
 
 local input_hook = function (func, self, action_name, ...)
     local pressed = func(self, action_name, ...)
-    if mod.initialized then
-        local has_flashlight = mod:has_flashlight_attachment()
-        local has_laser_pointer = mod:has_laser_pointer_attachment()
-        if action_name == "weapon_extra_pressed" and (has_flashlight or has_laser_pointer) then
-            if pressed and has_flashlight then
-                mod:toggle_flashlight()
-            end
-            if pressed and has_laser_pointer then
-                mod:toggle_laser()
-            end
+    if mod.initialized and mod:execute_extension(mod.player_unit, "flashlight_system", "is_wielded") then
+        if action_name == "weapon_extra_pressed" and pressed then
+            mod:execute_extension(mod.player_unit, "flashlight_system", "on_toggle")
             return self:get_default(action_name)
         end
-        if action_name == "weapon_extra_hold" and (has_flashlight or has_laser_pointer) then
+        if action_name == "weapon_extra_hold" then
             return self:get_default(action_name)
         end
     end

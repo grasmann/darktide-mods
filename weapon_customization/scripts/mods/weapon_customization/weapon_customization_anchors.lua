@@ -9,10 +9,19 @@ local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
 local _item_minion = "content/items/weapons/minions"
 
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+--#region local functions
+    local table_size = table.size
+--#endregion
+
 -- ##### ┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐  ┌┬┐┌─┐┌┐ ┬  ┌─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###############################################
 -- ##### │  │ │└─┐ │ │ ││││   │ ├─┤├┴┐│  ├┤   ├┤ │ │││││   │ ││ ││││└─┐ ###############################################
 -- ##### └─┘└─┘└─┘ ┴ └─┘┴ ┴   ┴ ┴ ┴└─┘┴─┘└─┘  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ###############################################
 
+local index = 1
 table.combine = function(...)
     local arg = {...}
     local combined = {}
@@ -53,8 +62,8 @@ table.tv = function(t, i)
 end
 table.model_table = function(content, parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     local angle = angle or 0
-    local move = move or vector3_box(0, 0, 0)
-    local remove = remove or vector3_box(0, 0, 0)
+    local move = move or Vector3Box(0, 0, 0)
+    local remove = remove or Vector3Box(0, 0, 0)
     local type = type or "none"
     local no_support = no_support or {}
     local automatic_equip = automatic_equip or {}
@@ -63,9 +72,10 @@ table.model_table = function(content, parent, angle, move, remove, type, no_supp
     -- Build table
     local _table = {}
     local i = 1
-    for _, data in pairs(content) do
-        _table[data.name] = {
-            model = data.model,
+    for _, content_line in pairs(content) do
+        _table[content_line.name] = {
+            model = content_line.model,
+            data = content_line.data,
             type = table.tv(type, i),
             parent = table.tv(parent, i),
             angle = table.tv(angle, i),
@@ -75,9 +85,11 @@ table.model_table = function(content, parent, angle, move, remove, type, no_supp
             no_support = table.tv(no_support, i),
             automatic_equip = table.tv(automatic_equip, i),
             hide_mesh = table.tv(hide_mesh, i),
-            special_resolve = table.tv(special_resolve, i)
+            special_resolve = table.tv(special_resolve, i),
+            index = index,
         }
         i = i + 1
+        index = index + 1
     end
     return _table
 end
@@ -512,6 +524,15 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "muzzle_03",
         "muzzle_04",
         "muzzle_05",
+        "muzzle_06",
+        "muzzle_07",
+        "muzzle_08",
+        "muzzle_09",
+        "muzzle_10",
+        "muzzle_11",
+        "muzzle_12",
+        "muzzle_13",
+        "muzzle_14",
         "barrel_01",
         "barrel_02",
         "barrel_03",
@@ -606,18 +627,18 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "lasgun_stock_02",
         "lasgun_stock_03",
     }
-    mod.shotgun_stocks = {
-        "shotgun_rifle_stock_01",
-        "shotgun_rifle_stock_02",
-        "shotgun_rifle_stock_03",
-        "shotgun_rifle_stock_04",
-        "shotgun_rifle_stock_07",
-        "shotgun_rifle_stock_08",
-        "shotgun_rifle_stock_09",
-        "shotgun_rifle_stock_10",
-        "shotgun_rifle_stock_11",
-        "shotgun_rifle_stock_12",
-    }
+mod.shotgun_stocks = {
+    "shotgun_rifle_stock_01",
+    "shotgun_rifle_stock_02",
+    "shotgun_rifle_stock_03",
+    "shotgun_rifle_stock_04",
+    "shotgun_rifle_stock_07",
+    "shotgun_rifle_stock_08",
+    "shotgun_rifle_stock_09",
+    "shotgun_rifle_stock_10",
+    "shotgun_rifle_stock_11",
+    "shotgun_rifle_stock_12",
+}
     mod.attachment_units = {
         ["#ID[c54f4d16d170cfdb]"] = "flashlight_01",
         ["#ID[28ae77de0a24aba6]"] = "flashlight_02",
@@ -641,6 +662,9 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         ["#ID[891692deb6c77ef1]"] = "stock_05",
         -- ["#ID[bc25db1df0670d2a]"] = "bulwark_shield_01",
     }
+    mod.attachment_slots_show_always = {
+        -- "speedloader",
+    }
     mod.attachment_slots = {
         "flashlight",
         "handle",
@@ -651,6 +675,7 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "receiver",
         "magazine",
         "magazine2",
+        "speedloader",
         "bullet",
         "ammo",
         "ammo_used",
@@ -681,6 +706,16 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "trinket_hook",
         "slot_trinket_1",
         "slot_trinket_2",
+        "bullet_01",
+        "bullet_02",
+        "bullet_03",
+        "bullet_04",
+        "bullet_05",
+        "casing_01",
+        "casing_02",
+        "casing_03",
+        "casing_04",
+        "casing_05",
     }
 --#endregion
 
@@ -787,6 +822,16 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         --#endregion
     --#endregion
 --#endregion
+
+mod.default_attachment_models = {}
+for weapon_name, weapon_data in pairs(mod.attachment_models) do
+    mod.default_attachment_models[weapon_name] = {}
+    for attachment_name, attachment_data in pairs(weapon_data) do
+        if attachment_data.index then
+            mod.default_attachment_models[weapon_name][attachment_data.index] = attachment_name
+        end
+    end
+end
 
 --#region Sounds
     mod.attachment_sounds = {

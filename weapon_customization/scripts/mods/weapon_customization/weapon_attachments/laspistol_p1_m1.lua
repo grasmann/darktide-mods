@@ -191,17 +191,15 @@ return table.combine(
             magazine = functions.magazine_attachments(),
             barrel = functions.barrel_attachments(),
             muzzle = functions.muzzle_attachments(),
-            rail = functions.rail_attachments(),
+            -- rail = functions.rail_attachments(),
             stock = functions.stock_attachments(),
             -- Ranged
             flashlight = _common_ranged.flashlights_attachments(),
             bayonet = _common_ranged.bayonet_attachments(),
             grip = _common_ranged.grip_attachments(),
             sight = table.icombine(
-                _common_ranged.sight_default(),
-                {{id = "sight_none",    name = "No Sight"}},
                 _common_ranged.reflex_sights_attachments(),
-                _common_ranged.sights_attachments()
+                _common_ranged.scopes_attachments(false)
             ),
             -- Shotgun
             stock_3 = _shotgun_p1_m1.stock_attachments(),
@@ -283,9 +281,9 @@ return table.combine(
             }),
             _common_ranged.reflex_sights_models("rail", -.5, vector3_box(-.1, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                 {rail = "rail_default", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
+                {rail = "rail_02", sight_2 = "sight_default"},
+                {rail = "rail_02", sight_2 = "sight_default"},
+                {rail = "rail_02", sight_2 = "sight_default"},
             }),
             _common_ranged.sights_models(nil, .35, vector3_box(-.3, -4, -.2), {
                 vector3_box(-.2, 0, 0),
@@ -299,9 +297,9 @@ return table.combine(
                 vector3_box(0, -.2, 0),
             }, "sight", {}, {
                 {rail = "rail_default", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
+                {rail = "rail_02", sight_2 = "sight_default"},
                 {rail = "rail_default", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
+                {rail = "rail_02", sight_2 = "sight_default"},
                 {rail = "rail_default", sight_2 = "sight_default"},
                 {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
                 {rail = "rail_default", sight_2 = "scope_sight_02", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
@@ -330,9 +328,9 @@ return table.combine(
             }),
             _common_ranged.scope_sights_models("sight", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0), "sight_2", {}, {
                 {rail = "rail_default"},
-                {rail = "rail_01"},
-                {rail = "rail_01"},
-                {rail = "rail_01"},
+                {rail = "rail_02"},
+                {rail = "rail_02"},
+                {rail = "rail_02"},
                 {rail = "rail_default"},
             }),
             _common_ranged.scope_lens_models("sight_2", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0)),
@@ -477,7 +475,8 @@ return table.combine(
                     bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"muzzle_03", "autogun_bayonet_03"}, -- Bayonet 3
                     bayonet = {offset = true, position = vector3_box(0, .065, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {stock_3 = {parent = "body", position = vector3_box(0, -.037, -.035), rotation = vector3_box(25, 0, 0), scale = vector3_box(.6, 1.2, 1)}}, -- Stocks
+                -- {stock_3 = {parent = "body", position = vector3_box(0, -.037, -.035), rotation = vector3_box(25, 0, 0), scale = vector3_box(.6, 1.2, 1)}}, -- Stocks
+                {stock_3 = {parent = "grip", position = vector3_box(0, -.14, -.11), rotation = vector3_box(-10, 0, 0), scale = vector3_box(.9, 1, 1)}},
                 -- {slot_trinket_1 = {parent = "trinket_hook", position = vector3_box(0, 0, .5), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"grip_01"}, -- Trinket
                     trinket_hook = {parent = "grip", position = vector3_box(0, -.115, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},

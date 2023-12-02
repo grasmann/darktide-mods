@@ -140,15 +140,12 @@ return table.combine(
             emblem_right = _common.emblem_right_attachments(),
             emblem_left = _common.emblem_left_attachments(),
             grip = table.icombine(
-                _common_melee.grip_default(),
                 _common_melee.axe_grip_attachments()
             ),
             head = table.icombine(
-                _common_melee.head_default(),
                 _common_melee.axe_head_attachments()
             ),
             pommel = table.icombine(
-                _common_melee.pommel_default(),
                 _common_melee.axe_pommel_attachments()
             ),
         },

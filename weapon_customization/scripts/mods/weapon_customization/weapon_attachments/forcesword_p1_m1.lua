@@ -81,6 +81,7 @@ local functions = {
             {id = "force_sword_grip_06",      name = "Grip 6"},
             {id = "force_sword_grip_07",      name = "Grip 7"},
             {id = "force_sword_grip_08",      name = "Grip 8"},
+            {id = "force_sword_grip_09",      name = "Grip 9"},
         }
     end,
     grip_models = function(parent, angle, move, remove)
@@ -97,6 +98,7 @@ local functions = {
             force_sword_grip_06 =      {model = _item_melee.."/grips/2h_power_sword_grip_01", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             force_sword_grip_07 =      {model = _item_melee.."/grips/2h_power_sword_grip_02", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             force_sword_grip_08 =      {model = _item_melee.."/grips/2h_power_sword_grip_03", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+            force_sword_grip_09 =      {model = _item_melee.."/grips/force_sword_grip_06", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
         }
     end,
     blade_attachments = function()
@@ -110,6 +112,7 @@ local functions = {
             {id = "force_sword_blade_06",      name = "Blade 6"},
             {id = "force_sword_blade_07",      name = "Blade 7"},
             {id = "force_sword_blade_08",      name = "Blade 8"},
+            {id = "force_sword_blade_09",      name = "Blade 9"},
         }
     end,
     blade_models = function(parent, angle, move, remove)
@@ -126,6 +129,7 @@ local functions = {
             force_sword_blade_06 =      {model = _item_melee.."/blades/2h_power_sword_blade_01", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             force_sword_blade_07 =      {model = _item_melee.."/blades/2h_power_sword_blade_02", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             force_sword_blade_08 =      {model = _item_melee.."/blades/2h_power_sword_blade_03", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+            force_sword_blade_09 =      {model = _item_melee.."/blades/force_sword_blade_06", type = "blade", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
         }
     end,
     pommel_attachments = function()
@@ -169,6 +173,7 @@ local functions = {
             {id = "force_sword_hilt_07",      name = "Hilt 7"},
             {id = "force_sword_hilt_08",      name = "Hilt 8"},
             {id = "force_sword_hilt_09",      name = "Hilt 9"},
+            {id = "force_sword_hilt_10",      name = "Hilt 10"},
         }
     end,
     hilt_models = function(parent, angle, move, remove)
@@ -186,6 +191,7 @@ local functions = {
             force_sword_hilt_07 =      {model = _item_melee.."/hilts/2h_power_sword_hilt_01", type = "hilt", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             force_sword_hilt_08 =      {model = _item_melee.."/hilts/2h_power_sword_hilt_02", type = "hilt", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             force_sword_hilt_09 =      {model = _item_melee.."/hilts/2h_power_sword_hilt_03", type = "hilt", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+            force_sword_hilt_10 =      {model = _item_melee.."/hilts/force_sword_hilt_07", type = "hilt", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
         }
     end,
 }

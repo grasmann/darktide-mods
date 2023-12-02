@@ -139,14 +139,13 @@ return table.combine(
             magazine = functions.magazine_attachments(),
             -- Ranged
             sight = table.icombine(
-                _common_ranged.sight_default(),
                 functions.sight_attachments(),
-                _common_ranged.reflex_sights_attachments(),
-                _common_ranged.sights_attachments()
+                _common_ranged.reflex_sights_attachments(false),
+                _common_ranged.sights_attachments(false)
             ),
             flashlight = _common_ranged.flashlights_attachments(),
             bayonet = _common_ranged.bayonet_attachments(),
-            rail = _common_lasgun.rail_attachments(),
+            -- rail = _common_lasgun.rail_attachments(),
             grip = _common_ranged.grip_attachments(),
             -- Lasgun
             barrel = _common_lasgun.barrel_attachments(),
@@ -244,19 +243,19 @@ return table.combine(
                     lens = {offset = true, position = vector3_box(0, .12, .031), rotation = vector3_box(0, 0, 0), scale = vector3_box(.64, .6, .7), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, .01, .031), rotation = vector3_box(180, 0, 0), scale = vector3_box(.64, .85, .7), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, .07, -.0415), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, .1, .026)}},
+                    scope_offset = {position = vector3_box(0, .03, .026)}},
                 {dependencies = {"scope_02"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, -.04, .21), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1)},
-                    lens = {offset = true, position = vector3_box(0, -.02, .03), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 1}},
-                    lens_2 = {offset = true, position = vector3_box(0, -.14, .03), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 2}},
-                    sight_2 = {offset = true, position = vector3_box(0, .09, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
-                    scope_offset = {position = vector3_box(0, 0, .0275)}},
+                    lens = {offset = true, position = vector3_box(0, -.02, .037), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 1}},
+                    lens_2 = {offset = true, position = vector3_box(0, -.14, .037), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 2}},
+                    sight_2 = {offset = true, position = vector3_box(0, .09, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
+                    scope_offset = {position = vector3_box(0, 0, .022), rotation = vector3_box(.3, 0, 0)}},
                 {dependencies = {"scope_03"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, 0, .21), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                     lens = {offset = true, position = vector3_box(0, .08, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, .22, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, .1, .025)}},
+                    scope_offset = {position = vector3_box(0, .025, .025)}},
                 {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

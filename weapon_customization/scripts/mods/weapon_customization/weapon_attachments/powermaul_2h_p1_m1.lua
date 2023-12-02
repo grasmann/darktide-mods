@@ -173,16 +173,16 @@ return table.combine(
             emblem_left = _common.emblem_left_attachments(),
             shaft = table.icombine(
                 functions.shaft_attachments(),
-                _common_melee.human_power_maul_shaft_attachments()
+                _common_melee.human_power_maul_shaft_attachments(false)
             ),
             pommel = functions.pommel_attachments(),
             connector = table.icombine(
                 functions.connector_attachments(),
-                _common_melee.human_power_maul_connector_attachments()
+                _common_melee.human_power_maul_connector_attachments(false)
             ),
             head = table.icombine(
                 functions.head_attachments(),
-                _common_melee.human_power_maul_head_attachments()
+                _common_melee.human_power_maul_head_attachments(false)
             ),
         },
         models = table.combine(

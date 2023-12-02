@@ -53,7 +53,9 @@ local functions = {
             {id = "receiver_03",        name = "Receiver 3"},
             {id = "receiver_04",        name = "Receiver 4"},
             {id = "receiver_05",        name = "Receiver 5"},
-            {id = "receiver_06",        name = "Receiver 4"},
+            {id = "receiver_06",        name = "Receiver 6"},
+            {id = "receiver_07",        name = "Receiver 7"},
+            {id = "receiver_08",        name = "Receiver 8"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -71,6 +73,8 @@ local functions = {
             {name = "receiver_04",      model = _item_ranged.."/recievers/boltgun_rifle_receiver_04"},
             {name = "receiver_05",      model = _item_ranged.."/recievers/boltgun_rifle_receiver_05"},
             {name = "receiver_06",      model = _item_ranged.."/recievers/boltgun_pistol_receiver_01"},
+            {name = "receiver_07",      model = _item_ranged.."/recievers/boltgun_rifle_receiver_06"},
+            {name = "receiver_08",      model = _item_ranged.."/recievers/boltgun_rifle_receiver_07"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     magazine_attachments = function(default)
@@ -99,6 +103,8 @@ local functions = {
             {id = "bolter_barrel_01",   name = "Barrel 1"},
             {id = "bolter_barrel_02",   name = "Barrel 2"},
             -- {id = "bolter_barrel_03",   name = "Barrel 3"},
+            {id = "bolter_barrel_04",   name = "Barrel 3"},
+            {id = "bolter_barrel_05",   name = "Barrel 4"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -113,6 +119,8 @@ local functions = {
             {name = "bolter_barrel_01",      model = _item_ranged.."/barrels/boltgun_rifle_barrel_01"},
             {name = "bolter_barrel_02",      model = _item_ranged.."/barrels/boltgun_rifle_barrel_02"},
             {name = "bolter_barrel_03",      model = _item_ranged.."/barrels/boltgun_pistol_barrel_01"},
+            {name = "bolter_barrel_04",      model = _item_ranged.."/barrels/boltgun_rifle_barrel_03"},
+            {name = "bolter_barrel_05",      model = _item_ranged.."/barrels/boltgun_rifle_barrel_04"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     underbarrel_attachments = function(default)
@@ -120,6 +128,8 @@ local functions = {
             {id = "underbarrel_01",         name = "Underbarrel 1"},
             {id = "underbarrel_02",         name = "Underbarrel 2"},
             {id = "underbarrel_03",         name = "Underbarrel 3"},
+            {id = "underbarrel_04",         name = "Underbarrel 4"},
+            {id = "underbarrel_05",         name = "Underbarrel 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -134,6 +144,8 @@ local functions = {
             {name = "underbarrel_01",      model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_01"},
             {name = "underbarrel_02",      model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_02"},
             {name = "underbarrel_03",      model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_03"},
+            {name = "underbarrel_04",      model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_04"},
+            {name = "underbarrel_05",      model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_05"},
             {name = "no_underbarrel",      model = ""},
         }, parent, angle, move, remove, type or "underbarrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
@@ -173,26 +185,23 @@ return table.combine(
             barrel = functions.barrel_attachments(),
             underbarrel = functions.underbarrel_attachments(),
             sight = table.icombine(
-                _common_ranged.sight_default(),
-                functions.sight_attachments(),
                 _common_ranged.reflex_sights_attachments(),
-                _common_ranged.scopes_attachments()
+                _common_ranged.scopes_attachments(false)
             ),
             -- Ranged
             flashlight = _common_ranged.flashlights_attachments(),
             magazine = table.icombine(
-                {{id = "magazine_default", name = mod:localize("mod_attachment_default")}},
                 _common_ranged.magazine_attachments()
             ),
             bayonet = _common_ranged.bayonet_attachments(),
             grip = _common_ranged.grip_attachments(),
             stock = _common_ranged.stock_attachments(),
             -- Lasgun
-            rail = _common_lasgun.rail_attachments(),
+            -- rail = _common_lasgun.rail_attachments(),
             -- Other
             muzzle = table.icombine(
                 _autopistol_p1_m1.muzzle_attachments(),
-                _ogryn_rippergun_p1_m1.barrel_attachments()
+                _ogryn_rippergun_p1_m1.barrel_attachments(false)
             ),
             -- Common
             trinket_hook = _common.trinket_hook_attachments(),
@@ -218,7 +227,12 @@ return table.combine(
             end),
             functions.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
             functions.underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
-            functions.sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
+            functions.sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+                {rail = "rail_default", sight_2 = "sight_default"},
+                {rail = "rail_default", sight_2 = "sight_default"},
+                {rail = "rail_default", sight_2 = "sight_default"},
+                {rail = "rail_default", sight_2 = "sight_default"},
+            }),
             -- Ranged
             _common_ranged.flashlight_models("receiver", -2.5, vector3_box(-.3, -3, 0), vector3_box(.2, 0, 0)),
             _common_ranged.grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1), "grip", {
@@ -247,22 +261,22 @@ return table.combine(
                 {"trinket_hook"},
                 {"trinket_hook"},
             }, {
-                {trinket_hook = "trinket_hook_05_carbon"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_default"},
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
-                {trinket_hook = "trinket_hook_05_carbon"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_default"},
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
-                {trinket_hook = "trinket_hook_05_carbon"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_default"},
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
-                {trinket_hook = "trinket_hook_05_carbon"},
-                {trinket_hook = "trinket_hook_05_carbon"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_default"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_default"},
                 {trinket_hook = "trinket_hook_empty"},
-                {trinket_hook = "trinket_hook_05_carbon"},
+                {trinket_hook = "trinket_hook_empty|trinket_hook_default"},
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
@@ -363,48 +377,68 @@ return table.combine(
                     },
                     grip = {offset = true, position = vector3_box(0, .01, -.01)}
                 },
+
+
+
                 {dependencies = {"bolter_magazine_03"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, -.01, -.01), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+
+
 
                 {dependencies = {"scope_01"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, -.06, .19), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1)},
                     lens = {offset = true, position = vector3_box(0, .12, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.64, .6, .7), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, .01, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.64, .85, .7), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, .07, -.046), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, .15, .0196), rotation = vector3_box(1.4, 0, 0)},
+                    scope_offset = {position = vector3_box(0, .075, .014), rotation = vector3_box(-.3, 0, 0)},
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {dependencies = {"scope_02"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, -.08, .19), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1)},
                     lens = {offset = true, position = vector3_box(0, -.02, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, -.14, .035), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, .09, -.0475), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
-                    scope_offset = {position = vector3_box(0, .1, .021), rotation = vector3_box(1.2, 0, 0)},
+                    scope_offset = {position = vector3_box(0, .1, .0165), rotation = vector3_box(.25, 0, 0)},
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {dependencies = {"scope_03"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, -.03, .19), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                     lens = {offset = true, position = vector3_box(0, .08, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, .22, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, .2, .0186)},
+                    scope_offset = {position = vector3_box(0, .13, .02)},
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
-                {scope_offset = {position = vector3_box(0, 0, .022)}},
+
+
+
                 {dependencies = {"grip_27|grip_28|grip_29"}, -- Grip
                     grip = {offset = true, position = vector3_box(0, .01, -.02), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+
+
                 {dependencies = {"receiver_01", "emblem_left_02"}, -- Emblem
                     emblem_left = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, -1, 1)}},
                 {dependencies = {"receiver_02", "emblem_left_02"}, -- Emblem
                     emblem_left = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, -1, 1)}},
+
+
+
                 {dependencies = {"!trinket_hook"}, -- Sight
                     trinket_hook = {parent = "underbarrel", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+
+
                 {dependencies = {"reflex_sight_01"}, -- Sight
                     sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"reflex_sight_02"}, -- Sight
                     sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"reflex_sight_03"}, -- Sight
                     sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+
+
                 {dependencies = {"auto_pistol_magazine_01"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1.8, 1)}},
                 {dependencies = {"magazine_01"}, -- Magazine
@@ -415,16 +449,32 @@ return table.combine(
                     magazine = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1, 1)}},
                 {dependencies = {"magazine_04"}, -- Magazine
                     magazine = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1, 1)}},
+
+
+
                 {dependencies = {"laser_pointer"}, -- Laser Pointer
                     flashlight = {parent = "receiver", position = vector3_box(.045, .3, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {flashlight = {parent = "receiver", position = vector3_box(.045, .3, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Flashlight
+
+
+
                 {stock = {parent = "receiver", position = vector3_box(0, -0.1, 0.08), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Stocks
+
+
+
                 {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"}, -- Grip
+                    scope_offset = {position = vector3_box(0, 0, .022)},
                     rail = {parent = "receiver", position = vector3_box(0, .025, .1625), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.35, 1.3)}},
                 {rail = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}}, -- Rail
+
+
+
                 {dependencies = {"autogun_bayonet_03"}, -- Bayonet
                     bayonet = {parent = "barrel", position = vector3_box(0, .125, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {bayonet = {parent = "barrel", position = vector3_box(0, .2, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}}, -- Bayonet
+
+
+
                 {dependencies = {"muzzle_02"}, -- Muzzle
                     muzzle = {parent = "barrel", position = vector3_box(0, .21, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1.4, 1.4)}},
                 {dependencies = {"muzzle_04"}, -- Muzzle
@@ -444,6 +494,9 @@ return table.combine(
                 {dependencies = {"barrel_06"}, -- Ripper muzzle
                     muzzle = {parent = "barrel", position = vector3_box(0, -.1, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.56, .56, .56)}},
                 {muzzle = {position = vector3_box(0, .21, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1.4, 1.4)}},
+
+
+
                 -- {slot_trinket_2 = {parent = "trinket_hook", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"grip_01"}, -- Trinket
                     trinket_hook = {parent = "grip", position = vector3_box(0, -.115, -.15), rotation = vector3_box(-45, 0, 0), scale = vector3_box(1, 1, 1)}},

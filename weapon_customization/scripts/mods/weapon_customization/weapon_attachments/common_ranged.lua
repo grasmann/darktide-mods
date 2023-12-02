@@ -44,13 +44,20 @@ return {
     end,
     flashlight_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
         if mesh_move == nil then mesh_move = false end
+        local flashlight_data = {
+            {{loc_flashlight_light_cone = 3}, {loc_flashlight_intensity = 2}, {loc_flashlight_battery = 3}},
+            {{loc_flashlight_light_cone = 1}, {loc_flashlight_intensity = 2}, {loc_flashlight_battery = 4}},
+            {{loc_flashlight_light_cone = 4}, {loc_flashlight_intensity = 3}, {loc_flashlight_battery = 1}},
+            {{loc_flashlight_light_cone = 2}, {loc_flashlight_intensity = 4}, {loc_flashlight_battery = 2}},
+            {{loc_flashlight_light_cone = 2}, {loc_flashlight_intensity = 2}, {loc_flashlight_battery = 2}},
+        }
         return table.model_table({
             {name = "default",       model = ""},
-            {name = "flashlight_01", model = _item_ranged.."/flashlights/flashlight_01"},
-            {name = "flashlight_02", model = _item_ranged.."/flashlights/flashlight_02"},
-            {name = "flashlight_03", model = _item_ranged.."/flashlights/flashlight_03"},
-            {name = "flashlight_04", model = _item_ranged.."/flashlights/flashlight_05"},
-            {name = "laser_pointer", model = _item_ranged.."/flashlights/flashlight_05"},
+            {name = "flashlight_01", model = _item_ranged.."/flashlights/flashlight_01", data = flashlight_data[1]},
+            {name = "flashlight_02", model = _item_ranged.."/flashlights/flashlight_02", data = flashlight_data[2]},
+            {name = "flashlight_03", model = _item_ranged.."/flashlights/flashlight_03", data = flashlight_data[3]},
+            {name = "flashlight_04", model = _item_ranged.."/flashlights/flashlight_05", data = flashlight_data[4]},
+            {name = "laser_pointer", model = _item_ranged.."/flashlights/flashlight_05", data = flashlight_data[5]},
         }, parent, angle, move, remove, type or "flashlight", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 
@@ -71,6 +78,7 @@ return {
             {id = "grip_13",      name = "Boltgun 1"},
             {id = "grip_14",      name = "Boltgun 2"},
             {id = "grip_15",      name = "Boltgun 3"},
+            {id = "grip_34",      name = "Boltgun 4"},
             {id = "grip_19",      name = "Laspistol 1"},
             {id = "grip_20",      name = "Laspistol 2"},
             {id = "grip_21",      name = "Laspistol 3"},
@@ -127,6 +135,7 @@ return {
             {name = "grip_31",      model = _item_ranged.."/grips/autogun_rifle_grip_ak_04"},
             {name = "grip_32",      model = _item_ranged.."/grips/autogun_rifle_grip_ak_05"},
             {name = "grip_33",      model = _item_ranged.."/grips/lasgun_pistol_grip_04"},
+            {name = "grip_34",      model = _item_ranged.."/grips/boltgun_rifle_grip_04"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 
@@ -163,6 +172,7 @@ return {
             {id = "reflex_sight_01", name = "Reflex Sight 1"},
             {id = "reflex_sight_02", name = "Reflex Sight 2"},
             {id = "reflex_sight_03", name = "Reflex Sight 3"},
+            {id = "sight_none",      name = ""},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -203,6 +213,7 @@ return {
     scope_lens_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
+            {name = "scope_lens_default",   model = ""},
             {name = "scope_lens_01",   model = _item_ranged.."/flashlights/flashlight_01"},
             {name = "scope_lens_02",   model = _item_ranged.."/bullets/rippergun_rifle_bullet_01"},
         }, parent, angle, move, remove, type or "lens", no_support, automatic_equip, hide_mesh, mesh_move)
@@ -210,6 +221,7 @@ return {
     scope_lens_2_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
+            {name = "scope_lens_default",   model = ""},
             {name = "scope_lens_2_01",   model = _item_ranged.."/flashlights/flashlight_01"},
             {name = "scope_lens_2_02",   model = _item_ranged.."/bullets/rippergun_rifle_bullet_01"},
         }, parent, angle, move, remove, type or "lens_2", no_support, automatic_equip, hide_mesh, mesh_move)
@@ -227,9 +239,9 @@ return {
     end,
     scopes_attachments = function(default)
         local attachments = {
-            {id = "scope_01",                        name = mod:localize("mod_attachment_scope_01")},
-            {id = "scope_02",                        name = mod:localize("mod_attachment_scope_02")},
-            {id = "scope_03",                        name = mod:localize("mod_attachment_scope_03")},
+            {id = "scope_03", name = mod:localize("mod_attachment_scope_03")},
+            {id = "scope_01", name = mod:localize("mod_attachment_scope_01")},
+            {id = "scope_02", name = mod:localize("mod_attachment_scope_02")},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -243,9 +255,9 @@ return {
             {id = "autogun_rifle_ak_sight_01",       name = "Braced Autogun"},
             {id = "autogun_rifle_killshot_sight_01", name = "Headhunter Autogun"},
             {id = "lasgun_rifle_sight_01",           name = "Lasgun"},
+            {id = "scope_03",                        name = mod:localize("mod_attachment_scope_03")},
             {id = "scope_01",                        name = mod:localize("mod_attachment_scope_01")},
             {id = "scope_02",                        name = mod:localize("mod_attachment_scope_02")},
-            {id = "scope_03",                        name = mod:localize("mod_attachment_scope_03")},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -294,6 +306,8 @@ return {
             {id = "autogun_rifle_stock_10", name = "Braced Autogun 4"},
             {id = "autogun_rifle_stock_11", name = "Braced Autogun 5"},
             {id = "lasgun_stock_04",        name = "Infantry Lasgun 4"},
+            {id = "autogun_rifle_stock_12", name = "Braced Autogun 6"},
+            {id = "autogun_rifle_stock_13", name = "Braced Autogun 7"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -320,6 +334,8 @@ return {
             {name = "autogun_rifle_stock_07", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_03"},
             {name = "autogun_rifle_stock_10", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_04"},
             {name = "autogun_rifle_stock_11", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_05"},
+            {name = "autogun_rifle_stock_12", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_06"},
+            {name = "autogun_rifle_stock_13", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_07"},
             {name = "autogun_rifle_stock_08", model = _item_ranged.."/stocks/autogun_rifle_killshot_stock_01"},
             {name = "autogun_rifle_stock_09", model = _item_ranged.."/stocks/autogun_rifle_killshot_stock_02"},
             {name = "lasgun_stock_01",        model = _item_ranged.."/stocks/lasgun_rifle_stock_01"},

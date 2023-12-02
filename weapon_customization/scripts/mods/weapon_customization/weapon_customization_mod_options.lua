@@ -71,14 +71,3 @@ function mod.update_options()
 		mod.update_option(option.setting_id)
 	end
 end
-
--- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
--- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
--- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
-
-mod:hook(CLASS.BaseView, "_on_view_load_complete", function(func, self, loaded, ...)
-	func(self, loaded, ...)
-	if self.view_name == "dmf_options_view" then
-		mod.update_options()
-	end
-end)

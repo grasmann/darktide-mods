@@ -136,7 +136,7 @@ end
 -- Check cached character state
 mod.character_state_changed = function(self)
 	local changed = false
-	local character_state = self:_character_state()
+	local character_state = self:character_state()
 	if character_state ~= self.last_character_state then
 		changed = true
 	end
@@ -144,7 +144,7 @@ mod.character_state_changed = function(self)
 end
 
 -- Check character state
-mod._character_state = function(self)
+mod.character_state = function(self)
 	return self.character_state_machine_extension:current_state()
 end
 
@@ -155,6 +155,19 @@ mod.player_from_viewport = function(self, viewport_name)
             return player
         end
     end
+end
+
+-- Get player from player_unit
+mod.player_from_unit = function(self, unit)
+    if unit then
+        local player_manager = managers.player
+        for _, player in pairs(player_manager:players()) do
+            if player.player_unit == unit then
+                return player
+            end
+        end
+    end
+    return managers.player:local_player_safe(1)
 end
 
 mod.world = function(self)
@@ -170,6 +183,64 @@ mod.wwise_world = function(self, world)
 	return wwise_wwise_world(world)
 end
 
+mod.get_view = function(self, view_name)
+    return managers.ui:view_active(view_name) and managers.ui:view_instance(view_name) or nil
+end
+
 mod.get_cosmetic_view = function(self)
-    return managers.ui:view_active(COSMETIC_VIEW) and managers.ui:view_instance(COSMETIC_VIEW) or nil
+	return self:get_view(COSMETIC_VIEW)
+    -- return managers.ui:view_active(COSMETIC_VIEW) and managers.ui:view_instance(COSMETIC_VIEW) or nil
+end
+
+mod.is_light_mutator = function(self)
+	local FLASHLIGHT_AGGRO_MUTATORS = {
+		"mutator_darkness_los",
+		"mutator_ventilation_purge_los"
+	}
+	local mutator_manager = managers.state.mutator
+	for i = 1, #FLASHLIGHT_AGGRO_MUTATORS do
+		if mutator_manager:mutator(FLASHLIGHT_AGGRO_MUTATORS[i]) then
+			return true
+		end
+	end
+end
+
+mod.is_in_hub = function()
+	local game_mode_name = managers.state.game_mode:game_mode_name()
+	return game_mode_name == "hub"
+end
+
+mod.is_in_prologue_hub = function()
+	local game_mode_name = managers.state.game_mode:game_mode_name()
+	return game_mode_name == "prologue_hub"
+end
+
+mod.main_time = function()
+	return managers.time:time("main")
+end
+
+mod.game_time = function()
+	return managers.time:time("gameplay")
+end
+
+mod.recreate_hud = function(self)
+	local ui_manager = managers.ui
+	if ui_manager then
+		local hud = ui_manager._hud
+		if hud then
+			local player = managers.player:local_player(1)
+			local peer_id = player:peer_id()
+			local local_player_id = player:local_player_id()
+			local elements = hud._element_definitions
+			local visibility_groups = hud._visibility_groups
+			hud:destroy()
+			ui_manager:create_player_hud(peer_id, local_player_id, elements, visibility_groups)
+		end
+	end
+end
+
+mod.has_flashlight = function(self, item)
+	local gear_id = self:get_gear_id(item)
+	local flashlight = gear_id and self:get_gear_setting(gear_id, "flashlight")
+	return flashlight and flashlight ~= "laser_pointer"
 end

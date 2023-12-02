@@ -42,7 +42,6 @@ local HudElementBattery = class("HudElementBattery", "HudElementBase")
 
 HudElementBattery.init = function (self, parent, draw_layer, start_scale)
 	HudElementBattery.super.init(self, parent, draw_layer, start_scale, Definitions)
-
 	self._charges = {}
 	self._charge_width = 0
 	self._charge_widget = self:_create_widget("charge", Definitions.charge_definition)
@@ -68,7 +67,7 @@ end
 
 HudElementBattery._update_charge_amount = function (self)
 	local current = mod:get_battery_charge()
-	local max = mod:get_battery_charge_max()
+	local max = mod:get_battery_max()
 	local charge_amount = max or 0
 	local charge_amount_ceiled = max and math_ceil(max) or 0
 
@@ -103,8 +102,9 @@ HudElementBattery.on_resolution_modified = function (self)
 end
 
 HudElementBattery._update_visibility = function (self, dt)
+	local max = mod:get_battery_max()
 	local charge_fraction = mod:get_battery_fraction() or 1
-	local draw = mod:get("mod_option_battery_show") and charge_fraction < mod:get("mod_option_battery_show_threshold")
+	local draw = mod:get("mod_option_battery_show") and charge_fraction < mod:get("mod_option_battery_show_threshold") and max and max > 0
 
 	local alpha_speed = 3
 	local alpha_multiplier = self._alpha_multiplier or 0

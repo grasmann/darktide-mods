@@ -247,6 +247,47 @@ end
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
 
+mod.execute_hide_meshes = function(self, item, attachment_units)
+	local gear_id = self:get_gear_id(item)
+	local slot_info_id = self:get_slot_info_id(item)
+	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+	local item_name = self:item_name_from_content_string(item.name)
+	for _, unit in pairs(attachment_units) do
+		if slot_infos[slot_info_id] then
+			local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
+			local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
+			-- Hide meshes
+			local hide_mesh = attachment_data and attachment_data.hide_mesh
+			-- Get fixes
+			local fixes = mod:_apply_anchor_fixes(item, unit)
+			hide_mesh = fixes and fixes.hide_mesh or hide_mesh
+			-- Check hide mesh
+			if hide_mesh then
+				-- Iterate hide mesh entries
+				for _, hide_entry in pairs(hide_mesh) do
+					-- Check more than one parameter
+					if #hide_entry > 1 then
+						-- Get attachment name - parameter 1
+						local attachment_slot = hide_entry[1]
+						-- Get attachment unit
+						local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+						-- Check unit
+						if hide_unit and unit_alive(hide_unit) then
+							-- Hide nodes
+							for i = 2, #hide_entry do
+								local mesh_index = hide_entry[i]
+								if unit_num_meshes(hide_unit) >= mesh_index then
+									unit_set_mesh_visibility(hide_unit, mesh_index, false)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 local output_index = 1
 -- Visual loadout extension hooks
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
@@ -282,7 +323,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		-- end
 		local attachment_slot_info = {}
 
-		if item_unit and attachments and gear_id and (in_store ~= "premium" or in_possesion_of_player) then
+		if item_unit and attachments and gear_id and (not item_data.premium_store_item or in_possesion_of_player) then
 			mod:setup_item_definitions()
 
 			-- Add flashlight slot
@@ -326,7 +367,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 		-- ############################################################################################################
 
-		if attachment_units and item_unit and attachments and gear_id and in_store ~= "premium" then
+		if attachment_units and item_unit and attachments and gear_id and not item_data.premium_store_item then
+
+			unit_set_data(item_unit, "attachment_units", attachment_units)
 
 			local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 			slot_infos[slot_info_id] = attachment_slot_info
@@ -751,6 +794,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
 				attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
 				attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
+				Unit.set_data(spawned_unit, "attachment_name", attachment_name)
+				Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
 			end
 		end
 	
@@ -868,7 +913,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			-- 	-- mod:echo("In store: "..tostring(gear_id).." - "..tostring(in_store))
 			-- end
 
-			if gear_id and in_store ~= "premium" then
+			if gear_id and not item_data.premium_store_item then
 				mod:setup_item_definitions()
 
 				-- Add flashlight slot

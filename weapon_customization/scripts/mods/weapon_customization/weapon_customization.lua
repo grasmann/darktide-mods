@@ -26,6 +26,7 @@ mod:persistent_table(REFERENCE, {
 		visible_equipment = {},
 		view_weapon_sounds = {},
 		needed = {},
+		customization = {},
 	},
 	used_packages = {
 		visible_equipment = {},
@@ -33,6 +34,7 @@ mod:persistent_table(REFERENCE, {
 		needed = {},
 		attachments = {},
 		hub = {},
+		customization = {},
 	},
 	-- Input
 	input_hooked = false,
@@ -47,23 +49,31 @@ mod.was_third_person = nil
 	local script_unit = ScriptUnit
 	local managers = Managers
 	local CLASS = CLASS
-	-- local Fade = Fade
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ###############################################################################
 -- ##### ││││ │ ││  ├┤ └┐┌┘├┤ │││ │ └─┐ ###############################################################################
 -- ##### ┴ ┴└─┘─┴┘  └─┘ └┘ └─┘┘└┘ ┴ └─┘ ###############################################################################
 
+function DMFMod:echot(message, optional_t, optional_time)
+    local t = type(optional_t) == "number" and optional_t
+        or Managers and Managers.time and Managers.time:time("main")
+        or 0
+    local time = type(optional_time) == "number" and optional_time or 2
+    self._echot = self._echot or {}
+    local echoTime = self._echot[message]
+    if not echoTime or echoTime < t then
+        self:echo(message)
+        self._echot[message] = t + time
+    end
+end
+
 -- Gamestate changed
 function mod.on_game_state_changed(status, state_name)
-	-- Reset flashlight state
-	mod:reset_flashlight()
-	mod:reset_laser_pointer()
-	mod:recharge_battery()
-	-- mod:release_slot_packages()
+	-- Release hub packages
 	mod:release_non_essential_packages()
 	mod:persistent_table(REFERENCE).used_packages.hub = {}
-	-- mod:reset_sights(true)
+	-- Turn off package safety
 	mod.keep_all_packages = nil
 end
 
@@ -71,42 +81,24 @@ end
 function mod.on_setting_changed(setting_id)
 	-- Update mod settings
 	mod.update_option(setting_id)
-	-- Update flashlight
-	if setting_id == "mod_option_flashlight_shadows" or setting_id == "mod_option_flashlight_flicker" then
-		if mod:has_flashlight_attachment() then mod:toggle_flashlight(true) end
-		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
-	end
-	if setting_id == "mod_option_laser_pointer_wild" or setting_id == "mod_option_laser_pointer_weapon_dot" or setting_id == "mod_option_laser_pointer_weapon_flash" then
-		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
-	end
-	if setting_id == "mod_option_visible_equipment" then
-		mod:update_equipment_visibility()
-	end
-	if setting_id == "mod_option_visible_equipment" then
-		mod.visible_equipment = mod:get("mod_option_visible_equipment")
-	end
-	if setting_id == "mod_option_visible_equipment_sounds" then
-		mod.visible_equipment_sounds = mod:get("mod_option_visible_equipment_sounds")
-	end
-	if setting_id == "mod_option_visible_equipment_own_sounds_fp" then
-		mod.visible_equipment_sounds_fp = mod:get("mod_option_visible_equipment_own_sounds_fp")
-	end
+	-- Update randomization
 	if setting_id == "mod_option_randomization_players" or setting_id == "mod_option_randomization_store" then
 		mod.keep_all_packages = true
 		mod:update_modded_packages()
 	end
+	-- Trigger Events
+	managers.event:trigger("weapon_customization_settings_changed")
 	-- Debug
 	mod._debug = mod:get("mod_option_debug")
 end
 
 -- Update loop
 function mod.update(main_dt)
-	mod:update_flicker()
-	mod:update_battery()
-	mod:update_equipment(main_dt)
-	-- mod:update_crouch_aim()
+	-- mod:update_flicker()
+	-- mod:update_battery()
 end
 
+-- When all mods are loaded
 function mod.on_all_mods_loaded()
 	mod:recreate_hud()
 end
@@ -116,62 +108,36 @@ end
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
 
 -- Player visual extension initialized
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
-	-- Original function
-	func(self, world, unit, ...)
-
+mod.player_unit_loaded = function(self)
 	-- Initialize
-	mod:init()
+	self:init()
 	-- Update used packages
-    mod:update_modded_packages()
-	-- mod:reset_sights(true)
-end)
+    self:update_modded_packages()
+end
 
-mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
-	-- Original function
-	func(self, world, unit, ...)
-
+mod.husk_unit_loaded = function(self)
 	-- Update used packages
-    mod:update_modded_packages()
-end)
+    self:update_modded_packages()
+end
 
 -- Player visual extension destroyed
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
-
-	if self._unit == mod.player_unit then
+mod.player_unit_destroyed = function(self, player_unit)
+	if player_unit == mod.player_unit then
 		-- Set reinitialization
 		mod.initialized = false
 	end
-
 	-- Update used packages
     mod:update_modded_packages()
-
-	-- Original function
-	return func(self, ...)
-end)
+end
 
 mod:hook(CLASS.PlayerUnitFirstPersonExtension, "_update_first_person_mode", function(func, self, t, ...)
 	local show_1p_equipment, wants_1p_camera = func(self, t, ...)
 	if mod.initialized then
-		-- Update flashlight / laser pointer
-		if mod:has_flashlight_attachment() then mod:update_flashlight_view() end
-		if mod:has_laser_pointer_attachment() then mod:update_laser_pointer() end
-		-- mod:daemon_host_update(t)
 		-- Cache values
 		mod.was_third_person = mod:_is_in_third_person()
-		mod.last_character_state = mod:_character_state()
+		mod.last_character_state = mod:character_state()
 	end
 	return show_1p_equipment, wants_1p_camera
-end)
-
--- Update flashlight state
-mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
-	func(self, ...)
-	-- Update flashlight
-	if mod._update_flashlight then
-		if mod:has_flashlight_attachment() then mod:toggle_flashlight(true) end
-		if mod:has_laser_pointer_attachment() then mod:toggle_laser(true) end
-	end
 end)
 
 -- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐ #######################################################################################
@@ -198,29 +164,32 @@ mod.init = function(self)
 	self.time_manager = managers.time
 	self.initialized = true
 	self._next_check_at_t = 0
-	-- if self:persistent_table(REFERENCE).fade_system then
-	-- 	Fade.destroy(self:persistent_table(REFERENCE).fade_system)
-	-- end
-	-- self:persistent_table(REFERENCE).fade_system = Fade.init()
 	self:print("Initialized")
 end
 
+-- Extensions
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
+
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/extension_base")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/laser_pointer_extension")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/flashlight_extension")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/crouch_animation_extension")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/sight_extension")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/visible_equipment_extension")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/battery_extension")
 -- Import mod files
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_crouch")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_bolt_pistol")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_action_hooks")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_gear")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visible_equipment")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_laser_pointer")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_daemon_host")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_laser_pointer")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_daemon_host")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_fix")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_sights")
+
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_mod_options")
 

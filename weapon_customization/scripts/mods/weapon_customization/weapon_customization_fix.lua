@@ -21,6 +21,7 @@ local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
     local table_remove = table.remove
     local table_clone = table.clone
     local table_enum = table.enum
+    local table_find = table.find
     local math_uuid = math.uuid
     local Unit = Unit
     local unit_has_node = Unit.has_node
@@ -160,12 +161,12 @@ mod:hook(CLASS.InventoryWeaponsView, "_equip_item", function(func, self, slot_na
         -- Update used packages
         mod:update_modded_packages()
     end
-    -- Laser pointer
-    local ITEM_TYPES = UISettings.ITEM_TYPES
-	local item_type = item.item_type
-    if item_type == ITEM_TYPES.WEAPON_RANGED then
-        mod:reset_laser_pointer()
-    end
+    -- -- Laser pointer
+    -- local ITEM_TYPES = UISettings.ITEM_TYPES
+	-- local item_type = item.item_type
+    -- if item_type == ITEM_TYPES.WEAPON_RANGED then
+    --     mod:reset_laser_pointer()
+    -- end
 end)
 
 mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
@@ -495,10 +496,10 @@ mod:hook_require("scripts/backend/master_items", function(instance)
             __gear = {
                 masterDataInstance = {
                     id = data.id,
-                    overrides = data.overrides
+                    overrides = data.overrides,
                 }
             },
-            __gear_id = data.gear_id or data.gearId
+            __gear_id = data.gear_id or data.gearId,
         }
     
         setmetatable(item_instance, {
@@ -540,6 +541,7 @@ mod:hook_require("scripts/backend/master_items", function(instance)
                 return field_value
             end,
             __newindex = function (t, field_name, value)
+                rawset(t, field_name, value)
                 -- ferror("Not allowed to modify inventory items - %s[%s]", rawget(item_instance, "__gear_id"), field_name)
             end,
             __tostring = function (t)
@@ -570,7 +572,13 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         end
     end
 
-    instance.get_store_item_instance = function (description)
-        return _store_item_plus_overrides(description)
+    instance.get_store_item_instance = function(description)
+        local instance = _store_item_plus_overrides(description)
+        instance.__master_item.store_item = true
+        local definition = mod:persistent_table(REFERENCE).item_definitions[instance.__master_item.name]
+        if definition and definition.feature_flags and table_find(definition.feature_flags, "FEATURE_premium_store") then
+            instance.__master_item.premium_store_item = true
+        end
+        return instance
     end
 end)

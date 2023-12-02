@@ -163,7 +163,7 @@ return {
 	mod_attachment_remove = {
 		en = "Twin.Linked Heavy Stubber|Ripper Gun|Rumbler|Kickback|Ogryn Thumper|Grenadier Gauntlet|Cleaver|Power Maul|Battle Maul & Mk III Slab Shield|Battle Maul & Mk 3 Slab Shield|Bully Club|Shredder Autopistol|Helbore Lasgun|Laspistol|Infantry Autogun|Headhunter Autogun|Braced Autogun|Spearhead Boltgun|Boltgun|Infantry Lasgun| pattern lasgun|Heavy|Autogun|Recon Lasgun| Purgation Flamer|Flamer| pattern flamer|Combat Shotgun|Stub Revolver|Stubrevolver|Plasma Gun|Force Staff|Duelling Sword|Blaze Force Sword|Force Sword|Power Sword|Sword|Combat Axe|Tactical Axe|Assault Chainsword|Chainsword|Combat Blade|Model Powersword|Assault Chainaxe|Chainaxe|pattern|unknown manufacture|Sapper Shovel|Thunder Hammer|Crusher|Model Powermaul|Eviscerator|Camo|[()]",
 		de = "-Rippergun|-Schwert|Doppelläufiges|-Maschinengewehr|-Tarnung|[():]|Rippergun|-Camo|-Rückschlag|-Prügel|Rückschlag|-Grenadierhandschuh|Grenadierhandschuh|-Hackmesser|Hackmesser|-Energiestreitkolben|.Kampf.Streitkolben|& Orox.Klotzschild Mk III|& Orox.Klotzschild Mk 3|-Schlägerkeule|-Kampfaxt|Kampfaxt| Taktische Axt|.Sturm.Kettenschwert|Sturm.Kettenschwert|.Kampfklinge|Kampfklinge|.Energieschwert|Energieschwert|Pionierspaten|.Sturm.Kettenaxt|.Helbore.Lasergewehr|Infanterie.Lasergewehr|.Kundschafter.Lasergewehr| Schwere Laserpistole|.Muster.Lasergewehr|.Infanterie.Sturmgewehr|.Stabilisation.Sturmgewehr|.Kopfjäger.Sturmgewehr|.Sturmgewehr|.Schredder.Maschinenpistole|Speerspitze.Boltpistole|Schwere Laserpistole|.Läuterungs.Flammenwerfer|Läuterungs.Flammenwerfer|.Einsatzschrotflinte|Einsatzschrotflinte|Infanterie|Sturmgewehr|Schredder.Maschinenpistole|.Speerspitze.Boltpistole|.Plasmagewehr|.Stub.Revolver|Stub.Revolver|.Purgatus.Psistab|Purgatus.Psistab|Leerenschlag.Psistab|.Trauma.Psistab|.Welle.Psistab|Leerenschlag.|.Psistab|.Glut.Psischwert|Glut.Psischwert|Psischwert|isches Duellschwert|.Donnerhammer|Donnerhammer|.Brecher|Brecher|Schwerer Ausweider|Schwerer|.Ausweider|.Schweres Schwert|.Läuterungsflammenwerfer",
-		ru = "Спаренный тяжёлый стаббер|Дробовик-потрошитель|Гранатомёт|Дробовик|Отбойник огрина|Гренадерская перчатка|Тесак|Силовая булава|Боевая булава и Мод III|Боевая булава и Мод 3|Дубина задиры|Щит-плита|щит-плита|Автопистолет-крошитель|Автопистолет|-крошитель|Хельборовое лазружьё|Тяжёлый лазпистолет|Тяжелый лазпистолет|Пехотный автомат|Автомат-головострел|Усиленный автомат|Пронзающий болтер|Болтер|Лазвинтовка пехоты| образец лазгана|Тяжёлый|Автомат|-головострел|Лазвинтовка разведки|Лазган|Пехотный лазган| Огнемёт очищения|Огнемет чистки|Огнемёт| образец огнемёта|Боевой дробовик|Стаб-револьвер|Плазменная винтовка|Психосиловой|посох|чистки|пустотный|Силовой посох|Силовой|Травма|Молния|Пургатус|Пустотный|Дуэльный меч|Пламенный силовой меч|Силовой меч|Силовой меч|Меч|Боевой топор|Тактический топор|Штурмовой пиломеч|Пиломеч|Боевой клинок|Мод Силовой меч|Штурмовой пилотопор|Пилотопор|образец|неизвестный производитель|Сапёрная лопата|Громовой|Крушитель|Мод Силовая булава|Потрошитель|Камуфляж|камуфляж|Стаб|-револьвер|быстрый|«Коготь дьявола»|пылающий|Пламенный психосиловой|оперативник|Штурмовой цепной|Тяжелый эвисцератор|меч|Дробитель|подлатанный подручными средствами|-потрошитель|Рубило|Отбойник|Боевая булава|и щит Верзилы мод. III|Палица задиры|Катачанский|Рамблер|Спаренный тяжелый пулемет|топор|цепной|Хелборский лазган|охотника за головами|Разведывательный лазган|Серийный автомат|Скорострельный|стаб|Тяжелый|дуэльный |Огненный психосиловой|очищения|тический психосиловой|Волновой психосиловой|Щит|\"|-плита|Пылающий|психосиловой|Травмы|Импульса|Пустоты|Хельбор|Хельборское|лазружьё|лазган|лазвинтовка|Плазмаган|плазмаган|Плазмомёт|Грозовой|молот|боевое снаряжение|Шоковая|булава|Малая саперная лопатка|[()]|",
+		ru = "Спаренный тяжёлый стаббер|Дробовик-потрошитель|Гранатомёт|Дробовик|Отбойник огрина|Гренадерская перчатка|Тесак|Силовая булава|Боевая булава и Мод III|Боевая булава и Мод 3|Дубина задиры|Щит-плита|щит-плита|Автопистолет-крошитель|Автопистолет|-крошитель|Хельборовое лазружьё|Тяжёлый лазпистолет|Тяжелый лазпистолет|Пехотный автомат|Автомат-головострел|Усиленный автомат|Пронзающий болтер|Болтер|Лазвинтовка пехоты| образец лазгана|Тяжёлый|Автомат|-головострел|Лазвинтовка разведки|Лазган|Пехотный лазган| Огнемёт очищения|Огнемет чистки|Огнемёт| образец огнемёта|Боевой дробовик|Стаб-револьвер|Плазменная винтовка|Психосиловой|посох|чистки|пустотный|Силовой посох|Силовой|Травма|Молния|Пургатус|Пустотный|Дуэльный меч|Пламенный силовой меч|Силовой меч|Силовой меч|Меч|Боевой топор|Тактический топор|Штурмовой пиломеч|Пиломеч|Боевой клинок|Мод Силовой меч|Штурмовой пилотопор|Пилотопор|образец|неизвестный производитель|Сапёрная лопата|Громовой|Крушитель|Мод Силовая булава|Потрошитель|Камуфляж|камуфляж|Стаб|-револьвер|быстрый|«Коготь дьявола»|пылающий|Пламенный психосиловой|оперативник|Штурмовой цепной|Тяжелый эвисцератор|меч|Дробитель|подлатанный подручными средствами|-потрошитель|Рубило|Отбойник|Боевая булава|и щит Верзилы мод. III|Палица задиры|Катачанский|Рамблер|Спаренный тяжелый пулемет|топор|цепной|Хелборский лазган|охотника за головами|Разведывательный лазган|Серийный автомат|Скорострельный|стаб|Тяжелый|дуэльный |Огненный психосиловой|очищения|тический психосиловой|Волновой психосиловой|Щит|\"|-плита|Пылающий|психосиловой|Травмы|Импульса|Пустоты|Хельборское|лазружьё|лазган|лазвинтовка|Плазмаган|плазмаган|Плазмомёт|Грозовой|молот|боевое снаряжение|Шоковая|булава|Малая саперная лопатка||[()]|",
 		["zh-cn"] = "等离子枪|步兵激光枪|样式激光枪|地狱钻激光枪|侦察激光枪|侦查激光枪|重型激光手枪|粉碎者自动手枪|步兵自动枪|稳固自动枪|猎头者自动枪|猎颅者自动枪|自动枪|速发左轮枪|左轮枪|战斗霰弹枪|先锋爆矢枪|涤罪火焰喷射器|力场杖|开膛枪|开膛手霰弹枪|低吼者|击退者|双联重机枪|掷弹兵臂铠|砍刀|恶霸棍棒|动力锤|作战大锤|与板砖大盾 Mk.III|与板砖大盾 Mk.3|粉碎者|雷霆锤|战斧|战术斧|战斗利刃|工兵铲|突击链锯剑|链锯剑|突击链锯斧|动力剑|能量剑|决斗剑|炙焰力场剑|力场剑|重剑|重型开膛剑|剑|迷彩|[()]|（|）",
 	},
 	-- mod_option_misc_flicker_fix = {
@@ -179,22 +179,69 @@ return {
 	group_scopes = {
 		en = "Scopes",
 		de = "Zielfernrohre",
+		ru = "Прицелы",
 	},
 	mod_option_scopes_sound = {
 		en = "Sounds",
 		de = "Geräusche",
+		ru = "Звуки",
 	},
 	mod_option_scopes_sound_tooltip = {
 		en = "Plays a sound when activating scope aiming.",
 		de = "Spielt ein Geräusch ab wenn das Zielfernrohr aktiviert wird.",
+		ru = "Воспроизводится звук при активации прицеливания.",
 	},
 	mod_option_scopes_particle = {
 		en = "Effect",
 		de = "Effekt",
+		ru = "Эффект",
 	},
 	mod_option_scopes_particle_tooltip = {
 		en = "Adds a screen effect to scope aiming.",
 		de = "Fügt einen Bildschirmeffekt zum Zielfernrohr-Zielen hinzu.",
+		ru = "Добавляет экранный эффект при прицеливании.",
+	},
+	mod_option_scopes_recoil = {
+		en = "Recoil",
+		de = "Rüstoß",
+	},
+	mod_option_scopes_recoil_tooltip = {
+		en = "Recoil strength when aiming a scope.",
+		de = "Rückstoßstärke beim Zielen mit einem Zielfernrohr.",
+	},
+	mod_option_scopes_sway = {
+		en = "Sway",
+		de = "Schwanken",
+	},
+	mod_option_scopes_sway_tooltip = {
+		en = "Sway strength when aiming a scope.",
+		de = "Schwankstärke beim Anvisieren eines Zielfernrohrs.",
+	},
+	mod_option_scopes_reticle_size = {
+		en = "Reticle Size",
+		de = "Fadenkreuzgröße",
+	},
+	mod_option_scopes_reticle_size_tooltip = {
+		en = "Set reticle size for scopes.",
+		de = "Setze Fadenkreuzgröße für Zielfernrohre.",
+	},
+	mod_option_deactivate_crosshair_aiming = {
+		en = "Deactivate Crosshair",
+		de = "Zielkreuz Deaktivieren",
+		ru = "Деактивировать перекрестие",
+		["zh-cn"] = "禁用准星",
+	},
+	mod_option_deactivate_crosshair_aiming_tooltip = {
+		en = "Crosshair is automatically hidden when a scope is aimed",
+		de = "Zielkreuz wird automatisch versteckt wenn Zielfernrohr benutzt wird",
+	},
+	mod_option_deactivate_laser_aiming = {
+		en = "Deactivate Laser Pointer",
+		de = "Laserpointer Deaktivieren",
+	},
+	mod_option_deactivate_laser_aiming_tooltip = {
+		en = "Laser pointer is automatically hidden when a scope is aimed",
+		de = "Laserpointer wird automatisch versteckt wenn Zielfernrohr benutzt wird",
 	},
 	group_randomization = {
 		en = "Randomization",
@@ -249,6 +296,22 @@ return {
 		de = "Chance dass Waffen eine Taschenlampe haben",
 		ru = "Шанс, что на оружии будет фогнарик",
 		["zh-cn"] = "武器安装手电筒的概率",
+	},
+	mod_option_randomization_laser_pointer = {
+		en = "Laser Pointer",
+		de = "Laserpointer",
+	},
+	mod_option_randomization_laser_pointer_tooltip = {
+		en = "Allow laser pointers for player randomization.",
+		de = "Erlaube Laserpointer bei der Randomisierung der Spieler.",
+	},
+	mod_option_randomization_stock = {
+		en = "Stock",
+		de = "Gewehrkolben",
+	},
+	mod_option_randomization_stock_tooltip = {
+		en = "Stock",
+		de = "Gewehrkolben",
 	},
 	group_visible_equipment = {
 		en = "Visible Equipment",
@@ -316,6 +379,22 @@ return {
 		ru = "Анимации оружия",
 		["zh-cn"] = "武器动画",
 	},
+	mod_option_camera_hide_ui = {
+		en = "Hide UI",
+		de = "Menu Ausblenden",
+	},
+	mod_option_camera_hide_ui_tooltip = {
+		en = "Hide UI",
+		de = "Menu Ausblenden",
+	},
+	mod_option_carousel = {
+		en = "Carousel",
+		de = "Karussell",
+	},
+	mod_option_carousel_tooltip = {
+		en = "Carousel",
+		de = "Karussell",
+	},
 	mod_option_weapon_build_animation = {
 		en = "Play Animations",
 		de = "Animationen Abspielen",
@@ -364,6 +443,18 @@ return {
 		ru = "Фонарик",
 		["zh-cn"] = "手电筒",
 	},
+	loc_flashlight_light_cone = {
+		en = "Light Cone",
+		de = "Lichtkegel",
+	},
+	loc_flashlight_intensity = {
+		en = "Intensity",
+		de = "Helligkeit",
+	},
+	loc_flashlight_battery = {
+		en = "Battery Life",
+		de = "Batteriekraft",
+	},
 	mod_option_flashlight_shadows = {
 		en = "Flashlight Shadows",
 		de = "Taschenlampenschatten",
@@ -400,13 +491,29 @@ return {
 		ru = "Лазерный указатель",
 		["zh-cn"] = "激光指示器",
 	},
-	mod_option_deactivate_crosshair = {
+	mod_option_laser_pointer_count = {
+		en = "Strength",
+		de = "Stärke",
+	},
+	mod_option_laser_pointer_count_tooltip = {
+		en = "Strength of your own laser pointer",
+		de = "Stärke des eigenen Laserpointers",
+	},
+	mod_option_laser_pointer_count_others = {
+		en = "Strength (Team)",
+		de = "Stärke (Team)",
+	},
+	mod_option_laser_pointer_count_others_tooltip = {
+		en = "Strength of your teammate's laser pointer",
+		de = "Stärke der Laserpointer von Mitspielern",
+	},
+	mod_option_deactivate_crosshair_laser = {
 		en = "Deactivate Crosshair",
 		de = "Zielkreuz Deaktivieren",
 		ru = "Деактивировать перекрестие",
 		["zh-cn"] = "禁用准星",
 	},
-	mod_option_deactivate_crosshair_tooltip = {
+	mod_option_deactivate_crosshair_laser_tooltip = {
 		en = "Crosshair is automatically hidden when laser pointer is activated",
 		de = "Zielkreuz wird automatisch versteckt wenn Laserpointer angeschaltet wird",
 		ru = "Перекрестие автоматически скрывается при активации лазерного указателя.",

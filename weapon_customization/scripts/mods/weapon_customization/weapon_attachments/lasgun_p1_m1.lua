@@ -67,7 +67,7 @@ return table.combine(
             -- Native
             receiver = functions.receiver_attachments(),
             -- Lasgun
-            rail = _common_lasgun.rail_attachments(),
+            -- rail = _common_lasgun.rail_attachments(),
             grip = _common_ranged.grip_attachments(),
             barrel = _common_lasgun.barrel_attachments(),
             muzzle = _common_lasgun.muzzle_attachments(),
@@ -76,12 +76,10 @@ return table.combine(
             -- Ranged
             flashlight = _common_ranged.flashlights_attachments(),
             sight = table.icombine(
-                _common_ranged.sight_default(),
                 _common_ranged.reflex_sights_attachments(),
-                _common_ranged.sights_attachments()
+                _common_ranged.sights_attachments(false)
             ),
             stock = table.icombine(
-                {{id = "stock_default", name = mod:localize("mod_attachment_default")}},
                 _common_ranged.stock_attachments()
             ),
             -- Bolter
@@ -182,7 +180,7 @@ return table.combine(
                     lens = {offset = true, position = vector3_box(0, 0, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.64, .6, .7), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, -.12, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.64, .85, .7), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, .12, -.046), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, .1, -.009), rotation = vector3_box(0, 0, 0)},
+                    scope_offset = {position = vector3_box(0, .015, -.009), rotation = vector3_box(0, 0, 0)},
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {dependencies = {"scope_02"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, -.08, .156), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1)},
@@ -196,7 +194,7 @@ return table.combine(
                     lens = {offset = true, position = vector3_box(0, .08, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, .22, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, .1, -.0055)},
+                    scope_offset = {position = vector3_box(0, .033, -.0055)},
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

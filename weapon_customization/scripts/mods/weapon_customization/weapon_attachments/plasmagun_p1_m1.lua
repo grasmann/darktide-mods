@@ -92,6 +92,7 @@ local functions = {
             {id = "magazine_01",        name = "Magazine 1"},
             {id = "magazine_02",        name = "Magazine 2"},
             {id = "magazine_03",        name = "Magazine 3"},
+            {id = "magazine_04",        name = "Magazine 4"},
         }
     end,
     magazine_models = function(parent, angle, move, remove)
@@ -103,6 +104,7 @@ local functions = {
             magazine_01 =      {model = _item_ranged.."/magazines/plasma_rifle_magazine_01", type = "magazine", parent = tv(parent, 2), angle = a, move = m, remove = r},
             magazine_02 =      {model = _item_ranged.."/magazines/plasma_rifle_magazine_02", type = "magazine", parent = tv(parent, 3), angle = a, move = m, remove = r},
             magazine_03 =      {model = _item_ranged.."/magazines/melta_gun_magazine_01",    type = "magazine", parent = tv(parent, 4), angle = a, move = m, remove = r},
+            magazine_04 =      {model = _item_ranged.."/magazines/plasma_rifle_magazine_03", type = "magazine", parent = tv(parent, 4), angle = a, move = m, remove = r},
         }
     end,
     barrel_attachments = function()
@@ -111,6 +113,7 @@ local functions = {
             {id = "barrel_01",      name = "Barrel 1"},
             {id = "barrel_02",      name = "Barrel 2"},
             {id = "barrel_03",      name = "Barrel 3"},
+            {id = "barrel_04",      name = "Barrel 4"},
         }
     end,
     barrel_models = function(parent, angle, move, remove)
@@ -122,6 +125,7 @@ local functions = {
             barrel_01 =      {model = _item_ranged.."/barrels/plasma_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = a, move = m, remove = r},
             barrel_02 =      {model = _item_ranged.."/barrels/plasma_rifle_barrel_02", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r},
             barrel_03 =      {model = _item_ranged.."/barrels/plasma_rifle_barrel_03", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r},
+            barrel_04 =      {model = _item_ranged.."/barrels/plasma_rifle_barrel_04", type = "barrel", parent = tv(parent, 5), angle = a, move = m, remove = r},
         }
     end,
     stock_attachments = function()
@@ -130,6 +134,7 @@ local functions = {
             {id = "plasma_rifle_stock_01",      name = "Ventilation 1"},
             {id = "plasma_rifle_stock_02",      name = "Ventilation 2"},
             {id = "plasma_rifle_stock_03",      name = "Ventilation 3"},
+            {id = "plasma_rifle_stock_04",      name = "Ventilation 4"},
         }
     end,
     stock_models = function(parent, angle, move, remove)
@@ -141,6 +146,7 @@ local functions = {
             plasma_rifle_stock_01 =      {model = _item_ranged.."/stocks/plasma_rifle_stock_01", type = "stock", parent = tv(parent, 2), angle = a, move = m, remove = r},
             plasma_rifle_stock_02 =      {model = _item_ranged.."/stocks/plasma_rifle_stock_02", type = "stock", parent = tv(parent, 3), angle = a, move = m, remove = r},
             plasma_rifle_stock_03 =      {model = _item_ranged.."/stocks/plasma_rifle_stock_03", type = "stock", parent = tv(parent, 4), angle = a, move = m, remove = r},
+            plasma_rifle_stock_04 =      {model = _item_ranged.."/stocks/plasma_rifle_stock_04", type = "stock", parent = tv(parent, 4), angle = a, move = m, remove = r},
         }
     end,
     grip_attachments = function()
@@ -169,7 +175,6 @@ return table.combine(
     {
         attachments = { -- Done 14.9.2023
             sight_2 = table.icombine(
-                _common_ranged.sight_default(),
                 _common_ranged.reflex_sights_attachments()
             ),
             receiver = functions.receiver_attachments(),
@@ -177,7 +182,7 @@ return table.combine(
             barrel = functions.barrel_attachments(),
             grip = functions.grip_attachments(),
             stock = functions.stock_attachments(),
-            rail = _common_lasgun.rail_attachments(),
+            -- rail = _common_lasgun.rail_attachments(),
             stock_2 = _common_ranged.stock_attachments(),
             emblem_right = _common.emblem_right_attachments(),
             emblem_left = _common.emblem_left_attachments(),

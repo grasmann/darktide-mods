@@ -159,15 +159,13 @@ return table.combine(
             barrel = functions.barrel_attachments(),
             muzzle = functions.muzzle_attachments(),
             sight = table.icombine(
-                _common_ranged.sight_default(),
                 functions.sight_attachments(),
-                _common_ranged.reflex_sights_attachments(),
-                _common_ranged.sights_attachments()
+                _common_ranged.reflex_sights_attachments(false),
+                _common_ranged.sights_attachments(false)
             ),
             -- Ranged
             flashlight = _common_ranged.flashlights_attachments(),
             magazine = table.icombine(
-                {{id = "magazine_default", name = mod:localize("mod_attachment_default")}},
                 _common_ranged.magazine_attachments()
             ),
             grip = _common_ranged.grip_attachments(),

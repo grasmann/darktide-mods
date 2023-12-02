@@ -113,6 +113,7 @@ return {
     rail_attachments = function(default)
         local attachments = {
             {id = "rail_01", name = "Rail 1"},
+            {id = "rail_02", name = "Rail 2"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -125,6 +126,7 @@ return {
         return table.model_table({
             {name = "rail_default", model = ""},
             {name = "rail_01",      model = _item_ranged.."/rails/lasgun_rifle_rail_01"},
+            {name = "rail_02",      model = _item_ranged.."/rails/lasgun_pistol_rail_01"},
         }, parent, angle, move, remove, type or "rail", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     magazine_attachments = function(default)
