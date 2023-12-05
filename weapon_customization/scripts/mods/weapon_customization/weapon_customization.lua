@@ -15,6 +15,7 @@ mod:persistent_table(REFERENCE, {
 	spawned_lasers = {},
 	-- Items
 	item_definitions = nil,
+	composite_items = {},
 	-- Equipment
 	player_equipment = {},
 	attachment_slot_infos = {},
@@ -46,9 +47,13 @@ mod.was_third_person = nil
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local Unit = Unit
+	local unit_alive = Unit.alive
 	local script_unit = ScriptUnit
 	local managers = Managers
 	local CLASS = CLASS
+	local type = type
+	local DMFMod = DMFMod
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ###############################################################################
@@ -57,7 +62,7 @@ mod.was_third_person = nil
 
 function DMFMod:echot(message, optional_t, optional_time)
     local t = type(optional_t) == "number" and optional_t
-        or Managers and Managers.time and Managers.time:time("main")
+        or managers and managers.time and managers.time:time("main")
         or 0
     local time = type(optional_time) == "number" and optional_time or 2
     self._echot = self._echot or {}
@@ -75,6 +80,7 @@ function mod.on_game_state_changed(status, state_name)
 	mod:persistent_table(REFERENCE).used_packages.hub = {}
 	-- Turn off package safety
 	mod.keep_all_packages = nil
+	-- mod:composite_test()
 end
 
 -- Mod settings changed
@@ -190,6 +196,8 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_cus
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
 
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/composite")
+
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_mod_options")
 
@@ -197,6 +205,13 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_cus
 if managers and managers.player._game_state ~= nil then
 	mod:init()
 	mod:setup_item_definitions()
+	if mod.player_unit and unit_alive(mod.player_unit) then
+		mod:remove_extension(mod.player_unit, "sight_system")
+		mod:remove_extension(mod.player_unit, "visible_equipment_system")
+		mod:remove_extension(mod.player_unit, "flashlight_system")
+		-- mod:remove_extension(mod.player_unit, "battery_system")
+		-- mod:remove_extension(mod.player_unit, "laser_pointer_system")
+	end
 end
 
 mod:load_needed_packages()

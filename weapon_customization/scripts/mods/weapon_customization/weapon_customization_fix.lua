@@ -581,4 +581,17 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         end
         return instance
     end
+
+    if not instance._get_cached then instance._get_cached = instance.get_cached end
+    instance.get_cached = function ()
+        local master_items = instance._get_cached()
+        if not mod:persistent_table(REFERENCE).item_definitions and master_items then
+            mod:setup_item_definitions(master_items)
+        end
+        if mod:persistent_table(REFERENCE).item_definitions then
+            return mod:persistent_table(REFERENCE).item_definitions
+        end
+        return master_items
+    end
+
 end)

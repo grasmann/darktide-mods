@@ -273,6 +273,7 @@ return {
             {name = "autogun_rifle_sight_01",          model = _item_ranged.."/sights/autogun_rifle_sight_01"},
             {name = "autogun_rifle_killshot_sight_01", model = _item_ranged.."/sights/autogun_rifle_killshot_sight_01"},
             {name = "lasgun_rifle_sight_01",           model = _item_ranged.."/sights/lasgun_rifle_sight_01"},
+            -- content/items/weapons/player/ranged/scopes/scope_1
             {name = "scope_01",                        model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_02"},
             {name = "scope_02",                        model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_04"},
             {name = "scope_03",                        model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_05"},

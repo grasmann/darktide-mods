@@ -393,10 +393,11 @@ mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewpor
     -- Original function
     func(self, dt, t, viewport_name, ...)
     -- Extensions
-    local player = mod:player_from_viewport(viewport_name)
-    if player and player.player_unit then
-        mod:execute_extension(player.player_unit, "sight_system", "update_zoom", viewport_name)
-    end
+    -- local player = mod:player_from_viewport(viewport_name)
+    -- if player and player.player_unit then
+    -- mod:execute_extension(player.player_unit, "sight_system", "update_zoom", viewport_name)
+    -- end
+    managers.event:trigger("weapon_customization_update_zoom", viewport_name)
 end)
 
 
@@ -478,8 +479,12 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
             world = self._equipment_component._world,
         }, self._unit, "SightExtension", "sight_system", {
             player = self._player,
+            player_unit = self._player.player_unit,
             is_local_unit = self._is_local_unit,
-            ranged_weapon = self._weapon_extension._weapons[SLOT_SECONDARY],
+            ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
+                {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p})
+            -- ranged_weapon = self._weapon_extension._weapons[SLOT_SECONDARY],
+            -- ranged_weapon = self._equipment[SLOT_SECONDARY],
         })
     else
         mod:execute_extension(self._unit, "sight_system", "update", unit, dt, t)
@@ -665,8 +670,9 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
                     world = self._equipment_component._world,
                 }, self._unit, "SightExtension", "sight_system", {
                     player = self._player,
+                    player_unit = self._player.player_unit,
                     is_local_unit = self._is_local_unit,
-                    ranged_weapon = table_merge_recursive(slot, {weapon_template = weapon_template, weapon_unit = slot.unit_1p}
+                    ranged_weapon = table_merge_recursive(slot, {weapon_template = weapon_template, weapon_unit = slot.unit_1p, attachment_units = slot.attachments_1p}
                     ),
                 })
             end
@@ -917,6 +923,7 @@ end)
 -- ##### ├┤ │ ││ │ │ └─┐ │ ├┤ ├─┘└─┐ ##################################################################################
 -- ##### └  └─┘└─┘ ┴ └─┘ ┴ └─┘┴  └─┘ ##################################################################################
 
+local steps = 0
 -- Capture footsteps for equipment animation
 mod:hook_require("scripts/utilities/footstep", function(instance)
     -- Backup original function
@@ -926,14 +933,15 @@ mod:hook_require("scripts/utilities/footstep", function(instance)
             query_to, optional_set_speed_parameter, optional_set_first_person_parameter)
         -- Check mod optionm
         if mod:get("mod_option_visible_equipment") then
-            -- local locomotion_ext = script_unit.extension(unit, "locomotion_system")
-            -- local speed = locomotion_ext and locomotion_ext:move_speed() or 0
-            -- mod:execute_extension(unit, "visible_equipment_system", "set_speed", speed * .25)
-            mod:execute_extension(unit, "visible_equipment_system", "trigger_step")
-            -- if locomotion_ext:move_speed() > 0 then
-            --     -- Extension
-            --     mod:execute_extension(unit, "visible_equipment_system", "trigger_step")
-            -- end
+            local locomotion_ext = script_unit.extension(unit, "locomotion_system")
+            local speed = locomotion_ext and locomotion_ext:move_speed() or 0
+            if speed > 0 then
+                -- if unit == mod.player_unit then
+                --     steps = steps + 1
+                --     mod:echo("step! "..tostring(steps).." speed: "..tostring(speed))
+                -- end
+                mod:execute_extension(unit, "visible_equipment_system", "trigger_step")
+            end
         end
         
         -- Original function

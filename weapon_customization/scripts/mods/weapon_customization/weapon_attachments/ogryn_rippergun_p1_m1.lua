@@ -210,9 +210,9 @@ return table.combine(
             }
         },
         sounds = {
-            magazine = {
-                detach = {SoundEventAliases.magazine_fail.events.ogryn_rippergun_p1_m1},
-            }
+            -- magazine = {
+            --     detach = {SoundEventAliases.magazine_fail.events.ogryn_rippergun_p1_m1},
+            -- }
         },
     }
 )

@@ -353,7 +353,7 @@ end
 mod.get_attachment_slot_in_attachments = function(self, attachments, attachment_slot)
 	if attachments then
 		for _, unit in pairs(attachments) do
-			if unit_get_data(unit, "attachment_slot") == attachment_slot then
+			if unit and unit_alive(unit) and unit_get_data(unit, "attachment_slot") == attachment_slot then
 				return unit
 			end
 		end
@@ -1293,7 +1293,11 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 		end
 	end
 
+	-- local current_rotation = self._rotation_angle
+
 	func(self, dt, t, input_service, ...)
+
+	-- self._rotation_angle = current_rotation
 
 	if self._reference_name ~= "WeaponIconUI" and mod.cosmetics_view then
 
@@ -1489,6 +1493,11 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 					local anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment]
 					anchor = mod:_apply_anchor_fixes(mod.cosmetics_view._presentation_item, unit) or anchor
+
+					-- if unit_good and Unit.has_data(unit, "anchor") then
+					-- 	anchor = Unit.get_data(unit, "anchor") or anchor
+					-- end
+
 					animation_wait_attach = anchor and anchor.animation_wait_attach or animation_wait_attach
 					animation_wait_detach = anchor and anchor.animation_wait_detach or animation_wait_detach
 					local default_position0 = unit and vector3_unbox(gear_info.unit_default_position[unit])
@@ -1579,11 +1588,10 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 								-- When attaching
 								elseif entry.type == "attach" then
-									if not entry.detach_done and not entry.attach_only then
+									if not entry.detach_done and entry.attach_only then
 										mod:load_new_attachment(weapon_spawn_data.item)
 										entry.detach_done = true
-									end
-									if entry.no_attach_animation or not unit_good then
+									elseif entry.no_attach_animation or not unit_good then
 										-- Not processed
 										entry.attach_done = true
 										entry.end_time = t
@@ -1800,7 +1808,7 @@ mod:hook(CLASS.UIWeaponSpawner, "_update_input_rotation", function(func, self, d
 	if not weapon_spawn_data then
 		return
 	end
-	if not self._is_rotating and self._rotation_angle ~= self._default_rotation_angle then
+	if not self._is_rotating and self._rotation_angle ~= self._default_rotation_angle and mod.dropdown_open then
 		local rotation_angle = math_lerp(self._rotation_angle, self._default_rotation_angle, dt)
 		self:_set_rotation(rotation_angle)
 	end

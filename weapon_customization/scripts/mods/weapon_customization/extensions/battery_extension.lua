@@ -26,6 +26,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "weapon_customization"
+local SLOT_SECONDARY = "slot_secondary"
 
 -- ##### ┌┐ ┌─┐┌┬┐┌┬┐┌─┐┬─┐┬ ┬  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ############################################################
 -- ##### ├┴┐├─┤ │  │ ├┤ ├┬┘└┬┘  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ############################################################
@@ -40,7 +41,7 @@ local BatteryExtension = class("BatteryExtension", "WeaponCustomizationExtension
 -- Initialize
 BatteryExtension.init = function(self, extension_init_context, unit, extension_init_data)
     BatteryExtension.super.init(self, extension_init_context, unit, extension_init_data)
-
+    
     self.consumer_template = extension_init_data.consumer_template
     self.consumer = extension_init_data.consumer
     self.battery_template = extension_init_data.battery_template
@@ -84,6 +85,10 @@ BatteryExtension.fraction = function(self)
     return current / max
 end
 
+BatteryExtension.is_wielded = function(self)
+    return self.wielded
+end
+
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
@@ -96,12 +101,12 @@ BatteryExtension.update = function(self, dt, t)
             -- if not self.consumer_template then self.consumer_template = self._active_consumer_template.battery.max end
         -- Battery interval
         self.timer = self.timer or 0
-        if self.current_charge > 0 and t > self.timer then
+        if t > self.timer then
                 -- Check if consumer is switched on
                 -- local consumer_on = self:persistent_table(REFERENCE).flashlight_on
                 -- local laser_pointer_on = self:persistent_table(REFERENCE).laser_pointer_on == 2
                 -- local only_pointer = self:persistent_table(REFERENCE).laser_pointer_on == 1
-            if self.on then
+            if self.on and self:is_wielded() then
                 -- Drain battery
                 local drain = self.battery_template.drain
                 self.current_charge = math_clamp(self.current_charge - drain, 0, self.battery_template.max)
@@ -111,10 +116,22 @@ BatteryExtension.update = function(self, dt, t)
             end
             -- Set battery time
             self.timer = t + self.battery_template.interval
-        elseif self.current_charge == 0 then
-            -- Disable consumer
-                -- self.consumer:set_enabled(false)
+        -- elseif self.on and self.current_charge == 0 then
+        --     -- Disable consumer
+        --     -- mod:execute_extension(self.player_unit, "flashlight_system", "set_enabled", false)
+        --     -- self.on = false
+        --     -- self.consumer:set_enabled(false)
         end
+    end
+end
+
+BatteryExtension.on_wield_slot = function(self, slot)
+    self.wielded = slot.name == SLOT_SECONDARY
+end
+
+BatteryExtension.on_unwield_slot = function(self, slot)
+    if slot.name == SLOT_SECONDARY then
+        self.wielded = false
     end
 end
 

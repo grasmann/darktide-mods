@@ -121,24 +121,24 @@ mod.randomize_weapon = function(self, item)
     return random_attachments
 end
 
-mod.setup_item_definitions = function(self)
+mod.setup_item_definitions = function(self, master_items)
     if self:persistent_table(REFERENCE).item_definitions == nil then
-        local master_items = MasterItems.get_cached()
+        local master_items = master_items or MasterItems.get_cached()
         if master_items then
             self:persistent_table(REFERENCE).item_definitions = table_clone_instance(master_items)
-            -- Bulwark shield
-            local definitions = self:persistent_table(REFERENCE).item_definitions
-            -- if not definitions[bulwark_shield_string] then
-                local bulwark_shield_string = "content/items/weapons/player/melee/ogryn_bulwark_shield_01"
-                local bulwark_shield_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
-                definitions[bulwark_shield_string] = table_clone(definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"])
-                local bulwark_shield = definitions[bulwark_shield_string]
-                bulwark_shield.name = bulwark_shield_string
-                bulwark_shield.base_unit = bulwark_shield_unit
-                bulwark_shield.resource_dependencies = {
-                    [bulwark_shield_unit] = true,
-                }
-            -- end
+            -- -- Bulwark shield
+            -- local definitions = self:persistent_table(REFERENCE).item_definitions
+            -- -- if not definitions[bulwark_shield_string] then
+            --     local bulwark_shield_string = "content/items/weapons/player/melee/ogryn_bulwark_shield_01"
+            --     local bulwark_shield_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+            --     definitions[bulwark_shield_string] = table_clone(definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"])
+            --     local bulwark_shield = definitions[bulwark_shield_string]
+            --     bulwark_shield.name = bulwark_shield_string
+            --     bulwark_shield.base_unit = bulwark_shield_unit
+            --     bulwark_shield.resource_dependencies = {
+            --         [bulwark_shield_unit] = true,
+            --     }
+            -- -- end
         end
     end
     -- local definitions = self:persistent_table(REFERENCE).item_definitions
@@ -762,7 +762,9 @@ end)
 
 local input_hook = function (func, self, action_name, ...)
     local pressed = func(self, action_name, ...)
-    if mod.initialized and mod:execute_extension(mod.player_unit, "flashlight_system", "is_wielded") then
+    local wielded = mod:execute_extension(mod.player_unit, "flashlight_system", "is_wielded")
+    local modded = mod:execute_extension(mod.player_unit, "flashlight_system", "is_modded")
+    if mod.initialized and wielded and modded then
         if action_name == "weapon_extra_pressed" and pressed then
             mod:execute_extension(mod.player_unit, "flashlight_system", "on_toggle")
             return self:get_default(action_name)

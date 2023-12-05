@@ -156,7 +156,7 @@ mod.visible_equipment_offsets = {
             loading = mod.visible_equipment_loading_offsets.melee_medium,
         },
         WEAPON_RANGED = {
-            default = {position = vector3_box(.7, .6, .2), rotation = vector3_box(200, 0, 90), scale = vector3_box(1, 1, 1),
+            default = {position = vector3_box(.7, .6, -.2), rotation = vector3_box(200, 0, 90), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.1, .05, 0), step_rotation = vector3_box(5, -5, 0)},
             backpack = {position = vector3_box(.1, .6, .8), rotation = vector3_box(200, 60, 70), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.1, .05, 0), step_rotation = vector3_box(0, -5, 0)},
@@ -166,7 +166,7 @@ mod.visible_equipment_offsets = {
     human = {
         WEAPON_MELEE = {
             default = {position = vector3_box(.3, .25, -.025), rotation = vector3_box(180, -80, 90), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(.025, .0225, 0), step_rotation = vector3_box(0, -7.5, -7.5)},
+                step_move = vector3_box(-.01, 0, -.01), step_rotation = vector3_box(0, -5, 5)},
             backpack = {position = vector3_box(.3, .25, -.225), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.025, .0125, 0), step_rotation = vector3_box(0, -5, -5)},
             loading = mod.visible_equipment_loading_offsets.melee_medium,
@@ -174,9 +174,9 @@ mod.visible_equipment_offsets = {
         },
         WEAPON_RANGED = {
             default = {position = vector3_box(.3, .22, .125), rotation = vector3_box(200, -10, 90), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(-.05, .025, 0), step_rotation = vector3_box(7.5, -7.5, 0)},
+                step_move = vector3_box(-.02, .022, .01), step_rotation = vector3_box(0, -2.5, -5)},
             backpack = {position = vector3_box(.3, .22, .25), rotation = vector3_box(240, 10, 90), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(-.05, .025, 0), step_rotation = vector3_box(7.5, -7.5, 0)},
+                step_move = vector3_box(-.03, .025, 0), step_rotation = vector3_box(7.5, -7.5, 0)},
             loading = mod.visible_equipment_loading_offsets.default,
         },
     },
@@ -273,6 +273,13 @@ mod.visible_equipment_offsets = {
         },
     --#endregion
     --#region Guns
+        thunderhammer_2h_p1_m1 = {
+            default = {position = vector3_box(-.5, .25, .05), rotation = vector3_box(180, 80, -120), scale = vector3_box(1, 1, 1),
+                step_move = vector3_box(-.02, 0, .05), step_rotation = vector3_box(0, -5, 0)},
+            backpack = {position = vector3_box(.3, .25, -.225), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
+                 step_move = vector3_box(-.025, .0125, 0), step_rotation = vector3_box(0, -5, -5)},
+            loading = mod.visible_equipment_loading_offsets.ranged_huge,
+        },
         forcestaff_p1_m1 = {
             default = {position = vector3_box(.3, .2, .075), rotation = vector3_box(180, 80, 90), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.05, .025, 0), step_rotation = vector3_box(2.5, -2.5, 0)},
@@ -363,8 +370,7 @@ mod.visible_equipment_offsets = {
     mod.visible_equipment_offsets.combatsword_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
     mod.visible_equipment_offsets.combatsword_p1_m2 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
     mod.visible_equipment_offsets.combatsword_p1_m3 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
-    mod.visible_equipment_offsets.thunderhammer_2h_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
-    mod.visible_equipment_offsets.thunderhammer_2h_p1_m2 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+    
     mod.visible_equipment_offsets.powermaul_2h_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
     mod.visible_equipment_offsets.chainsword_2h_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
     mod.visible_equipment_offsets.combatsword_p2_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
@@ -380,6 +386,8 @@ mod.visible_equipment_offsets = {
     mod.visible_equipment_offsets.chainsword_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
 --#endregion
 --#region Copies
+    -- mod.visible_equipment_offsets.thunderhammer_2h_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+    mod.visible_equipment_offsets.thunderhammer_2h_p1_m2 = mod.visible_equipment_offsets.thunderhammer_2h_p1_m1
     mod.visible_equipment_offsets.ogryn_heavystubber_p1_m2 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1
     mod.visible_equipment_offsets.ogryn_heavystubber_p1_m3 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1
     mod.visible_equipment_offsets.ogryn_rippergun_p1_m2 = mod.visible_equipment_offsets.ogryn_rippergun_p1_m1

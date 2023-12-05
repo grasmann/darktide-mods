@@ -124,17 +124,15 @@ LaserPointerExtension.init = function(self, extension_init_context, unit, extens
     self.dot_weapon_effect_id = nil
     self.dot_eccect_id = nil
     self.hit_marker_dots = {}
+    
     self:on_settings_changed()
 
     self.initialized = true
 end
 
 LaserPointerExtension.delete = function(self)
-    -- LaserPointerExtension.super.delete(self)
-
     managers.event:unregister(self, "weapon_customization_cutscene")
     self.initialized = false
-
     self.on = false
     self:despawn_laser()
     self:despawn_weapon_dot()
@@ -172,6 +170,13 @@ end
 LaserPointerExtension.is_wielded = function(self)
     -- mod:echo("wielded "..tostring(self.wielded))
     return self.wielded
+end
+
+LaserPointerExtension.is_braced = function(self)
+    local template = self.ranged_weapon.weapon_template
+    local alt_fire = template and template.alternate_fire_settings
+    local braced = alt_fire and alt_fire.start_anim_event == "to_braced"
+    return braced
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
@@ -310,9 +315,10 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
 end
 
 LaserPointerExtension.update_laser = function(self, dt, t)
-    local deactivate = self.deactivate_laser_aiming
-        and mod:execute_extension(self.player_unit, "sight_system", "is_aiming")
-    if deactivate then
+    local first_person = self:get_first_person()
+    local braced = mod:execute_extension(self.player_unit, "sight_system", "is_braced")
+    local deactivate = self.deactivate_laser_aiming and mod:execute_extension(self.player_unit, "sight_system", "is_aiming")
+    if deactivate and first_person and not braced then
         self:despawn_all()
     elseif self.initialized then
         self:spawn_all()

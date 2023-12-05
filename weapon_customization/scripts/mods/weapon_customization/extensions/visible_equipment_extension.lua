@@ -49,6 +49,9 @@ local VisibleEquipmentOffsets = mod:io_dofile("weapon_customization/scripts/mods
         local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
         return vector3(x, y, z)
     end
+    local quaternion_from_vector = function(vector)
+        return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
+    end
     local math = math
     local math_ease_out_elastic = math.ease_out_elastic
     local math_easeInCubic = math.easeInCubic
@@ -92,17 +95,19 @@ local ATTACHMENT_SPAWN_STATUS = table.enum("waiting_for_load", "fully_spawned")
 local REFERENCE = "weapon_customization"
 local WEAPON_MELEE = "WEAPON_MELEE"
 local ANIM_TIME_MELEE = .3
-local ANIM_TIME_WOBBLE_MELEE = .3
+local ANIM_TIME_WOBBLE_MELEE = .6
 local WEAPON_RANGED = "WEAPON_RANGED"
 local ANIM_TIME_RANGED = .3
-local ANIM_TIME_WOBBLE_RANGED = .5
+local ANIM_TIME_WOBBLE_RANGED = .6
 local SLOT_UNARMED = "slot_unarmed"
 local SLAB_SHIELD = "ogryn_powermaul_slabshield_p1_m1"
 local BACKPACK_ATTACH = "j_backpackattach"
 local BACKPACK_OFFSET = "j_backpackoffset"
 local BACKPACK_EMPTY = "content/items/characters/player/human/backpacks/empty_backpack"
 local STEP_STATE = "step"
+local STEP_STATE_BACK = "step_back"
 local STEP_WOBBLE = "wobble"
+local SLOT_SECONDARY = "slot_secondary"
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
 -- ##### │  │  ├─┤└─┐└─┐ ##############################################################################################
@@ -531,22 +536,43 @@ end
 --     self.step_speed = speed
 -- end
 
+VisibleEquipmentExtension.play_equipment_sound = function(self, slot, i)
+    -- Play sound
+    local sound = nil
+    local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
+    local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+    local play_sound = (not self.is_local_unit and mod:get("mod_option_visible_equipment_sounds") ~= "off")
+        or (self.is_local_unit and (not first_person or mod:get("mod_option_visible_equipment_own_sounds_fp"))
+        and mod:get("mod_option_visible_equipment_sounds") == "all")
+    if play_sound and slot.name ~= wielded_slot then
+        local sounds = i == 1 and self.sounds[slot][1] or self.sounds[slot][2]
+        local rnd = sounds and math_random(1, #sounds)
+        sound = sounds and sounds[rnd] or self.sounds[slot][3]
+        if sound and self.fx_extension then
+            self.fx_extension:trigger_wwise_event(sound, true, true, self.player_unit, 1, "foley_speed", self.step_animation[slot].speed)
+        end
+    end
+end
+
 VisibleEquipmentExtension.update_animation = function(self, dt, t)
     local locomotion = (self.locomotion_ext and self.locomotion_ext:move_speed() or 0)
-    self.step_speed = math.max(locomotion, 1) * .2
-    -- mod:echot("speed: "..tostring(self.step_speed))
-    -- Check trigger
-    if self.trigger_wobble then
-        for slot_name, slot in pairs(self.equipment) do
-            if self.slot_loaded[slot] and self.step_animation[slot] then
-                if self.step_animation[slot].state ~= STEP_STATE then
-                    self.step_animation[slot].end_time = t + (self.step_animation[slot].time / self.step_speed)
-                    self.step_animation[slot].state = STEP_STATE
-                end
-            end
-        end
-        self.trigger_wobble = nil
-    end
+    self.step_speed = math.max(math.abs(locomotion), 1)
+    local wobble_was_triggered = self.trigger_wobble
+    self.trigger_wobble = nil
+
+    -- if locomotion == 0 and not self.stop_wobble then
+    --     -- mod:echo("stop!")
+    --     wobble_was_triggered = true
+    --     -- for slot_name, slot in pairs(self.equipment) do
+    --     --     if self.slot_loaded[slot] and self.step_animation[slot] then
+    --     --         self.step_animation[slot].state = STEP_WOBBLE
+    --     --         self.step_animation[slot].end_time = t + (self.step_animation[slot].time_wobble / self.step_speed)
+    --     --     end
+    --     -- end
+    --     self.stop_wobble = true
+    -- elseif locomotion > 0 then
+    --     self.stop_wobble = nil
+    -- end
 
     -- Process animation part step
     for slot_name, slot in pairs(self.equipment) do
@@ -562,134 +588,180 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
                 end
                 
-                self.step_animation[slot].speed = self.step_speed
+                self.step_animation[slot].speed = self.step_speed * .2
+
+                if wobble_was_triggered then
+                    if locomotion == 0 then
+                        self.step_animation[slot].state = STEP_WOBBLE
+                    elseif self.step_animation[slot].state ~= STEP_STATE and self.step_animation[slot].state ~= STEP_STATE_BACK then
+                        if slot.name == SLOT_SECONDARY then
+                            self.step_animation[slot].state = STEP_STATE_BACK
+                        else
+                            self.step_animation[slot].state = STEP_STATE
+                        end
+                    end
+                    self.step_animation[slot].end_time = t + (self.step_animation[slot].time / self.step_speed)
+                end
+
+                if self.stop_wobble then
+                    self.step_animation[slot].speed = self.step_speed * .05
+                end
+
+                local get_values = function(i)
+                    local default_position = vector3_unbox(data.position[i])
+                    local position_move = vector3_unbox(data.step_move[i]) * math.max(self.step_speed * .5, 1)
+                    local default_rotation = vector3_unbox(data.rotation[i])
+                    local rotation_move = vector3_unbox(data.step_rotation[i]) * math.max(self.step_speed * .5, 1)
+                    return default_position, position_move, default_rotation, rotation_move
+                end
 
                 -- Start step animation
                 if not self.step_animation[slot].state and self.step_animation[slot].end_time then
-                    self.step_animation[slot].state = STEP_STATE
+                    if locomotion > 0 then
+                        self.step_animation[slot].state = STEP_STATE
+                    else
+                        self.step_animation[slot].state = STEP_WOBBLE
+                    end
                     -- Play sound
                     for i, unit in pairs(units) do
                         -- Set default position
                         if unit and unit_alive(unit) then
                             -- Set position
-                            unit_set_local_position(unit, 1, vector3_unbox(data.position[i]))
+                            local default_position = vector3_unbox(data.position[i])
+                            unit_set_local_position(unit, 1, default_position)
                             -- Set rotation
-                            local rot = vector3_unbox(data.rotation[i])
-                            local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
+                            local rotation = quaternion_from_vector(vector3_unbox(data.rotation[i]))
                             unit_set_local_rotation(unit, 1, rotation)
                         end
                     end
                     
                 elseif self.step_animation[slot].state == STEP_STATE and t < self.step_animation[slot].end_time then
+                    if locomotion == 0 then
+                        self.step_animation[slot].state = STEP_WOBBLE
+                        self.step_animation[slot].end_time = t + (self.step_animation[slot].time_wobble / self.step_animation[slot].speed)
+                    end
                     -- Lerp values
                     for i, unit in pairs(units) do
                         local progress = (self.step_animation[slot].end_time - t) / (self.step_animation[slot].time / self.step_animation[slot].speed)
                         local anim_progress = math.clamp(math.ease_sine(1 - progress), 0, 2)
                         if unit and unit_alive(unit) then
+                            local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
-                            local default_position = vector3_unbox(data.position[i])
-                            local position_move = vector3_unbox(data.step_move[1]) * math.max(self.step_animation[slot].speed, 1)
                             local lerp_position = vector3_lerp(default_position, default_position + position_move, anim_progress)
                             unit_set_local_position(unit, 1, lerp_position)
                             -- Set rotation
-                            local default_rotation = vector3_unbox(data.rotation[i])
-                            local rotation_move = vector3_unbox(data.step_rotation[1]) * math.max(self.step_animation[slot].speed, 1)
-                            local lerp_rotation = vector3_lerp(default_rotation, default_rotation + rotation_move, anim_progress)
-                            local rotation = quaternion_from_euler_angles_xyz(lerp_rotation[1], lerp_rotation[2], lerp_rotation[3])
-                            unit_set_local_rotation(unit, 1, rotation)
+                            local lerp_rotation = quaternion_from_vector(vector3_lerp(default_rotation, default_rotation + rotation_move, anim_progress))
+                            unit_set_local_rotation(unit, 1, lerp_rotation)
                         end
                     end
                     -- Check end of part step
                 elseif self.step_animation[slot].state == STEP_STATE and t >= self.step_animation[slot].end_time then
                     -- Start part wobble
-                    -- mod:echot("self.step_speed: "..tostring(self.step_speed))
-                    self.step_animation[slot].state = STEP_WOBBLE
-                    self.step_animation[slot].end_time = t + (self.step_animation[slot].time_wobble / self.step_animation[slot].speed)
+                    if locomotion > 0 then
+                        self.step_animation[slot].state = STEP_STATE_BACK
+                        self.step_animation[slot].end_time = t + (self.step_animation[slot].time / self.step_animation[slot].speed)
+                    else
+                        self.step_animation[slot].state = STEP_WOBBLE
+                        self.step_animation[slot].end_time = t + (self.step_animation[slot].time_wobble / self.step_animation[slot].speed)
+                    end
                     for i, unit in pairs(units) do
                         -- Set move position and rotation
                         if unit and unit_alive(unit) then
+                            local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
-                            local default_position = vector3_unbox(data.position[i])
-                            local position_move = vector3_unbox(data.step_move[1]) * math.max(self.step_animation[slot].speed, 1)
                             unit_set_local_position(unit, 1, default_position + position_move)
                             -- Set rotation
-                            local default_rotation = vector3_unbox(data.rotation[i])
-                            local rotation_move = vector3_unbox(data.step_rotation[1]) * math.max(self.step_animation[slot].speed, 1)
-                            local lerp_rotation = default_rotation + rotation_move
-                            local rotation = quaternion_from_euler_angles_xyz(lerp_rotation[1], lerp_rotation[2], lerp_rotation[3])
-                            unit_set_local_rotation(unit, 1, rotation)
+                            local lerp_rotation = quaternion_from_vector(default_rotation + rotation_move)
+                            unit_set_local_rotation(unit, 1, lerp_rotation)
                         end
                     end
-                    -- Play sound
-                    local sound = nil
-                    local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
-                    local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
-                    local play_sound = (not self.is_local_unit and mod:get("mod_option_visible_equipment_sounds") ~= "off")
-                        or (self.is_local_unit and (not first_person or mod:get("mod_option_visible_equipment_own_sounds_fp"))
-                        and mod:get("mod_option_visible_equipment_sounds") == "all")
-                    if play_sound and slot_name ~= wielded_slot then
-                        local sounds = i == 1 and self.sounds[slot][1] or self.sounds[slot][2]
-                        local rnd = sounds and math_random(1, #sounds)
-                        sound = sounds and sounds[rnd] or self.sounds[slot][3]
-                        if sound and self.fx_extension then
-                            self.fx_extension:trigger_wwise_event(sound, true, true, self.player_unit, 1, "foley_speed", self.step_animation[slot].speed)
+                    -- -- Play sound
+                    -- self:play_equipment_sound(slot)
+
+                elseif self.step_animation[slot].state == STEP_STATE_BACK and t < self.step_animation[slot].end_time then
+                    if locomotion == 0 then
+                        self.step_animation[slot].state = STEP_WOBBLE
+                        self.step_animation[slot].end_time = t + (self.step_animation[slot].time_wobble / self.step_animation[slot].speed)
+                    end
+                    -- Lerp values
+                    for i, unit in pairs(units) do
+                        local progress = (self.step_animation[slot].end_time - t) / (self.step_animation[slot].time / self.step_animation[slot].speed)
+                        local anim_progress = math.clamp(math.ease_sine(1 - progress), 0, 2)
+                        if unit and unit_alive(unit) then
+                            local default_position, position_move, default_rotation, rotation_move = get_values(i)
+                            -- Set position
+                            local lerp_position = vector3_lerp(default_position + position_move, default_position, anim_progress)
+                            unit_set_local_position(unit, 1, lerp_position)
+                            -- Set rotation
+                            local lerp_rotation = quaternion_from_vector(vector3_lerp(default_rotation + rotation_move, default_rotation, anim_progress))
+                            unit_set_local_rotation(unit, 1, lerp_rotation)
+                        end
+                    end
+
+                elseif self.step_animation[slot].state == STEP_STATE_BACK and t >= self.step_animation[slot].end_time then
+                    -- Start part wobble
+                    if locomotion > 0 then
+                        self.step_animation[slot].state = STEP_STATE
+                        self.step_animation[slot].end_time = t + (self.step_animation[slot].time / self.step_animation[slot].speed)
+                    else
+                        self.step_animation[slot].state = STEP_WOBBLE
+                        self.step_animation[slot].end_time = t + (self.step_animation[slot].time_wobble / self.step_animation[slot].speed)
+                    end
+                    for i, unit in pairs(units) do
+                        -- Set move position and rotation
+                        if unit and unit_alive(unit) then
+                            local default_position, position_move, default_rotation, rotation_move = get_values(i)
+                            -- Set position
+                            unit_set_local_position(unit, 1, default_position)
+                            -- Set rotation
+                            local lerp_rotation = quaternion_from_vector(default_rotation)
+                            unit_set_local_rotation(unit, 1, lerp_rotation)
+                            -- Play sound
+                            self:play_equipment_sound(slot, i)
                         end
                     end
 
                 elseif self.step_animation[slot].state == STEP_WOBBLE and t < self.step_animation[slot].end_time then
+                    -- Start part wobble
+                    if locomotion > 0 then
+                        if slot.name == SLOT_SECONDARY then
+                            self.step_animation[slot].state = STEP_STATE_BACK
+                        else
+                            self.step_animation[slot].state = STEP_STATE
+                        end
+                    end
                     -- Lerp values
                     local progress = (self.step_animation[slot].end_time - t) / (self.step_animation[slot].time_wobble / self.step_animation[slot].speed)
-                    -- local anim_progress = progress
-                    -- if self.step_speed <= 1 then
-                    --     anim_progress = math.clamp(math_ease_out_elastic(1 - progress), 0, 2)
-                    -- else
-                    --     anim_progress = math.clamp(math.ease_sine(1 - progress), 0, 2)
-                    -- end
                     local anim_progress = math.clamp(math_ease_out_elastic(1 - progress), 0, 2)
                     for i, unit in pairs(units) do
                         if unit and unit_alive(unit) then
+                            local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
-                            local default_position = vector3_unbox(data.position[i])
-                            local position_move = vector3_unbox(data.step_move[1]) * math.max(self.step_animation[slot].speed, 1)
                             local lerp_position = vector3_lerp(default_position + position_move, default_position, anim_progress)
                             unit_set_local_position(unit, 1, lerp_position)
                             -- Set rotation
-                            local default_rotation = vector3_unbox(data.rotation[i])
-                            local rotation_move = vector3_unbox(data.step_rotation[1]) * math.max(self.step_animation[slot].speed, 1)
-                            local lerp_rotation = vector3_lerp(default_rotation + rotation_move, default_rotation, anim_progress)
-                            local rotation = quaternion_from_euler_angles_xyz(lerp_rotation[1], lerp_rotation[2], lerp_rotation[3])
-                            unit_set_local_rotation(unit, 1, rotation)
+                            local lerp_rotation = quaternion_from_vector(vector3_lerp(default_rotation + rotation_move, default_rotation, anim_progress))
+                            unit_set_local_rotation(unit, 1, lerp_rotation)
                         end
                     end
-                    if progress > .5 and self.step_speed > 1 then
-                        self.step_animation[slot].state = STEP_STATE
-                        -- self.step_animation[slot].end_time = t + (self.step_animation[slot].time / self.step_animation[slot].speed)
-                    end
-                    -- Check part end
+
+                -- Check part end
                 elseif self.step_animation[slot].state == STEP_WOBBLE and t >= self.step_animation[slot].end_time then
-                    -- if self.step_speed <= 1 then
-                    --     self.step_animation[slot].state = nil
-                    --     self.step_animation[slot].end_time = nil
-                    -- else
-                    --     self.step_animation[slot].state = STEP_STATE
-                    --     self.step_animation[slot].end_time = t + (self.step_animation[slot].time / self.step_animation[slot].speed)
-                    -- end
                     -- -- End animation
                     self.step_animation[slot].state = nil
                     self.step_animation[slot].end_time = nil
                     for i, unit in pairs(units) do
                         -- Set default position and rotation
                         if unit and unit_alive(unit) then
+                            local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
-                            local default_position = vector3_unbox(data.position[i])
                             unit_set_local_position(unit, 1, default_position)
                             -- Set rotation
-                            local default_rotation = vector3_unbox(data.rotation[i])
-                            -- local rot = dd[slot].rotation[i]
-                            local rotation = quaternion_from_euler_angles_xyz(default_rotation[1], default_rotation[2], default_rotation[3])
+                            local rotation = quaternion_from_vector(default_rotation)
                             unit_set_local_rotation(unit, 1, rotation)
                         end
                     end
+
                 end
             end
         end

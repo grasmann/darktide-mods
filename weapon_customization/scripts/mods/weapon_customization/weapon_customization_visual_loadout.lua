@@ -163,6 +163,12 @@ mod._add_custom_attachments = function(self, item, attachments)
 end
 
 mod._apply_anchor_fixes = function(self, item, unit_or_name)
+	-- if item and self:is_composite_item(item.name) then
+	-- 	if item.anchors[unit_or_name] then
+	-- 		mod:echo(tostring(item.anchors[unit_or_name]))
+	-- 		return item.anchors[unit_or_name]
+	-- 	end
+	-- end
 	if item and item.attachments then
 		local gear_id = self:get_gear_id(item)
 		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
@@ -422,9 +428,17 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				-- Handle positioning and setup infos
 				if slot_infos[slot_info_id] then
 					local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
+					local attachment_slot = slot_infos[slot_info_id].unit_to_attachment_slot[unit]
 					local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
+					
+					-- if item_data.anchors and self:is_composite_item(item_data.name) then
+					-- 	attachment_data = item_data.anchors[attachment_slot]
+					-- end
+
 					local parent_name = attachment_data and attachment_data.parent and attachment_data.parent
 					local parent_node = attachment_data and attachment_data.parent_node and attachment_data.parent_node or 1
+
+					
 
 					-- if attachment_name == "scope" then
 					-- 	local num_meshes = unit_num_meshes(unit)
@@ -458,6 +472,13 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					-- Anchor
 					anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment_name]
 					anchor = mod:_apply_anchor_fixes(item_data, unit) or anchor
+
+					-- if self:is_composite_item(item_data.name) then
+					-- 	-- anchor = item_data.anchors[attachment_slot] or anchor
+					-- 	anchor = Unit.get_data("")
+					-- end
+					-- anchor = Unit.get_data(unit, "anchor") or anchor
+
 					parent_name = anchor and anchor.parent and anchor.parent or parent_name
 					parent_node = anchor and anchor.parent_node and anchor.parent_node or parent_node
 
@@ -796,6 +817,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
 				Unit.set_data(spawned_unit, "attachment_name", attachment_name)
 				Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
+				-- if item_data.anchors and mod:is_composite_item(item_data.name) then
+				-- 	Unit.set_data(spawned_unit, "anchor", item_data.anchors[attachment_slot])
+				-- 	-- mod:dtf(item_data.anchors[attachment_slot], "item_data.anchors["..tostring(attachment_slot).."]", 5)
+				-- 	-- attachment_data = item_data.anchors[attachment_slot]
+				-- 	-- Unit.set_data(spawned_unit, "composite_anchor", item_data.anchors[attachment_slot])
+				-- end
 			end
 		end
 	

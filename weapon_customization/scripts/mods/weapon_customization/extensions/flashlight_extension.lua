@@ -64,16 +64,16 @@ local SLOT_SECONDARY = "slot_secondary"
 
 mod.flashlight_templates = {
 	flashlight_01 = table.combine(
-        table_clone(FlashlightTemplates.assault), {battery = {max = 10, interval = 1, drain = .02, charge = .04}}
+        table_clone(FlashlightTemplates.assault), {battery = {max = 10, interval = .1, drain = .002, charge = .004}}
     ),
 	flashlight_02 = table.combine(
-        table_clone(FlashlightTemplates.default), {battery = {max = 10, interval = 1, drain = .01, charge = .04}}
+        table_clone(FlashlightTemplates.default), {battery = {max = 10, interval = .1, drain = .001, charge = .004}}
     ),
 	flashlight_03 = table.combine(
-        table_clone(FlashlightTemplates.assault), {battery = {max = 10, interval = 1, drain = .04, charge = .04}}
+        table_clone(FlashlightTemplates.assault), {battery = {max = 10, interval = .1, drain = .004, charge = .004}}
     ),
 	flashlight_04 = table.combine(
-        table_clone(FlashlightTemplates.default), {battery = {max = 10, interval = 1, drain = .03, charge = .04}}
+        table_clone(FlashlightTemplates.default), {battery = {max = 10, interval = .1, drain = .003, charge = .004}}
     ),
 	laser_pointer = {
 		light = {
@@ -100,7 +100,7 @@ mod.flashlight_templates = {
 				falloff = {far = 30, near = 0},
 			}
 		},
-		battery = {max = 10, interval = 1, drain = .03, charge = .04},
+		battery = {max = 10, interval = .1, drain = .002, charge = .004},
 		flicker = FlashlightTemplates.assault.flicker,
 	},
 }
@@ -181,10 +181,10 @@ end
 
 FlashlightExtension.delete = function(self)
     self.initialized = false
-    FlashlightExtension.super.delete(self)
-
+    managers.event:unregister(self, "weapon_customization_settings_changed")
     self.on = false
     self:set_light(false, false)
+    FlashlightExtension.super.delete(self)
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -250,7 +250,7 @@ FlashlightExtension.update_husk = function(self, dt, t)
     -- Husk with flashlight?
     local husk = self.has_flashlight and not self.is_local_unit
     if husk and not self.on and not is_in_hub then
-        self:set_enabled(false, true)
+        self:set_enabled(true, false)
     end
 end
 
@@ -269,9 +269,12 @@ FlashlightExtension.update = function(self, dt, t)
             self:set_light(false, false, true)
             self:set_light(false)
         end
+        -- Intensity
+        self:update_intensity()
         -- Save last first person
         self.last_first_person = first_person
     end
+
     -- Relay to sub extensions
     FlashlightExtension.super.update(self, dt, t)
 end
@@ -374,6 +377,20 @@ FlashlightExtension.set_flashlight_attachment = function(self)
     end
 end
 
+FlashlightExtension.update_intensity = function(self)
+    local charge_fraction = math.clamp(mod:execute_extension(self.player_unit, "battery_system", "fraction") or 1, .3, 1)
+    local light = self:light()
+    local template = self:light_template()
+    if light and template then
+        light_set_intensity(light, template.intensity * charge_fraction)
+        light_set_spot_angle_start(light, template.spot_angle.min * charge_fraction)
+        light_set_spot_angle_end(light, template.spot_angle.max * charge_fraction)
+        light_set_falloff_start(light, template.falloff.near * charge_fraction)
+        light_set_falloff_end(light, template.falloff.far * charge_fraction)
+        light_set_volumetric_intensity(light, template.volumetric_intensity * charge_fraction)
+    end
+end
+
 FlashlightExtension.set_light_values = function(self)
     -- Current
     local flashlight_unit = self:flashlight_unit()
@@ -389,7 +406,8 @@ FlashlightExtension.set_light_values = function(self)
     end
 end
 
-FlashlightExtension.set_enabled  = function(self, play_sound, optional_value)
+FlashlightExtension.set_enabled  = function(self, optional_value, optional_play_sound)
+    local play_sound = optional_play_sound or self.is_local_unit or self.spectated
     local is_in_hub = mod:is_in_hub() or mod:is_in_prologue_hub()
     if self.initialized and not is_in_hub then
         self.on = not self.on
@@ -438,9 +456,9 @@ FlashlightExtension.on_settings_changed = function(self)
     FlashlightExtension.super.on_settings_changed(self)
 end
 
-FlashlightExtension.on_toggle = function(self, play_sound, optional_value)
+FlashlightExtension.on_toggle = function(self, optional_play_sound, optional_value)
     if self:is_wielded() then
-        self:set_enabled(play_sound, optional_value)
+        self:set_enabled(optional_value, optional_play_sound)
     end
 end
 
@@ -508,6 +526,7 @@ mod.preview_flashlight = function(self, state, world, unit, attachment_name, no_
 end
 
 mod.set_light_values = function(self, flashlight_unit, template)
+    local intensity_modifier = intensity_modifier or 1
     local unit_good = flashlight_unit and unit_alive(flashlight_unit)
     local light = unit_good and unit_light(flashlight_unit, 1)
     local attachment_name = unit_good and unit_get_data(flashlight_unit, "attachment_name")
