@@ -4,41 +4,21 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local MasterItems = mod:original_require("scripts/backend/master_items")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
     local string = string
-    local string_find = string.find
     local string_format = string.format
     local table = table
-    local table_contains = table.contains
     local table_remove = table.remove
     local table_clone = table.clone
-    local table_enum = table.enum
     local table_find = table.find
     local math_uuid = math.uuid
-    local Unit = Unit
-    local unit_has_node = Unit.has_node
-    local unit_node = Unit.node
-    local unit_debug_name = Unit.debug_name
-    local unit_set_local_position = Unit.set_local_position
-    local unit_set_local_rotation = Unit.set_local_rotation
-    local unit_local_position = Unit.local_position
-    local unit_world_position = Unit.world_position
-    local unit_alive = Unit.alive
-    local unit_flow_event = Unit.flow_event
-    local unit_light = Unit.light
-    local unit_num_lights = Unit.num_lights
-    local light_set_intensity = Light.set_intensity
-    local world_unlink_unit = World.unlink_unit
-    local world_destroy_unit = World.destroy_unit
-    local level_units = Level.units
-    local vector3 = Vector3
-    local vector3_box = Vector3Box
     local pairs = pairs
-    local CLASS = CLASS
     local BUILD = BUILD
     local type = type
     local rawget = rawget
@@ -46,10 +26,8 @@ local mod = get_mod("weapon_customization")
     local ferror = ferror
     local tostring = tostring
     local setmetatable = setmetatable
-    local Application = Application
     local log_error = Log.error
     local log_warning = Log.warning
-    local managers = Managers
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

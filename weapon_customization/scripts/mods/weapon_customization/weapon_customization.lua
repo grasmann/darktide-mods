@@ -208,7 +208,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/battery_extension")
 -- Import mod files
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_bolt_pistol")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_action_hooks")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_gear")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")

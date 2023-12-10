@@ -45,7 +45,6 @@ local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/i
 	local unit_mesh = Unit.mesh
 	local unit_set_mesh_visibility = Unit.set_mesh_visibility
 	local unit_set_unit_visibility = Unit.set_unit_visibility
-	local unit_flow_event = Unit.flow_event
 	local Unit_set_scalar_for_materials = Unit.set_scalar_for_materials
 	local Unit_set_vector2_for_materials = Unit.set_vector2_for_materials
 	local Unit_set_vector3_for_materials = Unit.set_vector3_for_materials
@@ -53,14 +52,11 @@ local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/i
 	local Unit_set_texture_for_materials = Unit.set_texture_for_materials
 	local Mesh = Mesh
 	local mesh_local_position = Mesh.local_position
-	local mesh_set_local_position = Mesh.set_local_position
 	local Quaternion = Quaternion
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
 	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 	local quaternion_matrix4x4 = Quaternion.matrix4x4
-    local matrix4x4_transform = Matrix4x4.transform
 	local string = string
-	local string_sub = string.sub
 	local string_gsub = string.gsub
 	local string_find = string.find
 	local string_split = string.split
@@ -83,10 +79,10 @@ local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/i
 	local tonumber = tonumber
 	local visibility_contexts = VisibilityContexts
 	local CLASS = CLASS
-	local script_unit = ScriptUnit
 	local color = Color
 	local rawget = rawget
-	local managers = Managers
+    local Level = Level
+    local level_units = Level.units
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
