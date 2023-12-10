@@ -39,6 +39,11 @@ mod:persistent_table(REFERENCE, {
 	},
 	-- Input
 	input_hooked = false,
+	-- Performance
+	performance = {
+		measurements = {},
+		result_cache = {},
+	},
 })
 mod.was_third_person = nil
 
@@ -55,6 +60,13 @@ mod.was_third_person = nil
 	local type = type
 	local DMFMod = DMFMod
 --#endregion
+
+string.trim = function(s)
+	return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+string.cap = function(str)
+	return (str:gsub("^%l", string.upper))
+end
 
 -- ##### ┌┬┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ###############################################################################
 -- ##### ││││ │ ││  ├┤ └┐┌┘├┤ │││ │ └─┐ ###############################################################################
@@ -136,19 +148,30 @@ mod.player_unit_destroyed = function(self, player_unit)
     mod:update_modded_packages()
 end
 
-mod:hook(CLASS.PlayerUnitFirstPersonExtension, "_update_first_person_mode", function(func, self, t, ...)
-	local show_1p_equipment, wants_1p_camera = func(self, t, ...)
-	if mod.initialized then
-		-- Cache values
-		mod.was_third_person = mod:_is_in_third_person()
-		mod.last_character_state = mod:character_state()
-	end
-	return show_1p_equipment, wants_1p_camera
-end)
+-- mod:hook(CLASS.PlayerUnitFirstPersonExtension, "_update_first_person_mode", function(func, self, t, ...)
+-- 	local show_1p_equipment, wants_1p_camera = func(self, t, ...)
+-- 	if mod.initialized then
+-- 		-- Cache values
+-- 		mod.was_third_person = mod:_is_in_third_person()
+-- 		mod.last_character_state = mod:character_state()
+-- 	end
+-- 	return show_1p_equipment, wants_1p_camera
+-- end)
 
 -- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐ #######################################################################################
 -- ##### │││││ │ │├─┤│  │┌─┘├┤  #######################################################################################
 -- ##### ┴┘└┘┴ ┴ ┴┴ ┴┴─┘┴└─┘└─┘ #######################################################################################
+
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/performance")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/common")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/weapons")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/attachments")
+
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/item_package")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/master_items")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/weapon_templates")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/input_service")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/visual_loadout_customization")
 
 mod.init = function(self)
 	self.ui_manager = managers.ui
@@ -186,13 +209,13 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions
 -- Import mod files
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_bolt_pistol")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_action_hooks")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_gear")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_gear")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_laser_pointer")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_daemon_host")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_fix")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_fix")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
 

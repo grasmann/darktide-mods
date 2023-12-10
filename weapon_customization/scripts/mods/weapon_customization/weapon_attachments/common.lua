@@ -24,7 +24,113 @@ local _item_minion = "content/items/weapons/minions"
     local type = type
 --#endregion
 
+-- staff_shaft_lower_attachments = function()
+--     return {
+--         {id = "shaft_lower_default", name = mod:localize("mod_attachment_default")},
+--         {id = "shaft_lower_01",      name = "Lower Shaft 1"},
+--         {id = "shaft_lower_02",      name = "Lower Shaft 2"},
+--         {id = "shaft_lower_03",      name = "Lower Shaft 3"},
+--         {id = "shaft_lower_04",      name = "Lower Shaft 4"},
+--         {id = "shaft_lower_05",      name = "Lower Shaft 5"},
+--     }
+-- end,
+-- staff_shaft_lower_models = function(parent, angle, move, remove)
+--     local a = angle or 0
+--     local m = move or vector3_box(0, 0, 0)
+--     local r = remove or vector3_box(0, 0, 0)
+--     return {
+--         shaft_lower_default = {model = "",                                                 type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         shaft_lower_01 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_01", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         shaft_lower_02 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_02", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         shaft_lower_03 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_03", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         shaft_lower_04 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_04", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         shaft_lower_05 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_05", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--     }
+-- end,
+
 return {
+    long_shaft_attachments = function(default)
+        local attachments = {
+            {id = "thunder_hammer_shaft_01",      name = "Thunderhammer 1"},
+            {id = "thunder_hammer_shaft_02",      name = "Thunderhammer 2"},
+            {id = "thunder_hammer_shaft_03",      name = "Thunderhammer 3"},
+            {id = "thunder_hammer_shaft_04",      name = "Thunderhammer 4"},
+            {id = "thunder_hammer_shaft_05",      name = "Thunderhammer 5"},
+            {id = "shaft_lower_01",      name = "Staff 1"},
+            {id = "shaft_lower_02",      name = "Staff 2"},
+            {id = "shaft_lower_03",      name = "Staff 3"},
+            {id = "shaft_lower_04",      name = "Staff 4"},
+            {id = "shaft_lower_05",      name = "Staff 5"},
+        }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "shaft_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    long_shaft_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "shaft_default", model = ""},
+            {name = "thunder_hammer_shaft_01",      model = _item_ranged.."/shafts/thunder_hammer_shaft_01"},
+            {name = "thunder_hammer_shaft_02",      model = _item_ranged.."/shafts/thunder_hammer_shaft_02"},
+            {name = "thunder_hammer_shaft_03",      model = _item_ranged.."/shafts/thunder_hammer_shaft_03"},
+            {name = "thunder_hammer_shaft_04",      model = _item_ranged.."/shafts/thunder_hammer_shaft_04"},
+            {name = "thunder_hammer_shaft_05",      model = _item_ranged.."/shafts/thunder_hammer_shaft_05"},
+            {name = "shaft_lower_01",      model = _item_ranged.."/shafts/force_staff_shaft_lower_01"},
+            {name = "shaft_lower_02",      model = _item_ranged.."/shafts/force_staff_shaft_lower_02"},
+            {name = "shaft_lower_03",      model = _item_ranged.."/shafts/force_staff_shaft_lower_03"},
+            {name = "shaft_lower_04",      model = _item_ranged.."/shafts/force_staff_shaft_lower_04"},
+            {name = "shaft_lower_05",      model = _item_ranged.."/shafts/force_staff_shaft_lower_05"},
+        }, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+    end,
+    connector_attachments = function(default)
+        local attachments = {
+            {id = "thunder_hammer_connector_01",      name = "Thunderhammer 1"},
+            {id = "thunder_hammer_connector_02",      name = "Thunderhammer 2"},
+            {id = "thunder_hammer_connector_03",      name = "Thunderhammer 3"},
+            {id = "thunder_hammer_connector_04",      name = "Thunderhammer 4"},
+            {id = "thunder_hammer_connector_05",      name = "Thunderhammer 5"},
+            {id = "body_01",      name = "Force Staff 1"},
+            {id = "body_02",      name = "Force Staff 2"},
+            {id = "body_03",      name = "Force Staff 3"},
+            {id = "body_04",      name = "Force Staff 4"},
+            {id = "body_05",      name = "Force Staff 5"},
+            {id = "2h_power_maul_connector_01",      name = "Power Maul 1"},
+            {id = "2h_power_maul_connector_02",      name = "Power Maul 2"},
+            {id = "2h_power_maul_connector_03",      name = "Power Maul 3"},
+            {id = "2h_power_maul_connector_04",      name = "Power Maul 4"},
+            {id = "2h_power_maul_connector_05",      name = "Power Maul 5"},
+        }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "connector_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    connector_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "connector_default", model = ""},
+            {name = "thunder_hammer_connector_01",      model = _item_melee.."/connectors/thunder_hammer_connector_01"},
+            {name = "thunder_hammer_connector_02",      model = _item_melee.."/connectors/thunder_hammer_connector_02"},
+            {name = "thunder_hammer_connector_03",      model = _item_melee.."/connectors/thunder_hammer_connector_03"},
+            {name = "thunder_hammer_connector_04",      model = _item_melee.."/connectors/thunder_hammer_connector_04"},
+            {name = "thunder_hammer_connector_05",      model = _item_melee.."/connectors/thunder_hammer_connector_05"},
+            {name = "body_01",      model = _item_melee.."/full/force_staff_full_01"},
+            {name = "body_02",      model = _item_melee.."/full/force_staff_full_02"},
+            {name = "body_03",      model = _item_melee.."/full/force_staff_full_03"},
+            {name = "body_04",      model = _item_melee.."/full/force_staff_full_04"},
+            {name = "body_05",      model = _item_melee.."/full/force_staff_full_05"},
+            {name = "2h_power_maul_connector_01",      model = _item_melee.."/connectors/2h_power_maul_connector_01"},
+            {name = "2h_power_maul_connector_02",      model = _item_melee.."/connectors/2h_power_maul_connector_02"},
+            {name = "2h_power_maul_connector_03",      model = _item_melee.."/connectors/2h_power_maul_connector_03"},
+            {name = "2h_power_maul_connector_04",      model = _item_melee.."/connectors/2h_power_maul_connector_04"},
+            {name = "2h_power_maul_connector_05",      model = _item_melee.."/connectors/2h_power_maul_connector_05"},
+        }, parent, angle, move, remove, type or "connector", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+    end,
+
+
     emblem_right_attachments = function()
         return {
             {id = "emblem_right_default", name = mod:localize("mod_attachment_default")},

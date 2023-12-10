@@ -24,7 +24,115 @@ local _item_minion = "content/items/weapons/minions"
     local type = type
 --#endregion
 
+-- head_attachments = function(default)
+--     local attachments = {
+--         {id = "head_01", name = "Head 1"},
+--         {id = "head_02", name = "Head 2"},
+--         {id = "head_03", name = "Head 3"},
+--         {id = "head_04", name = "Head 4"},
+--         {id = "head_05", name = "Head 5"},
+--     }
+--     if default == nil then default = true end
+--     if default then return table.icombine(
+--         {{id = "head_default", name = mod:localize("mod_attachment_default")}},
+--         attachments)
+--     else return attachments end
+-- end,
+-- head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+--     if mesh_move == nil then mesh_move = false end
+--     return table.model_table({
+--         {name = "head_default", model = ""},
+--         {name = "head_01",      model = _item_melee.."/heads/power_maul_head_01"},
+--         {name = "head_02",      model = _item_melee.."/heads/power_maul_head_02"},
+--         {name = "head_03",      model = _item_melee.."/heads/power_maul_head_03"},
+--         {name = "head_04",      model = _item_melee.."/heads/power_maul_head_04"},
+--         {name = "head_05",      model = _item_melee.."/heads/power_maul_head_05"},
+--     }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move)
+-- end,
+
+-- head_attachments = function()
+--     return {
+--         {id = "2h_power_maul_head_default", name = mod:localize("mod_attachment_default")},
+--         {id = "2h_power_maul_head_01",      name = "Head 1"},
+--         {id = "2h_power_maul_head_02",      name = "Head 2"},
+--         {id = "2h_power_maul_head_03",      name = "Head 3"},
+--         {id = "2h_power_maul_head_04",      name = "Head 4"},
+--         {id = "2h_power_maul_head_05",      name = "Head 5"},
+--     }
+-- end,
+-- head_models = function(parent, angle, move, remove)
+--     local a = angle or 0
+--     local m = move or vector3_box(0, 0, 0)
+--     local r = remove or vector3_box(0, 0, 0)
+--     return {
+--         ["2h_power_maul_head_default"] = {model = "",                                          type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         ["2h_power_maul_head_01"] =      {model = _item_melee.."/heads/2h_power_maul_head_01", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         ["2h_power_maul_head_02"] =      {model = _item_melee.."/heads/2h_power_maul_head_02", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         ["2h_power_maul_head_03"] =      {model = _item_melee.."/heads/2h_power_maul_head_03", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         ["2h_power_maul_head_04"] =      {model = _item_melee.."/heads/2h_power_maul_head_04", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--         ["2h_power_maul_head_05"] =      {model = _item_melee.."/heads/2h_power_maul_head_05", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+--     }
+-- end,
+
 return {
+    blunt_head_attachments = function(default)
+        local attachments = {
+            {id = "thunder_hammer_head_01",      name = "Thunderhammer 1"},
+            {id = "thunder_hammer_head_02",      name = "Thunderhammer 2"},
+            {id = "thunder_hammer_head_03",      name = "Thunderhammer 3"},
+            {id = "thunder_hammer_head_04",      name = "Thunderhammer 4"},
+            {id = "thunder_hammer_head_05",      name = "Thunderhammer 5"},
+            {id = "head_01",      name = "Power Maul 1"},
+            {id = "head_02",      name = "Power Maul 2"},
+            {id = "head_03",      name = "Power Maul 3"},
+            {id = "head_04",      name = "Power Maul 4"},
+            {id = "head_05",      name = "Power Maul 5"},
+            {id = "2h_power_maul_head_01",      name = "2H Power Maul 1"},
+            {id = "2h_power_maul_head_02",      name = "2H Power Maul 2"},
+            {id = "2h_power_maul_head_03",      name = "2H Power Maul 3"},
+            {id = "2h_power_maul_head_04",      name = "2H Power Maul 4"},
+            {id = "2h_power_maul_head_05",      name = "2H Power Maul 5"},
+            {id = "small_head_01", name = "Small Head 1"},
+            {id = "small_head_02", name = "Small Head 2"},
+            {id = "small_head_03", name = "Small Head 3"},
+            {id = "small_head_04", name = "Small Head 4"},
+            {id = "small_head_05", name = "Small Head 5"},
+            {id = "small_head_06", name = "Small Head 6"},
+        }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "head_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    blunt_head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "head_default",  model = ""},
+            {name = "thunder_hammer_head_01",      model = _item_melee.."/heads/thunder_hammer_head_01"},
+            {name = "thunder_hammer_head_02",      model = _item_melee.."/heads/thunder_hammer_head_02"},
+            {name = "thunder_hammer_head_03",      model = _item_melee.."/heads/thunder_hammer_head_03"},
+            {name = "thunder_hammer_head_04",      model = _item_melee.."/heads/thunder_hammer_head_04"},
+            {name = "thunder_hammer_head_05",      model = _item_melee.."/heads/thunder_hammer_head_05"},
+            {name = "head_01",      model = _item_melee.."/heads/power_maul_head_01"},
+            {name = "head_02",      model = _item_melee.."/heads/power_maul_head_02"},
+            {name = "head_03",      model = _item_melee.."/heads/power_maul_head_03"},
+            {name = "head_04",      model = _item_melee.."/heads/power_maul_head_04"},
+            {name = "head_05",      model = _item_melee.."/heads/power_maul_head_05"},
+            {name = "2h_power_maul_head_01",      model = _item_melee.."/heads/2h_power_maul_head_01"},
+            {name = "2h_power_maul_head_02",      model = _item_melee.."/heads/2h_power_maul_head_02"},
+            {name = "2h_power_maul_head_03",      model = _item_melee.."/heads/2h_power_maul_head_03"},
+            {name = "2h_power_maul_head_04",      model = _item_melee.."/heads/2h_power_maul_head_04"},
+            {name = "2h_power_maul_head_05",      model = _item_melee.."/heads/2h_power_maul_head_05"},
+            {name = "small_head_01", model = _item_melee.."/heads/human_power_maul_head_01"},
+            {name = "small_head_02", model = _item_melee.."/heads/human_power_maul_head_02"},
+            {name = "small_head_03", model = _item_melee.."/heads/human_power_maul_head_03"},
+            {name = "small_head_04", model = _item_melee.."/heads/human_power_maul_head_04"},
+            {name = "small_head_05", model = _item_melee.."/heads/human_power_maul_head_05"},
+            {name = "small_head_06", model = _item_melee.."/heads/human_power_maul_head_06"},
+        }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+    end,
+
     grip_default = function()
         return {
             {id = "grip_default",  name = mod:localize("mod_attachment_default")}
@@ -219,4 +327,6 @@ return {
             {name = "small_connector_06", model = _item_melee.."/connectors/human_power_maul_connector_06"},
         }, parent, angle, move, remove, type or "connector", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
+
+
 }

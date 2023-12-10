@@ -125,6 +125,7 @@ local FlashlightExtension = class("FlashlightExtension", "WeaponCustomizationExt
 
 FlashlightExtension.init = function(self, extension_init_context, unit, extension_init_data)
     FlashlightExtension.super.init(self, extension_init_context, unit, extension_init_data)
+
     -- Get flashlight units 1p / 3p
 	self.flashlight_unit_1p = extension_init_data.flashlight_unit_1p
 	self.flashlight_unit_3p = extension_init_data.flashlight_unit_3p
@@ -180,10 +181,14 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
 end
 
 FlashlightExtension.delete = function(self)
+    -- Deactivate
     self.initialized = false
-    managers.event:unregister(self, "weapon_customization_settings_changed")
     self.on = false
+    -- Unregister events
+    managers.event:unregister(self, "weapon_customization_settings_changed")
+    -- Unset
     self:set_light(false, false)
+    
     FlashlightExtension.super.delete(self)
 end
 
@@ -255,8 +260,6 @@ FlashlightExtension.update_husk = function(self, dt, t)
 end
 
 FlashlightExtension.update = function(self, dt, t)
-    -- FlashlightExtension.super.update(self, dt, t)
-
     local first_person = self:get_first_person()
     if self.initialized then
         self:update_husk(dt, t)
@@ -274,7 +277,6 @@ FlashlightExtension.update = function(self, dt, t)
         -- Save last first person
         self.last_first_person = first_person
     end
-
     -- Relay to sub extensions
     FlashlightExtension.super.update(self, dt, t)
 end
@@ -526,7 +528,6 @@ mod.preview_flashlight = function(self, state, world, unit, attachment_name, no_
 end
 
 mod.set_light_values = function(self, flashlight_unit, template)
-    local intensity_modifier = intensity_modifier or 1
     local unit_good = flashlight_unit and unit_alive(flashlight_unit)
     local light = unit_good and unit_light(flashlight_unit, 1)
     local attachment_name = unit_good and unit_get_data(flashlight_unit, "attachment_name")
@@ -552,5 +553,12 @@ end
 mod.get_flashlight_template = function(self, flashlight_name)
     if flashlight_name then return self.flashlight_templates[flashlight_name] end
 end
+
+mod:hook_require("scripts/settings/equipment/flashlight_templates", function(instance)
+    for name, template in pairs(instance) do
+        template.light.first_person.cast_shadows = mod:get("mod_option_flashlight_shadows")
+        template.light.third_person.cast_shadows = mod:get("mod_option_flashlight_shadows")
+    end
+end)
 
 return FlashlightExtension

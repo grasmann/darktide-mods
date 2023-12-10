@@ -5,6 +5,10 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
+    local math = math
+    local math_abs = math.abs
+    local vector3 = Vector3
+    local vector3_zero = vector3.zero
     local script_unit = ScriptUnit
     local script_unit_has_extension = script_unit.has_extension
     local script_unit_extension = script_unit.extension
@@ -14,6 +18,8 @@ local mod = get_mod("weapon_customization")
     local world_physics_world = world.physics_world
     local managers = Managers
     local pairs = pairs
+    local class = class
+    local wc_perf = wc_perf
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -44,6 +50,8 @@ mod.extensions = {
 
 local WeaponCustomizationExtension = class("WeaponCustomizationExtension")
 
+WeaponCustomizationExtension.perf = wc_perf
+
 -- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
 -- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
@@ -63,7 +71,10 @@ WeaponCustomizationExtension.init = function(self, extension_init_context, unit,
     self.character_state_extension = script_unit_extension(self.player_unit, "character_state_machine_system")
     self.side_extension = managers.state.extension and managers.state.extension:system("side_system")
     self.first_person_extension = script_unit_extension(self.player_unit, "first_person_system")
+    self.locomotion_ext = script_unit_extension(self.player_unit, "locomotion_system")
     self.first_person_unit = self.first_person_extension and self.first_person_extension:first_person_unit()
+    self.alternate_fire_component = self.unit_data and self.unit_data:read_component("alternate_fire")
+    self.sprint_character_state_component = self.unit_data and self.unit_data:read_component("sprint_character_state")
     self.event_manager = managers.event
     
     self.sub_extensions = {}
@@ -166,6 +177,15 @@ WeaponCustomizationExtension.get_first_person = function(self)
     local no_cutscene = not self.cut_scene
     local first_person = first_person_extension and first_person_extension:is_in_first_person_mode()
     return common and no_cutscene and first_person
+end
+
+WeaponCustomizationExtension.get_vectors_almost_same = function(self, v1, v2, tolerance)
+    local tolerance = tolerance or .5
+    local v1 = v1 or vector3_zero()
+    local v2 = v2 or vector3_zero()
+    if math_abs(v1[1] - v2[1]) < tolerance and math_abs(v1[2] - v2[2]) < tolerance and math_abs(v1[3] - v2[3]) < tolerance then
+        return true
+    end
 end
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬   ###########################################################################################

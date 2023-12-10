@@ -167,13 +167,14 @@ return {
         }, parent, angle, move, remove, type or "bayonet", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 
-    reflex_sights_attachments = function(default)
+    reflex_sights_attachments = function(default, none)
         local attachments = {
             {id = "reflex_sight_01", name = "Reflex Sight 1"},
             {id = "reflex_sight_02", name = "Reflex Sight 2"},
             {id = "reflex_sight_03", name = "Reflex Sight 3"},
-            {id = "sight_none",      name = ""},
+            -- {id = "sight_none",      name = ""},
         }
+        if none then attachments[#attachments+1] = {id = "sight_none",      name = ""} end
         if default == nil then default = true end
         if default then return table.icombine(
             {{id = "sight_default", name = mod:localize("mod_attachment_default")}},

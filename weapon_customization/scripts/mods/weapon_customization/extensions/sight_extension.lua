@@ -263,7 +263,7 @@ SightExtension.set_lens_units = function(self)
         local lenses = {}
         mod:_recursive_find_unit(self.ranged_weapon.weapon_unit, LENS_A, lenses)
         mod:_recursive_find_unit(self.ranged_weapon.weapon_unit, LENS_B, lenses)
-        if #lenses == 2 then
+        if #lenses >= 2 then
             local scope_sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight_2")
             self.default_reticle_position = scope_sight and scope_sight.position
             -- mod:echo("default_reticle_position: "..tostring(self.default_reticle_position))
@@ -499,6 +499,7 @@ end
 
 SightExtension.update_zoom = function(self, viewport_name)
     if self.initialized and self:get_first_person() then
+        local viewport_name = viewport_name or self.player.viewport_name
         -- local viewport = ScriptWorld.viewport(self.world, self.player.viewport_name)
         -- local camera = viewport and ScriptViewport.camera(viewport)
         local camera_manager = managers.state.camera
@@ -509,23 +510,23 @@ SightExtension.update_zoom = function(self, viewport_name)
             if self.custom_vertical_fov then camera_set_custom_vertical_fov(camera, self.custom_vertical_fov) end
             if self.vertical_fov then camera_set_vertical_fov(camera, self.vertical_fov) end
         else
-            -- mod:echot("!camera")
+            mod:echot("!camera")
         end
     end
 end
 
-mod:hook(CLASS.HudElementCrosshair, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
-    local parent = self._parent
-    if parent then
-        local player_extensions = parent:player_extensions()
-        if player_extensions and player_extensions.unit and self._widget then
-            local is_hiding_crosshair = mod:execute_extension(player_extensions.unit, "sight_system", "is_hiding_crosshair")
+-- mod:hook(CLASS.HudElementCrosshair, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
+--     local parent = self._parent
+--     if parent then
+--         local player_extensions = parent:player_extensions()
+--         if player_extensions and player_extensions.unit and self._widget then
+--             local is_hiding_crosshair = mod:execute_extension(player_extensions.unit, "sight_system", "is_hiding_crosshair")
             
-            self._widget.visible = not is_hiding_crosshair
-        end
-    end
-    func(self, dt, t, input_service, ui_renderer, render_settings, ...)
-end)
+--             self._widget.visible = not is_hiding_crosshair
+--         end
+--     end
+--     func(self, dt, t, input_service, ui_renderer, render_settings, ...)
+-- end)
 
 -- ##### ┬─┐┌─┐┌─┐┌─┐┬┬    ┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌─┐┬ ┬ ####################################################################
 -- ##### ├┬┘├┤ │  │ │││    ├─┤│││ ││  └─┐│││├─┤└┬┘ ####################################################################

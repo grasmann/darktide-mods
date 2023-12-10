@@ -188,7 +188,7 @@ return table.combine(
         attachments = {
             -- Native
             receiver = functions.receiver_attachments(),
-            magazine = functions.magazine_attachments(),
+            -- magazine = functions.magazine_attachments(),
             barrel = functions.barrel_attachments(),
             muzzle = functions.muzzle_attachments(),
             -- rail = functions.rail_attachments(),
@@ -212,7 +212,7 @@ return table.combine(
         models = table.combine(
             -- Native
             functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
-            functions.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
+            -- functions.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
             functions.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {}, {
                 {receiver = "laspistol_receiver_04|laspistol_receiver_01"},
                 {receiver = "laspistol_receiver_04|laspistol_receiver_01"},

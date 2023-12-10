@@ -44,13 +44,38 @@ mod.attachment_entry_is_weapon = function(self, name)
 	end
 end
 
+local filter = {
+	"stubgun_pistol_bullet",
+	"stubgun_pistol_casing",
+	"shotgun_rifle_bullet",
+	"bot_",
+	"rippergun_rifle_bullet",
+	"psyker_throwing_knife",
+	"shotgun_grenade_bullet",
+	"autogun_pistol_bullet",
+	"autogun_rifle_bullet",
+	"force_staff_projectile",
+	"grenade_thumper",
+	"_cinematic",
+
+	"_cine",
+	"_trail",
+	"unarmed_",
+}
 mod.find_attachment_entries = function(self)
 	self:setup_item_definitions()
 	local ranged_definitions = {}
 	local melee_definitions = {}
 	local item_definitions = self:persistent_table(REFERENCE).item_definitions
 	for name, data in pairs(item_definitions) do
-		if not self:find_attachment_entry_in_mod(name) and not self:attachment_entry_is_weapon(name) then
+		local filter_ok = true
+		for _, phrase in pairs(filter) do
+			if string_find(name, phrase) then
+				filter_ok = false
+				break
+			end
+		end
+		if not self:find_attachment_entry_in_mod(name) and not self:attachment_entry_is_weapon(name) and filter_ok then
 			if string_find(name, _item_ranged) then
 				ranged_definitions[name] = data
 			elseif string_find(name, _item_melee) then
@@ -70,6 +95,14 @@ mod.test_index = 1
 mod.inc_test_index = function()
 	mod.test_index = mod.test_index + 1
 	mod:echo(tostring(mod.test_index))
+end
+
+mod.clear_chat = function()
+	managers.event:trigger("event_clear_notifications")
+end
+
+mod.dump_perf = function()
+	mod:dtf(mod:persistent_table(REFERENCE).performance.result_cache, "perf_results", 10)
 end
 
 --  Debug

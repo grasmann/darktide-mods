@@ -48,7 +48,6 @@ BatteryExtension.init = function(self, extension_init_context, unit, extension_i
     self.current_charge = self.battery_template.max
     self.timer = 0
     self.on = extension_init_data.on or self.is_local_unit and mod:flashlight_active() or false
-
     self.initialized = true
 end
 
@@ -97,15 +96,10 @@ end
 BatteryExtension.update = function(self, dt, t)
     -- Check battery template
     if self.battery_template then
-            -- Set initial value if not set
-            -- if not self.consumer_template then self.consumer_template = self._active_consumer_template.battery.max end
         -- Battery interval
         self.timer = self.timer or 0
         if t > self.timer then
-                -- Check if consumer is switched on
-                -- local consumer_on = self:persistent_table(REFERENCE).flashlight_on
-                -- local laser_pointer_on = self:persistent_table(REFERENCE).laser_pointer_on == 2
-                -- local only_pointer = self:persistent_table(REFERENCE).laser_pointer_on == 1
+            -- Check if consumer is switched on
             if self.on and self:is_wielded() then
                 -- Drain battery
                 local drain = self.battery_template.drain
@@ -116,11 +110,6 @@ BatteryExtension.update = function(self, dt, t)
             end
             -- Set battery time
             self.timer = t + self.battery_template.interval
-        -- elseif self.on and self.current_charge == 0 then
-        --     -- Disable consumer
-        --     -- mod:execute_extension(self.player_unit, "flashlight_system", "set_enabled", false)
-        --     -- self.on = false
-        --     -- self.consumer:set_enabled(false)
         end
     end
 end

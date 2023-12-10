@@ -868,23 +868,9 @@ end)
 
 mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
 	func(self, item_unit_3p, ...)
-
     if self._weapon_spawn_data then
         mod.weapon_spawning = nil
         self._weapon_spawn_data.streaming_complete = true
-
-        -- if self._reference_name ~= "WeaponIconUI" and self._weapon_spawn_data.attachment_units_3p then
-        --     local flashlight = mod:get_attachment_slot_in_attachments(self._weapon_spawn_data.attachment_units_3p, "flashlight")
-        --     -- local attachment_name = flashlight and unit_get_data(flashlight, "attachment_name")
-        --     local gear_id = mod:get_gear_id(self._weapon_spawn_data.item)
-        --     local attachment_name = mod:get_gear_setting(gear_id, "flashlight", self._weapon_spawn_data.item)
-        --     -- mod:echot("attachment_name lol: "..tostring(attachment_name))
-        --     if flashlight and attachment_name and not mod.dropdown_open then
-        --         -- mod:preview_flashlight(true, self._world, flashlight, attachment_name, true)
-        --     -- else
-        --     --     mod:preview_flashlight(false, self._world, flashlight, attachment_name, true)
-        --     end
-        -- end
 	end
 end)
 
@@ -894,6 +880,27 @@ mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
 	mod:ui_weapon_spawner_despawn_weapon(self)
     -- Original function
 	func(self, ...)
+end)
+
+
+
+
+
+
+-- ##### ┬ ┬┬ ┬┌┬┐  ┌─┐┬  ┌─┐┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬┬─┐ ##################################################
+-- ##### ├─┤│ │ ││  ├┤ │  ├┤ │││├┤ │││ │   │  ├┬┘│ │└─┐└─┐├─┤├─┤│├┬┘ ##################################################
+-- ##### ┴ ┴└─┘─┴┘  └─┘┴─┘└─┘┴ ┴└─┘┘└┘ ┴   └─┘┴└─└─┘└─┘└─┘┴ ┴┴ ┴┴┴└─ ##################################################
+mod:hook(CLASS.HudElementCrosshair, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
+    local parent = self._parent
+    if parent then
+        local player_extensions = parent:player_extensions()
+        if player_extensions and player_extensions.unit and self._widget then
+            local is_hiding_crosshair = mod:execute_extension(player_extensions.unit, "sight_system", "is_hiding_crosshair")
+            
+            self._widget.visible = not is_hiding_crosshair
+        end
+    end
+    func(self, dt, t, input_service, ui_renderer, render_settings, ...)
 end)
 
 
@@ -923,33 +930,18 @@ end)
 -- ##### ├┤ │ ││ │ │ └─┐ │ ├┤ ├─┘└─┐ ##################################################################################
 -- ##### └  └─┘└─┘ ┴ └─┘ ┴ └─┘┴  └─┘ ##################################################################################
 
+
+
 local steps = 0
 -- Capture footsteps for equipment animation
 mod:hook_require("scripts/utilities/footstep", function(instance)
-    -- Backup original function
-    if not instance._trigger_material_footstep then instance._trigger_material_footstep = instance.trigger_material_footstep end
-    -- Hook
-    instance.trigger_material_footstep = function(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from,
-            query_to, optional_set_speed_parameter, optional_set_first_person_parameter)
-        -- Check mod optionm
-        if mod:get("mod_option_visible_equipment") then
-            local locomotion_ext = script_unit.extension(unit, "locomotion_system")
-            local speed = locomotion_ext and locomotion_ext:move_speed() or 0
-            if speed > 0 then
-                -- if unit == mod.player_unit then
-                --     steps = steps + 1
-                --     mod:echo("step! "..tostring(steps).." speed: "..tostring(speed))
-                -- end
-                mod:execute_extension(unit, "visible_equipment_system", "trigger_step")
-            end
-        end
-        
-        -- Original function
-        local sound_id = instance._trigger_material_footstep(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from,
-            query_to, optional_set_speed_parameter, optional_set_first_person_parameter)
+    mod:hook(instance, "trigger_material_footstep", function(func, sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, ...)
 
-        return sound_id
-    end
+        mod:execute_extension(unit, "visible_equipment_system", "on_footstep")
+
+        return func(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from,
+        query_to, optional_set_speed_parameter, optional_set_first_person_parameter, ...)
+    end)
 end)
 
 
@@ -992,7 +984,7 @@ end)
 --             slot.was_processed = nil
 --         elseif slot.occupied and slot.was_processed then
 --             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "load_slots")
---             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "update", t)
+--             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "update", dt, t)
 --         end
 --     end
 -- end)

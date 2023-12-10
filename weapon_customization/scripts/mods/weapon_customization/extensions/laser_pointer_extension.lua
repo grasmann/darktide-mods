@@ -64,6 +64,7 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
     local pairs = pairs
     local CLASS = CLASS
     local script_unit = ScriptUnit
+    local DebugDrawer = DebugDrawer
     local managers = Managers
     local get_mod = get_mod
 --#endregion
@@ -157,18 +158,11 @@ LaserPointerExtension.get_spawner_name = function(self)
     return SPAWNER_NAME_3P
 end
 
-LaserPointerExtension.get_vectors_almost_same = function(self, v1, v2, tolerance)
-    if math_abs(v1[1] - v2[1]) < tolerance and math_abs(v1[2] - v2[2]) < tolerance and math_abs(v1[3] - v2[3]) < tolerance then
-        return true
-    end
-end
-
 LaserPointerExtension.is_active = function(self)
     return self:is_wielded() and self.on
 end
 
 LaserPointerExtension.is_wielded = function(self)
-    -- mod:echo("wielded "..tostring(self.wielded))
     return self.wielded
 end
 
@@ -194,7 +188,6 @@ LaserPointerExtension.update_all = function(self, dt, t)
 end
 
 LaserPointerExtension.update = function(self, dt, t)
-    -- LaserPointerExtension.super.update(self, dt, t)
     self:update_all(dt, t)
     self.last_first_person = self:get_first_person()
 end
@@ -472,14 +465,12 @@ LaserPointerExtension.spawn_laser = function(self)
     local particle = #self.laser_effect_ids == 0
     local slot = self:is_wielded()
     if self.on and common and particle and husk and slot then
-        -- mod:echo("spawning laser")
         self:set_fx_spawner()
         local spawner_name = self:get_spawner_name()
         self.end_position = self.end_position or self:target_fallback()
         for i = 1, self.laser_count do
             self.fx_extension:_spawn_unit_fx_line(LINE_EFFECT, true, spawner_name, vector3_unbox(self.end_position), true, "destroy", vector3(1, 1, 1), false)
         end
-        -- mod:spawn_laser(self.fx_extension, spawner_name, self.end_position)
     end
 end
 
@@ -503,10 +494,12 @@ LaserPointerExtension.spawn_weapon_dot = function(self)
         local first_person = not self:get_first_person()
 
         self.dot_weapon_effect_id = world_create_particles(self.world, LASER_DOT, vector3_zero(), quaternion_identity())
-        world_set_particles_material_vector3(self.world, self.dot_weapon_effect_id, "eye_glow", "trail_color", vector3(0, 0, 0))
         matrix4x4_set_translation(unit_world_pose, vector3(0, .065, 0))
-        matrix4x4_set_scale(unit_world_pose, vector3(.5, .5, .5))
+        matrix4x4_set_scale(unit_world_pose, vector3(.01, .01, .01))
         world_link_particles(self.world, self.dot_weapon_effect_id, laser_pointer_unit, 2, unit_world_pose, "destroy")
+        world_set_particles_material_vector3(self.world, self.dot_weapon_effect_id, "eye_socket", "material_variable_21872256", vector3(1, 0, 0))
+        world_set_particles_material_vector3(self.world, self.dot_weapon_effect_id, "eye_glow", "trail_color", vector3(0, 0, 0))
+        world_set_particles_material_vector3(self.world, self.dot_weapon_effect_id, "eye_flash_init", "material_variable_21872256", vector3(.01, 0, 0))
         if self:is_weapon_fov_installed() and first_person then
             world_set_particles_use_custom_fov(self.world, self.dot_weapon_effect_id, false)
         end
@@ -529,14 +522,17 @@ LaserPointerExtension.spawn_laser_dot = function(self)
     if self.on and common and particle and self.end_position and husk and slot then
         local end_position = vector3_unbox(self.end_position)
         self.laser_dot_effect_id = world_create_particles(self.world, LASER_DOT, end_position)
-        world_set_particles_material_vector3(self.world, self.laser_dot_effect_id, "eye_glow", "trail_color", vector3(0, 0, 0))
-        world_set_particles_material_vector3(self.world, self.laser_dot_effect_id, "eye_flash_init", "material_variable_21872256", vector3(0, 0, 0))
 
         local distance = vector3_distance(unit_world_position(self.first_person_unit, 1), end_position) - .5
         local unit_world_pose = matrix4x4_identity()
         matrix4x4_set_translation(unit_world_pose, vector3(0, distance, 0))
-        matrix4x4_set_scale(unit_world_pose, vector3(1, 1, 1) * self.hit_indicator_size)
+        matrix4x4_set_scale(unit_world_pose, vector3(.1, .1, .1) * self.hit_indicator_size)
         world_link_particles(self.world, self.laser_dot_effect_id, self.first_person_unit, 1, unit_world_pose, "destroy")
+
+        world_set_particles_use_custom_fov(self.world, self.laser_dot_effect_id, false)
+        world_set_particles_material_vector3(self.world, self.laser_dot_effect_id, "eye_socket", "material_variable_21872256", vector3(1, 0, 0))
+        world_set_particles_material_vector3(self.world, self.laser_dot_effect_id, "eye_glow", "trail_color", vector3(0, 0, 0))
+        world_set_particles_material_vector3(self.world, self.laser_dot_effect_id, "eye_flash_init", "material_variable_21872256", vector3(.1, 0, 0))
     end
 end
 
@@ -601,7 +597,7 @@ end
 LaserPointerExtension.particles_wrapper_created = function(self, particle_name, effect_id)
     if particle_name == LASER_PARTICLE_EFFECT then
         self.laser_effect_ids[#self.laser_effect_ids+1] = effect_id
-        -- World.set_particles_material_vector3(self.world, effect_id, "beam", "beam_color", vector3(0, 255, 0))
+        World.set_particles_material_vector3(self.world, effect_id, "beam", "beam_color", vector3(0, 255, 0))
         -- World.set_particles_material_color(self.world, effect_id, "beam", vector3(0, 255, 0))
     end
 end
@@ -651,7 +647,6 @@ end
 
 -- Toggle laser pointer
 mod.set_preview_laser = function(self, state, laser_pointer_unit, world)
-    -- local unit = optional_laser_pointer_unit
     if state and laser_pointer_unit and world then
         local previews = self.preview_laser[laser_pointer_unit]
         if not previews then
@@ -663,14 +658,11 @@ mod.set_preview_laser = function(self, state, laser_pointer_unit, world)
             local local_player_unit = managers.player:local_player(1).player_unit
             local LASER_COUNT = mod:get("mod_option_laser_pointer_count")
             for i = 1, LASER_COUNT do
-                -- fx_extension:_spawn_unit_fx_line(LINE_EFFECT, true, spawner_name, end_position, true, "stop", vector3(1, 1, 1), false)
                 previews[#previews+1] = world_create_particles(world, LASER_PARTICLE_EFFECT,
                     matrix4x4_translation(spawn_pose), matrix4x4_rotation(spawn_pose), matrix4x4_scale(spawn_pose))
                 world_link_particles(world, previews[#previews], laser_pointer_unit, 2, pose, "destroy")
             end
-            
             self.preview_laser[laser_pointer_unit] = previews
-            -- mod:spawn_laser(self.fx_extension, spawner_name, self.end_position)
         end
     elseif not state and laser_pointer_unit and self.preview_laser[laser_pointer_unit] and world then
         local previews = self.preview_laser[laser_pointer_unit]

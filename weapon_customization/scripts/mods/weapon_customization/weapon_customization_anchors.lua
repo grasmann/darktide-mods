@@ -211,10 +211,12 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.anchors.ogryn_club_p2_m3 = mod.anchors.ogryn_club_p2_m1
         --#endregion
         --#region Guns
+            mod.anchors.stubrevolver_p1_m2 = mod.anchors.stubrevolver_p1_m1
             mod.anchors.shotgun_p1_m2 = mod.anchors.shotgun_p1_m1
             mod.anchors.shotgun_p1_m3 = mod.anchors.shotgun_p1_m1
             mod.anchors.bolter_p1_m2 = mod.anchors.bolter_p1_m1
             mod.anchors.bolter_p1_m3 = mod.anchors.bolter_p1_m1
+            mod.anchors.laspistol_p1_m3 = mod.anchors.laspistol_p1_m1
             mod.anchors.autogun_p1_m2 = mod.anchors.autogun_p1_m1
             mod.anchors.autogun_p1_m3 = mod.anchors.autogun_p1_m1
             mod.anchors.autogun_p2_m1 = mod.anchors.autogun_p1_m1
@@ -235,6 +237,7 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.anchors.combataxe_p1_m3 = mod.anchors.combataxe_p1_m1
             mod.anchors.combataxe_p2_m2 = mod.anchors.combataxe_p2_m1
             mod.anchors.combataxe_p2_m3 = mod.anchors.combataxe_p2_m1
+            mod.anchors.combataxe_p3_m2 = mod.anchors.combataxe_p3_m1
             mod.anchors.powersword_p1_m2 = mod.anchors.powersword_p1_m1
             mod.anchors.combatsword_p1_m2 = mod.anchors.combatsword_p1_m1
             mod.anchors.combatsword_p1_m3 = mod.anchors.combatsword_p1_m1
@@ -316,6 +319,7 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.attachment.bolter_p1_m3 = mod.attachment.bolter_p1_m1
             mod.attachment.stubrevolver_p1_m2 = mod.attachment.stubrevolver_p1_m1
             mod.attachment.stubrevolver_p1_m3 = mod.attachment.stubrevolver_p1_m1
+            mod.attachment.laspistol_p1_m3 = mod.attachment.laspistol_p1_m1
             mod.attachment.autogun_p1_m2 = mod.attachment.autogun_p1_m1
             mod.attachment.autogun_p1_m3 = mod.attachment.autogun_p1_m1
             mod.attachment.autogun_p2_m1 = mod.attachment.autogun_p1_m1
@@ -339,6 +343,7 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.attachment.combataxe_p1_m3 = mod.attachment.combataxe_p1_m1
             mod.attachment.combataxe_p2_m2 = mod.attachment.combataxe_p2_m1
             mod.attachment.combataxe_p2_m3 = mod.attachment.combataxe_p2_m1
+            mod.attachment.combataxe_p3_m2 = mod.attachment.combataxe_p3_m1
             mod.attachment.powersword_p1_m2 = mod.attachment.powersword_p1_m1
             mod.attachment.combatsword_p1_m2 = mod.attachment.combatsword_p1_m1
             mod.attachment.combatsword_p1_m3 = mod.attachment.combatsword_p1_m1
@@ -627,18 +632,18 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
         "lasgun_stock_02",
         "lasgun_stock_03",
     }
-mod.shotgun_stocks = {
-    "shotgun_rifle_stock_01",
-    "shotgun_rifle_stock_02",
-    "shotgun_rifle_stock_03",
-    "shotgun_rifle_stock_04",
-    "shotgun_rifle_stock_07",
-    "shotgun_rifle_stock_08",
-    "shotgun_rifle_stock_09",
-    "shotgun_rifle_stock_10",
-    "shotgun_rifle_stock_11",
-    "shotgun_rifle_stock_12",
-}
+    mod.shotgun_stocks = {
+        "shotgun_rifle_stock_01",
+        "shotgun_rifle_stock_02",
+        "shotgun_rifle_stock_03",
+        "shotgun_rifle_stock_04",
+        "shotgun_rifle_stock_07",
+        "shotgun_rifle_stock_08",
+        "shotgun_rifle_stock_09",
+        "shotgun_rifle_stock_10",
+        "shotgun_rifle_stock_11",
+        "shotgun_rifle_stock_12",
+    }
     mod.attachment_units = {
         ["#ID[c54f4d16d170cfdb]"] = "flashlight_01",
         ["#ID[28ae77de0a24aba6]"] = "flashlight_02",
@@ -786,6 +791,7 @@ mod.shotgun_stocks = {
             mod.attachment_models.bolter_p1_m3 = mod.attachment_models.bolter_p1_m1
             mod.attachment_models.stubrevolver_p1_m2 = mod.attachment_models.stubrevolver_p1_m1
             mod.attachment_models.stubrevolver_p1_m3 = mod.attachment_models.stubrevolver_p1_m1
+            mod.attachment_models.laspistol_p1_m3 = mod.attachment_models.laspistol_p1_m1
             mod.attachment_models.autogun_p1_m2 = mod.attachment_models.autogun_p1_m1
             mod.attachment_models.autogun_p1_m3 = mod.attachment_models.autogun_p1_m1
             mod.attachment_models.autogun_p2_m1 = mod.attachment_models.autogun_p1_m1
@@ -809,6 +815,7 @@ mod.shotgun_stocks = {
             mod.attachment_models.combataxe_p1_m3 = mod.attachment_models.combataxe_p1_m1
             mod.attachment_models.combataxe_p2_m2 = mod.attachment_models.combataxe_p1_m1
             mod.attachment_models.combataxe_p2_m3 = mod.attachment_models.combataxe_p1_m1
+            mod.attachment_models.combataxe_p3_m2 = mod.attachment_models.combataxe_p3_m1
             mod.attachment_models.powersword_p1_m2 = mod.attachment_models.powersword_p1_m1
             mod.attachment_models.combatsword_p1_m2 = mod.attachment_models.combatsword_p1_m1
             mod.attachment_models.combatsword_p1_m3 = mod.attachment_models.combatsword_p1_m1
