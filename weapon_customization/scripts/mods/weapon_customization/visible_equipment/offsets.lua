@@ -28,8 +28,6 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
     local quaternion_from_vector = function(vector)
         return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
     end
-    local table = table
-    local table_clone = table.clone
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -160,7 +158,7 @@ mod.visible_equipment_offsets = {
     ogryn = {
         WEAPON_MELEE = {
             default = {position = vector3_box(.5, .5, -.15), rotation = vector3_box(170, -85, 90), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(-.03, .0075, 0), step_rotation = vector3_box(2.5, -2.5, 5)},
+                step_move = vector3_box(-.01, .003, 0), step_rotation = vector3_box(-1.5, 1.5, 5)},
             backpack = {position = vector3_box(.65, .5, .4), rotation = vector3_box(180, -15, 135), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(0, 0, 0), step_rotation = vector3_box(0, -2.5, 5)},
             loading = mod.visible_equipment_loading_offsets.melee_medium,
@@ -192,8 +190,8 @@ mod.visible_equipment_offsets = {
     },
     --#region Ogryn Guns
         ogryn_heavystubber_p1_m1 = {
-            default = {position = vector3_box(.7, .55, .2), rotation = vector3_box(200, -10, 90), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(-.03, .0075, .01), step_rotation = vector3_box(-2, 2.5, -2.5)},
+            default = {position = vector3_box(.8, .45, .15), rotation = vector3_box(200, -10, 100), scale = vector3_box(1, 1, 1),
+                step_move = vector3_box(-.01, .003, .005), step_rotation = vector3_box(-1, 1.5, -1.5)},
             backpack = {position = vector3_box(.1, .6, .8), rotation = vector3_box(200, 60, 70), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(.02, -.03, -.04), step_rotation = vector3_box(2.5, -2.5, .5)},
             loading = mod.visible_equipment_loading_offsets.ranged_bulky,
@@ -216,9 +214,9 @@ mod.visible_equipment_offsets = {
         },
         ogryn_rippergun_p1_m1 = {
             default = {position = vector3_box(.4, .55, .4), rotation = vector3_box(200, -10, 90), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(-.03, .0075, .01), step_rotation = vector3_box(-2, 2.5, -2.5)},
+                step_move = vector3_box(-.01, .003, .005), step_rotation = vector3_box(-1, 1.5, -1.5)},
             backpack = {position = vector3_box(-.2, .5, .7), rotation = vector3_box(200, 60, 70), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(.02, -.03, -.02), step_rotation = vector3_box(2.5, -2.5, .5)},
+                step_move = vector3_box(.02, -.03, -.04), step_rotation = vector3_box(2.5, -2.5, .5)},
             loading = mod.visible_equipment_loading_offsets.ranged_bulky,
             init = function(visible_equipment_extension, slot)
                 -- Get slot info
@@ -240,9 +238,9 @@ mod.visible_equipment_offsets = {
         },
         ogryn_gauntlet_p1_m1 = {
             default = {position = vector3_box(.05, .4, .8), rotation = vector3_box(20, 10, 90), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(-.01, .0075, .01), step_rotation = vector3_box(2.5, 2.5, -.5)},
+                step_move = vector3_box(-.01, .003, .005), step_rotation = vector3_box(-1, 1.5, -1.5)},
             backpack = {position = vector3_box(-.5, .5, .4), rotation = vector3_box(200, -120, 110), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(.02, -.03, -.02), step_rotation = vector3_box(2.5, -2.5, .5)},
+                step_move = vector3_box(.02, -.03, -.04), step_rotation = vector3_box(2.5, -2.5, .5)},
             loading = mod.visible_equipment_loading_offsets.ranged_bulky,
         },
         ogryn_thumper_p1_m1 = {
@@ -306,8 +304,8 @@ mod.visible_equipment_offsets = {
             step_sounds = {SoundEventAliases.sfx_weapon_locomotion.events.flamer_p1_m1},
         },
         stubrevolver_p1_m1 = {
-            default = {position = vector3_box(0, .2, .04), rotation = vector3_box(40, -10, 100), scale = vector3_box(1, 1, 1),
-                step_move = vector3_box(-.0025, -.01, .005), step_rotation = vector3_box(-2.5, -5, 5)},
+            default = {position = vector3_box(-.01, .2, .1), rotation = vector3_box(30, -10, 90), scale = vector3_box(1, 1, 1),
+                step_move = vector3_box(-.0025, -.01, .005), step_rotation = vector3_box(-2.5, -2.5, 2.5)},
             backpack = {position = vector3_box(-.09, .21, .1), rotation = vector3_box(180, 10, 90), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.01, .0075, .0025), step_rotation = vector3_box(-1.5, -2.5, -5)},
             loading = mod.visible_equipment_loading_offsets.default,

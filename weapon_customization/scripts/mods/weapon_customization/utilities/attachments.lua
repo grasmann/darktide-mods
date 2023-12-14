@@ -26,12 +26,18 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
     local table = table
 	local table_insert = table.insert
 	local table_contains = table.contains
+	local table_clone = table.clone
     local Unit = Unit
 	local unit_get_data = Unit.get_data
 	local unit_alive = Unit.alive
 	local unit_get_child_units = Unit.get_child_units
 	local unit_debug_name = Unit.debug_name
     local unit_has_node = Unit.has_node
+	local unit_set_unit_visibility = Unit.set_unit_visibility
+	local unit_set_local_scale = Unit.set_local_scale
+	local unit_num_meshes = Unit.num_meshes
+	local unit_set_mesh_visibility = Unit.set_mesh_visibility
+	local vector3 = Vector3
     local managers = Managers
     local math = math
     local math_abs = math.abs
@@ -55,6 +61,47 @@ local KASR = mod:localize("mod_attachment_kasr")
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+-- Get vanilla default attachment of specified item and slot
+mod.get_actual_default_attachment = function(self, item, attachment_slot)
+	-- Check item
+	if item then
+		-- Setup master items backup
+		self:setup_item_definitions()
+		-- Get original item
+		local original_item = self:persistent_table(REFERENCE).item_definitions[item.name]
+		local item_name = self:item_name_from_content_string(original_item.name)
+		-- Check item
+		if original_item and original_item.attachments then
+			-- Find attachment
+			local attachment = self:_recursive_find_attachment(original_item.attachments, attachment_slot)
+			if attachment then
+				if attachment.attachment_name then return attachment.attachment_name end
+				-- Check attachment data
+				if item_name and self.attachment_models[item_name] and self.default_attachment_models[item_name] then
+					-- Iterate attachments
+					local filter = {"laser_pointer"}
+					local default = nil
+					for _, attachment_name in pairs(mod.default_attachment_models[item_name]) do
+						if not table_contains(filter, attachment_name) then
+							local attachment_data = self.attachment_models[item_name][attachment_name]
+
+							if not string_find(attachment_name, "default") and attachment_data
+									and attachment_data.model == attachment.item and attachment_data.model ~= "" then
+								default = attachment_name
+								break
+							elseif string_find(attachment_name, "default") and attachment_data 
+									and attachment_data.model == attachment.item and attachment_data.model ~= "" then
+								default = attachment_name
+							end
+						end
+					end
+					return default
+				end
+			end
+		end
+	end
+end
 
 mod.get_item_attachment_slots = function(self, item)
 	local item_name = self:item_name_from_content_string(item.name)
@@ -120,7 +167,7 @@ mod.load_attachment_packages = function(self, item, attachment_slot)
 				local callback = callback(mod, "attachment_package_loaded", attachment_data.index, attachment_slot, attachment_data.name, attachment_data.base_unit)
 				if not self:persistent_table(REFERENCE).loaded_packages.customization[package_key] then
 					self:persistent_table(REFERENCE).used_packages.customization[package_key] = true
-					self:persistent_table(REFERENCE).loaded_packages.customization[package_key] = managers.package:load(package_name, REFERENCE, callback, true)
+					self:persistent_table(REFERENCE).loaded_packages.customization[package_key] = managers.package:load(package_name, REFERENCE, callback)
 				end
 			end
 		end
@@ -520,6 +567,52 @@ end
 
 
 
+mod.execute_hide_meshes = function(self, item, attachment_units)
+	local gear_id = self:get_gear_id(item)
+	local slot_info_id = self:get_slot_info_id(item)
+	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+	local item_name = self:item_name_from_content_string(item.name)
+	for _, unit in pairs(attachment_units) do
+		if slot_infos[slot_info_id] then
+			local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
+			local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
+			-- Hide meshes
+			local hide_mesh = attachment_data and attachment_data.hide_mesh
+			-- Get fixes
+			local fixes = mod:_apply_anchor_fixes(item, unit)
+			hide_mesh = fixes and fixes.hide_mesh or hide_mesh
+			-- Check hide mesh
+			if hide_mesh then
+				-- Iterate hide mesh entries
+				for _, hide_entry in pairs(hide_mesh) do
+					-- Check more than one parameter
+					if #hide_entry > 1 then
+						-- Get attachment name - parameter 1
+						local attachment_slot = hide_entry[1]
+						-- Get attachment unit
+						local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+						-- Check unit
+						if hide_unit and unit_alive(hide_unit) then
+							-- Hide nodes
+							for i = 2, #hide_entry do
+								local mesh_index = hide_entry[i]
+								if unit_num_meshes(hide_unit) >= mesh_index then
+									unit_set_mesh_visibility(hide_unit, mesh_index, false)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+
+
+
+
+
 
 
 
@@ -778,4 +871,197 @@ mod._overwrite_attachments = function(self, item_data, attachments)
         -- end
     end
 
+end
+
+
+
+
+
+
+
+
+local attachment_setting_overwrite = {
+	slot_trinket_1 = "slot_trinket_1",
+	slot_trinket_2 = "slot_trinket_2",
+	help_sight = "bolter_sight_01",
+}
+
+mod._add_custom_attachments = function(self, item, attachments)
+	local gear_id = self:get_gear_id(item)
+	if gear_id and attachments then
+		-- Get item name
+		local item_name = self:item_name_from_content_string(item.name)
+		-- Save original attachments
+		if item.__master_item and not item.__master_item.original_attachments then
+			item.__master_item.original_attachments = table_clone(attachments)
+		elseif not item.original_attachments then
+			item.original_attachments = table_clone(attachments)
+		end
+		-- Iterate custom attachment slots
+		for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
+			-- Get weapon setting for attachment slot
+			local attachment_setting = self:get_gear_setting(gear_id, attachment_slot, item)
+			local attachment = self:_recursive_find_attachment(attachments, attachment_slot)
+			-- Overwrite specific attachment settings
+			if table_contains(attachment_setting_overwrite, attachment_slot) then
+				attachment_setting = attachment_setting_overwrite[attachment_slot]
+			end
+			-- if attachment_slot == "slot_trinket_1" then attachment_setting = "slot_trinket_1" end
+			-- if attachment_slot == "slot_trinket_2" then attachment_setting = "slot_trinket_2" end
+			-- if attachment_slot == "help_sight" then attachment_setting = "bolter_sight_01" end
+			if table_contains(self[attachment_table], attachment_setting) then
+				-- Get attachment data
+				local attachment_data = self.attachment_models[item_name] and self.attachment_models[item_name][attachment_setting]
+				if attachment_data and attachment_data.parent then
+					-- Set attachment parent
+					local parent = attachments
+					local has_original_parent, original_parent = self:_recursive_find_attachment_parent(attachments, attachment_slot)
+					if has_original_parent and attachment_data.parent ~= original_parent then
+						self:_recursive_remove_attachment(attachments, attachment_slot)
+					end
+					local parent_slot = self:_recursive_find_attachment(attachments, attachment_data.parent)
+					parent = parent_slot and parent_slot.children or parent
+					-- Children
+					local original_children = {}
+					if attachment and attachment.children then
+						original_children = table_clone(attachment.children)
+					end
+					-- Value
+					local original_value = nil
+					if attachment and attachment.item and attachment.item ~= "" then
+						original_value = attachment and attachment.item
+					end
+					-- Attach custom slot
+					parent[attachment_slot] = {
+						children = original_children,
+						item = original_value or attachment_data.model,
+						attachment_type = attachment_slot,
+            			attachment_name = attachment_setting,
+					}
+				end
+			end
+		end
+	end
+end
+
+mod._apply_anchor_fixes = function(self, item, unit_or_name)
+	-- if item and self:is_composite_item(item.name) then
+	-- 	if item.anchors[unit_or_name] then
+	-- 		mod:echo(tostring(item.anchors[unit_or_name]))
+	-- 		return item.anchors[unit_or_name]
+	-- 	end
+	-- end
+	if item and item.attachments then
+		local gear_id = self:get_gear_id(item)
+		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
+		local slot_info_id = self:get_slot_info_id(item)
+		local item_name = self:item_name_from_content_string(item.name)
+
+		-- -- Default
+		-- if type(unit_or_name) == "string" and string_find(unit_or_name, "default") then
+		-- 	mod:echo("default: "..tostring(unit_or_name))
+		-- 	local attachment_data = self.attachment_models[item_name][unit_or_name]
+		-- 	local attachment_slot = attachment_data and attachment_data.type
+		-- 	unit_or_name = attachment_slot and self:get_gear_setting(gear_id, attachment_slot, item) or unit_or_name
+		-- 	mod:echo("attachment: "..tostring(unit_or_name))
+		-- end
+
+		local attachments = item.attachments
+		if gear_id then
+			-- Fixes
+			if self.anchors[item_name] and self.anchors[item_name].fixes then
+				local fixes = self.anchors[item_name].fixes
+				for _, fix_data in pairs(fixes) do
+					-- Dependencies
+					local has_dependencies = false
+					local no_dependencies = false
+					if fix_data.dependencies then
+						for _, dependency_entry in pairs(fix_data.dependencies) do
+							-- local sets = string_split(dependency_entry, ",")
+							-- for _, set in pairs(sets) do
+							-- if not string_find(dependency_entry, ",") then
+								local dependency_possibilities = string_split(dependency_entry, "|")
+								local has_dependency_possibility = false
+
+								for _, dependency_possibility in pairs(dependency_possibilities) do
+									local negative = string_find(dependency_possibility, "!")
+									dependency_possibility = string_gsub(dependency_possibility, "!", "")
+									if self.attachment_models[item_name] and self.attachment_models[item_name][dependency_possibility] then
+										-- local model_string = self.attachment_models[item_name][dependency].model
+										if negative then
+											has_dependency_possibility = not self:_recursive_find_attachment_name(attachments, dependency_possibility)
+										else
+											has_dependency_possibility = self:_recursive_find_attachment_name(attachments, dependency_possibility)
+										end
+										if has_dependency_possibility then break end
+									elseif table_contains(self.attachment_slots, dependency_possibility) then
+										if negative then
+											has_dependency_possibility = not self:_recursive_find_attachment(attachments, dependency_possibility)
+										else
+											has_dependency_possibility = self:_recursive_find_attachment(attachments, dependency_possibility)
+										end
+										if has_dependency_possibility then break end
+									end
+								end
+
+								has_dependencies = has_dependency_possibility
+								if not has_dependencies then break end
+							-- end
+						end
+					else
+						no_dependencies = true
+					end
+					if has_dependencies or no_dependencies then
+						for fix_attachment, fix in pairs(fix_data) do
+							-- Attachment
+							if slot_infos and slot_infos[slot_info_id] then
+								local attachment_slot_info = slot_infos[slot_info_id]
+								if self.attachment_models[item_name] and self.attachment_models[item_name][fix_attachment] then
+									-- local model_string = self.attachment_models[item_name][fix_attachment].model
+									local has_fix_attachment = self:_recursive_find_attachment_name(attachments, fix_attachment)
+									local fix_attachment_slot = self.attachment_models[item_name][fix_attachment].type
+									if has_fix_attachment and fix_attachment_slot and unit_or_name == attachment_slot_info.attachment_slot_to_unit[fix_attachment_slot] then
+										return fix
+									end
+								end
+								-- Slot
+								if unit_or_name == attachment_slot_info.attachment_slot_to_unit[fix_attachment] then
+									return fix
+								end
+							end
+							-- Scope offset etc
+							if unit_or_name == fix_attachment then
+								return fix
+							end
+						end
+					end
+				end
+			end
+		else self:print("slot_info is nil") end
+	end
+end
+
+
+
+
+
+
+
+
+
+mod.hide_bullets = function(self, attachment_units)
+    if attachment_units and #attachment_units > 0 then
+        local hide_units = {"bullet_01", "bullet_02", "bullet_03", "bullet_04", "bullet_05",
+            "casing_01", "casing_02", "casing_03", "casing_04", "casing_05",
+            "speedloader"}
+        -- Iterate attachments
+        for _, unit in pairs(attachment_units) do
+            -- Check hide unit
+            if table.contains(hide_units, Unit.get_data(unit, "attachment_slot")) then
+                -- Hide
+                unit_set_unit_visibility(unit, false, false)
+                unit_set_local_scale(unit, 1, vector3(0, 0, 0))
+            end
+        end
+    end
 end

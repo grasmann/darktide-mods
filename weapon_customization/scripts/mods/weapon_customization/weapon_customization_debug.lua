@@ -87,6 +87,7 @@ mod.find_attachment_entries = function(self)
 	self:dtf(melee_definitions, "melee_definitions", 15)
 end
 
+
 -- ##### ┌┬┐┌─┐┌─┐┌┬┐  ┬┌┐┌┌┬┐┌─┐─┐ ┬ #################################################################################
 -- #####  │ ├┤ └─┐ │   ││││ ││├┤ ┌┴┬┘ #################################################################################
 -- #####  ┴ └─┘└─┘ ┴   ┴┘└┘─┴┘└─┘┴ └─ #################################################################################
@@ -111,6 +112,7 @@ mod._debug_skip_some = true
 
 -- Debug print
 mod.print = function(self, message, skip)
+	self:info(message)
 	if self._debug and not skip then self:echo(message) end
 end
 

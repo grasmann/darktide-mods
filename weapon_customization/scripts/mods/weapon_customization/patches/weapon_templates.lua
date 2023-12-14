@@ -4,6 +4,8 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local WeaponTemplates = mod:original_require("scripts/settings/equipment/weapon_templates/weapon_templates")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -19,8 +21,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "weapon_customization"
-
-mod.weapon_templates = {}
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ################################################
 -- ##### │││├┤ ├─┤├─┘│ ││││   │ ├┤ │││├─┘│  ├─┤ │ ├┤   ├─┘├─┤ │ │  ├─┤ ################################################
@@ -74,10 +74,42 @@ mod.template_add_torch = function(self, orig_weapon_template)
 end
 
 mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
-	if not instance._weapon_template then instance._weapon_template = instance.weapon_template end
-	instance.weapon_template = function(template_name)
-		local weapon_template = instance._weapon_template(template_name)
-        -- local weapon_template = mod:template_set_bolt_pistol(weapon_template)
-		return mod:template_add_torch(weapon_template)
-	end
+
+    -- mod:hook(instance, "weapon_template", function(func, template_name, ...)
+    --     local weapon_template = func(template_name, ...)
+    --     -- local weapon_template = mod:template_set_bolt_pistol(weapon_template)
+	-- 	return mod:template_add_torch(weapon_template)
+    -- end)
+
+    -- current_weapon_template = function (weapon_action_component)
+	-- 	return WeaponTemplates[weapon_action_component.template_name]
+	-- end
+    mod:hook(instance, "current_weapon_template", function(func, weapon_action_component, ...)
+        return mod:template_add_torch(func(weapon_action_component, ...))
+    end)
+
+    -- WeaponTemplate.weapon_template_from_item = function (weapon_item)
+    --     if not weapon_item then
+    --         return nil
+    --     end
+    
+    --     local weapon_template_name = weapon_item.weapon_template
+    --     local weapon_progression_template_name = weapon_item.weapon_progression_template
+    
+    --     if weapon_progression_template_name then
+    --         return WeaponTemplates[weapon_progression_template_name]
+    --     end
+    
+    --     return WeaponTemplates[weapon_template_name]
+    -- end
+    mod:hook(instance, "weapon_template_from_item", function(func, weapon_item, ...)
+        return mod:template_add_torch(func(weapon_item, ...))
+    end)
+
+	-- if not instance._weapon_template then instance._weapon_template = instance.weapon_template end
+	-- instance.weapon_template = function(template_name)
+	-- 	local weapon_template = instance._weapon_template(template_name)
+    --     -- local weapon_template = mod:template_set_bolt_pistol(weapon_template)
+	-- 	return mod:template_add_torch(weapon_template)
+	-- end
 end)

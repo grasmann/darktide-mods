@@ -274,16 +274,16 @@ return table.combine(
             end),
             functions.underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
             functions.sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, 0, .1), "sight", nil, {
-                {rail = "rail_default", sight_2 = "sight_none"}
+                {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"}
             }),
             -- Ranged
             _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.3, -3, 0), vector3_box(.2, 0, 0)),
             -- _common_ranged.reflex_sights_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
             _common_ranged.reflex_sights_models("barrel", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.4, 0), "sight", {}, {
-                {rail = "rail_default", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
+                {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
+                {rail = "rail_01", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
+                {rail = "rail_01", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
+                {rail = "rail_01", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
             }),
             _common_ranged.sights_models("barrel", .35, vector3_box(0, -4, -.2), {
                 vector3_box(-.2, 0, 0),
@@ -296,15 +296,15 @@ return table.combine(
                 vector3_box(0, -.2, 0),
                 vector3_box(0, -.2, 0),
             }, "sight", {}, {
-                {rail = "rail_default", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
-                {rail = "rail_default", sight_2 = "sight_default"},
-                {rail = "rail_01", sight_2 = "sight_default"},
-                {rail = "rail_default", sight_2 = "scope_sight_03"},
+                {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
+                {rail = "rail_01", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
+                {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
+                {rail = "rail_01", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
+                {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
                 {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
                 {rail = "rail_default", sight_2 = "scope_sight_02", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
                 {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
-                {rail = "rail_default", sight_2 = "sight_default"},
+                {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
             }, {}, {
                 true,
                 true,

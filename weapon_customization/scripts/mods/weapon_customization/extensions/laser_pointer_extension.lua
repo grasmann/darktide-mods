@@ -67,6 +67,7 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
     local DebugDrawer = DebugDrawer
     local managers = Managers
     local get_mod = get_mod
+    local wc_perf = wc_perf
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -93,7 +94,7 @@ local LINE_EFFECT = {
 local SPAWNER_NAME = "slot_primary_laser_pointer_1p"
 local SPAWNER_NAME_3P = "slot_primary_laser_pointer_3p"
 local LOCK_STATES = {"walking", "sliding", "jumping", "falling", "dodging", "ledge_vaulting"}
-local CROUCH_OPTION = "mod_option_misc_cover_on_crouch"
+-- local CROUCH_OPTION = "mod_option_misc_cover_on_crouch"
 
 -- ##### ┬  ┌─┐┌─┐┌─┐┬─┐  ┌─┐┌─┐┬┌┐┌┌┬┐┌─┐┬─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #############################################
 -- ##### │  ├─┤└─┐├┤ ├┬┘  ├─┘│ │││││ │ ├┤ ├┬┘  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ #############################################
@@ -188,16 +189,18 @@ LaserPointerExtension.update_all = function(self, dt, t)
 end
 
 LaserPointerExtension.update = function(self, dt, t)
+    local perf = wc_perf.start("LaserPointerExtension.update", 2)
     self:update_all(dt, t)
     self.last_first_person = self:get_first_person()
+    wc_perf.stop(perf)
 end
 
 LaserPointerExtension.update_lock = function(self, dt, t)
     self.lock = table_contains(LOCK_STATES, self.character_state)
-    local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching
-    if mod:get(CROUCH_OPTION) and is_crouching then
-        self.lock = false
-    end
+    -- local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching
+    -- if mod:get(CROUCH_OPTION) and is_crouching then
+    --     self.lock = false
+    -- end
     if self.lock_overwrite ~= nil then
         self.lock = self.lock_overwrite
     end
@@ -344,9 +347,9 @@ LaserPointerExtension.update_laser_particle = function(self, dt, t)
             world_set_particles_variable(self.world, laser_effect_id, variable_index, vector3(scale, distance, distance))
             -- Weapon FOV compatibility
             local first_person = not self:get_first_person()
-            if self:is_weapon_fov_installed() and first_person then
-                world_set_particles_use_custom_fov(self.world, laser_effect_id, false)
-            end
+            -- if self:is_weapon_fov_installed() and first_person then
+            world_set_particles_use_custom_fov(self.world, laser_effect_id, false)
+            -- end
             -- Update end position
             for index, data in pairs(aligned_vfx.buffer) do
                 if data.particle_id == laser_effect_id then
@@ -507,7 +510,7 @@ LaserPointerExtension.spawn_weapon_dot = function(self)
 end
 
 LaserPointerExtension.despawn_weapon_dot = function(self)
-    if self.dot_weapon_effect_id then
+    if self.dot_weapon_effect_id and self.dot_weapon_effect_id > 0 then
         world_stop_spawning_particles(self.world, self.dot_weapon_effect_id)
         world_destroy_particles(self.world, self.dot_weapon_effect_id)
         self.dot_weapon_effect_id = nil
@@ -537,7 +540,7 @@ LaserPointerExtension.spawn_laser_dot = function(self)
 end
 
 LaserPointerExtension.despawn_laser_dot = function(self)
-    if self.laser_dot_effect_id then
+    if self.laser_dot_effect_id and self.laser_dot_effect_id > 0 then
         world_stop_spawning_particles(self.world, self.laser_dot_effect_id)
         world_destroy_particles(self.world, self.laser_dot_effect_id)
         self.laser_dot_effect_id = nil

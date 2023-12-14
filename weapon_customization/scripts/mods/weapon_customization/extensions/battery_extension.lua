@@ -19,6 +19,7 @@ local mod = get_mod("weapon_customization")
     local script_unit = ScriptUnit
     local script_unit_has_extension = script_unit.has_extension
     local script_unit_extension = script_unit.extension
+    local wc_perf = wc_perf
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -94,6 +95,7 @@ end
 
 -- Update battery
 BatteryExtension.update = function(self, dt, t)
+    local perf = wc_perf.start("BatteryExtension.update", 2)
     -- Check battery template
     if self.battery_template then
         -- Battery interval
@@ -112,6 +114,7 @@ BatteryExtension.update = function(self, dt, t)
             self.timer = t + self.battery_template.interval
         end
     end
+    wc_perf.stop(perf)
 end
 
 BatteryExtension.on_wield_slot = function(self, slot)

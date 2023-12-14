@@ -61,6 +61,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local script_unit = ScriptUnit
     local script_unit_has_extension = script_unit.has_extension
     local script_unit_extension = script_unit.extension
+    local wc_perf = wc_perf
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -148,13 +149,11 @@ SightExtension.is_hiding_crosshair = function(self)
     local laser = self.deactivate_crosshair_laser and mod:execute_extension(self.player_unit, "laser_pointer_system", "is_active")
     local sniper_or_scope = self:is_sniper() or self:is_scope()
     local aiming = self.deactivate_crosshair_aiming and self._is_aiming and sniper_or_scope
-    -- mod:echot("deactivate_crosshair_aiming: "..tostring(self.deactivate_crosshair_aiming))
-    -- mod:echot("laser: "..tostring(laser).." ".."sniper_or_scope: "..tostring(sniper_or_scope).." ".."aiming: "..tostring(aiming))
     return laser or aiming
 end
 
 SightExtension.is_aiming = function(self)
-    return self._is_aiming
+    return self.alternate_fire_component and self.alternate_fire_component.is_active
 end
 
 SightExtension.is_scope = function(self)
@@ -330,10 +329,11 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 SightExtension.update = function(self, unit, dt, t)
+    local perf = wc_perf.start("SightExtension.update", 2)
     if self.initialized then
         -- local rotation = self.lens_units[3] and unit_local_rotation(self.lens_units[3], 1)
 
-        if self.lens_units and self.lens_units[3] and self.default_reticle_position
+        if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position
                 and not self.is_starting_aim and not self._is_aiming then
             local default_offset = vector3_unbox(self.default_reticle_position)
             unit_set_local_position(self.lens_units[3], 1, default_offset)
@@ -353,7 +353,7 @@ SightExtension.update = function(self, unit, dt, t)
                     if self.offset.position then
                         local position = vector3_lerp(vector3_zero(), vector3_unbox(self.offset.position), anim_progress)
                         self.position_offset = vector3_box(position)
-                        if self.lens_units and self.lens_units[3] and self.default_reticle_position then
+                        if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
                             local default_offset = vector3_unbox(self.default_reticle_position)
                             local rotation = unit_local_rotation(self.lens_units[3], 1)
                             local forward = Quaternion.forward(rotation)
@@ -372,7 +372,7 @@ SightExtension.update = function(self, unit, dt, t)
             elseif self.aim_timer and t > self.aim_timer then
                 self.is_starting_aim = nil
                 if self.sniper_zoom then
-                    if self.lens_units and self.lens_units[3] and self.default_reticle_position then
+                    if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
                         local default_offset = vector3_unbox(self.default_reticle_position)
                         local rotation = unit_local_rotation(self.lens_units[3], 1)
                         local forward = Quaternion.forward(rotation)
@@ -407,7 +407,7 @@ SightExtension.update = function(self, unit, dt, t)
                     if self.offset.position then
                         local position = vector3_lerp(vector3_unbox(self.offset.position), vector3_zero(), anim_progress)
                         self.position_offset = vector3_box(position)
-                        if self.lens_units and self.lens_units[3] and self.default_reticle_position then
+                        if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
                             local default_offset = vector3_unbox(self.default_reticle_position)
                             local rotation = unit_local_rotation(self.lens_units[3], 1)
                             local forward = Quaternion.forward(rotation)
@@ -426,7 +426,7 @@ SightExtension.update = function(self, unit, dt, t)
                     end
                 end
             elseif self.aim_timer and t > self.aim_timer then
-                if self.lens_units and self.lens_units[3] and self.default_reticle_position then
+                if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
                     local default_offset = vector3_unbox(self.default_reticle_position)
                     unit_set_unit_visibility(self.lens_units[3], false)
                     unit_set_local_position(self.lens_units[3], 1, default_offset)
@@ -441,6 +441,7 @@ SightExtension.update = function(self, unit, dt, t)
 
         self:update_scope_lenses()
     end
+    wc_perf.stop(perf)
 end
 
 -- mod:hook(CLASS.ActionWeaponBase, "init", function(func, self, action_context, action_params, action_settings, ...)
@@ -505,40 +506,16 @@ SightExtension.update_zoom = function(self, viewport_name)
         local camera_manager = managers.state.camera
         local camera = camera_manager:camera(viewport_name)
         if camera then
-            -- mod:echot("camera")
             self:set_default_fov(camera_vertical_fov(camera), camera_custom_vertical_fov(camera))
             if self.custom_vertical_fov then camera_set_custom_vertical_fov(camera, self.custom_vertical_fov) end
             if self.vertical_fov then camera_set_vertical_fov(camera, self.vertical_fov) end
-        else
-            mod:echot("!camera")
         end
     end
 end
 
--- mod:hook(CLASS.HudElementCrosshair, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
---     local parent = self._parent
---     if parent then
---         local player_extensions = parent:player_extensions()
---         if player_extensions and player_extensions.unit and self._widget then
---             local is_hiding_crosshair = mod:execute_extension(player_extensions.unit, "sight_system", "is_hiding_crosshair")
-            
---             self._widget.visible = not is_hiding_crosshair
---         end
---     end
---     func(self, dt, t, input_service, ui_renderer, render_settings, ...)
--- end)
-
 -- ##### ┬─┐┌─┐┌─┐┌─┐┬┬    ┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌─┐┬ ┬ ####################################################################
 -- ##### ├┬┘├┤ │  │ │││    ├─┤│││ ││  └─┐│││├─┤└┬┘ ####################################################################
 -- ##### ┴└─└─┘└─┘└─┘┴┴─┘  ┴ ┴┘└┘─┴┘  └─┘└┴┘┴ ┴ ┴  ####################################################################
-
--- SightExtension.get_first_person = function(self)
---     local fp_ext = self.first_person_extension
---     local common = self.initialized and (self.is_local_unit or self.spectated)
---     local no_cutscene = not self.cut_scene
---     local first_person = fp_ext and fp_ext:is_in_first_person_mode()
---     return common and no_cutscene and first_person
--- end
 
 SightExtension.get_sniper_sway_template = function(self, sway_template)
     if not self.sniper_sway_template and sway_template and self:is_sniper() then

@@ -34,7 +34,9 @@ mod.systems = {
     BatteryExtension          = "battery_system",
     CrouchAnimationExtension  = "crouch_system",
     SightExtension            = "sight_system",
-    VisibleEquipmentExtension = "visible_equipment_system"}
+    VisibleEquipmentExtension = "visible_equipment_system",
+    WeaponAnimationExtension  = "weapon_animation_system",
+}
 mod.extensions = {
     flashlight_system        = "FlashlightExtension",
     laser_pointer_system     = "LaserPointerExtension",
@@ -42,6 +44,7 @@ mod.extensions = {
     crouch_system            = "CrouchAnimationExtension",
     sight_system             = "SightExtension",
     visible_equipment_system = "VisibleEquipmentExtension",
+    weapon_animation_system  = "WeaponAnimationExtension",
 }
 
 -- ##### ┌┐ ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #####################################################################
@@ -63,20 +66,25 @@ WeaponCustomizationExtension.init = function(self, extension_init_context, unit,
     self.player = extension_init_data.player
     self.player_unit = extension_init_data.player_unit
     self.is_local_unit = extension_init_data.is_local_unit
+
     self.visual_loadout_extension = script_unit_extension(self.player_unit, "visual_loadout_system")
     self.fx_extension = script_unit_extension(self.player_unit, "fx_system")
     self.weapon_extension = script_unit_extension(self.player_unit, "weapon_system")
     self.unit_data = script_unit_extension(self.player_unit, "unit_data_system")
-    self.movement_state_component = self.unit_data and self.unit_data:read_component("movement_state")
     self.character_state_extension = script_unit_extension(self.player_unit, "character_state_machine_system")
-    self.side_extension = managers.state.extension and managers.state.extension:system("side_system")
     self.first_person_extension = script_unit_extension(self.player_unit, "first_person_system")
     self.locomotion_ext = script_unit_extension(self.player_unit, "locomotion_system")
+
     self.first_person_unit = self.first_person_extension and self.first_person_extension:first_person_unit()
+    
+    self.movement_state_component = self.unit_data and self.unit_data:read_component("movement_state")
     self.alternate_fire_component = self.unit_data and self.unit_data:read_component("alternate_fire")
     self.sprint_character_state_component = self.unit_data and self.unit_data:read_component("sprint_character_state")
+    self.hub_jog_character_state = self.unit_data and self.unit_data:read_component("hub_jog_character_state")
+
     self.event_manager = managers.event
-    
+    self.side_extension = managers.state.extension and managers.state.extension:system("side_system")
+
     self.sub_extensions = {}
     self.syncronized_calls = {}
     self.events = {}
@@ -100,9 +108,11 @@ end
 
 -- Update
 WeaponCustomizationExtension.update = function(self, ...)
+    local perf = wc_perf.start("WeaponCustomizationExtension.update", 2)
     for system, extension in pairs(self.sub_extensions) do
         mod:execute_extension(self.player_unit, system, "update", ...)
     end
+    wc_perf.stop(perf)
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################

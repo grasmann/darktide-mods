@@ -39,6 +39,7 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local type = type
     local tostring = tostring
     local script_unit = ScriptUnit
+    local wc_perf = wc_perf
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -186,91 +187,97 @@ mod.setup_item_definitions = function(self, master_items)
     -- -- end
 end
 
-mod.update_modded_packages = function(self)
-    -- Reset used packages
-    local new_used_packages = {}
-    -- Get modded packages
-    local found_packages = self:get_modded_packages()
-    for _, package_name in pairs(found_packages) do
-        new_used_packages[package_name] = true
-    end
-    -- Set packages
-    self:persistent_table(REFERENCE).used_packages.attachments = new_used_packages
-end
+-- mod.update_modded_packages = function(self)
 
-mod.get_modded_packages = function(self)
-    local found_packages = {}
-    -- if table_size(self:persistent_table(REFERENCE).used_packages.attachments) == 0 then
-        self:setup_item_definitions()
-        -- self:load_needed_packages()
-        -- local players = managers.player:players()
-        -- if player_or_nil then players = {player_or_nil} end
-        -- for _, player in pairs(players) do
-        --     local player_unit = player.player_unit
-            -- if self.weapon_extension then
-            -- local weapon_extension = self.weapon_extension --player_unit and script_unit.extension(player_unit, "weapon_system")
-            if self.weapon_extension then
-                local weapons = self.weapon_extension._weapons
-                for slot_name, weapon in pairs(weapons) do
-                    if weapon and weapon.item and weapon.item.attachments then
-                        local packages =self:get_modded_item_packages(weapon.item.attachments)
-                        local original_packages = {}
-                        if weapon.item.original_attachments then
-                            original_packages = self:get_modded_item_packages(weapon.item.original_attachments)
-                        end
-                        for _, package_name in pairs(packages) do
-                            -- self:persistent_table(REFERENCE).used_packages.attachments[package] = true
-                            found_packages[#found_packages+1] = package_name
-                        end
-                        for _, package_name in pairs(original_packages) do
-                            -- self:persistent_table(REFERENCE).used_packages.attachments[package] = true
-                            found_packages[#found_packages+1] = package_name
-                        end
-                    end
-                end
-            end
-        -- end
-    -- end
-    return found_packages
-end
+--     local perf = wc_perf.start("mod.update_modded_packages", 2)
 
-mod.get_modded_item_packages = function(self, attachments)
-    local found_attachments = {}
-    local found_packages = {}
-    self:_recursive_get_attachments(attachments, found_attachments, true)
-    for _, attachment_data in pairs(found_attachments) do
-        local item_string = attachment_data.item
-        if item_string and item_string ~= "" then
-            local item_definition = self:persistent_table(REFERENCE).item_definitions[item_string]
-            if item_definition and item_definition.resource_dependencies then
-                for package_name, _ in pairs(item_definition.resource_dependencies) do
-                    -- self:persistent_table(REFERENCE).used_packages.attachments[package_name] = true
-                    found_packages[#found_packages+1] = package_name
-                end
-            end
-        end
-    end
-    return found_packages
-end
+--     -- Reset used packages
+--     local new_used_packages = {}
+--     -- Get modded packages
+--     local found_packages = self:get_modded_packages()
+--     for _, package_name in pairs(found_packages) do
+--         new_used_packages[package_name] = true
+--     end
+--     -- Set packages
+--     self:persistent_table(REFERENCE).used_packages.attachments = new_used_packages
+
+--     wc_perf.stop(perf)
+
+-- end
+
+-- mod.get_modded_packages = function(self)
+--     local found_packages = {}
+--     -- if table_size(self:persistent_table(REFERENCE).used_packages.attachments) == 0 then
+--         self:setup_item_definitions()
+--         -- self:load_needed_packages()
+--         -- local players = managers.player:players()
+--         -- if player_or_nil then players = {player_or_nil} end
+--         -- for _, player in pairs(players) do
+--         --     local player_unit = player.player_unit
+--             -- if self.weapon_extension then
+--             -- local weapon_extension = self.weapon_extension --player_unit and script_unit.extension(player_unit, "weapon_system")
+--             if self.weapon_extension then
+--                 local weapons = self.weapon_extension._weapons
+--                 for slot_name, weapon in pairs(weapons) do
+--                     if weapon and weapon.item and weapon.item.attachments then
+--                         local packages =self:get_modded_item_packages(weapon.item.attachments)
+--                         local original_packages = {}
+--                         if weapon.item.original_attachments then
+--                             original_packages = self:get_modded_item_packages(weapon.item.original_attachments)
+--                         end
+--                         for _, package_name in pairs(packages) do
+--                             -- self:persistent_table(REFERENCE).used_packages.attachments[package] = true
+--                             found_packages[#found_packages+1] = package_name
+--                         end
+--                         for _, package_name in pairs(original_packages) do
+--                             -- self:persistent_table(REFERENCE).used_packages.attachments[package] = true
+--                             found_packages[#found_packages+1] = package_name
+--                         end
+--                     end
+--                 end
+--             end
+--         -- end
+--     -- end
+--     return found_packages
+-- end
+
+-- mod.get_modded_item_packages = function(self, attachments)
+--     local found_attachments = {}
+--     local found_packages = {}
+--     self:_recursive_get_attachments(attachments, found_attachments, true)
+--     for _, attachment_data in pairs(found_attachments) do
+--         local item_string = attachment_data.item
+--         if item_string and item_string ~= "" then
+--             local item_definition = self:persistent_table(REFERENCE).item_definitions[item_string]
+--             if item_definition and item_definition.resource_dependencies then
+--                 for package_name, _ in pairs(item_definition.resource_dependencies) do
+--                     -- self:persistent_table(REFERENCE).used_packages.attachments[package_name] = true
+--                     found_packages[#found_packages+1] = package_name
+--                 end
+--             end
+--         end
+--     end
+--     return found_packages
+-- end
 
 -- ##### ┬┌┐┌┬  ┬┌─┐┌┐┌┌┬┐┌─┐┬─┐┬ ┬ ###################################################################################
 -- ##### ││││└┐┌┘├┤ │││ │ │ │├┬┘└┬┘ ###################################################################################
 -- ##### ┴┘└┘ └┘ └─┘┘└┘ ┴ └─┘┴└─ ┴  ###################################################################################
 
-mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
-    local pass_input, pass_draw = func(self, dt, t, input_service, ...)
-    if mod.weapon_changed then
+-- mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
+--     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
+--     if mod.weapon_changed then
 
-        self:_spawn_profile(self._presentation_profile)
+--         self:_spawn_profile(self._presentation_profile)
 
-		managers.ui:item_icon_updated(mod.changed_weapon)
-		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
-		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
+-- 		managers.ui:item_icon_updated(mod.changed_weapon)
+-- 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
+-- 		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
 
-        mod.weapon_changed = nil
-    end
-    return pass_input, pass_draw
-end)
+--         mod.weapon_changed = nil
+--     end
+--     return pass_input, pass_draw
+-- end)
 
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ###########################################################
 -- ##### │ │ ├┤ │││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┘├─┤ │ │  ├─┤ ###########################################################

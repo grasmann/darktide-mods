@@ -83,6 +83,7 @@ local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/i
 	local rawget = rawget
     local Level = Level
     local level_units = Level.units
+	local managers= Managers
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -90,270 +91,89 @@ local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/i
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "weapon_customization"
-local attachment_setting_overwrite = {
-	slot_trinket_1 = "slot_trinket_1",
-	slot_trinket_2 = "slot_trinket_2",
-	help_sight = "bolter_sight_01",
-}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments, node_name, ...)
-    local _attachments = nil
-    if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
-        _attachments = attachments
-    end
-    return func(self, sources, source_name, parent_unit, _attachments, node_name, ...)
-end)
+-- mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments, node_name, ...)
+--     local _attachments = nil
+--     if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
+--         _attachments = attachments
+--     end
+--     return func(self, sources, source_name, parent_unit, _attachments, node_name, ...)
+-- end)
 
-mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
-    local _attachments = nil
-    if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
-        _attachments = attachments
-    end
-    return func(self, spawners, spawner_name, parent_unit, _attachments, node_name, should_add_3p_node, ...)
-end)
+-- mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
+--     local _attachments = nil
+--     if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
+--         _attachments = attachments
+--     end
+--     return func(self, spawners, spawner_name, parent_unit, _attachments, node_name, should_add_3p_node, ...)
+-- end)
 
-mod:hook(CLASS.UIWorldSpawner, "spawn_level", function(func, self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
-    func(self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
-    if string_find(self._world_name, "ViewElementInventoryWeaponPreview") then
-        local level_units = level_units(self._level, true)
-        local unknown_units = {}
-        if level_units then
-            local move_units = {
-                "#ID[7fb88579bf209537]", -- background
-                "#ID[7c763e4de74815e3]", -- lights
-            }
-            local light_units = {
-                "#ID[be13f33921de73ac]", -- lights
-            }
+-- mod:hook(CLASS.UIWorldSpawner, "spawn_level", function(func, self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
+--     func(self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
+--     if string_find(self._world_name, "ViewElementInventoryWeaponPreview") then
+--         local level_units = level_units(self._level, true)
+--         local unknown_units = {}
+--         if level_units then
+--             local move_units = {
+--                 "#ID[7fb88579bf209537]", -- background
+--                 "#ID[7c763e4de74815e3]", -- lights
+--             }
+--             local light_units = {
+--                 "#ID[be13f33921de73ac]", -- lights
+--             }
 
-            mod.preview_lights = {}
+--             mod.preview_lights = {}
 
-            for _, unit in pairs(level_units) do
-                if table_contains(move_units, unit_debug_name(unit)) then
-                    unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 6, 0))
-                end
-                if table_contains(light_units, unit_debug_name(unit)) then
-                    mod.preview_lights[#mod.preview_lights+1] = {
-                        unit = unit,
-                        position = vector3_box(unit_local_position(unit, 1)),
-                    }
-                end
-            end
-        end
-    end
-end)
+--             for _, unit in pairs(level_units) do
+--                 if table_contains(move_units, unit_debug_name(unit)) then
+--                     unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 6, 0))
+--                 end
+--                 if table_contains(light_units, unit_debug_name(unit)) then
+--                     mod.preview_lights[#mod.preview_lights+1] = {
+--                         unit = unit,
+--                         position = vector3_box(unit_local_position(unit, 1)),
+--                     }
+--                 end
+--             end
+--         end
+--     end
+-- end)
 
-mod:hook(CLASS.ExtensionManager, "unregister_unit", function(func, self, unit, ...)
-    if unit and unit_alive(unit) then
-        func(self, unit, ...)
-    end
-end)
-
-mod._add_custom_attachments = function(self, item, attachments)
-	local gear_id = self:get_gear_id(item)
-	if gear_id and attachments then
-		-- Get item name
-		local item_name = self:item_name_from_content_string(item.name)
-		-- Save original attachments
-		if item.__master_item and not item.__master_item.original_attachments then
-			item.__master_item.original_attachments = table_clone(attachments)
-		elseif not item.original_attachments then
-			item.original_attachments = table_clone(attachments)
-		end
-		-- Iterate custom attachment slots
-		for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
-			-- Get weapon setting for attachment slot
-			local attachment_setting = self:get_gear_setting(gear_id, attachment_slot, item)
-			local attachment = self:_recursive_find_attachment(attachments, attachment_slot)
-			-- Overwrite specific attachment settings
-			if table_contains(attachment_setting_overwrite, attachment_slot) then
-				attachment_setting = attachment_setting_overwrite[attachment_slot]
-			end
-			-- if attachment_slot == "slot_trinket_1" then attachment_setting = "slot_trinket_1" end
-			-- if attachment_slot == "slot_trinket_2" then attachment_setting = "slot_trinket_2" end
-			-- if attachment_slot == "help_sight" then attachment_setting = "bolter_sight_01" end
-			if table_contains(self[attachment_table], attachment_setting) then
-				-- Get attachment data
-				local attachment_data = self.attachment_models[item_name] and self.attachment_models[item_name][attachment_setting]
-				if attachment_data and attachment_data.parent then
-					-- Set attachment parent
-					local parent = attachments
-					local has_original_parent, original_parent = self:_recursive_find_attachment_parent(attachments, attachment_slot)
-					if has_original_parent and attachment_data.parent ~= original_parent then
-						self:_recursive_remove_attachment(attachments, attachment_slot)
-					end
-					local parent_slot = self:_recursive_find_attachment(attachments, attachment_data.parent)
-					parent = parent_slot and parent_slot.children or parent
-					-- Children
-					local original_children = {}
-					if attachment and attachment.children then
-						original_children = table_clone(attachment.children)
-					end
-					-- Value
-					local original_value = nil
-					if attachment and attachment.item and attachment.item ~= "" then
-						original_value = attachment and attachment.item
-					end
-					-- Attach custom slot
-					parent[attachment_slot] = {
-						children = original_children,
-						item = original_value or attachment_data.model,
-						attachment_type = attachment_slot,
-            			attachment_name = attachment_setting,
-					}
-				end
-			end
-		end
-	end
-end
-
-mod._apply_anchor_fixes = function(self, item, unit_or_name)
-	-- if item and self:is_composite_item(item.name) then
-	-- 	if item.anchors[unit_or_name] then
-	-- 		mod:echo(tostring(item.anchors[unit_or_name]))
-	-- 		return item.anchors[unit_or_name]
-	-- 	end
-	-- end
-	if item and item.attachments then
-		local gear_id = self:get_gear_id(item)
-		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
-		local slot_info_id = self:get_slot_info_id(item)
-		local item_name = self:item_name_from_content_string(item.name)
-
-		-- -- Default
-		-- if type(unit_or_name) == "string" and string_find(unit_or_name, "default") then
-		-- 	mod:echo("default: "..tostring(unit_or_name))
-		-- 	local attachment_data = self.attachment_models[item_name][unit_or_name]
-		-- 	local attachment_slot = attachment_data and attachment_data.type
-		-- 	unit_or_name = attachment_slot and self:get_gear_setting(gear_id, attachment_slot, item) or unit_or_name
-		-- 	mod:echo("attachment: "..tostring(unit_or_name))
-		-- end
-
-		local attachments = item.attachments
-		if gear_id then
-			-- Fixes
-			if self.anchors[item_name] and self.anchors[item_name].fixes then
-				local fixes = self.anchors[item_name].fixes
-				for _, fix_data in pairs(fixes) do
-					-- Dependencies
-					local has_dependencies = false
-					local no_dependencies = false
-					if fix_data.dependencies then
-						for _, dependency_entry in pairs(fix_data.dependencies) do
-							-- local sets = string_split(dependency_entry, ",")
-							-- for _, set in pairs(sets) do
-							-- if not string_find(dependency_entry, ",") then
-								local dependency_possibilities = string_split(dependency_entry, "|")
-								local has_dependency_possibility = false
-
-								for _, dependency_possibility in pairs(dependency_possibilities) do
-									local negative = string_find(dependency_possibility, "!")
-									dependency_possibility = string_gsub(dependency_possibility, "!", "")
-									if self.attachment_models[item_name] and self.attachment_models[item_name][dependency_possibility] then
-										-- local model_string = self.attachment_models[item_name][dependency].model
-										if negative then
-											has_dependency_possibility = not self:_recursive_find_attachment_name(attachments, dependency_possibility)
-										else
-											has_dependency_possibility = self:_recursive_find_attachment_name(attachments, dependency_possibility)
-										end
-										if has_dependency_possibility then break end
-									elseif table_contains(self.attachment_slots, dependency_possibility) then
-										if negative then
-											has_dependency_possibility = not self:_recursive_find_attachment(attachments, dependency_possibility)
-										else
-											has_dependency_possibility = self:_recursive_find_attachment(attachments, dependency_possibility)
-										end
-										if has_dependency_possibility then break end
-									end
-								end
-
-								has_dependencies = has_dependency_possibility
-								if not has_dependencies then break end
-							-- end
-						end
-					else
-						no_dependencies = true
-					end
-					if has_dependencies or no_dependencies then
-						for fix_attachment, fix in pairs(fix_data) do
-							-- Attachment
-							if slot_infos and slot_infos[slot_info_id] then
-								local attachment_slot_info = slot_infos[slot_info_id]
-								if self.attachment_models[item_name] and self.attachment_models[item_name][fix_attachment] then
-									-- local model_string = self.attachment_models[item_name][fix_attachment].model
-									local has_fix_attachment = self:_recursive_find_attachment_name(attachments, fix_attachment)
-									local fix_attachment_slot = self.attachment_models[item_name][fix_attachment].type
-									if has_fix_attachment and fix_attachment_slot and unit_or_name == attachment_slot_info.attachment_slot_to_unit[fix_attachment_slot] then
-										return fix
-									end
-								end
-								-- Slot
-								if unit_or_name == attachment_slot_info.attachment_slot_to_unit[fix_attachment] then
-									return fix
-								end
-							end
-							-- Scope offset etc
-							if unit_or_name == fix_attachment then
-								return fix
-							end
-						end
-					end
-				end
-			end
-		else self:print("slot_info is nil") end
-	end
-end
+-- mod:hook(CLASS.ExtensionManager, "unregister_unit", function(func, self, unit, ...)
+--     if unit and unit_alive(unit) then
+--         func(self, unit, ...)
+--     end
+-- end)
 
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
 
-mod.execute_hide_meshes = function(self, item, attachment_units)
-	local gear_id = self:get_gear_id(item)
-	local slot_info_id = self:get_slot_info_id(item)
-	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
-	local item_name = self:item_name_from_content_string(item.name)
-	for _, unit in pairs(attachment_units) do
-		if slot_infos[slot_info_id] then
-			local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
-			local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
-			-- Hide meshes
-			local hide_mesh = attachment_data and attachment_data.hide_mesh
-			-- Get fixes
-			local fixes = mod:_apply_anchor_fixes(item, unit)
-			hide_mesh = fixes and fixes.hide_mesh or hide_mesh
-			-- Check hide mesh
-			if hide_mesh then
-				-- Iterate hide mesh entries
-				for _, hide_entry in pairs(hide_mesh) do
-					-- Check more than one parameter
-					if #hide_entry > 1 then
-						-- Get attachment name - parameter 1
-						local attachment_slot = hide_entry[1]
-						-- Get attachment unit
-						local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
-						-- Check unit
-						if hide_unit and unit_alive(hide_unit) then
-							-- Hide nodes
-							for i = 2, #hide_entry do
-								local mesh_index = hide_entry[i]
-								if unit_num_meshes(hide_unit) >= mesh_index then
-									unit_set_mesh_visibility(hide_unit, mesh_index, false)
-								end
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-end
+-- mod:hook(CLASS.InventoryBackgroundView, "_check_profile_changes", function(func, self, ...)
+-- 	func(self, ...)
 
-local output_index = 1
+-- 	mod:echo("check")
+-- end)
+
+mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
+    local pass_input, pass_draw = func(self, dt, t, input_service, ...)
+    if mod.weapon_changed then
+
+        self:_spawn_profile(self._presentation_profile)
+
+		managers.ui:item_icon_updated(mod.changed_weapon)
+		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
+		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
+
+        mod.weapon_changed = nil
+    end
+    return pass_input, pass_draw
+end)
+
 -- Visual loadout extension hooks
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
@@ -368,24 +188,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local attachments = item_data.attachments
 		local gear_id = mod:get_gear_id(item_data)
 		local slot_info_id = mod:get_slot_info_id(item_data)
-		local in_possesion_of_player = mod:item_in_possesion_of_player(item_data)
-		local in_store = mod:item_in_store(item_data)
-		-- if in_possesion_of_player and gear_id then
-		-- 	-- mod:echo("In possesion of player: "..tostring(gear_id))
-		-- end
-		-- if in_store == "store" and gear_id then
-		-- 	if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-		-- 		local master_item = item_data.__master_item or item_data
-		-- 		local random_attachments = mod:randomize_weapon(master_item)
-		-- 		mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
-		-- 	end
-		-- 	-- mod:echo("In store: "..tostring(gear_id).." - "..tostring(in_store))
-		-- end
-		-- if output_index < 20 then
-		-- 	mod:echo("In possesion of player: "..tostring(in_possesion_of_player))
-		-- 	-- mod:echo("In store: "..tostring(in_store))
-		-- 	output_index = output_index + 1
-		-- end
+		local in_possesion_of_player = mod:is_owned_by_player(item_data)
 		local attachment_slot_info = {}
 
 		if item_unit and attachments and gear_id and (not item_data.premium_store_item or in_possesion_of_player) then
@@ -697,10 +500,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	end
 
 	instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
+		-- attach_settings.force_highest_lod_step = false
 		local weapon_skin = instance._validate_item_name(item_data.slot_weapon_skin)
 		local gear_id = mod:get_gear_id(item_data)
-		local in_possesion_of_player = mod:item_in_possesion_of_player(item_data)
-		local in_store = mod:item_in_store(item_data)
+		local in_possesion_of_player = mod:is_owned_by_player(item_data)
+		local in_store = mod:is_store_item(item_data)
 		-- if in_possesion_of_player and gear_id then
 		-- 	-- mod:echo("In possesion of player: "..tostring(gear_id))
 		-- end
@@ -996,8 +800,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			local attachments = override_item_data.attachments
 			local gear_id = mod:get_gear_id(item_data)
 
-			local in_possesion_of_player = mod:item_in_possesion_of_player(item_data)
-			local in_store = mod:item_in_store(item_data)
+			-- local in_possesion_of_player = mod:item_in_possesion_of_player(item_data)
+			-- local in_store = mod:item_in_store(item_data)
 			-- if in_possesion_of_player and gear_id then
 			-- 	-- mod:echo("In possesion of player: "..tostring(gear_id))
 			-- end

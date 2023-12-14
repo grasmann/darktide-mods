@@ -167,24 +167,26 @@ mod.get_slot_info_id = function(self, item)
 	return item and (item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid)
 end
 
-mod.item_in_possesion_of_player = function(self, item)
-	if managers.data_service and managers.data_service.gear and managers.data_service.gear._cached_gear_list then
-		local gear_id = self:get_gear_id(item)
-		return managers.data_service.gear._cached_gear_list[gear_id] ~= nil
-	end
+mod.is_owned_by_player = function(self, item)
+	local gear_id = self:get_gear_id(item)
+	return gear_id and mod.player_items[gear_id] or mod:get_view("inventory_view") or mod:get_view("inventory_weapons_view") or mod:get_cosmetic_view()
 end
 
-mod.item_in_possesion_of_other_player = function(self, item)
-	return not self:item_in_possesion_of_player(item) and not self:item_in_store(item)
+mod.is_owned_by_other_player = function(self, item)
+	return not self:is_owned_by_player(item) and not self:is_store_item(item) and not self:is_premium_store_item(item)
 end
 
-mod.item_in_store = function(self, item)
-	return item.store_item
+mod.is_store_item = function(self, item)
+	return mod:get_view("credits_vendor_view") or mod:get_view("marks_vendor_view")
 end
 
-mod.save_equipment_file = function(self, gear_id)
-
+mod.is_premium_store_item = function(self, item)
+	return mod:get_view("store_view") or mod:get_view("store_item_detail_view")
 end
+
+-- mod.save_equipment_file = function(self, gear_id)
+
+-- end
 
 -- Set attachment for specified gear id and slot
 mod.set_gear_setting = function(self, gear_id, attachment_slot, optional_attachment_or_nil)
@@ -210,27 +212,35 @@ end
 -- Get attachment from specified gear id and slot
 -- Optional: Item to get real default attachment
 mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or_nil)
+	-- local item = optional_item_or_nil and optional_item_or_nil.__master_item or optional_item_or_nil
+	local in_premium_store = mod:is_premium_store_item(optional_item_or_nil)
 	-- if mod:not_trinket(attachment_slot) then
-	-- Check manual changes
-	local attachment = self:get(tostring(gear_id).."_"..attachment_slot)
+	local attachment = nil
 	-- Check skin
-	-- if not attachment and optional_item_or_nil then
-	-- 	local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
-	-- 	local weapon_skin = optional_item_or_nil.slot_weapon_skin
-	-- 	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
-	-- 		self:setup_item_definitions()
-	-- 		weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
-	-- 	end
-	-- 	if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
-	-- 		local attachment_data = self:_recursive_find_attachment(weapon_skin.attachments, attachment_slot)
-	-- 		if attachment_data then
-	-- 			attachment = attachment_data.attachment_name
-	-- 		end
-	-- 	end
-	-- end
+	if optional_item_or_nil and mod:is_premium_store_item(optional_item_or_nil) then
+		local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
+		local weapon_skin = optional_item_or_nil.slot_weapon_skin
+		if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
+			self:setup_item_definitions()
+			weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
+		end
+		if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
+			local attachment_data = self:_recursive_find_attachment(weapon_skin.attachments, attachment_slot)
+			if attachment_data then
+				attachment = attachment_data.attachment_name
+				-- mod:echo("attachment_name: "..tostring(attachment_data.attachment_name))
+				-- attachment = mod:get_actual_default_attachment(optional_item_or_nil, attachment_slot)
+				-- mod:echo("attachment_name: "..tostring(attachment))
+			end
+		end
+	end
+	-- Check manual changes
+	if not attachment then
+		attachment = self:get(tostring(gear_id).."_"..attachment_slot)
+	end
 	-- Check temp
-	if self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-		attachment = self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot] or attachment
+	if not attachment and self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
+		attachment = self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot]
 	end
 	-- Check default
 	if not attachment and optional_item_or_nil then
@@ -247,47 +257,6 @@ mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or
 	end
 	return attachment
 	-- end
-end
-
--- Get vanilla default attachment of specified item and slot
-mod.get_actual_default_attachment = function(self, item, attachment_slot)
-	-- Check item
-	if item then
-		-- Setup master items backup
-		self:setup_item_definitions()
-		-- Get original item
-		local original_item = self:persistent_table(REFERENCE).item_definitions[item.name]
-		local item_name = self:item_name_from_content_string(original_item.name)
-		-- Check item
-		if original_item and original_item.attachments then
-			-- Find attachment
-			local attachment = self:_recursive_find_attachment(original_item.attachments, attachment_slot)
-			if attachment then
-				if attachment.attachment_name then return attachment.attachment_name end
-				-- Check attachment data
-				if item_name and self.attachment_models[item_name] and self.default_attachment_models[item_name] then
-					-- Iterate attachments
-					local filter = {"laser_pointer"}
-					local default = nil
-					for _, attachment_name in pairs(mod.default_attachment_models[item_name]) do
-						if not table_contains(filter, attachment_name) then
-							local attachment_data = self.attachment_models[item_name][attachment_name]
-
-							if not string_find(attachment_name, "default") and attachment_data
-									and attachment_data.model == attachment.item and attachment_data.model ~= "" then
-								default = attachment_name
-								break
-							elseif string_find(attachment_name, "default") and attachment_data 
-									and attachment_data.model == attachment.item and attachment_data.model ~= "" then
-								default = attachment_name
-							end
-						end
-					end
-					return default
-				end
-			end
-		end
-	end
 end
 
 mod.get_gear_size = function(self)

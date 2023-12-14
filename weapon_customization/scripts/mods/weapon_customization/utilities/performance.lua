@@ -29,10 +29,12 @@ local REFERENCE = "weapon_customization"
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-local start_performance_measure = function(name)
+mod:persistent_table(REFERENCE).performance.result_cache = {}
+
+local start_performance_measure = function(name, threshold)
     local performance = mod:persistent_table(REFERENCE).performance
     local id = #performance.measurements + 1
-    performance.measurements[id] = {name = name, start = _os.clock()}
+    performance.measurements[id] = {name = name, start = _os.clock(), threshold = threshold or 0}
     return id
 end
 
@@ -59,11 +61,13 @@ local stop_performance_measure = function(id, echo)
         local minus = performance.measurements[id].minus or 0
         local result = ((time - performance.measurements[id].start) - minus) * 1000
         -- Cache
-        performance.result_cache[performance.measurements[id].name] = performance.result_cache[performance.measurements[id].name] or {}
-        local c = performance.result_cache[performance.measurements[id].name]
-        c[#c+1] = result
+        if result >= performance.measurements[id].threshold then
+            performance.result_cache[performance.measurements[id].name] = performance.result_cache[performance.measurements[id].name] or {}
+            local c = performance.result_cache[performance.measurements[id].name]
+            c[#c+1] = result
+        end
         -- Cache
-        if echo then mod:echot(tostring(result)) end
+        if echo then mod:echo(tostring(result)) end
         performance.measurements[id] = nil
         return result
     end

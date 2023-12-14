@@ -22,6 +22,9 @@ mod:persistent_table(REFERENCE, {
 	weapon_templates = {},
 	temp_gear_settings = {},
 	fade_system = nil,
+	extensions = {
+		visible_equipment = {},
+	},
 	-- Pakcages
 	loaded_packages = {
 		visible_equipment = {},
@@ -90,6 +93,10 @@ function mod.on_game_state_changed(status, state_name)
 	-- Release hub packages
 	mod:release_non_essential_packages()
 	mod:persistent_table(REFERENCE).used_packages.hub = {}
+	-- mod:echo("state change: "..tostring(state_name))
+	-- if state_name == "StateLoading" and status == "enter" then
+	-- 	mod:clear_packages()
+	-- end
 	-- Turn off package safety
 	mod.keep_all_packages = nil
 	-- mod:composite_test()
@@ -102,7 +109,7 @@ function mod.on_setting_changed(setting_id)
 	-- Update randomization
 	if setting_id == "mod_option_randomization_players" or setting_id == "mod_option_randomization_store" then
 		mod.keep_all_packages = true
-		mod:update_modded_packages()
+		-- mod:update_modded_packages()
 	end
 	-- Trigger Events
 	managers.event:trigger("weapon_customization_settings_changed")
@@ -130,12 +137,12 @@ mod.player_unit_loaded = function(self)
 	-- Initialize
 	self:init()
 	-- Update used packages
-    self:update_modded_packages()
+    -- self:update_modded_packages()
 end
 
 mod.husk_unit_loaded = function(self)
 	-- Update used packages
-    self:update_modded_packages()
+    -- self:update_modded_packages()
 end
 
 -- Player visual extension destroyed
@@ -145,7 +152,7 @@ mod.player_unit_destroyed = function(self, player_unit)
 		mod.initialized = false
 	end
 	-- Update used packages
-    mod:update_modded_packages()
+    -- mod:update_modded_packages()
 end
 
 -- mod:hook(CLASS.PlayerUnitFirstPersonExtension, "_update_first_person_mode", function(func, self, t, ...)
@@ -167,6 +174,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/weapons")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/attachments")
 
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/misc")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/item_package")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/master_items")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/weapon_templates")
@@ -206,16 +214,11 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/sight_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/visible_equipment_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/battery_extension")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_animation_extension")
 -- Import mod files
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_bolt_pistol")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
--- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_gear")
--- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_utilities")
--- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_flashlight")
--- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_laser_pointer")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_daemon_host")
--- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_visual_loadout")
--- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_fix")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
 
@@ -229,6 +232,7 @@ if managers and managers.player._game_state ~= nil then
 	mod:init()
 	mod:setup_item_definitions()
 	if mod.player_unit and unit_alive(mod.player_unit) then
+		mod:remove_extension(mod.player_unit, "crouch_system")
 		mod:remove_extension(mod.player_unit, "sight_system")
 		mod:remove_extension(mod.player_unit, "visible_equipment_system")
 		mod:remove_extension(mod.player_unit, "flashlight_system")
