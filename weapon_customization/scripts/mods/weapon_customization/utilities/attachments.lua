@@ -419,7 +419,7 @@ mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachmen
 				SoundEventAliases.sfx_inspect.events.ogryn_thumper_p1_m1} end
 			return {SoundEventAliases.sfx_equip.events[item_name] or SoundEventAliases.sfx_equip.default}
 
-		elseif attachment_slot == "bayonet" then
+		elseif attachment_slot == "bayonet" or attachment_slot == "blade" then
 			if type == "select" then return {SoundEventAliases.sfx_equip.events.ogryn_combatblade_p1_m2} end
 			if type == "detach" then return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_pull.events[item_name] or SoundEventAliases.sfx_reload_lever_pull.default}
 			else return {SoundEventAliases.sfx_equip.events.combatsword_p2_m3, SoundEventAliases.sfx_reload_lever_release.events[item_name] or SoundEventAliases.sfx_reload_lever_release.default} end
@@ -448,7 +448,7 @@ mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachmen
 				else return {SoundEventAliases.sfx_equip_02.events.lasgun_p2_m1} end
 			end
 			return {SoundEventAliases.sfx_vent_rattle.events.plasmagun_p1_m1}
-		elseif attachment_slot == "stock" or attachment_slot == "stock_2" or attachment_slot == "stock_3" then
+		elseif attachment_slot == "stock" or attachment_slot == "stock_2" or attachment_slot == "stock_3" or attachment_slot == "hilt" then
 			if type == "select" then return {SoundEventAliases.sfx_inspect.events.ogryn_thumper_p1_m1} end
 			return {SoundEventAliases.sfx_equip_02.events.bolter_p1_m1}
 

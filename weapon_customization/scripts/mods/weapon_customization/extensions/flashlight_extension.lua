@@ -186,7 +186,7 @@ FlashlightExtension.delete = function(self)
     self.initialized = false
     self.on = false
     -- Unregister events
-    managers.event:unregister(self, "weapon_customization_settings_changed")
+    -- managers.event:unregister(self, "weapon_customization_settings_changed")
     -- Unset
     self:set_light(false, false)
     

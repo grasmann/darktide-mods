@@ -386,6 +386,8 @@ mod.visible_equipment_offsets = {
 }
 --#region Other weapons
     mod.visible_equipment_offsets.ogryn_club_p1_m1 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
+    mod.visible_equipment_offsets.ogryn_club_p1_m2 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
+    mod.visible_equipment_offsets.ogryn_club_p1_m3 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
     mod.visible_equipment_offsets.ogryn_combatblade_p1_m1 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
     mod.visible_equipment_offsets.ogryn_combatblade_p1_m2 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
     mod.visible_equipment_offsets.ogryn_combatblade_p1_m3 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
@@ -450,10 +452,12 @@ mod.visible_equipment_offsets = {
     mod.visible_equipment_offsets.combatsword_p3_m2 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
     mod.visible_equipment_offsets.combatsword_p3_m3 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
     mod.visible_equipment_offsets.chainaxe_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+    mod.visible_equipment_offsets.chainaxe_p1_m2 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
     mod.visible_equipment_offsets.chainsword_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
 --#endregion
 --#region Copies
     -- mod.visible_equipment_offsets.thunderhammer_2h_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+    mod.visible_equipment_offsets.chainsword_2h_p1_m2 = mod.visible_equipment_offsets.chainsword_2h_p1_m1
     mod.visible_equipment_offsets.thunderhammer_2h_p1_m2 = mod.visible_equipment_offsets.thunderhammer_2h_p1_m1
     mod.visible_equipment_offsets.ogryn_heavystubber_p1_m2 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1
     mod.visible_equipment_offsets.ogryn_heavystubber_p1_m3 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1
@@ -471,6 +475,8 @@ mod.visible_equipment_offsets = {
 
 --#region Other weapons
     mod.visible_equipment_offsets.ogryn_club_p1_m1.loading = mod.visible_equipment_loading_offsets.melee_medium
+    mod.visible_equipment_offsets.ogryn_club_p1_m2.loading = mod.visible_equipment_loading_offsets.melee_medium
+    mod.visible_equipment_offsets.ogryn_club_p1_m3.loading = mod.visible_equipment_loading_offsets.melee_medium
     mod.visible_equipment_offsets.ogryn_combatblade_p1_m1.loading = mod.visible_equipment_loading_offsets.melee_medium
     mod.visible_equipment_offsets.ogryn_combatblade_p1_m2.loading = mod.visible_equipment_loading_offsets.melee_medium
     mod.visible_equipment_offsets.ogryn_combatblade_p1_m3.loading = mod.visible_equipment_loading_offsets.melee_medium

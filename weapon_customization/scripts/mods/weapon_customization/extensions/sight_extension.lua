@@ -127,6 +127,7 @@ end
 
 SightExtension.delete = function(self)
     managers.event:unregister(self, "weapon_customization_settings_changed")
+    managers.event:unregister(self, "weapon_customization_update_zoom")
     self.initialized = false
     self.offset = vector3_zero()
     SightExtension.super.delete(self)

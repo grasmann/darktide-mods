@@ -90,6 +90,7 @@ local VisibleEquipmentOffsets = mod:io_dofile("weapon_customization/scripts/mods
         return combined
     end
     local wc_perf = wc_perf
+    local type = type
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -134,7 +135,7 @@ local WEIGHT_FACTORS = {
 
 local VisibleEquipmentExtension = class("VisibleEquipmentExtension", "WeaponCustomizationExtension")
 
-local GLOBAL_ARRAY = mod:persistent_table(REFERENCE).extensions.visible_equipment
+-- local GLOBAL_ARRAY = mod:persistent_table(REFERENCE).extensions.visible_equipment
 
 -- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
@@ -146,7 +147,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.loading_spawn_point = extension_init_data.loading_spawn_point
     self.equipment_component = extension_init_data.equipment_component
     self.equipment = extension_init_data.equipment
-    self.wielded_slot = extension_init_data.wielded_slot
+    self.wielded_slot = extension_init_data.wielded_slot or SLOT_UNARMED
     self:set_foot_step_interval()
     self.ui_profile_spawner = extension_init_data.ui_profile_spawner
     self.back_node = self:get_back_node()
@@ -177,7 +178,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
 
     self:on_settings_changed()
 
-    GLOBAL_ARRAY[self] = true
+    -- GLOBAL_ARRAY[self] = true
 
     -- Initialized
     self.initialized = true
@@ -188,7 +189,7 @@ VisibleEquipmentExtension.delete = function(self)
 
     self.initialized = false
 
-    GLOBAL_ARRAY[self] = nil
+    -- GLOBAL_ARRAY[self] = nil
 
     -- Iterate slots
     for slot_name, slot in pairs(self.equipment) do
@@ -276,6 +277,10 @@ VisibleEquipmentExtension.get_back_node = function(self)
     return 1
 end
 
+VisibleEquipmentExtension.get_breed = function(self)
+    return self:get_back_node() == BACKPACK_OFFSET and "ogryn" or "human"
+end
+
 VisibleEquipmentExtension.get_foot_step_interval = function(self)
     -- local unit_data = script_unit.extension(self.player_unit, "unit_data_system")
     -- local movement_state_component = unit_data and unit_data:read_component("movement_state")
@@ -307,43 +312,9 @@ VisibleEquipmentExtension.get_foot_step_interval = function(self)
     end
 end
 
-VisibleEquipmentExtension.get_dependencies = function(self)
-    mod:setup_item_definitions()
-    local found_packages = {}
-    for slot_name, slot in pairs(self.equipment) do
-        if slot_name == SLOT_SECONDARY or slot_name == SLOT_PRIMARY then
-            local item = slot.item
-            local item_definition = item and mod:persistent_table(REFERENCE).item_definitions[item.name]
-            if item_definition and item_definition.resource_dependencies then
-                for package_name, _ in pairs(item_definition.resource_dependencies) do
-                    found_packages[#found_packages+1] = package_name
-                end
-            end
-        end
-    end
-    return found_packages
-    -- return self.dependencies
-end
-
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
 -- ##### │││├┤  │ ├─┤│ │ ││└─┐ ########################################################################################
 -- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
-
-VisibleEquipmentExtension.set_dependencies = function(self)
-    mod:setup_item_definitions()
-    self.dependencies = {}
-    for slot_name, slot in pairs(self.equipment) do
-        if slot_name == SLOT_SECONDARY or slot_name == SLOT_PRIMARY then
-            local item = slot.item
-            local item_definition = item and mod:persistent_table(REFERENCE).item_definitions[item.name]
-            if item_definition and item_definition.resource_dependencies then
-                for package_name, _ in pairs(item_definition.resource_dependencies) do
-                    self.dependencies[#self.dependencies+1] = package_name
-                end
-            end
-        end
-    end
-end
 
 VisibleEquipmentExtension.set_foot_step_interval = function(self)
     if self.initialized then
@@ -352,9 +323,31 @@ VisibleEquipmentExtension.set_foot_step_interval = function(self)
             local item = wielded_slot and wielded_slot.item
             local weapon_template = self.weapon_template[wielded_slot]
             self.footstep_intervals = weapon_template and weapon_template.footstep_intervals
+        elseif not wielded_slot or wielded_slot.name == SLOT_UNARMED then
+            local breed = self:get_breed()
+            -- mod:echo("breed: "..tostring(breed))
+            -- mod:echo("interval: unarmed_"..tostring(breed))
+            local hub = self.is_in_hub and "_hub" or ""
+            local name = "unarmed_"..tostring(breed)..tostring(hub)
+            if footstep_intervals_templates[name] then
+                self.footstep_intervals = footstep_intervals_templates[name]
+            end
         end
     end
 end
+
+mod:hook_require("scripts/settings/equipment/footstep/footstep_intervals_templates", function(footstep_intervals_templates)
+    footstep_intervals_templates.unarmed_human_hub = {
+		crouch_walking = 0.61,
+		walking = 0.37,
+		sprinting = 0.33
+	}
+	footstep_intervals_templates.unarmed_ogryn_hub = {
+		crouch_walking = 0.70,
+		walking = 0.60,
+		sprinting = 0.54
+	}
+end)
 
 VisibleEquipmentExtension.set_estimated_weapon_data = function(self, slot)
     local item_name = self.item_names[slot]
@@ -454,29 +447,59 @@ VisibleEquipmentExtension.position_equipment = function(self)
     end
 end
 
+-- local db_i = 1
+VisibleEquipmentExtension.get_dependencies = function(self, slot)
+    -- Setup definitions
+    mod:setup_item_definitions()
+
+    local found_packages = {}
+    -- Get master item
+    local item = slot.item and slot.item.__master_item
+    -- Get definition
+    local item_definition = mod:persistent_table(REFERENCE).item_definitions[item.name]
+    -- Check resource dependencies
+    if item_definition and item_definition.resource_dependencies then
+        -- Iterate dependencies
+        for package_name, _ in pairs(item_definition.resource_dependencies) do
+            -- Add package
+            found_packages[#found_packages+1] = package_name
+        end
+    end
+    -- Return package list
+    return found_packages
+end
+
 VisibleEquipmentExtension.release_slot_packages = function(self, slot)
-	for sound, package_id in pairs(self.packages[slot]) do
-        -- Set unused
-		mod:persistent_table(REFERENCE).used_packages.visible_equipment[sound] = nil
-        -- Unload package
-		managers.package:release(package_id)
-        -- Remove package id
-        mod:persistent_table(REFERENCE).loaded_packages.visible_equipment[sound] = nil
-        self.packages[slot][sound] = nil
-	end
+    local count = 0
+    if self.packages[slot] then
+        for package_name, package_id in pairs(self.packages[slot]) do
+            -- Unload package
+            managers.package:release(package_id)
+            -- Remove package id
+            self.packages[slot][package_name] = nil
+
+            count = count + 1
+        end
+    end
+    if count > 0 then
+        mod:print("Release "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
+    end
 end
 
 VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
-    for _, sound in pairs(packages) do
+    local count = 0
+    for _, package_name in pairs(packages) do
         -- Check if loaded
-        if not mod:persistent_table(REFERENCE).loaded_packages.visible_equipment[sound] then
-            -- Prevent unload
-            mod:persistent_table(REFERENCE).used_packages.visible_equipment[sound] = true
+        if not self.packages[slot][package_name] then
             -- Load package
-            mod:persistent_table(REFERENCE).loaded_packages.visible_equipment[sound] = managers.package:load(sound, REFERENCE)
-            -- Set package id
-            self.packages[slot][sound] = mod:persistent_table(REFERENCE).loaded_packages.visible_equipment[sound]
+            local ref = REFERENCE.."_"..tostring(self.player_unit)
+            self.packages[slot][package_name] = managers.package:load(package_name, ref)
+            
+            count = count + 1
         end
+    end
+    if count > 0 then
+        mod:print("Load "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
     end
 end
 
@@ -486,77 +509,83 @@ end
 
 VisibleEquipmentExtension.on_equip_slot = function(self, slot)
     -- Check item
-	local item = slot.item and slot.item.__master_item
-	if not self.slot_loaded[slot] and not self.slot_is_loading[slot] then
-        local item_good = item and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED)
-        local loaded = slot.item_loaded or slot.attachment_spawn_status == ATTACHMENT_SPAWN_STATUS.fully_spawned
-        if item_good and loaded then
-            -- mod:add_to_packages(slot.item)
-            self:set_dependencies()
+    if slot.name == SLOT_SECONDARY or slot.name == SLOT_PRIMARY then
+        local item = slot.item and slot.item.__master_item
+        if not self.slot_loaded[slot] and not self.slot_is_loading[slot] then
+            local item_good = item and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED)
+            local loaded = slot.item_loaded or slot.attachment_spawn_status == ATTACHMENT_SPAWN_STATUS.fully_spawned
+            if item_good and loaded then
+                self.slot_is_loading[slot] = true
+                -- Item name
+                self.item_names[slot] = mod:item_name_from_content_string(item.name)
+                -- Item type
+                self.item_types[slot] = item.item_type
+                -- Animation
+                self.step_animation[slot] = {}
+                self.step_animation[slot].time = self.time_overwrite or self.item_types[slot] == WEAPON_MELEE and ANIM_TIME_MELEE or ANIM_TIME_RANGED
+                self.step_animation[slot].time_wobble = self.time_overwrite or self.item_types[slot] == WEAPON_MELEE and ANIM_TIME_WOBBLE_MELEE or ANIM_TIME_WOBBLE_RANGED
+                self.rotate_animation[slot] = {}
+                self.weapon_template[slot] = WeaponTemplate.weapon_template_from_item(slot.item)
+                -- Attach settings
+                local attach_settings = self.equipment_component:_attach_settings()
+                self.equipment_component:_fill_attach_settings_3p(attach_settings, slot)
+                attach_settings.skip_link_children = true
+                -- Spawn dummy weapon
+                self.dummy_units[slot] = {}
+                self.dummy_units[slot].base, self.dummy_units[slot].attachments = VisualLoadoutCustomization.spawn_item(slot.item, attach_settings, self.player_unit)
+                VisualLoadoutCustomization.add_extensions(nil, self.dummy_units[slot].attachments, attach_settings)
+                local callback = function()
+                end
+                Unit.force_stream_meshes(self.dummy_units[slot].base, callback, true)
+                for _, unit in pairs(self.dummy_units[slot].attachments) do
+                    Unit.force_stream_meshes(unit, callback, true)
+                end
+                -- Hide bullets
+                self:hide_bullets(slot)
+                -- Equipment data
+                local data, sounds_1, sounds_2 = self:get_equipment_data(slot)
+                local sounds_3 = SoundEventAliases.sfx_ads_up.events[self.item_names[slot]]
+                    or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
+                    or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+                    or SoundEventAliases.sfx_equip.events.default
+                local sounds_4 = SoundEventAliases.sfx_weapon_foley_left_hand_01.events[self.item_names[slot]]
+                    or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
+                    or SoundEventAliases.sfx_ads_down.events.default
+                self.equipment_data[slot] = data
+                -- Load sound packages
+                self.packages[slot] = {}
+                self:load_slot_packages(slot, table.icombine(
+                    sounds_1 or {},
+                    sounds_2 or {},
+                    {sounds_3},
+                    {sounds_4},
+                    self:get_dependencies(slot)
+                ))
+                -- Sounds
+                self.sounds[slot] = {
+                    sounds_1,
+                    sounds_2,
+                    sounds_3,
+                    sounds_4,
+                }
+                -- Init function
+                if self.equipment_data[slot].init then
+                    self.equipment_data[slot].init(self, slot)
+                end
 
-            self.slot_is_loading[slot] = true
-            -- Item name
-            self.item_names[slot] = mod:item_name_from_content_string(item.name)
-            -- Item type
-            self.item_types[slot] = item.item_type
-            -- Animation
-            self.step_animation[slot] = {}
-            self.step_animation[slot].time = self.time_overwrite or self.item_types[slot] == WEAPON_MELEE and ANIM_TIME_MELEE or ANIM_TIME_RANGED
-            self.step_animation[slot].time_wobble = self.time_overwrite or self.item_types[slot] == WEAPON_MELEE and ANIM_TIME_WOBBLE_MELEE or ANIM_TIME_WOBBLE_RANGED
-            self.rotate_animation[slot] = {}
-            self.weapon_template[slot] = WeaponTemplate.weapon_template_from_item(slot.item)
-            -- Attach settings
-            local attach_settings = self.equipment_component:_attach_settings()
-            self.equipment_component:_fill_attach_settings_3p(attach_settings, slot)
-            attach_settings.skip_link_children = true
-            -- Spawn dummy weapon
-            self.dummy_units[slot] = {}
-            self.dummy_units[slot].base, self.dummy_units[slot].attachments = VisualLoadoutCustomization.spawn_item(slot.item, attach_settings, self.player_unit)
-            VisualLoadoutCustomization.add_extensions(nil, self.dummy_units[slot].attachments, attach_settings)
-            -- Hide bullets
-            self:hide_bullets(slot)
-            -- Equipment data
-            local data, sounds_1, sounds_2 = self:get_equipment_data(slot)
-            local sounds_3 = SoundEventAliases.sfx_ads_up.events[self.item_names[slot]]
-                or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
-                or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
-                or SoundEventAliases.sfx_equip.events.default
-            local sounds_4 = SoundEventAliases.sfx_weapon_foley_left_hand_01.events[self.item_names[slot]]
-                or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
-                or SoundEventAliases.sfx_ads_down.events.default
-            self.equipment_data[slot] = data
-            -- Load sound packages
-            self.packages[slot] = {}
-            self:load_slot_packages(slot, table.icombine(
-                sounds_1 or {},
-                sounds_2 or {},
-                {sounds_3},
-                {sounds_4}
-            ))
-            -- Sounds
-            self.sounds[slot] = {
-                sounds_1,
-                sounds_2,
-                sounds_3,
-                sounds_4,
-            }
-            -- Init function
-            if self.equipment_data[slot].init then
-                self.equipment_data[slot].init(self, slot)
+                self:set_estimated_weapon_data(slot)
+
+                -- Trigger equipment animation
+                self.trigger_wobble = true
+
+                -- Position equipment
+                self:position_equipment()
+                -- Visibility
+                self:on_update_item_visibility()
+
+                self.slot_loaded[slot] = true
+                self.slot_is_loading[slot] = nil
             end
-
-            self:set_estimated_weapon_data(slot)
-
-            -- Trigger equipment animation
-            self.trigger_wobble = true
-
-            -- Position equipment
-            self:position_equipment()
-            -- Visibility
-            self:on_update_item_visibility()
-
-            self.slot_loaded[slot] = true
-            self.slot_is_loading[slot] = nil
         end
     end
 end
@@ -589,6 +618,8 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
             world_destroy_unit(self.world, self.dummy_units[slot].base)
         end
     end
+    -- Package
+    self:release_slot_packages(slot)
     -- Delete references
     self.dummy_units[slot] = nil
     self.item_names[slot] = nil
@@ -602,9 +633,10 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
 end
 
 VisibleEquipmentExtension.on_unequip_slot = function(self, slot)
-    -- Delete
-    self:delete_slot(slot)
-    -- -- Package
+    if slot.name == SLOT_SECONDARY or slot.name == SLOT_PRIMARY then
+        -- Delete
+        self:delete_slot(slot)
+    end
     -- local item = slot.item and slot.item.__master_item
     -- local item_good = item and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED)
     -- if item and item_good then
@@ -668,6 +700,7 @@ VisibleEquipmentExtension.on_footstep = function(self)
         local locomotion_ext = script_unit.extension(self.player_unit, "locomotion_system")
         local speed = locomotion_ext and locomotion_ext:move_speed() or 0
         if speed > 0 then
+            self:set_foot_step_interval()
             self:trigger_step()
         end
     end

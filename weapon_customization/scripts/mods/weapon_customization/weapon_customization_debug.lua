@@ -112,7 +112,7 @@ mod._debug_skip_some = true
 
 -- Debug print
 mod.print = function(self, message, skip)
-	self:info(message)
+	if self._debug then self:info(message) end
 	if self._debug and not skip then self:echo(message) end
 end
 

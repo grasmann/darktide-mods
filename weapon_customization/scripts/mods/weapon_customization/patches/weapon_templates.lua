@@ -27,7 +27,11 @@ local REFERENCE = "weapon_customization"
 -- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ################################################
 
 local present_hook = function(func, self, item, ...)
-    mod.previewed_weapon = {f = mod:has_flashlight(item), l = mod:has_laser_pointer(item)}
+    mod.previewed_weapon = {
+        flashlight = mod:has_flashlight(item),
+        laser_pointer = mod:has_laser_pointer(item),
+        item = item
+    }
 	local ret = func(self, item, ...)
     mod.previewed_weapon = nil
     return ret
@@ -44,23 +48,25 @@ end)
 
 mod.template_add_torch = function(self, orig_weapon_template)
     if self.previewed_weapon and orig_weapon_template then
+        local gear_id = self:get_gear_id(self.previewed_weapon.item)
         local templates = self:persistent_table(REFERENCE).weapon_templates
-        if not templates[orig_weapon_template.name] then
-            templates[orig_weapon_template.name] = table_clone(orig_weapon_template)
+
+        if not templates[gear_id] then
+            templates[gear_id] = table_clone(orig_weapon_template)
         end
-        local weapon_template = templates[orig_weapon_template.name]
+        local weapon_template = templates[gear_id]
             
         if weapon_template.displayed_weapon_stats_table and weapon_template.displayed_weapon_stats_table.damage[3] then
             weapon_template.displayed_weapon_stats_table.damage[3] = nil
         end
 
-        if self.previewed_weapon.l then
+        if self.previewed_weapon.laser_pointer then
             weapon_template.displayed_attacks.special = {
                 type = "vent",
                 display_name = "loc_weapon_special_laser_pointer",
                 desc = "loc_stats_special_action_laser_pointer_desc",
             }
-        elseif self.previewed_weapon.f then
+        elseif self.previewed_weapon.flashlight then
             weapon_template.displayed_attacks.special = {
                 desc = "loc_stats_special_action_flashlight_desc",
                 display_name = "loc_weapon_special_flashlight",

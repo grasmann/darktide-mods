@@ -73,6 +73,7 @@ local Sway = mod:original_require("scripts/utilities/sway")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local SLOT_SECONDARY = "slot_secondary"
 local CROUCH_OPTION = "mod_option_misc_cover_on_crouch"
 local CROUCH_TIME = .5
 local CROUCH_POSITION = vector3_box(-.05, 0, -.2)
@@ -117,6 +118,7 @@ end
 
 CrouchAnimationExtension.on_wield_slot = function(self, slot)
     self.weapon_template = slot and WeaponTemplate.weapon_template_from_item(slot.item)
+    self.ranged_weapon = slot and slot.name == SLOT_SECONDARY
 end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
@@ -202,11 +204,11 @@ CrouchAnimationExtension.update_animation = function(self, dt, t)
 
         -- if self.pause then return end
 
-        if is_crouching and state_valid and not is_aiming and not self.is_crouched and not self.overwrite then
+        if self.ranged_weapon and is_crouching and state_valid and not is_aiming and not self.is_crouched and not self.overwrite then
             self.is_crouched = true
             self.sound_played = nil
             self.crouch_end = t + CROUCH_TIME
-        elseif (not is_crouching or not state_valid or is_aiming or self.overwrite) and self.is_crouched then
+        elseif (not is_crouching or not state_valid or is_aiming or self.overwrite or not self.ranged_weapon) and self.is_crouched then
             self.is_crouched = false
             self.sound_played = nil
             self.crouch_end = t + CROUCH_TIME

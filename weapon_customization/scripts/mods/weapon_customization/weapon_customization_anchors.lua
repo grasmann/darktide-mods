@@ -112,43 +112,45 @@ local table = table
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _ogryn_heavystubber_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_heavystubber_p1_m1")
-local _ogryn_rippergun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_rippergun_p1_m1")
-local _ogryn_thumper_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_thumper_p1_m1")
-local _ogryn_gauntlet_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_gauntlet_p1_m1")
-local _ogryn_club_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_club_p1_m1")
-local _ogryn_combatblade_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_combatblade_p1_m1")
-local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_p1_m1")
-local _ogryn_powermaul_slabshield_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_slabshield_p1_m1")
-local _ogryn_club_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_club_p2_m1")
-local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
-local _lasgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p1_m1")
-local _lasgun_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p2_m1")
-local _lasgun_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p3_m1")
-local _autogun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autogun_p1_m1")
-local _autopistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autopistol_p1_m1")
-local _shotgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/shotgun_p1_m1")
-local _bolter_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/bolter_p1_m1")
-local _stubrevolver_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/stubrevolver_p1_m1")
-local _plasmagun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/plasmagun_p1_m1")
-local _laspistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/laspistol_p1_m1")
-local _flamer_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/flamer_p1_m1")
-local _forcestaff_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/forcestaff_p1_m1")
-local _combataxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p1_m1")
-local _combataxe_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p2_m1")
-local _combatknife_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatknife_p1_m1")
-local _powersword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powersword_p1_m1")
-local _chainaxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainaxe_p1_m1")
-local _chainsword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainsword_p1_m1")
-local _combataxe_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p3_m1")
-local _combatsword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p1_m1")
-local _thunderhammer_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/thunderhammer_2h_p1_m1")
-local _powermaul_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powermaul_2h_p1_m1")
-local _chainsword_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainsword_2h_p1_m1")
-local _combatsword_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p2_m1")
-local _forcesword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/forcesword_p1_m1")
-local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p3_m1")
+--#region Load files
+    local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+    local _ogryn_heavystubber_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_heavystubber_p1_m1")
+    local _ogryn_rippergun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_rippergun_p1_m1")
+    local _ogryn_thumper_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_thumper_p1_m1")
+    local _ogryn_gauntlet_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_gauntlet_p1_m1")
+    local _ogryn_club_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_club_p1_m1")
+    local _ogryn_combatblade_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_combatblade_p1_m1")
+    local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_p1_m1")
+    local _ogryn_powermaul_slabshield_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_slabshield_p1_m1")
+    local _ogryn_club_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_club_p2_m1")
+    local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
+    local _lasgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p1_m1")
+    local _lasgun_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p2_m1")
+    local _lasgun_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/lasgun_p3_m1")
+    local _autogun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autogun_p1_m1")
+    local _autopistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autopistol_p1_m1")
+    local _shotgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/shotgun_p1_m1")
+    local _bolter_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/bolter_p1_m1")
+    local _stubrevolver_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/stubrevolver_p1_m1")
+    local _plasmagun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/plasmagun_p1_m1")
+    local _laspistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/laspistol_p1_m1")
+    local _flamer_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/flamer_p1_m1")
+    local _forcestaff_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/forcestaff_p1_m1")
+    local _combataxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p1_m1")
+    local _combataxe_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p2_m1")
+    local _combatknife_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatknife_p1_m1")
+    local _powersword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powersword_p1_m1")
+    local _chainaxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainaxe_p1_m1")
+    local _chainsword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainsword_p1_m1")
+    local _combataxe_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combataxe_p3_m1")
+    local _combatsword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p1_m1")
+    local _thunderhammer_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/thunderhammer_2h_p1_m1")
+    local _powermaul_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powermaul_2h_p1_m1")
+    local _chainsword_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainsword_2h_p1_m1")
+    local _combatsword_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p2_m1")
+    local _forcesword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/forcesword_p1_m1")
+    local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p3_m1")
+--#endregion
 
 --#region Anchors
     mod.anchors = {
@@ -205,6 +207,8 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.anchors.ogryn_thumper_p1_m2 = mod.anchors.ogryn_thumper_p1_m1
         --#endregion
         --#region Ogryn Melee
+            mod.anchors.ogryn_club_p1_m2 = mod.anchors.ogryn_club_p1_m1
+            mod.anchors.ogryn_club_p1_m3 = mod.anchors.ogryn_club_p1_m1
             mod.anchors.ogryn_combatblade_p1_m2 = mod.anchors.ogryn_combatblade_p1_m1
             mod.anchors.ogryn_combatblade_p1_m3 = mod.anchors.ogryn_combatblade_p1_m1
             mod.anchors.ogryn_club_p2_m2 = mod.anchors.ogryn_club_p2_m1
@@ -238,6 +242,10 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.anchors.combataxe_p2_m2 = mod.anchors.combataxe_p2_m1
             mod.anchors.combataxe_p2_m3 = mod.anchors.combataxe_p2_m1
             mod.anchors.combataxe_p3_m2 = mod.anchors.combataxe_p3_m1
+
+            mod.anchors.chainaxe_p1_m2 = mod.anchors.chainaxe_p1_m1
+            mod.anchors.chainsword_2h_p1_m2 = mod.anchors.chainsword_2h_p1_m1
+
             mod.anchors.powersword_p1_m2 = mod.anchors.powersword_p1_m1
             mod.anchors.combatsword_p1_m2 = mod.anchors.combatsword_p1_m1
             mod.anchors.combatsword_p1_m3 = mod.anchors.combatsword_p1_m1
@@ -307,6 +315,8 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.attachment.ogryn_thumper_p1_m2 = mod.attachment.ogryn_thumper_p1_m1
         --#endregion
         --#region Ogryn Melee
+            mod.attachment.ogryn_club_p1_m2 = mod.attachment.ogryn_club_p1_m1
+            mod.attachment.ogryn_club_p1_m3 = mod.attachment.ogryn_club_p1_m1
             mod.attachment.ogryn_combatblade_p1_m2 = mod.attachment.ogryn_combatblade_p1_m1
             mod.attachment.ogryn_combatblade_p1_m3 = mod.attachment.ogryn_combatblade_p1_m1
             mod.attachment.ogryn_club_p2_m2 = mod.attachment.ogryn_club_p2_m1
@@ -345,6 +355,10 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.attachment.combataxe_p2_m3 = mod.attachment.combataxe_p2_m1
             mod.attachment.combataxe_p3_m2 = mod.attachment.combataxe_p3_m1
             mod.attachment.powersword_p1_m2 = mod.attachment.powersword_p1_m1
+
+            mod.attachment.chainaxe_p1_m2 = mod.attachment.chainaxe_p1_m1
+            mod.attachment.chainsword_2h_p1_m2 = mod.attachment.chainsword_2h_p1_m1
+
             mod.attachment.combatsword_p1_m2 = mod.attachment.combatsword_p1_m1
             mod.attachment.combatsword_p1_m3 = mod.attachment.combatsword_p1_m1
             mod.attachment.thunderhammer_2h_p1_m2 = mod.attachment.thunderhammer_2h_p1_m1
@@ -417,9 +431,16 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
     }
     mod.hilts = {
         "power_sword_hilt_01",
+        "power_sword_2h_hilt_01",
+        "power_sword_2h_hilt_02",
+        "power_sword_2h_hilt_03",
+        "force_sword_hilt_01",
+        "force_sword_hilt_02",
+        "force_sword_hilt_03",
+        "force_sword_hilt_04",
+        "force_sword_hilt_05",
+        "force_sword_hilt_06",
         "force_sword_hilt_07",
-        "force_sword_hilt_08",
-        "force_sword_hilt_09",
     }
     mod.decals_right = {
         "decal_right_01",
@@ -779,6 +800,8 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.attachment_models.ogryn_thumper_p1_m2 = mod.attachment_models.ogryn_thumper_p1_m1
         --#endregion
         --#region Ogryn Melee
+            mod.attachment_models.ogryn_club_p1_m2 = mod.attachment_models.ogryn_club_p1_m1
+            mod.attachment_models.ogryn_club_p1_m3 = mod.attachment_models.ogryn_club_p1_m1
             mod.attachment_models.ogryn_combatblade_p1_m2 = mod.attachment_models.ogryn_combatblade_p1_m1
             mod.attachment_models.ogryn_combatblade_p1_m3 = mod.attachment_models.ogryn_combatblade_p1_m1
             mod.attachment_models.ogryn_club_p2_m2 = mod.attachment_models.ogryn_club_p2_m1
@@ -816,6 +839,10 @@ local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weap
             mod.attachment_models.combataxe_p2_m2 = mod.attachment_models.combataxe_p1_m1
             mod.attachment_models.combataxe_p2_m3 = mod.attachment_models.combataxe_p1_m1
             mod.attachment_models.combataxe_p3_m2 = mod.attachment_models.combataxe_p3_m1
+
+            mod.attachment_models.chainaxe_p1_m2 = mod.attachment_models.chainaxe_p1_m1
+            mod.attachment_models.chainsword_2h_p1_m2 = mod.attachment_models.chainsword_2h_p1_m1
+
             mod.attachment_models.powersword_p1_m2 = mod.attachment_models.powersword_p1_m1
             mod.attachment_models.combatsword_p1_m2 = mod.attachment_models.combatsword_p1_m1
             mod.attachment_models.combatsword_p1_m3 = mod.attachment_models.combatsword_p1_m1

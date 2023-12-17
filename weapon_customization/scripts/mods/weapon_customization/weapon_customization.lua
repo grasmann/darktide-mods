@@ -10,7 +10,7 @@ local REFERENCE = "weapon_customization"
 mod:persistent_table(REFERENCE, {
 	-- Persistend flashlight values
 	flashlight_on = false,
-	laser_pointer_on = 0,
+	-- laser_pointer_on = 0,
 	-- Laser particles
 	spawned_lasers = {},
 	-- Items
@@ -23,7 +23,7 @@ mod:persistent_table(REFERENCE, {
 	temp_gear_settings = {},
 	fade_system = nil,
 	extensions = {
-		visible_equipment = {},
+		dependencies = {},
 	},
 	-- Pakcages
 	loaded_packages = {
@@ -40,6 +40,7 @@ mod:persistent_table(REFERENCE, {
 		hub = {},
 		customization = {},
 	},
+	keep_all_packages = nil,
 	-- Input
 	input_hooked = false,
 	-- Performance
@@ -89,7 +90,7 @@ function DMFMod:echot(message, optional_t, optional_time)
 end
 
 -- Gamestate changed
-function mod.on_game_state_changed(status, state_name)
+mod.on_game_state_changed = function(status, state_name)
 	-- Release hub packages
 	mod:release_non_essential_packages()
 	mod:persistent_table(REFERENCE).used_packages.hub = {}
@@ -103,7 +104,7 @@ function mod.on_game_state_changed(status, state_name)
 end
 
 -- Mod settings changed
-function mod.on_setting_changed(setting_id)
+mod.on_setting_changed = function(setting_id)
 	-- Update mod settings
 	mod.update_option(setting_id)
 	-- Update randomization
@@ -118,14 +119,19 @@ function mod.on_setting_changed(setting_id)
 end
 
 -- Update loop
-function mod.update(main_dt)
+mod.update = function(main_dt)
 	-- mod:update_flicker()
 	-- mod:update_battery()
 end
 
 -- When all mods are loaded
-function mod.on_all_mods_loaded()
+mod.on_all_mods_loaded = function()
 	mod:recreate_hud()
+	mod:persistent_table(REFERENCE).keep_all_packages = false
+end
+
+mod.on_unload = function(exit_game)
+	if not exit_game then mod:persistent_table(REFERENCE).keep_all_packages = true end
 end
 
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
@@ -180,6 +186,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/ma
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/weapon_templates")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/input_service")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/visual_loadout_customization")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/randomization")
 
 mod.init = function(self)
 	self.ui_manager = managers.ui
@@ -207,6 +214,7 @@ end
 -- Extensions
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
 
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/dependency_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/extension_base")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/laser_pointer_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/flashlight_extension")
@@ -220,7 +228,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_daemon_host")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
-mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
+-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
 
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/composite")
 
@@ -232,12 +240,14 @@ if managers and managers.player._game_state ~= nil then
 	mod:init()
 	mod:setup_item_definitions()
 	if mod.player_unit and unit_alive(mod.player_unit) then
-		mod:remove_extension(mod.player_unit, "crouch_system")
-		mod:remove_extension(mod.player_unit, "sight_system")
-		mod:remove_extension(mod.player_unit, "visible_equipment_system")
-		mod:remove_extension(mod.player_unit, "flashlight_system")
-		-- mod:remove_extension(mod.player_unit, "battery_system")
-		-- mod:remove_extension(mod.player_unit, "laser_pointer_system")
+		if mod._debug then
+			mod:remove_extension(mod.player_unit, "crouch_system")
+			mod:remove_extension(mod.player_unit, "sight_system")
+			mod:remove_extension(mod.player_unit, "visible_equipment_system")
+			mod:remove_extension(mod.player_unit, "flashlight_system")
+			-- mod:remove_extension(mod.player_unit, "battery_system")
+			-- mod:remove_extension(mod.player_unit, "laser_pointer_system")
+		end
 	end
 end
 

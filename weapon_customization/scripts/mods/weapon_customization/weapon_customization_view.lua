@@ -10,6 +10,7 @@ local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dr
 local ItemUtils = mod:original_require("scripts/utilities/items")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
+local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 local MasterItems = mod:original_require("scripts/backend/master_items")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
@@ -983,6 +984,9 @@ mod.spawn_attachment_preview = function(self, index, attachment_slot, attachment
 	local world = self.cosmetics_view._weapon_preview._ui_weapon_spawner._world
 	local pose = Unit.world_pose(link_unit, 1)
 	local unit = base_unit and World.spawn_unit_ex(world, base_unit, nil, pose)
+	local callback = function()
+	end
+	Unit.force_stream_meshes(unit, callback, true)
 	-- local attachment_data = mod.attachment_models[self.cosmetics_view._item_name][attachment_name]
 	local attachment_data = attachment_name and mod.attachment_models[self.cosmetics_view._item_name][attachment_name]
 	local scale = attachment_data and attachment_data.scale or vector3(1, 1, 1)
@@ -2918,6 +2922,9 @@ end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
     func(self, ...)
+
+	mod:remove_extension(mod.player_unit, "visible_equipment_system")
+
 	-- Fetch instance
 	mod.cosmetics_view = self
 	mod.changed_weapon = nil
@@ -3083,32 +3090,65 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 	-- Fade.destroy(self._fade_system)
 end)
 
+mod.attachment_package_snapshot = function(self, item, test_data)
+    local packages = test_data or {}
+    if not test_data then
+        local attachments = item.__master_item.attachments
+        ItemPackage._resolve_item_packages_recursive(attachments, MasterItems.get_cached(), packages)
+    end
+    if self.old_package_snapshot then
+        self.new_package_snapshot = packages
+        return self:attachment_package_resolve()
+    else
+        self.old_package_snapshot = packages
+    end
+end
+
+mod.attachment_package_resolve = function(self)
+    if self.old_package_snapshot and self.new_package_snapshot then
+        local old_packages = {}
+        for name, _ in pairs(self.old_package_snapshot) do
+            if not self.new_package_snapshot[name] then
+                old_packages[#old_packages+1] = name
+            end
+        end
+        local new_packages = {}
+        for name, _ in pairs(self.new_package_snapshot) do
+            if not self.old_package_snapshot[name] then
+                new_packages[#new_packages+1] = name
+            end
+        end
+        self.old_package_snapshot = nil
+        self.new_package_snapshot = nil
+        return old_packages, new_packages
+    end
+end
+
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
 	if self._selected_tab_index == 3 then
 		mod.original_weapon_settings = {}
 		mod.just_changed = {}
 		mod:update_equip_button()
 
-		-- mod:attachment_package_snapshot(self._selected_item)
+		mod:attachment_package_snapshot(self._selected_item)
 
-		-- local old_packages, new_packages = mod:attachment_package_snapshot(self._presentation_item)
-		-- if new_packages and #new_packages > 0 then
-		-- 	local weapon_spawner = self._weapon_preview._ui_weapon_spawner
-		-- 	local reference_name = weapon_spawner._reference_name .. "_weapon_item_loader_" .. tostring(weapon_spawner._weapon_loader_index)
-		-- 	for _, new_package in pairs(new_packages) do
-		-- 		managers.package:load(new_package, reference_name, nil, true)
-		-- 	end
-		-- end
+		local old_packages, new_packages = mod:attachment_package_snapshot(self._presentation_item)
+		if new_packages and #new_packages > 0 then
+			local weapon_spawner = self._weapon_preview._ui_weapon_spawner
+			local reference_name = weapon_spawner._reference_name .. "_weapon_item_loader_" .. tostring(weapon_spawner._weapon_loader_index)
+			for _, new_package in pairs(new_packages) do
+				managers.package:load(new_package, reference_name, nil, true)
+			end
+		end
 
-		-- local package_synchronizer_client = managers.package_synchronization:synchronizer_client()
-		-- if package_synchronizer_client then
-		-- 	package_synchronizer_client:reevaluate_all_profiles_packages()
-		-- end
+		local package_synchronizer_client = managers.package_synchronization:synchronizer_client()
+		if package_synchronizer_client then
+			package_synchronizer_client:reevaluate_all_profiles_packages()
+		end
 
 		mod:redo_weapon_attachments(self._presentation_item)
 		self._presentation_item.item_type = self._selected_item.item_type
 		self._presentation_item.gear_id = self._selected_item.gear_id
-		mod.changed_weapon = self._presentation_item
 
 		-- mod:get_dropdown_positions()
 		-- mod:get_changed_weapon_settings()
@@ -3122,6 +3162,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 
 		mod.reset_start = managers.time:time("main")
 
+		mod.changed_weapon = self._presentation_item
 		mod.weapon_changed = true
 	else
 		if self._presentation_item.__master_item.original_attachments then

@@ -415,6 +415,8 @@ end)
 -- ##### ┴  ┴─┘┴ ┴ ┴ └─┘┴└─  └─┘┘└┘┴ ┴    └┘ ┴└─┘└─┘┴ ┴┴─┘  ┴─┘└─┘┴ ┴─┴┘└─┘└─┘ ┴   └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ #########
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
+    -- Dependency
+    script_unit_add_extension(nil, self._unit, "DependencyExtension", "dependency_system", {equipment = self._equipment})
     -- Original function
     func(self, world, unit, ...)
     -- Mod
@@ -431,6 +433,9 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_equip_item_to_slot", function
         -- Flashlights
         mod:remove_extension(self._unit, "flashlight_system")
     end
+    -- -- Dependency
+    -- mod:remove_extension(self._unit, "dependency_system")
+    -- script_unit_add_extension(nil, self._unit, "DependencyExtension", "dependency_system", {equipment = self._equipment})
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_unequip_item_from_slot", function(func, self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
@@ -440,6 +445,9 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_unequip_item_from_slot", func
         -- Flashlights
         mod:remove_extension(self._unit, "flashlight_system")
     end
+    -- -- Dependency
+    -- mod:remove_extension(self._unit, "dependency_system")
+    -- script_unit_add_extension(nil, self._unit, "DependencyExtension", "dependency_system", {equipment = self._equipment})
     -- Original function
     func(self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
 end)
@@ -451,6 +459,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
     mod:remove_extension(self._unit, "sight_system")
     -- Flashlights
     mod:remove_extension(self._unit, "flashlight_system")
+    -- Dependency
+    mod:remove_extension(self._unit, "dependency_system")
     -- Mod
     mod:player_unit_destroyed(self._unit)
     -- Original function
@@ -466,7 +476,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
     -- Visible equipment
     local visible_equipment_system = script_unit_has_extension(self._unit, "visible_equipment_system")
     local visible_equipment_system_option = mod:get(OPTION_VISIBLE_EQUIPMENT)
-    if not visible_equipment_system and visible_equipment_system_option then
+    if not visible_equipment_system and visible_equipment_system_option and not managers.ui:has_active_view() then
         script_unit_add_extension({
             world = self._equipment_component._world,
         }, self._unit, "VisibleEquipmentExtension", "visible_equipment_system", {
@@ -552,6 +562,8 @@ end)
 -- ##### ┴  ┴─┘┴ ┴ ┴ └─┘┴└─  ┴ ┴└─┘└─┘┴ ┴   └┘ ┴└─┘└─┘┴ ┴┴─┘  ┴─┘└─┘┴ ┴─┴┘└─┘└─┘ ┴   └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ #######
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
+    -- Dependency
+    script_unit_add_extension(nil, self._unit, "DependencyExtension", "dependency_system", {equipment = self._equipment})
     -- Original function
     func(self, world, unit, ...)
     -- Wielded slot function
@@ -572,6 +584,9 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function
         -- Flashlights
         mod:remove_extension(self._unit, "flashlight_system")
     end
+    -- -- Dependency
+    -- mod:remove_extension(self._unit, "dependency_system")
+    -- script_unit_add_extension(nil, self._unit, "DependencyExtension", "dependency_system", {equipment = self._equipment})
 end)
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "wield_slot", function(func, self, slot_name, ...)
@@ -623,6 +638,8 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "destroy", function(func, self,
     mod:remove_extension(self._unit, "sight_system")
     -- Flashlights
     mod:remove_extension(self._unit, "flashlight_system")
+    -- Dependency
+    mod:remove_extension(self._unit, "dependency_system")
     -- Original function
     func(self, ...)
 end)
@@ -635,7 +652,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
 
     -- Visible equipment
     local visible_equipment_system = script_unit_has_extension(self._unit, "visible_equipment_system")
-    if not visible_equipment_system and mod:get(OPTION_VISIBLE_EQUIPMENT) then
+    if not visible_equipment_system and mod:get(OPTION_VISIBLE_EQUIPMENT) and not managers.ui:has_active_view() then
         script_unit_add_extension({
             world = self._equipment_component._world,
         }, self._unit, "VisibleEquipmentExtension", "visible_equipment_system", {

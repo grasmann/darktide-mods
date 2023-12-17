@@ -464,7 +464,7 @@ end
 
 LaserPointerExtension.spawn_laser = function(self)
     local common = self.initialized and self.fx_extension
-    local husk = self.is_local_unit or self.team_lasers
+    local husk = self.is_local_unit or (self.team_lasers or self.spectated)
     local particle = #self.laser_effect_ids == 0
     local slot = self:is_wielded()
     if self.on and common and particle and husk and slot then
@@ -488,7 +488,7 @@ end
 LaserPointerExtension.spawn_weapon_dot = function(self)
     local common = self.initialized
     local particle = not self.dot_weapon_effect_id
-    local husk = self.is_local_unit or self.team_lasers
+    local husk = self.is_local_unit or (self.team_lasers or self.spectated)
     local slot = self:is_wielded()
     if self.on and common and particle and self.weapon_dot and husk and slot then
         local unit_world_pose = matrix4x4_identity()
@@ -520,7 +520,7 @@ end
 LaserPointerExtension.spawn_laser_dot = function(self)
     local common = self.initialized
     local particle = not self.laser_dot_effect_id
-    local husk = self.is_local_unit or self.team_lasers
+    local husk = self.is_local_unit or (self.team_lasers or self.spectated)
     local slot = self:is_wielded()
     if self.on and common and particle and self.end_position and husk and slot then
         local end_position = vector3_unbox(self.end_position)

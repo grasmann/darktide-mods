@@ -137,55 +137,55 @@ local REFERENCE = "weapon_customization"
 --     return random_attachments
 -- end
 
-mod.setup_item_definitions = function(self, master_items)
-    if self:persistent_table(REFERENCE).item_definitions == nil then
-        local master_items = master_items or MasterItems.get_cached()
-        if master_items then
-            self:persistent_table(REFERENCE).item_definitions = table_clone_instance(master_items)
-            -- -- Bulwark shield
-            -- local definitions = self:persistent_table(REFERENCE).item_definitions
-            -- -- if not definitions[bulwark_shield_string] then
-            --     local bulwark_shield_string = "content/items/weapons/player/melee/ogryn_bulwark_shield_01"
-            --     local bulwark_shield_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
-            --     definitions[bulwark_shield_string] = table_clone(definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"])
-            --     local bulwark_shield = definitions[bulwark_shield_string]
-            --     bulwark_shield.name = bulwark_shield_string
-            --     bulwark_shield.base_unit = bulwark_shield_unit
-            --     bulwark_shield.resource_dependencies = {
-            --         [bulwark_shield_unit] = true,
-            --     }
-            -- -- end
-        end
-    end
-    -- local definitions = self:persistent_table(REFERENCE).item_definitions
-    -- -- if not definitions["content/items/weapons/player/ranged/sights/scope_01"] then
-    --     definitions["content/items/weapons/player/ranged/sights/scope_01"] = table_clone(definitions["content/items/weapons/minions/ranged/renegade_sniper_rifle"])
-    --     local scope = definitions["content/items/weapons/player/ranged/sights/scope_01"]
-    --     scope.reset_scene_graph_on_unlink = nil
-    --     scope.item_list_faction = "Player"
-    --     scope.show_in_1p = true
-    --     scope.attach_node = "ap_sight_01"
-    --     scope.attachments = {
-    --         zzz_shared_material_overrides = {
-    --           children = {},
-    --           item = "",
-    --         }
-    --     }
-    --     scope.name = "content/items/weapons/player/ranged/sights/scope_01"
-    --     scope.fx_sources = nil
-    --     scope.material_overrides = nil
-    --     scope.wielded_attach_node = nil
-    --     scope.unwielded_attach_node = nil
-    -- -- end
-    -- -- if self:persistent_table(REFERENCE).bulwark_item_definitions == nil then
-    -- --     local master_items = MasterItems.get_cached()
-    -- --     if master_items then
-    -- --         self:persistent_table(REFERENCE).bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
-    -- --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
-    -- --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
-    -- --     end
-    -- -- end
-end
+-- mod.setup_item_definitions = function(self, master_items)
+--     if self:persistent_table(REFERENCE).item_definitions == nil then
+--         local master_items = master_items or MasterItems.get_cached()
+--         if master_items then
+--             self:persistent_table(REFERENCE).item_definitions = table_clone_instance(master_items)
+--             -- -- Bulwark shield
+--             -- local definitions = self:persistent_table(REFERENCE).item_definitions
+--             -- -- if not definitions[bulwark_shield_string] then
+--             --     local bulwark_shield_string = "content/items/weapons/player/melee/ogryn_bulwark_shield_01"
+--             --     local bulwark_shield_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+--             --     definitions[bulwark_shield_string] = table_clone(definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"])
+--             --     local bulwark_shield = definitions[bulwark_shield_string]
+--             --     bulwark_shield.name = bulwark_shield_string
+--             --     bulwark_shield.base_unit = bulwark_shield_unit
+--             --     bulwark_shield.resource_dependencies = {
+--             --         [bulwark_shield_unit] = true,
+--             --     }
+--             -- -- end
+--         end
+--     end
+--     -- local definitions = self:persistent_table(REFERENCE).item_definitions
+--     -- -- if not definitions["content/items/weapons/player/ranged/sights/scope_01"] then
+--     --     definitions["content/items/weapons/player/ranged/sights/scope_01"] = table_clone(definitions["content/items/weapons/minions/ranged/renegade_sniper_rifle"])
+--     --     local scope = definitions["content/items/weapons/player/ranged/sights/scope_01"]
+--     --     scope.reset_scene_graph_on_unlink = nil
+--     --     scope.item_list_faction = "Player"
+--     --     scope.show_in_1p = true
+--     --     scope.attach_node = "ap_sight_01"
+--     --     scope.attachments = {
+--     --         zzz_shared_material_overrides = {
+--     --           children = {},
+--     --           item = "",
+--     --         }
+--     --     }
+--     --     scope.name = "content/items/weapons/player/ranged/sights/scope_01"
+--     --     scope.fx_sources = nil
+--     --     scope.material_overrides = nil
+--     --     scope.wielded_attach_node = nil
+--     --     scope.unwielded_attach_node = nil
+--     -- -- end
+--     -- -- if self:persistent_table(REFERENCE).bulwark_item_definitions == nil then
+--     -- --     local master_items = MasterItems.get_cached()
+--     -- --     if master_items then
+--     -- --         self:persistent_table(REFERENCE).bulwark_item_definitions = table_clone_instance(MasterItems.get_cached())
+--     -- --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"] = self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/player/melee/ogryn_slabshield_p1_m1"]
+--     -- --         self:persistent_table(REFERENCE).bulwark_item_definitions["content/items/weapons/minions/shields/chaos_ogryn_bulwark_shield_01"].base_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+--     -- --     end
+--     -- -- end
+-- end
 
 -- mod.update_modded_packages = function(self)
 
@@ -537,64 +537,64 @@ end
 
 -- end
 
-mod:hook(CLASS.StoreService, "purchase_item", function(func, self, offer, ...)
-    mod.purchase_gear_id = offer.description.gear_id
-    return func(self, offer, ...)
-end)
+-- mod:hook(CLASS.StoreService, "purchase_item", function(func, self, offer, ...)
+--     mod.purchase_gear_id = offer.description.gear_id
+--     return func(self, offer, ...)
+-- end)
 
-mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gear, ...)
-    -- mod:dtf(gear, "purchased_gear", 20)
-    local this_gear_id = mod.purchase_gear_id or mod.reward_gear_id
-    -- mod:echo("create gear "..tostring(this_gear_id))
-    if this_gear_id and mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id] then
-        local attachments = table_clone(mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id])
-        mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id] = nil
-        -- mod:echo("purchased_gear "..tostring(this_gear_id))
-        -- mod:echo("set settings for "..tostring(gear_id))
-        for attachment_slot, attachment in pairs(attachments) do
-            mod:set_gear_setting(gear_id, attachment_slot, attachment)
-        end
-    end
-    mod.purchase_gear_id = nil
-    mod.reward_gear_id = nil
-    func(self, gear_id, gear, ...)
-end)
+-- mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gear, ...)
+--     -- mod:dtf(gear, "purchased_gear", 20)
+--     local this_gear_id = mod.purchase_gear_id or mod.reward_gear_id
+--     -- mod:echo("create gear "..tostring(this_gear_id))
+--     if this_gear_id and mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id] then
+--         local attachments = table_clone(mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id])
+--         mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id] = nil
+--         -- mod:echo("purchased_gear "..tostring(this_gear_id))
+--         -- mod:echo("set settings for "..tostring(gear_id))
+--         for attachment_slot, attachment in pairs(attachments) do
+--             mod:set_gear_setting(gear_id, attachment_slot, attachment)
+--         end
+--     end
+--     mod.purchase_gear_id = nil
+--     mod.reward_gear_id = nil
+--     func(self, gear_id, gear, ...)
+-- end)
 
-mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...)
-    local item, item_group, rarity, item_level = func(self, card_reward, ...)
-    if mod:get("mod_option_randomization_store") then
-        mod.reward_gear_id = mod:get_gear_id(item) or "reward"
-        -- mod:echo("randomize reward "..tostring(mod.reward_gear_id))
-        if not mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] then
-            local master_item = item.__master_item or item
-            local random_attachments = mod:randomize_weapon(master_item)
-            mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] = random_attachments
-            -- Auto equip
-            for attachment_slot, value in pairs(random_attachments) do
-                if not mod.add_custom_attachments[attachment_slot] then
-                    mod:resolve_auto_equips(item, value)
-                end
-            end
-            for attachment_slot, value in pairs(random_attachments) do
-                if mod.add_custom_attachments[attachment_slot] then
-                    mod:resolve_auto_equips(item, value)
-                end
-            end
-            -- Special resolve
-            for attachment_slot, value in pairs(random_attachments) do
-                if mod.add_custom_attachments[attachment_slot] then
-                    mod:resolve_special_changes(item, value)
-                end
-            end
-            for attachment_slot, value in pairs(random_attachments) do
-                if not mod.add_custom_attachments[attachment_slot] then
-                    mod:resolve_special_changes(item, value)
-                end
-            end
-        end
-    end
-    return item, item_group, rarity, item_level
-end)
+-- mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...)
+--     local item, item_group, rarity, item_level = func(self, card_reward, ...)
+--     if mod:get("mod_option_randomization_store") then
+--         mod.reward_gear_id = mod:get_gear_id(item) or "reward"
+--         -- mod:echo("randomize reward "..tostring(mod.reward_gear_id))
+--         if not mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] then
+--             local master_item = item.__master_item or item
+--             local random_attachments = mod:randomize_weapon(master_item)
+--             mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] = random_attachments
+--             -- Auto equip
+--             for attachment_slot, value in pairs(random_attachments) do
+--                 if not mod.add_custom_attachments[attachment_slot] then
+--                     mod:resolve_auto_equips(item, value)
+--                 end
+--             end
+--             for attachment_slot, value in pairs(random_attachments) do
+--                 if mod.add_custom_attachments[attachment_slot] then
+--                     mod:resolve_auto_equips(item, value)
+--                 end
+--             end
+--             -- Special resolve
+--             for attachment_slot, value in pairs(random_attachments) do
+--                 if mod.add_custom_attachments[attachment_slot] then
+--                     mod:resolve_special_changes(item, value)
+--                 end
+--             end
+--             for attachment_slot, value in pairs(random_attachments) do
+--                 if not mod.add_custom_attachments[attachment_slot] then
+--                     mod:resolve_special_changes(item, value)
+--                 end
+--             end
+--         end
+--     end
+--     return item, item_group, rarity, item_level
+-- end)
 
 -- mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
 

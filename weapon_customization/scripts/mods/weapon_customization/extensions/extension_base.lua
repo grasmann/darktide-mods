@@ -36,6 +36,7 @@ mod.systems = {
     SightExtension            = "sight_system",
     VisibleEquipmentExtension = "visible_equipment_system",
     WeaponAnimationExtension  = "weapon_animation_system",
+    DependencyExtension       = "dependency_system",
 }
 mod.extensions = {
     flashlight_system        = "FlashlightExtension",
@@ -45,6 +46,7 @@ mod.extensions = {
     sight_system             = "SightExtension",
     visible_equipment_system = "VisibleEquipmentExtension",
     weapon_animation_system  = "WeaponAnimationExtension",
+    dependency_system        = "DependencyExtension",
 }
 
 -- ##### ┌┐ ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #####################################################################

@@ -281,7 +281,6 @@ mod.redo_weapon_attachments = function(self, item)
 		-- Sights
 		-- local sights_extension = script_unit.extension(self.player_unit, "sights_system")
 		-- Unequip
-		-- sights_extension:on_weapon_unequipped()
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		-- Equip
 		self.visual_loadout_extension:equip_item_to_slot(item, slot_name, nil, gameplay_time)

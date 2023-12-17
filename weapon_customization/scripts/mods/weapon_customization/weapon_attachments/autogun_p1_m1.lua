@@ -17,6 +17,9 @@ local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
 local _item_minion = "content/items/weapons/minions"
 
+local _lense_default = "scope_lens_default"
+local _sight_default = "sight_default"
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -254,6 +257,7 @@ local definitions = table.combine(
             trinket_hook = _common.trinket_hook_attachments(),
         },
         models = table.combine(
+            -- {customization_default_position = vector3_box(0, -1, 0)},
             -- Native
             functions.braced_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .1, 0)),
             functions.headhunter_barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .1, 0), nil, {
@@ -273,14 +277,12 @@ local definitions = table.combine(
             _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(0, .1, 0), vector3_box(0, .4, -.034)),
             _common_ranged.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
             _common_ranged.reflex_sights_models(nil, .2, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
-                {rail = "rail_default"},
-                {rail = "rail_01"},
-                {rail = "rail_01"},
-                {rail = "rail_01"},
+                {rail = "rail_default", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
+                {rail = "rail_01", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
+                {rail = "rail_01", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
+                {rail = "rail_01", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
             }),
             _common_ranged.scope_sights_models("sight", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0), "sight_2", {}, {
-                {rail = "rail_default"},
-                {rail = "rail_default"},
                 {rail = "rail_default"},
                 {rail = "rail_default"},
                 {rail = "rail_default"},
@@ -298,15 +300,15 @@ local definitions = table.combine(
                 vector3_box(0, -.2, 0),
                 vector3_box(0, -.2, 0),
             }, nil, nil, {
-                {rail = "rail_default"},
-                {rail = "rail_01"},
-                {rail = "rail_default"},
-                {rail = "rail_01"},
-                {rail = "rail_default"},
+                {rail = "rail_default", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
+                {rail = "rail_01", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
+                {rail = "rail_default", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
+                {rail = "rail_01", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
+                {rail = "rail_default", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
                 {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
                 {rail = "rail_default", sight_2 = "scope_sight_02", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
                 {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
-                {rail = "rail_default"},
+                {rail = "rail_default", sight_2 = _sight_default, lens = _lense_default, lens_2 = _lense_default},
             }, {
                 {},
                 {},
@@ -790,37 +792,5 @@ local definitions = table.combine(
         },
     }
 )
-
--- mod.patch_fixes = function(self, fixes, ...)
---     local num_args = select("#", ...)
---     if num_args >= 2 then
---         -- local data = fixes
---         for i = 1, num_args, 2 do
---             local key = select(i, ...)
---             local data1 = fixes[key]
---             mod:echo("patch "..tostring(key))
-
---             key = select(i + 1, ...)
---             local data2 = fixes[key]
---             mod:echo("val "..tostring(key))
---             -- local key = select(i, ...)
---             -- data = data[key]
-
---             -- if not data then
---             --     return nil
---             -- end
-
---             -- if num_args == i then
---             --     if data.value ~= nil then
---             --         return data.value
---             --     end
-
---             --     Log.error("Component", "[_component_data_default_value][Unit: %s][Component: %s] Missing default value for variable(%s)", Unit.id_string(unit), guid, key)
---             -- end
---         end
---     end
--- end
-
--- mod:patch_fixes(definitions.anchors.fixes, "test", "bla")
 
 return definitions
