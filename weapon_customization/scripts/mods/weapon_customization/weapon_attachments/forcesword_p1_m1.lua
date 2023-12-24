@@ -112,7 +112,7 @@ local functions = {
             {id = "force_sword_blade_06",      name = "Blade 6"},
             {id = "force_sword_blade_07",      name = "Blade 7"},
             {id = "force_sword_blade_08",      name = "Blade 8"},
-            {id = "force_sword_blade_06",      name = "Blade 6"},
+            {id = "force_sword_blade_09",      name = "Blade 9"},
         }
     end,
     blade_models = function(parent, angle, move, remove)

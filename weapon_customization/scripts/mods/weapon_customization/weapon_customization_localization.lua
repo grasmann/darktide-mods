@@ -72,6 +72,14 @@ return {
 		ru = "При приседании воспроизводится анимация использования прикрытия и оружие поднимается дулом вверх.",
 		["zh-cn"] = "蹲伏时播放被掩体遮蔽的动画",
 	},
+	mod_option_misc_sway = {
+		en = "Sway Animation",
+		de = "Schwank Animation",
+	},
+	mod_option_misc_sway_tooltip = {
+		en = "Plays a weapon sway animation when turning",
+		de = "Spielt eine Waffenschwank-Bewegungsanimation beim Drehen",
+	},
 	mod_option_misc_attachment_names = {
 		en = "Attachment Names",
 		ru = "Названия обвесов",

@@ -11,6 +11,8 @@ local mod = get_mod("weapon_customization")
 	local pairs = pairs
 	local managers = Managers
 	local type = type
+	local table = table
+	local table_sort = table.sort
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -119,6 +121,35 @@ end
 -- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐  ┬┌┬┐┌─┐┌┬┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐ ###############################################
 -- #####  ││├┤ ├┴┐│ ││ ┬  │ │ ├┤ │││  ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐ ###############################################
 -- ##### ─┴┘└─┘└─┘└─┘└─┘  ┴ ┴ └─┘┴ ┴  ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘ ###############################################
+
+mod.console_output = function(self)
+	self:info("####################################################################################################")
+	self:info("###################################### Weapon Customization ########################################")
+	self:info("####################################################################################################")
+	self:info("Highest Processing Times")
+	local processing = {}
+	local performance = mod:persistent_table(REFERENCE).performance
+	for name, t in pairs(performance.result_cache) do
+		table_sort(t, function(a, b) return a > b end)
+		processing[name] = t[1]
+		self:info(tostring(name).." ("..tostring(#t)..") "..tostring(t[1]).."ms")
+	end
+	self:info("####################################################################################################")
+	local prevented = mod:persistent_table(REFERENCE).prevent_unload
+	local total = 0
+	for name, count in pairs(prevented) do
+		total = total + count
+	end
+	self:info("Packages prevented from unloading "..tostring(total))
+	if self._debug then
+		for name, count in pairs(prevented) do
+			self:info(tostring(name).." "..tostring(count).." times")
+		end
+	end
+	self:info("####################################################################################################")
+	self:info("###################################### Weapon Customization ########################################")
+	self:info("####################################################################################################")
+end
 
 mod.debug_attachments = function(self, item_data, attachments, weapon_name_or_table, overwrite, full, depth)
     if item_data then

@@ -303,8 +303,14 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update", function(func, self, un
         }, self._unit, "CrouchAnimationExtension", "crouch_system", {
             player_unit = self._unit, is_local_unit = self._is_local_unit,
         })
-    -- else
-    --     mod:execute_extension(unit, "crouch_system", "update", dt, t)
+    end
+    -- Sway
+    if not script_unit_has_extension(self._unit, "sway_system") then
+        self.crouch_animation_extension = script_unit_add_extension({
+            world = self._world,
+        }, self._unit, "SwayAnimationExtension", "sway_system", {
+            player_unit = self._unit, is_local_unit = self._is_local_unit,
+        })
     end
 end)
 
@@ -324,6 +330,8 @@ end)
 mod:hook(CLASS.PlayerUnitFirstPersonExtension, "destroy", function(func, self, ...)
     -- Crouch
     mod:remove_extension(self._unit, "crouch_system")
+    -- Sway
+    mod:remove_extension(self._unit, "sway_system")
     -- Original function
 	func(self, ...)
 end)
@@ -339,6 +347,8 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
     -- end
     -- Sights
     mod:execute_extension(unit, "sight_system", "update_position_and_rotation", self)
+    -- Sway
+    mod:execute_extension(unit, "sway_system", "update", dt, t)
     -- Crouch
     mod:execute_extension(unit, "crouch_system", "update", dt, t)
 end)
@@ -350,6 +360,16 @@ end)
 mod:hook(CLASS.PlayerHuskFirstPersonExtension, "update", function(func, self, unit, dt, t, ...)
     -- Original function
     func(self, unit, dt, t, ...)
+    -- Sway
+    if not script_unit_has_extension(self._unit, "sway_system") then
+        self.crouch_animation_extension = script_unit_add_extension({
+            world = self._world,
+        }, self._unit, "SwayAnimationExtension", "sway_system", {
+            player_unit = self._unit, is_local_unit = self._is_local_unit,
+        })
+    else
+        mod:execute_extension(self._unit, "sway_system", "update", dt, t)
+    end
     -- Crouch
     if not script_unit_has_extension(self._unit, "crouch_system") then
         self.crouch_animation_extension = script_unit_add_extension({
@@ -365,6 +385,8 @@ end)
 mod:hook(CLASS.PlayerHuskFirstPersonExtension, "destroy", function(func, self, ...)
     -- Crouch
     mod:remove_extension(self._unit, "crouch_system")
+    -- Sway
+    mod:remove_extension(self._unit, "sway_system")
     -- Original function
 	func(self, ...)
 end)
@@ -393,6 +415,8 @@ mod:hook(CLASS.PlayerHuskFirstPersonExtension, "update_unit_position_and_rotatio
     mod:execute_extension(self._unit, "flashlight_system", "set_spectated", self._is_first_person_spectated)
     -- Crouch
     mod:execute_extension(self._unit, "crouch_system", "set_spectated", self._is_first_person_spectated)
+    -- Sway
+    mod:execute_extension(self._unit, "sway_system", "set_spectated", self._is_first_person_spectated)
 end)
 
 -- ##### ┌─┐┌─┐┌┬┐┌─┐┬─┐┌─┐  ┌┬┐┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐ ####################################################################
@@ -740,6 +764,8 @@ mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_pers
         mod:execute_extension(slot.parent_unit_3p, "flashlight_system", "on_wield_slot", slot)
         -- Crouch
         mod:execute_extension(slot.parent_unit_3p, "crouch_system", "on_wield_slot", slot)
+        -- Sway
+        mod:execute_extension(slot.parent_unit_3p, "sway_system", "on_wield_slot", slot)
     end
 end)
 

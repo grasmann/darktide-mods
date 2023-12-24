@@ -17,6 +17,7 @@ local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/butt
 local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
 local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
 local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
+local WorldRenderUtils = mod:original_require("scripts/utilities/world_render")
 
 local ViewElementWeaponInfoDefinitions = mod:original_require("scripts/ui/view_elements/view_element_weapon_info/view_element_weapon_info_definitions")
 local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
@@ -541,68 +542,68 @@ mod.do_weapon_part_animation = function(self, item, attachment_slot, attachment_
 end
 
 mod.draw_equipment_lines = function(self, dt, t)
-	-- local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
-	-- if self.cosmetics_view and slot_infos and not self.dropdown_open then
-	-- 	local gear_id = self.cosmetics_view._gear_id
-	-- 	local slot_info_id = self.cosmetics_view._slot_info_id
-	-- 	local item = self.cosmetics_view._selected_item
-	-- 	local gui = self.cosmetics_view._ui_forward_renderer.gui
-	-- 	local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
-	-- 	local attachments = item.attachments
-	-- 	if attachments and #self.weapon_part_animation_entries == 0 and slot_infos[slot_info_id] then
-	-- 		local found_attachment_slots = self:get_item_attachment_slots(item)
-	-- 		if #found_attachment_slots > 0 then
+	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+	if self.cosmetics_view and slot_infos and not self.dropdown_open then
+		local gear_id = self.cosmetics_view._gear_id
+		local slot_info_id = self.cosmetics_view._slot_info_id
+		local item = self.cosmetics_view._selected_item
+		local gui = self.cosmetics_view._ui_forward_renderer.gui
+		local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
+		local attachments = item.attachments
+		if attachments and #self.weapon_part_animation_entries == 0 and slot_infos[slot_info_id] then
+			local found_attachment_slots = self:get_item_attachment_slots(item)
+			if #found_attachment_slots > 0 then
 
-	-- 			for _, attachment_slot in pairs(found_attachment_slots) do
-	-- 				local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
-	-- 				if unit and unit_alive(unit) then
-	-- 					local box = Unit.box(unit, false)
-	-- 					local center_position = matrix4x4_translation(box)
-	-- 					local world_to_screen, distance = camera_world_to_screen(camera, center_position)
-	-- 					local saved_origin = self.dropdown_positions[attachment_slot]
-	-- 					if saved_origin and saved_origin[3] and saved_origin[3] == true then
-	-- 						local origin = vector2(saved_origin[1], saved_origin[2])
-	-- 						local color = Color(255, 49, 62, 45)
-	-- 						ScriptGui.hud_line(gui, origin, world_to_screen, 20, 4, Color(255, 106, 121, 100))
-	-- 						ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
-	-- 						break
-	-- 					end
-	-- 				end
-	-- 			end
+				for _, attachment_slot in pairs(found_attachment_slots) do
+					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+					if unit and unit_alive(unit) then
+						local box = Unit.box(unit, false)
+						local center_position = matrix4x4_translation(box)
+						local world_to_screen, distance = camera_world_to_screen(camera, center_position)
+						local saved_origin = self.dropdown_positions[attachment_slot]
+						if saved_origin and saved_origin[3] and saved_origin[3] == true then
+							local origin = vector2(saved_origin[1], saved_origin[2])
+							local color = Color(255, 49, 62, 45)
+							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 4, Color(255, 106, 121, 100))
+							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
+							break
+						end
+					end
+				end
 
-	-- 			-- local any_active = false
-	-- 			-- for _, data in pairs(self.dropdown_positions) do
-	-- 			-- 	if data[3] == true then
-	-- 			-- 		any_active = true
-	-- 			-- 		break
-	-- 			-- 	end
-	-- 			-- end
-	-- 			-- for _, attachment_slot in pairs(found_attachment_slots) do
-	-- 			-- 	local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
-	-- 			-- 	if unit and unit_alive(unit) then
-	-- 			-- 		local saved_origin = self.dropdown_positions[attachment_slot]
-	-- 			-- 		local unit_position = unit_world_position(unit, 1)
-	-- 			-- 		local camera_position = camera_world_position(self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera)
-	-- 			-- 		local distance = vector3.distance(unit_position, camera_position)
-	-- 			-- 		if (saved_origin and saved_origin[3] and saved_origin[3] == true) then
-	-- 			-- 			if self.cosmetics_view._fade_system then
-	-- 			-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, 0)
-	-- 			-- 			end
-	-- 			-- 		elseif any_active then
-	-- 			-- 			if self.cosmetics_view._fade_system then
-	-- 			-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, distance * .1)
-	-- 			-- 			end
-	-- 			-- 		else
-	-- 			-- 			if self.cosmetics_view._fade_system then
-	-- 			-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, 0)
-	-- 			-- 			end
-	-- 			-- 		end
-	-- 			-- 	end
-	-- 			-- end
+				-- local any_active = false
+				-- for _, data in pairs(self.dropdown_positions) do
+				-- 	if data[3] == true then
+				-- 		any_active = true
+				-- 		break
+				-- 	end
+				-- end
+				-- for _, attachment_slot in pairs(found_attachment_slots) do
+				-- 	local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+				-- 	if unit and unit_alive(unit) then
+				-- 		local saved_origin = self.dropdown_positions[attachment_slot]
+				-- 		local unit_position = unit_world_position(unit, 1)
+				-- 		local camera_position = camera_world_position(self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera)
+				-- 		local distance = vector3.distance(unit_position, camera_position)
+				-- 		if (saved_origin and saved_origin[3] and saved_origin[3] == true) then
+				-- 			if self.cosmetics_view._fade_system then
+				-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, 0)
+				-- 			end
+				-- 		elseif any_active then
+				-- 			if self.cosmetics_view._fade_system then
+				-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, distance * .1)
+				-- 			end
+				-- 		else
+				-- 			if self.cosmetics_view._fade_system then
+				-- 				Fade.set_min_fade(self.cosmetics_view._fade_system, unit, 0)
+				-- 			end
+				-- 		end
+				-- 	end
+				-- end
 
-	-- 		end
-	-- 	end
-	-- end
+			end
+		end
+	end
 end
 
 -- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###################################
@@ -1248,7 +1249,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			local item_unit_3p = weapon_spawn_data.item_unit_3p
 
 			-- Camera movement
-			if mod.do_move and mod:get("mod_option_camera_zoom") then
+			if mod.do_move and mod:get("mod_option_camera_zoom") and not self.demo then
 				if mod.move_position then
 					local last_move_position = mod.last_move_position and vector3_unbox(mod.last_move_position) or vector3_zero()
 					local move_position = vector3_unbox(mod.move_position)
@@ -1325,10 +1326,10 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			end
 
 			-- Reset
-			if mod.do_reset and not mod.dropdown_open then
+			if mod.do_reset and not mod.dropdown_open and not self.demo then
 				mod.reset_start = t + mod.reset_wait_time
 				mod.do_reset = nil
-			elseif mod.reset_start and t >= mod.reset_start and not mod.dropdown_open then
+			elseif mod.reset_start and t >= mod.reset_start and not mod.dropdown_open and not self.demo then
 				if mod.move_position then
 					mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
 				end
@@ -1337,7 +1338,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				mod.reset_start = nil
 				self._default_rotation_angle = 0
 				mod._last_rotation_angle = 0
-			elseif mod.reset_start and mod.dropdown_open then
+			elseif mod.reset_start and mod.dropdown_open and not self.demo then
 				mod.reset_start = mod.reset_start + dt
 			end
 
@@ -1967,7 +1968,7 @@ mod.cb_on_demo_pressed = function(self)
 	self.demo_time = 1
 	self.demo_timer = 0
 	self.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
-	self:start_weapon_move(vector3_box(vector3(-.15, -1, 0)), true)
+	self:start_weapon_move(vector3_box(vector3(-.15, -1, 0)))
 end
 
 mod.cb_on_randomize_pressed = function(self, skip_animation)
@@ -1988,6 +1989,7 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 			-- local no_animation = attachment_data and attachment_data.no_animation
 			if not skip_animation then
 				self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], value, nil, nil, true)
+				self.weapon_part_animation_update = true
 			else
 				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, value, index < table_size(random_attachments))
 			end
@@ -1996,29 +1998,29 @@ mod.cb_on_randomize_pressed = function(self, skip_animation)
 		-- for attachment_slot, value in pairs(random_attachments) do
 		-- 	self:resolve_special_changes(self.cosmetics_view._presentation_item, value)
 		-- end
-		-- Auto equip
-		for attachment_slot, value in pairs(random_attachments) do
-			if not mod.add_custom_attachments[attachment_slot] then
-				mod:resolve_auto_equips(self.cosmetics_view._presentation_item, value)
-			end
-		end
-		for attachment_slot, value in pairs(random_attachments) do
-			if mod.add_custom_attachments[attachment_slot] then
-				mod:resolve_auto_equips(self.cosmetics_view._presentation_item, value)
-			end
-		end
-		-- Special
-		for attachment_slot, value in pairs(random_attachments) do
-			if mod.add_custom_attachments[attachment_slot] then
-				mod:resolve_special_changes(self.cosmetics_view._presentation_item, value)
-			end
-		end
-		for attachment_slot, value in pairs(random_attachments) do
-			if not mod.add_custom_attachments[attachment_slot] then
-				mod:resolve_special_changes(self.cosmetics_view._presentation_item, value)
-			end
-		end
-		self.weapon_part_animation_update = true
+		-- -- Auto equip
+		-- for attachment_slot, value in pairs(random_attachments) do
+		-- 	if not mod.add_custom_attachments[attachment_slot] then
+		-- 		mod:resolve_auto_equips(self.cosmetics_view._presentation_item, value)
+		-- 	end
+		-- end
+		-- for attachment_slot, value in pairs(random_attachments) do
+		-- 	if mod.add_custom_attachments[attachment_slot] then
+		-- 		mod:resolve_auto_equips(self.cosmetics_view._presentation_item, value)
+		-- 	end
+		-- end
+		-- -- Special
+		-- for attachment_slot, value in pairs(random_attachments) do
+		-- 	if mod.add_custom_attachments[attachment_slot] then
+		-- 		mod:resolve_special_changes(self.cosmetics_view._presentation_item, value)
+		-- 	end
+		-- end
+		-- for attachment_slot, value in pairs(random_attachments) do
+		-- 	if not mod.add_custom_attachments[attachment_slot] then
+		-- 		mod:resolve_special_changes(self.cosmetics_view._presentation_item, value)
+		-- 	end
+		-- end
+		
 		-- if not skip_animation then self.weapon_part_animation_update = true end
 	end
 end
@@ -2052,28 +2054,28 @@ mod.cb_on_reset_pressed = function(self, skip_animation)
 			end
 			index = index + 1
 		end
-		-- -- Auto equip
-		-- for attachment_slot, value in pairs(changed_weapon_settings) do
-		-- 	if not mod.add_custom_attachments[attachment_slot] then
-		-- 		mod:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
-		-- 	end
-		-- end
-		-- for attachment_slot, value in pairs(changed_weapon_settings) do
-		-- 	if mod.add_custom_attachments[attachment_slot] then
-		-- 		mod:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
-		-- 	end
-		-- end
-		-- -- Special
-		-- for attachment_slot, value in pairs(changed_weapon_settings) do
-		-- 	if mod.add_custom_attachments[attachment_slot] then
-		-- 		mod:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
-		-- 	end
-		-- end
-		-- for attachment_slot, value in pairs(changed_weapon_settings) do
-		-- 	if not mod.add_custom_attachments[attachment_slot] then
-		-- 		mod:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
-		-- 	end
-		-- end
+		-- Auto equip
+		for attachment_slot, value in pairs(changed_weapon_settings) do
+			if not mod.add_custom_attachments[attachment_slot] then
+				mod:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
+			end
+		end
+		for attachment_slot, value in pairs(changed_weapon_settings) do
+			if mod.add_custom_attachments[attachment_slot] then
+				mod:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
+			end
+		end
+		-- Special
+		for attachment_slot, value in pairs(changed_weapon_settings) do
+			if mod.add_custom_attachments[attachment_slot] then
+				mod:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
+			end
+		end
+		for attachment_slot, value in pairs(changed_weapon_settings) do
+			if not mod.add_custom_attachments[attachment_slot] then
+				mod:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
+			end
+		end
 		self.weapon_part_animation_update = true
 		-- if not skip_animation then mod.weapon_part_animation_update = true end
 
@@ -2898,6 +2900,27 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 	-- self._fade_system = Fade.init()
 	-- Presets
 	-- self._weapon_presets = self:_add_element(ViewElementWeaponPresets, "weapon_presets", 90, nil, "weapon_presets_pivot", {gear_id = self._gear_id})
+
+	self.draw = function(self, dt, t, input_service, layer)
+		local render_scale = self._render_scale
+		local render_settings = self._render_settings
+		local ui_renderer = self._ui_renderer
+		local ui_default_renderer = self._ui_default_renderer
+		local ui_forward_renderer = self._ui_forward_renderer
+		render_settings.start_layer = layer
+		render_settings.scale = render_scale
+		render_settings.inverse_scale = render_scale and 1 / render_scale
+		local ui_scenegraph = self._ui_scenegraph
+	
+		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, render_settings)
+		UIWidget.draw(self._background_widget, ui_renderer)
+		UIRenderer.end_pass(ui_renderer)
+		UIRenderer.begin_pass(ui_forward_renderer, ui_scenegraph, input_service, dt, render_settings)
+		self:_draw_widgets(dt, t, input_service, ui_forward_renderer, render_settings)
+		UIRenderer.end_pass(ui_forward_renderer)
+		self:_draw_elements(dt, t, ui_forward_renderer, render_settings, input_service)
+		self:_draw_render_target()
+	end
 	-- Overwrite draw elements function
 	-- Make view legend inputs visible when UI gets hidden
 	self._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
@@ -2908,14 +2931,20 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 			local element = elements_array[i]
 			if element then
 				local element_name = element.__class_name
-				-- if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
-				-- 	ui_renderer = self._ui_renderer or self._ui_default_renderer or ui_renderer
-				-- end
+				if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
+					ui_renderer = self._ui_default_renderer or ui_renderer
+				end
 				render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
 				element:draw(dt, t, ui_renderer, render_settings, input_service)
 			end
 		end
 		render_settings.alpha_multiplier = old_alpha_multiplier
+	end
+
+	self._cb_on_ui_visibility_toggled = function (self, id)
+		self._visibility_toggled_on = not self._visibility_toggled_on
+		local display_name = self._visibility_toggled_on and "loc_menu_toggle_ui_visibility_off" or "loc_menu_toggle_ui_visibility_on"
+		self._input_legend_element:set_display_name(id, display_name)
 	end
 
 end)
@@ -2948,6 +2977,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 	mod:create_bar_breakdown_widgets()
 
 	-- mod:dtf(self, "InventoryWeaponCosmeticsView", 20)
+	-- local world_name = self._unique_id .. "_ui_forward_world"
+	-- local viewport_name = self._unique_id .. "_ui_forward_world_viewport"
+	-- WorldRenderUtils.enable_world_fullscreen_blur(world_name, viewport_name, .1)
+	-- WorldRenderUtils.disable_world_fullscreen_blur(world_name, viewport_name)
 
 	self._item_grid._widgets_by_name.grid_background.visible = false
 end)
@@ -2967,16 +3000,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
 		mod:update_reset_button()
 	end
 
-	-- if mod.cosmetics_view and mod.demo then
-	-- 	local rotation_angle = (mod._last_rotation_angle or 0) + dt
-	-- 	self._weapon_preview._ui_weapon_spawner._rotation_angle = rotation_angle
-	-- 	self._weapon_preview._ui_weapon_spawner._default_rotation_angle = rotation_angle
-	-- 	mod._last_rotation_angle = self._weapon_preview._ui_weapon_spawner._default_rotation_angle
-	-- 	if mod.demo_timer < t then
-	-- 		mod:cb_on_randomize_pressed()
-	-- 		mod.demo_timer = t + mod.demo_time
-	-- 	end
-	-- end
+	if mod.cosmetics_view and mod.demo then
+		local rotation_angle = (mod._last_rotation_angle or 0) + dt
+		self._weapon_preview._ui_weapon_spawner._rotation_angle = rotation_angle
+		self._weapon_preview._ui_weapon_spawner._default_rotation_angle = rotation_angle
+		mod._last_rotation_angle = self._weapon_preview._ui_weapon_spawner._default_rotation_angle
+		if mod.demo_timer < t then
+			mod:cb_on_randomize_pressed(true)
+			mod.demo_timer = t + mod.demo_time
+		end
+	end
 
 	return pass_input, pass_draw
 end)
@@ -3433,8 +3466,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.scenegraph_definition.info_box.size[1] = 1920 - (grid_width + 160)
 	-- instance.scenegraph_definition.display_name.text_horizontal_alignment = "right"
 	instance.scenegraph_definition.display_name.horizontal_alignment = "left"
+	instance.scenegraph_definition.display_name.size[1] = 1920 - (grid_width + 160)
 	-- instance.scenegraph_definition.sub_display_name.text_horizontal_alignment = "right"
 	instance.scenegraph_definition.sub_display_name.horizontal_alignment = "left"
+	instance.scenegraph_definition.sub_display_name.size[1] = 1920 - (grid_width + 160)
 	
 	instance.scenegraph_definition.attachment_info_box = {
 		vertical_alignment = "bottom",
@@ -3583,7 +3618,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		parent = "equip_button",
 		horizontal_alignment = "right",
 		size = equip_button_size,
-		position = {0, -equip_button_size[2] * 3 - 15 * 3, 1}
+		position = {0, -equip_button_size[2], 1}
 	}
 	instance.widget_definitions.demo_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.default_button), "demo_button", {
 		gamepad_action = "confirm_pressed",
@@ -3652,6 +3687,15 @@ end)
 
 mod:hook_require("scripts/ui/view_elements/view_element_inventory_weapon_preview/view_element_inventory_weapon_preview_settings", function(instance)
 	instance.shading_environment = "content/shading_environments/ui/ui_item_preview"
+	-- instance.shading_environment = "content/shading_environments/ui_default"
+	-- instance.shading_environment = "content/shading_environments/ui/portrait"
+	-- instance.shading_environment = "content/shading_environments/ui/weapon_icons"
+	-- instance.shading_environment = "content/shading_environments/ui/ui_popup_background"
+	-- instance.shading_environment = "content/shading_environments/ui/inventory"
+	-- instance.shading_environment = "content/shading_environments/ui/barber" -> crash
+	-- instance.shading_environment = "content/shading_environments/ui/barber_character_appearance" -> crash
+	-- instance.shading_environment = "content/shading_environments/ui/inventory"
+	-- instance.weapon_spawn_depth = 3
 end)
 
 -- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################

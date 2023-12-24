@@ -76,6 +76,7 @@ local functions = {
             {id = "2h_chain_sword_grip_01",      name = "Grip 1"},
             {id = "2h_chain_sword_grip_02",      name = "Grip 2"},
             {id = "2h_chain_sword_grip_03",      name = "Grip 3"},
+            {id = "2h_chain_sword_grip_04",      name = "Grip 4"},
         }
     end,
     grip_models = function(parent, angle, move, remove)
@@ -87,6 +88,7 @@ local functions = {
             ["2h_chain_sword_grip_01"] =      {model = _item_melee.."/grips/2h_chain_sword_grip_01", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             ["2h_chain_sword_grip_02"] =      {model = _item_melee.."/grips/2h_chain_sword_grip_02", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             ["2h_chain_sword_grip_03"] =      {model = _item_melee.."/grips/2h_chain_sword_grip_03", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+            ["2h_chain_sword_grip_04"] =      {model = _item_melee.."/grips/2h_chain_sword_grip_04", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
         }
     end,
     body_attachments = function()
@@ -95,6 +97,7 @@ local functions = {
             {id = "2h_chain_sword_body_01",      name = "Body 1"},
             {id = "2h_chain_sword_body_02",      name = "Body 2"},
             {id = "2h_chain_sword_body_03",      name = "Body 3"},
+            {id = "2h_chain_sword_body_04",      name = "Body 4"},
         }
     end,
     body_models = function(parent, angle, move, remove)
@@ -106,6 +109,7 @@ local functions = {
             ["2h_chain_sword_body_01"] =      {model = _item_melee.."/full/2h_chain_sword_body_01", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             ["2h_chain_sword_body_02"] =      {model = _item_melee.."/full/2h_chain_sword_body_02", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
             ["2h_chain_sword_body_03"] =      {model = _item_melee.."/full/2h_chain_sword_body_03", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+            ["2h_chain_sword_body_04"] =      {model = _item_melee.."/full/2h_chain_sword_body_04", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
         }
     end,
     chain_attachments = function()

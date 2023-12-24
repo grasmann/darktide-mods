@@ -193,7 +193,7 @@ mod.resolve_special_changes = function(self, item, attachment)
 						end
 					end
 
-					self:remove_weapon_part_animation(special_slot)
+					-- self:remove_weapon_part_animation(special_slot)
 				end
 
 				if string_find(special_attachment, "|") then
@@ -204,11 +204,11 @@ mod.resolve_special_changes = function(self, item, attachment)
 
 				-- mod:echo("special resolve: "..tostring(special_slot).." = "..tostring(special_attachment))
 				-- self:set_gear_setting(gear_id, special_slot, special_attachment)
-				if self.cosmetics_view then
-					self:do_weapon_part_animation(item, special_slot, "attach", special_attachment)
-				else
-					self:set_gear_setting(gear_id, special_slot, special_attachment)
-				end
+				-- if self.cosmetics_view then
+				-- 	self:do_weapon_part_animation(item, special_slot, "attach", special_attachment)
+				-- else
+				self:set_gear_setting(gear_id, special_slot, special_attachment)
+				-- end
 			end
 		end
 	end
@@ -289,14 +289,29 @@ mod.resolve_auto_equips = function(self, item)
 												if attachment_name then
 													-- mod:echo(tostring(auto_type).." = "..tostring(attachment_name))
 													if negative and attachment_name ~= parameters[1] then
+														-- self:set_gear_setting(gear_id, auto_type, parameters[2])
+														-- if self.cosmetics_view then
+														-- 	self:do_weapon_part_animation(item, auto_type, "attach", parameters[2])
+														-- else
 														self:set_gear_setting(gear_id, auto_type, parameters[2])
+														-- end
 													elseif attachment_name == parameters[1] then
+														-- self:set_gear_setting(gear_id, auto_type, parameters[2])
+														-- if self.cosmetics_view then
+														-- 	self:do_weapon_part_animation(item, auto_type, "attach", parameters[2])
+														-- else
 														self:set_gear_setting(gear_id, auto_type, parameters[2])
+														-- end
 													end
 												else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
 											-- else mod:print("Attachments are nil") end
 										else
+											-- self:set_gear_setting(gear_id, auto_type, parameters[1])
+											-- if self.cosmetics_view then
+											-- 	self:do_weapon_part_animation(item, auto_type, "attach", parameters[1])
+											-- else
 											self:set_gear_setting(gear_id, auto_type, parameters[1])
+											-- end
 										end
 								-- 	end
 								-- end
@@ -617,7 +632,25 @@ end
 
 
 
-
+mod._recursive_find_unit_by_slot = function(self, weapon_unit, attachment_slot, output, output2)
+    local unit = nil
+    local output = output or {}
+    -- Get unit children
+	local children = unit_get_child_units(weapon_unit)
+	if children then
+        -- Iterate children
+		for _, child in pairs(children) do
+            if output2 then
+                output2[#output2+1] = unit_get_data(child, "attachment_slot")
+            end
+			if unit_get_data(child, "attachment_slot") == attachment_slot then
+                output[#output+1] = child
+			else
+                self:_recursive_find_unit_by_slot(child, attachment_slot, output, output2)
+			end
+		end
+	end
+end
 
 mod._recursive_find_unit = function(self, weapon_unit, unit_name, output, output2)
     local unit = nil

@@ -74,26 +74,22 @@ local Sway = mod:original_require("scripts/utilities/sway")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local SLOT_SECONDARY = "slot_secondary"
-local CROUCH_OPTION = "mod_option_misc_cover_on_crouch"
-local CROUCH_TIME = .5
-local CROUCH_POSITION = vector3_box(-.05, 0, -.2)
-local CROUCH_ROTATION = vector3_box(0, -60, 0)
-local IGNORE_STATES = {"ledge_vaulting"}
+local SWAY_OPTION = "mod_option_misc_sway"
 local CROSSHAIR_POSITION_LERP_SPEED = 35
 
--- ##### ┌─┐┬─┐┌─┐┬ ┬┌─┐┬ ┬  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ######################################
--- ##### │  ├┬┘│ ││ ││  ├─┤  ├─┤│││││││├─┤ │ ││ ││││  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ######################################
--- ##### └─┘┴└─└─┘└─┘└─┘┴ ┴  ┴ ┴┘└┘┴┴ ┴┴ ┴ ┴ ┴└─┘┘└┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ######################################
+-- ##### ┌─┐┬ ┬┌─┐┬ ┬  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ############################################
+-- ##### └─┐│││├─┤└┬┘  ├─┤│││││││├─┤ │ ││ ││││  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ############################################
+-- ##### └─┘└┴┘┴ ┴ ┴   ┴ ┴┘└┘┴┴ ┴┴ ┴ ┴ ┴└─┘┘└┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ############################################
 
-local CrouchAnimationExtension = class("CrouchAnimationExtension", "WeaponCustomizationExtension")
+local SwayAnimationExtension = class("SwayAnimationExtension", "WeaponCustomizationExtension")
 
 -- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
 -- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
 
 -- Initialize
-CrouchAnimationExtension.init = function(self, extension_init_context, unit, extension_init_data)
-    CrouchAnimationExtension.super.init(self, extension_init_context, unit, extension_init_data)
+SwayAnimationExtension.init = function(self, extension_init_context, unit, extension_init_data)
+    SwayAnimationExtension.super.init(self, extension_init_context, unit, extension_init_data)
 
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
 
@@ -102,21 +98,21 @@ CrouchAnimationExtension.init = function(self, extension_init_context, unit, ext
     self.initialized = true
 end
 
-CrouchAnimationExtension.delete = function(self)
+SwayAnimationExtension.delete = function(self)
     managers.event:unregister(self, "weapon_customization_settings_changed")
     self.initialized = false
-    CrouchAnimationExtension.super.delete(self)
+    SwayAnimationExtension.super.delete(self)
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
 -- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
-CrouchAnimationExtension.on_settings_changed = function(self)
-    self.on = mod:get(CROUCH_OPTION)
+SwayAnimationExtension.on_settings_changed = function(self)
+    self.on = mod:get(SWAY_OPTION)
 end
 
-CrouchAnimationExtension.on_wield_slot = function(self, slot)
+SwayAnimationExtension.on_wield_slot = function(self, slot)
     self.weapon_template = slot and WeaponTemplate.weapon_template_from_item(slot.item)
     self.ranged_weapon = slot and slot.name == SLOT_SECONDARY
 end
@@ -125,34 +121,24 @@ end
 -- ##### │ ┬├┤  │   └┐┌┘├─┤│  │ │├┤ └─┐ ###############################################################################
 -- ##### └─┘└─┘ ┴    └┘ ┴ ┴┴─┘└─┘└─┘└─┘ ###############################################################################
 
-CrouchAnimationExtension.is_aiming = function(self)
+SwayAnimationExtension.is_aiming = function(self)
     return self.alternate_fire_component and self.alternate_fire_component.is_active
 end
 
-CrouchAnimationExtension.is_braced = function(self)
+SwayAnimationExtension.is_braced = function(self)
     local template = self.weapon_template
     local alt_fire = template and template.alternate_fire_settings
     local braced = alt_fire and alt_fire.start_anim_event == "to_braced"
     return braced
 end
 
--- CrouchAnimationExtension.is_active = function(self)
---     return self.is_crouched and not self.overwrite and not self:is_aiming()
--- end
-
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
 -- ##### └─┐├┤  │   └┐┌┘├─┤│  │ │├┤ └─┐ ###############################################################################
 -- ##### └─┘└─┘ ┴    └┘ ┴ ┴┴─┘└─┘└─┘└─┘ ###############################################################################
 
-CrouchAnimationExtension.set_spectated = function(self, spectated)
+SwayAnimationExtension.set_spectated = function(self, spectated)
     if self.initialized then
         self.spectated = spectated
-    end
-end
-
-CrouchAnimationExtension.set_overwrite = function(self, overwrite)
-    if self.initialized then
-        self.overwrite = overwrite
     end
 end
 
@@ -160,98 +146,71 @@ end
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
--- Update character state to check for ignore states
-CrouchAnimationExtension.update_character_state = function(self)
-    self.character_state = self.character_state_extension and self.character_state_extension:current_state()
-end
-
 -- Update
-CrouchAnimationExtension.update = function(self, dt, t)
-    local perf = wc_perf.start("CrouchAnimationExtension.update", 2)
+SwayAnimationExtension.update = function(self, dt, t)
+    local perf = wc_perf.start("SwayAnimationExtension.update", 2)
     if self.initialized and self.on and self:get_first_person() then
-        self:update_character_state()
-
-        if self:is_braced() then
-            if self.movement_state_component.is_crouching and not table_contains(IGNORE_STATES, self.character_state) and not self.overwrite then
-                if unit_has_animation_event(self.first_person_unit, "to_braced") and not self.is_crouched then
-                    unit_animation_event(self.first_person_unit, "to_braced")
-                    self.is_crouched = true
-                end
-            else
-                if unit_has_animation_event(self.first_person_unit, "to_unaim_braced") and self.is_crouched then
-                    unit_animation_event(self.first_person_unit, "to_unaim_braced")
-                    self.is_crouched = nil
-                end
-            end
-        else
-            self:update_animation(dt, t)
-        end
-
+        self:update_animation(dt, t)
     end
     wc_perf.stop(perf)
 end
 
 -- Update animation
-CrouchAnimationExtension.update_animation = function(self, dt, t)
-    if self.initialized and self:get_first_person() then
-        -- Get parameters
-        local is_aiming = self:is_aiming()
-        local is_crouching = self.movement_state_component.is_crouching
-        local state_valid = not table_contains(IGNORE_STATES, self.character_state)
+SwayAnimationExtension.update_animation = function(self, dt, t)
+    -- local position = unit_local_position(self.first_person_unit, 1)
+    -- self.last_real_position = vector3_box(unit_local_position(self.first_person_unit, 1))
+    
 
-        -- Start animation
-        if self.ranged_weapon and is_crouching and state_valid and not is_aiming and not self.is_crouched and not self.overwrite then
-            -- Start crouch animation
-            self.is_crouched = true
-            self.sound_played = nil
-            self.crouch_end = t + CROUCH_TIME
-        elseif (not is_crouching or not state_valid or is_aiming or self.overwrite or not self.ranged_weapon) and self.is_crouched then
-            -- Start uncrouch animation
-            self.is_crouched = false
-            self.sound_played = nil
-            self.crouch_end = t + CROUCH_TIME
-        end
+    local not_aiming_or_braced = not self:is_aiming() or self:is_braced()
+    if self.initialized and self:get_first_person() and not_aiming_or_braced then
+        -- Get rotation
+        local original_rotation = unit_local_rotation(self.first_person_unit, 1)
+        local last_player_rotation = self.last_real_rotation and quaternion_unbox(self.last_real_rotation) or original_rotation
+        local rotation_diff = quaternion_to_vector(last_player_rotation) - quaternion_to_vector(original_rotation)
+        local pitch_diff = (Quaternion.pitch(last_player_rotation) - Quaternion.pitch(original_rotation)) * 5
+        self.last_real_rotation = quaternion_box(original_rotation)
 
-        -- Null init
-        local rotation = quaternion_from_vector(vector3_zero())
+        local rotation = vector3_zero()
         local position = vector3_zero()
+        local new_rotation = quaternion_identity()
+        local new_position = vector3_zero()
+        local current_rotation = self.rotate_animation and vector3_unbox(self.rotate_animation)
+        local current = current_rotation or vector3_zero()
 
-        -- Update animation
-        if self.crouch_end and self.crouch_end > t then
-            -- Play equipment sound
-            if not self.sound_played then
-                mod:execute_extension(self.player_unit, "visible_equipment_system", "play_equipment_sound", nil, nil, true, true)
-                self.sound_played = true
-            end
-            -- Lerp values
-            local progress = (self.crouch_end - t) / CROUCH_TIME
-            local anim_progress = math_ease_out_elastic(1 - progress)
-            if progress > .7 then anim_progress = math_easeOutCubic(1 - progress) end
-            if not self.is_crouched then anim_progress = math_easeInCubic(progress) end
-            rotation = quaternion_from_vector(vector3_unbox(CROUCH_ROTATION) * anim_progress)
-            position = vector3_unbox(CROUCH_POSITION) * anim_progress
+        local yaw = rotation_diff[3]
+        -- reduce the yaw  
+        yaw = yaw % 360;
+        -- force it to be the positive remainder, so that 0 <= yaw < 360  
+        yaw = (yaw + 360) % 360;  
+        -- force into the minimum absolute value residue class, so that -180 < yaw <= 180  
+        if yaw > 180 then yaw = yaw - 360 end
+        yaw = yaw * .1
+        yaw = yaw * -1
 
-        elseif self.crouch_end and self.crouch_end <= t then
-            -- Unset timer
-            self.crouch_end = nil
+        local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
+        local rotated_pos = matrix4x4_transform(mat, vector3(pitch_diff, 0, yaw))
+
+        current = current + rotated_pos * .25
+        current = current - current * (dt * 8)
+
+        for i = 1, 3 do
+            current[i] = math.clamp(current[i], -2.5, 2.5)
         end
 
-        -- Set crouch values
-        if self.is_crouched and not self.crouch_end then
-            rotation = quaternion_from_vector(vector3_unbox(CROUCH_ROTATION))
-            position = vector3_unbox(CROUCH_POSITION)
-        end
+        local new_euler_rotation = quaternion_from_vector(current)
+        new_rotation = Quaternion.multiply(quaternion_from_vector(rotation), new_euler_rotation)
+        new_position = position + vector3(current[3] * .75, 0, current[1]) * .05
 
-        -- Save values
-        self.position = vector3_box(position)
-        self.rotation = quaternion_box(rotation)
+        self.position = vector3_box(new_position)
+        self.rotation = quaternion_box(new_rotation)
 
-        -- Set position and rotation
-        self:set_position_and_rotation(position, rotation)
+        self:set_position_and_rotation(new_position, new_rotation)
+
+        self.rotate_animation = vector3_box(current)
     end
 end
 
-CrouchAnimationExtension.set_position_and_rotation = function(self, offset_position, offset_rotation)
+SwayAnimationExtension.set_position_and_rotation = function(self, offset_position, offset_rotation)
     if offset_position and offset_rotation then
         local position = unit_local_position(self.first_person_unit, 1)
         local rotation = unit_local_rotation(self.first_person_unit, 1)
@@ -265,7 +224,7 @@ CrouchAnimationExtension.set_position_and_rotation = function(self, offset_posit
     end
 end
 
-CrouchAnimationExtension.crosshair_position = function(self, hud_element_crosshair, dt, t, ui_renderer)
+SwayAnimationExtension.crosshair_position = function(self, hud_element_crosshair, dt, t, ui_renderer)
 	local target_x = 0
 	local target_y = 0
 	local ui_renderer_scale = ui_renderer.scale
@@ -319,7 +278,7 @@ CrouchAnimationExtension.crosshair_position = function(self, hud_element_crossha
 	return x, y
 end
 
-CrouchAnimationExtension.adjust_crosshair = function(self, hud_element_crosshair, x, y)
+SwayAnimationExtension.adjust_crosshair = function(self, hud_element_crosshair, x, y)
     -- local x, y = self:crosshair_position(hud_element_crosshair, dt, t, ui_renderer)
     local widget = hud_element_crosshair._widget
 	if widget then
@@ -333,32 +292,4 @@ CrouchAnimationExtension.adjust_crosshair = function(self, hud_element_crosshair
     return x, y
 end
 
--- CrouchAnimationExtension.crosshair_position = function(self, x, y)
---     local position = self.position and vector3_unbox(self.position) or vector3_zero()
---     mod:echot("diff: "..tostring(position[3]), 2)
---     return x, y + position[3] * 10 or 0
--- end
-
--- CrouchAnimationExtension.pause = function(self)
---     if self.initialized then
---         -- self.pause = true
---         local position = self.last_real_position and vector3_unbox(self.last_real_position)
---         if position and vector3.is_valid(position) then
---             unit_set_local_position(self.first_person_unit, 1, position)
---             mod:echot("set")
---         end
---         local rotation = self.last_real_rotation and quaternion_unbox(self.last_real_rotation)
---         if rotation and Quaternion.is_valid(position) then unit_set_local_rotation(self.first_person_unit, 1, rotation) end
---     end
--- end
-
--- CrouchAnimationExtension.resume = function(self)
---     if self.initialized then
---         -- self.pause = false
---         local position = self.position and vector3_unbox(self.position) or vector3_zero()
---         local rotation = self.rotation and quaternion_unbox(self.rotation) or vector3_zero()
---         self:set_position_and_rotation(position, rotation)
---     end
--- end
-
-return CrouchAnimationExtension
+return SwayAnimationExtension

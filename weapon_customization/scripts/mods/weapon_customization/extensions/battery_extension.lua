@@ -12,10 +12,6 @@ local mod = get_mod("weapon_customization")
     local class = class
     local math = math
     local math_clamp = math.clamp
-    local table = table
-    local table_insert = table.insert
-    local table_find_by_key = table.find_by_key
-    local CLASS = CLASS
     local script_unit = ScriptUnit
     local script_unit_has_extension = script_unit.has_extension
     local script_unit_extension = script_unit.extension
@@ -166,29 +162,5 @@ mod.get_battery_fraction = function(self)
     end
 	return 0
 end
-
--- ##### ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┬ ┬┬ ┬┌┬┐ ###############################################################################
--- ##### ├┤ ┌┴┬┘ │ ├┤ │││ ││  ├─┤│ │ ││ ###############################################################################
--- ##### └─┘┴ └─ ┴ └─┘┘└┘─┴┘  ┴ ┴└─┘─┴┘ ###############################################################################
-
-local hud_element_script = "weapon_customization/scripts/mods/weapon_customization/hud/hud_element_battery"
-local hud_element_class = "HudElementBattery"
-
--- Add hud element to hud
-mod:add_require_path(hud_element_script)
-mod:hook(CLASS.UIHud, "init", function(func, self, elements, visibility_groups, params, ...)
-	if not table_find_by_key(elements, "class_name", hud_element_class) then
-		table_insert(elements, {
-			filename = hud_element_script,
-			class_name = hud_element_class,
-			visibility_groups = {
-				"alive",
-				"tactical_overlay",
-                "in_view",
-			},
-		})
-	end
-	return func(self, elements, visibility_groups, params, ...)
-end)
 
 return BatteryExtension

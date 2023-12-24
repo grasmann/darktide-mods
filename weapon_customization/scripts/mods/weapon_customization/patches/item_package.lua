@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
+local MasterItems = mod:original_require("scripts/backend/master_items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -15,6 +16,9 @@ local ItemPackage = mod:original_require("scripts/foundation/managers/package/ut
     local table_remove = table.remove
     local table_contains = table.contains
     local table_is_empty = table.is_empty
+    local table_clone_instance = table.clone_instance
+    local table_clone = table.clone
+    local table_size = table.size
     local script_unit = ScriptUnit
     local script_unit_has_extension = script_unit.has_extension
     local script_unit_extension = script_unit.extension
@@ -256,6 +260,8 @@ local REFERENCE = "weapon_customization"
 --#endregion
 
 mod.can_package_be_unloaded = function(self, package_name)
+    -- Check package name
+    if not string_find(package_name, "content/weapons/player") then return true end
     -- Check registered packages
     local used_packages = self:persistent_table(REFERENCE).used_packages
     for _, USED_PACKAGES in pairs(used_packages) do
@@ -281,6 +287,12 @@ mod.can_package_be_unloaded = function(self, package_name)
     if string_find(package_name, "trinket") then return false end
     -- Tempt random fix
     if self:persistent_table(REFERENCE).keep_all_packages then return false end
+
+    local package_manager = managers.package
+    -- Is loading
+    if package_manager:is_loading_now(package_name) or package_manager:is_loading(package_name) then return false end
+    -- -- Unload
+    -- if not package_manager:can_unload(package_name) then return false end
     return true
 end
 
@@ -309,11 +321,14 @@ mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)
 	end
 
     -- Unload rest
-    -- for package_name, load_ids in pairs(self._loaded_packages) do
-    --     for _, load_id in pairs(load_ids) do
-    --         managers.package:release(load_id)
-    --     end
-    -- end
+    if self._loaded_packages then
+        for package_name, load_ids in pairs(self._loaded_packages) do
+            for _, load_id in pairs(load_ids) do
+                managers.package:release(load_id)
+                mod:print("MispredictPackageHandler - unloaded left over "..tostring(package_name))
+            end
+        end
+    end
 
 	self._pending_unloads = nil
 	self._loaded_packages = nil
@@ -460,12 +475,26 @@ end)
 mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
 	local load_call_item = self._load_call_data[id]
 	local package_name = load_call_item.package_name
+    local load_call_list = self._package_to_load_call_item[package_name]
+
     -- Unload if possible
     local keep_all = mod:persistent_table(REFERENCE).keep_all_packages
-    if (mod:can_package_be_unloaded(package_name) and not keep_all) or self._shutdown_has_started then
+    local can_unload = mod:can_package_be_unloaded(package_name) and not keep_all
+    if can_unload or self._shutdown_has_started or #load_call_list > 1 then
         func(self, id, ...)
-    else mod:print("prevented package "..tostring(package_name).." from unloading") end
+    else
+        if mod:persistent_table(REFERENCE).prevent_unload[package_name] then
+            mod:persistent_table(REFERENCE).prevent_unload[package_name] = mod:persistent_table(REFERENCE).prevent_unload[package_name] + 1
+        else
+            mod:persistent_table(REFERENCE).prevent_unload[package_name] = 1
+        end
+        mod:print("prevented package "..tostring(package_name).." from unloading")
+    end
 end)
+
+mod.randomize_item = function(self, item)
+
+end
 
 mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(ItemPackage)
 
@@ -476,62 +505,45 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
             local gear_id = mod:get_gear_id(item)
 
-            local in_possesion_of_player = mod:is_owned_by_player(item)
-            -- if in_possesion_of_player then
-            --     -- mod:echo("player")
+            -- local in_possesion_of_player = mod:is_owned_by_player(item)
+            -- local in_possesion_of_other_player = mod:is_owned_by_other_player(item)
+            -- local in_store = mod:is_store_item(item) and not mod:is_premium_store_item(item)
+            -- local in_premium_store = mod:is_premium_store_item(item)
+            -- local store = in_store and mod:get("mod_option_randomization_store")
+            -- local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
+            -- local randomize = store or other_player
+            -- if randomize and gear_id then
+            --     if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
+            --         -- mod:print("randomize "..tostring(gear_id))
+            --         local master_item = item.__master_item or item
+            --         local random_attachments = mod:randomize_weapon(master_item)
+            --         mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
+            --         -- Auto equip
+            --         for attachment_slot, value in pairs(random_attachments) do
+            --             if not mod.add_custom_attachments[attachment_slot] then
+            --                 mod:resolve_auto_equips(item, value)
+            --             end
+            --         end
+            --         for attachment_slot, value in pairs(random_attachments) do
+            --             if mod.add_custom_attachments[attachment_slot] then
+            --                 mod:resolve_auto_equips(item, value)
+            --             end
+            --         end
+            --         -- Special resolve
+            --         for attachment_slot, value in pairs(random_attachments) do
+            --             if mod.add_custom_attachments[attachment_slot] then
+            --                 mod:resolve_special_changes(item, value)
+            --             end
+            --         end
+            --         for attachment_slot, value in pairs(random_attachments) do
+            --             if not mod.add_custom_attachments[attachment_slot] then
+            --                 mod:resolve_special_changes(item, value)
+            --             end
+            --         end
+            --     end
             -- end
-            local in_possesion_of_other_player = mod:is_owned_by_other_player(item)
-            -- if not in_possesion_of_player and in_possesion_of_other_player then
-            --     -- mod:echo("other player")
-            -- end
-            local in_store = mod:is_store_item(item) and not mod:is_premium_store_item(item)
-            -- if in_store then
-            --     -- mod:echo("store")
-            -- -- else
-            -- --     mod:echo("not store")
-            -- end
-            local in_premium_store = mod:is_premium_store_item(item)
-            -- if in_premium_store then
-            --     mod:echo("premium_store")
-            -- end
-            local store = in_store and mod:get("mod_option_randomization_store")
-            local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
-            local randomize = store or other_player
-            -- if randomize then
-            --     mod:echo("randomize")
-            -- end
-            if randomize and gear_id then
-                if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-                    mod:print("randomize "..tostring(gear_id))
-                    local master_item = item.__master_item or item
-                    local random_attachments = mod:randomize_weapon(master_item)
-                    mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
-                    -- Auto equip
-                    for attachment_slot, value in pairs(random_attachments) do
-                        if not mod.add_custom_attachments[attachment_slot] then
-                            mod:resolve_auto_equips(item, value)
-                        end
-                    end
-                    for attachment_slot, value in pairs(random_attachments) do
-                        if mod.add_custom_attachments[attachment_slot] then
-                            mod:resolve_auto_equips(item, value)
-                        end
-                    end
-                    -- Special resolve
-                    for attachment_slot, value in pairs(random_attachments) do
-                        if mod.add_custom_attachments[attachment_slot] then
-                            mod:resolve_special_changes(item, value)
-                        end
-                    end
-                    for attachment_slot, value in pairs(random_attachments) do
-                        if not mod.add_custom_attachments[attachment_slot] then
-                            mod:resolve_special_changes(item, value)
-                        end
-                    end
-                end
-            end
 
-            if gear_id then
+            if gear_id and not mod:is_premium_store_item() then
                 mod:setup_item_definitions()
 
                 -- Add flashlight slot

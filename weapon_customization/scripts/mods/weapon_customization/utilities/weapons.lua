@@ -91,6 +91,28 @@ mod.randomize_weapon = function(self, item)
             end
         end
     end
+	-- -- Auto equip
+	-- for attachment_slot, value in pairs(random_attachments) do
+	-- 	if not mod.add_custom_attachments[attachment_slot] then
+	-- 		mod:resolve_auto_equips(item, value)
+	-- 	end
+	-- end
+	-- for attachment_slot, value in pairs(random_attachments) do
+	-- 	if mod.add_custom_attachments[attachment_slot] then
+	-- 		mod:resolve_auto_equips(item, value)
+	-- 	end
+	-- end
+	-- -- Special resolve
+	-- for attachment_slot, value in pairs(random_attachments) do
+	-- 	if mod.add_custom_attachments[attachment_slot] then
+	-- 		mod:resolve_special_changes(item, value)
+	-- 	end
+	-- end
+	-- for attachment_slot, value in pairs(random_attachments) do
+	-- 	if not mod.add_custom_attachments[attachment_slot] then
+	-- 		mod:resolve_special_changes(item, value)
+	-- 	end
+	-- end
     -- No support
     for _, no_support_entry in pairs(no_support_entries) do
         for attachment_slot, random_attachment in pairs(random_attachments) do
@@ -155,16 +177,19 @@ end
 
 -- Get gear id from item
 mod.get_gear_id = function(self, item)
-	return item and (item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id)
+	local gear_id = item and (item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id)
+	return gear_id and mod.gear_id_to_offer_id[gear_id] or gear_id
 end
 
 mod.get_real_gear_id = function(self, item)
-	return item and (item.__original_gear_id or item.__gear and item.__gear.uuid or item.__gear_id or item.gear_id)
+	local gear_id = item and (item.__original_gear_id or item.__gear and item.__gear.uuid or item.__gear_id or item.gear_id)
+	return gear_id and mod.gear_id_to_offer_id[gear_id] or gear_id
 end
 
 -- Get slot info id
 mod.get_slot_info_id = function(self, item)
-	return item and (item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid)
+	local slot_info_id = item and (item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid)
+	return slot_info_id and mod.gear_id_to_offer_id[slot_info_id] or slot_info_id
 end
 
 mod.is_owned_by_player = function(self, item)
@@ -213,27 +238,34 @@ end
 -- Optional: Item to get real default attachment
 mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or_nil)
 	-- local item = optional_item_or_nil and optional_item_or_nil.__master_item or optional_item_or_nil
-	local in_premium_store = mod:is_premium_store_item(optional_item_or_nil)
+	local in_premium_store = mod:is_premium_store_item()
 	-- if mod:not_trinket(attachment_slot) then
 	local attachment = nil
-	-- Check skin
-	if optional_item_or_nil and mod:is_premium_store_item(optional_item_or_nil) then
-		local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
-		local weapon_skin = optional_item_or_nil.slot_weapon_skin
-		if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
-			self:setup_item_definitions()
-			weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
-		end
-		if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
-			local attachment_data = self:_recursive_find_attachment(weapon_skin.attachments, attachment_slot)
-			if attachment_data then
-				attachment = attachment_data.attachment_name
-				-- mod:echo("attachment_name: "..tostring(attachment_data.attachment_name))
-				-- attachment = mod:get_actual_default_attachment(optional_item_or_nil, attachment_slot)
-				-- mod:echo("attachment_name: "..tostring(attachment))
-			end
-		end
-	end
+	-- -- Check skin
+	-- if optional_item_or_nil and in_premium_store then
+	-- 	local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
+	-- 	local weapon_skin = optional_item_or_nil.slot_weapon_skin
+	-- 	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
+	-- 		self:setup_item_definitions()
+	-- 		weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
+	-- 	end
+	-- 	if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
+	-- 		local attachment_data = self:_recursive_find_attachment(weapon_skin.attachments, attachment_slot)
+	-- 		if attachment_data and self.attachment_models[item_name] then
+	-- 			for attachment_name, model_data in pairs(self.attachment_models[item_name]) do
+	-- 				if model_data.model == attachment_data.item then
+	-- 					attachment = attachment_name
+	-- 					break
+	-- 				end
+	-- 			end
+	-- 			-- attachment = attachment_data.attachment_name
+	-- 			-- mod:echo("attachment_name: "..tostring(attachment_data.attachment_name))
+	-- 			-- attachment = mod:get_actual_default_attachment(optional_item_or_nil, attachment_slot)
+	-- 			-- mod:echo("attachment_name: "..tostring(attachment))
+	-- 			mod:echo("attachment: "..tostring(attachment))
+	-- 		end
+	-- 	end
+	-- end
 	-- Check manual changes
 	if not attachment then
 		attachment = self:get(tostring(gear_id).."_"..attachment_slot)

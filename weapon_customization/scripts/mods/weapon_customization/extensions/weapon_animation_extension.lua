@@ -64,6 +64,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
     local managers = Managers
     local class = class
     local pairs = pairs
+    local wc_perf = wc_perf
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -73,6 +74,7 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
 local REFERENCE = "weapon_customization"
 local MOVE_IN_DURATION = 1
 local MOVE_OUT_DURATION = .5
+local MOVE_RESET_TIME = 1
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ######################################
 -- ##### │││├┤ ├─┤├─┘│ ││││  ├─┤│││││││├─┤ │ ││ ││││  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ######################################
@@ -87,10 +89,15 @@ local WeaponAnimationExtension = class("WeaponAnimationExtension", "WeaponCustom
 WeaponAnimationExtension.init = function(self, extension_init_context, unit, extension_init_data)
     WeaponAnimationExtension.super.init(self, extension_init_context, unit, extension_init_data)
 
-    mod:echo("init")
+    mod:echo("Init WeaponAnimationExtension")
 
     self.ui_weapon_spawner = extension_init_data.ui_weapon_spawner
-    self:set_units()
+    self.camera = self.ui_weapon_spawner._camera
+    self.weapon_spawn_data = self.ui_weapon_spawner._weapon_spawn_data
+    self.weapon_unit = self.weapon_spawn_data.item_unit_3p
+    self.attachment_units = self.weapon_spawn_data.attachment_units_3p
+    self.link_unit = self.weapon_spawn_data.link_unit
+    -- self:set_units()
     self.link_unit_position = self.link_unit and vector3_box(unit_local_position(self.link_unit, 1))
     self.link_unit_base_position = self.link_unit_position
 
@@ -107,7 +114,7 @@ WeaponAnimationExtension.delete = function(self)
     managers.event:unregister(self, "weapon_customization_settings_changed")
     self.initialized = false
 
-    mod:echo("delete")
+    mod:echo("Delete WeaponAnimationExtension")
 
     WeaponAnimationExtension.super.delete(self)
 end
@@ -137,6 +144,10 @@ end
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+WeaponAnimationExtension.get_weapon_spawn_data = function(self)
+    return self.ui_weapon_spawner and self.ui_weapon_spawner._weapon_spawn_data
+end
+
 WeaponAnimationExtension.is_animated = function(self, attachment_slot)
 	for _, animation in pairs(self.animations) do
 		if animation.slot == attachment_slot then
@@ -149,21 +160,23 @@ end
 -- ##### └─┐├┤  │   └┐┌┘├─┤│  │ │├┤ └─┐ ###############################################################################
 -- ##### └─┘└─┘ ┴    └┘ ┴ ┴┴─┘└─┘└─┘└─┘ ###############################################################################
 
-WeaponAnimationExtension.set_units = function(self)
-    local weapon_spawn_data = self.ui_weapon_spawner._weapon_spawn_data
-    if weapon_spawn_data then
-        self.weapon_unit = weapon_spawn_data.item_unit_3p
-        self.attachment_units = weapon_spawn_data.attachment_units_3p
-        self.link_unit = weapon_spawn_data.link_unit
-    end
-end
+-- WeaponAnimationExtension.set_units = function(self)
+--     local weapon_spawn_data = self:get_weapon_spawn_data()
+--     if weapon_spawn_data then
+--         self.weapon_unit = weapon_spawn_data.item_unit_3p
+--         self.attachment_units = weapon_spawn_data.attachment_units_3p
+--         self.link_unit = weapon_spawn_data.link_unit
+--     end
+-- end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
 -- ##### │││├┤  │ ├─┤│ │ ││└─┐ ########################################################################################
 -- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
 
-WeaponAnimationExtension.move = function(self, position)
-    self.move = true
+WeaponAnimationExtension.move = function(self, position, optional_reset)
+    mod:echot("start move "..tostring(position))
+    self.do_move = true
+    self.do_reset = optional_reset
     if position then
 		self.position = position
 	else
@@ -353,24 +366,33 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 WeaponAnimationExtension.update = function(self, dt, t)
+    local perf = wc_perf.start("WeaponAnimationExtension.update", 2)
     if self.initialized then
         self:update_move(dt, t)
         self:update_rotation(dt, t)
         self:update_lights(dt, t)
         self:draw_equipment_lines(dt, t)
     end
+    wc_perf.stop(perf)
+end
+
+WeaponAnimationExtension.update_reset = function(self, dt, t)
+
 end
 
 WeaponAnimationExtension.update_move = function(self, dt, t)
-    local weapon_spawn_data = self.ui_weapon_spawner._weapon_spawn_data
-    if weapon_spawn_data and self.ui_weapon_spawner._link_unit_position then
+    local weapon_spawn_data = self:get_weapon_spawn_data()
+    if weapon_spawn_data and self.link_unit_position then
 
-        local link_unit = weapon_spawn_data.link_unit
+        -- local link_unit = weapon_spawn_data.link_unit
 		local position = vector3_unbox(self.link_unit_position)
 
         -- Camera movement
-        if self.move and self.camera_zoom then
+        if self.do_move and self.camera_zoom then
+            self.do_move = nil
+            self.reset_start = nil
             if self.position and not self.move_end then
+                mod:echot("start move animation")
                 local last_position = self.last_position and vector3_unbox(self.last_position) or vector3_zero()
                 local move_position = vector3_unbox(self.position)
                 if not vector3_equal(last_position, move_position) then
@@ -379,36 +401,51 @@ WeaponAnimationExtension.update_move = function(self, dt, t)
                     self.move_duration = MOVE_IN_DURATION
                     self.last_position = self.position
                     mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
+                else
+                    mod:echot("skip move animation")
                 end
+                self.position = nil
+
             elseif self.link_unit_base_position then
+                mod:echot("start reset animation")
                 local last_position = vector3_unbox(self.link_unit_position)
-                local move_position = vector3_unbox(self.link_unit_base_position)
-                if not vector3_equal(move_position, last_position) then
+                local base_position = vector3_unbox(self.link_unit_base_position)
+                if not vector3_equal(base_position, last_position) then
                     self.new_position = self.link_unit_base_position
                     self.move_end = t + MOVE_OUT_DURATION
                     self.move_duration = MOVE_OUT_DURATION
                     self.last_position = vector3_zero()
                     mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
+                else
+                    mod:echot("skip reset animation")
                 end
             end
+
         elseif self.move_end and t < self.move_end then
             local progress = (self.move_end - t) / self.move_duration
             local anim_progress = math_easeInCubic(1 - progress)
             local lerp_position = vector3_lerp(position, vector3_unbox(self.new_position), anim_progress)
-            if link_unit and unit_alive(link_unit) then
-                unit_set_local_position(link_unit, 1, lerp_position)
+            if self.link_unit and unit_alive(self.link_unit) then
+                unit_set_local_position(self.link_unit, 1, lerp_position)
             end
             self.link_unit_position = vector3_box(lerp_position)
 
         elseif self.move_end and t >= self.move_end then
+            mod:echot("finish move animation")
             self.move_end = nil
-            if link_unit and unit_alive(link_unit) then
-                unit_set_local_position(link_unit, 1, vector3_unbox(self.new_position))
-                self.link_unit_position = vector3_box(unit_local_position(link_unit, 1))
+            if self.link_unit and unit_alive(self.link_unit) then
+                unit_set_local_position(self.link_unit, 1, vector3_unbox(self.new_position))
+                self.link_unit_position = vector3_box(unit_local_position(self.link_unit, 1))
             end
-            if self.move_duration == MOVE_IN_DURATION and not vector3_equal(vector3_unbox(self.new_position), vector3_zero()) then
-                self.reset = true
+            if self.do_reset then
+                self.do_reset = nil
+                self.reset_start = t + MOVE_RESET_TIME
             end
+
+        elseif self.reset_start and t >= self.reset_start then
+            mod:echot("Start reset")
+            self.reset_start = nil
+            self:move(nil, false)
 
         end
 
@@ -421,12 +458,12 @@ WeaponAnimationExtension.update_rotation = function(self, dt, t)
 end
 
 WeaponAnimationExtension.update_lights = function(self, dt, t)
-	if mod.preview_lights and self.ui_weapon_spawner._link_unit_base_position and self.ui_weapon_spawner._link_unit_position then
+	if mod.preview_lights and self.link_unit_base_position and self.link_unit_position then
 		for _, unit_data in pairs(mod.preview_lights) do
 			-- Get default position
 			local default_position = vector3_unbox(unit_data.position)
 			-- Get difference to link unit position
-			local link_difference = vector3_unbox(self.ui_weapon_spawner._link_unit_base_position) - vector3_unbox(self.ui_weapon_spawner._link_unit_position)
+			local link_difference = vector3_unbox(self.link_unit_base_position) - vector3_unbox(self.link_unit_position)
 			-- Position with offset
 			local light_position = vector3(default_position[1], default_position[2] - link_difference[2], default_position[3])
 			unit_set_local_position(unit_data.unit, 1, light_position)
@@ -442,7 +479,7 @@ WeaponAnimationExtension.draw_equipment_lines = function(self, dt, t)
 		local slot_info_id = cosmetics_view._slot_info_id
 		local item = cosmetics_view._selected_item
 		local gui = cosmetics_view._ui_forward_renderer.gui
-		local camera = self.ui_weapon_spawner._camera
+		-- local camera = self.ui_weapon_spawner._camera
 		local attachments = item.attachments
 
 		if attachments and #self.animations == 0 and slot_infos[slot_info_id] then
@@ -456,7 +493,7 @@ WeaponAnimationExtension.draw_equipment_lines = function(self, dt, t)
 					if unit and unit_alive(unit) then
 						local box = Unit.box(unit, false)
 						local center_position = matrix4x4_translation(box)
-						local world_to_screen, distance = camera_world_to_screen(camera, center_position)
+						local world_to_screen, distance = camera_world_to_screen(self.camera, center_position)
 						local saved_origin = mod.dropdown_positions[attachment_slot]
 
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then

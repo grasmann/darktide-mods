@@ -40,6 +40,7 @@ mod:persistent_table(REFERENCE, {
 		hub = {},
 		customization = {},
 	},
+	prevent_unload = {},
 	keep_all_packages = nil,
 	-- Input
 	input_hooked = false,
@@ -132,6 +133,7 @@ end
 
 mod.on_unload = function(exit_game)
 	if not exit_game then mod:persistent_table(REFERENCE).keep_all_packages = true end
+	if exit_game then mod:console_output() end
 end
 
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
@@ -187,6 +189,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/we
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/input_service")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/visual_loadout_customization")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/randomization")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/hud")
 
 mod.init = function(self)
 	self.ui_manager = managers.ui
@@ -219,6 +222,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/laser_pointer_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/flashlight_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/crouch_animation_extension")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/sway_animation_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/sight_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/visible_equipment_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/battery_extension")
@@ -228,7 +232,6 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_daemon_host")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
--- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_patch")
 
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/composite")
 
@@ -242,6 +245,7 @@ if managers and managers.player._game_state ~= nil then
 	if mod.player_unit and unit_alive(mod.player_unit) then
 		if mod._debug then
 			mod:remove_extension(mod.player_unit, "crouch_system")
+			mod:remove_extension(mod.player_unit, "sway_system")
 			mod:remove_extension(mod.player_unit, "sight_system")
 			mod:remove_extension(mod.player_unit, "visible_equipment_system")
 			mod:remove_extension(mod.player_unit, "flashlight_system")

@@ -41,6 +41,7 @@ local functions = {
     body_attachments = function(default)
         local attachments = {
             {id = "body_01",        name = "Body 1"},
+            {id = "body_02",        name = "Body 2"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -53,6 +54,7 @@ local functions = {
         return table.model_table({
             {name = "body_default", model = ""},
             {name = "body_01",      model = _item_melee.."/full/stubgun_pistol_full_01"},
+            {name = "body_02",      model = _item_ranged.."/recievers/stubgun_pistol_receiver_02"}
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     barrel_attachments = function(default)
@@ -247,7 +249,7 @@ return table.combine(
                         lens = {parent = "sight", position = vector3_box(0, .033, .002), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .085, .002), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 2}},
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                        scope_offset = {position = vector3_box(0, .22, .034)}},
+                        scope_offset = {position = vector3_box(0, .22, .033)}},
                     -- Martyr's Gaze
                     {dependencies = {"scope_01", "barrel_04"},
                         sight = {parent = "barrel", parent_node = 10, position = vector3_box(0, -.03, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1), hide_mesh = {{"barrel", 9}},
@@ -261,7 +263,7 @@ return table.combine(
                         lens = {parent = "sight", position = vector3_box(0, .105, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .275, 1), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .065, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(1, .3, 1), data = {lens = 2}},
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                        scope_offset = {position = vector3_box(0, .175, .034)}},
+                        scope_offset = {position = vector3_box(0, .175, .033)}},
                     -- Extermination Lense
                     {dependencies = {"scope_02", "barrel_04"},
                         sight = {parent = "barrel", parent_node = 10, position = vector3_box(0, -.07, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1), hide_mesh = {{"barrel", 9}},
@@ -277,16 +279,15 @@ return table.combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.048), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
                         scope_offset = {position = vector3_box(0, .35, .028)}},
                     
-                    -- {sight_2 = {parent = "barrel", parent_node = 9, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
-                    -- {lens = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
-                    -- {lens_2 = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                    {sight_2 = {parent = "barrel", parent_node = 9, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                    {lens = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+                    {lens_2 = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
+                    {dependencies = {"barrel_04|barrel_05"},
+                        no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0)}},
+
                 --#endregion
                 --#region Muzzle
-                    {dependencies = {"muzzle_06"},
-                        muzzle = {parent = "barrel", parent_node = 9, position = vector3_box(0, .2225, -.02075), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
-                            animation_wait_attach = {"barrel"},
-                        },
-                    },
                     {dependencies = {"barrel_01"},
                         muzzle = {parent = "barrel", parent_node = 9, position = vector3_box(0, .2, -.0225), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
                             animation_wait_attach = {"barrel"},
@@ -330,13 +331,13 @@ return table.combine(
                 --#endregion
                 --#region Barrel
                     {dependencies = {"barrel_04"},
-                        body = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(1.5, 0, 0), rotation_node = 1, scale = vector3_box(1, 1, 1)},
-                        barrel = {offset = true, position = vector3_box(0, 0, -.001), rotation = vector3_box(1.5, 0, 0), rotation_node = 2, scale = vector3_box(1, 1, 1),
+                        -- body = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(1.5, 0, 0), rotation_node = 1, scale = vector3_box(1, 1, 1)},
+                        barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), rotation_node = 2, scale = vector3_box(1, 1, 1),
                             trigger_move = {"muzzle", "rail"}, animation_wait_detach = {"rail", "muzzle"},
                         }
                     },
                     {dependencies = {"barrel_05"},
-                        barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(1.5, 0, 0), rotation_node = 2, scale = vector3_box(1, 1, 1),
+                        barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), rotation_node = 2, scale = vector3_box(1, 1, 1),
                             trigger_move = {"muzzle", "rail"}, animation_wait_detach = {"rail", "muzzle"},
                         }
                     },

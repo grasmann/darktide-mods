@@ -190,8 +190,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local slot_info_id = mod:get_slot_info_id(item_data)
 		local in_possesion_of_player = mod:is_owned_by_player(item_data)
 		local attachment_slot_info = {}
-
-		if item_unit and attachments and gear_id and (not item_data.premium_store_item or in_possesion_of_player) then
+		
+		if item_unit and attachments and gear_id and in_possesion_of_player and not mod:is_premium_store_item() then
 			mod:setup_item_definitions()
 
 			-- Add flashlight slot
@@ -235,7 +235,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 		-- ############################################################################################################
 
-		if attachment_units and item_unit and attachments and gear_id and not item_data.premium_store_item then
+		if attachment_units and item_unit and attachments and gear_id and not mod:is_premium_store_item() then
 
 			unit_set_data(item_unit, "attachment_units", attachment_units)
 
@@ -616,14 +616,17 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	end
 
 	instance._node_name_to_attachment_slot = function(item_name, node_name)
-		local name = node_name
-		name = string_gsub(name, "ap_", "")
-		name = string_gsub(name, "_01", "")
-		name = string_gsub(name, "rp_", "")
-		name = string_gsub(name, "magazine_02", "magazine2")
-		if string_find(name, "chained_rig") then name = "receiver" end
-		if name == "trinket" then name = mod.anchors[item_name] and mod.anchors[item_name].trinket_slot or "slot_trinket_1" end
-		return name
+		if type(node_name) == "string" then
+			local name = node_name
+			name = string_gsub(name, "ap_", "")
+			name = string_gsub(name, "_01", "")
+			name = string_gsub(name, "rp_", "")
+			name = string_gsub(name, "magazine_02", "magazine2")
+			if string_find(name, "chained_rig") then name = "receiver" end
+			if name == "trinket" then name = mod.anchors[item_name] and mod.anchors[item_name].trinket_slot or "slot_trinket_1" end
+			return name
+		end
+		return "unknown"
 	end
 
 	instance._spawn_attachment = function(item_data, settings, parent_unit, optional_mission_template, attachment_slot_info, attachment_type, attachment_name, item_name, in_possesion_of_player)
@@ -678,7 +681,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			end
 		--#endregion Original
 
-		if type(attach_node) == "string" then
+		-- local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
+		-- Unit.set_data(spawned_unit, "attachment_name", attachment_name)
+		-- Unit.set_data(spawned_unit, "attachment_slot", attachment_type)
+		-- if type(attach_node) == "string" then
 			local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
 			-- if item_data.base_unit ~= "content/characters/empty_item/empty_item" then
 				attachment_slot_info = attachment_slot_info or {}
@@ -698,7 +704,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				-- 	-- Unit.set_data(spawned_unit, "composite_anchor", item_data.anchors[attachment_slot])
 				-- end
 			-- end
-		end
+		-- end
 	
 		--#region Original
 			local item_type = item_data.item_type
@@ -814,7 +820,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			-- 	-- mod:echo("In store: "..tostring(gear_id).." - "..tostring(in_store))
 			-- end
 
-			if gear_id and not item_data.premium_store_item then
+			if gear_id and not mod:is_premium_store_item() then
 				mod:setup_item_definitions()
 
 				-- Add flashlight slot

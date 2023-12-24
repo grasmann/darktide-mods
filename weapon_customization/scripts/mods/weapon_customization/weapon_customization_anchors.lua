@@ -156,106 +156,109 @@ local table = table
     mod.anchors = {
         --#region Ogryn Guns
             ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.anchors,
-            ogryn_rippergun_p1_m1 = _ogryn_rippergun_p1_m1.anchors,
-            ogryn_thumper_p1_m1 = _ogryn_thumper_p1_m1.anchors,
-            ogryn_gauntlet_p1_m1 = _ogryn_gauntlet_p1_m1.anchors,
+            ogryn_rippergun_p1_m1    = _ogryn_rippergun_p1_m1.anchors,
+            ogryn_thumper_p1_m1      = _ogryn_thumper_p1_m1.anchors,
+            ogryn_gauntlet_p1_m1     = _ogryn_gauntlet_p1_m1.anchors,
         --#endregion
         --#region Ogryn Melee
-            ogryn_club_p1_m1 = _ogryn_club_p1_m1.anchors,
-            ogryn_combatblade_p1_m1 = _ogryn_combatblade_p1_m1.anchors,
-            ogryn_powermaul_p1_m1 = _ogryn_powermaul_p1_m1.anchors,
+            ogryn_club_p1_m1                 = _ogryn_club_p1_m1.anchors,
+            ogryn_combatblade_p1_m1          = _ogryn_combatblade_p1_m1.anchors,
+            ogryn_powermaul_p1_m1            = _ogryn_powermaul_p1_m1.anchors,
             ogryn_powermaul_slabshield_p1_m1 = _ogryn_powermaul_slabshield_p1_m1.anchors,
-            ogryn_club_p2_m1 = _ogryn_club_p2_m1.anchors,
+            ogryn_club_p2_m1                 = _ogryn_club_p2_m1.anchors,
         --#endregion
         --#region Guns
-            autopistol_p1_m1 = _autopistol_p1_m1.anchors,
-            shotgun_p1_m1 = _shotgun_p1_m1.anchors,
-            bolter_p1_m1 = _bolter_p1_m1.anchors,
+            autopistol_p1_m1   = _autopistol_p1_m1.anchors,
+            shotgun_p1_m1      = _shotgun_p1_m1.anchors,
+            bolter_p1_m1       = _bolter_p1_m1.anchors,
             stubrevolver_p1_m1 = _stubrevolver_p1_m1.anchors,
-            plasmagun_p1_m1 = _plasmagun_p1_m1.anchors,
-            laspistol_p1_m1 = _laspistol_p1_m1.anchors,
-            autogun_p1_m1 = _autogun_p1_m1.anchors,
-            lasgun_p1_m1 = _lasgun_p1_m1.anchors,
-            lasgun_p2_m1 = _lasgun_p2_m1.anchors,
-            lasgun_p3_m1 = _lasgun_p3_m1.anchors,
-            flamer_p1_m1 = _flamer_p1_m1.anchors,
-            forcestaff_p1_m1 = _forcestaff_p1_m1.anchors,
+            plasmagun_p1_m1    = _plasmagun_p1_m1.anchors,
+            laspistol_p1_m1    = _laspistol_p1_m1.anchors,
+            autogun_p1_m1      = _autogun_p1_m1.anchors,
+            lasgun_p1_m1       = _lasgun_p1_m1.anchors,
+            lasgun_p2_m1       = _lasgun_p2_m1.anchors,
+            lasgun_p3_m1       = _lasgun_p3_m1.anchors,
+            flamer_p1_m1       = _flamer_p1_m1.anchors,
+            forcestaff_p1_m1   = _forcestaff_p1_m1.anchors,
         --#endregion
         --#region Melee
-            combataxe_p1_m1 = _combataxe_p1_m1.anchors,
-            combataxe_p2_m1 = _combataxe_p2_m1.anchors,
-            combatknife_p1_m1 = _combatknife_p1_m1.anchors,
-            powersword_p1_m1 = _powersword_p1_m1.anchors,
-            chainaxe_p1_m1 = _chainaxe_p1_m1.anchors,
-            chainsword_p1_m1 = _chainsword_p1_m1.anchors,
-            combataxe_p3_m1 = _combataxe_p3_m1.anchors,
-            combatsword_p1_m1 = _combatsword_p1_m1.anchors,
+            combataxe_p1_m1        = _combataxe_p1_m1.anchors,
+            combataxe_p2_m1        = _combataxe_p2_m1.anchors,
+            combatknife_p1_m1      = _combatknife_p1_m1.anchors,
+            powersword_p1_m1       = _powersword_p1_m1.anchors,
+            chainaxe_p1_m1         = _chainaxe_p1_m1.anchors,
+            chainsword_p1_m1       = _chainsword_p1_m1.anchors,
+            combataxe_p3_m1        = _combataxe_p3_m1.anchors,
+            combatsword_p1_m1      = _combatsword_p1_m1.anchors,
             thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.anchors,
-            powermaul_2h_p1_m1 = _powermaul_2h_p1_m1.anchors,
-            chainsword_2h_p1_m1 = _chainsword_2h_p1_m1.anchors,
-            combatsword_p2_m1 = _combatsword_p2_m1.anchors,
-            forcesword_p1_m1 = _forcesword_p1_m1.anchors,
-            combatsword_p3_m1 = _combatsword_p3_m1.anchors,
+            powermaul_2h_p1_m1     = _powermaul_2h_p1_m1.anchors,
+            chainsword_2h_p1_m1    = _chainsword_2h_p1_m1.anchors,
+            combatsword_p2_m1      = _combatsword_p2_m1.anchors,
+            forcesword_p1_m1       = _forcesword_p1_m1.anchors,
+            combatsword_p3_m1      = _combatsword_p3_m1.anchors,
         --#endregion
     }
     --#region Copies
         --#region Ogryn Guns
             mod.anchors.ogryn_heavystubber_p1_m2 = mod.anchors.ogryn_heavystubber_p1_m1
             mod.anchors.ogryn_heavystubber_p1_m3 = mod.anchors.ogryn_heavystubber_p1_m1
-            mod.anchors.ogryn_rippergun_p1_m2 = mod.anchors.ogryn_rippergun_p1_m1
-            mod.anchors.ogryn_rippergun_p1_m3 = mod.anchors.ogryn_rippergun_p1_m1
-            mod.anchors.ogryn_thumper_p1_m2 = mod.anchors.ogryn_thumper_p1_m1
+            mod.anchors.ogryn_rippergun_p1_m2    = mod.anchors.ogryn_rippergun_p1_m1
+            mod.anchors.ogryn_rippergun_p1_m3    = mod.anchors.ogryn_rippergun_p1_m1
+            mod.anchors.ogryn_thumper_p1_m2      = mod.anchors.ogryn_thumper_p1_m1
         --#endregion
         --#region Ogryn Melee
-            mod.anchors.ogryn_club_p1_m2 = mod.anchors.ogryn_club_p1_m1
-            mod.anchors.ogryn_club_p1_m3 = mod.anchors.ogryn_club_p1_m1
+            mod.anchors.ogryn_club_p1_m2        = mod.anchors.ogryn_club_p1_m1
+            mod.anchors.ogryn_club_p1_m3        = mod.anchors.ogryn_club_p1_m1
             mod.anchors.ogryn_combatblade_p1_m2 = mod.anchors.ogryn_combatblade_p1_m1
             mod.anchors.ogryn_combatblade_p1_m3 = mod.anchors.ogryn_combatblade_p1_m1
-            mod.anchors.ogryn_club_p2_m2 = mod.anchors.ogryn_club_p2_m1
-            mod.anchors.ogryn_club_p2_m3 = mod.anchors.ogryn_club_p2_m1
+            mod.anchors.ogryn_powermaul_p1_m2   = mod.anchors.ogryn_powermaul_p1_m1
+            mod.anchors.ogryn_powermaul_p1_m3   = mod.anchors.ogryn_powermaul_p1_m1
+            mod.anchors.ogryn_club_p2_m2        = mod.anchors.ogryn_club_p2_m1
+            mod.anchors.ogryn_club_p2_m3        = mod.anchors.ogryn_club_p2_m1
         --#endregion
         --#region Guns
             mod.anchors.stubrevolver_p1_m2 = mod.anchors.stubrevolver_p1_m1
-            mod.anchors.shotgun_p1_m2 = mod.anchors.shotgun_p1_m1
-            mod.anchors.shotgun_p1_m3 = mod.anchors.shotgun_p1_m1
-            mod.anchors.bolter_p1_m2 = mod.anchors.bolter_p1_m1
-            mod.anchors.bolter_p1_m3 = mod.anchors.bolter_p1_m1
-            mod.anchors.laspistol_p1_m3 = mod.anchors.laspistol_p1_m1
-            mod.anchors.autogun_p1_m2 = mod.anchors.autogun_p1_m1
-            mod.anchors.autogun_p1_m3 = mod.anchors.autogun_p1_m1
-            mod.anchors.autogun_p2_m1 = mod.anchors.autogun_p1_m1
-            mod.anchors.autogun_p2_m2 = mod.anchors.autogun_p1_m1
-            mod.anchors.autogun_p2_m3 = mod.anchors.autogun_p1_m1
-            mod.anchors.autogun_p3_m1 = mod.anchors.autogun_p1_m1
-            mod.anchors.autogun_p3_m2 = mod.anchors.autogun_p1_m1
-            mod.anchors.autogun_p3_m3 = mod.anchors.autogun_p1_m1
-            mod.anchors.lasgun_p1_m2 = mod.anchors.lasgun_p1_m1
-            mod.anchors.lasgun_p1_m3 = mod.anchors.lasgun_p1_m1
-            mod.anchors.lasgun_p2_m2 = mod.anchors.lasgun_p2_m1
-            mod.anchors.lasgun_p2_m3 = mod.anchors.lasgun_p2_m1
-            mod.anchors.lasgun_p3_m2 = mod.anchors.lasgun_p3_m1
-            mod.anchors.lasgun_p3_m3 = mod.anchors.lasgun_p3_m1
+            mod.anchors.shotgun_p1_m2      = mod.anchors.shotgun_p1_m1
+            mod.anchors.shotgun_p1_m3      = mod.anchors.shotgun_p1_m1
+            mod.anchors.bolter_p1_m2       = mod.anchors.bolter_p1_m1
+            mod.anchors.bolter_p1_m3       = mod.anchors.bolter_p1_m1
+            mod.anchors.laspistol_p1_m3    = mod.anchors.laspistol_p1_m1
+            mod.anchors.autogun_p1_m2      = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p1_m3      = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p2_m1      = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p2_m2      = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p2_m3      = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p3_m1      = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p3_m2      = mod.anchors.autogun_p1_m1
+            mod.anchors.autogun_p3_m3      = mod.anchors.autogun_p1_m1
+            mod.anchors.lasgun_p1_m2       = mod.anchors.lasgun_p1_m1
+            mod.anchors.lasgun_p1_m3       = mod.anchors.lasgun_p1_m1
+            mod.anchors.lasgun_p2_m2       = mod.anchors.lasgun_p2_m1
+            mod.anchors.lasgun_p2_m3       = mod.anchors.lasgun_p2_m1
+            mod.anchors.lasgun_p3_m2       = mod.anchors.lasgun_p3_m1
+            mod.anchors.lasgun_p3_m3       = mod.anchors.lasgun_p3_m1
         --#endregion
         --#region Melee
-            mod.anchors.combataxe_p1_m2 = mod.anchors.combataxe_p1_m1
-            mod.anchors.combataxe_p1_m3 = mod.anchors.combataxe_p1_m1
-            mod.anchors.combataxe_p2_m2 = mod.anchors.combataxe_p2_m1
-            mod.anchors.combataxe_p2_m3 = mod.anchors.combataxe_p2_m1
-            mod.anchors.combataxe_p3_m2 = mod.anchors.combataxe_p3_m1
-
-            mod.anchors.chainaxe_p1_m2 = mod.anchors.chainaxe_p1_m1
-            mod.anchors.chainsword_2h_p1_m2 = mod.anchors.chainsword_2h_p1_m1
-
-            mod.anchors.powersword_p1_m2 = mod.anchors.powersword_p1_m1
-            mod.anchors.combatsword_p1_m2 = mod.anchors.combatsword_p1_m1
-            mod.anchors.combatsword_p1_m3 = mod.anchors.combatsword_p1_m1
+            mod.anchors.combataxe_p1_m2        = mod.anchors.combataxe_p1_m1
+            mod.anchors.combataxe_p1_m3        = mod.anchors.combataxe_p1_m1
+            mod.anchors.combataxe_p2_m2        = mod.anchors.combataxe_p2_m1
+            mod.anchors.combataxe_p2_m3        = mod.anchors.combataxe_p2_m1
+            mod.anchors.combatknife_p1_m2      = mod.anchors.combatknife_p1_m1
+            mod.anchors.combataxe_p3_m2        = mod.anchors.combataxe_p3_m1
+            mod.anchors.combataxe_p3_m3        = mod.anchors.combataxe_p3_m1
+            mod.anchors.chainaxe_p1_m2         = mod.anchors.chainaxe_p1_m1
+            mod.anchors.chainsword_p1_m2       = mod.anchors.chainsword_p1_m1
+            mod.anchors.chainsword_2h_p1_m2    = mod.anchors.chainsword_2h_p1_m1
+            mod.anchors.powersword_p1_m2       = mod.anchors.powersword_p1_m1
+            mod.anchors.combatsword_p1_m2      = mod.anchors.combatsword_p1_m1
+            mod.anchors.combatsword_p1_m3      = mod.anchors.combatsword_p1_m1
             mod.anchors.thunderhammer_2h_p1_m2 = mod.anchors.thunderhammer_2h_p1_m1
-            mod.anchors.combatsword_p2_m2 = mod.anchors.combatsword_p2_m1
-            mod.anchors.combatsword_p2_m3 = mod.anchors.combatsword_p2_m1
-            mod.anchors.forcesword_p1_m2 = mod.anchors.forcesword_p1_m1
-            mod.anchors.forcesword_p1_m3 = mod.anchors.forcesword_p1_m1
-            mod.anchors.combatsword_p3_m2 = mod.anchors.combatsword_p3_m1
-            mod.anchors.combatsword_p3_m3 = mod.anchors.combatsword_p3_m1
+            mod.anchors.combatsword_p2_m2      = mod.anchors.combatsword_p2_m1
+            mod.anchors.combatsword_p2_m3      = mod.anchors.combatsword_p2_m1
+            mod.anchors.forcesword_p1_m2       = mod.anchors.forcesword_p1_m1
+            mod.anchors.forcesword_p1_m3       = mod.anchors.forcesword_p1_m1
+            mod.anchors.combatsword_p3_m2      = mod.anchors.combatsword_p3_m1
+            mod.anchors.combatsword_p3_m3      = mod.anchors.combatsword_p3_m1
         --#endregion
     --#endregion
 --#endregion
@@ -264,46 +267,46 @@ local table = table
     mod.attachment = {
         --#region Ogryn Guns
             ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.attachments,
-            ogryn_rippergun_p1_m1 = _ogryn_rippergun_p1_m1.attachments,
-            ogryn_thumper_p1_m1 = _ogryn_thumper_p1_m1.attachments,
-            ogryn_gauntlet_p1_m1 = _ogryn_gauntlet_p1_m1.attachments,
+            ogryn_rippergun_p1_m1    = _ogryn_rippergun_p1_m1.attachments,
+            ogryn_thumper_p1_m1      = _ogryn_thumper_p1_m1.attachments,
+            ogryn_gauntlet_p1_m1     = _ogryn_gauntlet_p1_m1.attachments,
         --#endregion
         --#region Ogryn Melee
-            ogryn_club_p1_m1 = _ogryn_club_p1_m1.attachments,
-            ogryn_combatblade_p1_m1 = _ogryn_combatblade_p1_m1.attachments,
-            ogryn_powermaul_p1_m1 = _ogryn_powermaul_p1_m1.attachments,
+            ogryn_club_p1_m1                 = _ogryn_club_p1_m1.attachments,
+            ogryn_combatblade_p1_m1          = _ogryn_combatblade_p1_m1.attachments,
+            ogryn_powermaul_p1_m1            = _ogryn_powermaul_p1_m1.attachments,
             ogryn_powermaul_slabshield_p1_m1 = _ogryn_powermaul_slabshield_p1_m1.attachments,
-            ogryn_club_p2_m1 = _ogryn_club_p2_m1.attachments,
+            ogryn_club_p2_m1                 = _ogryn_club_p2_m1.attachments,
         --#endregion
         --#region Guns
-            autopistol_p1_m1 = _autopistol_p1_m1.attachments,
-            shotgun_p1_m1 = _shotgun_p1_m1.attachments,
-            bolter_p1_m1 = _bolter_p1_m1.attachments,
+            autopistol_p1_m1   = _autopistol_p1_m1.attachments,
+            shotgun_p1_m1      = _shotgun_p1_m1.attachments,
+            bolter_p1_m1       = _bolter_p1_m1.attachments,
             stubrevolver_p1_m1 = _stubrevolver_p1_m1.attachments,
-            plasmagun_p1_m1 = _plasmagun_p1_m1.attachments,
-            laspistol_p1_m1 = _laspistol_p1_m1.attachments,
-            autogun_p1_m1 = _autogun_p1_m1.attachments,
-            lasgun_p1_m1 = _lasgun_p1_m1.attachments,
-            lasgun_p2_m1 = _lasgun_p2_m1.attachments,
-            lasgun_p3_m1 = _lasgun_p3_m1.attachments,
-            flamer_p1_m1 = _flamer_p1_m1.attachments,
-            forcestaff_p1_m1 = _forcestaff_p1_m1.attachments,
+            plasmagun_p1_m1    = _plasmagun_p1_m1.attachments,
+            laspistol_p1_m1    = _laspistol_p1_m1.attachments,
+            autogun_p1_m1      = _autogun_p1_m1.attachments,
+            lasgun_p1_m1       = _lasgun_p1_m1.attachments,
+            lasgun_p2_m1       = _lasgun_p2_m1.attachments,
+            lasgun_p3_m1       = _lasgun_p3_m1.attachments,
+            flamer_p1_m1       = _flamer_p1_m1.attachments,
+            forcestaff_p1_m1   = _forcestaff_p1_m1.attachments,
         --#endregion
         --#region Melee
-            combataxe_p1_m1 = _combataxe_p1_m1.attachments,
-            combataxe_p2_m1 = _combataxe_p2_m1.attachments,
-            combatknife_p1_m1 = _combatknife_p1_m1.attachments,
-            powersword_p1_m1 = _powersword_p1_m1.attachments,
-            chainaxe_p1_m1 = _chainaxe_p1_m1.attachments,
-            chainsword_p1_m1 = _chainsword_p1_m1.attachments,
-            combataxe_p3_m1 = _combataxe_p3_m1.attachments,
-            combatsword_p1_m1 = _combatsword_p1_m1.attachments,
+            combataxe_p1_m1        = _combataxe_p1_m1.attachments,
+            combataxe_p2_m1        = _combataxe_p2_m1.attachments,
+            combatknife_p1_m1      = _combatknife_p1_m1.attachments,
+            powersword_p1_m1       = _powersword_p1_m1.attachments,
+            chainaxe_p1_m1         = _chainaxe_p1_m1.attachments,
+            chainsword_p1_m1       = _chainsword_p1_m1.attachments,
+            combataxe_p3_m1        = _combataxe_p3_m1.attachments,
+            combatsword_p1_m1      = _combatsword_p1_m1.attachments,
             thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.attachments,
-            powermaul_2h_p1_m1 = _powermaul_2h_p1_m1.attachments,
-            chainsword_2h_p1_m1 = _chainsword_2h_p1_m1.attachments,
-            combatsword_p2_m1 = _combatsword_p2_m1.attachments,
-            forcesword_p1_m1 = _forcesword_p1_m1.attachments,
-            combatsword_p3_m1 = _combatsword_p3_m1.attachments,
+            powermaul_2h_p1_m1     = _powermaul_2h_p1_m1.attachments,
+            chainsword_2h_p1_m1    = _chainsword_2h_p1_m1.attachments,
+            combatsword_p2_m1      = _combatsword_p2_m1.attachments,
+            forcesword_p1_m1       = _forcesword_p1_m1.attachments,
+            combatsword_p3_m1      = _combatsword_p3_m1.attachments,
         --#endregion
     }
     --#region Copies
@@ -315,59 +318,62 @@ local table = table
             mod.attachment.ogryn_thumper_p1_m2 = mod.attachment.ogryn_thumper_p1_m1
         --#endregion
         --#region Ogryn Melee
-            mod.attachment.ogryn_club_p1_m2 = mod.attachment.ogryn_club_p1_m1
-            mod.attachment.ogryn_club_p1_m3 = mod.attachment.ogryn_club_p1_m1
+            mod.attachment.ogryn_club_p1_m2        = mod.attachment.ogryn_club_p1_m1
+            mod.attachment.ogryn_club_p1_m3        = mod.attachment.ogryn_club_p1_m1
             mod.attachment.ogryn_combatblade_p1_m2 = mod.attachment.ogryn_combatblade_p1_m1
             mod.attachment.ogryn_combatblade_p1_m3 = mod.attachment.ogryn_combatblade_p1_m1
-            mod.attachment.ogryn_club_p2_m2 = mod.attachment.ogryn_club_p2_m1
-            mod.attachment.ogryn_club_p2_m3 = mod.attachment.ogryn_club_p2_m1
+            mod.attachment.ogryn_powermaul_p1_m2   = mod.attachment.ogryn_powermaul_p1_m1
+            mod.attachment.ogryn_powermaul_p1_m3   = mod.attachment.ogryn_powermaul_p1_m1
+            mod.attachment.ogryn_club_p2_m2        = mod.attachment.ogryn_club_p2_m1
+            mod.attachment.ogryn_club_p2_m3        = mod.attachment.ogryn_club_p2_m1
         --#endregion
         --#region Guns
-            mod.attachment.shotgun_p1_m2 = mod.attachment.shotgun_p1_m1
-            mod.attachment.shotgun_p1_m3 = mod.attachment.shotgun_p1_m1
-            mod.attachment.bolter_p1_m2 = mod.attachment.bolter_p1_m1
-            mod.attachment.bolter_p1_m3 = mod.attachment.bolter_p1_m1
+            mod.attachment.shotgun_p1_m2      = mod.attachment.shotgun_p1_m1
+            mod.attachment.shotgun_p1_m3      = mod.attachment.shotgun_p1_m1
+            mod.attachment.bolter_p1_m2       = mod.attachment.bolter_p1_m1
+            mod.attachment.bolter_p1_m3       = mod.attachment.bolter_p1_m1
             mod.attachment.stubrevolver_p1_m2 = mod.attachment.stubrevolver_p1_m1
             mod.attachment.stubrevolver_p1_m3 = mod.attachment.stubrevolver_p1_m1
-            mod.attachment.laspistol_p1_m3 = mod.attachment.laspistol_p1_m1
-            mod.attachment.autogun_p1_m2 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p1_m3 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p2_m1 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p2_m2 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p2_m3 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p3_m1 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p3_m2 = mod.attachment.autogun_p1_m1
-            mod.attachment.autogun_p3_m3 = mod.attachment.autogun_p1_m1
-            mod.attachment.lasgun_p1_m2 = mod.attachment.lasgun_p1_m1
-            mod.attachment.lasgun_p1_m3 = mod.attachment.lasgun_p1_m1
-            mod.attachment.lasgun_p2_m2 = mod.attachment.lasgun_p2_m1
-            mod.attachment.lasgun_p2_m3 = mod.attachment.lasgun_p2_m1
-            mod.attachment.lasgun_p3_m2 = mod.attachment.lasgun_p3_m1
-            mod.attachment.lasgun_p3_m3 = mod.attachment.lasgun_p3_m1
-            mod.attachment.forcestaff_p2_m1 = mod.attachment.forcestaff_p1_m1
-            mod.attachment.forcestaff_p3_m1 = mod.attachment.forcestaff_p1_m1
-            mod.attachment.forcestaff_p4_m1 = mod.attachment.forcestaff_p1_m1
+            mod.attachment.laspistol_p1_m3    = mod.attachment.laspistol_p1_m1
+            mod.attachment.autogun_p1_m2      = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p1_m3      = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p2_m1      = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p2_m2      = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p2_m3      = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p3_m1      = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p3_m2      = mod.attachment.autogun_p1_m1
+            mod.attachment.autogun_p3_m3      = mod.attachment.autogun_p1_m1
+            mod.attachment.lasgun_p1_m2       = mod.attachment.lasgun_p1_m1
+            mod.attachment.lasgun_p1_m3       = mod.attachment.lasgun_p1_m1
+            mod.attachment.lasgun_p2_m2       = mod.attachment.lasgun_p2_m1
+            mod.attachment.lasgun_p2_m3       = mod.attachment.lasgun_p2_m1
+            mod.attachment.lasgun_p3_m2       = mod.attachment.lasgun_p3_m1
+            mod.attachment.lasgun_p3_m3       = mod.attachment.lasgun_p3_m1
+            mod.attachment.forcestaff_p2_m1   = mod.attachment.forcestaff_p1_m1
+            mod.attachment.forcestaff_p3_m1   = mod.attachment.forcestaff_p1_m1
+            mod.attachment.forcestaff_p4_m1   = mod.attachment.forcestaff_p1_m1
         --#endregion
         --#region Melee
-            mod.attachment.combataxe_p1_m2 = mod.attachment.combataxe_p1_m1
-            mod.attachment.combataxe_p1_m3 = mod.attachment.combataxe_p1_m1
-            mod.attachment.combataxe_p2_m2 = mod.attachment.combataxe_p2_m1
-            mod.attachment.combataxe_p2_m3 = mod.attachment.combataxe_p2_m1
-            mod.attachment.combataxe_p3_m2 = mod.attachment.combataxe_p3_m1
-            mod.attachment.powersword_p1_m2 = mod.attachment.powersword_p1_m1
-
-            mod.attachment.chainaxe_p1_m2 = mod.attachment.chainaxe_p1_m1
-            mod.attachment.chainsword_2h_p1_m2 = mod.attachment.chainsword_2h_p1_m1
-
-            mod.attachment.combatsword_p1_m2 = mod.attachment.combatsword_p1_m1
-            mod.attachment.combatsword_p1_m3 = mod.attachment.combatsword_p1_m1
+            mod.attachment.combataxe_p1_m2        = mod.attachment.combataxe_p1_m1
+            mod.attachment.combataxe_p1_m3        = mod.attachment.combataxe_p1_m1
+            mod.attachment.combataxe_p2_m2        = mod.attachment.combataxe_p2_m1
+            mod.attachment.combatknife_p1_m2      = mod.attachment.combatknife_p1_m1
+            mod.attachment.combataxe_p2_m3        = mod.attachment.combataxe_p2_m1
+            mod.attachment.combataxe_p3_m2        = mod.attachment.combataxe_p3_m1
+            mod.attachment.combataxe_p3_m3        = mod.attachment.combataxe_p3_m1
+            mod.attachment.powersword_p1_m2       = mod.attachment.powersword_p1_m1
+            mod.attachment.chainaxe_p1_m2         = mod.attachment.chainaxe_p1_m1
+            mod.attachment.chainsword_p1_m2       = mod.attachment.chainsword_p1_m1
+            mod.attachment.chainsword_2h_p1_m2    = mod.attachment.chainsword_2h_p1_m1
+            mod.attachment.combatsword_p1_m2      = mod.attachment.combatsword_p1_m1
+            mod.attachment.combatsword_p1_m3      = mod.attachment.combatsword_p1_m1
             mod.attachment.thunderhammer_2h_p1_m2 = mod.attachment.thunderhammer_2h_p1_m1
-            mod.attachment.combatsword_p2_m2 = mod.attachment.combatsword_p2_m1
-            mod.attachment.combatsword_p2_m3 = mod.attachment.combatsword_p2_m1
-            mod.attachment.forcesword_p1_m2 = mod.attachment.forcesword_p1_m1
-            mod.attachment.forcesword_p1_m3 = mod.attachment.forcesword_p1_m1
-            mod.attachment.combatsword_p3_m2 = mod.attachment.combatsword_p3_m1
-            mod.attachment.combatsword_p3_m3 = mod.attachment.combatsword_p3_m1
+            mod.attachment.combatsword_p2_m2      = mod.attachment.combatsword_p2_m1
+            mod.attachment.combatsword_p2_m3      = mod.attachment.combatsword_p2_m1
+            mod.attachment.forcesword_p1_m2       = mod.attachment.forcesword_p1_m1
+            mod.attachment.forcesword_p1_m3       = mod.attachment.forcesword_p1_m1
+            mod.attachment.combatsword_p3_m2      = mod.attachment.combatsword_p3_m1
+            mod.attachment.combatsword_p3_m3      = mod.attachment.combatsword_p3_m1
         --#endregion
     --#endregion
 --#endregion
@@ -393,6 +399,7 @@ local table = table
         sight_2 = "reflex_sights",
         help_sight = "help_sights",
         muzzle = "muzzles",
+        muzzle_2 = "muzzles",
         trinket_hook = "trinket_hooks",
         slot_trinket_1 = "slot_trinket_1",
         slot_trinket_2 = "slot_trinket_2",
@@ -612,7 +619,7 @@ local table = table
     mod.sniper_zoom_levels = {
         lasgun_rifle_krieg_muzzle_02 = 15,
         lasgun_rifle_krieg_muzzle_04 = 9,
-        lasgun_rifle_krieg_muzzle_05 = 20,
+        lasgun_rifle_krieg_muzzle_05 = 25,
     }
     mod.flashlights = {
         "flashlight_01",
@@ -749,110 +756,113 @@ local table = table
     mod.attachment_models = {
         --#region Ogryn Guns
             ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.models,
-            ogryn_rippergun_p1_m1 = _ogryn_rippergun_p1_m1.models,
-            ogryn_thumper_p1_m1 = _ogryn_thumper_p1_m1.models,
-            ogryn_gauntlet_p1_m1 = _ogryn_gauntlet_p1_m1.models,
+            ogryn_rippergun_p1_m1    = _ogryn_rippergun_p1_m1.models,
+            ogryn_thumper_p1_m1      = _ogryn_thumper_p1_m1.models,
+            ogryn_gauntlet_p1_m1     = _ogryn_gauntlet_p1_m1.models,
         --#endregion
         --#region Ogryn Melee
-            ogryn_club_p1_m1 = _ogryn_club_p1_m1.models,
-            ogryn_combatblade_p1_m1 = _ogryn_combatblade_p1_m1.models,
-            ogryn_powermaul_p1_m1 = _ogryn_powermaul_p1_m1.models,
+            ogryn_club_p1_m1                 = _ogryn_club_p1_m1.models,
+            ogryn_combatblade_p1_m1          = _ogryn_combatblade_p1_m1.models,
+            ogryn_powermaul_p1_m1            = _ogryn_powermaul_p1_m1.models,
             ogryn_powermaul_slabshield_p1_m1 = _ogryn_powermaul_slabshield_p1_m1.models,
-            ogryn_club_p2_m1 = _ogryn_club_p2_m1.models,
+            ogryn_club_p2_m1                 = _ogryn_club_p2_m1.models,
         --#endregion
         --#region Guns
-            autopistol_p1_m1 = _autopistol_p1_m1.models,
-            shotgun_p1_m1 = _shotgun_p1_m1.models,
-            bolter_p1_m1 = _bolter_p1_m1.models,
+            autopistol_p1_m1   = _autopistol_p1_m1.models,
+            shotgun_p1_m1      = _shotgun_p1_m1.models,
+            bolter_p1_m1       = _bolter_p1_m1.models,
             stubrevolver_p1_m1 = _stubrevolver_p1_m1.models,
-            plasmagun_p1_m1 = _plasmagun_p1_m1.models,
-            laspistol_p1_m1 = _laspistol_p1_m1.models,
-            autogun_p1_m1 = _autogun_p1_m1.models,
-            lasgun_p1_m1 = _lasgun_p1_m1.models,
-            lasgun_p2_m1 = _lasgun_p2_m1.models,
-            lasgun_p3_m1 = _lasgun_p3_m1.models,
-            flamer_p1_m1 = _flamer_p1_m1.models,
-            forcestaff_p1_m1 = _forcestaff_p1_m1.models,
+            plasmagun_p1_m1    = _plasmagun_p1_m1.models,
+            laspistol_p1_m1    = _laspistol_p1_m1.models,
+            autogun_p1_m1      = _autogun_p1_m1.models,
+            lasgun_p1_m1       = _lasgun_p1_m1.models,
+            lasgun_p2_m1       = _lasgun_p2_m1.models,
+            lasgun_p3_m1       = _lasgun_p3_m1.models,
+            flamer_p1_m1       = _flamer_p1_m1.models,
+            forcestaff_p1_m1   = _forcestaff_p1_m1.models,
         --#endregion
         --#region Melee
-            combataxe_p1_m1 = _combataxe_p1_m1.models,
-            combataxe_p2_m1 = _combataxe_p2_m1.models,
-            combatknife_p1_m1 = _combatknife_p1_m1.models,
-            powersword_p1_m1 = _powersword_p1_m1.models,
-            chainaxe_p1_m1 = _chainaxe_p1_m1.models,
-            chainsword_p1_m1 = _chainsword_p1_m1.models,
-            combataxe_p3_m1 = _combataxe_p3_m1.models,
-            combatsword_p1_m1 = _combatsword_p1_m1.models,
+            combataxe_p1_m1        = _combataxe_p1_m1.models,
+            combataxe_p2_m1        = _combataxe_p2_m1.models,
+            combatknife_p1_m1      = _combatknife_p1_m1.models,
+            powersword_p1_m1       = _powersword_p1_m1.models,
+            chainaxe_p1_m1         = _chainaxe_p1_m1.models,
+            chainsword_p1_m1       = _chainsword_p1_m1.models,
+            combataxe_p3_m1        = _combataxe_p3_m1.models,
+            combatsword_p1_m1      = _combatsword_p1_m1.models,
             thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.models,
-            powermaul_2h_p1_m1 = _powermaul_2h_p1_m1.models,
-            chainsword_2h_p1_m1 = _chainsword_2h_p1_m1.models,
-            combatsword_p2_m1 = _combatsword_p2_m1.models,
-            forcesword_p1_m1 = _forcesword_p1_m1.models,
-            combatsword_p3_m1 = _combatsword_p3_m1.models,
+            powermaul_2h_p1_m1     = _powermaul_2h_p1_m1.models,
+            chainsword_2h_p1_m1    = _chainsword_2h_p1_m1.models,
+            combatsword_p2_m1      = _combatsword_p2_m1.models,
+            forcesword_p1_m1       = _forcesword_p1_m1.models,
+            combatsword_p3_m1      = _combatsword_p3_m1.models,
         --#endregion
     }
     --#region Copies
         --#region Ogryn Guns
             mod.attachment_models.ogryn_heavystubber_p1_m2 = mod.attachment_models.ogryn_heavystubber_p1_m1
             mod.attachment_models.ogryn_heavystubber_p1_m3 = mod.attachment_models.ogryn_heavystubber_p1_m1
-            mod.attachment_models.ogryn_rippergun_p1_m2 = mod.attachment_models.ogryn_rippergun_p1_m1
-            mod.attachment_models.ogryn_rippergun_p1_m3 = mod.attachment_models.ogryn_rippergun_p1_m1
-            mod.attachment_models.ogryn_thumper_p1_m2 = mod.attachment_models.ogryn_thumper_p1_m1
+            mod.attachment_models.ogryn_rippergun_p1_m2    = mod.attachment_models.ogryn_rippergun_p1_m1
+            mod.attachment_models.ogryn_rippergun_p1_m3    = mod.attachment_models.ogryn_rippergun_p1_m1
+            mod.attachment_models.ogryn_thumper_p1_m2      = mod.attachment_models.ogryn_thumper_p1_m1
         --#endregion
         --#region Ogryn Melee
-            mod.attachment_models.ogryn_club_p1_m2 = mod.attachment_models.ogryn_club_p1_m1
-            mod.attachment_models.ogryn_club_p1_m3 = mod.attachment_models.ogryn_club_p1_m1
+            mod.attachment_models.ogryn_club_p1_m2        = mod.attachment_models.ogryn_club_p1_m1
+            mod.attachment_models.ogryn_club_p1_m3        = mod.attachment_models.ogryn_club_p1_m1
             mod.attachment_models.ogryn_combatblade_p1_m2 = mod.attachment_models.ogryn_combatblade_p1_m1
             mod.attachment_models.ogryn_combatblade_p1_m3 = mod.attachment_models.ogryn_combatblade_p1_m1
-            mod.attachment_models.ogryn_club_p2_m2 = mod.attachment_models.ogryn_club_p2_m1
-            mod.attachment_models.ogryn_club_p2_m3 = mod.attachment_models.ogryn_club_p2_m1
+            mod.attachment_models.ogryn_powermaul_p1_m2   = mod.attachment_models.ogryn_powermaul_p1_m1
+            mod.attachment_models.ogryn_powermaul_p1_m3   = mod.attachment_models.ogryn_powermaul_p1_m1
+            mod.attachment_models.ogryn_club_p2_m2        = mod.attachment_models.ogryn_club_p2_m1
+            mod.attachment_models.ogryn_club_p2_m3        = mod.attachment_models.ogryn_club_p2_m1
         --#endregion
         --region Guns
-            mod.attachment_models.shotgun_p1_m2 = mod.attachment_models.shotgun_p1_m1
-            mod.attachment_models.shotgun_p1_m3 = mod.attachment_models.shotgun_p1_m1
-            mod.attachment_models.bolter_p1_m2 = mod.attachment_models.bolter_p1_m1
-            mod.attachment_models.bolter_p1_m3 = mod.attachment_models.bolter_p1_m1
+            mod.attachment_models.shotgun_p1_m2      = mod.attachment_models.shotgun_p1_m1
+            mod.attachment_models.shotgun_p1_m3      = mod.attachment_models.shotgun_p1_m1
+            mod.attachment_models.bolter_p1_m2       = mod.attachment_models.bolter_p1_m1
+            mod.attachment_models.bolter_p1_m3       = mod.attachment_models.bolter_p1_m1
             mod.attachment_models.stubrevolver_p1_m2 = mod.attachment_models.stubrevolver_p1_m1
             mod.attachment_models.stubrevolver_p1_m3 = mod.attachment_models.stubrevolver_p1_m1
-            mod.attachment_models.laspistol_p1_m3 = mod.attachment_models.laspistol_p1_m1
-            mod.attachment_models.autogun_p1_m2 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p1_m3 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p2_m1 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p2_m2 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p2_m3 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p3_m1 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p3_m2 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.autogun_p3_m3 = mod.attachment_models.autogun_p1_m1
-            mod.attachment_models.lasgun_p1_m2 = mod.attachment_models.lasgun_p1_m1
-            mod.attachment_models.lasgun_p1_m3 = mod.attachment_models.lasgun_p1_m1
-            mod.attachment_models.lasgun_p2_m2 = mod.attachment_models.lasgun_p2_m1
-            mod.attachment_models.lasgun_p2_m3 = mod.attachment_models.lasgun_p2_m1
-            mod.attachment_models.lasgun_p3_m2 = mod.attachment_models.lasgun_p3_m1
-            mod.attachment_models.lasgun_p3_m3 = mod.attachment_models.lasgun_p3_m1
-            mod.attachment_models.forcestaff_p2_m1 = mod.attachment_models.forcestaff_p1_m1
-            mod.attachment_models.forcestaff_p3_m1 = mod.attachment_models.forcestaff_p1_m1
-            mod.attachment_models.forcestaff_p4_m1 = mod.attachment_models.forcestaff_p1_m1
+            mod.attachment_models.laspistol_p1_m3    = mod.attachment_models.laspistol_p1_m1
+            mod.attachment_models.autogun_p1_m2      = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p1_m3      = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p2_m1      = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p2_m2      = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p2_m3      = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p3_m1      = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p3_m2      = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.autogun_p3_m3      = mod.attachment_models.autogun_p1_m1
+            mod.attachment_models.lasgun_p1_m2       = mod.attachment_models.lasgun_p1_m1
+            mod.attachment_models.lasgun_p1_m3       = mod.attachment_models.lasgun_p1_m1
+            mod.attachment_models.lasgun_p2_m2       = mod.attachment_models.lasgun_p2_m1
+            mod.attachment_models.lasgun_p2_m3       = mod.attachment_models.lasgun_p2_m1
+            mod.attachment_models.lasgun_p3_m2       = mod.attachment_models.lasgun_p3_m1
+            mod.attachment_models.lasgun_p3_m3       = mod.attachment_models.lasgun_p3_m1
+            mod.attachment_models.forcestaff_p2_m1   = mod.attachment_models.forcestaff_p1_m1
+            mod.attachment_models.forcestaff_p3_m1   = mod.attachment_models.forcestaff_p1_m1
+            mod.attachment_models.forcestaff_p4_m1   = mod.attachment_models.forcestaff_p1_m1
         --#endregion
         --region Melee
-            mod.attachment_models.combataxe_p1_m2 = mod.attachment_models.combataxe_p1_m1
-            mod.attachment_models.combataxe_p1_m3 = mod.attachment_models.combataxe_p1_m1
-            mod.attachment_models.combataxe_p2_m2 = mod.attachment_models.combataxe_p1_m1
-            mod.attachment_models.combataxe_p2_m3 = mod.attachment_models.combataxe_p1_m1
-            mod.attachment_models.combataxe_p3_m2 = mod.attachment_models.combataxe_p3_m1
-
-            mod.attachment_models.chainaxe_p1_m2 = mod.attachment_models.chainaxe_p1_m1
-            mod.attachment_models.chainsword_2h_p1_m2 = mod.attachment_models.chainsword_2h_p1_m1
-
-            mod.attachment_models.powersword_p1_m2 = mod.attachment_models.powersword_p1_m1
-            mod.attachment_models.combatsword_p1_m2 = mod.attachment_models.combatsword_p1_m1
-            mod.attachment_models.combatsword_p1_m3 = mod.attachment_models.combatsword_p1_m1
+            mod.attachment_models.combataxe_p1_m2        = mod.attachment_models.combataxe_p1_m1
+            mod.attachment_models.combataxe_p1_m3        = mod.attachment_models.combataxe_p1_m1
+            mod.attachment_models.combataxe_p2_m2        = mod.attachment_models.combataxe_p1_m1
+            mod.attachment_models.combataxe_p2_m3        = mod.attachment_models.combataxe_p1_m1
+            mod.attachment_models.combatknife_p1_m2      = mod.attachment_models.combatknife_p1_m1
+            mod.attachment_models.combataxe_p3_m2        = mod.attachment_models.combataxe_p3_m1
+            mod.attachment_models.combataxe_p3_m3        = mod.attachment_models.combataxe_p3_m1
+            mod.attachment_models.chainaxe_p1_m2         = mod.attachment_models.chainaxe_p1_m1
+            mod.attachment_models.chainsword_p1_m2       = mod.attachment_models.chainsword_p1_m1
+            mod.attachment_models.chainsword_2h_p1_m2    = mod.attachment_models.chainsword_2h_p1_m1
+            mod.attachment_models.powersword_p1_m2       = mod.attachment_models.powersword_p1_m1
+            mod.attachment_models.combatsword_p1_m2      = mod.attachment_models.combatsword_p1_m1
+            mod.attachment_models.combatsword_p1_m3      = mod.attachment_models.combatsword_p1_m1
             mod.attachment_models.thunderhammer_2h_p1_m2 = mod.attachment_models.thunderhammer_2h_p1_m1
-            mod.attachment_models.combatsword_p2_m2 = mod.attachment_models.combatsword_p2_m1
-            mod.attachment_models.combatsword_p2_m3 = mod.attachment_models.combatsword_p2_m1
-            mod.attachment_models.forcesword_p1_m2 = mod.attachment_models.forcesword_p1_m1
-            mod.attachment_models.forcesword_p1_m3 = mod.attachment_models.forcesword_p1_m1
-            mod.attachment_models.combatsword_p3_m2 = mod.attachment_models.combatsword_p3_m1
-            mod.attachment_models.combatsword_p3_m3 = mod.attachment_models.combatsword_p3_m1
+            mod.attachment_models.combatsword_p2_m2      = mod.attachment_models.combatsword_p2_m1
+            mod.attachment_models.combatsword_p2_m3      = mod.attachment_models.combatsword_p2_m1
+            mod.attachment_models.forcesword_p1_m2       = mod.attachment_models.forcesword_p1_m1
+            mod.attachment_models.forcesword_p1_m3       = mod.attachment_models.forcesword_p1_m1
+            mod.attachment_models.combatsword_p3_m2      = mod.attachment_models.combatsword_p3_m1
+            mod.attachment_models.combatsword_p3_m3      = mod.attachment_models.combatsword_p3_m1
         --#endregion
     --#endregion
 --#endregion

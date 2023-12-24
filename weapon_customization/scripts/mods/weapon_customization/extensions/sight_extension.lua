@@ -73,10 +73,14 @@ local EFFECT_OPTION = "mod_option_scopes_particle"
 local EFFECT = "content/fx/particles/screenspace/screen_ogryn_dash"
 local SOUND_OPTION = "mod_option_scopes_sound"
 local SOUND = "wwise/events/weapon/play_lasgun_p3_mag_button"
-local SIGHT_A = "#ID[7abb5fc7a4e06dcb]"
-local SIGHT_B = "#ID[21bfd951c3d1b9fe]"
-local LENS_A = "#ID[827a5604cb4ec7ff]"
-local LENS_B = "#ID[c54f4d16d170cfdb]"
+-- local SIGHT_A = "#ID[7abb5fc7a4e06dcb]"
+-- local SIGHT_B = "#ID[21bfd951c3d1b9fe]"
+-- local LENS_A = "#ID[827a5604cb4ec7ff]"
+-- local LENS_B = "#ID[c54f4d16d170cfdb]"
+
+local SIGHT = "sight_2"
+local LENS_A = "lens"
+local LENS_B = "lens_2"
 
 -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #################################################################
 -- ##### └─┐││ ┬├─┤ │ └─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ #################################################################
@@ -113,7 +117,6 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 	-- self.first_person_unit = self.first_person_extension:first_person_unit()
     -- self.unit_data_extension = script_unit_extension(self.player_unit, "unit_data_system")
     -- self.movement_state_component = self.unit_data_extension:read_component("movement_state")
-    self:set_weapon_values()
     self.sniper_recoil_template = nil
     self.sniper_sway_template = nil
 
@@ -121,6 +124,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
     managers.event:register(self, "weapon_customization_update_zoom", "update_zoom")
 
     self:on_settings_changed()
+    self:set_weapon_values()
     
     self.initialized = true
 end
@@ -162,7 +166,8 @@ SightExtension.is_scope = function(self)
 end
 
 SightExtension.is_sight = function(self)
-    return table_contains(mod.sights, self.sight_name)
+    return not self:is_scope() and not self:is_sniper()
+    -- return table_contains(mod.sights, self.sight_name)
 end
 
 SightExtension.is_sniper = function(self)
@@ -257,12 +262,12 @@ end
 
 SightExtension.set_lens_units = function(self)
     local reflex = {}
-    mod:_recursive_find_unit(self.ranged_weapon.weapon_unit, SIGHT_A, reflex) 
-    mod:_recursive_find_unit(self.ranged_weapon.weapon_unit, SIGHT_B, reflex)
+    mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, SIGHT, reflex)
+    -- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, SIGHT_B, reflex)
     if #reflex >= 1 then
         local lenses = {}
-        mod:_recursive_find_unit(self.ranged_weapon.weapon_unit, LENS_A, lenses)
-        mod:_recursive_find_unit(self.ranged_weapon.weapon_unit, LENS_B, lenses)
+        mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_A, lenses)
+        mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_B, lenses)
         if #lenses >= 2 then
             local scope_sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight_2")
             self.default_reticle_position = scope_sight and scope_sight.position
@@ -379,9 +384,6 @@ SightExtension.update = function(self, unit, dt, t)
                         local forward = Quaternion.forward(rotation)
                         local max = forward * 1
                         local current_reticle_offset = max - (forward * self.reticle_size)
-                        -- local scope_rotation = unit_local_rotation(self.lens_units[3], 2)
-                        -- local mat = quaternion_matrix4x4(scope_rotation)
-                        -- local rotated_pos = matrix4x4_transform(mat, current_reticle_offset)
                         unit_set_local_position(self.lens_units[3], 1, default_offset + current_reticle_offset)
                     end
                     local apply_fov = math_rad(self.sniper_zoom)
@@ -414,9 +416,6 @@ SightExtension.update = function(self, unit, dt, t)
                             local forward = Quaternion.forward(rotation)
                             local max = forward * 1
                             local current_reticle_offset = max - (forward * self.reticle_size)
-                            -- local scope_rotation = unit_local_rotation(self.lens_units[3], 2)
-                            -- local mat = quaternion_matrix4x4(scope_rotation)
-                            -- local rotated_pos = matrix4x4_transform(mat, current_reticle_offset)
                             local reticle_offset = vector3_lerp(default_offset + current_reticle_offset, default_offset, anim_progress)
                             unit_set_local_position(self.lens_units[3], 1, reticle_offset)
                         end
@@ -444,10 +443,6 @@ SightExtension.update = function(self, unit, dt, t)
     end
     wc_perf.stop(perf)
 end
-
--- mod:hook(CLASS.ActionWeaponBase, "init", function(func, self, action_context, action_params, action_settings, ...)
---     func(self, action_context, action_params, action_settings, ...)
--- end)
 
 SightExtension.update_position_and_rotation = function(self)
     if self:get_first_person() then
@@ -500,12 +495,13 @@ SightExtension.update_scope_lenses = function(self)
 end
 
 SightExtension.update_zoom = function(self, viewport_name)
-    if self.initialized and self:get_first_person() then
-        local viewport_name = viewport_name or self.player.viewport_name
-        -- local viewport = ScriptWorld.viewport(self.world, self.player.viewport_name)
-        -- local camera = viewport and ScriptViewport.camera(viewport)
-        local camera_manager = managers.state.camera
-        local camera = camera_manager:camera(viewport_name)
+    local player = viewport_name == self.player.viewport_name or self.spectated
+    if self.initialized and self:get_first_person() and player then
+        -- local viewport_name = viewport_name or self.player.viewport_name
+        local viewport = ScriptWorld.viewport(self.world, viewport_name)
+        local camera = viewport and ScriptViewport.camera(viewport)
+        -- local camera_manager = managers.state.camera
+        -- local camera = camera_manager:camera(self.player.viewport_name)
         if camera then
             self:set_default_fov(camera_vertical_fov(camera), camera_custom_vertical_fov(camera))
             if self.custom_vertical_fov then camera_set_custom_vertical_fov(camera, self.custom_vertical_fov) end

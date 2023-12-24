@@ -13,6 +13,7 @@ local mod = get_mod("weapon_customization")
     local class = class
     local managers = Managers
     local tostring = tostring
+    local wc_perf = wc_perf
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -50,8 +51,8 @@ end
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 DependencyExtension.get_dependencies = function(self)
+    local perf = wc_perf.start("DependencyExtension.get_dependencies", 2)
     mod:setup_item_definitions()
-
     local found_packages = {}
     for slot_name, slot in pairs(self.equipment) do
         if slot_name == SLOT_SECONDARY or slot_name == SLOT_PRIMARY then
@@ -64,5 +65,6 @@ DependencyExtension.get_dependencies = function(self)
             end
         end
     end
+    wc_perf.stop(perf)
     return found_packages
 end

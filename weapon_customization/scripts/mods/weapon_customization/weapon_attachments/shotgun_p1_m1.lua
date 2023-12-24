@@ -7,6 +7,7 @@ local mod = get_mod("weapon_customization")
 local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
 local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
 local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
+local _autogun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autogun_p1_m1")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -212,6 +213,8 @@ return table.combine(
             ),
             -- Lasgun
             -- rail = _common_lasgun.rail_attachments(),
+            -- Autogun
+            muzzle = _autogun_p1_m1.muzzle_attachments();
             -- Common
             trinket_hook = _common.trinket_hook_attachments(),
             emblem_right = _common.emblem_right_attachments(),
@@ -263,6 +266,7 @@ return table.combine(
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01",     underbarrel = "!no_underbarrel|no_underbarrel"},
             }, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
+                changes["muzzle_2"] = mod:get_gear_setting(gear_id, "muzzle", item)
                 if attachment == "barrel_10" or attachment == "barrel_11" or attachment == "barrel_12" then
                     local receiver = mod:get_gear_setting(gear_id, "receiver", item)
                     if receiver ~= "receiver_02" and receiver ~= "receiver_03" and receiver ~= "receiver_04" then changes["receiver"] = "receiver_02" end
@@ -327,6 +331,8 @@ return table.combine(
             _common_ranged.scope_lens_2_models("sight_2", .2, vector3_box(0, -4, -.2), vector3_box(0, 0, 0)),
             -- Lasgun
             _common_lasgun.rail_models("barrel", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
+            -- Autogun
+            _autogun_p1_m1.muzzle_models("barrel", -.5, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
             -- Common
             _common.emblem_right_models("receiver", -3, vector3_box(-.4, -5, 0), vector3_box(.2, 0, 0)),
             _common.emblem_left_models("receiver", 0, vector3_box(0, -5, 0), vector3_box(-.2, 0, 0)),
@@ -343,6 +349,32 @@ return table.combine(
                 --     rail = {parent = "barrel", position = vector3_box(0, -.045, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 2.3, 1)}},
                 {rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 
+                {dependencies = {"barrel_01"},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_02"},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .71, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_03"},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .5, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_04"},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .51, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_07"},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_08"},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_09"},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_10"},
+                    muzzle = {parent = "barrel", position = vector3_box(-.03, .36, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)},
+                    muzzle_2 = {parent = "barrel", position = vector3_box(.03, .36, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_11"},
+                    muzzle = {parent = "barrel", position = vector3_box(-.03, .47, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)},
+                    muzzle_2 = {parent = "barrel", position = vector3_box(.03, .47, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {dependencies = {"barrel_12"},
+                    muzzle = {parent = "barrel", position = vector3_box(-.03, .6, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)},
+                    muzzle_2 = {parent = "barrel", position = vector3_box(.03, .6, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {muzzle = {parent = "barrel", position = vector3_box(0, .5, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {muzzle_2 = {parent = "barrel", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
                 {barrel = {offset = true, animation_wait_detach = {"underbarrel", "rail", "sight"}, trigger_move = {"underbarrel", "rail", "sight"}}},
                 {underbarrel = {offset = true, animation_wait_attach = {"barrel"}}},
                 {dependencies = {"scope_01", "barrel_10|barrel_11|barrel_12"},

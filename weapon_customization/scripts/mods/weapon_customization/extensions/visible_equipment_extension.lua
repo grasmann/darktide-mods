@@ -173,6 +173,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.weapon_template = {}
     self.size = {}
     self.weight = {}
+    self.visible = {}
 
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
 
@@ -310,6 +311,10 @@ VisibleEquipmentExtension.get_foot_step_interval = function(self)
         if self.footstep_intervals and self.footstep_intervals.walking then return self.footstep_intervals.walking end
         return footstep_intervals_templates.default.walking
     end
+end
+
+VisibleEquipmentExtension.is_weapon_slot = function(self, slot)
+    return slot.name == SLOT_SECONDARY or slot.name == SLOT_PRIMARY
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
@@ -503,13 +508,53 @@ VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
     end
 end
 
--- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
--- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
--- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
+VisibleEquipmentExtension.delete_slot = function(self, slot)
+    local perf = wc_perf.start("VisibleEquipmentExtension.delete_slot", 2)
+    -- Check base unit
+    if self.dummy_units[slot] and self.dummy_units[slot].base then
+        -- Check attachment units
+        if self.dummy_units[slot].attachments then
+            -- Iterate attachments
+            for _, unit in pairs(self.dummy_units[slot].attachments) do
+                -- Check unit
+                if unit and unit_alive(unit) then
+                    -- Unlink unit
+                    world_unlink_unit(self.world, unit)
+                end
+            end
+            for _, unit in pairs(self.dummy_units[slot].attachments) do
+                -- Check unit
+                if unit and unit_alive(unit) then
+                    -- Delete unit
+                    world_destroy_unit(self.world, unit)
+                end
+            end
+        end
+        if self.dummy_units[slot].base and unit_alive(self.dummy_units[slot].base) then
+            -- Unlink unit
+            world_unlink_unit(self.world, self.dummy_units[slot].base)
+            -- Delete unit
+            world_destroy_unit(self.world, self.dummy_units[slot].base)
+        end
+    end
+    -- Package
+    self:release_slot_packages(slot)
+    -- Delete references
+    self.dummy_units[slot] = nil
+    self.item_names[slot] = nil
+    self.item_types[slot] = nil
+    self.equipment_data[slot] = nil
+    self.packages[slot] = nil
+    self.slot_loaded[slot] = nil
+    self.step_animation[slot] = nil
+    self.sounds[slot] = nil
+    self.rotate_animation[slot] = nil
+    wc_perf.stop(perf)
+end
 
-VisibleEquipmentExtension.on_equip_slot = function(self, slot)
-    -- Check item
-    if slot.name == SLOT_SECONDARY or slot.name == SLOT_PRIMARY then
+VisibleEquipmentExtension.load_slot = function(self, slot)
+    local perf = wc_perf.start("VisibleEquipmentExtension.load_slot", 2)
+    if self.initialized and self:is_weapon_slot(slot) then
         local item = slot.item and slot.item.__master_item
         if not self.slot_loaded[slot] and not self.slot_is_loading[slot] then
             local item_good = item and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED)
@@ -533,7 +578,7 @@ VisibleEquipmentExtension.on_equip_slot = function(self, slot)
                 -- Spawn dummy weapon
                 self.dummy_units[slot] = {}
                 self.dummy_units[slot].base, self.dummy_units[slot].attachments = VisualLoadoutCustomization.spawn_item(slot.item, attach_settings, self.player_unit)
-                VisualLoadoutCustomization.add_extensions(nil, self.dummy_units[slot].attachments, attach_settings)
+                -- VisualLoadoutCustomization.add_extensions(nil, self.dummy_units[slot].attachments, attach_settings)
                 local callback = function()
                 end
                 Unit.force_stream_meshes(self.dummy_units[slot].base, callback, true)
@@ -588,60 +633,19 @@ VisibleEquipmentExtension.on_equip_slot = function(self, slot)
             end
         end
     end
+    wc_perf.stop(perf)
 end
 
-VisibleEquipmentExtension.delete_slot = function(self, slot)
-    -- Check base unit
-    if self.dummy_units[slot] and self.dummy_units[slot].base then
-        -- Check attachment units
-        if self.dummy_units[slot].attachments then
-            -- Iterate attachments
-            for _, unit in pairs(self.dummy_units[slot].attachments) do
-                -- Check unit
-                if unit and unit_alive(unit) then
-                    -- Unlink unit
-                    world_unlink_unit(self.world, unit)
-                end
-            end
-            for _, unit in pairs(self.dummy_units[slot].attachments) do
-                -- Check unit
-                if unit and unit_alive(unit) then
-                    -- Delete unit
-                    world_destroy_unit(self.world, unit)
-                end
-            end
-        end
-        if self.dummy_units[slot].base and unit_alive(self.dummy_units[slot].base) then
-            -- Unlink unit
-            world_unlink_unit(self.world, self.dummy_units[slot].base)
-            -- Delete unit
-            world_destroy_unit(self.world, self.dummy_units[slot].base)
-        end
-    end
-    -- Package
-    self:release_slot_packages(slot)
-    -- Delete references
-    self.dummy_units[slot] = nil
-    self.item_names[slot] = nil
-    self.item_types[slot] = nil
-    self.equipment_data[slot] = nil
-    self.packages[slot] = nil
-    self.slot_loaded[slot] = nil
-    self.step_animation[slot] = nil
-    self.sounds[slot] = nil
-    self.rotate_animation[slot] = nil
+-- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
+-- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
+-- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
+
+VisibleEquipmentExtension.on_equip_slot = function(self, slot)
+    self:load_slot(slot)
 end
 
 VisibleEquipmentExtension.on_unequip_slot = function(self, slot)
-    if slot.name == SLOT_SECONDARY or slot.name == SLOT_PRIMARY then
-        -- Delete
-        self:delete_slot(slot)
-    end
-    -- local item = slot.item and slot.item.__master_item
-    -- local item_good = item and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED)
-    -- if item and item_good then
-    --     mod:remove_from_packages(slot.item)
-    -- end
+    self:delete_slot(slot)
 end
 
 VisibleEquipmentExtension.on_wield_slot = function(self, slot)
@@ -669,6 +673,55 @@ VisibleEquipmentExtension.on_update_item_visibility = function(self, wielded_slo
         self.wielded_slot = self.equipment[wielded_slot]
         self:on_wield_slot(self.wielded_slot)
     end
+    self:update_equipment_visibility()
+end
+
+VisibleEquipmentExtension.on_footstep = function(self)
+    -- Check mod optionm
+    if self.on then
+        local locomotion_ext = script_unit.extension(self.player_unit, "locomotion_system")
+        local speed = locomotion_ext and locomotion_ext:move_speed() or 0
+        if speed > 0 then
+            self:set_foot_step_interval()
+            self:trigger_step()
+        end
+    end
+end
+
+VisibleEquipmentExtension.on_settings_changed = function(self)
+    self.on = mod:get("mod_option_visible_equipment")
+    self.sound = mod:get("mod_option_visible_equipment_sounds")
+    self.sound_fp = mod:get("mod_option_visible_equipment_own_sounds_fp")
+end
+
+VisibleEquipmentExtension.load_slots = function(self)
+    -- Iterate slots
+    for slot_name, slot in pairs(self.equipment) do
+        -- Load
+        self:load_slot(slot)
+    end
+end
+
+-- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
+-- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
+-- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
+
+VisibleEquipmentExtension.update = function(self, dt, t)
+    local perf = wc_perf.start("VisibleEquipmentExtension.update", 2)
+    if self.initialized then
+        -- Equipment data
+        self:update_equipment_data()
+        -- Position
+        self:position_equipment()
+        -- Animation
+        self:update_animation(dt, t)
+        -- Visibility
+        self:on_update_item_visibility()
+    end
+    wc_perf.stop(perf)
+end
+
+VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
     -- Iterate slots
     for slot_name, slot in pairs(self.equipment) do
         -- Check units
@@ -692,51 +745,6 @@ VisibleEquipmentExtension.on_update_item_visibility = function(self, wielded_slo
             end
         end
     end
-end
-
-VisibleEquipmentExtension.on_footstep = function(self)
-    -- Check mod optionm
-    if self.on then
-        local locomotion_ext = script_unit.extension(self.player_unit, "locomotion_system")
-        local speed = locomotion_ext and locomotion_ext:move_speed() or 0
-        if speed > 0 then
-            self:set_foot_step_interval()
-            self:trigger_step()
-        end
-    end
-end
-
-VisibleEquipmentExtension.on_settings_changed = function(self)
-    self.on = mod:get("mod_option_visible_equipment")
-    self.sound = mod:get("mod_option_visible_equipment_sounds")
-    self.sound_fp = mod:get("mod_option_visible_equipment_own_sounds_fp")
-end
-
-VisibleEquipmentExtension.load_slots = function(self)
-    if self.initialized then
-        -- Iterate slots
-        for slot_name, slot in pairs(self.equipment) do
-            -- Equip
-            self:on_equip_slot(slot)
-        end
-    end
-end
-
--- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
--- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
--- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
-
-VisibleEquipmentExtension.update = function(self, dt, t)
-    local perf = wc_perf.start("VisibleEquipmentExtension.update", 2)
-    if self.initialized then
-        -- Equipment data
-        self:update_equipment_data()
-        -- Position
-        self:position_equipment()
-        -- Animation
-        self:update_animation(dt, t)
-    end
-    wc_perf.stop(perf)
 end
 
 VisibleEquipmentExtension.update_equipment_data = function(self)
