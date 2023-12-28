@@ -95,13 +95,8 @@ mod.on_game_state_changed = function(status, state_name)
 	-- Release hub packages
 	mod:release_non_essential_packages()
 	mod:persistent_table(REFERENCE).used_packages.hub = {}
-	-- mod:echo("state change: "..tostring(state_name))
-	-- if state_name == "StateLoading" and status == "enter" then
-	-- 	mod:clear_packages()
-	-- end
 	-- Turn off package safety
 	mod.keep_all_packages = nil
-	-- mod:composite_test()
 end
 
 -- Mod settings changed
@@ -111,7 +106,6 @@ mod.on_setting_changed = function(setting_id)
 	-- Update randomization
 	if setting_id == "mod_option_randomization_players" or setting_id == "mod_option_randomization_store" then
 		mod.keep_all_packages = true
-		-- mod:update_modded_packages()
 	end
 	-- Trigger Events
 	managers.event:trigger("weapon_customization_settings_changed")
@@ -144,8 +138,6 @@ end
 mod.player_unit_loaded = function(self)
 	-- Initialize
 	self:init()
-	-- Update used packages
-    -- self:update_modded_packages()
 end
 
 mod.husk_unit_loaded = function(self)

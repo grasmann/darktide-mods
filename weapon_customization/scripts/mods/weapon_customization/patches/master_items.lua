@@ -353,10 +353,10 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
             local data_service = managers and managers.data_service
             local gear_data = data_service and data_service.gear
             local cached_gear_list = gear_data and gear_data._cached_gear_list
-            if cached_gear_list and cached_gear_list[gear_id] ~= nil then
+            if gear_id and cached_gear_list and cached_gear_list[gear_id] ~= nil then
                 mod.player_items[gear_id] = true
                 -- item_instance.__master_item.owned_by_player = cached_gear_list[gear_id] ~= nil
-            else
+            elseif gear_id then
                 -- local gear_id = mod:get_gear_id(item)
                 mod.player_items[gear_id] = nil
 

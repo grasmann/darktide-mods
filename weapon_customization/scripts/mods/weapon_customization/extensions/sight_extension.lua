@@ -177,6 +177,10 @@ SightExtension.is_sniper = function(self)
     return table_contains(mod.scopes, self.sight_name) and not self:is_braced()
 end
 
+SightExtension.is_sniper_or_scope = function(self)
+    return self:is_scope() or self:is_sniper()
+end
+
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
 -- ##### │││├┤  │ ├─┤│ │ ││└─┐ ########################################################################################
 -- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
@@ -494,11 +498,11 @@ SightExtension.update_scope_lenses = function(self)
     end
 end
 
-SightExtension.update_zoom = function(self, viewport_name)
-    local player = viewport_name == self.player.viewport_name or self.spectated
-    if self.initialized and self:get_first_person() and player then
+SightExtension.update_zoom = function(self)
+    -- local player = viewport_name == self.player.viewport_name or self.spectated
+    if self.initialized and self:get_first_person() then --and player then
         -- local viewport_name = viewport_name or self.player.viewport_name
-        local viewport = ScriptWorld.viewport(self.world, viewport_name)
+        local viewport = ScriptWorld.viewport(self.world, self.player.viewport_name)
         local camera = viewport and ScriptViewport.camera(viewport)
         -- local camera_manager = managers.state.camera
         -- local camera = camera_manager:camera(self.player.viewport_name)
@@ -509,6 +513,41 @@ SightExtension.update_zoom = function(self, viewport_name)
         end
     end
 end
+
+-- SightExtension.get_zoom_values = function(self, camera, default_custom_vertical_fov, default_vertical_fov)
+--     self:set_default_fov(default_vertical_fov, default_custom_vertical_fov)
+--     return self.custom_vertical_fov or self.default_custom_vertical_fov, self.vertical_fov or self.default_vertical_fov
+-- end
+
+local Viewport = Viewport
+local ShadingEnvironment = ShadingEnvironment
+
+
+mod:hook(CLASS.CameraManager, "shading_callback", function(func, self, world, shading_env, viewport, default_shading_environment_resource, ...)
+    local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
+    -- -- Sights
+    if self._world == world then
+        local camera_shading_env_settings = camera_data.shading_environment
+        local viewport_name = Viewport.get_data(viewport, "name")
+        local camera_nodes = self._camera_nodes[viewport_name]
+        local current_node = self:_current_node(camera_nodes)
+        local root_unit = current_node:root_unit()
+        local scale = 5
+        local is_aiming = mod:execute_extension(root_unit, "sight_system", "is_aiming")
+        local is_sniper_or_scope = mod:execute_extension(root_unit, "sight_system", "is_sniper_or_scope")
+        local scale = (is_aiming and not is_sniper_or_scope and .5) or (is_aiming and is_sniper_or_scope and 2.5) or 3.5
+
+		-- if camera_shading_env_settings.dof_enabled then
+        ShadingEnvironment.set_scalar(shading_env, "dof_enabled", 1)
+        ShadingEnvironment.set_scalar(shading_env, "dof_focal_distance", .5)
+        ShadingEnvironment.set_scalar(shading_env, "dof_focal_region", 30)
+        ShadingEnvironment.set_scalar(shading_env, "dof_focal_region_start", -1)
+        ShadingEnvironment.set_scalar(shading_env, "dof_focal_region_end", 29)
+        ShadingEnvironment.set_scalar(shading_env, "dof_focal_near_scale", scale)
+        ShadingEnvironment.set_scalar(shading_env, "dof_focal_far_scale", 1)
+        -- end
+    end
+end)
 
 -- ##### ┬─┐┌─┐┌─┐┌─┐┬┬    ┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌─┐┬ ┬ ####################################################################
 -- ##### ├┬┘├┤ │  │ │││    ├─┤│││ ││  └─┐│││├─┤└┬┘ ####################################################################
