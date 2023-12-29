@@ -27,6 +27,7 @@ local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_tem
     local wc_perf = wc_perf
     local table = table
     local table_merge_recursive = table.merge_recursive
+    local Viewport = Viewport
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -46,28 +47,13 @@ mod:hook_require("scripts/utilities/alternate_fire", function(instance)
 
     mod:hook(instance, "stop", function(func, alternate_fire_component, peeking_component, first_person_extension, weapon_tweak_templates_component, animation_extension, weapon_template, skip_stop_anim, player_unit, from_action_input)
         local gameplay_time = mod.time_manager:time("gameplay")
+        -- Sights
         mod:execute_extension(player_unit, "sight_system", "on_aim_stop", gameplay_time)
+        -- Weapon DOF
+        mod:execute_extension(player_unit, "weapon_dof_system", "on_aim_stop", gameplay_time)
+        -- Original function
         return func(alternate_fire_component, peeking_component, first_person_extension, weapon_tweak_templates_component, animation_extension, weapon_template, skip_stop_anim, player_unit, from_action_input)
     end)
-
-    -- if not instance._stop then instance._stop = instance.stop end
-    -- instance.stop = function(alternate_fire_component, peeking_component, first_person_extension, weapon_tweak_templates_component,
-    --         animation_extension, weapon_template, skip_stop_anim, player_unit, from_action_input)
-    --     instance._stop(alternate_fire_component, peeking_component, first_person_extension, weapon_tweak_templates_component,
-    --         animation_extension, weapon_template, skip_stop_anim, player_unit, from_action_input)
-    --     local gameplay_time = mod.time_manager:time("gameplay")
-    --     mod:execute_extension(player_unit, "sight_system", "on_aim_stop", gameplay_time)
-    -- end
-
-    -- if not instance._stop then instance._stop = instance.stop end
-    -- instance.stop = function(alternate_fire_component, peeking_component, first_person_extension, weapon_tweak_templates_component,
-    --         animation_extension, weapon_template, skip_stop_anim, player_unit, from_action_input)
-    --     instance._stop(alternate_fire_component, peeking_component, first_person_extension, weapon_tweak_templates_component,
-    --         animation_extension, weapon_template, skip_stop_anim, player_unit, from_action_input)
-    --     local gameplay_time = mod.time_manager:time("gameplay")
-    --     mod:execute_extension(player_unit, "sight_system", "on_aim_stop", gameplay_time)
-    -- end
-
 end)
 
 -- ##### ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┬─┐┌─┐┌┐┌┌─┐┌─┐┌┬┐  ┬ ┬┬┌─┐┬  ┌┬┐ ##########################################################
@@ -94,12 +80,16 @@ end)
 mod:hook(CLASS.ActionAim, "start", function(func, self, action_settings, t, ...)
     -- Sights
     mod:execute_extension(self._player_unit, "sight_system", "on_aim_start", t)
-    -- Finish event
-    self.finish = function(self, reason, data, t, time_in_action)
-        self.super.finish(self, reason, data, t, time_in_action)
-        -- Sights
-        mod:execute_extension(self._player_unit, "sight_system", "on_aim_finish")
-    end
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_aim_start", t)
+    -- -- Finish event
+    -- self.finish = function(self, reason, data, t, time_in_action)
+    --     self.super.finish(self, reason, data, t, time_in_action)
+    --     -- Sights
+    --     mod:execute_extension(self._player_unit, "sight_system", "on_aim_finish")
+    --     -- Sights
+    --     mod:execute_extension(self._player_unit, "weapon_dof_system", "on_aim_finish")
+    -- end
     -- Original function
     func(self, action_settings, t, ...)
 end)
@@ -111,16 +101,20 @@ end)
 mod:hook(CLASS.ActionUnaim, "start", function(func, self, action_settings, t, ...)
     -- Sights
     mod:execute_extension(self._player_unit, "sight_system", "on_unaim_start", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_start", t)
     -- Original function
     func(self, action_settings, t, ...)
 end)
 
-mod:hook(CLASS.ActionUnaim, "finish", function(func, self, reason, data, t, time_in_action, ...)
-    -- Sights
-    mod:execute_extension(self._player_unit, "sight_system", "on_unaim_finish")
-    -- Original function
-    func(self, reason, data, t, time_in_action, ...)
-end)
+-- mod:hook(CLASS.ActionUnaim, "finish", function(func, self, reason, data, t, time_in_action, ...)
+--     -- Sights
+--     mod:execute_extension(self._player_unit, "sight_system", "on_unaim_finish")
+--     -- Weapon DOF
+--     mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_finish")
+--     -- Original function
+--     func(self, reason, data, t, time_in_action, ...)
+-- end)
 
 -- ##### ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐┬ ┬┌─┐┬─┐┌─┐┌─┐  ┌─┐┬  ┬┌─┐┬─┐┬  ┌─┐┌─┐┌┬┐ ##############################################
 -- ##### ├─┤│   │ ││ ││││  │  ├─┤├─┤├┬┘│ ┬├┤   │ │└┐┌┘├┤ ├┬┘│  │ │├─┤ ││ ##############################################
@@ -129,6 +123,8 @@ end)
 mod:hook(CLASS.ActionOverloadCharge, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
     -- Sights
     mod:execute_extension(self._player_unit, "sight_system", "on_aim_start", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_aim_start", t)
     -- Original function
     func(self, action_settings, t, time_scale, action_start_params, ...)
 end)
@@ -138,6 +134,8 @@ mod:hook(CLASS.ActionOverloadCharge, "finish", function(func, self, reason, data
     func(self, reason, data, t, time_in_action, ...)
     -- Sights
     mod:execute_extension(self._player_unit, "sight_system", "on_aim_stop", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_aim_stop", t)
 end)
 
 -- ##### ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┬  ┬┌─┐┌┐┌┌┬┐  ┌─┐┬  ┬┌─┐┬─┐┬ ┬┌─┐┌─┐┌┬┐ ###################################################
@@ -145,14 +143,20 @@ end)
 -- ##### ┴ ┴└─┘ ┴ ┴└─┘┘└┘   └┘ └─┘┘└┘ ┴   └─┘ └┘ └─┘┴└─┴ ┴└─┘┴ ┴ ┴  ###################################################
 
 mod:hook(CLASS.ActionVentOverheat, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
+    -- Laser pointer
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", false, action_settings.total_time)
+    -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", true)
+    -- Original function
     func(self, action_settings, t, time_scale, action_start_params, ...)
 end)
 
 mod:hook(CLASS.ActionVentOverheat, "finish", function(func, self, reason, data, t, time_in_action, ...)
+    -- Laser pointer
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", nil, self._action_settings.total_time)
+    -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", false)
+    -- Original function
     func(self, reason, data, t, time_in_action, ...)
 end)
 
@@ -161,14 +165,20 @@ end)
 -- ##### ┴└─└─┘┴─┘└─┘┴ ┴─┴┘  └─┘┴ ┴└─┘ ┴ └─┘└─┘┘└┘ ####################################################################
 
 mod:hook(CLASS.ActionReloadShotgun, "start", function(func, self, action_settings, t, time_scale, ...)
+    -- Laser pointer
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", false, action_settings.total_time)
+    -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", true)
+    -- Original function
     func(self, action_settings, t, time_scale, ...)
 end)
 
 mod:hook(CLASS.ActionReloadShotgun, "finish", function(func, self, reason, data, t, time_in_action, ...)
+    -- Laser pointer
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", nil, self._action_settings.total_time)
+    -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", false)
+    -- Original function
     func(self, reason, data, t, time_in_action, ...)
 end)
 
@@ -177,16 +187,21 @@ end)
 -- ##### ┴└─└─┘┴─┘└─┘┴ ┴─┴┘  └─┘ ┴ ┴ ┴ ┴ └─┘ ##########################################################################
 
 mod:hook(CLASS.ActionReloadState, "start", function(func, self, action_settings, t, time_scale, ...)
+    -- Laser pointer
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", false, action_settings.total_time)
+    -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", true)
+    -- Original function
     func(self, action_settings, t, time_scale, ...)
 end)
 
 mod:hook(CLASS.ActionReloadState, "_update_functionality", function(func, self, reload_state, time_in_action, time_scale, dt, t, ...)
+    -- Crouch
     local action_reload_component = self._action_reload_component
     if action_reload_component.has_refilled_ammunition then
         mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", false)
     end
+    -- Original function
     func(self, reload_state, time_in_action, time_scale, dt, t, ...)
 end)
 
@@ -196,8 +211,11 @@ end)
 -- end)
 
 mod:hook(CLASS.ActionReloadState, "finish", function(func, self, reason, data, t, time_in_action, ...)
+    -- Laser pointer
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", nil, self._action_settings.total_time)
+    -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", false)
+    -- Original function
     func(self, reason, data, t, time_in_action, ...)
 end)
 
@@ -206,14 +224,20 @@ end)
 -- ##### ┴┘└┘└─┘┴  └─┘└─┘ ┴  ##########################################################################################
 
 mod:hook(CLASS.ActionInspect, "start", function(func, self, action_settings, ...)
+    -- Laser pointer
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", false, action_settings.total_time)
+    -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", true)
+    -- Original function
     func(self, action_settings, ...)
 end)
 
 mod:hook(CLASS.ActionInspect, "finish", function(func, self, reason, data, t, time_in_action, ...)
+    -- Laser pointer
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", nil, self._action_settings.total_time)
+    -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", false)
+    -- Original function
     func(self, reason, data, t, time_in_action, ...)
 end)
 
@@ -310,28 +334,30 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "extensions_ready", function(func
     end
 end)
 
--- mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update", function(func, self, unit, dt, t, ...)
---     -- Original function
---     func(self, unit, dt, t, ...)
---     -- Add CrouchAnimationExtension
---     if not script_unit_has_extension(self._unit, "crouch_system") then
---         self.crouch_animation_extension = script_unit_add_extension({
---             world = self._world,
---         }, self._unit, "CrouchAnimationExtension", "crouch_system", {
---             player_unit = self._unit,
---             is_local_unit = self._is_local_unit,
---         })
---     end
---     -- Add SwayAnimationExtension
---     if not script_unit_has_extension(self._unit, "sway_system") then
---         self.crouch_animation_extension = script_unit_add_extension({
---             world = self._world,
---         }, self._unit, "SwayAnimationExtension", "sway_system", {
---             player_unit = self._unit,
---             is_local_unit = self._is_local_unit,
---         })
---     end
--- end)
+--#regin Old
+    -- mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update", function(func, self, unit, dt, t, ...)
+    --     -- Original function
+    --     func(self, unit, dt, t, ...)
+    --     -- Add CrouchAnimationExtension
+    --     if not script_unit_has_extension(self._unit, "crouch_system") then
+    --         self.crouch_animation_extension = script_unit_add_extension({
+    --             world = self._world,
+    --         }, self._unit, "CrouchAnimationExtension", "crouch_system", {
+    --             player_unit = self._unit,
+    --             is_local_unit = self._is_local_unit,
+    --         })
+    --     end
+    --     -- Add SwayAnimationExtension
+    --     if not script_unit_has_extension(self._unit, "sway_system") then
+    --         self.crouch_animation_extension = script_unit_add_extension({
+    --             world = self._world,
+    --         }, self._unit, "SwayAnimationExtension", "sway_system", {
+    --             player_unit = self._unit,
+    --             is_local_unit = self._is_local_unit,
+    --         })
+    --     end
+    -- end)
+--#endregion
 
 --#region Old
     -- mod:hook(CLASS.PlayerUnitFirstPersonExtension, "fixed_update", function(func, self, unit, dt, t, frame, ...)
@@ -360,6 +386,8 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
     func(self, unit, dt, t, ...)
     -- Sights
     mod:execute_extension(unit, "sight_system", "update_position_and_rotation", self)
+    -- Weapon DOF
+    mod:execute_extension(unit, "weapon_dof_system", "update", dt, t)
     -- Sway
     mod:execute_extension(unit, "sway_system", "update", dt, t)
     -- Crouch
@@ -398,6 +426,8 @@ mod:hook(CLASS.PlayerHuskFirstPersonExtension, "update", function(func, self, un
     mod:execute_extension(self._unit, "sway_system", "update", dt, t)
     -- CrouchAnimationExtension
     mod:execute_extension(self._unit, "crouch_system", "update", dt, t)
+    -- Weapon DOF
+    mod:execute_extension(self._unit, "weapon_dof_system", "update", dt, t)
 end)
 
 mod:hook(CLASS.PlayerHuskFirstPersonExtension, "destroy", function(func, self, ...)
@@ -415,6 +445,8 @@ mod:hook(CLASS.PlayerHuskFirstPersonExtension, "update_unit_position_and_rotatio
     -- Sights
     mod:execute_extension(self._unit, "sight_system", "set_spectated", self._is_first_person_spectated)
     mod:execute_extension(self._unit, "sight_system", "update_position_and_rotation", self)
+    -- Weapon DOF
+    mod:execute_extension(self._unit, "weapon_dof_system", "set_spectated", self._is_first_person_spectated)
     -- Flashlight / laser pointer
     mod:execute_extension(self._unit, "flashlight_system", "set_spectated", self._is_first_person_spectated)
     -- Crouch
@@ -430,12 +462,28 @@ end)
 mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewport_name, ...)
     -- Original function
     func(self, dt, t, viewport_name, ...)
-    -- Sights
+    -- Get unit
     local camera_nodes = self._camera_nodes[viewport_name]
     local current_node = self:_current_node(camera_nodes)
     local root_unit = current_node:root_unit()
+    -- Sights
     mod:execute_extension(root_unit, "sight_system", "update_zoom")
-    -- managers.event:trigger("weapon_customization_update_zoom", viewport_name)
+end)
+
+mod:hook(CLASS.CameraManager, "shading_callback", function(func, self, world, shading_env, viewport, default_shading_environment_resource, ...)
+    -- Original function
+    local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
+    -- Extensions
+    if self._world == world then
+        -- Get unit
+        local viewport_name = Viewport.get_data(viewport, "name")
+        local camera_nodes = self._camera_nodes[viewport_name]
+        local current_node = self:_current_node(camera_nodes)
+        local root_unit = current_node:root_unit()
+        -- Sight
+        -- mod:execute_extension(root_unit, "sight_system", "apply_weapon_dof", shading_env)
+        mod:execute_extension(root_unit, "weapon_dof_system", "apply_weapon_dof", shading_env)
+    end
 end)
 
 --#region Old
@@ -469,6 +517,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_equip_item_to_slot", function
     if slot_name == SLOT_SECONDARY then
         -- Sights
         mod:remove_extension(self._unit, "sight_system")
+        -- Weapon DOF
+        mod:remove_extension(self._unit, "weapon_dof_system")
         -- Flashlights
         mod:remove_extension(self._unit, "flashlight_system")
     end
@@ -479,6 +529,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_unequip_item_from_slot", func
     if slot_name == SLOT_SECONDARY then
         -- Sights
         mod:remove_extension(self._unit, "sight_system")
+        -- Weapon DOF
+        mod:remove_extension(self._unit, "weapon_dof_system")
         -- Flashlights
         mod:remove_extension(self._unit, "flashlight_system")
     end
@@ -491,6 +543,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
     mod:remove_extension(self._unit, "visible_equipment_system")
     -- Sights
     mod:remove_extension(self._unit, "sight_system")
+    -- Weapon DOF
+    mod:remove_extension(self._unit, "weapon_dof_system")
     -- Flashlights
     mod:remove_extension(self._unit, "flashlight_system")
     -- Dependency
@@ -544,6 +598,19 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
     else
         -- Update SightExtension
         mod:execute_extension(self._unit, "sight_system", "update", unit, dt, t)
+    end
+    -- Weapon DOF
+    if not script_unit_has_extension(self._unit, "weapon_dof_system") and self._weapon_extension._weapons[SLOT_SECONDARY] then
+        -- Add WeaponDOFExtension
+        script_unit_add_extension({
+            world = self._equipment_component._world,
+        }, self._unit, "WeaponDOFExtension", "weapon_dof_system", {
+            player = self._player,
+            player_unit = self._player.player_unit,
+            is_local_unit = self._is_local_unit,
+            ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
+                {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p})
+        })
     end
     -- Flashlights
     local slot = self._equipment[SLOT_SECONDARY]
@@ -618,6 +685,8 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function
     if slot_name == SLOT_SECONDARY then
         -- Sights
         mod:remove_extension(self._unit, "sight_system")
+        -- Weapon DOF
+        mod:remove_extension(self._unit, "weapon_dof_system")
         -- Flashlights
         mod:remove_extension(self._unit, "flashlight_system")
     end
@@ -631,6 +700,10 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "wield_slot", function(func, se
     if wielded_slot then
         -- Flashlights
         mod:execute_extension(self._unit, "flashlight_system", "on_wield_slot", wielded_slot)
+        -- Sight
+        mod:execute_extension(self._unit, "sight_system", "on_wield_slot")
+        -- Weapon DOF
+        mod:execute_extension(self._unit, "weapon_dof_system", "on_wield_slot")
     end
 end)
 
@@ -664,6 +737,8 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "destroy", function(func, self,
     mod:remove_extension(self._unit, "visible_equipment_system")
     -- Sights
     mod:remove_extension(self._unit, "sight_system")
+    -- Weapon DOF
+    mod:remove_extension(self._unit, "weapon_dof_system")
     -- Flashlights
     mod:remove_extension(self._unit, "flashlight_system")
     -- Dependency
@@ -721,6 +796,25 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
         -- Update SightExtension
         mod:execute_extension(self._unit, "sight_system", "update", unit, dt, t)
     end
+    -- Weapon DOF
+    if not script_unit_has_extension(self._unit, "weapon_dof_system") then
+        local slot = self._equipment[SLOT_SECONDARY]
+        if slot then
+            local weapon_template = WeaponTemplate.weapon_template_from_item(slot.item)
+            if weapon_template then
+                -- Add WeaponDOFExtension
+                script_unit_add_extension({
+                    world = self._equipment_component._world,
+                }, self._unit, "WeaponDOFExtension", "weapon_dof_system", {
+                    player = self._player,
+                    player_unit = self._player.player_unit,
+                    is_local_unit = self._is_local_unit,
+                    ranged_weapon = table_merge_recursive(slot, {weapon_template = weapon_template, weapon_unit = slot.unit_1p, attachment_units = slot.attachments_1p}
+                    ),
+                })
+            end
+        end
+    end
     -- Flashlights
     local slot = self._equipment[SLOT_SECONDARY]
     if not script_unit_has_extension(self._unit, "flashlight_system") and slot then
@@ -748,9 +842,11 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
     local alternate_fire_component = unit_data_extension and unit_data_extension:read_component("alternate_fire")
     if alternate_fire_component and alternate_fire_component.is_active then
         mod:execute_extension(self._unit, "sight_system", "set_aiming", true, t)
+        mod:execute_extension(self._unit, "weapon_dof_system", "set_aiming", true, t)
         -- mod:execute_extension(self._unit, "crouch_system", "set_aiming", true)
     elseif alternate_fire_component and not alternate_fire_component.is_active then
         mod:execute_extension(self._unit, "sight_system", "set_aiming", false, t)
+        mod:execute_extension(self._unit, "weapon_dof_system", "set_aiming", false, t)
         -- mod:execute_extension(self._unit, "crouch_system", "set_aiming", false)
     end
     wc_perf.stop(perf)
@@ -773,6 +869,10 @@ mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_pers
         mod:execute_extension(slot.parent_unit_3p, "crouch_system", "on_wield_slot", slot)
         -- Sway
         mod:execute_extension(slot.parent_unit_3p, "sway_system", "on_wield_slot", slot)
+        -- Sight
+        mod:execute_extension(slot.parent_unit_3p, "sight_system", "on_wield_slot", slot)
+        -- Weapon DOF
+        mod:execute_extension(slot.parent_unit_3p, "weapon_dof_system", "on_wield_slot", slot)
     end
 end)
 

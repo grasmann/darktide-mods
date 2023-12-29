@@ -13,7 +13,6 @@ local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customiz
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -29,49 +28,13 @@ local _item_minion = "content/items/weapons/minions"
     local type = type
 --#endregion
 
-local tv = function(t, i)
-    local res = nil
-    if type(t) == "table" then
-        if #t >= i then
-            res = t[i]
-        elseif #t >= 1 then
-            res = t[1]
-        else
-            return nil
-        end
-    else
-        res = t
-    end
-    if res == "" then
-        return nil
-    end
-    return res
-end
-table.combine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for name, value in pairs(t) do
-            combined[name] = value
-        end
-    end
-    return combined
-end
-table.icombine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for _, value in pairs(t) do
-            combined[#combined+1] = value
-        end
-    end
-    return combined
-end
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 local functions = {
-    staff_head_attachments = function()
-        return {
-            {id = "head_default", name = mod:localize("mod_attachment_default")},
+    staff_head_attachments = function(default)
+        local attachments = {
             {id = "head_01",      name = "Head 1"},
             {id = "head_02",      name = "Head 2"},
             {id = "head_03",      name = "Head 3"},
@@ -80,92 +43,105 @@ local functions = {
             {id = "head_06",      name = "Head 6"},
             {id = "head_07",      name = "Head 7"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "head_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    staff_head_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            head_default = {model = "",                                        type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            head_01 =      {model = _item_melee.."/heads/force_staff_head_01", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            head_02 =      {model = _item_melee.."/heads/force_staff_head_02", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            head_03 =      {model = _item_melee.."/heads/force_staff_head_03", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            head_04 =      {model = _item_melee.."/heads/force_staff_head_04", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            head_05 =      {model = _item_melee.."/heads/force_staff_head_05", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            head_06 =      {model = _item_melee.."/heads/force_staff_head_06", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            head_07 =      {model = _item_melee.."/heads/force_staff_head_07", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    staff_head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "head_default", model = ""},
+            {name = "head_01",      model = _item_melee.."/heads/force_staff_head_01"},
+            {name = "head_02",      model = _item_melee.."/heads/force_staff_head_02"},
+            {name = "head_03",      model = _item_melee.."/heads/force_staff_head_03"},
+            {name = "head_04",      model = _item_melee.."/heads/force_staff_head_04"},
+            {name = "head_05",      model = _item_melee.."/heads/force_staff_head_05"},
+            {name = "head_06",      model = _item_melee.."/heads/force_staff_head_06"},
+            {name = "head_07",      model = _item_melee.."/heads/force_staff_head_07"},
+        }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    staff_body_attachments = function()
-        return {
-            {id = "body_default", name = mod:localize("mod_attachment_default")},
+    staff_body_attachments = function(default)
+        local attachments = {
             {id = "body_01",      name = "Body 1"},
             {id = "body_02",      name = "Body 2"},
             {id = "body_03",      name = "Body 3"},
             {id = "body_04",      name = "Body 4"},
             {id = "body_05",      name = "Body 5"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "body_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    staff_body_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            body_default = {model = "",                                       type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
-            body_01 =      {model = _item_melee.."/full/force_staff_full_01", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
-            body_02 =      {model = _item_melee.."/full/force_staff_full_02", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
-            body_03 =      {model = _item_melee.."/full/force_staff_full_03", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
-            body_04 =      {model = _item_melee.."/full/force_staff_full_04", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
-            body_05 =      {model = _item_melee.."/full/force_staff_full_05", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
-        }
+    staff_body_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "body_default", model = ""},
+            {name = "body_01",      model = _item_melee.."/full/force_staff_full_01"},
+            {name = "body_02",      model = _item_melee.."/full/force_staff_full_02"},
+            {name = "body_03",      model = _item_melee.."/full/force_staff_full_03"},
+            {name = "body_04",      model = _item_melee.."/full/force_staff_full_04"},
+            {name = "body_05",      model = _item_melee.."/full/force_staff_full_05"},
+        }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    staff_shaft_upper_attachments = function()
-        return {
-            {id = "shaft_upper_default", name = mod:localize("mod_attachment_default")},
+    staff_shaft_upper_attachments = function(default)
+        local attachments = {
             {id = "shaft_upper_01",      name = "Upper Shaft 1"},
             {id = "shaft_upper_02",      name = "Upper Shaft 2"},
             {id = "shaft_upper_03",      name = "Upper Shaft 3"},
             {id = "shaft_upper_04",      name = "Upper Shaft 4"},
             {id = "shaft_upper_05",      name = "Upper Shaft 5"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "shaft_upper_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    staff_shaft_upper_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            shaft_upper_default = {model = "",                                                 type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_upper_01 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_01", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_upper_02 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_02", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_upper_03 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_03", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_upper_04 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_04", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_upper_05 =      {model = _item_ranged.."/shafts/force_staff_shaft_upper_05", type = "shaft_upper", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    staff_shaft_upper_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "shaft_upper_default", model = ""},
+            {name = "shaft_upper_01",      model = _item_ranged.."/shafts/force_staff_shaft_upper_01"},
+            {name = "shaft_upper_02",      model = _item_ranged.."/shafts/force_staff_shaft_upper_02"},
+            {name = "shaft_upper_03",      model = _item_ranged.."/shafts/force_staff_shaft_upper_03"},
+            {name = "shaft_upper_04",      model = _item_ranged.."/shafts/force_staff_shaft_upper_04"},
+            {name = "shaft_upper_05",      model = _item_ranged.."/shafts/force_staff_shaft_upper_05"},
+        }, parent, angle, move, remove, type or "shaft_upper", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    staff_shaft_lower_attachments = function()
-        return {
-            {id = "shaft_lower_default", name = mod:localize("mod_attachment_default")},
+    staff_shaft_lower_attachments = function(default)
+        local attachments = {
             {id = "shaft_lower_01",      name = "Lower Shaft 1"},
             {id = "shaft_lower_02",      name = "Lower Shaft 2"},
             {id = "shaft_lower_03",      name = "Lower Shaft 3"},
             {id = "shaft_lower_04",      name = "Lower Shaft 4"},
             {id = "shaft_lower_05",      name = "Lower Shaft 5"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "shaft_lower_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    staff_shaft_lower_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            shaft_lower_default = {model = "",                                                 type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_lower_01 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_01", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_lower_02 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_02", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_lower_03 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_03", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_lower_04 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_04", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            shaft_lower_05 =      {model = _item_ranged.."/shafts/force_staff_shaft_lower_05", type = "shaft_lower", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    staff_shaft_lower_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "shaft_lower_default", model = ""},
+            {name = "shaft_lower_01",      model = _item_ranged.."/shafts/force_staff_shaft_lower_01"},
+            {name = "shaft_lower_02",      model = _item_ranged.."/shafts/force_staff_shaft_lower_02"},
+            {name = "shaft_lower_03",      model = _item_ranged.."/shafts/force_staff_shaft_lower_03"},
+            {name = "shaft_lower_04",      model = _item_ranged.."/shafts/force_staff_shaft_lower_04"},
+            {name = "shaft_lower_05",      model = _item_ranged.."/shafts/force_staff_shaft_lower_05"},
+        }, parent, angle, move, remove, type or "shaft_lower", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }
+
+-- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
+-- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
+-- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
     functions,

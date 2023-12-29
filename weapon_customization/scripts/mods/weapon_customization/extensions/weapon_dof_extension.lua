@@ -1,0 +1,233 @@
+local mod = get_mod("weapon_customization")
+
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+--#region local functions
+    local math = math
+    local math_clamp01 = math.clamp01
+    local math_ease_sine = math.ease_sine
+    local math_lerp = math.lerp
+    local table = table
+    local pairs = pairs
+    local class = class
+    local wc_perf = wc_perf
+    local managers = Managers
+    local tostring = tostring
+    local Viewport = Viewport
+    local table_contains = table.contains
+    local ShadingEnvironment = ShadingEnvironment
+    local shading_environment_set_scalar = ShadingEnvironment.set_scalar
+--#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+--#regin Data
+    local REFERENCE = "weapon_customization"
+--#endregion
+
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
+-- ##### │  │  ├─┤└─┐└─┐ ##############################################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘ ##############################################################################################
+
+local WeaponDOFExtension = class("WeaponDOFExtension", "WeaponCustomizationExtension")
+
+-- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
+-- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
+-- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
+
+WeaponDOFExtension.init = function(self, extension_init_context, unit, extension_init_data)
+    WeaponDOFExtension.super.init(self, extension_init_context, unit, extension_init_data)
+    -- Attributes
+    self.ranged_weapon = extension_init_data.ranged_weapon
+    self.dof_near_scale = 0
+    self.last_target = 0
+    self.target = 0
+    -- Events
+    managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
+    -- Set values
+    self:on_settings_changed()
+    self:set_weapon_values()
+    -- Set initialized
+    self.initialized = true
+end
+
+WeaponDOFExtension.delete = function(self)
+    managers.event:unregister(self, "weapon_customization_settings_changed")
+    -- Set uninitialized
+    self.initialized = false
+    -- Delete
+    WeaponDOFExtension.super.delete(self)
+end
+
+-- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
+-- ##### │││├┤  │ ├─┤│ │ ││└─┐ ########################################################################################
+-- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
+
+WeaponDOFExtension.set_weapon_values = function(self)
+    self.sights = {
+        mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
+        mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
+    }
+    self.sight = self.sights[2] or self.sights[1]
+    self.sight_name = self.sights[1] and mod:item_name_from_content_string(self.sights[1].item)
+    self.start_time = self.ranged_weapon.weapon_template.actions.action_zoom
+        and self.ranged_weapon.weapon_template.actions.action_zoom.total_time
+        or self.ranged_weapon.weapon_template.actions.action_wield.total_time
+    self.reset_time = self.ranged_weapon.weapon_template.actions.action_unzoom 
+        and self.ranged_weapon.weapon_template.actions.action_unzoom.total_time
+        or self.ranged_weapon.weapon_template.actions.action_wield.total_time
+end
+
+-- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
+-- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
+-- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
+
+WeaponDOFExtension.on_aim_start = function(self, t)
+    self._is_aiming = true
+end
+
+WeaponDOFExtension.on_wield_slot = function(self, slot)
+    self._is_scope = nil
+    self._is_sniper = nil
+    self._is_braced = nil
+end
+
+WeaponDOFExtension.on_aim_stop = function(self, t)
+    self._is_aiming = nil
+end
+
+WeaponDOFExtension.on_unaim_start = function(self, t)
+    self._is_aiming = nil
+end
+
+WeaponDOFExtension.on_settings_changed = function(self)
+    -- self.value = mod:get("mod_option_misc_weapon_dof")
+    self.no_aim = mod:get("mod_option_misc_weapon_dof_no_aim")
+    self.no_aim_strength = 5 * mod:get("mod_option_misc_weapon_dof_strength_no_aim")
+    self.scope = mod:get("mod_option_misc_weapon_dof_scope")
+    self.scope_strength = 5 * mod:get("mod_option_misc_weapon_dof_strength_scope")
+    self.sight = mod:get("mod_option_misc_weapon_dof_sight")
+    self.sight_strength = 5 * mod:get("mod_option_misc_weapon_dof_strength_sight")
+    self.dirty = true
+end
+
+-- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
+-- ##### │ ┬├┤  │   └┐┌┘├─┤│  │ │├┤ └─┐ ###############################################################################
+-- ##### └─┘└─┘ ┴    └┘ ┴ ┴┴─┘└─┘└─┘└─┘ ###############################################################################
+
+WeaponDOFExtension.is_braced = function(self)
+    -- Check cache
+    if self._is_braced == nil then
+        -- Get value
+        local template = self.ranged_weapon.weapon_template
+        local alt_fire = template and template.alternate_fire_settings
+        self._is_braced = alt_fire and alt_fire.start_anim_event == "to_braced"
+    end
+    -- Return cache
+    return self._is_braced
+end
+
+WeaponDOFExtension.is_scope = function(self)
+    -- Check cache
+    if self._is_scope == nil then
+        -- Get value
+        self._is_scope = table_contains(mod.reflex_sights, self.sight_name)
+    end
+    -- Return cache
+    return self._is_scope
+end
+
+WeaponDOFExtension.is_aiming = function(self)
+    return self.alternate_fire_component and self.alternate_fire_component.is_active
+end
+
+WeaponDOFExtension.is_sight = function(self)
+    return not self:is_scope() and not self:is_sniper()
+end
+
+WeaponDOFExtension.is_sniper = function(self)
+    -- Check cache
+    if self._is_sniper == nil then
+        -- Get value
+        self._is_sniper = table_contains(mod.scopes, self.sight_name) and not self:is_braced()
+    end
+    -- Return cache
+    return self._is_sniper
+end
+
+WeaponDOFExtension.is_sniper_or_scope = function(self)
+    return self:is_scope() or self:is_sniper()
+end
+
+-- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
+-- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
+-- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
+
+WeaponDOFExtension.update = function(self, dt, t)
+    local no_aim = not self:is_aiming() and self.no_aim
+    local scope = self:is_aiming() and self:is_sniper_or_scope() and self.scope
+    local sight = self:is_aiming() and self:is_sight() and self.sight
+
+    if self._is_aiming ~= self.last_aiming or self.dirty then
+        local target = 0
+
+        if self._is_aiming then
+            if scope then
+                target = self.scope_strength
+            elseif sight then
+                target = self.sight_strength
+            end
+
+        elseif no_aim then
+            target = self.no_aim_strength
+        end
+
+        self.do_lerp = self.target ~= target
+        self.last_target = self.target
+        self.target = target or 0
+        self.last_aiming = self._is_aiming
+        self.dirty = nil
+    end
+
+    if self.do_lerp then
+        local time = self:is_aiming() and self.start_time or self.reset_time
+        self.lerp_timer = t + time
+        self.do_lerp = nil
+    elseif self.lerp_timer and t < self.lerp_timer then
+        local time_in_action = math_clamp01(self.start_time - (self.lerp_timer - t))
+        local progress = time_in_action / self.start_time
+        local anim_progress = math_ease_sine(progress)
+        self.dof_near_scale = math_lerp(self.last_target, self.target, anim_progress)
+    elseif self.lerp_timer and t >= self.lerp_timer then
+        self.dof_near_scale = self.target
+        self.lerp_timer = nil
+    end
+
+end
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+WeaponDOFExtension.apply_weapon_dof = function(self, shading_env)
+    -- local scale = 5
+    -- local is_aiming = self:is_aiming()
+    -- local is_sniper_or_scope = self:is_sniper_or_scope()
+    -- local scale = (is_aiming and not is_sniper_or_scope and .5) or (is_aiming and is_sniper_or_scope and 2.5) or 3.5
+
+    ShadingEnvironment.set_scalar(shading_env, "dof_enabled", 1)
+    ShadingEnvironment.set_scalar(shading_env, "dof_focal_distance", .5)
+    ShadingEnvironment.set_scalar(shading_env, "dof_focal_region", 50)
+    ShadingEnvironment.set_scalar(shading_env, "dof_focal_region_start", -1)
+    ShadingEnvironment.set_scalar(shading_env, "dof_focal_region_end", 49)
+    ShadingEnvironment.set_scalar(shading_env, "dof_focal_near_scale", self.dof_near_scale)
+    ShadingEnvironment.set_scalar(shading_env, "dof_focal_far_scale", .5)
+end

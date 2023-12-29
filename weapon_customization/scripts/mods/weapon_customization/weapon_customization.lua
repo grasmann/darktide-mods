@@ -64,6 +64,9 @@ mod.was_third_person = nil
 	local CLASS = CLASS
 	local type = type
 	local DMFMod = DMFMod
+	local vector3 = Vector3
+	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+    local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
 --#endregion
 
 string.trim = function(s)
@@ -71,6 +74,14 @@ string.trim = function(s)
 end
 string.cap = function(str)
 	return (str:gsub("^%l", string.upper))
+end
+
+Quaternion.to_vector = function(quaternion)
+	local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
+	return vector3(x, y, z)
+end
+Quaternion.from_vector = function(vector)
+	return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ###############################################################################
@@ -219,6 +230,7 @@ mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/visible_equipment_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/battery_extension")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_animation_extension")
+mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_dof_extension")
 -- Import mod files
 -- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_bolt_pistol")
 mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
@@ -243,6 +255,7 @@ if managers and managers.player._game_state ~= nil then
 			mod:remove_extension(mod.player_unit, "flashlight_system")
 			-- mod:remove_extension(mod.player_unit, "battery_system")
 			-- mod:remove_extension(mod.player_unit, "laser_pointer_system")
+			mod:remove_extension(mod.player_unit, "weapon_dof_system")
 		end
 	end
 end

@@ -13,8 +13,6 @@ local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_c
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
-local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -30,49 +28,13 @@ local _item_minion = "content/items/weapons/minions"
     local type = type
 --#endregion
 
-local tv = function(t, i)
-    local res = nil
-    if type(t) == "table" then
-        if #t >= i then
-            res = t[i]
-        elseif #t >= 1 then
-            res = t[1]
-        else
-            return nil
-        end
-    else
-        res = t
-    end
-    if res == "" then
-        return nil
-    end
-    return res
-end
-table.combine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for name, value in pairs(t) do
-            combined[name] = value
-        end
-    end
-    return combined
-end
-table.icombine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for _, value in pairs(t) do
-            combined[#combined+1] = value
-        end
-    end
-    return combined
-end
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 local functions = {
-    receiver_attachments = function()
-        return {
-            {id = "receiver_default", name = mod:localize("mod_attachment_default")},
+    receiver_attachments = function(default)
+        local attachments = {
             {id = "receiver_01",      name = "Flamer 1"},
             {id = "receiver_02",      name = "Flamer 2"},
             {id = "receiver_03",      name = "Flamer 3"},
@@ -80,43 +42,47 @@ local functions = {
             {id = "receiver_05",      name = "Flamer 5"},
             {id = "receiver_06",      name = "Flamer 6"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "receiver_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    receiver_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            receiver_default = {model = "",                                                  type = "receiver", parent = tv(parent, 1), angle = a, move = m, remove = r},
-            receiver_01 =      {model = _item_ranged.."/recievers/flamer_rifle_receiver_01", type = "receiver", parent = tv(parent, 2), angle = a, move = m, remove = r},
-            receiver_02 =      {model = _item_ranged.."/recievers/flamer_rifle_receiver_02", type = "receiver", parent = tv(parent, 3), angle = a, move = m, remove = r},
-            receiver_03 =      {model = _item_ranged.."/recievers/flamer_rifle_receiver_03", type = "receiver", parent = tv(parent, 4), angle = a, move = m, remove = r},
-            receiver_04 =      {model = _item_ranged.."/recievers/flamer_rifle_receiver_04", type = "receiver", parent = tv(parent, 5), angle = a, move = m, remove = r},
-            receiver_05 =      {model = _item_ranged.."/recievers/flamer_rifle_receiver_05", type = "receiver", parent = tv(parent, 6), angle = a, move = m, remove = r},
-            receiver_06 =      {model = _item_ranged.."/recievers/flamer_rifle_receiver_06", type = "receiver", parent = tv(parent, 7), angle = a, move = m, remove = r},
-        }
+    receiver_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "receiver_default", model = ""},
+            {name = "receiver_01",      model = _item_ranged.."/recievers/flamer_rifle_receiver_01"},
+            {name = "receiver_02",      model = _item_ranged.."/recievers/flamer_rifle_receiver_02"},
+            {name = "receiver_03",      model = _item_ranged.."/recievers/flamer_rifle_receiver_03"},
+            {name = "receiver_04",      model = _item_ranged.."/recievers/flamer_rifle_receiver_04"},
+            {name = "receiver_05",      model = _item_ranged.."/recievers/flamer_rifle_receiver_05"},
+            {name = "receiver_06",      model = _item_ranged.."/recievers/flamer_rifle_receiver_06"},
+        }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    magazine_attachments = function()
-        return {
-            {id = "magazine_default", name = mod:localize("mod_attachment_default")},
+    magazine_attachments = function(default)
+        local attachments = {
             {id = "magazine_01",      name = "Flamer 1"},
             {id = "magazine_02",      name = "Flamer 2"},
             {id = "magazine_03",      name = "Flamer 3"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "magazine_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    magazine_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            magazine_default = {model = "",                                                  type = "magazine", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = true},
-            magazine_01 =      {model = _item_ranged.."/magazines/flamer_rifle_magazine_01", type = "magazine", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = true},
-            magazine_02 =      {model = _item_ranged.."/magazines/flamer_rifle_magazine_02", type = "magazine", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = true},
-            magazine_03 =      {model = _item_ranged.."/magazines/flamer_rifle_magazine_03", type = "magazine", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = true},
-        }
+    magazine_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "magazine_default", model = ""},
+            {name = "magazine_01",      model = _item_ranged.."/magazines/flamer_rifle_magazine_01"},
+            {name = "magazine_02",      model = _item_ranged.."/magazines/flamer_rifle_magazine_02"},
+            {name = "magazine_03",      model = _item_ranged.."/magazines/flamer_rifle_magazine_03"},
+        }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    barrel_attachments = function()
-        return {
-            {id = "barrel_default", name = mod:localize("mod_attachment_default")},
+    barrel_attachments = function(default)
+        local attachments = {
             {id = "barrel_01",      name = "Flamer 1"},
             {id = "barrel_02",      name = "Flamer 2"},
             {id = "barrel_03",      name = "Flamer 3"},
@@ -124,25 +90,29 @@ local functions = {
             {id = "barrel_05",      name = "Flamer 5"},
             {id = "barrel_06",      name = "Flamer 6"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "barrel_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    barrel_models = function(parent, angle, move, remove, no_support, automatic_equip, hide_mesh)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        local n = no_support or {{"rail"}}
-        local ae = automatic_equip or {}
-        local h = hide_mesh or {}
-        return {
-            barrel_default = {model = "",                                              type = "barrel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 1), no_support = tv(n, 1)},
-            barrel_01 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_01", type = "barrel", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 2), no_support = tv(n, 2)},
-            barrel_02 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_02", type = "barrel", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 3), no_support = tv(n, 3)},
-            barrel_03 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_03", type = "barrel", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 4), no_support = tv(n, 4)},
-            barrel_04 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_04", type = "barrel", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 5), no_support = tv(n, 5)},
-            barrel_05 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_05", type = "barrel", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 6), no_support = tv(n, 6)},
-            barrel_06 =      {model = _item_ranged.."/barrels/flamer_rifle_barrel_06", type = "barrel", parent = tv(parent, 7), angle = a, move = m, remove = r, mesh_move = false, trigger_move = {"flashlight"}, automatic_equip = tv(ae, 7), no_support = tv(n, 7)},
-        }
+    barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "barrel_default", model = ""},
+            {name = "barrel_01",      model = _item_ranged.."/barrels/flamer_rifle_barrel_01"},
+            {name = "barrel_02",      model = _item_ranged.."/barrels/flamer_rifle_barrel_02"},
+            {name = "barrel_03",      model = _item_ranged.."/barrels/flamer_rifle_barrel_03"},
+            {name = "barrel_04",      model = _item_ranged.."/barrels/flamer_rifle_barrel_04"},
+            {name = "barrel_05",      model = _item_ranged.."/barrels/flamer_rifle_barrel_05"},
+            {name = "barrel_06",      model = _item_ranged.."/barrels/flamer_rifle_barrel_06"},
+        }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }
+
+-- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
+-- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
+-- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
     functions,
@@ -165,7 +135,7 @@ return table.combine(
             _common.trinket_hook_models(nil, 0, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2)),
             functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
             functions.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
-            functions.barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), {
+            functions.barrel_models(nil, -.3, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), "barrel", {
                 {"trinket_hook_empty"},
                 {"trinket_hook_empty"},
                 {"trinket_hook_empty"},

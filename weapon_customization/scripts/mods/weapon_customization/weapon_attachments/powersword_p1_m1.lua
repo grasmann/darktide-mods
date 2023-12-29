@@ -12,9 +12,7 @@ local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_cu
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -170,8 +168,8 @@ return table.combine(
             hilt = _common_melee.sword_hilt_attachments(),
         },
         models = table.combine(
-            _common.emblem_right_models("head", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
-            _common.emblem_left_models("head", -3, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
+            _common.emblem_right_models("blade", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
+            _common.emblem_left_models("blade", -3, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _common.trinket_hook_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             -- functions.hilt_models("grip", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .1)),
             _common_melee.sword_hilt_models("grip", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .1)),

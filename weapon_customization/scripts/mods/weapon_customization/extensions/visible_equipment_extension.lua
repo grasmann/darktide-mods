@@ -4,12 +4,14 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
-local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
-local InputService = mod:original_require("scripts/managers/input/input_service")
-local footstep_intervals_templates = mod:original_require("scripts/settings/equipment/footstep/footstep_intervals_templates")
-local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
-local VisibleEquipmentOffsets = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/visible_equipment/offsets")
+--#region Require
+    local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
+    local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
+    local InputService = mod:original_require("scripts/managers/input/input_service")
+    local footstep_intervals_templates = mod:original_require("scripts/settings/equipment/footstep/footstep_intervals_templates")
+    local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
+    local VisibleEquipmentOffsets = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/visible_equipment/offsets")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -30,6 +32,7 @@ local VisibleEquipmentOffsets = mod:io_dofile("weapon_customization/scripts/mods
     local unit_flow_event = Unit.flow_event
     local unit_set_unit_visibility = Unit.set_unit_visibility
     local unit_get_child_units = Unit.get_child_units
+    local unit_force_stream_meshes = Unit.force_stream_meshes
     local vector3 = Vector3
     local vector3_lerp = vector3.lerp
     local vector3 = vector3
@@ -46,13 +49,13 @@ local VisibleEquipmentOffsets = mod:io_dofile("weapon_customization/scripts/mods
     local quaternion_box = QuaternionBox
     local quaternion_unbox = QuaternionBox.unbox
     local quaternion_matrix4x4 = Quaternion.matrix4x4
-    local quaternion_to_vector = function(quaternion)
-        local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
-        return vector3(x, y, z)
-    end
-    local quaternion_from_vector = function(vector)
-        return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
-    end
+    local quaternion_to_vector = Quaternion.to_vector --function(quaternion)
+    --     local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
+    --     return vector3(x, y, z)
+    -- end
+    local quaternion_from_vector = Quaternion.from_vector --function(vector)
+    --     return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
+    -- end
     local math = math
     local math_abs = math.abs
     local math_ease_out_elastic = math.ease_out_elastic
@@ -69,65 +72,55 @@ local VisibleEquipmentOffsets = mod:io_dofile("weapon_customization/scripts/mods
     local script_unit = ScriptUnit
     local managers = Managers
     local table = table
+    local table_enum = table.enum
+    local table_icombine = table.icombine
+    local table_combine = table.combine
     local tostring = tostring
     local string = string
     local string_find = string.find
-    table.multi = function(v, c)
-        local t = {}
-        for i = 1, c do
-            t[#t+1] = v
-        end
-        return t
-    end
-    table.combine = function(...)
-        local arg = {...}
-        local combined = {}
-        for _, t in ipairs(arg) do
-            for name, value in pairs(t) do
-                combined[name] = value
-            end
-        end
-        return combined
-    end
     local wc_perf = wc_perf
+    local wc_perf_start = wc_perf.start
+    local wc_perf_stop = wc_perf.stop
     local type = type
+    local class = class
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local ATTACHMENT_SPAWN_STATUS = table.enum("waiting_for_load", "fully_spawned")
-local REFERENCE = "weapon_customization"
-local WEAPON_MELEE = "WEAPON_MELEE"
-local ANIM_TIME_MELEE = .3
-local ANIM_TIME_WOBBLE_MELEE = .6
-local WEAPON_RANGED = "WEAPON_RANGED"
-local ANIM_TIME_RANGED = .3
-local ANIM_TIME_WOBBLE_RANGED = .6
-local SLAB_SHIELD = "ogryn_powermaul_slabshield_p1_m1"
-local BACKPACK_ATTACH = "j_backpackattach"
-local BACKPACK_OFFSET = "j_backpackoffset"
-local BACKPACK_EMPTY = "content/items/characters/player/human/backpacks/empty_backpack"
-local STEP_STATE = "step"
-local STEP_STATE_BACK = "step_back"
-local STEP_WOBBLE = "wobble"
-local SLOT_UNARMED = "slot_unarmed"
-local SLOT_PRIMARY = "slot_primary"
-local SLOT_SECONDARY = "slot_secondary"
-local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
-local BACKPACK = "backpack"
-local DEFAULT = "default"
-local SPRINT = "sprint"
-local WALK = "walk"
-local OFF = "off"
-local ALL = "all"
-local WEIGHT_FACTORS = {
-    light = .66,
-    medium = .33,
-    heavy = .1,
-}
-
+--#region Data
+    local ATTACHMENT_SPAWN_STATUS = table_enum("waiting_for_load", "fully_spawned")
+    local REFERENCE = "weapon_customization"
+    local WEAPON_MELEE = "WEAPON_MELEE"
+    local ANIM_TIME_MELEE = .3
+    local ANIM_TIME_WOBBLE_MELEE = .6
+    local WEAPON_RANGED = "WEAPON_RANGED"
+    local ANIM_TIME_RANGED = .3
+    local ANIM_TIME_WOBBLE_RANGED = .6
+    local SLAB_SHIELD = "ogryn_powermaul_slabshield_p1_m1"
+    local BACKPACK_ATTACH = "j_backpackattach"
+    local BACKPACK_OFFSET = "j_backpackoffset"
+    local BACKPACK_EMPTY = "content/items/characters/player/human/backpacks/empty_backpack"
+    local STEP_STATE = "step"
+    local STEP_STATE_BACK = "step_back"
+    local STEP_WOBBLE = "wobble"
+    local SLOT_UNARMED = "slot_unarmed"
+    local SLOT_PRIMARY = "slot_primary"
+    local SLOT_SECONDARY = "slot_secondary"
+    local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
+    local BACKPACK = "backpack"
+    local DEFAULT = "default"
+    local SPRINT = "sprint"
+    local WALK = "walk"
+    local OFF = "off"
+    local ALL = "all"
+    local WEIGHT_FACTORS = {
+        light = .66,
+        medium = .33,
+        heavy = .1,
+    }
+--#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
 -- ##### │  │  ├─┤└─┐└─┐ ##############################################################################################
@@ -135,35 +128,35 @@ local WEIGHT_FACTORS = {
 
 local VisibleEquipmentExtension = class("VisibleEquipmentExtension", "WeaponCustomizationExtension")
 
--- local GLOBAL_ARRAY = mod:persistent_table(REFERENCE).extensions.visible_equipment
-
 -- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
 -- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
 
 VisibleEquipmentExtension.init = function(self, extension_init_context, unit, extension_init_data)
+    -- Parent
     VisibleEquipmentExtension.super.init(self, extension_init_context, unit, extension_init_data)
-
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.init", 2)
+    -- Attributes
     self.loading_spawn_point = extension_init_data.loading_spawn_point
     self.equipment_component = extension_init_data.equipment_component
     self.equipment = extension_init_data.equipment
     self.wielded_slot = extension_init_data.wielded_slot or SLOT_UNARMED
-    self:set_foot_step_interval()
     self.ui_profile_spawner = extension_init_data.ui_profile_spawner
-    self.back_node = self:get_back_node()
+    self.back_node = self:current_back_node()
+    self:set_foot_step_interval()
     self.trigger_wobble = nil
     self.back_change = nil
     self.unit_spawner = self.equipment_component._unit_spawner
     self.step_speed = 1
-
     self.is_in_hub = mod:is_in_hub()
-
     -- Slot specific
     self.slot_loaded = {}
     self.slot_is_loading = {}
     self.item_names = {}
     self.item_types = {}
     self.dummy_units = {}
+    self.is_linked = {}
     self.equipment_data = {}
     self.slot_infos = {}
     self.packages = {}
@@ -174,30 +167,31 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.size = {}
     self.weight = {}
     self.visible = {}
-
+    -- Events
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
-
+    -- Settings
     self:on_settings_changed()
-
-    -- GLOBAL_ARRAY[self] = true
-
     -- Initialized
     self.initialized = true
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.delete = function(self)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.delete", 2)
+    -- Events
     managers.event:unregister(self, "weapon_customization_settings_changed")
-
+    -- Uninitialize
     self.initialized = false
-
-    -- GLOBAL_ARRAY[self] = nil
-
     -- Iterate slots
     for slot_name, slot in pairs(self.equipment) do
         -- Delete
         self:delete_slot(slot)
     end
-    
+    -- Performance
+    wc_perf_stop(perf)
+    -- Parent
     VisibleEquipmentExtension.super.delete(self)
 end
 
@@ -206,10 +200,11 @@ end
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 VisibleEquipmentExtension.has_backpack = function(self)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.has_backpack", 2)
     -- Get cosmetic extra slot gear
     local gear_extra = self.equipment[SLOT_GEAR_EXTRA_COSMETIC]
 	local real_item = gear_extra and gear_extra.item and gear_extra.item.name
-    -- mod:echo(tostring(real_item))
     -- Cosmetic view
     local presentation_item = nil
     local inventory_cosmetics_view = mod:get_cosmetic_view()
@@ -225,11 +220,15 @@ VisibleEquipmentExtension.has_backpack = function(self)
         self.trigger_wobble = true
         self.back_change = item
     end
+    -- Performance
+    wc_perf_stop(perf)
     -- Check if not empty backpack
 	return item and item ~= BACKPACK_EMPTY
 end
 
-VisibleEquipmentExtension.get_equipment_data = function(self, slot)
+VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.equipment_data_by_slot", 2)
     -- Check if has backpack
     local data_type = self:has_backpack() and BACKPACK or DEFAULT
     local offsets = mod.visible_equipment_offsets
@@ -264,10 +263,13 @@ VisibleEquipmentExtension.get_equipment_data = function(self, slot)
         wield = item_data and item_data.wield,
         attach_node = attach_node,
     }
+    -- Performance
+    wc_perf_stop(perf)
+    -- Return data
     return equipment_data, sounds, sounds2
 end
 
-VisibleEquipmentExtension.get_back_node = function(self)
+VisibleEquipmentExtension.current_back_node = function(self)
     if self.player_unit and unit_alive(self.player_unit) then
         if unit_has_node(self.player_unit, BACKPACK_ATTACH) then
             return BACKPACK_ATTACH
@@ -279,32 +281,27 @@ VisibleEquipmentExtension.get_back_node = function(self)
 end
 
 VisibleEquipmentExtension.get_breed = function(self)
-    return self:get_back_node() == BACKPACK_OFFSET and "ogryn" or "human"
+    return self.back_node == BACKPACK_OFFSET and "ogryn" or "human"
 end
 
 VisibleEquipmentExtension.get_foot_step_interval = function(self)
-    -- local unit_data = script_unit.extension(self.player_unit, "unit_data_system")
-    -- local movement_state_component = unit_data and unit_data:read_component("movement_state")
-    local crouching = self.movement_state_component and self.movement_state_component.is_crouching
-    -- local alternate_fire_component = unit_data and unit_data:read_component("alternate_fire")
-    local alt_fire = self.alternate_fire_component and self.alternate_fire_component.is_active
-    -- local sprint_state = unit_data and unit_data:read_component("sprint_character_state")
-    local sprint = self.sprint_character_state_component and self.sprint_character_state_component.is_sprinting
-    -- local hub_jog_component = mod:is_in_hub() and unit_data and unit_data:read_component("hub_jog_character_state")
-    sprint = self.is_in_hub and self.hub_jog_character_state and self.hub_jog_character_state.move_state == SPRINT or sprint
-    crouching = self.is_in_hub and self.hub_jog_character_state and self.hub_jog_character_state.move_state == WALK or crouching
-    if sprint then
+    -- local crouching = self.movement_state_component and self.movement_state_component.is_crouching
+    -- local alt_fire = self.alternate_fire_component and self.alternate_fire_component.is_active
+    -- local sprint = self.sprint_character_state_component and self.sprint_character_state_component.is_sprinting
+    -- sprint = self.is_in_hub and self.hub_jog_character_state and self.hub_jog_character_state.move_state == SPRINT or sprint
+    -- crouching = self.is_in_hub and self.hub_jog_character_state and self.hub_jog_character_state.move_state == WALK or crouching
+    if self:is_sprinting() then
         if self.footstep_intervals and self.footstep_intervals.sprinting then return self.footstep_intervals.sprinting end
         return footstep_intervals_templates.default.sprinting
-    elseif crouching then
-        if alt_fire then
+    elseif self:is_crouching() then
+        if self:is_alt_fire() then
             if self.footstep_intervals and self.footstep_intervals.crouch_walking_alternate_fire then return self.footstep_intervals.crouch_walking_alternate_fire end
             return footstep_intervals_templates.default.crouch_walking_alternate_fire
         end
         if self.footstep_intervals and self.footstep_intervals.crouch_walking then return self.footstep_intervals.crouch_walking end
         return footstep_intervals_templates.default.crouch_walking
     else
-        if alt_fire then
+        if self:is_alt_fire() then
             if self.footstep_intervals and self.footstep_intervals.walking_alternate_fire then return self.footstep_intervals.walking_alternate_fire end
             return footstep_intervals_templates.default.walking_alternate_fire
         end
@@ -317,9 +314,27 @@ VisibleEquipmentExtension.is_weapon_slot = function(self, slot)
     return slot.name == SLOT_SECONDARY or slot.name == SLOT_PRIMARY
 end
 
+VisibleEquipmentExtension.is_alt_fire = function(self)
+    return self.alternate_fire_component and self.alternate_fire_component.is_active
+end
+
+VisibleEquipmentExtension.is_crouching = function(self)
+    local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching
+    return self.is_in_hub and self.hub_jog_character_state and self.hub_jog_character_state.move_state == WALK or is_crouching
+end
+
+VisibleEquipmentExtension.is_sprinting = function(self)
+    local is_sprinting = self.sprint_character_state_component and self.sprint_character_state_component.is_sprinting
+    return self.is_in_hub and self.hub_jog_character_state and self.hub_jog_character_state.move_state == SPRINT or is_sprinting
+end
+
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
 -- ##### │││├┤  │ ├─┤│ │ ││└─┐ ########################################################################################
 -- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
+
+VisibleEquipmentExtension.set_spectated = function(self, spectated)
+    self.spectated = spectated
+end
 
 VisibleEquipmentExtension.set_foot_step_interval = function(self)
     if self.initialized then
@@ -330,8 +345,6 @@ VisibleEquipmentExtension.set_foot_step_interval = function(self)
             self.footstep_intervals = weapon_template and weapon_template.footstep_intervals
         elseif not wielded_slot or wielded_slot.name == SLOT_UNARMED then
             local breed = self:get_breed()
-            -- mod:echo("breed: "..tostring(breed))
-            -- mod:echo("interval: unarmed_"..tostring(breed))
             local hub = self.is_in_hub and "_hub" or ""
             local name = "unarmed_"..tostring(breed)..tostring(hub)
             if footstep_intervals_templates[name] then
@@ -407,15 +420,15 @@ VisibleEquipmentExtension.trigger_step = function(self, optional_time_overwrite)
     end
 end
 
-VisibleEquipmentExtension.position_equipment = function(self)
+VisibleEquipmentExtension.link_equipment = function(self)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.link_equipment", 2)
     -- Attach to node
     local node_index, attach_unit = unit_node(self.player_unit, self.back_node), self.player_unit
-    -- local backpack_unit = self:has_backpack() and self.equipment["slot_gear_extra_cosmetic"]
-    --     and self.equipment["slot_gear_extra_cosmetic"].unit_3p
     -- Iterate equipment
     for slot_name, slot in pairs(self.equipment) do
         -- Check dummies
-        if self.dummy_units[slot] then
+        if self.dummy_units[slot] and not self.is_linked[slot] then
             -- Data
             local data = self.equipment_data[slot]
             local attach_node = data.attach_node
@@ -434,29 +447,54 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     -- Link unit to attachment node
                     world_unlink_unit(self.world, unit)
                     world_link_unit(self.world, unit, 1, attach_unit, attach_node_index or node_index, true)
+                    -- Scale equipment
+                    unit_set_local_scale(unit, 1, vector3_unbox(data.scale[i]))
+                end
+            end
+            -- Set linked
+            self.is_linked[slot] = true
+        end
+    end
+    -- Performance
+    wc_perf_stop(perf)
+end
+
+VisibleEquipmentExtension.position_equipment = function(self)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.position_equipment", 2)
+    -- Iterate equipment
+    for slot_name, slot in pairs(self.equipment) do
+        -- Check dummies
+        if self.dummy_units[slot] and self.is_linked[slot] then
+            -- Data
+            local data = self.equipment_data[slot]
+            -- Get list of units ( Slab shield )
+            local units = {self.dummy_units[slot].base}
+            if self.item_names[slot] == SLAB_SHIELD then
+                units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+            end
+            -- Iterate units
+            for i, unit in pairs(units) do
+                if unit and unit_alive(unit) then
+                    local rot = vector3_unbox(data.rotation[i])
+                    local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
                     -- Position equipment
                     unit_set_local_position(unit, 1, vector3_unbox(data.position[i]))
                     -- Rotate equipment
-                    local rot = vector3_unbox(data.rotation[i])
-                    local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
                     unit_set_local_rotation(unit, 1, rotation)
-                    -- Scale equipment
-                    unit_set_local_scale(unit, 1, vector3_unbox(data.scale[i]))
-                    -- if backpack_unit and unit_alive(backpack_unit) then
-                    --     world_unlink_unit(self.world, unit)
-                    --     world_link_unit(self.world, unit, 1, backpack_unit, 4, false)
-                    -- end
                 end
             end
         end
     end
+    -- Performance
+    wc_perf_stop(perf)
 end
 
--- local db_i = 1
 VisibleEquipmentExtension.get_dependencies = function(self, slot)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.get_dependencies", 2)
     -- Setup definitions
     mod:setup_item_definitions()
-
     local found_packages = {}
     -- Get master item
     local item = slot.item and slot.item.__master_item
@@ -470,11 +508,16 @@ VisibleEquipmentExtension.get_dependencies = function(self, slot)
             found_packages[#found_packages+1] = package_name
         end
     end
+    -- Performance
+    wc_perf_stop(perf)
     -- Return package list
     return found_packages
 end
 
 VisibleEquipmentExtension.release_slot_packages = function(self, slot)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.release_slot_packages", 2)
+    -- Release
     local count = 0
     if self.packages[slot] then
         for package_name, package_id in pairs(self.packages[slot]) do
@@ -489,9 +532,14 @@ VisibleEquipmentExtension.release_slot_packages = function(self, slot)
     if count > 0 then
         mod:print("Release "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
     end
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.load_slot_packages", 2)
+    -- Load
     local count = 0
     for _, package_name in pairs(packages) do
         -- Check if loaded
@@ -506,10 +554,13 @@ VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
     if count > 0 then
         mod:print("Load "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
     end
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.delete_slot = function(self, slot)
-    local perf = wc_perf.start("VisibleEquipmentExtension.delete_slot", 2)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.delete_slot", 2)
     -- Check base unit
     if self.dummy_units[slot] and self.dummy_units[slot].base then
         -- Check attachment units
@@ -546,14 +597,24 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
     self.equipment_data[slot] = nil
     self.packages[slot] = nil
     self.slot_loaded[slot] = nil
+    self.slot_is_loading[slot] = nil
     self.step_animation[slot] = nil
     self.sounds[slot] = nil
     self.rotate_animation[slot] = nil
-    wc_perf.stop(perf)
+    self.is_linked[slot] = nil
+    self.slot_infos[slot] = nil
+    self.weapon_template[slot] = nil
+    self.size[slot] = nil
+    self.weight[slot] = nil
+    self.visible[slot] = nil
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.load_slot = function(self, slot)
-    local perf = wc_perf.start("VisibleEquipmentExtension.load_slot", 2)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.load_slot", 2)
+    -- Load
     if self.initialized and self:is_weapon_slot(slot) then
         local item = slot.item and slot.item.__master_item
         if not self.slot_loaded[slot] and not self.slot_is_loading[slot] then
@@ -581,14 +642,14 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 -- VisualLoadoutCustomization.add_extensions(nil, self.dummy_units[slot].attachments, attach_settings)
                 local callback = function()
                 end
-                Unit.force_stream_meshes(self.dummy_units[slot].base, callback, true)
+                unit_force_stream_meshes(self.dummy_units[slot].base, callback, true)
                 for _, unit in pairs(self.dummy_units[slot].attachments) do
-                    Unit.force_stream_meshes(unit, callback, true)
+                    unit_force_stream_meshes(unit, callback, true)
                 end
                 -- Hide bullets
                 self:hide_bullets(slot)
                 -- Equipment data
-                local data, sounds_1, sounds_2 = self:get_equipment_data(slot)
+                local data, sounds_1, sounds_2 = self:equipment_data_by_slot(slot)
                 local sounds_3 = SoundEventAliases.sfx_ads_up.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
@@ -599,7 +660,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 self.equipment_data[slot] = data
                 -- Load sound packages
                 self.packages[slot] = {}
-                self:load_slot_packages(slot, table.icombine(
+                self:load_slot_packages(slot, table_icombine(
                     sounds_1 or {},
                     sounds_2 or {},
                     {sounds_3},
@@ -617,23 +678,52 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 if self.equipment_data[slot].init then
                     self.equipment_data[slot].init(self, slot)
                 end
-
+                -- Estimate values
                 self:set_estimated_weapon_data(slot)
-
                 -- Trigger equipment animation
                 self.trigger_wobble = true
-
                 -- Position equipment
+                self:link_equipment()
                 self:position_equipment()
                 -- Visibility
                 self:on_update_item_visibility()
-
+                -- Set flags
                 self.slot_loaded[slot] = true
                 self.slot_is_loading[slot] = nil
             end
         end
     end
-    wc_perf.stop(perf)
+    -- Performance
+    wc_perf_stop(perf)
+end
+
+VisibleEquipmentExtension.play_equipment_sound = function(self, slot, index, allow_crouching, allow_wielded)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.play_equipment_sound", 2)
+    -- Play
+    local wielded_slot_name = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
+    local slot = slot or self.equipment[wielded_slot_name]
+    local index = index or 1
+    -- Play sound
+    local sound = nil
+    local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+    local play_sound = (not self.is_local_unit and self.sound ~= OFF)
+        or (self.is_local_unit and (not first_person or self.sound_fp)
+        and self.sound == ALL)
+    local slot_valid = slot and (slot.name ~= wielded_slot_name or allow_wielded)
+    local allow_crouching = allow_crouching or true
+    local crouching = not self:is_crouching() or allow_crouching
+    if play_sound and slot_valid and crouching and self.sounds[slot] then
+        local sounds = index == 1 and self.sounds[slot][1] or self.sounds[slot][2]
+        local rnd = sounds and math_random(1, #sounds)
+        sound = sounds and sounds[rnd] or self.sounds[slot][3]
+        if not self:is_sprinting() then sound = self.sounds[slot][4] end
+        if sound and self.fx_extension then
+            self.fx_extension:trigger_wwise_event(sound, true, true, self.player_unit, 1, "foley_speed", self.step_speed)
+        end
+    end
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
@@ -655,6 +745,7 @@ VisibleEquipmentExtension.on_wield_slot = function(self, slot)
     if self.equipment_data[slot] and self.equipment_data[slot].wield then
         self.equipment_data[slot].wield(self, self.wielded_slot)
     end
+    -- Set step interval
     self:set_foot_step_interval()
 end
 
@@ -663,6 +754,7 @@ VisibleEquipmentExtension.on_unwield_slot = function(self, slot)
     if self.equipment_data[slot] and self.equipment_data[slot].unwield then
         self.equipment_data[slot].unwield(self, self.wielded_slot)
     end
+    -- Set step interval
     self:set_foot_step_interval()
 end
 
@@ -673,6 +765,7 @@ VisibleEquipmentExtension.on_update_item_visibility = function(self, wielded_slo
         self.wielded_slot = self.equipment[wielded_slot]
         self:on_wield_slot(self.wielded_slot)
     end
+    -- Update visibility
     self:update_equipment_visibility()
 end
 
@@ -707,7 +800,9 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 VisibleEquipmentExtension.update = function(self, dt, t)
-    local perf = wc_perf.start("VisibleEquipmentExtension.update", 2)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.update", 2)
+    -- Update
     if self.initialized then
         -- Equipment data
         self:update_equipment_data()
@@ -718,72 +813,57 @@ VisibleEquipmentExtension.update = function(self, dt, t)
         -- Visibility
         self:on_update_item_visibility()
     end
-    wc_perf.stop(perf)
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.update_equipment_visibility", 2)
+    -- Values
+    local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
+    local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+    local spectated = not self.is_local_unit and self.spectated and not first_person
+    local player = self.is_local_unit and not first_person
     -- Iterate slots
     for slot_name, slot in pairs(self.equipment) do
+        -- Values
+        local slot_not_wielded = slot_name ~= wielded_slot
+        local visible = slot_not_wielded and (player or spectated)
         -- Check units
         if self.dummy_units[slot] then
             -- Get units
-            local units = table.combine({self.dummy_units[slot].base}, self.dummy_units[slot].attachments)
-            if self.item_names[slot] == SLAB_SHIELD then
-                units = self.dummy_units[slot].attachments
-            end
+            local units = table_combine({self.dummy_units[slot].base}, self.dummy_units[slot].attachments)
+            -- if self.item_names[slot] == SLAB_SHIELD then
+            --     units = self.dummy_units[slot].attachments
+            -- end
             -- Iterate units
             for i, unit in pairs(units) do
                 -- Check unit
                 if unit and unit_alive(unit) then
-                    -- Get visibility
-                    local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
-                    local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
-                    local visible = slot_name ~= wielded_slot and (not self.is_local_unit or not first_person)
                     -- Set equipment visibility
                     unit_set_unit_visibility(unit, visible, true)
                 end
             end
         end
     end
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.update_equipment_data = function(self)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.update_equipment_data", 2)
     -- Iterate equipment
     for slot_name, slot in pairs(self.equipment) do
         -- Check slot
         if self.slot_loaded[slot] then
             -- Update data
-            self.equipment_data[slot] = self:get_equipment_data(slot)
+            self.equipment_data[slot] = self:equipment_data_by_slot(slot)
         end
     end
-end
-
-VisibleEquipmentExtension.play_equipment_sound = function(self, slot, index, allow_crouching, allow_wielded)
-    local wielded_slot_name = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
-    local slot = slot or self.equipment[wielded_slot_name]
-    local index = index or 1
-    local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching
-    local is_sprinting = self.sprint_character_state_component and self.sprint_character_state_component.is_sprinting
-    is_sprinting = self.is_in_hub and self.hub_jog_character_state and self.hub_jog_character_state.move_state == SPRINT or is_sprinting
-    is_crouching = self.is_in_hub and self.hub_jog_character_state and self.hub_jog_character_state.move_state == WALK or is_crouching
-    -- Play sound
-    local sound = nil
-    local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
-    local play_sound = (not self.is_local_unit and self.sound ~= OFF)
-        or (self.is_local_unit and (not first_person or self.sound_fp)
-        and self.sound == ALL)
-    local slot_valid = slot and (slot.name ~= wielded_slot_name or allow_wielded)
-    local allow_crouching = allow_crouching or true
-    local crouching = not is_crouching or allow_crouching
-    if play_sound and slot_valid and crouching and self.sounds[slot] then
-        local sounds = index == 1 and self.sounds[slot][1] or self.sounds[slot][2]
-        local rnd = sounds and math_random(1, #sounds)
-        sound = sounds and sounds[rnd] or self.sounds[slot][3]
-        if not is_sprinting then sound = self.sounds[slot][4] end
-        if sound and self.fx_extension then
-            self.fx_extension:trigger_wwise_event(sound, true, true, self.player_unit, 1, "foley_speed", self.step_speed)
-        end
-    end
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.get_vectors_almost_same = function(self, v1, v2, tolerance)
@@ -796,31 +876,25 @@ VisibleEquipmentExtension.get_vectors_almost_same = function(self, v1, v2, toler
 end
 
 VisibleEquipmentExtension.update_animation = function(self, dt, t)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.update_animation", 2)
+    -- Update
     local locomotion = (self.locomotion_ext and self.locomotion_ext:move_speed() or 0)
     self.step_speed = math.max(math.abs(locomotion), 1)
     local wobble_was_triggered = self.trigger_wobble
     self.trigger_wobble = nil
-
-        -- local node_index = not self.is_in_hub and 1 or unit_node(self.player_unit, self.back_node)
     local rotation_unit = not self.is_in_hub and self.first_person_unit or self.player_unit
     local parent_rotation = quaternion_to_vector(unit_world_rotation(rotation_unit, 1))
-        -- local base_position = unit_world_position(rotation_unit, 1)
-        -- local parent_position = unit_world_position(rotation_unit, node_index) - base_position
     local last_player_rotation = self.last_player_rotation and vector3_unbox(self.last_player_rotation) or parent_rotation
-        -- local last_player_position = self.last_player_position and vector3_unbox(self.last_player_position) or parent_rotation
     local rotation_diff = last_player_rotation - parent_rotation
-        -- local position_diff = self.is_in_hub and last_player_position - parent_position or vector3_zero()
     self.last_player_rotation = vector3_box(parent_rotation)
-        -- self.last_player_position = vector3_box(parent_position)
-
     -- Process animation part step
     for slot_name, slot in pairs(self.equipment) do
         -- Check slot
         if self.slot_loaded[slot] then
-
+            -- Weight
             local weight = self.weight[slot]
             local weight_factor = weight and WEIGHT_FACTORS[weight] or .33
-
             -- Get units
             local units = {self.dummy_units[slot].base}
             if self.item_names[slot] == SLAB_SHIELD then
@@ -830,12 +904,12 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
             local data = self.equipment_data[slot]
             -- Animation
             if self.step_animation[slot] then
-                
+                -- Lengths
                 self.step_animation[slot].length = self:get_foot_step_interval()
                 self.step_animation[slot].step_length = self.step_animation[slot].length * .4
                 self.step_animation[slot].back_length = self.step_animation[slot].length * .6
                 self.step_animation[slot].wobble_length = self.step_animation[slot].length * 6
-
+                -- Trigger
                 if wobble_was_triggered then
                     if locomotion == 0 then
                         self.step_animation[slot].state = STEP_WOBBLE
@@ -850,7 +924,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         end
                     end
                 end
-
+                -- Values
                 local get_values = function(i, speed)
                     local default_position = vector3_unbox(data.position[i])
                     local position_move = vector3_unbox(data.step_move[i]) * (speed or self.step_speed)
@@ -858,7 +932,6 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     local rotation_move = vector3_unbox(data.step_rotation[i]) * (speed or self.step_speed)
                     return default_position, position_move, default_rotation, rotation_move
                 end
-
                 -- Start step animation
                 if not self.step_animation[slot].state and self.step_animation[slot].end_time then
                     if locomotion > 0 then
@@ -881,6 +954,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         end
                     end
                     
+                -- STEP
                 elseif self.step_animation[slot].state == STEP_STATE and t < self.step_animation[slot].end_time then
                     if locomotion == 0 then
                         self.step_animation[slot].state = STEP_WOBBLE
@@ -889,7 +963,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     -- Lerp values
                     for i, unit in pairs(units) do
                         local progress = (self.step_animation[slot].end_time - t) / self.step_animation[slot].step_length
-                        local anim_progress = math.ease_sine(1 - progress) --math.clamp(math.ease_sine(1 - progress), 0, 1)
+                        local anim_progress = math.ease_sine(1 - progress)
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
@@ -900,7 +974,8 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                             unit_set_local_rotation(unit, 1, lerp_rotation)
                         end
                     end
-                    -- Check end of part step
+
+                -- STEP end
                 elseif self.step_animation[slot].state == STEP_STATE and t >= self.step_animation[slot].end_time then
                     -- Start part wobble
                     if locomotion > 0 then
@@ -924,6 +999,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         end
                     end
 
+                -- STEP BACK
                 elseif self.step_animation[slot].state == STEP_STATE_BACK and t < self.step_animation[slot].end_time then
                     if locomotion == 0 then
                         self.step_animation[slot].state = STEP_WOBBLE
@@ -932,7 +1008,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     -- Lerp values
                     for i, unit in pairs(units) do
                         local progress = (self.step_animation[slot].end_time - t) / self.step_animation[slot].back_length
-                        local anim_progress = math.ease_sine(1 - progress) --math.clamp(math.ease_sine(1 - progress), 0, 1)
+                        local anim_progress = math.ease_sine(1 - progress)
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
@@ -944,6 +1020,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         end
                     end
 
+                -- STEP BACK end
                 elseif self.step_animation[slot].state == STEP_STATE_BACK and t >= self.step_animation[slot].end_time then
                     -- Start part wobble
                     if locomotion > 0 then
@@ -965,6 +1042,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         end
                     end
 
+                -- WOBBLE
                 elseif self.step_animation[slot].state == STEP_WOBBLE and t < self.step_animation[slot].end_time then
                     -- Start part wobble
                     if locomotion > 0 then
@@ -991,7 +1069,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         end
                     end
 
-                -- Check part end
+                -- WOBBLE end
                 elseif self.step_animation[slot].state == STEP_WOBBLE and t >= self.step_animation[slot].end_time then
                     -- -- End animation
                     self.step_animation[slot].state = nil
@@ -1007,11 +1085,8 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                             unit_set_local_rotation(unit, 1, rotation)
                         end
                     end
-
                 end
-
             end
-
             -- Rotation
             for i, unit in pairs(units) do
                 -- Set default position and rotation
@@ -1062,10 +1137,10 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     self.rotate_animation[slot].current = vector3_box(current)
                 end
             end
-
-
         end
     end
+    -- Performance
+    wc_perf_stop(perf)
 end
 
 return VisibleEquipmentExtension

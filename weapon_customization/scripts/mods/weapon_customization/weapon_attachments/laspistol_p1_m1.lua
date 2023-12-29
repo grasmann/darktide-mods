@@ -15,8 +15,6 @@ local _shotgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_c
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
-local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -66,9 +64,9 @@ local functions = {
     magazine_attachments = function(default)
         local attachments = {
             {id = "magazine_01",        name = "Magazine 1"},
-            -- {id = "magazine_02",        name = "Magazine 2"},
-            -- {id = "magazine_03",        name = "Magazine 3"},
-            -- {id = "magazine_04",        name = "Magazine 4"},
+            {id = "magazine_02",        name = "Magazine 2"},
+            {id = "magazine_03",        name = "Magazine 3"},
+            {id = "magazine_04",        name = "Magazine 4"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -213,7 +211,7 @@ return table.combine(
             -- Native
             functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
             functions.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
-            functions.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), nil, {}, {
+            functions.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), "barrel", {}, {
                 {receiver = "laspistol_receiver_04|laspistol_receiver_01"},
                 {receiver = "laspistol_receiver_04|laspistol_receiver_01"},
                 {receiver = "laspistol_receiver_04|laspistol_receiver_02"},
