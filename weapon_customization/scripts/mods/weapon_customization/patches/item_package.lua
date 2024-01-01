@@ -12,29 +12,29 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
+    local Log = Log
+    local type = type
     local table = table
+    local pairs = pairs
+    local CLASS = CLASS
+    local rawget = rawget
+    local string = string
+    local wc_perf = wc_perf
+    local managers = Managers
+    local tostring = tostring
+    local log_error = Log.error
+    local table_size = table.size
+    local script_unit = ScriptUnit
+    local table_clone = table.clone
+    local string_find = string.find
     local table_remove = table.remove
     local table_contains = table.contains
     local table_is_empty = table.is_empty
     local table_clone_instance = table.clone_instance
-    local table_clone = table.clone
-    local table_size = table.size
-    local script_unit = ScriptUnit
-    local script_unit_has_extension = script_unit.has_extension
     local script_unit_extension = script_unit.extension
-    local script_unit_remove_extension = script_unit.remove_extension
+    local script_unit_has_extension = script_unit.has_extension
     local script_unit_add_extension = script_unit.add_extension
-    local pairs = pairs
-    local type = type
-    local rawget = rawget
-    local Log = Log
-    local log_error = Log.error
-    local string = string
-    local string_find = string.find
-    local CLASS = CLASS
-    local managers = Managers
-    local wc_perf = wc_perf
-    local tostring = tostring
+    local script_unit_remove_extension = script_unit.remove_extension
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -259,6 +259,19 @@ local REFERENCE = "weapon_customization"
     -- end)
 --#endregion
 
+mod.in_queue = function(self, package_name)
+    local package_manager = managers.package
+    if package_manager and package_manager._queue_order then
+        for _, queued_package_data in pairs(package_manager._queue_order) do
+            if queued_package_data.package_name == package_name then
+                mod:echot("package "..tostring(package_name).." is in queue")
+                return true
+            end
+        end
+    end
+    return false
+end
+
 mod.can_package_be_unloaded = function(self, package_name)
     -- Check package name
     if not string_find(package_name, "content/weapons/player") then return true end
@@ -293,6 +306,8 @@ mod.can_package_be_unloaded = function(self, package_name)
     if package_manager:is_loading_now(package_name) or package_manager:is_loading(package_name) then return false end
     -- -- Unload
     -- if not package_manager:can_unload(package_name) then return false end
+    -- Queue
+    if mod:in_queue(package_name) then return false end
     return true
 end
 
@@ -471,6 +486,14 @@ end
 mod:hook(CLASS.PackageSynchronizerClient, "_update_unload_delayer", function(func, self, dt, ...)
     return
 end)
+
+-- mod:hook(CLASS.PackageManager, "init", function(func, self, ...)
+--     -- Original function
+--     func(self, ...)
+--     self.in_queue = function(self, package_name)
+        
+--     end
+-- end)
 
 mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
 	local load_call_item = self._load_call_data[id]

@@ -12,9 +12,7 @@ local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_cu
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -30,49 +28,13 @@ local _item_minion = "content/items/weapons/minions"
     local type = type
 --#endregion
 
-local tv = function(t, i)
-    local res = nil
-    if type(t) == "table" then
-        if #t >= i then
-            res = t[i]
-        elseif #t >= 1 then
-            res = t[1]
-        else
-            return nil
-        end
-    else
-        res = t
-    end
-    if res == "" then
-        return nil
-    end
-    return res
-end
-table.combine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for name, value in pairs(t) do
-            combined[name] = value
-        end
-    end
-    return combined
-end
-table.icombine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for _, value in pairs(t) do
-            combined[#combined+1] = value
-        end
-    end
-    return combined
-end
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 local functions = {
-    grip_attachments = function()
-        return {
-            {id = "grip_default", name = mod:localize("mod_attachment_default")},
+    grip_attachments = function(default)
+        local attachments = {
             {id = "axe_grip_01",  name = "Combat Axe 1"},
             {id = "axe_grip_02",  name = "Combat Axe 2"},
             {id = "axe_grip_03",  name = "Combat Axe 3"},
@@ -80,68 +42,79 @@ local functions = {
             {id = "axe_grip_05",  name = "Combat Axe 5"},
             {id = "axe_grip_06",  name = "Combat Axe 6"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "grip_default",    name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    grip_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            grip_default = {model = "",                                type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_grip_01 =  {model = _item_melee.."/grips/axe_grip_01", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_grip_02 =  {model = _item_melee.."/grips/axe_grip_02", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_grip_03 =  {model = _item_melee.."/grips/axe_grip_03", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_grip_04 =  {model = _item_melee.."/grips/axe_grip_04", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_grip_05 =  {model = _item_melee.."/grips/axe_grip_05", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_grip_06 =  {model = _item_melee.."/grips/axe_grip_06", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "grip_default", model = ""},
+            {name = "axe_grip_01",      model = _item_melee.."/grips/axe_grip_01"},
+            {name = "axe_grip_02",      model = _item_melee.."/grips/axe_grip_02"},
+            {name = "axe_grip_03",      model = _item_melee.."/grips/axe_grip_03"},
+            {name = "axe_grip_04",      model = _item_melee.."/grips/axe_grip_04"},
+            {name = "axe_grip_05",      model = _item_melee.."/grips/axe_grip_05"},
+            {name = "axe_grip_06",      model = _item_melee.."/grips/axe_grip_06"},
+        }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    head_attachments = function()
-        return {
-            {id = "head_default", name = mod:localize("mod_attachment_default")},
+    head_attachments = function(default)
+        local attachments = {
             {id = "axe_head_01",  name = "Combat Axe 1"},
             {id = "axe_head_02",  name = "Combat Axe 2"},
             {id = "axe_head_03",  name = "Combat Axe 3"},
             {id = "axe_head_04",  name = "Combat Axe 4"},
             {id = "axe_head_05",  name = "Combat Axe 5"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "head_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    head_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            head_default = {model = "",                                type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_01 =  {model = _item_melee.."/heads/axe_head_01", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_02 =  {model = _item_melee.."/heads/axe_head_02", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_03 =  {model = _item_melee.."/heads/axe_head_03", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_04 =  {model = _item_melee.."/heads/axe_head_04", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_05 =  {model = _item_melee.."/heads/axe_head_05", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "head_default", model = ""},
+            {name = "axe_head_01",      model = _item_melee.."/heads/axe_head_01"},
+            {name = "axe_head_02",      model = _item_melee.."/heads/axe_head_02"},
+            {name = "axe_head_03",      model = _item_melee.."/heads/axe_head_03"},
+            {name = "axe_head_04",      model = _item_melee.."/heads/axe_head_04"},
+            {name = "axe_head_05",      model = _item_melee.."/heads/axe_head_05"},
+        }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    pommel_attachments = function()
-        return {
-            {id = "pommel_default", name = mod:localize("mod_attachment_default")},
+    pommel_attachments = function(default)
+        local attachments = {
             {id = "axe_pommel_01",  name = "Combat Axe 1"},
             {id = "axe_pommel_02",  name = "Combat Axe 2"},
             {id = "axe_pommel_03",  name = "Combat Axe 3"},
             {id = "axe_pommel_04",  name = "Combat Axe 4"},
             {id = "axe_pommel_05",  name = "Combat Axe 5"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "pommel_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    pommel_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            pommel_default = {model = "",                                    type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_01 =  {model = _item_melee.."/pommels/axe_pommel_01", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_02 =  {model = _item_melee.."/pommels/axe_pommel_02", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_03 =  {model = _item_melee.."/pommels/axe_pommel_03", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_04 =  {model = _item_melee.."/pommels/axe_pommel_04", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_05 =  {model = _item_melee.."/pommels/axe_pommel_05", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    pommel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "pommel_default", model = ""},
+            {name = "axe_pommel_01",      model = _item_melee.."/pommels/axe_pommel_01"},
+            {name = "axe_pommel_02",      model = _item_melee.."/pommels/axe_pommel_02"},
+            {name = "axe_pommel_03",      model = _item_melee.."/pommels/axe_pommel_03"},
+            {name = "axe_pommel_04",      model = _item_melee.."/pommels/axe_pommel_04"},
+            {name = "axe_pommel_05",      model = _item_melee.."/pommels/axe_pommel_05"},
+        }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }
+
+-- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
+-- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
+-- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
     functions,

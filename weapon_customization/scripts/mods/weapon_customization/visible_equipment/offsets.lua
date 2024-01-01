@@ -12,22 +12,17 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
 
 --#region local functions
     local Unit = Unit
+    local vector3 = Vector3
     local unit_alive = Unit.alive
+    local Quaternion = Quaternion
+    local vector3_box = Vector3Box
+    local quaternion_to_vector = Quaternion.to_vector
+    local quaternion_from_vector = Quaternion.from_vector
     local unit_set_local_position = Unit.set_local_position
     local unit_set_local_rotation = Unit.set_local_rotation
-    local vector3 = Vector3
-    local vector3_box = Vector3Box
-    local Quaternion = Quaternion
-    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
     local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
     local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
-    local quaternion_to_vector = function(quaternion)
-        local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
-        return vector3(x, y, z)
-    end
-    local quaternion_from_vector = function(vector)
-        return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
-    end
+    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

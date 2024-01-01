@@ -9,35 +9,35 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local table = table
-    local table_contains = table.contains
-    local table_clone_instance = table.clone_instance
-    local table_clone = table.clone
-    local table_size = table.size
-    local vector3_box = Vector3Box
-    local vector3_unbox = vector3_box.unbox
-    local quaternion_matrix4x4 = Quaternion.matrix4x4
-    local matrix4x4_transform = Matrix4x4.transform
-    local Camera = Camera
-    local camera_local_position = Camera.local_position
-    local camera_local_rotation = Camera.local_rotation
     local Unit = Unit
-    local unit_debug_name = Unit.debug_name
-    local unit_get_child_units = Unit.get_child_units
-    local string = string
-    local string_find = string.find
-    local string_gsub = string.gsub
-    local string_split = string.split
     local math = math
-    local math_random = math.random
-    local math_random_array_entry = math.random_array_entry
+    local type = type
+    local table = table
     local pairs = pairs
     local CLASS = CLASS
-    local managers = Managers
-    local type = type
-    local tostring = tostring
-    local script_unit = ScriptUnit
+    local Camera = Camera
+    local string = string
     local wc_perf = wc_perf
+    local managers = Managers
+    local tostring = tostring
+    local table_size = table.size
+    local vector3_box = Vector3Box
+    local script_unit = ScriptUnit
+    local table_clone = table.clone
+    local string_find = string.find
+    local string_gsub = string.gsub
+    local math_random = math.random
+    local string_split = string.split
+    local table_contains = table.contains
+    local vector3_unbox = vector3_box.unbox
+    local unit_debug_name = Unit.debug_name
+    local matrix4x4_transform = Matrix4x4.transform
+    local table_clone_instance = table.clone_instance
+    local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local unit_get_child_units = Unit.get_child_units
+    local camera_local_position = Camera.local_position
+    local camera_local_rotation = Camera.local_rotation
+    local math_random_array_entry = math.random_array_entry
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

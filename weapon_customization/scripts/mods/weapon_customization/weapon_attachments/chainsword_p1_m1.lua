@@ -12,9 +12,7 @@ local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_cu
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -30,49 +28,13 @@ local _item_minion = "content/items/weapons/minions"
     local type = type
 --#endregion
 
-local tv = function(t, i)
-    local res = nil
-    if type(t) == "table" then
-        if #t >= i then
-            res = t[i]
-        elseif #t >= 1 then
-            res = t[1]
-        else
-            return nil
-        end
-    else
-        res = t
-    end
-    if res == "" then
-        return nil
-    end
-    return res
-end
-table.combine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for name, value in pairs(t) do
-            combined[name] = value
-        end
-    end
-    return combined
-end
-table.icombine = function(...)
-    local arg = {...}
-    local combined = {}
-    for _, t in ipairs(arg) do
-        for _, value in pairs(t) do
-            combined[#combined+1] = value
-        end
-    end
-    return combined
-end
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 local functions = {
-    grip_attachments = function()
-        return {
-            {id = "chain_sword_grip_default", name = mod:localize("mod_attachment_default")},
+    grip_attachments = function(default)
+        local attachments = {
             {id = "chain_sword_grip_01",      name = "Grip 1"},
             {id = "chain_sword_grip_02",      name = "Grip 2"},
             {id = "chain_sword_grip_03",      name = "Grip 3"},
@@ -82,26 +44,28 @@ local functions = {
             {id = "chain_sword_grip_07",      name = "Grip 7"},
             {id = "chain_sword_grip_08",      name = "Grip 8"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "chain_sword_grip_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    grip_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            chain_sword_grip_default = {model = "",                                        type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_grip_01 =      {model = _item_melee.."/grips/chain_sword_grip_01", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_grip_02 =      {model = _item_melee.."/grips/chain_sword_grip_02", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_grip_03 =      {model = _item_melee.."/grips/chain_sword_grip_03", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_grip_04 =      {model = _item_melee.."/grips/chain_sword_grip_04", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_grip_05 =      {model = _item_melee.."/grips/chain_sword_grip_05", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_grip_06 =      {model = _item_melee.."/grips/chain_sword_grip_06", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_grip_07 =      {model = _item_melee.."/grips/chain_sword_grip_07", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_grip_08 =      {model = _item_melee.."/grips/chain_sword_grip_08", type = "grip", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "chain_sword_grip_default", model = ""},
+            {name = "chain_sword_grip_01",      model = _item_melee.."/grips/chain_sword_grip_01"},
+            {name = "chain_sword_grip_02",      model = _item_melee.."/grips/chain_sword_grip_02"},
+            {name = "chain_sword_grip_03",      model = _item_melee.."/grips/chain_sword_grip_03"},
+            {name = "chain_sword_grip_04",      model = _item_melee.."/grips/chain_sword_grip_04"},
+            {name = "chain_sword_grip_05",      model = _item_melee.."/grips/chain_sword_grip_05"},
+            {name = "chain_sword_grip_06",      model = _item_melee.."/grips/chain_sword_grip_06"},
+            {name = "chain_sword_grip_07",      model = _item_melee.."/grips/chain_sword_grip_07"},
+            {name = "chain_sword_grip_08",      model = _item_melee.."/grips/chain_sword_grip_08"},
+        }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    body_attachments = function()
-        return {
-            {id = "chain_sword_body_default", name = mod:localize("mod_attachment_default")},
+    body_attachments = function(default)
+        local attachments = {
             {id = "chain_sword_body_01",      name = "Body 1"},
             {id = "chain_sword_body_02",      name = "Body 2"},
             {id = "chain_sword_body_03",      name = "Body 3"},
@@ -112,40 +76,49 @@ local functions = {
             {id = "chain_sword_body_08",      name = "Body 8"},
             {id = "chain_sword_body_09",      name = "Body 9"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "chain_sword_body_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    body_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            chain_sword_body_default = {model = "",                                       type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_body_01 =      {model = _item_melee.."/full/chain_sword_full_01", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_body_02 =      {model = _item_melee.."/full/chain_sword_full_02", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_body_03 =      {model = _item_melee.."/full/chain_sword_full_03", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_body_04 =      {model = _item_melee.."/full/chain_sword_full_04", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false}, --buggy
-            chain_sword_body_05 =      {model = _item_melee.."/full/chain_sword_full_05", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false}, --buggy
-            chain_sword_body_06 =      {model = _item_melee.."/full/chain_sword_full_06", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_body_07 =      {model = _item_melee.."/full/chain_sword_full_07", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_body_08 =      {model = _item_melee.."/full/chain_sword_full_08", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_body_09 =      {model = _item_melee.."/full/chain_sword_full_09", type = "body", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    body_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "chain_sword_body_default", model = ""},
+            {name = "chain_sword_body_01",      model = _item_melee.."/full/chain_sword_full_01"},
+            {name = "chain_sword_body_02",      model = _item_melee.."/full/chain_sword_full_02"},
+            {name = "chain_sword_body_03",      model = _item_melee.."/full/chain_sword_full_03"},
+            {name = "chain_sword_body_04",      model = _item_melee.."/full/chain_sword_full_04"},
+            {name = "chain_sword_body_05",      model = _item_melee.."/full/chain_sword_full_05"},
+            {name = "chain_sword_body_06",      model = _item_melee.."/full/chain_sword_full_06"},
+            {name = "chain_sword_body_07",      model = _item_melee.."/full/chain_sword_full_07"},
+            {name = "chain_sword_body_08",      model = _item_melee.."/full/chain_sword_full_08"},
+            {name = "chain_sword_body_09",      model = _item_melee.."/full/chain_sword_full_09"},
+        }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    chain_attachments = function()
-        return {
-            {id = "chain_sword_chain_default", name = mod:localize("mod_attachment_default")},
+    chain_attachments = function(default)
+        local attachments = {
             {id = "chain_sword_chain_01",      name = "Chain 1"},
         }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "chain_sword_chain_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
     end,
-    chain_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            chain_sword_chain_default = {model = "",                                          type = "chain", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            chain_sword_chain_01 =      {model = _item_melee.."/chains/chain_sword_chain_01", type = "chain", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
+    chain_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "chain_sword_chain_default", model = ""},
+            {name = "chain_sword_chain_01",      model = _item_melee.."/chains/chain_sword_chain_01"},
+        }, parent, angle, move, remove, type or "chain", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }
+
+-- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
+-- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
+-- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
     functions,

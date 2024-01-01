@@ -472,6 +472,8 @@ end)
 
 mod:hook(CLASS.CameraManager, "shading_callback", function(func, self, world, shading_env, viewport, default_shading_environment_resource, ...)
     -- Original function
+    func(self, world, shading_env, viewport, default_shading_environment_resource, ...)
+    -- Camera data
     local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
     -- Extensions
     if self._world == world then
@@ -593,7 +595,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
             player_unit = self._player.player_unit,
             is_local_unit = self._is_local_unit,
             ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
-                {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p})
+                {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p}),
+            wielded_slot = self._equipment[self._inventory_component.wielded_slot],
         })
     else
         -- Update SightExtension
@@ -609,7 +612,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
             player_unit = self._player.player_unit,
             is_local_unit = self._is_local_unit,
             ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
-                {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p})
+                {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p}),
+            wielded_slot = self._equipment[self._inventory_component.wielded_slot],
         })
     end
     -- Flashlights
@@ -617,8 +621,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
     if not script_unit_has_extension(self._unit, "flashlight_system") and slot then
         local flashlight_unit_1p = mod:get_attachment_slot_in_attachments(slot.attachments_1p, "flashlight")
         local flashlight_unit_3p = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
-        local inventory_component = self._inventory_component
-	    local wielded_slot_name = inventory_component and inventory_component.wielded_slot
+        -- local inventory_component = self._inventory_component
+	    -- local wielded_slot_name = inventory_component and inventory_component.wielded_slot
         if flashlight_unit_1p and flashlight_unit_3p then
             -- Add FlashlightExtension
             script_unit_add_extension({
@@ -629,7 +633,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
                 is_local_unit = self._is_local_unit,
                 flashlight_unit_1p = flashlight_unit_1p,
                 flashlight_unit_3p = flashlight_unit_3p,
-                wielded_slot = wielded_slot_name and self._equipment[wielded_slot_name],
+                -- wielded_slot = wielded_slot_name and self._equipment[wielded_slot_name],
+                wielded_slot = self._equipment[self._inventory_component.wielded_slot],
             })
         end
     else
@@ -701,9 +706,9 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "wield_slot", function(func, se
         -- Flashlights
         mod:execute_extension(self._unit, "flashlight_system", "on_wield_slot", wielded_slot)
         -- Sight
-        mod:execute_extension(self._unit, "sight_system", "on_wield_slot")
+        mod:execute_extension(self._unit, "sight_system", "on_wield_slot", wielded_slot)
         -- Weapon DOF
-        mod:execute_extension(self._unit, "weapon_dof_system", "on_wield_slot")
+        mod:execute_extension(self._unit, "weapon_dof_system", "on_wield_slot", wielded_slot)
     end
 end)
 
@@ -789,6 +794,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
                     is_local_unit = self._is_local_unit,
                     ranged_weapon = table_merge_recursive(slot, {weapon_template = weapon_template, weapon_unit = slot.unit_1p, attachment_units = slot.attachments_1p}
                     ),
+                    wielded_slot = self._equipment[self._wielded_slot],
                 })
             end
         end
@@ -811,6 +817,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
                     is_local_unit = self._is_local_unit,
                     ranged_weapon = table_merge_recursive(slot, {weapon_template = weapon_template, weapon_unit = slot.unit_1p, attachment_units = slot.attachments_1p}
                     ),
+                    wielded_slot = self._equipment[self._wielded_slot],
                 })
             end
         end
@@ -894,6 +901,10 @@ mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, u
     func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
     -- Flashlights
     mod:execute_extension(unit_3p, "flashlight_system", "on_equip_slot", slot)
+    -- Sight
+    mod:execute_extension(unit_3p, "sight_system", "on_equip_slot", slot)
+    -- Weapon DOF
+    mod:execute_extension(unit_3p, "weapon_dof_system", "on_equip_slot", slot)
     -- Visible equipment
     if slot.name == "slot_gear_extra_cosmetic" then
         mod:execute_extension(unit_3p, "visible_equipment_system", "position_equipment")

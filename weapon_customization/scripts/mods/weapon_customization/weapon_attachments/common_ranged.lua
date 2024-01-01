@@ -1,5 +1,11 @@
 local mod = get_mod("weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local _autogun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/autogun_p1_m1")
+
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
@@ -28,6 +34,33 @@ local _item_melee = _item.."/melee"
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 return {
+    -- test_carry_handle_attachments = function(default)
+    --     local attachments = {
+    --         {id = "carryhandle_default", name = mod:localize("mod_attachment_default")},
+    --         {id = "carryhandle_01",  name = "MT carryhandle 1"},
+    --         {id = "carryhandle_04",  name = "MT carryhandle 2"},
+    --         {id = "carryhandle_01b", name = "MT carryhandle 1b"},
+    --         {id = "carryhandle_04b", name = "MT carryhandle 2b"},
+    --     }
+    --     if default == nil then default = true end
+    --     if default then return table.icombine(
+    --         {{id = "carryhandle_default", name = mod:localize("mod_attachment_default")}},
+    --         attachments)
+    --     else return attachments end
+    -- end,
+    -- test_carry_handle_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+    --     if mesh_move == nil then mesh_move = false end
+    --     return table.model_table({
+    --         {name = "carryhandle_default", model = ""},
+    --         {name = "carryhandle_01",      model = _item_melee.."/grips/2h_chain_sword_grip_01"},
+    --         {name = "carryhandle_04",      model = _item_melee.."/grips/2h_chain_sword_grip_04"},
+    --         {name = "carryhandle_01b",     model = _item_melee.."/grips/2h_chain_sword_grip_01"},
+    --         {name = "carryhandle_04b",     model = _item_melee.."/grips/2h_chain_sword_grip_04"},
+    --     }, parent, angle, move, remove, type or "carryhandle", no_support, automatic_equip, hide_mesh, mesh_move)
+    -- end,
+
+
+
     flashlights_attachments = function(default)
         local attachments = {
             {id = "flashlight_01", name = mod:localize("mod_attachment_flashlight_01")},

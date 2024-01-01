@@ -14,59 +14,53 @@ local Sway = mod:original_require("scripts/utilities/sway")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local class = class
     local Unit = Unit
-    local unit_has_animation_event = Unit.has_animation_event
-    local unit_animation_event = Unit.animation_event
-    local table = table
-    local table_contains = table.contains
-    local wc_perf = wc_perf
-    local managers = Managers
-
     local math = math
-    local math_abs = math.abs
-    local math_ease_out_elastic = math.ease_out_elastic
-    local math_easeInCubic = math.easeInCubic
-	local math_easeOutCubic = math.easeOutCubic
-    local math_random = math.random
     local Unit = Unit
-    local unit_get_data = Unit.get_data
+    local class = class
+    local table = table
+    local World = World
+    local Camera = Camera
+    local wc_perf = wc_perf
+    local vector3 = Vector3
+    local managers = Managers
+    local math_abs = math.abs
+    local Matrix4x4 = Matrix4x4
     local unit_alive = Unit.alive
+    local Quaternion = Quaternion
+    local vector3_box = Vector3Box
+    local math_random = math.random
+    local vector3_zero = vector3.zero
+    local vector3_lerp = vector3.lerp
+    local unit_get_data = Unit.get_data
+    local quaternion_box = QuaternionBox
+    local table_contains = table.contains
+    local vector3_unbox = vector3_box.unbox
+    local math_easeOutCubic = math.easeOutCubic
+    local math_easeInCubic = math.easeInCubic
+    local quaternion_unbox = quaternion_box.unbox
     local unit_world_position = Unit.world_position
     local unit_world_rotation = Unit.world_rotation
     local unit_local_position = Unit.local_position
-    local unit_set_local_position = Unit.set_local_position
     local unit_local_rotation = Unit.local_rotation
-    local unit_set_local_rotation = Unit.set_local_rotation
-    local unit_set_local_scale = Unit.set_local_scale
-    local unit_set_unit_visibility = Unit.set_unit_visibility
-    local unit_get_child_units = Unit.get_child_units
-    local Quaternion = Quaternion
-    local quaternion_box = QuaternionBox
-	local quaternion_unbox = quaternion_box.unbox
     local quaternion_identity = Quaternion.identity
-    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
-    local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
     local quaternion_multiply = Quaternion.multiply
-    local quaternion_matrix4x4 = Quaternion.matrix4x4
-    local Matrix4x4 = Matrix4x4
     local matrix4x4_transform = Matrix4x4.transform
-    local vector3_box = Vector3Box
-    local vector3_unbox = vector3_box.unbox
-    local vector3 = Vector3
-    local vector3_zero = vector3.zero
-    local vector3_lerp = vector3.lerp
-    local Camera = Camera
+    local unit_animation_event = Unit.animation_event
+    local unit_set_local_scale = Unit.set_local_scale
+    local unit_get_child_units = Unit.get_child_units
+    local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local quaternion_to_vector = Quaternion.to_vector
+    local math_ease_out_elastic = math.ease_out_elastic
     local camera_world_to_screen = Camera.world_to_screen
-    local World = World
+    local quaternion_from_vector = Quaternion.from_vector
+    local unit_set_local_position = Unit.set_local_position
+    local unit_set_local_rotation = Unit.set_local_rotation
+    local unit_has_animation_event = Unit.has_animation_event
+    local unit_set_unit_visibility = Unit.set_unit_visibility
+    local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
     local world_update_unit_and_children = World.update_unit_and_children
-    local quaternion_to_vector = function(quaternion)
-        local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
-        return vector3(x, y, z)
-    end
-    local quaternion_from_vector = function(vector)
-        return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
-    end
+    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

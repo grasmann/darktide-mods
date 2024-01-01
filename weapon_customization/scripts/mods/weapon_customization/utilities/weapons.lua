@@ -11,17 +11,17 @@ local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local table = table
+	local math = math
+	local table = table
+	local pairs = pairs
+	local string = string
+	local tostring = tostring
+	local managers = Managers
+	local script_unit = ScriptUnit
+	local string_find = string.find
+	local math_random = math.random
 	local table_contains = table.contains
-    local string = string
-    local string_find = string.find
-    local math = math
-    local math_random = math.random
-    local math_random_array_entry = math.random_array_entry
-    local tostring = tostring
-    local pairs = pairs
-    local script_unit = ScriptUnit
-    local managers = Managers
+	local math_random_array_entry = math.random_array_entry
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

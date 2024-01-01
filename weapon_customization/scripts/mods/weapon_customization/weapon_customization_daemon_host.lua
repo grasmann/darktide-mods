@@ -204,14 +204,14 @@ mod.daemon_host_update = function(self, t)
 		-- Smoke
 		if self.smoke_particle_end and t >= self.smoke_particle_end then
 			if self.smoke_particles and #self.smoke_particles > 0 then
-				self.fx_extension:destroy_player_particles(self.smoke_particles[1])
+				if self.smoke_particles[1] > 0 then self.fx_extension:destroy_player_particles(self.smoke_particles[1]) end
 				table_remove(self.smoke_particles, 1)
 				self.smoke_particle_end = t + SMOKE_PARTICLES_TIME
 			end
 		end
 		-- Sparks
 		if self.spark_particle_end and t >= self.spark_particle_end then
-			if self.spark_particles then self.fx_extension:destroy_player_particles(self.spark_particles) end
+			if self.spark_particles and self.spark_particles > 0 then self.fx_extension:destroy_player_particles(self.spark_particles) end
 			self.spark_particles = nil
 			self.flicker_wild = nil
 			-- Battery

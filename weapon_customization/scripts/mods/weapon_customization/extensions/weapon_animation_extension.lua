@@ -13,68 +13,68 @@ local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events"
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local script_gui_hud_line = ScriptGui.hud_line
-    local Camera = Camera
-    local camera_world_position = Camera.world_position
-	local camera_world_to_screen = Camera.world_to_screen
-	local camera_world_rotation = Camera.world_rotation
-    local vector3 = Vector3
-	local vector3_box = Vector3Box
-	local vector3_unbox = vector3_box.unbox
-	local vector3_zero = vector3.zero
-	local vector3_lerp = vector3.lerp
-    local vector3_equal = vector3.equal
-    local vector2 = Vector2
-    local matrix4x4_translation = Matrix4x4.translation
-    local table = table
-	local table_insert = table.insert
-	local table_size = table.size
-	local table_find = table.find
-	local table_contains = table.contains
-	local table_clone = table.clone
-	local table_reverse = table.reverse
-	local table_remove = table.remove
-	local table_sort = table.sort
-    local Color = Color
     local Unit = Unit
-	local unit_get_data = Unit.get_data
-	local unit_alive = Unit.alive
-	local unit_set_local_position = Unit.set_local_position
-	local unit_set_local_rotation = Unit.set_local_rotation
-	local unit_set_local_scale = Unit.set_local_scale
-	local unit_local_position = Unit.local_position
-	local unit_local_rotation = Unit.local_rotation
-	local unit_get_child_units = Unit.get_child_units
-	local unit_num_meshes = Unit.num_meshes
-	local unit_set_mesh_visibility = Unit.set_mesh_visibility
-	local unit_set_unit_visibility = Unit.set_unit_visibility
-	local unit_debug_name = Unit.debug_name
-    local unit_box = Unit.box
     local math = math
-	local math_round_with_precision = math.round_with_precision
-	local math_easeInCubic = math.easeInCubic
-	local math_easeOutCubic = math.easeOutCubic
-	local math_ease_out_elastic = math.ease_out_elastic
-	local math_min = math.min
-	local math_max = math.max
-	local math_lerp = math.lerp
-	local math_sin = math.sin
-	local math_pi = math.pi
-	local math_ceil = math.ceil
-    local managers = Managers
+    local table = table
+    local Color = Color
     local class = class
     local pairs = pairs
+    local math_pi = math.pi
+    local Camera = Camera
+    local math_min = math.min
+    local math_max = math.max
+    local math_sin = math.sin
+    local vector3 = Vector3
+    local vector2 = Vector2
     local wc_perf = wc_perf
+    local math_lerp = math.lerp
+    local math_ceil = math.ceil
+    local unit_box = Unit.box
+    local managers = Managers
+    local table_size = table.size
+    local table_find = table.find
+    local table_sort = table.sort
+    local unit_alive = Unit.alive
+    local vector3_box = Vector3Box
+    local table_clone = table.clone
+    local vector3_zero = vector3.zero
+    local vector3_lerp = vector3.lerp
+    local table_insert = table.insert
+    local table_remove = table.remove
+    local table_reverse = table.reverse
+    local unit_get_data = Unit.get_data
+    local table_contains = table.contains
+    local vector3_equal = vector3.equal
+    local vector3_unbox = vector3_box.unbox
+    local unit_num_meshes = Unit.num_meshes
+    local unit_debug_name = Unit.debug_name
+    local math_easeInCubic = math.easeInCubic
+    local math_easeOutCubic = math.easeOutCubic
+    local unit_local_position = Unit.local_position
+    local unit_local_rotation = Unit.local_rotation
+    local script_gui_hud_line = ScriptGui.hud_line
+    local unit_set_local_scale = Unit.set_local_scale
+    local unit_get_child_units = Unit.get_child_units
+    local camera_world_rotation = Camera.world_rotation
+    local math_ease_out_elastic = math.ease_out_elastic
+    local camera_world_to_screen = Camera.world_to_screen
+    local camera_world_position = Camera.world_position
+    local matrix4x4_translation = Matrix4x4.translation
+    local unit_set_local_position = Unit.set_local_position
+    local unit_set_local_rotation = Unit.set_local_rotation
+    local unit_set_mesh_visibility = Unit.set_mesh_visibility
+    local unit_set_unit_visibility = Unit.set_unit_visibility
+    local math_round_with_precision = math.round_with_precision
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
+local MOVE_RESET_TIME = 1
 local MOVE_IN_DURATION = 1
 local MOVE_OUT_DURATION = .5
-local MOVE_RESET_TIME = 1
+local REFERENCE = "weapon_customization"
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ######################################
 -- ##### │││├┤ ├─┤├─┘│ ││││  ├─┤│││││││├─┤ │ ││ ││││  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ######################################

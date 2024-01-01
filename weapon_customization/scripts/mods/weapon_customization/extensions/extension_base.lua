@@ -6,20 +6,20 @@ local mod = get_mod("weapon_customization")
 
 --#region Local functions
     local math = math
-    local math_abs = math.abs
-    local vector3 = Vector3
-    local vector3_zero = vector3.zero
-    local script_unit = ScriptUnit
-    local script_unit_has_extension = script_unit.has_extension
-    local script_unit_extension = script_unit.extension
-    local script_unit_remove_extension = script_unit.remove_extension
-    local script_unit_add_extension = script_unit.add_extension
     local world = World
-    local world_physics_world = world.physics_world
-    local managers = Managers
     local pairs = pairs
     local class = class
+    local vector3 = Vector3
     local wc_perf = wc_perf
+    local math_abs = math.abs
+    local managers = Managers
+    local script_unit = ScriptUnit
+    local vector3_zero = vector3.zero
+    local world_physics_world = world.physics_world
+    local script_unit_extension = script_unit.extension
+    local script_unit_has_extension = script_unit.has_extension
+    local script_unit_add_extension = script_unit.add_extension
+    local script_unit_remove_extension = script_unit.remove_extension
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

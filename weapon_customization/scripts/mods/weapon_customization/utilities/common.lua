@@ -9,50 +9,50 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local Unit = Unit
-	local unit_get_data = Unit.get_data
-	local unit_alive = Unit.alive
-	local unit_set_local_position = Unit.set_local_position
-	local unit_set_local_rotation = Unit.set_local_rotation
-	local unit_set_local_scale = Unit.set_local_scale
-	local unit_local_position = Unit.local_position
-	local unit_local_rotation = Unit.local_rotation
-	local unit_get_child_units = Unit.get_child_units
-	local unit_num_meshes = Unit.num_meshes
-	local unit_set_mesh_visibility = Unit.set_mesh_visibility
-	local unit_set_unit_visibility = Unit.set_unit_visibility
-	local unit_debug_name = Unit.debug_name
 	local Mesh = Mesh
-	local mesh_set_local_position = Mesh.set_local_position
-	local mesh_set_local_rotation = Mesh.set_local_rotation
-	local mesh_local_rotation = Mesh.local_rotation
+	local Unit = Unit
+	local type = type
+	local pairs = pairs
+	local vector3 = Vector3
+	local string = string
+	local vector2 = Vector2
 	local unit_mesh = Unit.mesh
+	local managers = Managers
+	local unit_alive = Unit.alive
+	local Quaternion = Quaternion
+	local vector3_box = Vector3Box
+	local vector3_zero = vector3.zero
+	local vector3_lerp = vector3.lerp
+	local string_gsub = string.gsub
+	local unit_get_data = Unit.get_data
+	local quaternion_box = QuaternionBox
+	local unit_num_meshes = Unit.num_meshes
+	local unit_debug_name = Unit.debug_name
 	local unit_world_pose = Unit.world_pose
 	local unit_local_pose = Unit.local_pose
+	local vector3_unbox = vector3_box.unbox
+	local quaternion_forward = Quaternion.forward
+	local quaternion_unbox = quaternion_box.unbox
+	local wwise_wwise_world = Wwise.wwise_world
+	local unit_local_position = Unit.local_position
+	local unit_local_rotation = Unit.local_rotation
+	local mesh_local_rotation = Mesh.local_rotation
 	local unit_set_local_pose = Unit.set_local_pose
 	local unit_world_position = Unit.world_position
 	local unit_world_rotation = Unit.world_rotation
-    local vector2 = Vector2
-	local vector3 = Vector3
-	local vector3_box = Vector3Box
-	local vector3_unbox = vector3_box.unbox
-	local vector3_zero = vector3.zero
-	local vector3_lerp = vector3.lerp
-	local Quaternion = Quaternion
-	local quaternion_forward = Quaternion.forward
-	local quaternion_matrix_4x4 = Quaternion.matrix4x4
-	local quaternion_axis_angle = Quaternion.axis_angle
-	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
-	local quaternion_box = QuaternionBox
-	local quaternion_unbox = quaternion_box.unbox
 	local quaternion_multiply = Quaternion.multiply
-    local wwise_wwise_world = Wwise.wwise_world
-    local world_physics_world = World.physics_world
-    local string = string
-    local string_gsub = string.gsub
-    local pairs = pairs
-    local managers = Managers
-    local type = type
+	local unit_set_local_scale = Unit.set_local_scale
+	local unit_get_child_units = Unit.get_child_units
+	local quaternion_matrix_4x4 = Quaternion.matrix4x4
+	local world_physics_world = World.physics_world
+	local quaternion_axis_angle = Quaternion.axis_angle
+	local unit_set_local_position = Unit.set_local_position
+	local unit_set_local_rotation = Unit.set_local_rotation
+	local mesh_set_local_position = Mesh.set_local_position
+	local mesh_set_local_rotation = Mesh.set_local_rotation
+	local unit_set_mesh_visibility = Unit.set_mesh_visibility
+	local unit_set_unit_visibility = Unit.set_unit_visibility
+	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -187,6 +187,7 @@ mod.load_needed_packages = function(self)
         "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
 		"content/fx/particles/enemies/sniper_laser_sight",
 		"content/fx/particles/enemies/red_glowing_eyes",
+		"packages/ui/views/splash_view/splash_view",
 		-- "content/characters/player/human/third_person/animations/lasgun_pistol",
 		-- "content/characters/player/human/first_person/animations/lasgun_pistol",
 		-- "content/characters/player/human/third_person/animations/stubgun_pistol",

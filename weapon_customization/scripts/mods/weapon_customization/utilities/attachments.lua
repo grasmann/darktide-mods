@@ -13,37 +13,37 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local string = string
-    local string_gsub = string.gsub
-    local string_find = string.find
-    local string_split = string.split
-    local string_trim = string.trim
-    local string_cap = string.cap
-    local localize = Localize
-    local Localize = Localize
-    local Application = Application
-    local pairs = pairs
-    local table = table
-	local table_insert = table.insert
-	local table_contains = table.contains
-	local table_clone = table.clone
-    local Unit = Unit
-	local unit_get_data = Unit.get_data
-	local unit_alive = Unit.alive
-	local unit_get_child_units = Unit.get_child_units
-	local unit_debug_name = Unit.debug_name
-    local unit_has_node = Unit.has_node
-	local unit_set_unit_visibility = Unit.set_unit_visibility
-	local unit_set_local_scale = Unit.set_local_scale
-	local unit_num_meshes = Unit.num_meshes
-	local unit_set_mesh_visibility = Unit.set_mesh_visibility
+	local Unit = Unit
+	local math = math
+	local type = type
+	local pairs = pairs
+	local table = table
 	local vector3 = Vector3
-    local managers = Managers
-    local math = math
-    local math_abs = math.abs
-    local callback = callback
-    local tostring = tostring
-    local type = type
+	local string = string
+	local localize = Localize
+	local Localize = Localize
+	local managers = Managers
+	local math_abs = math.abs
+	local callback = callback
+	local tostring = tostring
+	local unit_alive = Unit.alive
+	local table_clone = table.clone
+	local string_cap = string.cap
+	local table_insert = table.insert
+	local string_gsub = string.gsub
+	local string_find = string.find
+	local string_trim = string.trim
+	local Application = Application
+	local unit_get_data = Unit.get_data
+	local string_split = string.split
+	local table_contains = table.contains
+	local unit_has_node = Unit.has_node
+	local unit_debug_name = Unit.debug_name
+	local unit_num_meshes = Unit.num_meshes
+	local unit_get_child_units = Unit.get_child_units
+	local unit_set_local_scale = Unit.set_local_scale
+	local unit_set_unit_visibility = Unit.set_unit_visibility
+	local unit_set_mesh_visibility = Unit.set_mesh_visibility
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

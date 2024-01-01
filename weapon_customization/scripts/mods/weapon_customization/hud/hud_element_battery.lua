@@ -15,11 +15,11 @@ local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings"
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-	local math_ceil = math.ceil
 	local math_max = math.max
-	local math_round = math.round
 	local math_abs = math.abs
 	local math_min = math.min
+	local math_ceil = math.ceil
+	local math_round = math.round
 	local math_clamp = math.clamp
 	local string_format = string.format
 --#endregion

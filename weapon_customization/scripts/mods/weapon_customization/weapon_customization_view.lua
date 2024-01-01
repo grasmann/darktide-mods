@@ -1835,6 +1835,8 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 			mod:set_light_positions(self)
 		end
 
+		Unit.set_vector3_for_materials(weapon_spawn_data.item_unit_3p, "stimmed_color", vector3(1, 0, 0), true)
+
 		local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position = slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position or {}
 		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position["root"] = vector3_box(unit_local_position(weapon_spawn_data.item_unit_3p, 1))
@@ -2947,6 +2949,19 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 		self._input_legend_element:set_display_name(id, display_name)
 	end
 
+	-- self.set_can_exit = function(self, value, apply_next_frame)
+	-- 	if not apply_next_frame then
+	-- 		self._can_close = value
+	-- 	else
+	-- 		self._next_frame_can_close = value
+	-- 		self._can_close_frame_counter = 1
+	-- 	end
+	-- end
+	
+	self.can_exit = function (self)
+		return self._can_close and mod.weapon_part_animation_entries and #mod.weapon_part_animation_entries == 0
+	end
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
@@ -3180,8 +3195,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 		end
 
 		mod:redo_weapon_attachments(self._presentation_item)
-		self._presentation_item.item_type = self._selected_item.item_type
-		self._presentation_item.gear_id = self._selected_item.gear_id
+		-- local new_item = self._presentation_item.__master_item or self._presentation_item
+		-- new_item.item_type = self._selected_item.item_type
+		-- new_item.gear_id = self._selected_item.gear_id
+		-- new_item.name = self._selected_item.name
 
 		-- mod:get_dropdown_positions()
 		-- mod:get_changed_weapon_settings()
@@ -3195,8 +3212,13 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 
 		mod.reset_start = managers.time:time("main")
 
-		mod.changed_weapon = self._presentation_item
+		mod.changed_weapon = self._selected_item
 		mod.weapon_changed = true
+
+		managers.ui:item_icon_updated(self._selected_item)
+		managers.event:trigger("event_item_icon_updated", self._selected_item)
+		managers.event:trigger("event_replace_list_item", self._selected_item)
+
 	else
 		if self._presentation_item.__master_item.original_attachments then
 			self._presentation_item.__master_item.attachments = table_clone(self._selected_item.__master_item.attachments)

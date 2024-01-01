@@ -19,70 +19,65 @@ local mod = get_mod("weapon_customization")
 
 --#region local functions
     local Unit = Unit
+    local math = math
+    local type = type
+    local World = World
+    local pairs = pairs
+    local CLASS = CLASS
+    local table = table
+    local class = class
+    local ipairs = ipairs
+    local string = string
+    local vector3 = Vector3
+    local vector3 = vector3
+    local wc_perf = wc_perf
+    local math_abs = math.abs
+    local managers = Managers
+    local tostring = tostring
+    local unit_node = Unit.node
+    local Matrix4x4 = Matrix4x4
     local unit_alive = Unit.alive
+    local Quaternion = Quaternion
+    local table_enum = table.enum
+    local vector3_box = Vector3Box
+    local script_unit = ScriptUnit
+    local vector3_one = vector3.one
+    local math_random = math.random
+    local string_find = string.find
+    local vector3_lerp = vector3.lerp
+    local vector3_zero = vector3.zero
+    local wc_perf_stop = wc_perf.stop
+    local unit_has_node = Unit.has_node
+    local QuaternionBox = QuaternionBox
+    local table_combine = table.combine
+    local wc_perf_start = wc_perf.start
+    local quaternion_box = QuaternionBox
+    local table_icombine = table.icombine
+    local unit_flow_event = Unit.flow_event
+    local vector3_unbox = vector3_box.unbox
+    local world_link_unit = World.link_unit
+    local math_easeOutCubic = math.easeOutCubic
+    local math_easeInCubic = math.easeInCubic
+    local world_unlink_unit = World.unlink_unit
+    local quaternion_unbox = QuaternionBox.unbox
+    local world_destroy_unit = World.destroy_unit
     local unit_world_position = Unit.world_position
     local unit_world_rotation = Unit.world_rotation
     local unit_local_position = Unit.local_position
     local unit_local_rotation = Unit.local_rotation
+    local matrix4x4_transform = Matrix4x4.transform
+    local unit_set_local_scale = Unit.set_local_scale
+    local unit_get_child_units = Unit.get_child_units
+    local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local quaternion_to_vector = Quaternion.to_vector
+    local math_ease_out_elastic = math.ease_out_elastic
+    local quaternion_from_vector = Quaternion.from_vector
     local unit_set_local_position = Unit.set_local_position
     local unit_set_local_rotation = Unit.set_local_rotation
-    local unit_set_local_scale = Unit.set_local_scale
-    local unit_has_node = Unit.has_node
-    local unit_node = Unit.node
-    local unit_flow_event = Unit.flow_event
     local unit_set_unit_visibility = Unit.set_unit_visibility
-    local unit_get_child_units = Unit.get_child_units
     local unit_force_stream_meshes = Unit.force_stream_meshes
-    local vector3 = Vector3
-    local vector3_lerp = vector3.lerp
-    local vector3 = vector3
-    local vector3_box = Vector3Box
-    local vector3_unbox = vector3_box.unbox
-    local vector3_one = vector3.one
-    local vector3_zero = vector3.zero
-    local Matrix4x4 = Matrix4x4
-    local matrix4x4_transform = Matrix4x4.transform
-    local Quaternion = Quaternion
-    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
     local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
-    local QuaternionBox = QuaternionBox
-    local quaternion_box = QuaternionBox
-    local quaternion_unbox = QuaternionBox.unbox
-    local quaternion_matrix4x4 = Quaternion.matrix4x4
-    local quaternion_to_vector = Quaternion.to_vector --function(quaternion)
-    --     local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
-    --     return vector3(x, y, z)
-    -- end
-    local quaternion_from_vector = Quaternion.from_vector --function(vector)
-    --     return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
-    -- end
-    local math = math
-    local math_abs = math.abs
-    local math_ease_out_elastic = math.ease_out_elastic
-    local math_easeInCubic = math.easeInCubic
-	local math_easeOutCubic = math.easeOutCubic
-    local math_random = math.random
-    local World = World
-    local world_unlink_unit = World.unlink_unit
-    local world_link_unit = World.link_unit
-    local world_destroy_unit = World.destroy_unit
-    local pairs = pairs
-    local ipairs = ipairs
-    local CLASS = CLASS
-    local script_unit = ScriptUnit
-    local managers = Managers
-    local table = table
-    local table_enum = table.enum
-    local table_icombine = table.icombine
-    local table_combine = table.combine
-    local tostring = tostring
-    local string = string
-    local string_find = string.find
-    local wc_perf = wc_perf
-    local wc_perf_start = wc_perf.start
-    local wc_perf_stop = wc_perf.stop
-    local type = type
-    local class = class
+    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -90,31 +85,31 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-    local ATTACHMENT_SPAWN_STATUS = table_enum("waiting_for_load", "fully_spawned")
-    local REFERENCE = "weapon_customization"
-    local WEAPON_MELEE = "WEAPON_MELEE"
-    local ANIM_TIME_MELEE = .3
-    local ANIM_TIME_WOBBLE_MELEE = .6
-    local WEAPON_RANGED = "WEAPON_RANGED"
-    local ANIM_TIME_RANGED = .3
-    local ANIM_TIME_WOBBLE_RANGED = .6
-    local SLAB_SHIELD = "ogryn_powermaul_slabshield_p1_m1"
-    local BACKPACK_ATTACH = "j_backpackattach"
-    local BACKPACK_OFFSET = "j_backpackoffset"
-    local BACKPACK_EMPTY = "content/items/characters/player/human/backpacks/empty_backpack"
-    local STEP_STATE = "step"
-    local STEP_STATE_BACK = "step_back"
-    local STEP_WOBBLE = "wobble"
-    local SLOT_UNARMED = "slot_unarmed"
-    local SLOT_PRIMARY = "slot_primary"
-    local SLOT_SECONDARY = "slot_secondary"
-    local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
-    local BACKPACK = "backpack"
-    local DEFAULT = "default"
-    local SPRINT = "sprint"
-    local WALK = "walk"
     local OFF = "off"
     local ALL = "all"
+    local WALK = "walk"
+    local SPRINT = "sprint"
+    local STEP_STATE = "step"
+    local DEFAULT = "default"
+    local ANIM_TIME_MELEE = .3
+    local ANIM_TIME_RANGED = .3
+    local BACKPACK = "backpack"
+    local STEP_WOBBLE = "wobble"
+    local ANIM_TIME_WOBBLE_MELEE = .6
+    local ANIM_TIME_WOBBLE_RANGED = .6
+    local WEAPON_MELEE = "WEAPON_MELEE"
+    local STEP_STATE_BACK = "step_back"
+    local SLOT_UNARMED = "slot_unarmed"
+    local SLOT_PRIMARY = "slot_primary"
+    local WEAPON_RANGED = "WEAPON_RANGED"
+    local SLOT_SECONDARY = "slot_secondary"
+    local REFERENCE = "weapon_customization"
+    local BACKPACK_ATTACH = "j_backpackattach"
+    local BACKPACK_OFFSET = "j_backpackoffset"
+    local SLAB_SHIELD = "ogryn_powermaul_slabshield_p1_m1"
+    local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
+    local ATTACHMENT_SPAWN_STATUS = table_enum("waiting_for_load", "fully_spawned")
+    local BACKPACK_EMPTY = "content/items/characters/player/human/backpacks/empty_backpack"
     local WEIGHT_FACTORS = {
         light = .66,
         medium = .33,
@@ -490,77 +485,10 @@ VisibleEquipmentExtension.position_equipment = function(self)
     wc_perf_stop(perf)
 end
 
-VisibleEquipmentExtension.get_dependencies = function(self, slot)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.get_dependencies", 2)
-    -- Setup definitions
-    mod:setup_item_definitions()
-    local found_packages = {}
-    -- Get master item
-    local item = slot.item and slot.item.__master_item
-    -- Get definition
-    local item_definition = mod:persistent_table(REFERENCE).item_definitions[item.name]
-    -- Check resource dependencies
-    if item_definition and item_definition.resource_dependencies then
-        -- Iterate dependencies
-        for package_name, _ in pairs(item_definition.resource_dependencies) do
-            -- Add package
-            found_packages[#found_packages+1] = package_name
-        end
-    end
-    -- Performance
-    wc_perf_stop(perf)
-    -- Return package list
-    return found_packages
-end
-
-VisibleEquipmentExtension.release_slot_packages = function(self, slot)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.release_slot_packages", 2)
-    -- Release
-    local count = 0
-    if self.packages[slot] then
-        for package_name, package_id in pairs(self.packages[slot]) do
-            -- Unload package
-            managers.package:release(package_id)
-            -- Remove package id
-            self.packages[slot][package_name] = nil
-
-            count = count + 1
-        end
-    end
-    if count > 0 then
-        mod:print("Release "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
-    end
-    -- Performance
-    wc_perf_stop(perf)
-end
-
-VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.load_slot_packages", 2)
-    -- Load
-    local count = 0
-    for _, package_name in pairs(packages) do
-        -- Check if loaded
-        if not self.packages[slot][package_name] then
-            -- Load package
-            local ref = REFERENCE.."_"..tostring(self.player_unit)
-            self.packages[slot][package_name] = managers.package:load(package_name, ref)
-            
-            count = count + 1
-        end
-    end
-    if count > 0 then
-        mod:print("Load "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
-    end
-    -- Performance
-    wc_perf_stop(perf)
-end
-
 VisibleEquipmentExtension.delete_slot = function(self, slot)
     -- Performance
     local perf = wc_perf_start("VisibleEquipmentExtension.delete_slot", 2)
+    local extension_manager = managers.state.extension
     -- Check base unit
     if self.dummy_units[slot] and self.dummy_units[slot].base then
         -- Check attachment units
@@ -569,6 +497,9 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
             for _, unit in pairs(self.dummy_units[slot].attachments) do
                 -- Check unit
                 if unit and unit_alive(unit) then
+                    if extension_manager then
+                        extension_manager:unregister_unit(unit)
+                    end
                     -- Unlink unit
                     world_unlink_unit(self.world, unit)
                 end
@@ -582,6 +513,9 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
             end
         end
         if self.dummy_units[slot].base and unit_alive(self.dummy_units[slot].base) then
+            if extension_manager then
+                extension_manager:unregister_unit(self.dummy_units[slot].base)
+            end
             -- Unlink unit
             world_unlink_unit(self.world, self.dummy_units[slot].base)
             -- Delete unit
@@ -713,14 +647,87 @@ VisibleEquipmentExtension.play_equipment_sound = function(self, slot, index, all
     local slot_valid = slot and (slot.name ~= wielded_slot_name or allow_wielded)
     local allow_crouching = allow_crouching or true
     local crouching = not self:is_crouching() or allow_crouching
+    local husk = not self.is_local_unit and not self.spectated
     if play_sound and slot_valid and crouching and self.sounds[slot] then
         local sounds = index == 1 and self.sounds[slot][1] or self.sounds[slot][2]
         local rnd = sounds and math_random(1, #sounds)
         sound = sounds and sounds[rnd] or self.sounds[slot][3]
         if not self:is_sprinting() then sound = self.sounds[slot][4] end
         if sound and self.fx_extension then
-            self.fx_extension:trigger_wwise_event(sound, true, true, self.player_unit, 1, "foley_speed", self.step_speed)
+            self.fx_extension:trigger_wwise_event(sound, husk, true, self.player_unit, 1, "foley_speed", self.step_speed)
         end
+    end
+    -- Performance
+    wc_perf_stop(perf)
+end
+
+-- ##### ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐┌─┐ #####################################################################################
+-- ##### ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #####################################################################################
+-- ##### ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #####################################################################################
+
+VisibleEquipmentExtension.get_dependencies = function(self, slot)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.get_dependencies", 2)
+    -- Setup definitions
+    mod:setup_item_definitions()
+    local found_packages = {}
+    -- Get master item
+    local item = slot.item and slot.item.__master_item
+    -- Get definition
+    local item_definition = mod:persistent_table(REFERENCE).item_definitions[item.name]
+    -- Check resource dependencies
+    if item_definition and item_definition.resource_dependencies then
+        -- Iterate dependencies
+        for package_name, _ in pairs(item_definition.resource_dependencies) do
+            -- Add package
+            found_packages[#found_packages+1] = package_name
+        end
+    end
+    -- Performance
+    wc_perf_stop(perf)
+    -- Return package list
+    return found_packages
+end
+
+VisibleEquipmentExtension.release_slot_packages = function(self, slot)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.release_slot_packages", 2)
+    -- Release
+    local count = 0
+    if self.packages[slot] then
+        for package_name, package_id in pairs(self.packages[slot]) do
+            -- Unload package
+            managers.package:release(package_id)
+            -- Remove package id
+            self.packages[slot][package_name] = nil
+
+            count = count + 1
+        end
+    end
+    if count > 0 then
+        mod:print("Release "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
+    end
+    -- Performance
+    wc_perf_stop(perf)
+end
+
+VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
+    -- Performance
+    local perf = wc_perf_start("VisibleEquipmentExtension.load_slot_packages", 2)
+    -- Load
+    local count = 0
+    for _, package_name in pairs(packages) do
+        -- Check if loaded
+        if not self.packages[slot][package_name] then
+            -- Load package
+            local ref = REFERENCE.."_"..tostring(self.player_unit)
+            self.packages[slot][package_name] = managers.package:load(package_name, ref)
+            
+            count = count + 1
+        end
+    end
+    if count > 0 then
+        mod:print("Load "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
     end
     -- Performance
     wc_perf_stop(perf)
@@ -823,7 +830,7 @@ VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
     -- Values
     local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
     local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
-    local spectated = not self.is_local_unit and self.spectated and not first_person
+    local spectated = not self.is_local_unit and (not self.spectated or not first_person)
     local player = self.is_local_unit and not first_person
     -- Iterate slots
     for slot_name, slot in pairs(self.equipment) do

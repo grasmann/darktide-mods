@@ -15,56 +15,57 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local table = table
-    local table_contains = table.contains
-    local vector3_box = Vector3Box
-    local vector3_unbox = vector3_box.unbox
-    local vector3 = Vector3
-    local vector3_zero = vector3.zero
-    local vector3_lerp = vector3.lerp
-    local Quaternion = Quaternion
-    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
-    local quaternion_matrix4x4 = Quaternion.matrix4x4
-    local Matrix4x4 = Matrix4x4
-    local matrix4x4_transform = Matrix4x4.transform
-    local Camera = Camera
-    local camera_world_position = Camera.world_position
-    local camera_vertical_fov = Camera.vertical_fov
-    local camera_custom_vertical_fov = Camera.custom_vertical_fov
-    local camera_set_custom_vertical_fov = Camera.set_custom_vertical_fov
-    local camera_set_vertical_fov = Camera.set_vertical_fov
     local Unit = Unit
-    local unit_get_data = Unit.get_data
-    local unit_alive = Unit.alive
-    local unit_world_position = Unit.world_position
-    local unit_local_position = Unit.local_position
-    local unit_set_local_position = Unit.set_local_position
-    local unit_local_rotation = Unit.local_rotation
-    local unit_set_local_rotation = Unit.set_local_rotation
-    local unit_set_local_scale = Unit.set_local_scale
-    local unit_set_unit_visibility = Unit.set_unit_visibility
-    local World = World
-    local world_update_unit_and_children = World.update_unit_and_children
-    local world_create_particles = World.create_particles
-    local world_destroy_particles = World.destroy_particles
     local math = math
-    local math_lerp = math.lerp
-    local math_easeInCubic = math.easeInCubic
-    local math_rad = math.rad
-    local math_clamp = math.clamp
-    local math_clamp01 = math.clamp01
+    local type = type
+    local table = table
+    local World = World
     local pairs = pairs
     local CLASS = CLASS
     local class = class
-    local managers = Managers
-    local type = type
-    local script_unit = ScriptUnit
-    local script_unit_has_extension = script_unit.has_extension
-    local script_unit_extension = script_unit.extension
+    local Camera = Camera
+    local vector3 = Vector3
     local wc_perf = wc_perf
+    local math_rad = math.rad
+    local managers = Managers
     local Viewport = Viewport
+    local Matrix4x4 = Matrix4x4
+    local math_lerp = math.lerp
+    local Quaternion = Quaternion
+    local unit_alive = Unit.alive
+    local math_clamp = math.clamp
+    local vector3_box = Vector3Box
+    local script_unit = ScriptUnit
+    local vector3_zero = vector3.zero
+    local vector3_lerp = vector3.lerp
+    local math_clamp01 = math.clamp01
+    local unit_get_data = Unit.get_data
+    local table_contains = table.contains
+    local vector3_unbox = vector3_box.unbox
+    local math_easeInCubic = math.easeInCubic
     local ShadingEnvironment = ShadingEnvironment
+    local matrix4x4_transform = Matrix4x4.transform
+    local camera_vertical_fov = Camera.vertical_fov
+    local unit_world_position = Unit.world_position
+    local unit_local_position = Unit.local_position
+    local unit_local_rotation = Unit.local_rotation
+    local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local unit_set_local_scale = Unit.set_local_scale
+    local camera_world_position = Camera.world_position
+    local script_unit_extension = script_unit.extension
+    local world_create_particles = World.create_particles
+    local camera_set_vertical_fov = Camera.set_vertical_fov
+    local unit_set_local_position = Unit.set_local_position
+    local unit_set_local_rotation = Unit.set_local_rotation
+    local world_destroy_particles = World.destroy_particles
+    local unit_set_unit_visibility = Unit.set_unit_visibility
+    local script_unit_has_extension = script_unit.has_extension
+    local camera_custom_vertical_fov = Camera.custom_vertical_fov
+    local world_stop_spawning_particles = World.stop_spawning_particles
     local shading_environment_set_scalar = ShadingEnvironment.set_scalar
+    local camera_set_custom_vertical_fov = Camera.set_custom_vertical_fov
+    local world_update_unit_and_children = World.update_unit_and_children
+    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -86,6 +87,8 @@ local LENS_A = "lens"
 local LENS_B = "lens_2"
 local SCOPE_OFFSET = "scope_offset"
 local NO_SCOPE_OFFSET = "no_scope_offset"
+local SLOT_SECONDARY = "slot_secondary"
+local SLOT_UNARMED = "slot_unarmed"
 
 -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #################################################################
 -- ##### └─┐││ ┬├─┤ │ └─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ #################################################################
@@ -100,6 +103,7 @@ local SightExtension = class("SightExtension", "WeaponCustomizationExtension")
 SightExtension.init = function(self, extension_init_context, unit, extension_init_data)
     SightExtension.super.init(self, extension_init_context, unit, extension_init_data)
 
+    self.wielded_slot = extension_init_data.wielded_slot or SLOT_UNARMED
     self.ranged_weapon = extension_init_data.ranged_weapon
     self.is_starting_aim = nil
     self._is_aiming = nil
@@ -151,13 +155,13 @@ end
 
 SightExtension.is_hiding_crosshair = function(self)
     -- Check cache
-    if self._is_hiding_crosshair == nil then
-        -- Get value
-        local laser = self.deactivate_crosshair_laser and mod:execute_extension(self.player_unit, "laser_pointer_system", "is_active")
-        local sniper_or_scope = self:is_sniper() or self:is_scope()
-        local aiming = self.deactivate_crosshair_aiming and self._is_aiming and sniper_or_scope
-        self._is_hiding_crosshair = laser or aiming
-    end
+    -- if self._is_hiding_crosshair == nil then
+    -- Get value
+    local laser = self.deactivate_crosshair_laser and mod:execute_extension(self.player_unit, "laser_pointer_system", "is_active")
+    local sniper_or_scope = self:is_sniper() or self:is_scope()
+    local aiming = self.deactivate_crosshair_aiming and self._is_aiming and sniper_or_scope
+    self._is_hiding_crosshair = laser or aiming
+    -- end
     -- Return cache
     return self._is_hiding_crosshair
 end
@@ -192,6 +196,10 @@ end
 
 SightExtension.is_sniper_or_scope = function(self)
     return self:is_scope() or self:is_sniper()
+end
+
+SightExtension.is_wielded = function(self)
+    return self.wielded_slot and self.wielded_slot.name == SLOT_SECONDARY
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
@@ -304,39 +312,62 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 SightExtension.on_aim_start = function(self, t)
-    self._is_hiding_crosshair = nil
-    self.is_starting_aim = true
-    self._is_aiming = true
-    self.aim_timer = t + self.start_time
-    if self.sniper_zoom and self.lens_units then
-        if self.lens_units[1] and unit_alive(self.lens_units[1]) and self.fx_extension and self.sniper_sound then
-            self.fx_extension:trigger_wwise_event(SOUND, false, self.lens_units[1], 1)
+    if self:is_wielded() then
+        self._is_hiding_crosshair = nil
+        self.is_starting_aim = true
+        self._is_aiming = true
+        self.aim_timer = t + self.start_time
+        if self.sniper_zoom and self.lens_units then
+            if self.lens_units[1] and unit_alive(self.lens_units[1]) and self.fx_extension and self.sniper_sound then
+                self.fx_extension:trigger_wwise_event(SOUND, false, self.lens_units[1], 1)
+            end
         end
     end
+end
+
+SightExtension.on_equip_slot = function(self, slot)
+    self._is_aiming = nil
+    self._is_scope = nil
+    self._is_sniper = nil
+    self._is_braced = nil
+    self.sniper_recoil_template = nil
+    self.sniper_sway_template = nil
 end
 
 SightExtension.on_wield_slot = function(self, slot)
     self._is_braced = nil
     self._is_scope = nil
     self._is_sniper = nil
+    self.wielded_slot = slot
+    if self._is_aiming then
+        self._is_aiming = nil
+        self.aim_timer = mod:game_time() + self.reset_time
+    end
 end
 
 SightExtension.on_aim_stop = function(self, t)
-    self._is_hiding_crosshair = nil
-    self.is_starting_aim = nil
-    self._is_aiming = nil
-    self.aim_timer = t + self.reset_time
-    if self.particle_effect then
-        world_destroy_particles(self.world, self.particle_effect)
-        self.particle_effect = nil
+    if self:is_wielded() then
+        self._is_hiding_crosshair = nil
+        self.is_starting_aim = nil
+        self._is_aiming = nil
+        self.aim_timer = t + self.reset_time
+        if self.particle_effect then
+            if self.particle_effect > 0 then
+                world_stop_spawning_particles(self.world, self.particle_effect)
+                world_destroy_particles(self.world, self.particle_effect)
+            end
+            self.particle_effect = nil
+        end
     end
 end
 
 SightExtension.on_unaim_start = function(self, t)
-    self._is_hiding_crosshair = nil
-    self.is_starting_aim = nil
-    self._is_aiming = nil
-    self.aim_timer = t + self.reset_time
+    if self:is_wielded() then
+        self._is_hiding_crosshair = nil
+        self.is_starting_aim = nil
+        self._is_aiming = nil
+        self.aim_timer = t + self.reset_time
+    end
 end
 
 SightExtension.on_settings_changed = function(self)
@@ -511,7 +542,10 @@ SightExtension.update_scope_lenses = function(self)
             self.particle_effect = world_create_particles(self.world, EFFECT, vector3(0, 0, 1))
         end
     elseif self.particle_effect then
-        world_destroy_particles(self.world, self.particle_effect)
+        if self.particle_effect > 0 then
+            world_stop_spawning_particles(self.world, self.particle_effect)
+            world_destroy_particles(self.world, self.particle_effect)
+        end
         self.particle_effect = nil
     end
 end

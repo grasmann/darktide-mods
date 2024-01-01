@@ -17,57 +17,57 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local table = table
-    local table_contains = table.contains
     local math = math
-    local math_abs = math.abs
-    local math_easeCubic = math.easeCubic
     local Unit = Unit
-    local unit_alive = Unit.alive
-    local unit_world_position = Unit.world_position
-    local unit_world_rotation = Unit.world_rotation
-    local unit_world_pose = Unit.world_pose
+    local table = table
     local Actor = Actor
-    local actor_unit = Actor.unit
-    local Quaternion = Quaternion
-    local quaternion_identity = Quaternion.identity
-    local quaternion_forward = Quaternion.forward
-    local Matrix4x4 = Matrix4x4
-    local matrix4x4_multiply = Matrix4x4.multiply
-    local matrix4x4_identity = Matrix4x4.identity
-    local matrix4x4_transform = Matrix4x4.transform
-    local matrix4x4_set_translation = Matrix4x4.set_translation
-    local matrix4x4_set_scale = Matrix4x4.set_scale
-    local matrix4x4_translation = Matrix4x4.translation
-    local matrix4x4_rotation = Matrix4x4.rotation
-    local matrix4x4_scale = Matrix4x4.scale
-    local vector3_box = Vector3Box
-    local vector3_unbox = vector3_box.unbox
-    local vector3 = Vector3
-    local vector3_zero = vector3.zero
-    local vector3_normalize = vector3.normalize
-    local vector3_distance = vector3.distance
-    local vector3_lerp = vector3.lerp
     local World = World
-    local world_stop_spawning_particles = World.stop_spawning_particles
-    local world_physics_world = World.physics_world
-    local world_create_particles = World.create_particles
-    local world_destroy_particles = World.destroy_particles
-    local world_find_particles_variable = World.find_particles_variable
-    local world_set_particles_variable = World.set_particles_variable
-    local world_set_particles_material_vector3 = World.set_particles_material_vector3
-    local world_set_particles_use_custom_fov = World.set_particles_use_custom_fov
-    local world_link_particles = World.link_particles
-    local world_move_particles = World.move_particles
-    local physics_world_raycast = PhysicsWorld.raycast
     local Color = Color
     local pairs = pairs
     local CLASS = CLASS
-    local script_unit = ScriptUnit
-    local DebugDrawer = DebugDrawer
-    local managers = Managers
+    local vector3 = Vector3
     local get_mod = get_mod
     local wc_perf = wc_perf
+    local math_abs = math.abs
+    local managers = Managers
+    local Matrix4x4 = Matrix4x4
+    local unit_alive = Unit.alive
+    local actor_unit = Actor.unit
+    local Quaternion = Quaternion
+    local vector3_box = Vector3Box
+    local script_unit = ScriptUnit
+    local DebugDrawer = DebugDrawer
+    local vector3_zero = vector3.zero
+    local vector3_lerp = vector3.lerp
+    local table_contains = table.contains
+    local math_easeCubic = math.easeCubic
+    local unit_world_pose = Unit.world_pose
+    local matrix4x4_scale = Matrix4x4.scale
+    local vector3_unbox = vector3_box.unbox
+    local vector3_distance = vector3.distance
+    local vector3_normalize = vector3.normalize
+    local quaternion_forward = Quaternion.forward
+    local matrix4x4_multiply = Matrix4x4.multiply
+    local matrix4x4_identity = Matrix4x4.identity
+    local matrix4x4_rotation = Matrix4x4.rotation
+    local unit_world_position = Unit.world_position
+    local unit_world_rotation = Unit.world_rotation
+    local quaternion_identity = Quaternion.identity
+    local matrix4x4_transform = Matrix4x4.transform
+    local matrix4x4_set_scale = Matrix4x4.set_scale
+    local world_physics_world = World.physics_world
+    local world_link_particles = World.link_particles
+    local world_move_particles = World.move_particles
+    local physics_world_raycast = PhysicsWorld.raycast
+    local matrix4x4_translation = Matrix4x4.translation
+    local world_create_particles = World.create_particles
+    local world_destroy_particles = World.destroy_particles
+    local matrix4x4_set_translation = Matrix4x4.set_translation
+    local world_set_particles_variable = World.set_particles_variable
+    local world_stop_spawning_particles = World.stop_spawning_particles
+    local world_find_particles_variable = World.find_particles_variable
+    local world_set_particles_use_custom_fov = World.set_particles_use_custom_fov
+    local world_set_particles_material_vector3 = World.set_particles_material_vector3
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -479,8 +479,10 @@ end
 
 LaserPointerExtension.despawn_laser = function(self)
     for _, laser_effect_id in pairs(self.laser_effect_ids) do
-        world_stop_spawning_particles(self.world, laser_effect_id)
-        world_destroy_particles(self.world, laser_effect_id)
+        if laser_effect_id > 0 then
+            world_stop_spawning_particles(self.world, laser_effect_id)
+            world_destroy_particles(self.world, laser_effect_id)
+        end
     end
     self.laser_effect_ids = {}
 end
@@ -513,8 +515,8 @@ LaserPointerExtension.despawn_weapon_dot = function(self)
     if self.dot_weapon_effect_id and self.dot_weapon_effect_id > 0 then
         world_stop_spawning_particles(self.world, self.dot_weapon_effect_id)
         world_destroy_particles(self.world, self.dot_weapon_effect_id)
-        self.dot_weapon_effect_id = nil
     end
+    self.dot_weapon_effect_id = nil
 end
 
 LaserPointerExtension.spawn_laser_dot = function(self)
@@ -543,8 +545,8 @@ LaserPointerExtension.despawn_laser_dot = function(self)
     if self.laser_dot_effect_id and self.laser_dot_effect_id > 0 then
         world_stop_spawning_particles(self.world, self.laser_dot_effect_id)
         world_destroy_particles(self.world, self.laser_dot_effect_id)
-        self.laser_dot_effect_id = nil
     end
+    self.laser_dot_effect_id = nil
 end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
@@ -600,7 +602,7 @@ end
 LaserPointerExtension.particles_wrapper_created = function(self, particle_name, effect_id)
     if particle_name == LASER_PARTICLE_EFFECT then
         self.laser_effect_ids[#self.laser_effect_ids+1] = effect_id
-        World.set_particles_material_vector3(self.world, effect_id, "beam", "beam_color", vector3(0, 255, 0))
+        -- World.set_particles_material_vector3(self.world, effect_id, "beam", "beam_color", vector3(0, 255, 0))
         -- World.set_particles_material_color(self.world, effect_id, "beam", vector3(0, 255, 0))
     end
 end
@@ -670,8 +672,10 @@ mod.set_preview_laser = function(self, state, laser_pointer_unit, world)
     elseif not state and laser_pointer_unit and self.preview_laser[laser_pointer_unit] and world then
         local previews = self.preview_laser[laser_pointer_unit]
         for _, preview_id in pairs(previews) do
-            world_stop_spawning_particles(world, preview_id)
-            world_destroy_particles(world, preview_id)
+            if preview_id > 0 then
+                world_stop_spawning_particles(world, preview_id)
+                world_destroy_particles(world, preview_id)
+            end
         end
         self.preview_laser[laser_pointer_unit] = nil
     end

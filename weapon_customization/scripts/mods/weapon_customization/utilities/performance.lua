@@ -15,9 +15,9 @@ if not _os.initialized then _os = DMF.deepcopy(Mods.lua.os) end
 
 --#region local functions
     local math = math
-    local math_round_with_precision = math.round_with_precision
     local tostring = tostring
     local os_clock = _os.clock
+    local math_round_with_precision = math.round_with_precision
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

@@ -4,82 +4,79 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
-local UIHud = mod:original_require("scripts/managers/ui/ui_hud")
-local Recoil = mod:original_require("scripts/utilities/recoil")
-local Sway = mod:original_require("scripts/utilities/sway")
+--#region Require
+    local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
+    local UIHud = mod:original_require("scripts/managers/ui/ui_hud")
+    local Recoil = mod:original_require("scripts/utilities/recoil")
+    local Sway = mod:original_require("scripts/utilities/sway")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local class = class
     local Unit = Unit
-    local unit_has_animation_event = Unit.has_animation_event
-    local unit_animation_event = Unit.animation_event
-    local table = table
-    local table_contains = table.contains
-    local wc_perf = wc_perf
-    local managers = Managers
-
     local math = math
-    local math_abs = math.abs
-    local math_ease_out_elastic = math.ease_out_elastic
-    local math_easeInCubic = math.easeInCubic
-	local math_easeOutCubic = math.easeOutCubic
-    local math_random = math.random
     local Unit = Unit
-    local unit_get_data = Unit.get_data
+    local class = class
+    local table = table
+    local World = World
+    local Camera = Camera
+    local wc_perf = wc_perf
+    local vector3 = Vector3
+    local managers = Managers
+    local math_abs = math.abs
+    local Matrix4x4 = Matrix4x4
     local unit_alive = Unit.alive
+    local Quaternion = Quaternion
+    local vector3_box = Vector3Box
+    local math_random = math.random
+    local vector3_zero = vector3.zero
+    local vector3_lerp = vector3.lerp
+    local unit_get_data = Unit.get_data
+    local quaternion_box = QuaternionBox
+    local table_contains = table.contains
+    local vector3_unbox = vector3_box.unbox
+    local math_easeOutCubic = math.easeOutCubic
+    local math_easeInCubic = math.easeInCubic
+    local quaternion_unbox = quaternion_box.unbox
     local unit_world_position = Unit.world_position
     local unit_world_rotation = Unit.world_rotation
     local unit_local_position = Unit.local_position
-    local unit_set_local_position = Unit.set_local_position
     local unit_local_rotation = Unit.local_rotation
-    local unit_set_local_rotation = Unit.set_local_rotation
-    local unit_set_local_scale = Unit.set_local_scale
-    local unit_set_unit_visibility = Unit.set_unit_visibility
-    local unit_get_child_units = Unit.get_child_units
-    local Quaternion = Quaternion
-    local quaternion_box = QuaternionBox
-	local quaternion_unbox = quaternion_box.unbox
     local quaternion_identity = Quaternion.identity
-    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
-    local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
     local quaternion_multiply = Quaternion.multiply
-    local quaternion_matrix4x4 = Quaternion.matrix4x4
-    local Matrix4x4 = Matrix4x4
     local matrix4x4_transform = Matrix4x4.transform
-    local vector3_box = Vector3Box
-    local vector3_unbox = vector3_box.unbox
-    local vector3 = Vector3
-    local vector3_zero = vector3.zero
-    local vector3_lerp = vector3.lerp
-    local Camera = Camera
+    local unit_animation_event = Unit.animation_event
+    local unit_set_local_scale = Unit.set_local_scale
+    local unit_get_child_units = Unit.get_child_units
+    local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local quaternion_to_vector = Quaternion.to_vector
+    local math_ease_out_elastic = math.ease_out_elastic
     local camera_world_to_screen = Camera.world_to_screen
-    local World = World
+    local quaternion_from_vector = Quaternion.from_vector
+    local unit_set_local_position = Unit.set_local_position
+    local unit_set_local_rotation = Unit.set_local_rotation
+    local unit_has_animation_event = Unit.has_animation_event
+    local unit_set_unit_visibility = Unit.set_unit_visibility
+    local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
     local world_update_unit_and_children = World.update_unit_and_children
-    local quaternion_to_vector = function(quaternion)
-        local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
-        return vector3(x, y, z)
-    end
-    local quaternion_from_vector = function(vector)
-        return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
-    end
+    local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local SLOT_SECONDARY = "slot_secondary"
-local CROUCH_OPTION = "mod_option_misc_cover_on_crouch"
-local CROUCH_TIME = .5
-local CROUCH_POSITION = vector3_box(-.05, 0, -.2)
-local CROUCH_ROTATION = vector3_box(0, -60, 0)
-local IGNORE_STATES = {"ledge_vaulting"}
-local CROSSHAIR_POSITION_LERP_SPEED = 35
+--#region Data
+    local CROUCH_TIME = .5
+    local SLOT_SECONDARY = "slot_secondary"
+    local IGNORE_STATES = {"ledge_vaulting"}
+    local CROSSHAIR_POSITION_LERP_SPEED = 35
+    local CROUCH_ROTATION = vector3_box(0, -60, 0)
+    local CROUCH_POSITION = vector3_box(-.05, 0, -.2)
+--#endregion
 
 -- ##### ┌─┐┬─┐┌─┐┬ ┬┌─┐┬ ┬  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ######################################
 -- ##### │  ├┬┘│ ││ ││  ├─┤  ├─┤│││││││├─┤ │ ││ ││││  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ######################################
@@ -94,17 +91,20 @@ local CrouchAnimationExtension = class("CrouchAnimationExtension", "WeaponCustom
 -- Initialize
 CrouchAnimationExtension.init = function(self, extension_init_context, unit, extension_init_data)
     CrouchAnimationExtension.super.init(self, extension_init_context, unit, extension_init_data)
-
+    -- Events
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
-
+    -- Settings
     self:on_settings_changed()
-
+    -- Init
     self.initialized = true
 end
 
 CrouchAnimationExtension.delete = function(self)
+    -- Events
     managers.event:unregister(self, "weapon_customization_settings_changed")
+    -- Init
     self.initialized = false
+    -- Delete
     CrouchAnimationExtension.super.delete(self)
 end
 
@@ -113,11 +113,13 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 CrouchAnimationExtension.on_settings_changed = function(self)
-    self.on = mod:get(CROUCH_OPTION)
+    self.on = mod:get("mod_option_misc_cover_on_crouch")
 end
 
 CrouchAnimationExtension.on_wield_slot = function(self, slot)
+    -- Template
     self.weapon_template = slot and WeaponTemplate.weapon_template_from_item(slot.item)
+    -- Ranged weapon
     self.ranged_weapon = slot and slot.name == SLOT_SECONDARY
 end
 
@@ -135,10 +137,6 @@ CrouchAnimationExtension.is_braced = function(self)
     local braced = alt_fire and alt_fire.start_anim_event == "to_braced"
     return braced
 end
-
--- CrouchAnimationExtension.is_active = function(self)
---     return self.is_crouched and not self.overwrite and not self:is_aiming()
--- end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
 -- ##### └─┐├┤  │   └┐┌┘├─┤│  │ │├┤ └─┐ ###############################################################################
@@ -170,23 +168,9 @@ CrouchAnimationExtension.update = function(self, dt, t)
     local perf = wc_perf.start("CrouchAnimationExtension.update", 2)
     if self.initialized and self.on and self:get_first_person() then
         self:update_character_state()
-
-        if self:is_braced() then
-            if self.movement_state_component.is_crouching and not table_contains(IGNORE_STATES, self.character_state) and not self.overwrite then
-                if unit_has_animation_event(self.first_person_unit, "to_braced") and not self.is_crouched then
-                    unit_animation_event(self.first_person_unit, "to_braced")
-                    self.is_crouched = true
-                end
-            else
-                if unit_has_animation_event(self.first_person_unit, "to_unaim_braced") and self.is_crouched then
-                    unit_animation_event(self.first_person_unit, "to_unaim_braced")
-                    self.is_crouched = nil
-                end
-            end
-        else
+        if not self:is_braced() then
             self:update_animation(dt, t)
         end
-
     end
     wc_perf.stop(perf)
 end
@@ -332,33 +316,5 @@ CrouchAnimationExtension.adjust_crosshair = function(self, hud_element_crosshair
     end
     return x, y
 end
-
--- CrouchAnimationExtension.crosshair_position = function(self, x, y)
---     local position = self.position and vector3_unbox(self.position) or vector3_zero()
---     mod:echot("diff: "..tostring(position[3]), 2)
---     return x, y + position[3] * 10 or 0
--- end
-
--- CrouchAnimationExtension.pause = function(self)
---     if self.initialized then
---         -- self.pause = true
---         local position = self.last_real_position and vector3_unbox(self.last_real_position)
---         if position and vector3.is_valid(position) then
---             unit_set_local_position(self.first_person_unit, 1, position)
---             mod:echot("set")
---         end
---         local rotation = self.last_real_rotation and quaternion_unbox(self.last_real_rotation)
---         if rotation and Quaternion.is_valid(position) then unit_set_local_rotation(self.first_person_unit, 1, rotation) end
---     end
--- end
-
--- CrouchAnimationExtension.resume = function(self)
---     if self.initialized then
---         -- self.pause = false
---         local position = self.position and vector3_unbox(self.position) or vector3_zero()
---         local rotation = self.rotation and quaternion_unbox(self.rotation) or vector3_zero()
---         self:set_position_and_rotation(position, rotation)
---     end
--- end
 
 return CrouchAnimationExtension

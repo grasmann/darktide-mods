@@ -12,24 +12,24 @@ local MinionPerception = mod:original_require("scripts/utilities/minion_percepti
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local wwiseWorld_stop_event = WwiseWorld.stop_event
-    local Unit = Unit
-    local unit_world_position = Unit.world_position
-    local unit_world_rotation = Unit.world_rotation
-    local unit_node = Unit.node
-    local unit_alive = Unit.alive
-    local actor_unit = Actor.unit
-    local quaternion_forward = Quaternion.forward
-    local physics_world_raycast = PhysicsWorld.raycast
-    local table = table
-    local table_clear = table.clear
-    local table_remove = table.remove
-    local HEALTH_ALIVE = HEALTH_ALIVE
-    local CLASS = CLASS
-    local managers = Managers
-    local script_unit = ScriptUnit
-    local tostring = tostring
-    local pairs = pairs
+	local Unit = Unit
+	local table = table
+	local CLASS = CLASS
+	local pairs = pairs
+	local managers = Managers
+	local tostring = tostring
+	local unit_node = Unit.node
+	local unit_alive = Unit.alive
+	local actor_unit = Actor.unit
+	local script_unit = ScriptUnit
+	local table_clear = table.clear
+	local table_remove = table.remove
+	local HEALTH_ALIVE = HEALTH_ALIVE
+	local quaternion_forward = Quaternion.forward
+	local unit_world_position = Unit.world_position
+	local unit_world_rotation = Unit.world_rotation
+	local physics_world_raycast = PhysicsWorld.raycast
+	local wwiseWorld_stop_event = WwiseWorld.stop_event
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

@@ -1,29 +1,27 @@
 local mod = get_mod("weapon_customization")
 
--- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
--- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
--- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
-
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local class = class
     local math = math
+    local class = class
+    local wc_perf = wc_perf
     local math_clamp = math.clamp
     local script_unit = ScriptUnit
-    local script_unit_has_extension = script_unit.has_extension
     local script_unit_extension = script_unit.extension
-    local wc_perf = wc_perf
+    local script_unit_has_extension = script_unit.has_extension
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
-local SLOT_SECONDARY = "slot_secondary"
+--#region Data
+    local SLOT_SECONDARY = "slot_secondary"
+    local REFERENCE = "weapon_customization"
+--#endregion
 
 -- ##### ┌┐ ┌─┐┌┬┐┌┬┐┌─┐┬─┐┬ ┬  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ############################################################
 -- ##### ├┴┐├─┤ │  │ ├┤ ├┬┘└┬┘  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ############################################################
@@ -38,10 +36,11 @@ local BatteryExtension = class("BatteryExtension", "WeaponCustomizationExtension
 -- Initialize
 BatteryExtension.init = function(self, extension_init_context, unit, extension_init_data)
     BatteryExtension.super.init(self, extension_init_context, unit, extension_init_data)
-    
+    -- Attributes
     self.consumer_template = extension_init_data.consumer_template
     self.consumer = extension_init_data.consumer
     self.battery_template = extension_init_data.battery_template
+    -- Values
     self.current_charge = self.battery_template.max
     self.timer = 0
     self.on = extension_init_data.on or self.is_local_unit and mod:flashlight_active() or false

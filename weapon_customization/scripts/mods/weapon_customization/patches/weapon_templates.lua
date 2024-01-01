@@ -13,8 +13,8 @@ local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_tem
 
 --#region Local functions
     local table = table
-    local table_clone = table.clone
     local CLASS = CLASS
+    local table_clone = table.clone
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

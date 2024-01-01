@@ -11,24 +11,24 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local string = string
-    local string_format = string.format
+    local type = type
     local table = table
-    local table_remove = table.remove
-    local table_clone = table.clone
-    local table_find = table.find
-    local math_uuid = math.uuid
     local pairs = pairs
     local BUILD = BUILD
-    local type = type
+    local string = string
     local rawget = rawget
     local rawset = rawset
     local ferror = ferror
     local tostring = tostring
-    local setmetatable = setmetatable
-    local log_error = Log.error
-    local log_warning = Log.warning
     local managers = Managers
+    local math_uuid = math.uuid
+    local log_error = Log.error
+    local table_find = table.find
+    local table_clone = table.clone
+    local log_warning = Log.warning
+    local table_remove = table.remove
+    local setmetatable = setmetatable
+    local string_format = string.format
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

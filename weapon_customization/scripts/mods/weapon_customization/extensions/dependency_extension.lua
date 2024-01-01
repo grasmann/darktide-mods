@@ -11,9 +11,9 @@ local mod = get_mod("weapon_customization")
 --#region local functions
     local pairs = pairs
     local class = class
+    local wc_perf = wc_perf
     local managers = Managers
     local tostring = tostring
-    local wc_perf = wc_perf
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

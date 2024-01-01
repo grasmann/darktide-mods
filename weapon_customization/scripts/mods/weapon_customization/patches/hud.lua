@@ -9,10 +9,10 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local table = table
-    local table_insert = table.insert
-    local table_find_by_key = table.find_by_key
-    local CLASS = CLASS
+	local table = table
+	local CLASS = CLASS
+	local table_insert = table.insert
+	local table_find_by_key = table.find_by_key
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

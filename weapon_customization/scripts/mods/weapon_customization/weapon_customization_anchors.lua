@@ -411,7 +411,15 @@ local table = table
         connector = "connectors",
         lens = "lenses",
         lens_2 = "lenses",
+        -- carryhandle = "carryhandles",
     }
+    -- mod.carryhandles = {
+    --     "carryhandle_default",
+    --     "carryhandle_01",
+    --     "carryhandle_04",
+    --     "carryhandle_01b",
+    --     "carryhandle_04b",
+    -- }
     mod.shafts = {
         "small_shaft_01",
         "small_shaft_02",
@@ -749,6 +757,8 @@ local table = table
         "casing_03",
         "casing_04",
         "casing_05",
+
+        "carryhandle",
     }
 --#endregion
 

@@ -12,48 +12,48 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
-    local vector3 = Vector3
-    local vector3_zero = vector3.zero
-    local vector3_box = Vector3Box
-    local vector3_unbox = vector3_box.unbox
     local Unit = Unit
-    local unit_get_data = Unit.get_data
+    local math = math
+    local table = table
+    local light = Light
+    local pairs = pairs
+    local CLASS = CLASS
+    local ipairs = ipairs
+    local vector3 = Vector3
+    local wc_perf = wc_perf
+    local math_max = math.max
+    local tostring = tostring
+    local managers = Managers
     local unit_alive = Unit.alive
     local unit_light = Unit.light
-    local unit_set_vector3_for_materials = Unit.set_vector3_for_materials
-    local table = table
-    local table_contains = table.contains
-    local table_clone = table.clone
-    local math = math
-    local math_random = math.random
-    local math_random_seed = math.random_seed
-    local math_max = math.max
+    local WwiseWorld = WwiseWorld
+    local vector3_box = Vector3Box
     local script_unit = ScriptUnit
-    local script_unit_add_extension = script_unit.add_extension
-    local light = Light
+    local table_clone = table.clone
+    local math_random = math.random
+    local vector3_zero = vector3.zero
+    local unit_get_data = Unit.get_data
+    local table_contains = table.contains
+    local vector3_unbox = vector3_box.unbox
+    local math_random_seed = math.random_seed
+    local light_set_enabled = light.set_enabled
+    local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
     local light_set_intensity = light.set_intensity
-    local light_color_with_intensity = light.color_with_intensity
     local light_set_ies_profile = light.set_ies_profile
-    local light_set_correlated_color_temperature = light.set_correlated_color_temperature
-    local light_set_volumetric_intensity = light.set_volumetric_intensity
+    local light_set_falloff_end = light.set_falloff_end
+    local light_set_color_filter = light.set_color_filter
     local light_set_casts_shadows = light.set_casts_shadows
-    local light_set_spot_angle_start = light.set_spot_angle_start
+    local light_set_falloff_start = light.set_falloff_start
     local light_set_spot_angle_end = light.set_spot_angle_end
     local light_set_spot_reflector = light.set_spot_reflector
-    local light_set_falloff_start = light.set_falloff_start
-    local light_set_falloff_end = light.set_falloff_end
-    local light_set_enabled = light.set_enabled
-    local light_set_color_filter = light.set_color_filter
-    local WwiseWorld = WwiseWorld
-	local wwise_world_make_auto_source = WwiseWorld.make_auto_source
-	local wwise_world_trigger_resource_event = WwiseWorld.trigger_resource_event
-    local tostring = tostring
-    local pairs = pairs
-    local ipairs = ipairs
-    local managers = Managers
-    local CLASS = CLASS
-    local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
-    local wc_perf = wc_perf
+    local script_unit_add_extension = script_unit.add_extension
+    local light_color_with_intensity = light.color_with_intensity
+    local light_set_spot_angle_start = light.set_spot_angle_start
+    local wwise_world_make_auto_source = WwiseWorld.make_auto_source
+    local unit_set_vector3_for_materials = Unit.set_vector3_for_materials
+    local light_set_volumetric_intensity = light.set_volumetric_intensity
+    local wwise_world_trigger_resource_event = WwiseWorld.trigger_resource_event
+    local light_set_correlated_color_temperature = light.set_correlated_color_temperature
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -166,8 +166,10 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
         self:add_extension(self.player_unit, "laser_pointer_system", extension_init_context, extension_init_data)
     end
     -- Register events
-    self:register_event("weapon_customization_cutscene", "set_cutscene")
-    self:register_event("weapon_customization_settings_changed", "on_settings_changed")
+    -- self:register_event("weapon_customization_cutscene", "set_cutscene")
+    -- self:register_event("weapon_customization_settings_changed", "on_settings_changed")
+    managers.event:register("weapon_customization_cutscene", "set_cutscene")
+    managers.event:register("weapon_customization_settings_changed", "on_settings_changed")
     -- Register synchronized calls
     self:register_synchronized_call("set_enabled")
     self:register_synchronized_call("set_spectated")
@@ -182,11 +184,12 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
 end
 
 FlashlightExtension.delete = function(self)
+    -- Unregister events
+    managers.event:unregister(self, "weapon_customization_cutscene")
+    managers.event:unregister(self, "weapon_customization_settings_changed")
     -- Deactivate
     self.initialized = false
     self.on = false
-    -- Unregister events
-    -- managers.event:unregister(self, "weapon_customization_settings_changed")
     -- Unset
     self:set_light(false, false)
     

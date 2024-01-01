@@ -11,79 +11,79 @@ local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/i
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local Unit = Unit
+	local Mesh = Mesh
+	local type = type
 	local table = table
-	local table_contains = table.contains
+	local World = World
+	local pairs = pairs
+	local CLASS = CLASS
+	local color = Color
+	local string = string
+	local rawget = rawget
+	local Level = Level
+	local vector2 = Vector2
+	local vector3 = Vector3
+	local managers= Managers
+	local log_info = Log.info
+	local tonumber = tonumber
+	local unit_node = Unit.node
+	local unit_mesh = Unit.mesh
 	local table_keys = table.keys
 	local table_sort = table.sort
 	local table_find = table.find
+	local unit_alive = Unit.alive
+	local Quaternion = Quaternion
+	local vector3_box = Vector3Box
+	local table_clone = table.clone
+	local string_gsub = string.gsub
+	local string_find = string.find
+	local vector3_one = vector3.one
 	local table_remove = table.remove
 	local table_append = table.append
-	local table_set_readonly = table.set_readonly
-	local table_clone = table.clone
-	local Unit = Unit
+	local string_split = string.split
+	local vector3_zero = vector3.zero
+	local matrix4x4_box = Matrix4x4Box
+	local level_units = Level.units
 	local unit_set_data = Unit.set_data
+	local unit_has_node = Unit.has_node
+	local table_contains = table.contains
 	local unit_debug_name = Unit.debug_name
-	local unit_alive = Unit.alive
-	local unit_set_local_position = Unit.set_local_position
-	local unit_set_local_rotation = Unit.set_local_rotation
-	local unit_set_local_scale = Unit.set_local_scale
+	local unit_local_pose = Unit.local_pose
+	local unit_world_pose = Unit.world_pose
+	local unit_lod_object = Unit.lod_object
+	local unit_num_meshes = Unit.num_meshes
+	local vector3_unbox = vector3_box.unbox
+	local world_link_unit = World.link_unit
+	local world_unlink_unit = World.unlink_unit
+	local table_set_readonly = table.set_readonly
+	local visibility_contexts = VisibilityContexts
 	local unit_local_position = Unit.local_position
 	local unit_local_rotation = Unit.local_rotation
 	local unit_world_position = Unit.world_position
 	local unit_world_rotation = Unit.world_rotation
-	local unit_local_pose = Unit.local_pose
-	local unit_has_node = Unit.has_node
-	local unit_node = Unit.node
-	local unit_world_pose = Unit.world_pose
-	local unit_set_animation_state_machine = Unit.set_animation_state_machine
 	local unit_has_lod_object = Unit.has_lod_object
-	local unit_lod_object = Unit.lod_object
-	local unit_set_unit_objects_visibility = Unit.set_unit_objects_visibility
-	local unit_set_unit_culling = Unit.set_unit_culling
 	local unit_set_sort_order = Unit.set_sort_order
-	local unit_num_meshes = Unit.num_meshes
-	local unit_mesh = Unit.mesh
+	local mesh_local_position = Mesh.local_position
+	local world_spawn_unit_ex = World.spawn_unit_ex
+	local unit_set_local_scale = Unit.set_local_scale
+	local quaternion_matrix4x4 = Quaternion.matrix4x4
+	local unit_set_unit_culling = Unit.set_unit_culling
+	local unit_set_local_position = Unit.set_local_position
+	local unit_set_local_rotation = Unit.set_local_rotation
+	local lod_group_add_lod_object = LODGroup.add_lod_object
 	local unit_set_mesh_visibility = Unit.set_mesh_visibility
 	local unit_set_unit_visibility = Unit.set_unit_visibility
+	local lod_object_set_static_select = LODObject.set_static_select
 	local Unit_set_scalar_for_materials = Unit.set_scalar_for_materials
 	local Unit_set_vector2_for_materials = Unit.set_vector2_for_materials
 	local Unit_set_vector3_for_materials = Unit.set_vector3_for_materials
 	local Unit_set_vector4_for_materials = Unit.set_vector4_for_materials
 	local Unit_set_texture_for_materials = Unit.set_texture_for_materials
-	local Mesh = Mesh
-	local mesh_local_position = Mesh.local_position
-	local Quaternion = Quaternion
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
+	local unit_set_animation_state_machine = Unit.set_animation_state_machine
+	local unit_set_unit_objects_visibility = Unit.set_unit_objects_visibility
 	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
-	local quaternion_matrix4x4 = Quaternion.matrix4x4
-	local string = string
-	local string_gsub = string.gsub
-	local string_find = string.find
-	local string_split = string.split
-	local vector2 = Vector2
-	local vector3 = Vector3
-	local vector3_box = Vector3Box
-	local vector3_unbox = vector3_box.unbox
-	local vector3_zero = vector3.zero
-	local vector3_one = vector3.one
-	local matrix4x4_box = Matrix4x4Box
-	local World = World
-	local world_unlink_unit = World.unlink_unit
-	local world_link_unit = World.link_unit
-	local world_spawn_unit_ex = World.spawn_unit_ex
-	local lod_group_add_lod_object = LODGroup.add_lod_object
-	local lod_object_set_static_select = LODObject.set_static_select
-	local log_info = Log.info
-	local pairs = pairs
-	local type = type
-	local tonumber = tonumber
-	local visibility_contexts = VisibilityContexts
-	local CLASS = CLASS
-	local color = Color
-	local rawget = rawget
-    local Level = Level
-    local level_units = Level.units
-	local managers= Managers
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -159,20 +159,75 @@ local REFERENCE = "weapon_customization"
 -- 	mod:echo("check")
 -- end)
 
-mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
-    local pass_input, pass_draw = func(self, dt, t, input_service, ...)
-    if mod.weapon_changed then
+-- mod:hook(CLASS.RenderTargetIconGeneratorBase, "_request_by_id", function(func, self, request_id, ignore_assert, ...)
+-- 	local requests_by_size = self._requests_by_size
+-- 	for size_key, requests in pairs(requests_by_size) do
+-- 		for _, request in pairs(requests) do
+-- 			if request.id == request_id then
+-- 				return request
+-- 			elseif string_find(request.id, request_id) then
+-- 				mod:echot("in string")
+-- 				return request
+-- 			end
+-- 		end
+-- 	end
+-- end)
 
-        self:_spawn_profile(self._presentation_profile)
-
-		managers.ui:item_icon_updated(mod.changed_weapon)
-		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
-		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
-
-        mod.weapon_changed = nil
-    end
-    return pass_input, pass_draw
+mod:hook(CLASS.WeaponIconUI, "init", function(func, self, render_settings, ...)
+	func(self, render_settings, ...)
+	self._request_by_id = function(self, request_id, ignore_assert, ...)
+		local requests_by_size = self._requests_by_size
+		for size_key, requests in pairs(requests_by_size) do
+			for _, request in pairs(requests) do
+				if request.id == request_id then
+					return request
+				-- CHECK request_id + size_key
+				elseif request.id == request_id.."_"..tostring(size_key) then
+					return request
+				end
+			end
+		end
+	end
 end)
+
+-- mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, context, on_present_callback, ...)
+-- 	func(self, item, context, on_present_callback, ...)
+-- 	mod:echot("present_item")
+-- end)
+
+-- mod:hook(CLASS.InventoryWeaponsView, "event_replace_list_item", function(func, self, item, ...)
+-- 	self:replace_item_instance(item)
+
+-- 	if self._previewed_item and item and self._previewed_item.gear_id == item.gear_id then
+-- 		mod:echot("replace")
+-- 		self:_stop_previewing()
+-- 		self._previewed_item = item
+-- 		self:_preview_item(item)
+-- 	end
+-- end)
+
+-- mod:hook(CLASS.WeaponIconUI, "weapon_icon_updated", function(func, self, item, prioritized, ...)
+-- 	local id = item.gear_id or item.name
+-- 	local request = self:_request_by_id(id)
+-- 	if request then
+-- 		self:_update_request(request, item, prioritized)
+-- 	end
+-- end)
+
+-- mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
+--     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
+--     if mod.weapon_changed then
+
+--         -- self:_spawn_profile(self._presentation_profile)
+
+-- 		managers.ui:item_icon_updated(mod.changed_weapon)
+-- 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
+-- 		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
+
+--         mod.weapon_changed = nil
+--     end
+--     return pass_input, pass_draw
+-- end)
 
 -- Visual loadout extension hooks
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)

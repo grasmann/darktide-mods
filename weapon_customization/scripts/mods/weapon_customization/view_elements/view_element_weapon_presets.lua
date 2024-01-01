@@ -23,13 +23,13 @@ local ViewElementWeaponPresetsSettings = mod:io_dofile("weapon_customization/scr
 
 --#region local functions
 	local table = table
-	local table_merge_recursive = table.merge_recursive
-	local table_clone = table.clone
-	local managers = Managers
 	local class = class
-	local callback = callback
-	local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
 	local Color = Color
+	local managers = Managers
+	local callback = callback
+	local table_clone = table.clone
+	local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
+	local table_merge_recursive = table.merge_recursive
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
