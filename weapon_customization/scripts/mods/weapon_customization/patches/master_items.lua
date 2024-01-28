@@ -36,9 +36,6 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "weapon_customization"
-
-mod.store_items = {}
-mod.premium_store_items = {}
 mod.player_items = {}
 
 -- ##### ┌┬┐┌─┐┌─┐┌┬┐┌─┐┬─┐  ┬┌┬┐┌─┐┌┬┐  ┌┬┐┌─┐┌┬┐┬┌─┐┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐┬─┐┌─┐┌─┐┬ ┬ ##############################
@@ -190,7 +187,6 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 rawset(item_instance, "__master_item", clone)
                 rawset(item_instance, "set_temporary_overrides", function (self, new_temp_overrides)
                     rawset(item_instance, "__temp_overrides", new_temp_overrides)
-        
                     _update_master_data(item_instance)
                 end)
         
@@ -217,7 +213,6 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         
                         if not success then
                             log_error("MasterItems", "[_item_plus_overrides][1] could not update master data with %s", gear.masterDataInstance.id)
-        
                             return nil
                         end
                     end
@@ -234,7 +229,6 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         
                     if not master_item then
                         log_warning("MasterItemCache", string_format("No master data for item with id %s", gear.masterDataInstance.id))
-        
                         return nil
                     end
         
@@ -242,16 +236,9 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 end,
                 __newindex = function (t, field_name, value)
                     rawset(t, field_name, value)
-                    -- if is_preview_item then
-                    --     rawset(t, field_name, value)
-                    -- else
-                    --     -- ferror("Not allowed to modify inventory items - %s[%s]", rawget(item_instance, "__gear_id"), field_name)
-                    --     rawget(item_instance, "__gear_id")
-                    -- end
                 end,
                 __tostring = function (t)
                     local master_item = rawget(item_instance, "__master_item")
-        
                     return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
                 end
             })
@@ -260,7 +247,6 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         
             if not success then
                 log_error("MasterItems", "[_item_plus_overrides][2] could not update master data with %s", gear.masterDataInstance.id)
-        
                 return nil
             end
         
@@ -277,8 +263,6 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                     }
                 },
                 __gear_id = data.gear_id or data.gearId,
-                -- __store_item = true,
-                -- __premium_store_item = premium_store_item,
             }
         
             setmetatable(item_instance, {
@@ -290,7 +274,6 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         
                         if not success then
                             log_error("MasterItems", "[_store_item_plus_overrides][1] could not update master data with %s; %s", data.id, data.gear_id)
-        
                             return nil
                         end
                     end
@@ -307,7 +290,6 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         
                     if not master_item then
                         log_warning("MasterItemCache", string_format("No master data for item with id %s", item_instance.__asset_id))
-        
                         return nil
                     end
         
@@ -321,11 +303,9 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 end,
                 __newindex = function (t, field_name, value)
                     rawset(t, field_name, value)
-                    -- ferror("Not allowed to modify inventory items - %s[%s]", rawget(item_instance, "__gear_id"), field_name)
                 end,
                 __tostring = function (t)
                     local master_item = rawget(item_instance, "__master_item")
-        
                     return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
                 end
             })
@@ -334,7 +314,6 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         
             if not success then
                 log_error("MasterItems", "[_store_item_plus_overrides][2] could not update master data with %s; %s", data.id, data.gear_id)
-        
                 return nil
             end
         
@@ -342,180 +321,106 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         end
     --#endregion Original Code
 
+    local function cached_gear_list()
+        local data_service = managers and managers.data_service
+        local gear_data = data_service and data_service.gear
+        return gear_data and gear_data._cached_gear_list
+    end
+
     mod:hook(MasterItems, "get_item_instance", function(func, gear, gear_id, ...)
+        -- Check instance
         if not gear then
             log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
             return nil
         else
+            -- Process
             local item_instance = _item_plus_overrides(gear, gear_id)
             local master_item = item_instance.__master_item or item_instance
-
-            local data_service = managers and managers.data_service
-            local gear_data = data_service and data_service.gear
-            local cached_gear_list = gear_data and gear_data._cached_gear_list
+            local cached_gear_list = cached_gear_list()
             if gear_id and cached_gear_list and cached_gear_list[gear_id] ~= nil then
                 mod.player_items[gear_id] = true
-                -- item_instance.__master_item.owned_by_player = cached_gear_list[gear_id] ~= nil
             elseif gear_id then
-                -- local gear_id = mod:get_gear_id(item)
                 mod.player_items[gear_id] = nil
-
+                -- Get attributes
                 local in_possesion_of_player = mod:is_owned_by_player(item_instance)
                 local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
                 local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
                 local in_premium_store = mod:is_premium_store_item(item_instance)
+                -- Get options
                 local store = in_store and mod:get("mod_option_randomization_store")
                 local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
                 local randomize = store or other_player
+                -- Randomize
                 if randomize and gear_id then
                     if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-                        -- mod:print("randomize "..tostring(gear_id))
-                        local random_attachments = mod:randomize_weapon(master_item)
-                        mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
-                        -- Auto equip
-                        for attachment_slot, value in pairs(random_attachments) do
-                            if not mod.add_custom_attachments[attachment_slot] then
-                                mod:resolve_auto_equips(item_instance, value)
-                            end
-                        end
-                        for attachment_slot, value in pairs(random_attachments) do
-                            if mod.add_custom_attachments[attachment_slot] then
-                                mod:resolve_auto_equips(item_instance, value)
-                            end
-                        end
-                        -- Special resolve
-                        for attachment_slot, value in pairs(random_attachments) do
-                            if mod.add_custom_attachments[attachment_slot] then
-                                mod:resolve_special_changes(item_instance, value)
-                            end
-                        end
-                        for attachment_slot, value in pairs(random_attachments) do
-                            if not mod.add_custom_attachments[attachment_slot] then
-                                mod:resolve_special_changes(item_instance, value)
-                            end
-                        end
+                        mod:randomize_item(item_instance, mod:persistent_table(REFERENCE).temp_gear_settings, gear_id)
                     end
                 end
-
+                -- Add / overwrite attachments
                 if gear_id then
+                    -- Setup definitions
                     mod:setup_item_definitions()
-    
-                    -- Add flashlight slot
+                    -- Add custom attachment slot
                     mod:_add_custom_attachments(master_item, master_item.attachments)
-                    
-                    -- Overwrite attachments
+                    -- Overwrite attachment slots
                     mod:_overwrite_attachments(master_item, master_item.attachments)
-    
-                    -- local found_packages = mod:get_modded_item_packages(item.attachments)
-                    -- for _, package_name in pairs(found_packages) do
-                    --     mod:persistent_table(REFERENCE).used_packages.hub[package_name] = true
-                    -- end
                 end
             end
-
-            mod:apply_special_templates(master_item)
-
+            -- Add special templates
+            -- mod:apply_special_templates(master_item)
+            -- Return instance
             return item_instance
         end
     end)
 
     mod:hook(MasterItems, "get_store_item_instance", function(func, description, ...)
         local item_instance = _store_item_plus_overrides(description)
-
         local gear_id = mod:get_gear_id(item_instance)
-        local offer_id = mod.gear_id_to_offer_id[gear_id]
-        -- mod:echo(tostring(gear_id).." = "..tostring(offer_id))
-        if gear_id then
-            mod.store_items[gear_id] = true
+        local offer_id = description.offer_id
+        if gear_id and offer_id then
             local master_item = item_instance.__master_item or item_instance
-            -- mod.gear_id_to_offer_id[gear_id] = 
-            -- mod:dtf(item_instance, "item_instance_"..tostring(gear_id), 10)
-            mod:setup_item_definitions()
-
             if not mod:is_premium_store_item() then
-                
+                -- Get attributes
                 local in_possesion_of_player = mod:is_owned_by_player(item_instance)
                 local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
                 local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
                 local in_premium_store = mod:is_premium_store_item(item_instance)
+                -- Get options
                 local store = in_store and mod:get("mod_option_randomization_store")
                 local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
                 local randomize = store or other_player
-                if randomize and gear_id then
-                    if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-                        -- mod:print("randomize "..tostring(gear_id))
-                        local random_attachments = mod:randomize_weapon(master_item)
-                        mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
-                        -- Auto equip
-                        for attachment_slot, value in pairs(random_attachments) do
-                            if not mod.add_custom_attachments[attachment_slot] then
-                                mod:resolve_auto_equips(item_instance, value)
-                            end
-                        end
-                        for attachment_slot, value in pairs(random_attachments) do
-                            if mod.add_custom_attachments[attachment_slot] then
-                                mod:resolve_auto_equips(item_instance, value)
-                            end
-                        end
-                        -- Special resolve
-                        for attachment_slot, value in pairs(random_attachments) do
-                            if mod.add_custom_attachments[attachment_slot] then
-                                mod:resolve_special_changes(item_instance, value)
-                            end
-                        end
-                        for attachment_slot, value in pairs(random_attachments) do
-                            if not mod.add_custom_attachments[attachment_slot] then
-                                mod:resolve_special_changes(item_instance, value)
-                            end
-                        end
+                -- Randomize
+                if randomize and offer_id then
+                    if not mod:persistent_table(REFERENCE).temp_gear_settings[offer_id] then
+                        mod:randomize_item(item_instance, mod:persistent_table(REFERENCE).temp_gear_settings, offer_id)
                     end
                 end
 
+                mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = mod:persistent_table(REFERENCE).temp_gear_settings[offer_id]
+                -- Add / overwrite attachments
                 if gear_id then
+                    -- Setup definitions
                     mod:setup_item_definitions()
-    
-                    -- Add flashlight slot
+                    -- Add custom attachment slot
                     mod:_add_custom_attachments(master_item, master_item.attachments)
-                    
-                    -- Overwrite attachments
+                    -- Overwrite attachment slots
                     mod:_overwrite_attachments(master_item, master_item.attachments)
-    
-                    -- local found_packages = mod:get_modded_item_packages(item.attachments)
-                    -- for _, package_name in pairs(found_packages) do
-                    --     mod:persistent_table(REFERENCE).used_packages.hub[package_name] = true
-                    -- end
                 end
             end
-
-            
-
-            -- local definition = mod:persistent_table(REFERENCE).item_definitions[description.id]
-            -- -- local premium_store_item = nil
-            -- if definition and definition.feature_flags and table_find(definition.feature_flags, "FEATURE_premium_store") then
-            --     -- premium_store_item = true
-            --     mod.premium_store_items[gear_id] = true
-            -- end
         end
-
+        -- Add special templates
+        -- mod:apply_special_templates(master_item)
+        -- Return instance
         return item_instance
     end)
 
-    -- mod:hook(MasterItems, "refresh", function(func, ...)
-    --     -- Refresh cache
-    --     mod:persistent_table(REFERENCE).item_definitions = nil
-    --     mod:setup_item_definitions()
-    --     -- Return
-    --     return func(...)
-    -- end)
-
-    mod:hook(MasterItems, "get_cached", function(func, ...)
-        local master_items = func(...)
-        if not mod:persistent_table(REFERENCE).item_definitions and master_items then
-            mod:setup_item_definitions(master_items)
-        end
-        if mod:persistent_table(REFERENCE).item_definitions then
-            return mod:persistent_table(REFERENCE).item_definitions
-        end
+    mod:hook(MasterItems, "get_cached", function(func, original, ...)
+        local master_items = func(original, ...)
+        -- Setup definitions
+        if not mod:persistent_table(REFERENCE).item_definitions and master_items then mod:setup_item_definitions(master_items) end
+        -- Return custom definitions
+        if not original and mod:persistent_table(REFERENCE).item_definitions then return mod:persistent_table(REFERENCE).item_definitions end
+        -- Return original definitions
         return master_items
     end)
 

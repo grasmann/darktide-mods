@@ -550,9 +550,9 @@ SightExtension.update_scope_lenses = function(self)
     end
 end
 
-SightExtension.update_zoom = function(self)
+SightExtension.update_zoom = function(self, viewport_name)
     if self.initialized and self:get_first_person() then
-        local viewport = ScriptWorld.viewport(self.world, self.player.viewport_name)
+        local viewport = ScriptWorld.viewport(self.world, viewport_name)
         local camera = viewport and ScriptViewport.camera(viewport)
         if camera then
             self:set_default_fov(camera_vertical_fov(camera), camera_custom_vertical_fov(camera))
@@ -561,53 +561,6 @@ SightExtension.update_zoom = function(self)
         end
     end
 end
-
--- SightExtension.apply_weapon_dof = function(self, shading_env)
---     local scale = 5
---     local is_aiming = self:is_aiming()
---     local is_sniper_or_scope = self:is_sniper_or_scope()
---     local scale = (is_aiming and not is_sniper_or_scope and .5) or (is_aiming and is_sniper_or_scope and 2.5) or 3.5
-
---     ShadingEnvironment.set_scalar(shading_env, "dof_enabled", 1)
---     ShadingEnvironment.set_scalar(shading_env, "dof_focal_distance", .5)
---     ShadingEnvironment.set_scalar(shading_env, "dof_focal_region", 50)
---     ShadingEnvironment.set_scalar(shading_env, "dof_focal_region_start", -1)
---     ShadingEnvironment.set_scalar(shading_env, "dof_focal_region_end", 49)
---     ShadingEnvironment.set_scalar(shading_env, "dof_focal_near_scale", scale)
---     ShadingEnvironment.set_scalar(shading_env, "dof_focal_far_scale", .5)
--- end
-
-
-
-
--- mod:hook(CLASS.CameraManager, "shading_callback", function(func, self, world, shading_env, viewport, default_shading_environment_resource, ...)
---     -- Original function
---     local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
---     -- Extensions
---     if self._world == world then
---         -- local camera_shading_env_settings = camera_data.shading_environment
---         local viewport_name = Viewport.get_data(viewport, "name")
---         local camera_nodes = self._camera_nodes[viewport_name]
---         local current_node = self:_current_node(camera_nodes)
---         local root_unit = current_node:root_unit()
---         -- Sight
---         mod:execute_extension(root_unit, "sight_system", "apply_weapon_dof", shading_env)
---         -- local scale = 5
---         -- local is_aiming = mod:execute_extension(root_unit, "sight_system", "is_aiming")
---         -- local is_sniper_or_scope = mod:execute_extension(root_unit, "sight_system", "is_sniper_or_scope")
---         -- local scale = (is_aiming and not is_sniper_or_scope and .5) or (is_aiming and is_sniper_or_scope and 2.5) or 3.5
-
--- 		-- -- if camera_shading_env_settings.dof_enabled then
---         -- shading_environment_set_scalar(shading_env, "dof_enabled", 1)
---         -- shading_environment_set_scalar(shading_env, "dof_focal_distance", .5)
---         -- shading_environment_set_scalar(shading_env, "dof_focal_region", 40)
---         -- shading_environment_set_scalar(shading_env, "dof_focal_region_start", -1)
---         -- shading_environment_set_scalar(shading_env, "dof_focal_region_end", 39)
---         -- shading_environment_set_scalar(shading_env, "dof_focal_near_scale", scale)
---         -- shading_environment_set_scalar(shading_env, "dof_focal_far_scale", .5)
---         -- end
---     end
--- end)
 
 -- ##### ┬─┐┌─┐┌─┐┌─┐┬┬    ┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌─┐┬ ┬ ####################################################################
 -- ##### ├┬┘├┤ │  │ │││    ├─┤│││ ││  └─┐│││├─┤└┬┘ ####################################################################

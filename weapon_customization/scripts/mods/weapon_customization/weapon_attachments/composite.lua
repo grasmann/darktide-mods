@@ -96,8 +96,6 @@ mod.is_composite_item = function(self, name)
 end
 
 mod.register_composite_item = function(self, name, description)
-    mod:echo("lool")
-
     if type(description) ~= "table" then return end
     if table_size(description) == 0 then return end
     -- self:setup_item_definitions()
@@ -194,7 +192,7 @@ mod.register_composite_item = function(self, name, description)
     self:persistent_table(REFERENCE).composite_items[name] = true
     self:persistent_table(REFERENCE).item_definitions[name] = item_definition
 
-    mod:dtf(self:persistent_table(REFERENCE).item_definitions[name], "item_definition", 10)
+    -- mod:dtf(self:persistent_table(REFERENCE).item_definitions[name], "item_definition", 10)
 
 end
 

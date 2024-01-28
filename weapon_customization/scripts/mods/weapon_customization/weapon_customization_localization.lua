@@ -60,6 +60,10 @@ return {
 		ru = "Включить отладку",
 		["zh-cn"] = "调试",
 	},
+	demo_mode = {
+		en = "Demo Mode",
+		de = "Demo Modus",
+	},
 	-- ##### ┌┬┐┬┌─┐┌─┐ ###############################################################################################
 	-- ##### ││││└─┐│   ###############################################################################################
 	-- ##### ┴ ┴┴└─┘└─┘ ###############################################################################################
@@ -181,7 +185,7 @@ return {
 		["zh-cn"] = "壁垒",
 	},
 	mod_attachment_remove = {
-		en = "Twin.Linked Heavy Stubber|Ripper Gun|Rumbler|Kickback|Ogryn Thumper|Grenadier Gauntlet|Cleaver|Power Maul|Battle Maul & Mk III Slab Shield|Battle Maul & Mk 3 Slab Shield|Bully Club|Shredder Autopistol|Helbore Lasgun|Laspistol|Infantry Autogun|Headhunter Autogun|Braced Autogun|Spearhead Boltgun|Boltgun|Infantry Lasgun| pattern lasgun|Heavy|Autogun|Recon Lasgun| Purgation Flamer|Flamer| pattern flamer|Combat Shotgun|Stub Revolver|Stubrevolver|Plasma Gun|Force Staff|Duelling Sword|Blaze Force Sword|Force Sword|Power Sword|Sword|Combat Axe|Tactical Axe|Assault Chainsword|Chainsword|Combat Blade|Model Powersword|Assault Chainaxe|Chainaxe|pattern|unknown manufacture|Sapper Shovel|Thunder Hammer|Crusher|Model Powermaul|Eviscerator|Camo|[()]|Latrine Shovel",
+		en = "Twin.Linked Heavy Stubber|Ripper Gun|Rumbler|Kickback|Ogryn Thumper|Grenadier Gauntlet|Cleaver|Power Maul|Battle Maul & Mk III Slab Shield|Battle Maul & Mk 3 Slab Shield|Bully Club|Shredder Autopistol|Helbore Lasgun|Laspistol|Infantry Autogun|Headhunter Autogun|Braced Autogun|Spearhead Boltgun|Boltgun|Infantry Lasgun| pattern lasgun|Heavy|Autogun|Recon Lasgun| Purgation Flamer|Flamer| pattern flamer|Combat Shotgun|Stub Revolver|Stubrevolver|Plasma Gun|Force Staff|Duelling Sword|Blaze Force Sword|Force Sword|Power Sword|Sword|Combat Axe|Tactical Axe|Assault Chainsword|Chainsword|Combat Blade|Model Powersword|Assault Chainaxe|Chainaxe|pattern|unknown manufacture|Sapper Shovel|Thunder Hammer|Crusher|Model Powermaul|Eviscerator|Camo|[()]|Latrine Shovel|Battle Maul & Slabshield",
 		de = "-Rippergun|-Schwert|Doppelläufiges|-Maschinengewehr|-Tarnung|[():]|Rippergun|-Camo|-Rückschlag|-Prügel|Rückschlag|-Grenadierhandschuh|Grenadierhandschuh|-Hackmesser|Hackmesser|-Energiestreitkolben|.Kampf.Streitkolben|& Orox.Klotzschild Mk III|& Orox.Klotzschild Mk 3|-Schlägerkeule|-Kampfaxt|Kampfaxt| Taktische Axt|.Sturm.Kettenschwert|Sturm.Kettenschwert|.Kampfklinge|Kampfklinge|.Energieschwert|Energieschwert|Pionierspaten|.Sturm.Kettenaxt|.Helbore.Lasergewehr|Infanterie.Lasergewehr|.Kundschafter.Lasergewehr| Schwere Laserpistole|.Muster.Lasergewehr|.Infanterie.Sturmgewehr|.Stabilisation.Sturmgewehr|.Kopfjäger.Sturmgewehr|.Sturmgewehr|.Schredder.Maschinenpistole|Speerspitze.Boltpistole|Schwere Laserpistole|.Läuterungs.Flammenwerfer|Läuterungs.Flammenwerfer|.Einsatzschrotflinte|Einsatzschrotflinte|Infanterie|Sturmgewehr|Schredder.Maschinenpistole|.Speerspitze.Boltpistole|.Plasmagewehr|.Stub.Revolver|Stub.Revolver|.Purgatus.Psistab|Purgatus.Psistab|Leerenschlag.Psistab|.Trauma.Psistab|.Welle.Psistab|Leerenschlag.|.Psistab|.Glut.Psischwert|Glut.Psischwert|Psischwert|isches Duellschwert|.Donnerhammer|Donnerhammer|.Brecher|Brecher|Schwerer Ausweider|Schwerer|.Ausweider|.Schweres Schwert|.Läuterungsflammenwerfer",
 		ru = "Спаренный тяжёлый стаббер|Дробовик-потрошитель|Гранатомёт|Дробовик|Отбойник огрина|Гренадерская перчатка|Тесак|Силовая булава|Боевая булава и Мод III|Боевая булава и Мод 3|Дубина задиры|Щит-плита|щит-плита|Автопистолет-крошитель|Автопистолет|-крошитель|Хельборовое лазружьё|Тяжёлый лазпистолет|Тяжелый лазпистолет|Пехотный автомат|Автомат-головострел|Усиленный автомат|Пронзающий болтер|Болтер|Лазвинтовка пехоты| образец лазгана|Тяжёлый|Автомат|-головострел|Лазвинтовка разведки|Лазган|Пехотный лазган| Огнемёт очищения|Огнемет чистки|Огнемёт| образец огнемёта|Боевой дробовик|Стаб-револьвер|Плазменная винтовка|Психосиловой|посох|чистки|пустотный|Силовой посох|Силовой|Травма|Молния|Пургатус|Пустотный|Дуэльный меч|Пламенный силовой меч|Силовой меч|Силовой меч|Меч|Боевой топор|Тактический топор|Штурмовой пиломеч|Пиломеч|Боевой клинок|Мод Силовой меч|Штурмовой пилотопор|Пилотопор|образец|неизвестный производитель|Сапёрная лопата|Громовой|Крушитель|Мод Силовая булава|Потрошитель|Камуфляж|камуфляж|Стаб|-револьвер|быстрый|«Коготь дьявола»|пылающий|Пламенный психосиловой|оперативник|Штурмовой цепной|Тяжелый эвисцератор|меч|Дробитель|подлатанный подручными средствами|-потрошитель|Рубило|Отбойник|Боевая булава|и щит Верзилы мод. III|Палица задиры|Катачанский|Рамблер|Спаренный тяжелый пулемет|топор|цепной|Хелборский лазган|охотника за головами|Разведывательный лазган|Серийный автомат|Скорострельный|стаб|Тяжелый|дуэльный |Огненный психосиловой|очищения|тический психосиловой|Волновой психосиловой|Щит|\"|-плита|Пылающий|психосиловой|Травмы|Импульса|Пустоты|Хельборское|Адскобуровое|лазружьё|лазган|лазвинтовка|Плазмаган|плазмаган|Плазмомёт|Грозовой|молот|боевое снаряжение|Шоковая|булава|Малая саперная лопатка||[()]|",
 		["zh-cn"] = "等离子枪|步兵激光枪|样式激光枪|地狱钻激光枪|侦察激光枪|侦查激光枪|重型激光手枪|粉碎者自动手枪|步兵自动枪|稳固自动枪|猎头者自动枪|猎颅者自动枪|自动枪|速发左轮枪|左轮枪|战斗霰弹枪|先锋爆矢枪|涤罪火焰喷射器|力场杖|开膛枪|开膛手霰弹枪|低吼者|击退者|双联重机枪|掷弹兵臂铠|砍刀|恶霸棍棒|动力锤|作战大锤|与板砖大盾 Mk.III|与板砖大盾 Mk.3|粉碎者|雷霆锤|战斧|战术斧|战斗利刃|工兵铲|突击链锯剑|链锯剑|突击链锯斧|动力剑|能量剑|决斗剑|炙焰力场剑|力场剑|重剑|重型开膛剑|剑|迷彩|[()]|（|）",
@@ -310,6 +314,14 @@ return {
 		de = "Randomisierung der Waffen der anderen Spieler",
 		ru = "Создавать случайные варианты оружия у других игроков",
 		["zh-cn"] = "随机化其他玩家的武器",
+	},
+	mod_option_randomization_reward = {
+		en = "Rewards",
+		de = "Belohnungen",
+	},
+	mod_option_randomization_reward_tooltip = {
+		en = "Randomize mission reward weapons",
+		de = "Randomisierung der Missions-Belohnungs Waffen",
 	},
 	mod_option_randomization_bayonet = {
 		en = "Bayonet",
@@ -623,18 +635,18 @@ return {
 		ru = "Устанавливает размер точки на конце лазера.",
 		["zh-cn"] = "设置激光末端圆点的大小",
 	},
-	mod_option_laser_pointer_wild = {
-		en = "Wild Flickering",
-		de = "Flimmert Wild",
-		ru = "Дикое мерцание",
-		["zh-cn"] = "强烈闪烁",
-	},
-	mod_option_laser_pointer_wild_tooltip = {
-		en = "The flashlight of the laser pointer constantly flickers",
-		de = "Die Taschenlampe des Laserpointers flimmert kontinuierlich",
-		ru = "Фонарик лазерной указки будет постоянно мерцать.",
-		["zh-cn"] = "激光指示器的手电筒持续闪烁",
-	},
+	-- mod_option_laser_pointer_wild = {
+	-- 	en = "Wild Flickering",
+	-- 	de = "Flimmert Wild",
+	-- 	ru = "Дикое мерцание",
+	-- 	["zh-cn"] = "强烈闪烁",
+	-- },
+	-- mod_option_laser_pointer_wild_tooltip = {
+	-- 	en = "The flashlight of the laser pointer constantly flickers",
+	-- 	de = "Die Taschenlampe des Laserpointers flimmert kontinuierlich",
+	-- 	ru = "Фонарик лазерной указки будет постоянно мерцать.",
+	-- 	["zh-cn"] = "激光指示器的手电筒持续闪烁",
+	-- },
 	mod_option_laser_pointer_weapon_dot = {
 		en = "Weapon Shine Effect",
 		de = "Waffen Scheineffekt",
@@ -647,108 +659,108 @@ return {
 		ru = "Устанавливает наличие эффекта свечения лазерного указателя.",
 		["zh-cn"] = "设置激光指示器配件上是否有闪光效果",
 	},
-	mod_option_laser_pointer_hit_indicator = {
-		en = "Hit Indicator Flash",
-		de = "Trefferindikator Blitz",
-		ru = "Вспышка при попадании",
-		["zh-cn"] = "命中指示器闪光",
-	},
-	mod_option_laser_pointer_hit_indicator_tooltip = {
-		en = "Use laser dot as a flashing hit indicator",
-		de = "Benutzt Laserpunkt als blitzenden Trefferindikator",
-		ru = "Используйте лазерную точку в качестве вспыхивающего индикатора попаданий.",
-		["zh-cn"] = "以激光圆点作为闪光的命中指示器",
-	},
-	mod_option_laser_pointer_hit_color = {
-		en = "Normal Hit Color",
-		de = "Normale Trefferfarbe",
-		ru = "Обычный цвет попадания",
-		["zh-cn"] = "普通命中颜色",
-	},
-	mod_option_laser_pointer_hit_color_tooltip = {
-		en = "Sets color for normal hits",
-		de = "Legt Farbe für normale Treffer fest",
-		ru = "Устанавливает цвет для обычных попаданий.",
-		["zh-cn"] = "设置普通命中的颜色",
-	},
-	mod_option_laser_pointer_hit_weakspot_color = {
-		en = "Weakspot Hit Color",
-		de = "Schwachstelle Trefferfarbe",
-		ru = "Цвет попадания в уязвимое место",
-		["zh-cn"] = "弱点命中颜色",
-	},
-	mod_option_laser_pointer_hit_weakspot_color_tooltip = {
-		en = "Sets color for weakspot hits",
-		de = "Legt Farbe für Schwachstellen-Treffer fest",
-		ru = "Устанавливает цвет для попаданий в уязвимые места.",
-		["zh-cn"] = "设置弱点命中的颜色",
-	},
-	mod_option_laser_pointer_hit_critical_color = {
-		en = "Critical Hit Color",
-		de = "Kritische Trefferfarbe",
-		ru = "Цвет критического попадания",
-		["zh-cn"] = "暴击命中颜色",
-	},
-	mod_option_laser_pointer_hit_critical_color_tooltip = {
-		en = "Sets color for critical hits",
-		de = "Legt Farbe für kritische Treffer fest",
-		ru = "Устанавливает цвет для критических попаданий.",
-		["zh-cn"] = "设置暴击命中的颜色",
-	},
-	mod_option_laser_pointer_kill_color = {
-		en = "Kill Color",
-		de = "Tötungsfarbe",
-		ru = "Цвет при убийстве",
-		["zh-cn"] = "击杀颜色",
-	},
-	mod_option_laser_pointer_kill_color_tooltip = {
-		en = "Sets color for hits that kill an enemy",
-		de = "Legt Farbe für Treffer fest die einen Gegner töten",
-		ru = "Устанавливает цвет для убийства врагов.",
-		["zh-cn"] = "设置击杀敌人时的颜色",
-	},
-	mod_option_laser_pointer_hit_indicator_brightness = {
-		en = "Brightness",
-		de = "Helligkeit",
-		ru = "Яркость",
-		["zh-cn"] = "亮度",
-	},
-	mod_option_laser_pointer_hit_indicator_brightness_tooltip = {
-		en = "Sets brightness of hit indicators",
-		de = "Legt Helligkeit der Trefferindikatoren fest",
-		ru = "Устанавливает яркость вспышки индикатора попаданий.",
-		["zh-cn"] = "设置命中指示器的亮度",
-	},
-	mod_option_laser_pointer_hit_indicator_size = {
-		en = "Size",
-		de = "Größe",
-		ru = "Размер",
-		["zh-cn"] = "大小",
-	},
-	mod_option_laser_pointer_hit_indicator_size_tooltip = {
-		en = "Sets size of hit indicators",
-		de = "Legt Größe der Trefferindikatoren fest",
-		ru = "Устанавливает размер вспышки индикатора попаданий.",
-		["zh-cn"] = "设置命中指示器的大小",
-	},
-	mod_option_laser_pointer_hit_color_white = {
-		en = "{#color(255,255,255)}{#reset()}",
-	},
-	mod_option_laser_pointer_hit_color_yellow = {
-		en = "{#color(255,255,0)}{#reset()}",
-	},
-	mod_option_laser_pointer_hit_color_red = {
-		en = "{#color(255,0,0)}{#reset()}",
-	},
-	mod_option_laser_pointer_hit_color_green = {
-		en = "{#color(0,255,0)}{#reset()}",
-	},
-	mod_option_laser_pointer_hit_color_blue = {
-		en = "{#color(0,0,255)}{#reset()}",
-	},
-	mod_option_laser_pointer_hit_color_gold = {
-		en = "{#color(171,141,63)}{#reset()}",
-	},
+	-- mod_option_laser_pointer_hit_indicator = {
+	-- 	en = "Hit Indicator Flash",
+	-- 	de = "Trefferindikator Blitz",
+	-- 	ru = "Вспышка при попадании",
+	-- 	["zh-cn"] = "命中指示器闪光",
+	-- },
+	-- mod_option_laser_pointer_hit_indicator_tooltip = {
+	-- 	en = "Use laser dot as a flashing hit indicator",
+	-- 	de = "Benutzt Laserpunkt als blitzenden Trefferindikator",
+	-- 	ru = "Используйте лазерную точку в качестве вспыхивающего индикатора попаданий.",
+	-- 	["zh-cn"] = "以激光圆点作为闪光的命中指示器",
+	-- },
+	-- mod_option_laser_pointer_hit_color = {
+	-- 	en = "Normal Hit Color",
+	-- 	de = "Normale Trefferfarbe",
+	-- 	ru = "Обычный цвет попадания",
+	-- 	["zh-cn"] = "普通命中颜色",
+	-- },
+	-- mod_option_laser_pointer_hit_color_tooltip = {
+	-- 	en = "Sets color for normal hits",
+	-- 	de = "Legt Farbe für normale Treffer fest",
+	-- 	ru = "Устанавливает цвет для обычных попаданий.",
+	-- 	["zh-cn"] = "设置普通命中的颜色",
+	-- },
+	-- mod_option_laser_pointer_hit_weakspot_color = {
+	-- 	en = "Weakspot Hit Color",
+	-- 	de = "Schwachstelle Trefferfarbe",
+	-- 	ru = "Цвет попадания в уязвимое место",
+	-- 	["zh-cn"] = "弱点命中颜色",
+	-- },
+	-- mod_option_laser_pointer_hit_weakspot_color_tooltip = {
+	-- 	en = "Sets color for weakspot hits",
+	-- 	de = "Legt Farbe für Schwachstellen-Treffer fest",
+	-- 	ru = "Устанавливает цвет для попаданий в уязвимые места.",
+	-- 	["zh-cn"] = "设置弱点命中的颜色",
+	-- },
+	-- mod_option_laser_pointer_hit_critical_color = {
+	-- 	en = "Critical Hit Color",
+	-- 	de = "Kritische Trefferfarbe",
+	-- 	ru = "Цвет критического попадания",
+	-- 	["zh-cn"] = "暴击命中颜色",
+	-- },
+	-- mod_option_laser_pointer_hit_critical_color_tooltip = {
+	-- 	en = "Sets color for critical hits",
+	-- 	de = "Legt Farbe für kritische Treffer fest",
+	-- 	ru = "Устанавливает цвет для критических попаданий.",
+	-- 	["zh-cn"] = "设置暴击命中的颜色",
+	-- },
+	-- mod_option_laser_pointer_kill_color = {
+	-- 	en = "Kill Color",
+	-- 	de = "Tötungsfarbe",
+	-- 	ru = "Цвет при убийстве",
+	-- 	["zh-cn"] = "击杀颜色",
+	-- },
+	-- mod_option_laser_pointer_kill_color_tooltip = {
+	-- 	en = "Sets color for hits that kill an enemy",
+	-- 	de = "Legt Farbe für Treffer fest die einen Gegner töten",
+	-- 	ru = "Устанавливает цвет для убийства врагов.",
+	-- 	["zh-cn"] = "设置击杀敌人时的颜色",
+	-- },
+	-- mod_option_laser_pointer_hit_indicator_brightness = {
+	-- 	en = "Brightness",
+	-- 	de = "Helligkeit",
+	-- 	ru = "Яркость",
+	-- 	["zh-cn"] = "亮度",
+	-- },
+	-- mod_option_laser_pointer_hit_indicator_brightness_tooltip = {
+	-- 	en = "Sets brightness of hit indicators",
+	-- 	de = "Legt Helligkeit der Trefferindikatoren fest",
+	-- 	ru = "Устанавливает яркость вспышки индикатора попаданий.",
+	-- 	["zh-cn"] = "设置命中指示器的亮度",
+	-- },
+	-- mod_option_laser_pointer_hit_indicator_size = {
+	-- 	en = "Size",
+	-- 	de = "Größe",
+	-- 	ru = "Размер",
+	-- 	["zh-cn"] = "大小",
+	-- },
+	-- mod_option_laser_pointer_hit_indicator_size_tooltip = {
+	-- 	en = "Sets size of hit indicators",
+	-- 	de = "Legt Größe der Trefferindikatoren fest",
+	-- 	ru = "Устанавливает размер вспышки индикатора попаданий.",
+	-- 	["zh-cn"] = "设置命中指示器的大小",
+	-- },
+	-- mod_option_laser_pointer_hit_color_white = {
+	-- 	en = "{#color(255,255,255)}{#reset()}",
+	-- },
+	-- mod_option_laser_pointer_hit_color_yellow = {
+	-- 	en = "{#color(255,255,0)}{#reset()}",
+	-- },
+	-- mod_option_laser_pointer_hit_color_red = {
+	-- 	en = "{#color(255,0,0)}{#reset()}",
+	-- },
+	-- mod_option_laser_pointer_hit_color_green = {
+	-- 	en = "{#color(0,255,0)}{#reset()}",
+	-- },
+	-- mod_option_laser_pointer_hit_color_blue = {
+	-- 	en = "{#color(0,0,255)}{#reset()}",
+	-- },
+	-- mod_option_laser_pointer_hit_color_gold = {
+	-- 	en = "{#color(171,141,63)}{#reset()}",
+	-- },
 	-- ##### ┌┐ ┌─┐┌┬┐┌┬┐┌─┐┬─┐┬ ┬ ####################################################################################
 	-- ##### ├┴┐├─┤ │  │ ├┤ ├┬┘└┬┘ ####################################################################################
 	-- ##### └─┘┴ ┴ ┴  ┴ └─┘┴└─ ┴  ####################################################################################

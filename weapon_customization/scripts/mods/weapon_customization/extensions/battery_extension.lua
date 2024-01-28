@@ -131,14 +131,71 @@ BatteryExtension.set_enabled = function(self, value)
     self.on = value
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬   ###########################################################################################
 -- ##### │ ┬│  │ │├┴┐├─┤│   ###########################################################################################
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘ ###########################################################################################
 
 -- Get current battery charge
 mod.get_battery_charge = function(self)
-    if mod.player_unit and script_unit_has_extension(mod.player_unit, "battery_system") then
-        local battery_extension = script_unit_extension(mod.player_unit, "battery_system")
+    if self.player_unit and script_unit_has_extension(self.player_unit, "battery_system") then
+        local battery_extension = script_unit_extension(self.player_unit, "battery_system")
         return battery_extension and battery_extension:charge()
     end
     return 0
@@ -146,8 +203,8 @@ end
 
 -- Get maximum battery charge
 mod.get_battery_max = function(self)
-    if mod.player_unit and script_unit_has_extension(mod.player_unit, "battery_system") then
-        local battery_extension = script_unit_extension(mod.player_unit, "battery_system")
+    if self.player_unit and script_unit_has_extension(self.player_unit, "battery_system") then
+        local battery_extension = script_unit_extension(self.player_unit, "battery_system")
         return battery_extension and battery_extension:max()
     end
 	return 0
@@ -155,8 +212,8 @@ end
 
 -- Get battery charge fraction
 mod.get_battery_fraction = function(self)
-    if mod.player_unit and script_unit_has_extension(mod.player_unit, "battery_system") then
-        local battery_extension = script_unit_extension(mod.player_unit, "battery_system")
+    if self.player_unit and script_unit_has_extension(self.player_unit, "battery_system") then
+        local battery_extension = script_unit_extension(self.player_unit, "battery_system")
         return battery_extension and battery_extension:fraction()
     end
 	return 0

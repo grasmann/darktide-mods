@@ -34,33 +34,6 @@ local _item_melee = _item.."/melee"
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 return {
-    -- test_carry_handle_attachments = function(default)
-    --     local attachments = {
-    --         {id = "carryhandle_default", name = mod:localize("mod_attachment_default")},
-    --         {id = "carryhandle_01",  name = "MT carryhandle 1"},
-    --         {id = "carryhandle_04",  name = "MT carryhandle 2"},
-    --         {id = "carryhandle_01b", name = "MT carryhandle 1b"},
-    --         {id = "carryhandle_04b", name = "MT carryhandle 2b"},
-    --     }
-    --     if default == nil then default = true end
-    --     if default then return table.icombine(
-    --         {{id = "carryhandle_default", name = mod:localize("mod_attachment_default")}},
-    --         attachments)
-    --     else return attachments end
-    -- end,
-    -- test_carry_handle_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
-    --     if mesh_move == nil then mesh_move = false end
-    --     return table.model_table({
-    --         {name = "carryhandle_default", model = ""},
-    --         {name = "carryhandle_01",      model = _item_melee.."/grips/2h_chain_sword_grip_01"},
-    --         {name = "carryhandle_04",      model = _item_melee.."/grips/2h_chain_sword_grip_04"},
-    --         {name = "carryhandle_01b",     model = _item_melee.."/grips/2h_chain_sword_grip_01"},
-    --         {name = "carryhandle_04b",     model = _item_melee.."/grips/2h_chain_sword_grip_04"},
-    --     }, parent, angle, move, remove, type or "carryhandle", no_support, automatic_equip, hide_mesh, mesh_move)
-    -- end,
-
-
-
     flashlights_attachments = function(default)
         local attachments = {
             {id = "flashlight_01", name = mod:localize("mod_attachment_flashlight_01")},
@@ -107,7 +80,10 @@ return {
             {id = "grip_09",      name = "Braced Autogun 1"},
             {id = "grip_10",      name = "Braced Autogun 2"},
             {id = "grip_11",      name = "Braced Autogun 3"},
+            {id = "grip_31",      name = "Braced Autogun 4"},
+            {id = "grip_32",      name = "Braced Autogun 5"},
             {id = "grip_12",      name = "Headhunter Autogun"},
+            {id = "grip_30",      name = "Boltgun Pistol 1"},
             {id = "grip_13",      name = "Boltgun 1"},
             {id = "grip_14",      name = "Boltgun 2"},
             {id = "grip_15",      name = "Boltgun 3"},
@@ -115,6 +91,7 @@ return {
             {id = "grip_19",      name = "Laspistol 1"},
             {id = "grip_20",      name = "Laspistol 2"},
             {id = "grip_21",      name = "Laspistol 3"},
+            {id = "grip_33",      name = "Laspistol 4"},
             {id = "grip_22",      name = "Lasgun 1"},
             {id = "grip_23",      name = "Lasgun 2"},
             {id = "grip_24",      name = "Lasgun 3"},
@@ -123,10 +100,6 @@ return {
             {id = "grip_27",      name = "Flamer 1"},
             {id = "grip_28",      name = "Flamer 2"},
             {id = "grip_29",      name = "Flamer 3"},
-            {id = "grip_30",      name = "Boltgun Pistol 1"},
-            {id = "grip_31",      name = "Braced Autogun 4"},
-            {id = "grip_32",      name = "Braced Autogun 5"},
-            {id = "grip_33",      name = "Laspistol 4"},
         }
         if default == nil then default = true end
         if default then return table.icombine(

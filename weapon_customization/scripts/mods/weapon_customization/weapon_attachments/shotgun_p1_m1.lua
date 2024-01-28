@@ -377,6 +377,17 @@ return table.combine(
 
                 {barrel = {offset = true, animation_wait_detach = {"underbarrel", "rail", "sight"}, trigger_move = {"underbarrel", "rail", "sight"}}},
                 {underbarrel = {offset = true, animation_wait_attach = {"barrel"}}},
+                -- Ranger's Vigil
+                {dependencies = {"scope_03", "barrel_10|barrel_11|barrel_12"},
+                    sight = {parent = "barrel", position = vector3_box(0, -.08, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"rail"}},
+                    scope_offset = {position = vector3_box(0, .26, .0235)}},
+                {dependencies = {"scope_03"},
+                    sight = {parent = "barrel", position = vector3_box(0, -.1, .075), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"rail"}},
+                    lens = {parent = "sight_2", position = vector3_box(0, .08, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
+                    lens_2 = {parent = "sight_2", position = vector3_box(0, .22, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
+                    sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
+                    scope_offset = {position = vector3_box(0, .1, .012)}},
+
                 {dependencies = {"scope_01", "barrel_10|barrel_11|barrel_12"},
                     sight = {parent = "barrel", position = vector3_box(0, -.16, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1), animation_wait_attach = {"rail"}},
                     scope_offset = {position = vector3_box(0, .16, .024)}},
@@ -395,15 +406,6 @@ return table.combine(
                     lens_2 = {parent = "sight_2", position = vector3_box(0, -.14, .03), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 2}},
                     sight_2 = {parent = "sight", position = vector3_box(0, .09, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
                     scope_offset = {position = vector3_box(0, .1, .0145)}},
-                {dependencies = {"scope_03", "barrel_10|barrel_11|barrel_12"},
-                    sight = {parent = "barrel", position = vector3_box(0, -.08, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"rail"}},
-                    scope_offset = {position = vector3_box(0, .26, .0235)}},
-                {dependencies = {"scope_03"}, -- Lasgun sight
-                    sight = {parent = "barrel", position = vector3_box(0, -.1, .075), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"rail"}},
-                    lens = {parent = "sight_2", position = vector3_box(0, .08, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
-                    lens_2 = {parent = "sight_2", position = vector3_box(0, .22, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
-                    sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, .2, .012)}},
                 {sight_2 = {parent = "barrel", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

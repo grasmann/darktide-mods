@@ -490,9 +490,78 @@ FlashlightExtension.on_unwield_slot = function(self, slot)
     end
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬   ###########################################################################################
 -- ##### │ ┬│  │ │├┴┐├─┤│   ###########################################################################################
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘ ###########################################################################################
+
+mod.is_flashlight_modded = function(self)
+    return self:execute_extension(self.player_unit, "flashlight_system", "is_modded")
+end
+
+mod.is_flashlight_wielded = function(self)
+    return self:execute_extension(self.player_unit, "flashlight_system", "is_wielded")
+end
+
+mod.toggle_flashlight = function(self)
+    self:execute_extension(self.player_unit, "flashlight_system", "on_toggle")
+end
 
 mod.set_flashlight_active = function(self, active)
     mod:persistent_table(REFERENCE).flashlight_on = active

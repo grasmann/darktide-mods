@@ -162,7 +162,6 @@ mod.load_attachment_packages = function(self, item, attachment_slot)
 	for _, attachment_data in pairs(possible_attachments) do
 		if attachment_data.item.resource_dependencies then
 			for package_name, _ in pairs(attachment_data.item.resource_dependencies) do
-				-- mod:echo(tostring(package_name))
 				local package_key = attachment_slot.."_"..attachment_data.name
 				local callback = callback(mod, "attachment_package_loaded", attachment_data.index, attachment_slot, attachment_data.name, attachment_data.base_unit)
 				if not self:persistent_table(REFERENCE).loaded_packages.customization[package_key] then
@@ -192,8 +191,6 @@ mod.resolve_special_changes = function(self, item, attachment)
 							self.original_weapon_settings[special_slot] = self:get_gear_setting(gear_id, special_slot)
 						end
 					end
-
-					-- self:remove_weapon_part_animation(special_slot)
 				end
 
 				if string_find(special_attachment, "|") then
@@ -202,13 +199,7 @@ mod.resolve_special_changes = function(self, item, attachment)
 					special_attachment = possibilities[rnd]
 				end
 
-				-- mod:echo("special resolve: "..tostring(special_slot).." = "..tostring(special_attachment))
-				-- self:set_gear_setting(gear_id, special_slot, special_attachment)
-				-- if self.cosmetics_view then
-				-- 	self:do_weapon_part_animation(item, special_slot, "attach", special_attachment)
-				-- else
 				self:set_gear_setting(gear_id, special_slot, special_attachment)
-				-- end
 			end
 		end
 	end
@@ -264,63 +255,36 @@ mod.resolve_auto_equips = function(self, item)
 	local item_name = self:item_name_from_content_string(item.name)
 	local gear_id = self:get_gear_id(item)
 	for _, attachment_slot in pairs(self.attachment_slots) do
-		-- if table_contains(self.just_changed, attachment_slot) then
-			local attachment = item and self:get_gear_setting(gear_id, attachment_slot, item)
-			if attachment then
-				if self.attachment_models[item_name] and self.attachment_models[item_name][attachment] then
-					local attachment_data = self.attachment_models[item_name][attachment]
-					if attachment_data then
-						local automatic_equip = attachment_data.automatic_equip
-						local fixes = self:_apply_anchor_fixes(item, attachment_slot)
-						automatic_equip = fixes and fixes.automatic_equip or automatic_equip
-						if automatic_equip then
-							for auto_type, auto_attachment in pairs(automatic_equip) do
-								-- if not table_contains(self.just_changed, auto_type) then
-									-- local sets = string_split(auto_attachment, ",")
-									-- for _, set in pairs(sets) do
-										local parameters = string_split(auto_attachment, "|")
-										if #parameters == 2 then
-											local negative = string_find(parameters[1], "!")
-											parameters[1] = string_gsub(parameters[1], "!", "")
-											-- local attachments = item.attachments or item.__master_item and item.__master_item.attachments
-											-- if attachments then
-												-- local attachment_data = self:_recursive_find_attachment(attachments, auto_type)
-												local attachment_name = self:get_gear_setting(gear_id, auto_type, item)
-												if attachment_name then
-													-- mod:echo(tostring(auto_type).." = "..tostring(attachment_name))
-													if negative and attachment_name ~= parameters[1] then
-														-- self:set_gear_setting(gear_id, auto_type, parameters[2])
-														-- if self.cosmetics_view then
-														-- 	self:do_weapon_part_animation(item, auto_type, "attach", parameters[2])
-														-- else
-														self:set_gear_setting(gear_id, auto_type, parameters[2])
-														-- end
-													elseif attachment_name == parameters[1] then
-														-- self:set_gear_setting(gear_id, auto_type, parameters[2])
-														-- if self.cosmetics_view then
-														-- 	self:do_weapon_part_animation(item, auto_type, "attach", parameters[2])
-														-- else
-														self:set_gear_setting(gear_id, auto_type, parameters[2])
-														-- end
-													end
-												else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
-											-- else mod:print("Attachments are nil") end
-										else
-											-- self:set_gear_setting(gear_id, auto_type, parameters[1])
-											-- if self.cosmetics_view then
-											-- 	self:do_weapon_part_animation(item, auto_type, "attach", parameters[1])
-											-- else
-											self:set_gear_setting(gear_id, auto_type, parameters[1])
-											-- end
-										end
-								-- 	end
-								-- end
+		local attachment = item and self:get_gear_setting(gear_id, attachment_slot, item)
+		if attachment then
+			if self.attachment_models[item_name] and self.attachment_models[item_name][attachment] then
+				local attachment_data = self.attachment_models[item_name][attachment]
+				if attachment_data then
+					local automatic_equip = attachment_data.automatic_equip
+					local fixes = self:_apply_anchor_fixes(item, attachment_slot)
+					automatic_equip = fixes and fixes.automatic_equip or automatic_equip
+					if automatic_equip then
+						for auto_type, auto_attachment in pairs(automatic_equip) do
+							local parameters = string_split(auto_attachment, "|")
+							if #parameters == 2 then
+								local negative = string_find(parameters[1], "!")
+								parameters[1] = string_gsub(parameters[1], "!", "")
+								local attachment_name = self:get_gear_setting(gear_id, auto_type, item)
+								if attachment_name then
+									if negative and attachment_name ~= parameters[1] then
+										self:set_gear_setting(gear_id, auto_type, parameters[2])
+									elseif attachment_name == parameters[1] then
+										self:set_gear_setting(gear_id, auto_type, parameters[2])
+									end
+								else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
+							else
+								self:set_gear_setting(gear_id, auto_type, parameters[1])
 							end
-						else mod:print("Automatic equip for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil", true) end
-					else mod:print("Attachment data for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil") end
-				else mod:print("Models for "..tostring(attachment).." in slot "..tostring(attachment_slot).." not found") end
-			end
-		-- end
+						end
+					else mod:print("Automatic equip for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil", true) end
+				else mod:print("Attachment data for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil") end
+			else mod:print("Models for "..tostring(attachment).." in slot "..tostring(attachment_slot).." not found") end
+		end
 	end
 end
 
@@ -924,12 +888,12 @@ mod._add_custom_attachments = function(self, item, attachments)
 	if gear_id and attachments then
 		-- Get item name
 		local item_name = self:item_name_from_content_string(item.name)
-		-- Save original attachments
-		if item.__master_item and not item.__master_item.original_attachments then
-			item.__master_item.original_attachments = table_clone(attachments)
-		elseif not item.original_attachments then
-			item.original_attachments = table_clone(attachments)
-		end
+		-- -- Save original attachments
+		-- if item.__master_item and not item.__master_item.original_attachments then
+		-- 	item.__master_item.original_attachments = table_clone(attachments)
+		-- elseif not item.original_attachments then
+		-- 	item.original_attachments = table_clone(attachments)
+		-- end
 		-- Iterate custom attachment slots
 		for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
 			-- Get weapon setting for attachment slot

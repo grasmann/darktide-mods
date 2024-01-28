@@ -235,7 +235,6 @@ SwayAnimationExtension.crosshair_position = function(self, hud_element_crosshair
         
         -- Adjust position
         local offset_position = self.position and vector3_unbox(self.position) or vector3_zero()
-        -- mod:echot("self.position: "..tostring(self.position), 2)
         local mat = quaternion_matrix4x4(shoot_rotation)
         local rotated_pos = matrix4x4_transform(mat, offset_position)
 

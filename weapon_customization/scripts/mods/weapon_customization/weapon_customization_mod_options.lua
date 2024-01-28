@@ -4,7 +4,9 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local WeaponCustomizationData = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_data")
+--#region Require
+	local WeaponCustomizationData = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_data")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -12,8 +14,8 @@ local WeaponCustomizationData = mod:io_dofile("weapon_customization/scripts/mods
 
 --#region Local functions
 	local pairs = pairs
-	local managers = Managers
 	local CLASS = CLASS
+	local managers = Managers
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -54,20 +56,26 @@ function mod.update_option(setting_id)
 	local options_view = managers.ui:view_instance("dmf_options_view")
 	if options_view then
 		local data_option = mod.fetch_option_from_data(setting_id)
-		if data_option.type == "checkbox" then
-			local visible = mod:get(setting_id)
-			if data_option.sub_widgets and #data_option.sub_widgets > 0 then
-				for _, sub_widget in pairs(data_option.sub_widgets) do
-					local option = mod.fetch_option_from_view(sub_widget.setting_id)
-                    option.widget.visible = visible
+		if data_option then
+			if data_option.type == "checkbox" then
+				local visible = mod:get(setting_id)
+				if data_option.sub_widgets and #data_option.sub_widgets > 0 then
+					for _, sub_widget in pairs(data_option.sub_widgets) do
+						local option = mod.fetch_option_from_view(sub_widget.setting_id)
+						option.widget.visible = visible
+					end
 				end
 			end
 		end
 	end
 end
 
-function mod.update_options()
-	for _, option in pairs(WeaponCustomizationData.options.widgets) do
+function mod.update_options(obj)
+	local obj = obj or WeaponCustomizationData.options.widgets
+	for _, option in pairs(obj) do
 		mod.update_option(option.setting_id)
+		if option.sub_widgets then
+			mod.update_options(option.sub_widgets)
+		end
 	end
 end

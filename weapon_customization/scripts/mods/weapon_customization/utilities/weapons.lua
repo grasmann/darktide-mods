@@ -29,6 +29,7 @@ local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "weapon_customization"
+local REWARD_ITEM = "reward_item"
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -132,25 +133,25 @@ mod.randomize_weapon = function(self, item)
     return random_attachments
 end
 
--- Get currently wielded weapon
-mod.get_wielded_weapon = function(self)
-	if self.initialized then
-		local inventory_component = self.weapon_extension._inventory_component
-		local weapons = self.weapon_extension._weapons
-		return self.weapon_extension:_wielded_weapon(inventory_component, weapons)
-	end
-end
+-- -- Get currently wielded weapon
+-- mod.get_wielded_weapon = function(self)
+-- 	if self.initialized then
+-- 		local inventory_component = self.weapon_extension._inventory_component
+-- 		local weapons = self.weapon_extension._weapons
+-- 		return self.weapon_extension:_wielded_weapon(inventory_component, weapons)
+-- 	end
+-- end
 
--- Get wielded slot
-mod.get_wielded_slot = function(self)
-	local inventory_component = self.weapon_extension._inventory_component
-	return inventory_component.wielded_slot
-end
+-- -- Get wielded slot
+-- mod.get_wielded_slot = function(self)
+-- 	local inventory_component = self.weapon_extension._inventory_component
+-- 	return inventory_component.wielded_slot
+-- end
 
--- Get wielded 3p unit
-mod.get_wielded_weapon_3p = function(self)
-	return self.visual_loadout_extension:unit_3p_from_slot("slot_secondary")
-end
+-- -- Get wielded 3p unit
+-- mod.get_wielded_weapon_3p = function(self)
+-- 	return self.visual_loadout_extension:unit_3p_from_slot("slot_secondary")
+-- end
 
 -- Get equipped weapon from gear id
 mod.get_weapon_from_gear_id = function(self, from_gear_id)
@@ -178,18 +179,18 @@ end
 -- Get gear id from item
 mod.get_gear_id = function(self, item)
 	local gear_id = item and (item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id)
-	return gear_id and mod.gear_id_to_offer_id[gear_id] or gear_id
+	return gear_id or REWARD_ITEM --and mod.gear_id_to_offer_id[gear_id] or gear_id
 end
 
 mod.get_real_gear_id = function(self, item)
 	local gear_id = item and (item.__original_gear_id or item.__gear and item.__gear.uuid or item.__gear_id or item.gear_id)
-	return gear_id and mod.gear_id_to_offer_id[gear_id] or gear_id
+	return gear_id or REWARD_ITEM --and mod.gear_id_to_offer_id[gear_id] or gear_id
 end
 
 -- Get slot info id
 mod.get_slot_info_id = function(self, item)
 	local slot_info_id = item and (item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid)
-	return slot_info_id and mod.gear_id_to_offer_id[slot_info_id] or slot_info_id
+	return slot_info_id or REWARD_ITEM --and mod.gear_id_to_offer_id[slot_info_id] or slot_info_id
 end
 
 mod.is_owned_by_player = function(self, item)

@@ -35,8 +35,9 @@ local _item_melee = _item.."/melee"
 local functions = {
     shield_attachments = function(default)
         local attachments = {
-            {id = "left_01",           name = "Slab Shield"},
-            -- {id = "left_02", name = "Bulwark Shield"},
+            {id = "left_01", name = "Slab Shield 1"},
+            {id = "left_02", name = "Bulwark Shield"},
+            {id = "left_03", name = "Slab Shield 2"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -49,7 +50,8 @@ local functions = {
         return table.model_table({
             {name = "left_default", model = ""},
             {name = "left_01",      model = _item_melee.."/ogryn_slabshield_p1_m1"},
-            -- {name = "left_02",      model = _item_melee.."/ogryn_bulwark_shield_01"},
+            {name = "left_02",      model = _item_melee.."/ogryn_bulwark_shield_01"},
+            {name = "left_03",      model = _item_melee.."/ogryn_slabshield_p1_m3"},
         }, parent, angle, move, remove, type or "left", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 }
@@ -88,6 +90,9 @@ return table.combine(
         ),
         anchors = { -- Additional custom positions for paper thing emblems?
             fixes = {
+                {dependencies = {"left_02"}, -- Bulwark Shield
+                    left = {offset = true, position = vector3_box(0, -.002, -.05), rotation = vector3_box(-15, 0, -5), scale = vector3_box(.8, .8, .8)}},
+
                 {dependencies = {"pommel_05"}, -- Trinket hook
                     trinket_hook = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.01, .01, .01)}},
                 {dependencies = {"head_01"}, -- Emblems

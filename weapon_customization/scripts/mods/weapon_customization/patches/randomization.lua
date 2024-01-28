@@ -4,6 +4,8 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local MasterItems = mod:original_require("scripts/backend/master_items")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -18,9 +20,11 @@ local mod = get_mod("weapon_customization")
     local Camera = Camera
     local string = string
     local wc_perf = wc_perf
+    local Localize = Localize
     local managers = Managers
     local tostring = tostring
     local table_size = table.size
+    local table_enum = table.enum
     local vector3_box = Vector3Box
     local script_unit = ScriptUnit
     local table_clone = table.clone
@@ -45,7 +49,8 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "weapon_customization"
-
+local REWARD_ITEM = "reward_item"
+local CARD_TYPES = table_enum("xp", "levelUp", "salary", "weaponDrop", "weapon_unlock", "talents_unlock")
 mod.gear_id_to_offer_id = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -61,6 +66,7 @@ mod:hook(CLASS.MarksVendorView, "_get_store", function(func, self, ...)
     promise:next(function(store_catalogue)
         for _, item_offer in pairs(store_catalogue.offers) do
             local offer_id = item_offer.offerId
+            item_offer.description.offer_id = item_offer.offerId
             local gear_id = item_offer.description.gear_id
             mod.gear_id_to_offer_id[gear_id] = offer_id
         end
@@ -73,6 +79,7 @@ mod:hook(CLASS.StoreService, "get_credits_store", function(func, self, ignore_ev
     promise:next(function(store_catalogue)
         for _, item_offer in pairs(store_catalogue.offers) do
             local offer_id = item_offer.offerId
+            item_offer.description.offer_id = item_offer.offerId
             local gear_id = item_offer.description.gear_id
             mod.gear_id_to_offer_id[gear_id] = offer_id
         end
@@ -80,82 +87,75 @@ mod:hook(CLASS.StoreService, "get_credits_store", function(func, self, ignore_ev
     return promise
 end)
 
--- mod:hook(CLASS.CreditsVendorView, "_convert_offers_to_layout_entries", function(func, self, item_offers, ...)
---     local layout = func(self, item_offers, ...)
---     -- mod:dtf(item_offers, "item_offers", 10)
---     for _, item_offer in pairs(item_offers) do
---         local offer_id = item_offer.offerId
---         local gear_id = item_offer.description.gear_id
---         mod.gear_id_to_offer_id[gear_id] = offer_id
---         -- mod:echo(tostring(gear_id).." SET TO "..tostring(offer_id))
---     end
---     return layout
--- end)
-
--- mod:hook(CLASS.VendorViewBase, "update", function(func, self, dt, t, input_service, ...)
---     func(self, dt, t, input_service, ...)
---     if self._offers and #self._offers > 0 then
---         for _, offer in pairs(self._offers) do
--- 			mod:echot()
---         end
---     end
--- end)
+mod.randomize_item = function(self, item_instance, table, id)
+    local master_item = item_instance.__master_item or item_instance
+    local random_attachments = self:randomize_weapon(master_item)
+    if table and id then table[id] = random_attachments end
+    -- Auto equip
+    for attachment_slot, value in pairs(random_attachments) do
+        if not self.add_custom_attachments[attachment_slot] then
+            self:resolve_auto_equips(item_instance, value)
+        end
+    end
+    for attachment_slot, value in pairs(random_attachments) do
+        if self.add_custom_attachments[attachment_slot] then
+            self:resolve_auto_equips(item_instance, value)
+        end
+    end
+    -- Special resolve
+    for attachment_slot, value in pairs(random_attachments) do
+        if self.add_custom_attachments[attachment_slot] then
+            self:resolve_special_changes(item_instance, value)
+        end
+    end
+    for attachment_slot, value in pairs(random_attachments) do
+        if not self.add_custom_attachments[attachment_slot] then
+            self:resolve_special_changes(item_instance, value)
+        end
+    end
+end
 
 mod:hook(CLASS.StoreService, "purchase_item", function(func, self, offer, ...)
-    mod.purchase_gear_id = offer.description.gear_id
+    mod.offer_id = offer.offerId
     return func(self, offer, ...)
 end)
 
 mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gear, ...)
-    -- mod:dtf(gear, "purchased_gear", 20)
-    local this_gear_id = mod.purchase_gear_id or mod.reward_gear_id
-    -- mod:echo("create gear "..tostring(this_gear_id))
-    if this_gear_id and mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id] then
-        local attachments = mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id]
-        mod:persistent_table(REFERENCE).temp_gear_settings[this_gear_id] = nil
-        -- mod:echo("purchased_gear "..tostring(this_gear_id))
-        -- mod:echo("set settings for "..tostring(gear_id))
+    local create_id = mod.offer_id or gear_id
+    local attachments = nil
+    if create_id and mod:persistent_table(REFERENCE).temp_gear_settings[create_id] then
+        attachments = table_clone(mod:persistent_table(REFERENCE).temp_gear_settings[create_id])
+        mod:persistent_table(REFERENCE).temp_gear_settings[create_id] = nil
+    end
+    if attachments then
+        mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = nil
         for attachment_slot, attachment in pairs(attachments) do
             mod:set_gear_setting(gear_id, attachment_slot, attachment)
         end
     end
-    mod.purchase_gear_id = nil
-    mod.reward_gear_id = nil
+    mod.offer_id = nil
     func(self, gear_id, gear, ...)
 end)
 
 mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...)
     local item, item_group, rarity, item_level = func(self, card_reward, ...)
-    if mod:get("mod_option_randomization_store") then
-        mod.reward_gear_id = mod:get_gear_id(item) or "reward"
-        -- mod:echo("randomize reward "..tostring(mod.reward_gear_id))
-        if not mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] then
-            local master_item = item.__master_item or item
-            local random_attachments = mod:randomize_weapon(master_item)
-            mod:persistent_table(REFERENCE).temp_gear_settings[mod.reward_gear_id] = random_attachments
-            -- -- Auto equip
-            -- for attachment_slot, value in pairs(random_attachments) do
-            --     if not mod.add_custom_attachments[attachment_slot] then
-            --         mod:resolve_auto_equips(item, value)
-            --     end
-            -- end
-            -- for attachment_slot, value in pairs(random_attachments) do
-            --     if mod.add_custom_attachments[attachment_slot] then
-            --         mod:resolve_auto_equips(item, value)
-            --     end
-            -- end
-            -- -- Special resolve
-            -- for attachment_slot, value in pairs(random_attachments) do
-            --     if mod.add_custom_attachments[attachment_slot] then
-            --         mod:resolve_special_changes(item, value)
-            --     end
-            -- end
-            -- for attachment_slot, value in pairs(random_attachments) do
-            --     if not mod.add_custom_attachments[attachment_slot] then
-            --         mod:resolve_special_changes(item, value)
-            --     end
-            -- end
+    if item and card_reward.gear_id and mod:get("mod_option_randomization_reward") then
+        local attachments = {}
+        item.gear_id = card_reward.gear_id
+        mod:randomize_item(item, attachments, card_reward.gear_id)
+        mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = nil
+        for attachment_slot, attachment in pairs(attachments[card_reward.gear_id]) do
+            mod:set_gear_setting(card_reward.gear_id, attachment_slot, attachment)
         end
+        -- mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = attachments
     end
     return item, item_group, rarity, item_level
 end)
+
+-- mod:hook(CLASS.EndPlayerView, "on_exit", function(func, self, ...)
+--     local session_report = self._session_report
+--     local reward_card_data = session_report.rewards
+-- 	local num_cards = #reward_card_data
+
+--     func(self, ...)
+-- end)

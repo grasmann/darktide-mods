@@ -52,10 +52,10 @@ local functions = {
         return table.model_table({
             {name = "shovel_head_default", model = ""},
             {name = "shovel_head_01",      model = _item_melee.."/heads/shovel_head_01"},
-            {name = "shovel_head_01",      model = _item_melee.."/heads/shovel_head_02"},
-            {name = "shovel_head_01",      model = _item_melee.."/heads/shovel_head_03"},
-            {name = "shovel_head_01",      model = _item_melee.."/heads/shovel_head_04"},
-            {name = "shovel_head_01",      model = _item_melee.."/heads/shovel_head_05"},
+            {name = "shovel_head_02",      model = _item_melee.."/heads/shovel_head_02"},
+            {name = "shovel_head_03",      model = _item_melee.."/heads/shovel_head_03"},
+            {name = "shovel_head_04",      model = _item_melee.."/heads/shovel_head_04"},
+            {name = "shovel_head_05",      model = _item_melee.."/heads/shovel_head_05"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     grip_attachments = function(default)
@@ -131,9 +131,7 @@ return table.combine(
             _common.emblem_right_models("grip", -2.5, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
             _common.emblem_left_models("grip", 0, vector3_box(.1, -4, -.1), vector3_box(-.2, 0, 0)),
             _common.trinket_hook_models(nil, 0, vector3_box(.05, -4, 0), vector3_box(0, 0, -.2)),
-            functions.head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), "head", {
-                -- {"trinket_hook_empty"},
-            }, {}, {}, function(gear_id, item, attachment)
+            functions.head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if string_find(attachment, "default") then
                     if mod:get_gear_setting(gear_id, "grip", item) ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
@@ -145,7 +143,7 @@ return table.combine(
                 end
                 return changes
             end),
-            functions.grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), "grip", {}, {}, {}, function(gear_id, item, attachment)
+            functions.grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if string_find(attachment, "default") then
                     if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
@@ -157,7 +155,7 @@ return table.combine(
                 end
                 return changes
             end),
-            functions.pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), "pommel", {}, {}, {}, function(gear_id, item, attachment)
+            functions.pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if string_find(attachment, "default") or string_find(attachment, "shovel_pommel_06") then
                     if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end

@@ -49,33 +49,35 @@ mod:hook(CLASS.WeaponStats, "get_compairing_stats", function(func, self, ...)
     return present_hook(func, self, self._item, ...)
 end)
 
--- mod.special_template_changes = {
---     shotgun_p1_m1 = function(gear_id, item, weapon_template)
---         local muzzle = mod:get_gear_setting(gear_id, "muzzle", item)
---         if muzzle then
---             weapon_template.actions.action_shoot_hip.fx.
---         end
---     end,
--- }
+--#region ToDo
+    -- mod.special_template_changes = {
+    --     shotgun_p1_m1 = function(gear_id, item, weapon_template)
+    --         local muzzle = mod:get_gear_setting(gear_id, "muzzle", item)
+    --         if muzzle then
+    --             weapon_template.actions.action_shoot_hip.fx.
+    --         end
+    --     end,
+    -- }
 
-mod.apply_special_templates = function(self, item)
-    -- if item.item_type == WEAPON_RANGED or item.item_type == WEAPON_MELEE then
-    --     local gear_id = self:get_gear_id(item)
-    --     local templates = self:persistent_table(REFERENCE).weapon_templates
-    --     local orig_weapon_template = WeaponTemplate.weapon_template_from_item(item)
-    --     -- if not mod.test74326587435 then
-    --     --     mod:dtf(orig_weapon_template, "orig_weapon_template", 10)
-    --     --     mod.test74326587435 = true
-    --     -- end
-    --     if not templates[gear_id] and orig_weapon_template then
-    --         templates[gear_id] = table_clone(orig_weapon_template)
-    --     end
-    --     local weapon_template = templates[gear_id]
-    --     if mod.special_template_changes[weapon_template.name] then
-    --         mod.special_template_changes[weapon_template.name](gear_id, item, weapon_template)
-    --     end
+    -- mod.apply_special_templates = function(self, item)
+        -- if item.item_type == WEAPON_RANGED or item.item_type == WEAPON_MELEE then
+        --     local gear_id = self:get_gear_id(item)
+        --     local templates = self:persistent_table(REFERENCE).weapon_templates
+        --     local orig_weapon_template = WeaponTemplate.weapon_template_from_item(item)
+        --     -- if not mod.test74326587435 then
+        --     --     mod:dtf(orig_weapon_template, "orig_weapon_template", 10)
+        --     --     mod.test74326587435 = true
+        --     -- end
+        --     if not templates[gear_id] and orig_weapon_template then
+        --         templates[gear_id] = table_clone(orig_weapon_template)
+        --     end
+        --     local weapon_template = templates[gear_id]
+        --     if mod.special_template_changes[weapon_template.name] then
+        --         mod.special_template_changes[weapon_template.name](gear_id, item, weapon_template)
+        --     end
+        -- end
     -- end
-end
+--#endregion
 
 mod.template_add_torch = function(self, orig_weapon_template)
     if self.previewed_weapon and orig_weapon_template then
@@ -112,41 +114,12 @@ end
 
 mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
 
-    -- mod:hook(instance, "weapon_template", function(func, template_name, ...)
-    --     local weapon_template = func(template_name, ...)
-    --     -- local weapon_template = mod:template_set_bolt_pistol(weapon_template)
-	-- 	return mod:template_add_torch(weapon_template)
-    -- end)
-
-    -- current_weapon_template = function (weapon_action_component)
-	-- 	return WeaponTemplates[weapon_action_component.template_name]
-	-- end
     mod:hook(instance, "current_weapon_template", function(func, weapon_action_component, ...)
         return mod:template_add_torch(func(weapon_action_component, ...))
     end)
 
-    -- WeaponTemplate.weapon_template_from_item = function (weapon_item)
-    --     if not weapon_item then
-    --         return nil
-    --     end
-    
-    --     local weapon_template_name = weapon_item.weapon_template
-    --     local weapon_progression_template_name = weapon_item.weapon_progression_template
-    
-    --     if weapon_progression_template_name then
-    --         return WeaponTemplates[weapon_progression_template_name]
-    --     end
-    
-    --     return WeaponTemplates[weapon_template_name]
-    -- end
     mod:hook(instance, "weapon_template_from_item", function(func, weapon_item, ...)
         return mod:template_add_torch(func(weapon_item, ...))
     end)
 
-	-- if not instance._weapon_template then instance._weapon_template = instance.weapon_template end
-	-- instance.weapon_template = function(template_name)
-	-- 	local weapon_template = instance._weapon_template(template_name)
-    --     -- local weapon_template = mod:template_set_bolt_pistol(weapon_template)
-	-- 	return mod:template_add_torch(weapon_template)
-	-- end
 end)

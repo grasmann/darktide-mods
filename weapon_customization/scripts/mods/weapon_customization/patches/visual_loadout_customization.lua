@@ -4,7 +4,9 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
+--#region Require
+	local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -90,146 +92,16 @@ local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/i
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
+--#region Data
+	local REFERENCE = "weapon_customization"
+--#endregion
+
+mod.mesh_positions = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
--- mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments, node_name, ...)
---     local _attachments = nil
---     if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
---         _attachments = attachments
---     end
---     return func(self, sources, source_name, parent_unit, _attachments, node_name, ...)
--- end)
-
--- mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
---     local _attachments = nil
---     if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
---         _attachments = attachments
---     end
---     return func(self, spawners, spawner_name, parent_unit, _attachments, node_name, should_add_3p_node, ...)
--- end)
-
--- mod:hook(CLASS.UIWorldSpawner, "spawn_level", function(func, self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
---     func(self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
---     if string_find(self._world_name, "ViewElementInventoryWeaponPreview") then
---         local level_units = level_units(self._level, true)
---         local unknown_units = {}
---         if level_units then
---             local move_units = {
---                 "#ID[7fb88579bf209537]", -- background
---                 "#ID[7c763e4de74815e3]", -- lights
---             }
---             local light_units = {
---                 "#ID[be13f33921de73ac]", -- lights
---             }
-
---             mod.preview_lights = {}
-
---             for _, unit in pairs(level_units) do
---                 if table_contains(move_units, unit_debug_name(unit)) then
---                     unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 6, 0))
---                 end
---                 if table_contains(light_units, unit_debug_name(unit)) then
---                     mod.preview_lights[#mod.preview_lights+1] = {
---                         unit = unit,
---                         position = vector3_box(unit_local_position(unit, 1)),
---                     }
---                 end
---             end
---         end
---     end
--- end)
-
--- mod:hook(CLASS.ExtensionManager, "unregister_unit", function(func, self, unit, ...)
---     if unit and unit_alive(unit) then
---         func(self, unit, ...)
---     end
--- end)
-
--- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
--- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
--- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
-
--- mod:hook(CLASS.InventoryBackgroundView, "_check_profile_changes", function(func, self, ...)
--- 	func(self, ...)
-
--- 	mod:echo("check")
--- end)
-
--- mod:hook(CLASS.RenderTargetIconGeneratorBase, "_request_by_id", function(func, self, request_id, ignore_assert, ...)
--- 	local requests_by_size = self._requests_by_size
--- 	for size_key, requests in pairs(requests_by_size) do
--- 		for _, request in pairs(requests) do
--- 			if request.id == request_id then
--- 				return request
--- 			elseif string_find(request.id, request_id) then
--- 				mod:echot("in string")
--- 				return request
--- 			end
--- 		end
--- 	end
--- end)
-
-mod:hook(CLASS.WeaponIconUI, "init", function(func, self, render_settings, ...)
-	func(self, render_settings, ...)
-	self._request_by_id = function(self, request_id, ignore_assert, ...)
-		local requests_by_size = self._requests_by_size
-		for size_key, requests in pairs(requests_by_size) do
-			for _, request in pairs(requests) do
-				if request.id == request_id then
-					return request
-				-- CHECK request_id + size_key
-				elseif request.id == request_id.."_"..tostring(size_key) then
-					return request
-				end
-			end
-		end
-	end
-end)
-
--- mod:hook(CLASS.ViewElementWeaponStats, "present_item", function(func, self, item, context, on_present_callback, ...)
--- 	func(self, item, context, on_present_callback, ...)
--- 	mod:echot("present_item")
--- end)
-
--- mod:hook(CLASS.InventoryWeaponsView, "event_replace_list_item", function(func, self, item, ...)
--- 	self:replace_item_instance(item)
-
--- 	if self._previewed_item and item and self._previewed_item.gear_id == item.gear_id then
--- 		mod:echot("replace")
--- 		self:_stop_previewing()
--- 		self._previewed_item = item
--- 		self:_preview_item(item)
--- 	end
--- end)
-
--- mod:hook(CLASS.WeaponIconUI, "weapon_icon_updated", function(func, self, item, prioritized, ...)
--- 	local id = item.gear_id or item.name
--- 	local request = self:_request_by_id(id)
--- 	if request then
--- 		self:_update_request(request, item, prioritized)
--- 	end
--- end)
-
--- mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
---     local pass_input, pass_draw = func(self, dt, t, input_service, ...)
---     if mod.weapon_changed then
-
---         -- self:_spawn_profile(self._presentation_profile)
-
--- 		managers.ui:item_icon_updated(mod.changed_weapon)
--- 		managers.event:trigger("event_item_icon_updated", mod.changed_weapon)
--- 		managers.event:trigger("event_replace_list_item", mod.changed_weapon)
-
---         mod.weapon_changed = nil
---     end
---     return pass_input, pass_draw
--- end)
-
--- Visual loadout extension hooks
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
 	instance._sort_order_enum = {
@@ -331,66 +203,13 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			        mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
 			    end
 
-				-- -- Bulwark shield
-				-- if unit_name == "#ID[bc25db1df0670d2a]" then
-				-- 	mod:echo("bulwark!")
-				-- 	unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 0, -.065))
-				-- 	local x, y, z = quaternion_to_euler_angles_xyz(unit_local_rotation(unit, 1))
-				-- 	local rotation = vector3(x, y, z) + vector3(-10, 5, 5)
-				-- 	local rotate_quaternion = quaternion_from_euler_angles_xyz(rotation[1], rotation[2], rotation[3])
-				-- 	unit_set_local_rotation(unit, 1, rotate_quaternion)
-				-- 	unit_set_local_scale(unit, 1, vector3(1, 1, 0.9))
-				-- end
-
 				-- Handle positioning and setup infos
 				if slot_infos[slot_info_id] then
 					local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
 					local attachment_slot = slot_infos[slot_info_id].unit_to_attachment_slot[unit]
-					-- -- Default
-					-- if attachment_name and string_find(attachment_name, "default") then
-					-- 	mod:echo("default: "..tostring(attachment_name))
-					-- 	-- local attachment_data = self.attachment_models[item_name][unit_or_name]
-					-- 	-- local attachment_slot = attachment_data and attachment_data.type
-					-- 	-- attachment_name = mod:get_actual_default_attachment(item_data, attachment_slot) or attachment_name
-					-- 	local item = item_data.__master_item or item_data
-					-- 	attachment_name = attachment_slot and mod:get_gear_setting(gear_id, attachment_slot, item_data) or attachment_name
-					-- 	mod:echo("attachment: "..tostring(attachment_name))
-					-- end
 					local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
-					
-					-- if item_data.anchors and self:is_composite_item(item_data.name) then
-					-- 	attachment_data = item_data.anchors[attachment_slot]
-					-- end
-
 					local parent_name = attachment_data and attachment_data.parent and attachment_data.parent
 					local parent_node = attachment_data and attachment_data.parent_node and attachment_data.parent_node or 1
-
-					
-
-					-- if attachment_name == "scope" then
-					-- 	local num_meshes = unit_num_meshes(unit)
-					-- 	-- mod:echo("scope - "..tostring(num_meshes))
-					-- 	if unit and unit_alive(unit) then
-					-- 		unit_set_mesh_visibility(unit, 1, false)
-					-- 		unit_set_mesh_visibility(unit, 2, false)
-					-- 		unit_set_mesh_visibility(unit, 3, false)
-					-- 		unit_set_mesh_visibility(unit, 5, false)
-					-- 		unit_set_mesh_visibility(unit, 6, false)
-					-- 		unit_set_mesh_visibility(unit, 7, false)
-					-- 		local check_groups = {"receiver", "main", "barrel", "scope", "a", "front_walls"}
-					-- 		for _, group in pairs(check_groups) do
-					-- 			if Unit.has_visibility_group(unit, group) then
-					-- 				mod:echo(group)
-					-- 			end
-					-- 		end
-					-- 		-- local childs = Unit.get_child_units(unit)
-					-- 		-- if childs then
-					-- 		-- 	mod:echo("childs "..tostring(#childs))
-					-- 		-- end
-					-- 	end
-					-- 	-- unit_set_local_position(unit, mod.test_index, vector3(0, 0, .1))
-					-- 	-- unit_set_local_scale(unit, 38, vector3(3, 3, 3))
-					-- end
 
 					-- Root movement
 					local root_movement = attachment_data and attachment_data.move_root or false
@@ -461,7 +280,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 							local scale = anchor.scale and vector3_unbox(anchor.scale) or vector3_one()
 							local scale_node = anchor.scale_node or 1
-							unit_set_local_scale(unit, scale_node, scale)
+							if type(scale_node) ~= "table" then
+								scale_node = {scale_node}
+							end
+							for _, node in pairs(scale_node) do
+								unit_set_local_scale(unit, node, scale)
+							end
 
 							unit_set_unit_visibility(unit, true, true)
 
@@ -474,39 +298,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					end
 				end
 			end
-
-			-- if mod.cosmetics_view and mod.cosmetics_view._fade_system then
-			-- 	local unit_item_offsets = {}
-			-- 	-- for _, unit in pairs(attachment_units) do
-			-- 	for i = #attachment_units, 1, -1 do
-			-- 		local unit = attachment_units[i]
-			-- 		world_unlink_unit(attach_settings.world, unit, true)
-			-- 		local offset = unit_world_position(item_unit, 1) - unit_world_position(unit, 1)
-			-- 		local unit_rotation = unit_world_rotation(item_unit, 1)
-			-- 		local mat = quaternion_matrix4x4(unit_rotation)
-			-- 		local rotated_offset = Matrix4x4.transform(mat, offset)
-			-- 		unit_item_offsets[unit] = rotated_offset
-			-- 	end
-			-- 	for _, unit in pairs(attachment_units) do
-			-- 		-- local offset = unit_world_position(item_unit, 1) - unit_world_position(unit, 1)
-			-- 		local offset = unit_item_offsets[unit]
-			-- 		-- local unit_rotation = unit_world_rotation(item_unit, 1)
-			-- 		-- local mat = quaternion_matrix4x4(unit_rotation)
-			-- 		-- local rotated_offset = Matrix4x4.transform(mat, offset)
-			-- 		-- world_unlink_unit(attach_settings.world, unit)
-			-- 		world_link_unit(attach_settings.world, unit, 1, item_unit, 1)
-			-- 		unit_set_local_position(unit, 1, offset)
-			-- 		-- mod:unit_set_local_position_mesh(slot_info_id, unit, offset)
-					
-			-- 		slot_infos[slot_info_id].unit_default_position[unit] = vector3_box(unit_local_position(unit, 1))
-			-- 		-- Set unit mesh default positions
-			-- 		mod.mesh_positions[unit] = mod.mesh_positions[unit] or {}
-			-- 		local num_meshes = unit_num_meshes(unit)
-			-- 		for i = 1, num_meshes do
-			-- 			mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
-			-- 		end
-			-- 	end
-			-- end
 
 			for _, unit in pairs(attachment_units) do
 				local anchor = nil
@@ -555,22 +346,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	end
 
 	instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
-		-- attach_settings.force_highest_lod_step = false
 		local weapon_skin = instance._validate_item_name(item_data.slot_weapon_skin)
 		local gear_id = mod:get_gear_id(item_data)
 		local in_possesion_of_player = mod:is_owned_by_player(item_data)
 		local in_store = mod:is_store_item(item_data)
-		-- if in_possesion_of_player and gear_id then
-		-- 	-- mod:echo("In possesion of player: "..tostring(gear_id))
-		-- end
-		-- if in_store == "store" and gear_id then
-		-- 	if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-		-- 		local master_item = item_data.__master_item or item_data
-		-- 		local random_attachments = mod:randomize_weapon(master_item)
-		-- 		mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
-		-- 	end
-		-- 	-- mod:echo("In store: "..tostring(gear_id).." - "..tostring(in_store))
-		-- end
 
 		if type(weapon_skin) == "string" then
 			weapon_skin = attach_settings.item_definitions[weapon_skin]
@@ -736,30 +515,16 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			end
 		--#endregion Original
 
-		-- local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
-		-- Unit.set_data(spawned_unit, "attachment_name", attachment_name)
-		-- Unit.set_data(spawned_unit, "attachment_slot", attachment_type)
-		-- if type(attach_node) == "string" then
-			local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
-			-- if item_data.base_unit ~= "content/characters/empty_item/empty_item" then
-				attachment_slot_info = attachment_slot_info or {}
-				attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
-				attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
-				attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
-				attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
-				attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
-				attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
-				Unit.set_data(spawned_unit, "attachment_name", attachment_name)
-				Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
-				-- mod:echo("spawn "..tostring(attachment_name))
-				-- if item_data.anchors and mod:is_composite_item(item_data.name) then
-				-- 	Unit.set_data(spawned_unit, "anchor", item_data.anchors[attachment_slot])
-				-- 	-- mod:dtf(item_data.anchors[attachment_slot], "item_data.anchors["..tostring(attachment_slot).."]", 5)
-				-- 	-- attachment_data = item_data.anchors[attachment_slot]
-				-- 	-- Unit.set_data(spawned_unit, "composite_anchor", item_data.anchors[attachment_slot])
-				-- end
-			-- end
-		-- end
+		local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
+		attachment_slot_info = attachment_slot_info or {}
+		attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
+		attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
+		attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
+		attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
+		attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
+		attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
+		Unit.set_data(spawned_unit, "attachment_name", attachment_name)
+		Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
 	
 		--#region Original
 			local item_type = item_data.item_type
@@ -860,20 +625,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		if override_item_data then
 			local attachments = override_item_data.attachments
 			local gear_id = mod:get_gear_id(item_data)
-
-			-- local in_possesion_of_player = mod:item_in_possesion_of_player(item_data)
-			-- local in_store = mod:item_in_store(item_data)
-			-- if in_possesion_of_player and gear_id then
-			-- 	-- mod:echo("In possesion of player: "..tostring(gear_id))
-			-- end
-			-- if in_store == "store" and gear_id then
-			-- 	if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-			-- 		local master_item = item_data.__master_item or item_data
-			-- 		local random_attachments = mod:randomize_weapon(master_item)
-			-- 		mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = random_attachments
-			-- 	end
-			-- 	-- mod:echo("In store: "..tostring(gear_id).." - "..tostring(in_store))
-			-- end
 
 			if gear_id and not mod:is_premium_store_item() then
 				mod:setup_item_definitions()

@@ -30,16 +30,16 @@ local _item_melee = _item.."/melee"
 return {
     long_shaft_attachments = function(default)
         local attachments = {
-            {id = "thunder_hammer_shaft_01",      name = "Thunderhammer 1"},
-            {id = "thunder_hammer_shaft_02",      name = "Thunderhammer 2"},
-            {id = "thunder_hammer_shaft_03",      name = "Thunderhammer 3"},
-            {id = "thunder_hammer_shaft_04",      name = "Thunderhammer 4"},
-            {id = "thunder_hammer_shaft_05",      name = "Thunderhammer 5"},
-            {id = "shaft_lower_01",      name = "Staff 1"},
-            {id = "shaft_lower_02",      name = "Staff 2"},
-            {id = "shaft_lower_03",      name = "Staff 3"},
-            {id = "shaft_lower_04",      name = "Staff 4"},
-            {id = "shaft_lower_05",      name = "Staff 5"},
+            {id = "thunder_hammer_shaft_01", name = "Thunderhammer 1"},
+            {id = "thunder_hammer_shaft_02", name = "Thunderhammer 2"},
+            {id = "thunder_hammer_shaft_03", name = "Thunderhammer 3"},
+            {id = "thunder_hammer_shaft_04", name = "Thunderhammer 4"},
+            {id = "thunder_hammer_shaft_05", name = "Thunderhammer 5"},
+            {id = "shaft_lower_01",          name = "Staff 1"},
+            {id = "shaft_lower_02",          name = "Staff 2"},
+            {id = "shaft_lower_03",          name = "Staff 3"},
+            {id = "shaft_lower_04",          name = "Staff 4"},
+            {id = "shaft_lower_05",          name = "Staff 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -51,35 +51,35 @@ return {
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "shaft_default", model = ""},
-            {name = "thunder_hammer_shaft_01",      model = _item_ranged.."/shafts/thunder_hammer_shaft_01"},
-            {name = "thunder_hammer_shaft_02",      model = _item_ranged.."/shafts/thunder_hammer_shaft_02"},
-            {name = "thunder_hammer_shaft_03",      model = _item_ranged.."/shafts/thunder_hammer_shaft_03"},
-            {name = "thunder_hammer_shaft_04",      model = _item_ranged.."/shafts/thunder_hammer_shaft_04"},
-            {name = "thunder_hammer_shaft_05",      model = _item_ranged.."/shafts/thunder_hammer_shaft_05"},
-            {name = "shaft_lower_01",      model = _item_ranged.."/shafts/force_staff_shaft_lower_01"},
-            {name = "shaft_lower_02",      model = _item_ranged.."/shafts/force_staff_shaft_lower_02"},
-            {name = "shaft_lower_03",      model = _item_ranged.."/shafts/force_staff_shaft_lower_03"},
-            {name = "shaft_lower_04",      model = _item_ranged.."/shafts/force_staff_shaft_lower_04"},
-            {name = "shaft_lower_05",      model = _item_ranged.."/shafts/force_staff_shaft_lower_05"},
+            {name = "thunder_hammer_shaft_01", model = _item_ranged.."/shafts/thunder_hammer_shaft_01"},
+            {name = "thunder_hammer_shaft_02", model = _item_ranged.."/shafts/thunder_hammer_shaft_02"},
+            {name = "thunder_hammer_shaft_03", model = _item_ranged.."/shafts/thunder_hammer_shaft_03"},
+            {name = "thunder_hammer_shaft_04", model = _item_ranged.."/shafts/thunder_hammer_shaft_04"},
+            {name = "thunder_hammer_shaft_05", model = _item_ranged.."/shafts/thunder_hammer_shaft_05"},
+            {name = "shaft_lower_01",          model = _item_ranged.."/shafts/force_staff_shaft_lower_01"},
+            {name = "shaft_lower_02",          model = _item_ranged.."/shafts/force_staff_shaft_lower_02"},
+            {name = "shaft_lower_03",          model = _item_ranged.."/shafts/force_staff_shaft_lower_03"},
+            {name = "shaft_lower_04",          model = _item_ranged.."/shafts/force_staff_shaft_lower_04"},
+            {name = "shaft_lower_05",          model = _item_ranged.."/shafts/force_staff_shaft_lower_05"},
         }, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     connector_attachments = function(default)
         local attachments = {
-            {id = "thunder_hammer_connector_01",      name = "Thunderhammer 1"},
-            {id = "thunder_hammer_connector_02",      name = "Thunderhammer 2"},
-            {id = "thunder_hammer_connector_03",      name = "Thunderhammer 3"},
-            {id = "thunder_hammer_connector_04",      name = "Thunderhammer 4"},
-            {id = "thunder_hammer_connector_05",      name = "Thunderhammer 5"},
-            {id = "body_01",      name = "Force Staff 1"},
-            {id = "body_02",      name = "Force Staff 2"},
-            {id = "body_03",      name = "Force Staff 3"},
-            {id = "body_04",      name = "Force Staff 4"},
-            {id = "body_05",      name = "Force Staff 5"},
-            {id = "2h_power_maul_connector_01",      name = "Power Maul 1"},
-            {id = "2h_power_maul_connector_02",      name = "Power Maul 2"},
-            {id = "2h_power_maul_connector_03",      name = "Power Maul 3"},
-            {id = "2h_power_maul_connector_04",      name = "Power Maul 4"},
-            {id = "2h_power_maul_connector_05",      name = "Power Maul 5"},
+            {id = "thunder_hammer_connector_01", name = "Thunderhammer 1"},
+            {id = "thunder_hammer_connector_02", name = "Thunderhammer 2"},
+            {id = "thunder_hammer_connector_03", name = "Thunderhammer 3"},
+            {id = "thunder_hammer_connector_04", name = "Thunderhammer 4"},
+            {id = "thunder_hammer_connector_05", name = "Thunderhammer 5"},
+            {id = "body_01",                     name = "Force Staff 1"},
+            {id = "body_02",                     name = "Force Staff 2"},
+            {id = "body_03",                     name = "Force Staff 3"},
+            {id = "body_04",                     name = "Force Staff 4"},
+            {id = "body_05",                     name = "Force Staff 5"},
+            {id = "2h_power_maul_connector_01",  name = "Power Maul 1"},
+            {id = "2h_power_maul_connector_02",  name = "Power Maul 2"},
+            {id = "2h_power_maul_connector_03",  name = "Power Maul 3"},
+            {id = "2h_power_maul_connector_04",  name = "Power Maul 4"},
+            {id = "2h_power_maul_connector_05",  name = "Power Maul 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -142,34 +142,6 @@ return {
         else return attachments end
     end,
     emblem_right_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        -- local a = angle or 0
-        -- local m = move or vector3_box(0, 0, 0)
-        -- local r = remove or vector3_box(0, 0, 0)
-        -- return {
-        --     emblem_right_default = {model = "",                                       type = "emblem_right", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_01 =      {model = _item_ranged.."/emblems/emblemright_01",  type = "emblem_right", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_02 =      {model = _item_ranged.."/emblems/emblemright_02",  type = "emblem_right", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_03 =      {model = _item_ranged.."/emblems/emblemright_03",  type = "emblem_right", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_04 =      {model = _item_ranged.."/emblems/emblemright_04a", type = "emblem_right", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_05 =      {model = _item_ranged.."/emblems/emblemright_04b", type = "emblem_right", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_06 =      {model = _item_ranged.."/emblems/emblemright_04c", type = "emblem_right", parent = tv(parent, 7), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_07 =      {model = _item_ranged.."/emblems/emblemright_04d", type = "emblem_right", parent = tv(parent, 8), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_08 =      {model = _item_ranged.."/emblems/emblemright_04e", type = "emblem_right", parent = tv(parent, 9), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_09 =      {model = _item_ranged.."/emblems/emblemright_04f", type = "emblem_right", parent = tv(parent, 10), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_10 =      {model = _item_ranged.."/emblems/emblemright_05",  type = "emblem_right", parent = tv(parent, 11), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_11 =      {model = _item_ranged.."/emblems/emblemright_06",  type = "emblem_right", parent = tv(parent, 12), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_12 =      {model = _item_ranged.."/emblems/emblemright_07",  type = "emblem_right", parent = tv(parent, 13), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_13 =      {model = _item_ranged.."/emblems/emblemright_08a", type = "emblem_right", parent = tv(parent, 14), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_14 =      {model = _item_ranged.."/emblems/emblemright_08b", type = "emblem_right", parent = tv(parent, 15), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_15 =      {model = _item_ranged.."/emblems/emblemright_08c", type = "emblem_right", parent = tv(parent, 16), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_16 =      {model = _item_ranged.."/emblems/emblemright_09a", type = "emblem_right", parent = tv(parent, 17), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_17 =      {model = _item_ranged.."/emblems/emblemright_09b", type = "emblem_right", parent = tv(parent, 18), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_18 =      {model = _item_ranged.."/emblems/emblemright_09c", type = "emblem_right", parent = tv(parent, 19), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_19 =      {model = _item_ranged.."/emblems/emblemright_09d", type = "emblem_right", parent = tv(parent, 20), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_20 =      {model = _item_ranged.."/emblems/emblemright_09e", type = "emblem_right", parent = tv(parent, 21), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_21 =      {model = _item_ranged.."/emblems/emblemright_10",  type = "emblem_right", parent = tv(parent, 22), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_right_22 =      {model = _item_ranged.."/emblems/emblemright_11",  type = "emblem_right", parent = tv(parent, 23), angle = a, move = m, remove = r, mesh_move = false},
-        -- }
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "emblem_right_default", model = ""},
@@ -220,25 +192,6 @@ return {
         else return attachments end
     end,
     emblem_left_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        -- local a = angle or 0
-        -- local m = move or vector3_box(0, 0, 0)
-        -- local r = remove or vector3_box(0, 0, 0)
-        -- return {
-        --     emblem_left_default = {model = "",                                      type = "emblem_left", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_01 =      {model = _item_ranged.."/emblems/emblemleft_01",  type = "emblem_left", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_02 =      {model = _item_ranged.."/emblems/emblemleft_02",  type = "emblem_left", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_03 =      {model = _item_ranged.."/emblems/emblemleft_03",  type = "emblem_left", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_04 =      {model = _item_ranged.."/emblems/emblemleft_04a", type = "emblem_left", parent = tv(parent, 5), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_05 =      {model = _item_ranged.."/emblems/emblemleft_04b", type = "emblem_left", parent = tv(parent, 6), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_06 =      {model = _item_ranged.."/emblems/emblemleft_04c", type = "emblem_left", parent = tv(parent, 7), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_07 =      {model = _item_ranged.."/emblems/emblemleft_04d", type = "emblem_left", parent = tv(parent, 8), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_08 =      {model = _item_ranged.."/emblems/emblemleft_04e", type = "emblem_left", parent = tv(parent, 9), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_09 =      {model = _item_ranged.."/emblems/emblemleft_04f", type = "emblem_left", parent = tv(parent, 10), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_10 =      {model = _item_ranged.."/emblems/emblemleft_05",  type = "emblem_left", parent = tv(parent, 11), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_11 =      {model = _item_ranged.."/emblems/emblemleft_06",  type = "emblem_left", parent = tv(parent, 12), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_12 =      {model = _item_ranged.."/emblems/emblemleft_10",  type = "emblem_left", parent = tv(parent, 13), angle = a, move = m, remove = r, mesh_move = false},
-        --     emblem_left_13 =      {model = _item_ranged.."/emblems/emblemleft_11",  type = "emblem_left", parent = tv(parent, 14), angle = a, move = m, remove = r, mesh_move = false},
-        -- }
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "emblem_left_default", model = ""},
@@ -270,15 +223,6 @@ return {
         else return attachments end
     end,
     decal_right_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        -- local a = angle or 0
-        -- local m = move or vector3_box(0, 0, 0)
-        -- local r = remove or vector3_box(0, 0, 0)
-        -- return {
-        --     decal_right_default = {model = "",                                     type = "decal_right", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        --     decal_right_01 =      {model = _item_ranged.."/decals/decalright_01",  type = "decal_right", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false},
-        --     decal_right_02 =      {model = _item_ranged.."/decals/decalright_02",  type = "decal_right", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
-        --     decal_right_03 =      {model = _item_ranged.."/decals/decalright_03",  type = "decal_right", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false},
-        -- }
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "decal_right_default", model = ""},
@@ -300,15 +244,6 @@ return {
         else return attachments end
     end,
     decal_left_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        -- local a = angle or 0
-        -- local m = move or vector3_box(0, 0, 0)
-        -- local r = remove or vector3_box(0, 0, 0)
-        -- return {
-        --     decal_left_default = {model = "",                                    type = "decal_left", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        --     decal_left_01 =      {model = _item_ranged.."/decals/decalleft_01",  type = "decal_left", parent = tv(parent, 2), angle = a, move = m, remove = r, mesh_move = false},
-        --     decal_left_02 =      {model = _item_ranged.."/decals/decalleft_02",  type = "decal_left", parent = tv(parent, 3), angle = a, move = m, remove = r, mesh_move = false},
-        --     decal_left_03 =      {model = _item_ranged.."/decals/decalleft_03",  type = "decal_left", parent = tv(parent, 4), angle = a, move = m, remove = r, mesh_move = false},
-        -- }
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "decal_left_default", model = ""},
@@ -351,36 +286,6 @@ return {
         else return attachments end
     end,
     trinket_hook_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        -- local a = angle or 0
-        -- local m = move or vector3_box(0, 0, 0)
-        -- local r = remove or vector3_box(0, 0, 0)
-        -- return {
-        --     trinket_hook_default =     {model = "",                                          type = "trinket_hook", parent = tv(parent, 1), angle = a, move = m, remove = tv(r, 1), mesh_move = false},
-        --     trinket_hook_02_90 =       {model = _item.."/trinkets/trinket_hook_02_90",       type = "trinket_hook", parent = tv(parent, 2), angle = a, move = m, remove = tv(r, 2), mesh_move = false},
-        --     trinket_hook_01_v =        {model = _item.."/trinkets/trinket_hook_01_v",        type = "trinket_hook", parent = tv(parent, 3), angle = a, move = m, remove = tv(r, 3), mesh_move = false},
-        --     trinket_hook_04_gold_v =   {model = _item.."/trinkets/trinket_hook_04_gold_v",   type = "trinket_hook", parent = tv(parent, 4), angle = a, move = m, remove = tv(r, 4), mesh_move = false},
-        --     trinket_hook_02 =          {model = _item.."/trinkets/trinket_hook_02",          type = "trinket_hook", parent = tv(parent, 5), angle = a, move = m, remove = tv(r, 5), mesh_move = false},
-        --     trinket_hook_03 =          {model = _item.."/trinkets/trinket_hook_03",          type = "trinket_hook", parent = tv(parent, 6), angle = a, move = m, remove = tv(r, 6), mesh_move = false},
-        --     trinket_hook_04_steel_v =  {model = _item.."/trinkets/trinket_hook_04_steel_v",  type = "trinket_hook", parent = tv(parent, 7), angle = a, move = m, remove = tv(r, 7), mesh_move = false},
-        --     trinket_hook_04_carbon =   {model = _item.."/trinkets/trinket_hook_04_carbon",   type = "trinket_hook", parent = tv(parent, 8), angle = a, move = m, remove = tv(r, 8), mesh_move = false},
-        --     trinket_hook_04_gold =     {model = _item.."/trinkets/trinket_hook_04_gold",     type = "trinket_hook", parent = tv(parent, 9), angle = a, move = m, remove = tv(r, 9), mesh_move = false},
-        --     trinket_hook_04_carbon_v = {model = _item.."/trinkets/trinket_hook_04_carbon_v", type = "trinket_hook", parent = tv(parent, 10), angle = a, move = m, remove = tv(r, 10), mesh_move = false},
-        --     trinket_hook_04_coated =   {model = _item.."/trinkets/trinket_hook_04_coated",   type = "trinket_hook", parent = tv(parent, 11), angle = a, move = m, remove = tv(r, 11), mesh_move = false},
-        --     trinket_hook_01 =          {model = _item.."/trinkets/trinket_hook_01",          type = "trinket_hook", parent = tv(parent, 12), angle = a, move = m, remove = tv(r, 12), mesh_move = false},
-        --     trinket_hook_04_steel =    {model = _item.."/trinkets/trinket_hook_04_steel",    type = "trinket_hook", parent = tv(parent, 13), angle = a, move = m, remove = tv(r, 13), mesh_move = false},
-        --     trinket_hook_02_45 =       {model = _item.."/trinkets/trinket_hook_02_45",       type = "trinket_hook", parent = tv(parent, 14), angle = a, move = m, remove = tv(r, 14), mesh_move = false},
-        --     trinket_hook_empty =       {model = _item.."/trinkets/trinket_hook_empty",       type = "trinket_hook", parent = tv(parent, 15), angle = a, move = m, remove = tv(r, 15), mesh_move = false, no_animation = true},
-        --     trinket_hook_05_gold =     {model = _item.."/trinkets/trinket_hook_05_gold",     type = "trinket_hook", parent = tv(parent, 16), angle = a, move = m, remove = tv(r, 16), mesh_move = false},
-        --     trinket_hook_05_carbon =   {model = _item.."/trinkets/trinket_hook_05_carbon",   type = "trinket_hook", parent = tv(parent, 17), angle = a, move = m, remove = tv(r, 17), mesh_move = false},
-        --     trinket_hook_05_coated_v = {model = _item.."/trinkets/trinket_hook_05_coated_v", type = "trinket_hook", parent = tv(parent, 18), angle = a, move = m, remove = tv(r, 18), mesh_move = false},
-        --     trinket_hook_05_gold_v =   {model = _item.."/trinkets/trinket_hook_05_gold_v",   type = "trinket_hook", parent = tv(parent, 19), angle = a, move = m, remove = tv(r, 19), mesh_move = false},
-        --     trinket_hook_05_steel_v =  {model = _item.."/trinkets/trinket_hook_05_steel_v",  type = "trinket_hook", parent = tv(parent, 20), angle = a, move = m, remove = tv(r, 20), mesh_move = false},
-        --     trinket_hook_05_coated =   {model = _item.."/trinkets/trinket_hook_05_coated",   type = "trinket_hook", parent = tv(parent, 21), angle = a, move = m, remove = tv(r, 21), mesh_move = false},
-        --     trinket_hook_05_carbon_v = {model = _item.."/trinkets/trinket_hook_05_carbon_v", type = "trinket_hook", parent = tv(parent, 22), angle = a, move = m, remove = tv(r, 22), mesh_move = false},
-        --     trinket_hook_03_v =        {model = _item.."/trinkets/trinket_hook_03_v",        type = "trinket_hook", parent = tv(parent, 23), angle = a, move = m, remove = tv(r, 23), mesh_move = false},
-        --     trinket_hook_05_steel =    {model = _item.."/trinkets/trinket_hook_05_steel",    type = "trinket_hook", parent = tv(parent, 24), angle = a, move = m, remove = tv(r, 24), mesh_move = false},
-        --     trinket_hook_04_coated_v = {model = _item.."/trinkets/trinket_hook_04_coated_v", type = "trinket_hook", parent = tv(parent, 25), angle = a, move = m, remove = tv(r, 25), mesh_move = false},
-        -- }
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "trinket_hook_default",     model = ""},
