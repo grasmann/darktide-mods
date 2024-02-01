@@ -14,6 +14,9 @@ local mod = get_mod("weapon_customization")
 	local math_uuid = math.uuid
 	local unit_alive = Unit.alive
 	local script_unit = ScriptUnit
+	local Application = Application
+	local unit_force_stream_meshes = Unit.force_stream_meshes
+	local application_set_time_step_policy = Application.set_time_step_policy
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -62,6 +65,21 @@ local mod = get_mod("weapon_customization")
 		},
 	})
 --#endregion
+
+-- mod:hook_require("scripts/managers/ui/ui_widget", function(UIWidget)
+-- 	mod:hook(UIWidget, "create_definition", function(func, pass_definitions, ...)
+-- 		-- Set all retained
+-- 		for i = 1, #pass_definitions do
+-- 			local pass_info = pass_definitions[i]
+-- 			-- if not pass_info.retained_mode then
+-- 			-- 	mod:echo("change retained_mode")
+-- 			-- end
+-- 			pass_info.retained_mode = false
+-- 		end
+-- 		-- Original function
+-- 		return func(pass_definitions, ...)
+-- 	end)
+-- end)
 
 -- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐ #######################################################################################
 -- ##### │││││ │ │├─┤│  │┌─┘├┤  #######################################################################################

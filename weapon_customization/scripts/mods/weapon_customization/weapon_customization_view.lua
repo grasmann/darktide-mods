@@ -201,6 +201,110 @@ local mod = get_mod("weapon_customization")
 mod.build_animation = WeaponBuildAnimation:new()
 -- mod.customization_camera = CustomizationCamera:new()
 
+mod.draw_box = function(self, unit, saved_origin)
+	local tm, half_size = Unit.box(unit)
+	local gui = self.cosmetics_view._ui_forward_renderer.gui
+	local ui_world_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+	local camera = ui_world_spawner and ui_world_spawner._camera
+	-- Get boundary points
+	local points = {
+		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
+		top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
+	}
+	points.bottom_01.position = Matrix4x4.transform(tm, vector3(half_size.x, half_size.y, -half_size.z))
+	points.bottom_02.position = Matrix4x4.transform(tm, vector3(half_size.x, -half_size.y, -half_size.z))
+	points.bottom_03.position = Matrix4x4.transform(tm, vector3(-half_size.x, -half_size.y, -half_size.z))
+	points.bottom_04.position = Matrix4x4.transform(tm, vector3(-half_size.x, half_size.y, -half_size.z))
+	points.top_01.position = Matrix4x4.transform(tm, vector3(half_size.x, half_size.y, half_size.z))
+	points.top_02.position = Matrix4x4.transform(tm, vector3(half_size.x, -half_size.y, half_size.z))
+	points.top_03.position = Matrix4x4.transform(tm, vector3(-half_size.x, -half_size.y, half_size.z))
+	points.top_04.position = Matrix4x4.transform(tm, vector3(-half_size.x, half_size.y, half_size.z))
+	-- Get position and distance to camera
+	local results = {
+		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
+		top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
+	}
+	results.bottom_01.position, results.bottom_01.distance = camera_world_to_screen(camera, points.bottom_01.position)
+	results.bottom_02.position, results.bottom_02.distance = camera_world_to_screen(camera, points.bottom_02.position)
+	results.bottom_03.position, results.bottom_03.distance = camera_world_to_screen(camera, points.bottom_03.position)
+	results.bottom_04.position, results.bottom_04.distance = camera_world_to_screen(camera, points.bottom_04.position)
+	results.top_01.position, results.top_01.distance = camera_world_to_screen(camera, points.top_01.position)
+	results.top_02.position, results.top_02.distance = camera_world_to_screen(camera, points.top_02.position)
+	results.top_03.position, results.top_03.distance = camera_world_to_screen(camera, points.top_03.position)
+	results.top_04.position, results.top_04.distance = camera_world_to_screen(camera, points.top_04.position)
+	-- Farthest point from camera
+	local farthest = nil
+	local last = 0
+	for name, data in pairs(results) do
+		if data.distance > last then
+			last = data.distance
+			farthest = name
+		end
+	end
+	-- Save as target for lines
+	if saved_origin then
+		local closest = nil
+		local last = math.huge
+		local saved_origin_v3 = vector3(saved_origin[1], saved_origin[2], 0)
+		for name, data in pairs(results) do
+			local position = vector3(data.position[1], data.position[2], 0)
+			local distance = vector3.distance(saved_origin_v3, position)
+			if distance < last then
+				last = distance
+				closest = name
+			end
+		end
+		if closest then
+			self.equipment_line_target = {
+				results[closest].position[1],
+				results[closest].position[2],
+			}
+		end
+	end
+	-- Draw box bottom
+	if farthest ~= "bottom_01" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_02.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "bottom_01" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_04.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "bottom_02" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.bottom_02.position, results.bottom_03.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "bottom_03" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_03.position, results.bottom_04.position, 20, 2, Color(255, 106, 121, 100)) end
+	-- Draw box top
+	if farthest ~= "top_01" and farthest ~= "bottom_01" then ScriptGui.hud_line(gui, results.top_01.position, results.bottom_01.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_02" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.top_02.position, results.bottom_02.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_03" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.top_03.position, results.bottom_03.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_04" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.top_04.position, results.bottom_04.position, 20, 2, Color(255, 106, 121, 100)) end
+	-- Draw box sides
+	if farthest ~= "top_01" and farthest ~= "top_02" then ScriptGui.hud_line(gui, results.top_01.position, results.top_02.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_01" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_01.position, results.top_04.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_02" and farthest ~= "top_03" then ScriptGui.hud_line(gui, results.top_02.position, results.top_03.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_03" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_03.position, results.top_04.position, 20, 2, Color(255, 106, 121, 100)) end
+end
+
+mod.draw_equipment_box = function(self, dt, t)
+	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+	if self.cosmetics_view and slot_infos and not self.dropdown_open then
+		-- local gear_id = self.cosmetics_view._gear_id
+		local slot_info_id = self.cosmetics_view._slot_info_id
+		local item = self.cosmetics_view._selected_item
+		-- local ui_world_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+		-- local weapon_spawn_data = ui_world_spawner and ui_world_spawner._weapon_spawn_data
+		-- local item_unit_3p = weapon_spawn_data and weapon_spawn_data.item_unit_3p
+		-- local attachments = item.attachments
+		if item.attachments and not self.build_animation:is_busy() and slot_infos[slot_info_id] then
+			local found_attachment_slots = self:get_item_attachment_slots(item)
+			if #found_attachment_slots > 0 then
+				for _, attachment_slot in pairs(found_attachment_slots) do
+					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+					if unit and unit_alive(unit) then
+						local saved_origin = self.dropdown_positions[attachment_slot]
+						if saved_origin and saved_origin[3] and saved_origin[3] == true then
+							self:draw_box(unit, saved_origin)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 mod.draw_equipment_lines = function(self, dt, t)
 	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 	if self.cosmetics_view and slot_infos and not self.dropdown_open then
@@ -219,12 +323,15 @@ mod.draw_equipment_lines = function(self, dt, t)
 						local box = Unit.box(unit, false)
 						local center_position = matrix4x4_translation(box)
 						local world_to_screen, distance = camera_world_to_screen(camera, center_position)
+						if self.equipment_line_target then
+							world_to_screen = vector2(self.equipment_line_target[1], self.equipment_line_target[2])
+						end
 						local saved_origin = self.dropdown_positions[attachment_slot]
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then
 							local origin = vector2(saved_origin[1], saved_origin[2])
 							local color = Color(255, 49, 62, 45)
-							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 4, Color(255, 106, 121, 100))
-							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
+							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 106, 121, 100))
+							-- ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
 							break
 						end
 					end
@@ -359,6 +466,7 @@ end
 
 mod.update_attachment_previews = function(self, dt, t)
 	local selected_index = self.attachment_preview_index or 1
+	local attachment_slot = self.preview_attachment_slot
 	if self.cosmetics_view._weapon_preview._ui_weapon_spawner._weapon_spawn_data then
 		for _, unit in pairs(self.spawned_attachments) do
 			
@@ -369,10 +477,15 @@ mod.update_attachment_previews = function(self, dt, t)
 				-- else
 				-- 	unit_set_local_scale(unit, 1, vector3(1, 1, 1))
 				-- end
+				local index = self.attachment_index[unit]
 				unit_set_local_rotation(unit, 1, unit_world_rotation(link_unit, 1))
 
-				-- local last_slot = mod.attachment_slot_positions[7] or self.spawned_attachments_last_position[unit]
+				if index == selected_index then
+					self:draw_box(unit)
+				end
 
+				-- local last_slot = mod.attachment_slot_positions[7] or self.spawned_attachments_last_position[unit]
+				-- self.dropdown_positions[attachment_slot][3] = index == self.attachment_preview_index
 				if self.attachment_index_updated[unit] ~= self.attachment_preview_index then
 					-- local max = self.attachment_preview_count / 2
 					-- local selected = selected_index / max
@@ -395,11 +508,11 @@ mod.update_attachment_previews = function(self, dt, t)
 					-- local target_position = camera_position + distance + down + vector3(x, 0, 0)
 					local world = self.cosmetics_view._weapon_preview._ui_weapon_spawner._world
 					local target_position = self.attachment_slot_positions[6]
-					local index = self.attachment_index[unit]
+					-- local index = self.attachment_index[unit]
 					local attachment_name = self.preview_attachment_name[unit]
 					if index == self.attachment_preview_index then
 						local item = mod.cosmetics_view._selected_item
-						local attachment_slot = self.preview_attachment_slot
+						-- local attachment_slot = self.preview_attachment_slot
 						self:play_attachment_sound(item, attachment_slot, attachment_name, "select")
 						self:preview_flashlight(true, world, unit, attachment_name)
 						local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
@@ -2055,6 +2168,123 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
 end)
 
+-- mod.is_inside_unit_bounds = function(self, unit, position)
+-- 	local box, half_size = Unit.box(unit, false)
+-- 	local center_position = matrix4x4_translation(box)
+
+--     -- local halfSize = cubeSize / 2
+
+--     local minX = center_position.x - half_size.x
+--     local minY = center_position.y - half_size.y
+--     local minZ = center_position.z - half_size.z
+
+--     local maxX = center_position.x + half_size.x
+--     local maxY = center_position.y + half_size.y
+--     local maxZ = center_position.z + half_size.z
+
+--     return (
+--         position.x >= minX and position.x <= maxX and
+--         position.y >= minY and position.y <= maxY and
+--         position.z >= minZ and position.z <= maxZ
+--     )
+-- end
+
+
+-- mod.is_attachment_pressed = function(self, input_service)
+-- 	local world = self.cosmetics_view._weapon_preview._ui_weapon_spawner._world
+-- 	local physics_world = world and World.physics_world(world)
+
+-- 	if not physics_world then
+-- 		return
+-- 	end
+
+-- 	local cursor_name = "cursor"
+-- 	local NilCursor = {0, 0, 0}
+-- 	local cursor = input_service:get(cursor_name) or NilCursor
+-- 	local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
+
+-- 	if physics_world and camera then
+-- 		local screen_height = RESOLUTION_LOOKUP.height
+-- 		cursor[2] = screen_height - cursor[2]
+-- 		local from = Camera.screen_to_world(camera, vector3(cursor[1], cursor[2], 0), 0)
+-- 		local direction = Camera.screen_to_world(camera, cursor, 1) - from
+-- 		local to = vector3.normalize(direction)
+-- 		local collision_filter = "default"
+-- 		local hit_position = self:_get_raycast_hit(from, to, physics_world, collision_filter)
+
+-- 		-- local input_pressed = input_service:get("left_pressed") or input_service:get("right_pressed")
+
+-- 		if hit_position then
+-- 			local ui_world_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+-- 			local weapon_spawn_data = ui_world_spawner and ui_world_spawner._weapon_spawn_data
+-- 			local attachment_units_3p = weapon_spawn_data and weapon_spawn_data.attachment_units_3p
+	
+-- 			if attachment_units_3p then
+-- 				for _, unit in pairs(attachment_units_3p) do
+-- 					if unit and unit_alive(unit) then
+						
+-- 						local attachment_slot = unit_get_data(unit, "attachment_slot")
+
+-- 						if mod:is_inside_unit_bounds(unit, hit_position + direction * .1) then
+-- 							self.dropdown_positions[attachment_slot][3] = true
+
+-- 							local input_pressed = input_service:get("left_pressed") or input_service:get("right_pressed")
+-- 							if input_pressed then
+
+-- 								mod:echo("pressed")
+-- 							end
+-- 						end
+-- 					end
+-- 				end
+-- 			end
+-- 		else
+-- 			mod:echo("nope2")
+-- 		end
+
+-- 		-- if hit_unit then
+-- 		-- 	mod:echot("pressed")
+-- 		-- 	return true
+-- 		-- end
+-- 	end
+-- end
+
+-- mod._get_raycast_hit = function(self, from, to, physics_world, collision_filter)
+-- 	local result, other = PhysicsWorld.raycast(physics_world, from, to, 1000, "all", "collision_filter", collision_filter)
+
+-- 	if not result then
+-- 		mod:echo("nope1")
+-- 		return
+-- 	end
+
+-- 	local closest_distance = math.huge
+-- 	local closest_hit = nil
+-- 	local INDEX_POSITION = 1
+-- 	local INDEX_DISTANCE = 2
+-- 	local INDEX_ACTOR = 4
+-- 	local num_hits = #result
+
+-- 	for i = 1, num_hits do
+-- 		local hit = result[i]
+-- 		local hit_distance = hit[INDEX_DISTANCE]
+-- 		local hit_actor = hit[INDEX_ACTOR]
+-- 		local hit_position = hit[INDEX_POSITION]
+-- 		local hit_unit = Actor.unit(hit_actor)
+
+-- 		if hit_distance < closest_distance then
+-- 			closest_distance = hit_distance
+-- 			closest_hit = hit
+-- 		end
+-- 	end
+
+-- 	if closest_hit then
+-- 		-- local hit_actor = closest_hit[INDEX_ACTOR]
+-- 		-- local hit_unit = Actor.unit(hit_actor)
+
+-- 		-- return hit_unit, hit_actor
+-- 		return closest_hit[INDEX_POSITION]
+-- 	end
+-- end
+
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
 
 	if self._selected_tab_index == 3 then
@@ -2069,6 +2299,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
 		mod:update_equip_button()
 		mod:update_reset_button()
 	end
+
+	-- if mod:is_attachment_pressed(input_service) then
+
+	-- end
 
 	if mod.cosmetics_view and mod.demo then
 		local rotation_angle = (mod._last_rotation_angle or 0) + dt
@@ -2139,6 +2373,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_draw_widgets", function(func, sel
 
 	mod:get_dropdown_positions()
 	mod:draw_equipment_lines(dt, t)
+	mod:draw_equipment_box(dt, t)
 
 	local bar_breakdown_widgets = self.bar_breakdown_widgets
 

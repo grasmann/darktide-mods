@@ -39,6 +39,7 @@ local mod = get_mod("weapon_customization")
     local SLOT_SECONDARY = "slot_secondary"
     local REFERENCE = "weapon_customization"
     local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
+    local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
     local DELETION_STATES = table_enum("default", "in_network_layers", "removing_units")
 --#endregion
 
@@ -563,7 +564,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
     -- Visible equipment
     local visible_equipment_system = script_unit_has_extension(self._unit, "visible_equipment_system")
     local visible_equipment_system_option = mod:get(OPTION_VISIBLE_EQUIPMENT)
-    if not visible_equipment_system and visible_equipment_system_option and not managers.ui:has_active_view() then
+    local hub = not mod:is_in_hub() or not mod:get(OPTION_VISIBLE_EQUIPMENT_NO_HUB)
+    if not visible_equipment_system and visible_equipment_system_option and not managers.ui:has_active_view() and hub then
         -- Add VisibleEquipmentExtension
         script_unit_add_extension({
             world = self._equipment_component._world,
@@ -575,7 +577,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
             equipment = self._equipment,
             wielded_slot = self._equipment[self._inventory_component.wielded_slot],
         })
-    elseif visible_equipment_system and not visible_equipment_system_option then
+    elseif visible_equipment_system and (not mod:get(OPTION_VISIBLE_EQUIPMENT) or not hub) then
         -- Remove VisibleEquipmentExtension
         mod:remove_extension(self._unit, "visible_equipment_system")
     elseif visible_equipment_system and visible_equipment_system_option then
@@ -759,7 +761,8 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
     local perf = wc_perf.start("PlayerHuskVisualLoadoutExtension.update", 2)
     -- Visible equipment
     local visible_equipment_system = script_unit_has_extension(self._unit, "visible_equipment_system")
-    if not visible_equipment_system and mod:get(OPTION_VISIBLE_EQUIPMENT) and not managers.ui:has_active_view() then
+    local hub = not mod:is_in_hub() or not mod:get(OPTION_VISIBLE_EQUIPMENT_NO_HUB)
+    if not visible_equipment_system and mod:get(OPTION_VISIBLE_EQUIPMENT) and not managers.ui:has_active_view() and hub then
         -- Add VisibleEquipmentExtension
         script_unit_add_extension({
             world = self._equipment_component._world,
@@ -771,7 +774,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
             equipment = self._equipment,
             wielded_slot = self._equipment[self._wielded_slot],
         })
-    elseif visible_equipment_system and not mod:get(OPTION_VISIBLE_EQUIPMENT) then
+    elseif visible_equipment_system and (not mod:get(OPTION_VISIBLE_EQUIPMENT) or not hub) then
         -- Remove VisibleEquipmentExtension
         mod:remove_extension(self._unit, "visible_equipment_system")
     elseif visible_equipment_system and mod:get(OPTION_VISIBLE_EQUIPMENT) then

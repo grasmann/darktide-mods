@@ -151,11 +151,3 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
     end
     return item, item_group, rarity, item_level
 end)
-
--- mod:hook(CLASS.EndPlayerView, "on_exit", function(func, self, ...)
---     local session_report = self._session_report
---     local reward_card_data = session_report.rewards
--- 	local num_cards = #reward_card_data
-
---     func(self, ...)
--- end)
