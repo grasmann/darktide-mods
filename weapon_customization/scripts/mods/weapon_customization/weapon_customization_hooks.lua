@@ -622,7 +622,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
         local flashlight_unit_1p = mod:get_attachment_slot_in_attachments(slot.attachments_1p, "flashlight")
         local flashlight_unit_3p = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
         -- local inventory_component = self._inventory_component
-	    -- local wielded_slot_name = inventory_component and inventory_component.wielded_slot
+        -- local wielded_slot_name = inventory_component and inventory_component.wielded_slot
         if flashlight_unit_1p and flashlight_unit_3p then
             -- Add FlashlightExtension
             script_unit_add_extension({
@@ -652,6 +652,11 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
     --#endregion
     wc_perf.stop(perf)
 end)
+
+-- mod:hook(CLASS.Flashlight, "update", function(func, self, unit, dt, t, ...)
+--     func(self, unit, dt, t, ...)
+--     self:update_first_person_mode(self._first_person_mode)
+-- end)
 
 -- ##### ┌─┐┬  ┌─┐┬ ┬┌─┐┬─┐  ┬ ┬┌┐┌┬┌┬┐  ┌─┐─┐ ┬  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##########################################
 -- ##### ├─┘│  ├─┤└┬┘├┤ ├┬┘  │ │││││ │   ├┤ ┌┴┬┘  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##########################################

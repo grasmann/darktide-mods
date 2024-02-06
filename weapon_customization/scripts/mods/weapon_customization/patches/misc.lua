@@ -80,6 +80,8 @@ end)
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments, node_name, ...)
     if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
         return func(self, sources, source_name, parent_unit, attachments, node_name, ...)
+    elseif mod:find_node_in_unit(parent_unit, node_name) then
+        return func(self, sources, source_name, parent_unit, nil, node_name, ...)
     end
     return func(self, sources, source_name, parent_unit, nil, 1, ...)
 end)
@@ -87,6 +89,8 @@ end)
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
     if attachments and mod:find_node_in_attachments(parent_unit, node_name, attachments) then
         return func(self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
+    elseif mod:find_node_in_unit(parent_unit, node_name) then
+        return func(self, spawners, spawner_name, parent_unit, nil, node_name, should_add_3p_node, ...)
     end
     return func(self, spawners, spawner_name, parent_unit, nil, 1, should_add_3p_node, ...)
 end)

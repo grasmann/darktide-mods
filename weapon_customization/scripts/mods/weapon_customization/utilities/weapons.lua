@@ -12,15 +12,21 @@ local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
 
 --#region local functions
 	local math = math
+	local type = type
+	local Unit = Unit
 	local table = table
 	local pairs = pairs
 	local string = string
+	local vector3 = Vector3
 	local tostring = tostring
+	local unit_box = Unit.box
 	local managers = Managers
+	local Matrix4x4 = Matrix4x4
 	local script_unit = ScriptUnit
 	local string_find = string.find
 	local math_random = math.random
 	local table_contains = table.contains
+	local matrix4x4_transform = Matrix4x4.transform
 	local math_random_array_entry = math.random_array_entry
 --#endregion
 
@@ -235,6 +241,28 @@ mod.not_trinket = function(self, attachment_slot)
 	return attachment_slot ~= "slot_trinket_1" and attachment_slot ~= "slot_trinket_2" and true
 end
 
+mod.has_premium_skin = function(self, item)
+	local item_name = self:item_name_from_content_string(item.name)
+	local weapon_skin = item.slot_weapon_skin
+	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
+		self:setup_item_definitions()
+		weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
+	end
+	if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
+		-- mod:echot(weapon_skin.name)
+		-- mod:dtf(weapon_skin, "weapon_skin", 6)
+		if weapon_skin.feature_flags then
+			-- if table_contains(weapon_skin.feature_flags, "FEATURE_premium_store") then
+			-- 	mod:echot("flag: "..tostring(weapon_skin.feature_flags[1]))
+			-- end
+			return table_contains(weapon_skin.feature_flags, "FEATURE_premium_store")
+			-- for _, flag in pairs(weapon_skin.feature_flags) do
+			-- 	mod:echot("flag: "..tostring(flag))
+			-- end
+		end
+	end
+end
+
 -- Get attachment from specified gear id and slot
 -- Optional: Item to get real default attachment
 mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or_nil)
@@ -242,8 +270,15 @@ mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or
 	local in_premium_store = mod:is_premium_store_item()
 	-- if mod:not_trinket(attachment_slot) then
 	local attachment = nil
-	-- -- Check skin
-	-- if optional_item_or_nil and in_premium_store then
+	-- Check skin
+	-- if optional_item_or_nil then
+	-- 	if mod:has_premium_skin(optional_item_or_nil) then
+	-- 		mod:echot("Premium Skin!")
+	-- 		attachment = self:get_actual_default_attachment(optional_item_or_nil, attachment_slot)
+	-- 	end
+	-- end
+	-- if optional_item_or_nil and mod:has_premium_skin(optional_item_or_nil) then
+	-- 	mod:echot("Premium Skin!")
 	-- 	local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
 	-- 	local weapon_skin = optional_item_or_nil.slot_weapon_skin
 	-- 	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
@@ -263,7 +298,7 @@ mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or
 	-- 			-- mod:echo("attachment_name: "..tostring(attachment_data.attachment_name))
 	-- 			-- attachment = mod:get_actual_default_attachment(optional_item_or_nil, attachment_slot)
 	-- 			-- mod:echo("attachment_name: "..tostring(attachment))
-	-- 			mod:echo("attachment: "..tostring(attachment))
+	-- 			-- mod:echo("attachment: "..tostring(attachment))
 	-- 		end
 	-- 	end
 	-- end
@@ -322,4 +357,43 @@ mod.redo_weapon_attachments = function(self, item)
 		-- Trigger flashlight update
 		self._update_flashlight = true
 	else self:print("redo_weapon_attachments - weapon is nil") end
+end
+
+mod.weapon_points = function(self, attachments)
+	local points = {}
+	for _, unit in pairs(attachments) do
+		if unit and Unit.alive(unit) then
+			local tm, half_size = Unit.box(unit)
+			points[unit] = {}
+			points[unit][#points[unit]+1] = matrix4x4_transform(tm, vector3(half_size.x, half_size.y, -half_size.z))
+			points[unit][#points[unit]+1] = matrix4x4_transform(tm, vector3(half_size.x, -half_size.y, -half_size.z))
+			points[unit][#points[unit]+1] = matrix4x4_transform(tm, vector3(-half_size.x, -half_size.y, -half_size.z))
+			points[unit][#points[unit]+1] = matrix4x4_transform(tm, vector3(-half_size.x, half_size.y, -half_size.z))
+			points[unit][#points[unit]+1] = matrix4x4_transform(tm, vector3(half_size.x, half_size.y, half_size.z))
+			points[unit][#points[unit]+1] = matrix4x4_transform(tm, vector3(half_size.x, -half_size.y, half_size.z))
+			points[unit][#points[unit]+1] = matrix4x4_transform(tm, vector3(-half_size.x, -half_size.y, half_size.z))
+			points[unit][#points[unit]+1] = matrix4x4_transform(tm, vector3(-half_size.x, half_size.y, half_size.z))
+		end
+	end
+	return points
+end
+
+mod.weapon_size = function(self, attachments)
+	local points = self:weapon_points(attachments);
+	local maxDistance = 0
+	for unit1, unit_points1 in pairs(points) do
+		for unit2, unit_points2 in pairs(points) do
+			if unit1 ~= unit2 then
+				for i1, position1 in pairs(unit_points1) do
+					for i2, position2 in pairs(unit_points2) do
+						if i1 ~= i2 then
+							local distance = vector3.distance(position1, position2)
+							maxDistance = math.max(maxDistance, distance)
+						end
+					end
+				end
+			end
+		end
+	end
+	return maxDistance
 end

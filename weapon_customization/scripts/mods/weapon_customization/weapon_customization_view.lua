@@ -161,6 +161,8 @@ local mod = get_mod("weapon_customization")
 	local RESET_WAIT_TIME = 5
 	local SOUND_DURATION = .5
 	local WEAPON_PART_ANIMATION_TIME = .75
+	local LINE_THICKNESS = 2
+	local LINE_Z = 0
 
 	-- mod.bar_breakdown_widgets = {}
 	-- mod.bar_breakdown_widgets_by_name = {}
@@ -204,8 +206,8 @@ mod.build_animation = WeaponBuildAnimation:new()
 mod.draw_box = function(self, unit, saved_origin)
 	local tm, half_size = Unit.box(unit)
 	local gui = self.cosmetics_view._ui_forward_renderer.gui
-	local ui_world_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
-	local camera = ui_world_spawner and ui_world_spawner._camera
+	local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+	local camera = ui_weapon_spawner and ui_weapon_spawner._camera
 	-- Get boundary points
 	local points = {
 		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
@@ -261,33 +263,35 @@ mod.draw_box = function(self, unit, saved_origin)
 			}
 		end
 	end
+ 
+	-- local weapon_spawn_data = ui_weapon_spawner._weapon_spawn_data
+	-- if weapon_spawn_data then
+	-- 	local weapon_size = mod:weapon_size(weapon_spawn_data.attachment_units_3p)
+	-- 	mod:echot("weapon_size: "..tostring(weapon_size))
+	-- end
+
 	-- Draw box bottom
-	if farthest ~= "bottom_01" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_02.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "bottom_01" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_04.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "bottom_02" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.bottom_02.position, results.bottom_03.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "bottom_03" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_03.position, results.bottom_04.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "bottom_01" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "bottom_01" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "bottom_02" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.bottom_02.position, results.bottom_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "bottom_03" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_03.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
 	-- Draw box top
-	if farthest ~= "top_01" and farthest ~= "bottom_01" then ScriptGui.hud_line(gui, results.top_01.position, results.bottom_01.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_02" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.top_02.position, results.bottom_02.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_03" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.top_03.position, results.bottom_03.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_04" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.top_04.position, results.bottom_04.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_01" and farthest ~= "bottom_01" then ScriptGui.hud_line(gui, results.top_01.position, results.bottom_01.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_02" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.top_02.position, results.bottom_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_03" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.top_03.position, results.bottom_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_04" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.top_04.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
 	-- Draw box sides
-	if farthest ~= "top_01" and farthest ~= "top_02" then ScriptGui.hud_line(gui, results.top_01.position, results.top_02.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_01" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_01.position, results.top_04.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_02" and farthest ~= "top_03" then ScriptGui.hud_line(gui, results.top_02.position, results.top_03.position, 20, 2, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_03" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_03.position, results.top_04.position, 20, 2, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_01" and farthest ~= "top_02" then ScriptGui.hud_line(gui, results.top_01.position, results.top_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_01" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_01.position, results.top_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_02" and farthest ~= "top_03" then ScriptGui.hud_line(gui, results.top_02.position, results.top_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	if farthest ~= "top_03" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_03.position, results.top_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
 end
 
 mod.draw_equipment_box = function(self, dt, t)
 	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 	if self.cosmetics_view and slot_infos and not self.dropdown_open then
-		-- local gear_id = self.cosmetics_view._gear_id
 		local slot_info_id = self.cosmetics_view._slot_info_id
 		local item = self.cosmetics_view._selected_item
-		-- local ui_world_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
-		-- local weapon_spawn_data = ui_world_spawner and ui_world_spawner._weapon_spawn_data
-		-- local item_unit_3p = weapon_spawn_data and weapon_spawn_data.item_unit_3p
-		-- local attachments = item.attachments
 		if item.attachments and not self.build_animation:is_busy() and slot_infos[slot_info_id] then
 			local found_attachment_slots = self:get_item_attachment_slots(item)
 			if #found_attachment_slots > 0 then
@@ -297,6 +301,7 @@ mod.draw_equipment_box = function(self, dt, t)
 						local saved_origin = self.dropdown_positions[attachment_slot]
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then
 							self:draw_box(unit, saved_origin)
+							break
 						end
 					end
 				end
@@ -330,8 +335,7 @@ mod.draw_equipment_lines = function(self, dt, t)
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then
 							local origin = vector2(saved_origin[1], saved_origin[2])
 							local color = Color(255, 49, 62, 45)
-							ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 106, 121, 100))
-							-- ScriptGui.hud_line(gui, origin, world_to_screen, 20, 2, Color(255, 49, 62, 45))
+							ScriptGui.hud_line(gui, origin, world_to_screen, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
 							break
 						end
 					end
@@ -891,6 +895,9 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 		-- 	world = self._world,
 		-- }, true)
 
+		-- local weapon_size = mod:weapon_size(weapon_spawn_data.attachment_units_3p)
+		-- mod:echot("weapon_size: "..tostring(weapon_size))
+
 		local item_name = mod.cosmetics_view._item_name
 		local link_unit = weapon_spawn_data.link_unit
 
@@ -989,7 +996,6 @@ mod:hook(CLASS.UIWeaponSpawner, "_despawn_current_weapon", function(func, self, 
 end)
 
 mod.ui_weapon_spawner_cb_on_unit_3p_streaming_complete = function(self, ui_weapon_spawner)
-
 end
 
 mod.ui_weapon_spawner_despawn_weapon = function(self, ui_weapon_spawner)

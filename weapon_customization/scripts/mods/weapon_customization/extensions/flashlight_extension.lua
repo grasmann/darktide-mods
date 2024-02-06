@@ -14,6 +14,7 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
 --#region Local functions
     local Unit = Unit
     local math = math
+    local type = type
     local table = table
     local light = Light
     local pairs = pairs
@@ -551,8 +552,14 @@ end
 -- ##### │ ┬│  │ │├┴┐├─┤│   ###########################################################################################
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘ ###########################################################################################
 
-mod.is_flashlight_modded = function(self)
+mod.is_flashlight_modded = function(self, item_or_gear_id)
+    -- local gear_id = item_or_gear_id
+    -- if type(item_or_gear_id) == "table" then
+    --     item_or_gear_id = item_or_gear_id.__master_item or item_or_gear_id
+    --     gear_id = self:get_gear_id(item_or_gear_id)
+    -- end
     return self:execute_extension(self.player_unit, "flashlight_system", "is_modded")
+    -- return gear_id and mod:get_gear_setting(gear_id, "flashlight") ~= nil
 end
 
 mod.is_flashlight_wielded = function(self)

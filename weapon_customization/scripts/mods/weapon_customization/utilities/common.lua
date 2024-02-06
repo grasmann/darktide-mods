@@ -188,6 +188,7 @@ mod.load_needed_packages = function(self)
 		"content/fx/particles/enemies/sniper_laser_sight",
 		"content/fx/particles/enemies/red_glowing_eyes",
 		"packages/ui/views/splash_view/splash_view",
+		-- "content/fx/particles/interacts/servoskull_visibility_hover",
 		-- "content/characters/player/human/third_person/animations/lasgun_pistol",
 		-- "content/characters/player/human/first_person/animations/lasgun_pistol",
 		-- "content/characters/player/human/third_person/animations/stubgun_pistol",

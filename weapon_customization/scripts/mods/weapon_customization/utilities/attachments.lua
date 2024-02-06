@@ -123,9 +123,16 @@ mod.find_node_in_attachments = function(self, parent_unit, node_name, attachment
             return true
 		end
 	end
-    -- Search node in parent unit
-	if unit_has_node(parent_unit, node_name) then
-        return true
+    -- -- Search node in parent unit
+	-- if unit_has_node(parent_unit, node_name) then
+    --     return true
+	-- end
+end
+
+mod.find_node_in_unit = function(self, unit, node_name)
+	-- Search node in parent unit
+	if unit_has_node(unit, node_name) then
+		return true
 	end
 end
 

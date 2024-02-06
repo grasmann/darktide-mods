@@ -24,6 +24,9 @@ local mod = get_mod("weapon_customization")
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 return {
+    -- ##### ┬─┐┌─┐┌─┐┌─┐┬┬  ┬┌─┐┬─┐┌─┐
+    -- ##### ├┬┘├┤ │  ├┤ │└┐┌┘├┤ ├┬┘└─┐
+    -- ##### ┴└─└─┘└─┘└─┘┴ └┘ └─┘┴└─└─┘
     receiver_attachments = function(default)
         local attachments = {
             {id = "receiver_01",        name = "Receiver 1"},
@@ -47,9 +50,9 @@ return {
             {name = "receiver_04",      model = _item_ranged.."/recievers/autogun_pistol_receiver_04"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-
-
+    -- ##### ┌┐ ┌─┐┬─┐┬─┐┌─┐┬  ┌─┐
+    -- ##### ├┴┐├─┤├┬┘├┬┘├┤ │  └─┐
+    -- ##### └─┘┴ ┴┴└─┴└─└─┘┴─┘└─┘
     barrel_attachments = function(default)
         local attachments = {
             {id = "barrel_01",      name = "Barrel 1"},
@@ -73,9 +76,9 @@ return {
             {name = "barrel_05",      model = _item_ranged.."/barrels/autogun_pistol_barrel_05"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-
-
+    -- ##### ┌┬┐┌─┐┌─┐┌─┐┌─┐┬┌┐┌┌─┐┌─┐
+    -- ##### │││├─┤│ ┬├─┤┌─┘││││├┤ └─┐
+    -- ##### ┴ ┴┴ ┴└─┘┴ ┴└─┘┴┘└┘└─┘└─┘
     magazine_attachments = function(default)
         local attachments = {
             {id = "auto_pistol_magazine_01",        name = "Magazine 1"},
@@ -91,9 +94,9 @@ return {
             {name = "auto_pistol_magazine_01", model = _item_ranged.."/magazines/autogun_pistol_magazine_01"},
         }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-
-
+    -- ##### ┌┬┐┬ ┬┌─┐┌─┐┬  ┌─┐┌─┐
+    -- ##### ││││ │┌─┘┌─┘│  ├┤ └─┐
+    -- ##### ┴ ┴└─┘└─┘└─┘┴─┘└─┘└─┘
     muzzle_attachments = function(default)
         local attachments = {
             {id = "muzzle_01",      name = "Autopistol Muzzle A"},
@@ -117,9 +120,9 @@ return {
             {name = "muzzle_05",      model = _item_ranged.."/muzzles/autogun_pistol_muzzle_05"},
         }, parent, angle, move, remove, type or "muzzle", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-
-
+    -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐
+    -- ##### └─┐││ ┬├─┤ │ └─┐
+    -- ##### └─┘┴└─┘┴ ┴ ┴ └─┘
     sight_attachments = function(default)
         local attachments = {
             {id = "sight_01",       name = "Sight 1"},

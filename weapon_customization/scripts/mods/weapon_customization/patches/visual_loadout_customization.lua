@@ -162,6 +162,37 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 		-- ############################################################################################################
 
+		-- if attachment_units and mod:has_premium_skin(item_data) and attach_settings then
+		-- 	mod:echot("premium skin - glow")
+		-- 	-- local particle_name = "content/fx/particles/interacts/servoskull_visibility_hover"
+		-- 	local particle_name = "content/fx/particles/enemies/red_glowing_eyes"
+		-- 	local world_scale = Vector3(1, 1, 1)
+			
+
+		-- 	local color = color(255, 255, 0, 0)
+		-- 	local intensity = 10
+		-- 	for _, unit in pairs(attachment_units) do
+		-- 		local world_position = Unit.world_position(unit, 1)
+		-- 		local world_rotation = Unit.world_rotation(unit, 1)
+		-- 		local particle_id = World.create_particles(attach_settings.world, particle_name, world_position, world_rotation, world_scale)
+		-- 		local unit_world_pose = Unit.world_pose(unit)
+		-- 		-- Matrix4x4.set_translation(unit_world_pose, vector3(0, distance, 0))
+		-- 		Matrix4x4.set_scale(unit_world_pose, Vector3(10, 10, 10))
+		-- 		World.link_particles(attach_settings.world, particle_id, unit, 1, unit_world_pose, "destroy")
+		-- 		World.set_particles_use_custom_fov(attach_settings.world, particle_id, false)
+		-- 		World.set_particles_material_vector3(attach_settings.world, particle_id, "eye_socket", "material_variable_21872256", Vector3(1, 0, 0))
+		-- 		World.set_particles_material_vector3(attach_settings.world, particle_id, "eye_glow", "trail_color", Vector3(1, 0, 0))
+		-- 		World.set_particles_material_vector3(attach_settings.world, particle_id, "eye_flash_init", "material_variable_21872256", Vector3(0, 0, 0))
+		-- 		-- Unit.set_vector3_for_materials(unit, "stimmed_color", color, true)
+		-- 		-- Unit.set_scalar_for_materials(unit, "emissive_intensity_lumen", intensity)
+		-- 		-- Unit.set_scalar_for_materials(unit, "increase_color", 2)
+		-- 		-- if attach_settings.character_unit then
+		-- 		-- 	-- "content/fx/particles/interacts/servoskull_visibility_hover"
+		-- 		-- 	mod:echot("character")
+		-- 		-- end
+		-- 	end
+		-- end
+
 		if attachment_units and item_unit and attachments and gear_id and not mod:is_premium_store_item() then
 
 			unit_set_data(item_unit, "attachment_units", attachment_units)
@@ -335,6 +366,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					end
 				end
 			end
+
+			local weapon_size = mod:weapon_size(attachment_units)
+			Unit.set_data(item_unit, "weapon_size", weapon_size)
+			-- mod:echot("weapon_size: "..tostring(weapon_size))
 		end
 	
 		-- Return original values
