@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\scoreboard\scripts\mods\scoreboard" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\scoreboard\scripts\mods\scoreboard"

@@ -715,6 +715,8 @@ mod.bosses = {
 	"chaos_plague_ogryn",
 	"chaos_plague_ogryn_sprayer",
 	"renegade_captain",
+	"renegade_twin_captain",
+	"renegade_twin_captain_two",
 }
 mod.current_health = {}
 mod.last_enemy_interaction = {}

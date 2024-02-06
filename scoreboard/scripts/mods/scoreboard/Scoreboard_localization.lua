@@ -484,28 +484,28 @@ return {
 		de = "Wiederbelebt / Gerettet",
 		-- fr = "Réanimés / Secourus", --> ?
 		-- ru = "Возрождено/Спасено", --> ?
-		-- ["zh-cn"] = "复苏 / 营救", --> ?
+		["zh-cn"] = "复苏 / 营救",
 	},
 	message_rescued_text = {
 		en = " rescued :subject:",
 		de = " hat :subject: gerettet",
 		-- fr = " a rammassé :subject:",
 		-- ru = " подбирает :subject:",
-		-- ["zh-cn"] = "拾取了:subject:",
+		["zh-cn"] = "营救了:subject:",
 	},
 	message_revived_text = {
 		en = " revived :subject:",
 		de = " hat :subject: wiederbelebt",
 		-- fr = " a rammassé :subject:",
 		-- ru = " подбирает :subject:",
-		-- ["zh-cn"] = "拾取了:subject:",
+		["zh-cn"] = "复苏了:subject:",
 	},
 	message_revived_rescued_description = {
 		en = "Shows message when a player revives / rescues another player",
 		de = "Zeigt eine Nachricht wenn ein Spieler einen anderen Spieler wiederbelebt / rettet",
 		-- fr = "Affiche un message lorsqu'un joueur ramasse un Plastacier ou de la Diamantine",
 		-- ru = "Показывает сообщения когда игрок подбирает ресурсы",
-		-- ["zh-cn"] = "玩家拾取塑钢或金刚铁时显示消息",
+		["zh-cn"] = "玩家复苏 / 营救另一名玩家时显示消息",
 	},
 	plugin_revived_rescued = {
 		en = "Revived / Rescued Operatives",
@@ -1013,5 +1013,13 @@ return {
 		fr = "caisses", -- ?
 		ru = "ящики", -- ?
 		["zh-cn"] = "弹药箱",
+	},
+	history_won = {
+		en = "WON",
+		["zh-cn"] = "成功",
+	},
+	history_lost = {
+		en = "LOST",
+		["zh-cn"] = "失败",
 	},
 }
