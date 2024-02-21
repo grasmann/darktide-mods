@@ -326,11 +326,13 @@ return {
 	mod_option_randomization_reward = {
 		en = "Rewards",
 		de = "Belohnungen",
+		ru = "Награды",
 		["zh-cn"] = "奖励",
 	},
 	mod_option_randomization_reward_tooltip = {
 		en = "Randomize mission reward weapons",
 		de = "Randomisierung der Missions-Belohnungs Waffen",
+		ru = "Создавать случайные варианты оружия, полученного в награду за миссии",
 		["zh-cn"] = "随机化任务奖励武器",
 	},
 	mod_option_randomization_bayonet = {

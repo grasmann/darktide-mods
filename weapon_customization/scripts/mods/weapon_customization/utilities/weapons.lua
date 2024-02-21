@@ -11,17 +11,32 @@ local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+local color = Color
 	local math = math
+	local unit_alive = Unit.alive
 	local type = type
 	local Unit = Unit
 	local table = table
 	local pairs = pairs
+	local unit_world_pose = Unit.world_pose
+	local unit_get_data = Unit.get_data
 	local string = string
+	local unit_set_data = Unit.set_data
+	local World = World
+	local world_create_particles = World.create_particles
+	local unit_world_position = Unit.world_position
+	local unit_world_rotation = Unit.world_rotation
+	local world_destroy_particles = World.destroy_particles
+	local world_stop_spawning_particles = World.stop_spawning_particles
 	local vector3 = Vector3
 	local tostring = tostring
+	local world_set_particles_use_custom_fov = World.set_particles_use_custom_fov
 	local unit_box = Unit.box
+	local world_link_particles = World.link_particles
 	local managers = Managers
-	local Matrix4x4 = Matrix4x4
+	local matrix4x4 = Matrix4x4
+	local matrix4x4_identity = matrix4x4.identity
+	local matrix4x4_set_scale = matrix4x4.set_scale
 	local script_unit = ScriptUnit
 	local string_find = string.find
 	local math_random = math.random
@@ -40,6 +55,49 @@ local REWARD_ITEM = "reward_item"
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+mod.spawn_premium_effects = function(self, item, item_unit, attachment_units, world)
+	if attachment_units and self:has_premium_skin(item) then
+		self:echot("premium skin - glow")
+		-- local particle_name = "content/fx/particles/interacts/servoskull_visibility_hover"
+		-- local particle_name = "content/fx/particles/enemies/red_glowing_eyes"
+		-- local particle_name = "content/fx/particles/abilities/psyker_warp_charge_shout"
+		-- local particle_name = "content/fx/particles/enemies/buff_stummed";
+		local particle_name = "content/fx/particles/abilities/chainlightning/protectorate_chainlightning_hands_charge";
+		local color = color(255, 255, 0, 0)
+		-- local intensity = 10
+		local world_scale = vector3(.1, .1, .1)
+		local unit = attachment_units[1] --item_unit
+		-- for _, unit in pairs(attachment_units) do
+			if unit and unit_alive(unit) and not unit_get_data(unit, "premium_particle") then
+				local world_position = unit_world_position(unit, 1)
+				local world_rotation = unit_world_rotation(unit, 1)
+				local particle_id = world_create_particles(world, particle_name, world_position, world_rotation, world_scale)
+				local unit_world_pose = unit_world_pose(unit, 1)
+				-- Matrix4x4.set_translation(unit_world_pose, vector3(0, distance, 0))
+				matrix4x4_set_scale(unit_world_pose, vector3(.1, .1, .1))
+				world_link_particles(world, particle_id, unit, 1, matrix4x4_identity(), "destroy")
+				world_set_particles_use_custom_fov(world, particle_id, true)
+				unit_set_data(unit, "premium_particle", particle_id)
+			end
+		-- end
+	end
+end
+
+mod.despawn_premium_effects = function(self, item, item_unit, attachment_units, world)
+	if attachment_units then
+		for _, unit in pairs(attachment_units) do
+			if unit and unit_alive(unit) then
+				local particle_id = unit_get_data(unit, "premium_particle")
+				if particle_id then
+					world_stop_spawning_particles(world, particle_id)
+					world_destroy_particles(world, particle_id)
+				end
+				unit_set_data(unit, "premium_particle", nil)
+			end
+		end
+	end
+end
 
 mod.random_chance = {
     bayonet = "mod_option_randomization_bayonet",
@@ -242,6 +300,7 @@ mod.not_trinket = function(self, attachment_slot)
 end
 
 mod.has_premium_skin = function(self, item)
+	local item = item.__master_item or item
 	local item_name = self:item_name_from_content_string(item.name)
 	local weapon_skin = item.slot_weapon_skin
 	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then

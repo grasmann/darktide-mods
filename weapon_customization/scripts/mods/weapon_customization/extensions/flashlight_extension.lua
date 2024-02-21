@@ -270,6 +270,7 @@ FlashlightExtension.update = function(self, dt, t)
     if self.initialized then
         self:update_husk(dt, t)
         self:update_flicker(dt, t)
+        -- self:set_enabled(self.on, false)
         -- Update laser pointer
         mod:execute_extension(self.player_unit, "laser_pointer_system", "update", dt, t)
         -- Check first person change
@@ -391,6 +392,7 @@ FlashlightExtension.update_intensity = function(self)
     local light = self:light()
     local template = self:light_template()
     if light and template then
+        light_set_enabled(light, self.on)
         light_set_intensity(light, template.intensity * charge_fraction)
         light_set_spot_angle_start(light, template.spot_angle.min * charge_fraction)
         light_set_spot_angle_end(light, template.spot_angle.max * charge_fraction)
@@ -414,6 +416,21 @@ FlashlightExtension.set_light_values = function(self)
         mod:set_light_values(flashlight_unit, template)
     end
 end
+
+-- FlashlightExtension.sync  = function(self)
+--     local is_in_hub = mod:is_in_hub() or mod:is_in_prologue_hub()
+--     if self.initialized and not is_in_hub then
+
+--         light_set_enabled(light, on)
+--         self.on = not self.on
+--         if self.is_local_unit then
+--             mod:set_flashlight_active(self.on)
+--         end
+--         self:set_light(play_sound, self.on)
+--     end
+--     -- Relay to sub extensions
+--     FlashlightExtension.super.set_enabled(self, self.on)
+-- end
 
 FlashlightExtension.set_enabled  = function(self, optional_value, optional_play_sound)
     local play_sound = optional_play_sound or self.is_local_unit or self.spectated

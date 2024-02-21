@@ -31,6 +31,7 @@ local mod = get_mod("weapon_customization")
     local vector3 = Vector3
     local vector3 = vector3
     local wc_perf = wc_perf
+    local callback = callback
     local math_abs = math.abs
     local managers = Managers
     local tostring = tostring
@@ -47,6 +48,8 @@ local mod = get_mod("weapon_customization")
     local vector3_lerp = vector3.lerp
     local vector3_zero = vector3.zero
     local wc_perf_stop = wc_perf.stop
+    local unit_get_data = Unit.get_data
+    local unit_has_data = Unit.has_data
     local unit_has_node = Unit.has_node
     local QuaternionBox = QuaternionBox
     local table_combine = table.combine
@@ -545,6 +548,11 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
     wc_perf_stop(perf)
 end
 
+VisibleEquipmentExtension.cb_on_unit_3p_streaming_complete = function(self, slot, perf)
+    -- Performance
+    wc_perf_stop(perf)
+end
+
 VisibleEquipmentExtension.load_slot = function(self, slot)
     -- Performance
     local perf = wc_perf_start("VisibleEquipmentExtension.load_slot", 2)
@@ -574,12 +582,13 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 self.dummy_units[slot] = {}
                 self.dummy_units[slot].base, self.dummy_units[slot].attachments = VisualLoadoutCustomization.spawn_item(slot.item, attach_settings, self.player_unit)
                 -- VisualLoadoutCustomization.add_extensions(nil, self.dummy_units[slot].attachments, attach_settings)
-                local callback = function()
-                end
+                -- Performance
+                local perf = wc_perf_start("VisibleEquipmentExtension.streaming_meshes", 2)
+                local callback = callback(self, "cb_on_unit_3p_streaming_complete", slot, perf)
                 unit_force_stream_meshes(self.dummy_units[slot].base, callback, true)
-                for _, unit in pairs(self.dummy_units[slot].attachments) do
-                    unit_force_stream_meshes(unit, callback, true)
-                end
+                -- for _, unit in pairs(self.dummy_units[slot].attachments) do
+                --     unit_force_stream_meshes(unit, callback, true)
+                -- end
                 -- Hide bullets
                 self:hide_bullets(slot)
                 -- Equipment data
@@ -752,6 +761,12 @@ VisibleEquipmentExtension.on_wield_slot = function(self, slot)
     if self.equipment_data[slot] and self.equipment_data[slot].wield then
         self.equipment_data[slot].wield(self, self.wielded_slot)
     end
+
+    -- if self.dummy_units[slot] and self.dummy_units[slot].base and self.dummy_units[slot].attachments then
+    --     local item = slot.item and slot.item.__master_item
+    --     mod:spawn_premium_effects(item, self.dummy_units[slot].base, self.dummy_units[slot].attachments, self.world)
+    -- end
+
     -- Set step interval
     self:set_foot_step_interval()
 end
@@ -761,6 +776,12 @@ VisibleEquipmentExtension.on_unwield_slot = function(self, slot)
     if self.equipment_data[slot] and self.equipment_data[slot].unwield then
         self.equipment_data[slot].unwield(self, self.wielded_slot)
     end
+
+    -- if self.dummy_units[slot] and self.dummy_units[slot].base and self.dummy_units[slot].attachments then
+    --     local item = slot.item and slot.item.__master_item
+    --     mod:despawn_premium_effects(item, self.dummy_units[slot].base, self.dummy_units[slot].attachments, self.world)
+    -- end
+
     -- Set step interval
     self:set_foot_step_interval()
 end
@@ -839,6 +860,7 @@ VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
         local visible = slot_not_wielded and (player or spectated)
         -- Check units
         if self.dummy_units[slot] then
+            local item = slot.item and slot.item.__master_item
             -- Get units
             local units = table_combine({self.dummy_units[slot].base}, self.dummy_units[slot].attachments)
             -- if self.item_names[slot] == SLAB_SHIELD then
@@ -850,6 +872,11 @@ VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
                 if unit and unit_alive(unit) then
                     -- Set equipment visibility
                     unit_set_unit_visibility(unit, visible, true)
+                    -- if visible then
+                    --     mod:spawn_premium_effects(item, self.dummy_units[slot].base, self.dummy_units[slot].attachments, self.world)
+                    -- else
+                    --     mod:despawn_premium_effects(item, self.dummy_units[slot].base, self.dummy_units[slot].attachments, self.world)
+                    -- end
                 end
             end
         end

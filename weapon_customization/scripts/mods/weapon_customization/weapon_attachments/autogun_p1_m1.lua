@@ -16,18 +16,14 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-    local _item = "content/items/weapons/player"
-    local _item_ranged = _item.."/ranged"
-    local _item_melee = _item.."/melee"
-    local _item_minion = "content/items/weapons/minions"
-    local _lense_default = "scope_lens_default"
     local _sight_default = "sight_default"
-    local _braced_barrels = "barrel_07|barrel_08|barrel_09|barrel_10|barrel_13|barrel_14|barrel_18|barrel_19"
-    local _infantry_barrels = "barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06"
-    local _infantry_and_braced_barrels = _infantry_barrels.."|".._braced_barrels
+    local _lense_default = "scope_lens_default"
     local _braced_receivers = "receiver_03|receiver_06|receiver_07"
     local _headhunter_receivers = "receiver_02|receiver_04|receiver_05"
     local _headhunter_barrels = "barrel_11|barrel_12|barrel_15|barrel_16"
+    local _infantry_barrels = "barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06"
+    local _braced_barrels = "barrel_07|barrel_08|barrel_09|barrel_10|barrel_13|barrel_14|barrel_18|barrel_19"
+    local _infantry_and_braced_barrels = _infantry_barrels.."|".._braced_barrels
     local _infantry_and_headhunter_barrels = _infantry_barrels.."|".._headhunter_barrels
 --#endregion
 

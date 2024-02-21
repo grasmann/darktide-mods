@@ -7,8 +7,10 @@ local mod = get_mod("weapon_customization")
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local Crouch = mod:original_require("scripts/extension_systems/character_state_machine/character_states/utilities/crouch")
 local Recoil = mod:original_require("scripts/utilities/recoil")
+local Sway = mod:original_require("scripts/utilities/sway")
 local ScriptViewport = mod:original_require("scripts/foundation/utilities/script_viewport")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
+local RecoilTemplate = mod:original_require("scripts/settings/equipment/recoil_templates")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -43,14 +45,17 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local math_easeInCubic = math.easeInCubic
+    local quaternion_forward = Quaternion.forward
     local ShadingEnvironment = ShadingEnvironment
     local matrix4x4_transform = Matrix4x4.transform
     local camera_vertical_fov = Camera.vertical_fov
     local unit_world_position = Unit.world_position
+    local unit_world_rotation = Unit.world_rotation
     local unit_local_position = Unit.local_position
     local unit_local_rotation = Unit.local_rotation
     local quaternion_matrix4x4 = Quaternion.matrix4x4
     local unit_set_local_scale = Unit.set_local_scale
+    local unit_get_child_units = Unit.get_child_units
     local camera_world_position = Camera.world_position
     local script_unit_extension = script_unit.extension
     local world_create_particles = World.create_particles
@@ -65,6 +70,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local shading_environment_set_scalar = ShadingEnvironment.set_scalar
     local camera_set_custom_vertical_fov = Camera.set_custom_vertical_fov
     local world_update_unit_and_children = World.update_unit_and_children
+    local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
     local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
@@ -119,6 +125,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
     self.lenses = {}
     self.sniper_recoil_template = nil
     self.sniper_sway_template = nil
+    self.first_person_component = self.unit_data:read_component("first_person")
 
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
     managers.event:register(self, "weapon_customization_update_zoom", "update_zoom")
@@ -246,7 +253,8 @@ SightExtension.set_weapon_values = function(self)
         mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "scope_lens_02"),
     }
     self:set_lens_units()
-    -- self.sight_unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon)
+    self.sight_unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_2")
+        or mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight")
     self.sight = self.sights[2] or self.sights[1] --self:get_sight()
     self.sight_name = self.sights[1] and mod:item_name_from_content_string(self.sights[1].item)
     self.offset = nil
@@ -492,30 +500,147 @@ SightExtension.update = function(self, unit, dt, t)
             end
         end
 
+        -- -- local first_person_component = self.unit_data:read_component("first_person")
+        -- -- local rotation = first_person_component.rotation
+        -- local rotation = self.rotation_offset and vector3_unbox(self.rotation_offset) or vector3_zero()
+        -- local recoil_template = self.weapon_extension:recoil_template()
+        -- local sway_template = self.weapon_extension:sway_template()
+        -- local recoil_component = self.unit_data:read_component("recoil")
+        -- local sway_component = self.unit_data:read_component("sway")
+        -- local recoiled_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, self.movement_state_component, rotation)
+        -- recoiled_rotation = Sway.apply_sway_rotation(sway_template, sway_component, self.movement_state_component, recoiled_rotation)
+
+        -- self.rotation_offset = vector3_box(recoiled_rotation)
+
         self:update_scope_lenses()
     end
     wc_perf.stop(perf)
 end
 
+-- SightExtension.apply_offset = function(self)
+--     local offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
+--     mod.camera_offset = offset
+-- end
+
 SightExtension.update_position_and_rotation = function(self)
     if self:get_first_person() then
-        if self.position_offset and self.first_person_unit and unit_alive(self.first_person_unit) then
+        -- local weapon_unit = self.ranged_weapon.weapon_unit
+        
+        -- if self.rotation_offset then
+        --     local weapon_unit = self.ranged_weapon.weapon_unit
+        --     if weapon_unit and unit_alive(weapon_unit) then
+        --         local rot = vector3_unbox(self.rotation_offset)
+        --         local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
+        --         -- if self.weapon_extension then
+        --         --     local recoil_template = self.weapon_extension:recoil_template()
+        --         --     local sway_template = self.weapon_extension:sway_template()
+        --         --     local recoil_component = self.unit_data:read_component("recoil")
+        --         --     local sway_component = self.unit_data:read_component("sway")
+        --         --     local recoiled_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, self.movement_state_component, rotation)
+        --         --     recoiled_rotation = Sway.apply_sway_rotation(sway_template, sway_component, self.movement_state_component, recoiled_rotation)
+        --         --     rotation = recoiled_rotation
+        --         -- end
+        --         -- unit_set_local_rotation(weapon_unit, 1, rotation)
+        --     end
+        -- end
+
+        -- local rot = self.rotation_offset and vector3_unbox(self.rotation_offset) or vector3_zero()
+        -- local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
+        mod.camera_rotation = nil
+
+        local distance = 0
+        if self.first_person_unit and unit_alive(self.first_person_unit) then
+            local position1 = unit_world_position(self.first_person_unit, 1)
+            local weapon_unit = self.ranged_weapon.weapon_unit
+            local position2 = unit_world_position(weapon_unit, 1)
+            distance = vector3.distance(position2, position1)
+        end
+        -- local diff = vector3_box position1 - position2
+
+        local offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
+
+        mod.camera_offset = offset --+ diff
+        mod.camera_distance = distance
+
+        local weapon_unit = self.ranged_weapon.weapon_unit
+        if self.first_person_unit and self.position_offset and unit_alive(self.first_person_unit) and weapon_unit and unit_alive(weapon_unit) and self.is_local_unit then
             local position = unit_local_position(self.first_person_unit, 1)
-            local rotation = unit_local_rotation(self.first_person_unit, 1)
-            local mat = quaternion_matrix4x4(rotation)
-            local rotated_pos = matrix4x4_transform(mat, vector3_unbox(self.position_offset))
-            unit_set_local_position(self.first_person_unit, 1, position - rotated_pos)
-            world_update_unit_and_children(self.world, self.first_person_unit)
+            local rotation = unit_local_rotation(weapon_unit, 1)
+            -- local rot = self.rotation_offset and vector3_unbox(self.rotation_offset) or vector3_zero()
+            -- local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
+            local rot = unit_local_rotation(self.first_person_unit, 1)
+            local recoil_template = self.weapon_extension:recoil_template()
+            local recoil_component = self.unit_data:read_component("recoil")
+            local recoiled_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, self.movement_state_component, rotation)
+            local recoil_x, recoil_y, recoil_z = quaternion_to_euler_angles_xyz(recoiled_rotation)
+            local combined = recoil_x + recoil_y + recoil_z
+            -- mod:echot("combined: "..tostring(combined))
+            local mat = quaternion_matrix4x4(rot)
+            local rotated_pos = matrix4x4_transform(mat, vector3_unbox(self.position_offset) * combined)
+            local forward = ((Quaternion.forward(rot) * combined) * self.position_offset[2])
+            local up = ((Quaternion.up(rot) * combined) * self.position_offset[3])
+            -- unit_set_local_rotation(weapon_unit, 1, recoiled_rotation)
+            -- unit_set_local_position(self.first_person_unit, 1, position - rotated_pos + forward + up)
+            -- world_update_unit_and_children(self.world, self.first_person_unit)
+
+            -- local rot = self.rotation_offset and vector3_unbox(self.rotation_offset) or vector3_zero()
+            -- local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
+            -- local recoil_template = self.weapon_extension:recoil_template()
+        --     local sway_template = self.weapon_extension:sway_template()
+            -- local recoil_component = self.unit_data:read_component("recoil")
+        --     local sway_component = self.unit_data:read_component("sway")
+            -- local recoiled_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, self.movement_state_component, rotation)
+        --     -- recoiled_rotation = Sway.apply_sway_rotation(sway_template, sway_component, self.movement_state_component, recoiled_rotation)
+            local recoil_x, recoil_y, recoil_z = quaternion_to_euler_angles_xyz(recoiled_rotation)
+            local rot_x, rot_y, rot_z = quaternion_to_euler_angles_xyz(rotation)
+            local new_rotation = quaternion_from_euler_angles_xyz(rot_x + (rot_x - recoil_x) * .5, rot_y + (rot_y - recoil_y) * .5, rot_z)
+        --     local diff = vector3(rot_x, rot_y, rot_z) - vector3(recoil_x, recoil_y, recoil_z)
+            unit_set_local_rotation(weapon_unit, 1, new_rotation)
+        --     -- local position = unit_local_position(weapon_unit, 1)
+        --     local mat = quaternion_matrix4x4(rotation)
+        --     local rotated_pos = matrix4x4_transform(mat, vector3(0, 0, diff[2]))
+        --     local combined = recoil_x + recoil_y + recoil_z
+        --     -- mod:echot("combined: "..tostring(combined))
+        --     -- unit_set_local_position(self.first_person_unit, 1, rotated_pos)
+
+            -- world_update_unit_and_children(self.world, self.first_person_unit)
+        -- -- else
+        -- --     unit_set_local_rotation(self.first_person_unit, 1, self.first_person_component.rotation)
         end
 
-        if self.rotation_offset then
-            local weapon_unit = self.ranged_weapon.weapon_unit
-            if weapon_unit and unit_alive(weapon_unit) then
-                local rot = vector3_unbox(self.rotation_offset)
-                local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
-                unit_set_local_rotation(weapon_unit, 1, rotation)
-            end
-        end
+        -- if self.position_offset and self.first_person_unit and unit_alive(self.first_person_unit) then
+        --     local position = unit_local_position(self.first_person_unit, 1)
+        --     local rotation = unit_local_rotation(self.first_person_unit, 1)
+        --     rotation = Quaternion.multiply(rotation, unit_local_rotation(weapon_unit, 1))
+        --     local mat = quaternion_matrix4x4(rotation)
+        --     local rotated_pos = matrix4x4_transform(mat, vector3_unbox(self.position_offset))
+        --     -- unit_set_local_position(self.first_person_unit, 1, position - rotated_pos)
+        --     mod.camera_offset = self.position_offset
+        -- else
+        --     mod.camera_offset = nil
+        -- end
+
+        -- world_update_unit_and_children(self.world, self.first_person_unit)
+        
+        -- local viewport_name = self.player.viewport_name
+        -- local viewport = viewport_name and ScriptWorld.viewport(self.world, viewport_name)
+        -- local camera = viewport and ScriptViewport.camera(viewport)
+        -- mod.camera_overwrite = vector3_box(vector3_zero())
+        -- if camera then
+        --     if self:is_sniper() and self:is_aiming() and self.sight_unit and unit_alive(self.sight_unit) then
+        --         -- mod:echot("bla")
+        --         local position = ScriptCamera.position(camera)
+        --         local rotation = ScriptCamera.rotation(camera)
+        --         local mat = quaternion_matrix4x4(rotation)
+        --         local rotated_pos = matrix4x4_transform(mat, position)
+        --         -- ScriptCamera.set_local_position(camera, rotated_pos)
+        --         mod.camera_overwrite = vector3_box(rotated_pos)
+        --     -- else
+        --     --     ScriptCamera.set_local_position(camera, vector3(0, 0, 0))
+        --     end
+        -- end
+
+        
     end
 end
 
@@ -558,6 +683,9 @@ SightExtension.update_zoom = function(self, viewport_name)
             self:set_default_fov(camera_vertical_fov(camera), camera_custom_vertical_fov(camera))
             if self.custom_vertical_fov then camera_set_custom_vertical_fov(camera, self.custom_vertical_fov) end
             if self.vertical_fov then camera_set_vertical_fov(camera, self.vertical_fov) end
+            local position = ScriptCamera.position(camera)
+            
+            ScriptCamera.set_local_position(camera, position)
         end
     end
 end

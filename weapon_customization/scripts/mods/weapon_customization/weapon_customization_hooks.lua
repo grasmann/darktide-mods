@@ -7,6 +7,9 @@ local mod = get_mod("weapon_customization")
 --#region Require
     local NetworkLookup = mod:original_require("scripts/network_lookup/network_lookup")
     local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
+    local ScriptViewport = mod:original_require("scripts/foundation/utilities/script_viewport")
+    local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
+    local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -22,8 +25,10 @@ local mod = get_mod("weapon_customization")
     local managers = Managers
     local Viewport = Viewport
     local table_enum = table.enum
+    local vector3_box = Vector3Box
     local script_unit = ScriptUnit
     local unit_get_data = Unit.get_data
+    local vector3_unbox = vector3_box.unbox
     local script_unit_extension = script_unit.extension
     local table_merge_recursive = table.merge_recursive
     local script_unit_has_extension = script_unit.has_extension
@@ -267,23 +272,23 @@ end)
     -- end)
 --#endregion
 
-mod:hook(CLASS.PlayerUnitWeaponExtension, "recoil_template", function(func, self, ...)
-    -- Original function
-    local recoil_template = func(self, ...)
-    -- Sights sniper template
-    recoil_template = mod:execute_extension(self._unit, "sight_system", "get_sniper_recoil_template", recoil_template) or recoil_template
-    -- Return value
-    return recoil_template
-end)
+-- mod:hook(CLASS.PlayerUnitWeaponExtension, "recoil_template", function(func, self, ...)
+--     -- Original function
+--     local recoil_template = func(self, ...)
+--     -- Sights sniper template
+--     recoil_template = mod:execute_extension(self._unit, "sight_system", "get_sniper_recoil_template", recoil_template) or recoil_template
+--     -- Return value
+--     return recoil_template
+-- end)
 
-mod:hook(CLASS.PlayerUnitWeaponExtension, "sway_template", function(func, self, ...)
-    -- Original function
-    local sway_template = func(self, ...)
-    -- Sights sniper template
-    sway_template = mod:execute_extension(self._unit, "sight_system", "get_sniper_sway_template", sway_template) or sway_template
-    -- Return value
-    return sway_template
-end)
+-- mod:hook(CLASS.PlayerUnitWeaponExtension, "sway_template", function(func, self, ...)
+--     -- Original function
+--     local sway_template = func(self, ...)
+--     -- Sights sniper template
+--     sway_template = mod:execute_extension(self._unit, "sight_system", "get_sniper_sway_template", sway_template) or sway_template
+--     -- Return value
+--     return sway_template
+-- end)
 
 --#region Old
     -- mod:hook(CLASS.PlayerUnitWeaponExtension, "on_wieldable_slot_equipped", function(func, self, item, slot_name, weapon_unit, fx_sources,
@@ -459,6 +464,17 @@ end)
 -- ##### └─┘┴ ┴┴ ┴└─┘┴└─┴ ┴  ┴ ┴┴ ┴┘└┘┴ ┴└─┘└─┘┴└─ ####################################################################
 
 mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewport_name, ...)
+    -- if mod.camera_offset then
+    --     -- local viewport = viewport_name and ScriptWorld.viewport(self._world, viewport_name)
+    --     -- local camera = viewport and ScriptViewport.camera(viewport)
+    --     -- if camera then
+    --     --     mod:echot("bla")
+    --     --     local position = ScriptCamera.position(camera)
+    --     --     local offset = vector3_unbox(mod.camera_overwrite)
+    --     --     ScriptCamera.set_local_position(camera, position + offset)
+    --     --     ScriptCamera.force_update(self._world, camera)
+    --     -- end
+    -- end
     -- Original function
     func(self, dt, t, viewport_name, ...)
     -- Get unit
@@ -467,6 +483,26 @@ mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewpor
     local root_unit = current_node:root_unit()
     -- Sights
     mod:execute_extension(root_unit, "sight_system", "update_zoom", viewport_name)
+end)
+
+mod:hook(CLASS.CameraManager, "_update_camera_properties", function(func, self, camera, shadow_cull_camera, camera_nodes, camera_data, viewport_name, ...)
+    if mod.camera_rotation then
+        camera_data.rotation = vector3_unbox(mod.camera_rotation)
+    end
+    -- Original function
+    func(self, camera, shadow_cull_camera, camera_nodes, camera_data, viewport_name, ...)
+end)
+
+mod:hook(CLASS.CameraManager, "_apply_offset", function(func, self, current_data, t, ...)
+    if mod.camera_offset then
+        -- self._camera_offset = mod.camera_offset
+        self:set_offset(mod.camera_offset[1], mod.camera_offset[2], mod.camera_offset[3])
+    else
+        self:set_offset(0, 0, 0)
+    end
+    -- mod:echot("distance: "..tostring(math.round_with_precision(mod.camera_distance or 0, 2)))
+    -- Original function
+    func(self, current_data, t, ...)
 end)
 
 mod:hook(CLASS.CameraManager, "shading_callback", function(func, self, world, shading_env, viewport, default_shading_environment_resource, ...)
