@@ -451,6 +451,7 @@ mod.set_light_positions = function(self)
 				local link_difference = vector3_unbox(weapon_spawner._link_unit_base_position) - vector3_unbox(weapon_spawner._link_unit_position)
 				-- Position with offset
 				local light_position = vector3(default_position[1], default_position[2] - link_difference[2], default_position[3])
+				-- mod:info("mod.set_light_positions: "..tostring(unit_data.unit))
 				unit_set_local_position(unit_data.unit, 1, light_position)
 			end
 		end
@@ -576,11 +577,13 @@ mod.update_attachment_previews = function(self, dt, t)
 					local progress = (self.spawned_attachments_timer[unit] - t) / 1
 					local anim_progress = math.easeOutCubic(1 - progress)
 					local lerp_position = vector3_lerp(vector3_unbox(last_position), vector3_unbox(target_position), anim_progress)
+					-- mod:info("mod.update_attachment_previews: "..tostring(unit))
 					unit_set_local_position(unit, 1, lerp_position)
 
 				elseif self.spawned_attachments_timer[unit] and self.spawned_attachments_timer[unit] <= t then
 					self.spawned_attachments_timer[unit] = nil
 					local target_position = self.spawned_attachments_target_position[unit]
+					-- mod:info("mod.update_attachment_previews: "..tostring(unit))
 					unit_set_local_position(unit, 1, vector3_unbox(target_position))
 					-- self.spawned_attachments_overwrite_position[unit] = nil
 					-- mod.attachment_slot_positions[7] = nil
@@ -793,12 +796,14 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 					local lerp_position = vector3_lerp(position, vector3_unbox(mod.new_position), anim_progress)
 					mod.link_unit_position = vector3_box(lerp_position)
 					if link_unit and unit_alive(link_unit) then
+						-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 						unit_set_local_position(link_unit, 1, lerp_position)
 					end
 					self._link_unit_position = vector3_box(lerp_position)
 				elseif mod.move_end and t > mod.move_end then
 					mod.move_end = nil
 					if link_unit and unit_alive(link_unit) then
+						-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 						unit_set_local_position(link_unit, 1, vector3_unbox(mod.new_position))
 					end
 					if link_unit and unit_alive(link_unit) then
@@ -952,8 +957,10 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 			
 			if mod.attachment_models[item_name] and mod.attachment_models[item_name].customization_default_position then
 				local position = vector3_unbox(mod.attachment_models[item_name].customization_default_position)
+				-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 				unit_set_local_position(link_unit, 1, unit_local_position(link_unit, 1) + position)
 			else
+				-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 				unit_set_local_position(link_unit, 1, vector3_unbox(self._link_unit_base_position_backup))
 			end
 
@@ -963,6 +970,7 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 
 			if mod.link_unit_position then
 				local position = vector3_unbox(mod.link_unit_position)
+				-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 				unit_set_local_position(link_unit, 1, position)
 			end
 
@@ -1091,6 +1099,7 @@ mod.cb_on_demo_pressed = function(self)
 	local weapon_spawn_data = ui_weapon_spawner._weapon_spawn_data
 	if weapon_spawn_data then
 		local link_unit = weapon_spawn_data.link_unit
+		-- mod:info("mod.set_light_positions: "..tostring(link_unit))
 		unit_set_local_position(link_unit, 1, vector3_unbox(ui_weapon_spawner._link_unit_position))
 	end
 end
@@ -2430,6 +2439,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 
 	if weapon_spawner._weapon_spawn_data then
 		local link_unit = weapon_spawner._weapon_spawn_data.link_unit
+		-- mod:info("CLASS.InventoryWeaponCosmeticsView: "..tostring(link_unit))
 		unit_set_local_position(link_unit, 1, vector3_unbox(default_position))
 	end
 
@@ -2437,6 +2447,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 	mod:release_attachment_sounds()
 
 	managers.event:unregister(self, "weapon_customization_hide_ui")
+	
+	mod:redo_weapon_attachments(self._presentation_item)
 
 	func(self, ...)
 

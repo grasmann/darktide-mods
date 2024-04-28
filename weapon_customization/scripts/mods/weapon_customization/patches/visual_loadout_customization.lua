@@ -21,13 +21,15 @@ local mod = get_mod("weapon_customization")
 	local pairs = pairs
 	local CLASS = CLASS
 	local color = Color
+	local Level = Level
 	local string = string
 	local rawget = rawget
-	local Level = Level
+	local wc_perf = wc_perf
 	local vector2 = Vector2
 	local vector3 = Vector3
 	local managers= Managers
 	local log_info = Log.info
+	local callback = callback
 	local tonumber = tonumber
 	local unit_node = Unit.node
 	local unit_mesh = Unit.mesh
@@ -41,15 +43,18 @@ local mod = get_mod("weapon_customization")
 	local string_gsub = string.gsub
 	local string_find = string.find
 	local vector3_one = vector3.one
+	local level_units = Level.units
 	local table_remove = table.remove
 	local table_append = table.append
 	local string_split = string.split
 	local vector3_zero = vector3.zero
+	local wc_perf_stop = wc_perf.stop
 	local matrix4x4_box = Matrix4x4Box
-	local level_units = Level.units
+	local wc_perf_start = wc_perf.start
 	local unit_set_data = Unit.set_data
 	local unit_has_node = Unit.has_node
 	local table_contains = table.contains
+	local quaternion_box = QuaternionBox
 	local unit_debug_name = Unit.debug_name
 	local unit_local_pose = Unit.local_pose
 	local unit_world_pose = Unit.world_pose
@@ -76,6 +81,7 @@ local mod = get_mod("weapon_customization")
 	local lod_group_add_lod_object = LODGroup.add_lod_object
 	local unit_set_mesh_visibility = Unit.set_mesh_visibility
 	local unit_set_unit_visibility = Unit.set_unit_visibility
+	local unit_force_stream_meshes = Unit.force_stream_meshes
 	local lod_object_set_static_select = LODObject.set_static_select
 	local Unit_set_scalar_for_materials = Unit.set_scalar_for_materials
 	local Unit_set_vector2_for_materials = Unit.set_vector2_for_materials
@@ -97,6 +103,11 @@ local mod = get_mod("weapon_customization")
 --#endregion
 
 mod.mesh_positions = {}
+mod.mesh_positions_changed = {}
+
+mod.visual_loadout_customization_stream_complete = function(self, perf)
+	-- wc_perf_stop(perf)
+end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -179,6 +190,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			slot_infos[slot_info_id].unit_mesh_rotation =		slot_infos[slot_info_id].unit_mesh_rotation or {}
 			slot_infos[slot_info_id].unit_mesh_index = 			slot_infos[slot_info_id].unit_mesh_index or {}
 			slot_infos[slot_info_id].unit_default_position = 	slot_infos[slot_info_id].unit_default_position or {}
+			slot_infos[slot_info_id].unit_default_rotation = 	slot_infos[slot_info_id].unit_default_rotation or {}
+			slot_infos[slot_info_id].unit_changed_position = 	slot_infos[slot_info_id].unit_changed_position or {}
+			slot_infos[slot_info_id].unit_changed_rotation = 	slot_infos[slot_info_id].unit_changed_rotation or {}
 			slot_infos[slot_info_id].attachment_slot_to_unit["root"] = item_unit
 			slot_infos[slot_info_id].unit_to_attachment_slot[item_unit] = "root"
 			slot_infos[slot_info_id].unit_to_attachment_name[item_unit] = "root"
@@ -189,6 +203,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			-- Set unit default positions
 			for _, unit in pairs(attachment_units) do
 				slot_infos[slot_info_id].unit_default_position[unit] = vector3_box(unit_local_position(unit, 1))
+				slot_infos[slot_info_id].unit_default_rotation[unit] = QuaternionBox(Unit.local_rotation(unit, 1))
 			end
 
 			-- Iterate attachment units
@@ -198,10 +213,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 				-- Set unit mesh default positions
 				mod.mesh_positions[unit] = mod.mesh_positions[unit] or {}
-			    local num_meshes = unit_num_meshes(unit)
-			    for i = 1, num_meshes do
-			        mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
-			    end
+				local num_meshes = unit_num_meshes(unit)
+				for i = 1, num_meshes do
+					mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
+				end
 
 				-- Handle positioning and setup infos
 				if slot_infos[slot_info_id] then
@@ -252,6 +267,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 						if unit and unit_alive(unit) then
 							-- Link to parent
 							if not anchor.offset then
+								Unit.set_data(unit, "parent_unit", parent)
+								Unit.set_data(unit, "parent_node", parent_node)
 								world_unlink_unit(attach_settings.world, unit)
 								world_link_unit(attach_settings.world, unit, 1, parent, parent_node)
 							end
@@ -297,6 +314,21 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 						end
 					end
 				end
+			end
+
+			for _, unit in pairs(attachment_units) do
+				-- Set unit mesh default positions
+				mod.mesh_positions_changed[unit] = mod.mesh_positions_changed[unit] or {}
+				local num_meshes = unit_num_meshes(unit)
+				for i = 1, num_meshes do
+					mod.mesh_positions_changed[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
+				end
+			end
+
+			-- Set unit changed positions
+			for _, unit in pairs(attachment_units) do
+				slot_infos[slot_info_id].unit_changed_position[unit] = vector3_box(unit_local_position(unit, 1))
+				slot_infos[slot_info_id].unit_changed_rotation[unit] = QuaternionBox(Unit.local_rotation(unit, 1))
 			end
 
 			for _, unit in pairs(attachment_units) do
@@ -398,6 +430,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local item_unit, bind_pose = instance.spawn_base_unit(item_data, attach_settings, parent_unit, optional_mission_template, in_possesion_of_player)
 		local skin_overrides = instance.generate_attachment_overrides_lookup(item_data, weapon_skin, in_possesion_of_player)
 		local attachment_units, attachment_name_to_unit, attachment_units_bind_poses = instance.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
+
+		-- local perf = wc_perf_start("VisualLoadoutCustomization.spawn_item", 2)
+		local callback = callback(mod, "visual_loadout_customization_stream_complete")
+		Unit.force_stream_meshes(item_unit, callback, true)
+		if attachment_units then
+			for _, unit in pairs(attachment_units) do
+				Unit.force_stream_meshes(item_unit, callback, true)
+			end
+		end
 	
 		instance.apply_material_overrides(item_data, item_unit, parent_unit, attach_settings)
 	
@@ -565,6 +606,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
 		Unit.set_data(spawned_unit, "attachment_name", attachment_name)
 		Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
+		Unit.set_data(spawned_unit, "parent_unit", parent_unit)
+		Unit.set_data(spawned_unit, "parent_node", attach_node_index)
 	
 		--#region Original
 			local item_type = item_data.item_type
@@ -598,7 +641,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		
 				if backpack_offset_node_index then
 					local backpack_offset_v3 = vector3(0, backpack_offset, 0)
-		
+					-- mod:info("instance._spawn_attachment: "..tostring(parent_unit))
 					unit_set_local_position(parent_unit, backpack_offset_node_index, backpack_offset_v3)
 				end
 			end

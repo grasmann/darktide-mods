@@ -213,6 +213,7 @@ SwayAnimationExtension.set_position_and_rotation = function(self, offset_positio
         -- Position
         local mat = quaternion_matrix4x4(rotation)
         local rotated_pos = matrix4x4_transform(mat, offset_position)
+        -- mod:info("SwayAnimationExtension.set_position_and_rotation: "..tostring(self.first_person_unit))
         unit_set_local_position(self.first_person_unit, 1, position + rotated_pos)
         world_update_unit_and_children(self.world, self.first_person_unit)
     end

@@ -274,6 +274,7 @@ mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 		end
 
 		if not mesh_move or unit_and_meshes then
+			-- mod:info("mod.unit_set_local_position_mesh: "..tostring(unit))
 			unit_set_local_position(unit, 1, movement)
 		end
 
@@ -284,6 +285,7 @@ mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 			local default_position = root_default_position and vector3_unbox(root_default_position) or vector3_zero()
 			local position = root_position and vector3_unbox(root_position) or vector3_zero()
 			local offset = default_position + position + movement
+			-- mod:info("mod.unit_set_local_position_mesh: "..tostring(root_unit))
 			unit_set_local_position(root_unit, 1, default_position + position + movement)
 		end
 	end

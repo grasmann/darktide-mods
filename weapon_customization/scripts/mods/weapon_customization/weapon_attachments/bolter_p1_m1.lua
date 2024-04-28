@@ -41,6 +41,16 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local moving_parts = {
+	receiver_01 = {nodes = {9, 10, 11, 14, 20, 22}},
+	receiver_02 = {nodes = {9, 10, 11, 14, 20, 21}},
+	receiver_03 = {nodes = {9, 10, 11, 14, 20, 21}},
+	receiver_04 = {nodes = {9, 10, 11, 14, 20, 22}},
+	receiver_05 = {nodes = {9, 10, 11, 14, 20, 22}},
+	receiver_07 = {nodes = {9, 10, 11, 14, 20, 22}},
+	receiver_08 = {nodes = {11, 12, 13, 16, 22, 24}},
+}
+
 return table_combine(
 	_bolter_p1_m1,
 	{
@@ -256,22 +266,25 @@ return table_combine(
 					lens = {offset = true, position = vector3_box(0, .12, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.64, .6, .7), data = {lens = 1}},
 					lens_2 = {offset = true, position = vector3_box(0, .01, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.64, .85, .7), data = {lens = 2}},
 					sight_2 = {offset = true, position = vector3_box(0, .07, -.046), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-					scope_offset = {position = vector3_box(0, .075, .014), rotation = vector3_box(-.3, 0, 0)},
+					scope_offset = {position = vector3_box(0, -.075, -.014), rotation = vector3_box(0, 0, 0), moving_parts = moving_parts, root = "receiver"},
 					rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+					
 				{dependencies = {"scope_02"}, -- Lasgun sight
 					sight = {offset = true, position = vector3_box(0, -.08, .19), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1)},
 					lens = {offset = true, position = vector3_box(0, -.02, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 1}},
 					lens_2 = {offset = true, position = vector3_box(0, -.14, .035), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 2}},
 					sight_2 = {offset = true, position = vector3_box(0, .09, -.0475), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
-					scope_offset = {position = vector3_box(0, .1, .0165), rotation = vector3_box(.25, 0, 0)},
+					scope_offset = {position = vector3_box(0, -.1, -.0165), rotation = vector3_box(0, 0, 0), moving_parts = moving_parts, root = "receiver"},
 					rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
 				{dependencies = {"scope_03"}, -- Lasgun sight
 					sight = {offset = true, position = vector3_box(0, -.03, .19), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
 					lens = {offset = true, position = vector3_box(0, .08, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
 					lens_2 = {offset = true, position = vector3_box(0, .22, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
 					sight_2 = {offset = true, position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-					scope_offset = {position = vector3_box(0, .13, .02)},
+					scope_offset = {position = vector3_box(0, -.13, -.02), moving_parts = moving_parts, root = "receiver"},
 					rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
 				{sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
 				{lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
 				{lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
@@ -328,7 +341,7 @@ return table_combine(
 
 
 				{dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"}, -- Grip
-					scope_offset = {position = vector3_box(0, 0, .022)},
+					scope_offset = {position = vector3_box(0, 0, -.022), moving_parts = moving_parts},
 					rail = {parent = "receiver", position = vector3_box(0, .025, .1625), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.35, 1.3)}},
 				{rail = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}}, -- Rail
 

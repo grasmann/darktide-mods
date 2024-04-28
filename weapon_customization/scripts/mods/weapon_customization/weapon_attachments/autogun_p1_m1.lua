@@ -42,6 +42,19 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local moving_parts = {
+    -- Infantry
+	receiver_01 = {nodes = {19, 20, 26, 43, 44, 45, 46, 47}},
+    -- Braced
+    receiver_03 = {nodes = {13, 17, 18, 21}},
+    receiver_06 = {nodes = {13, 17, 18, 21}},
+    receiver_07 = {nodes = {13, 17, 18, 21}},
+    -- Headhunter
+    receiver_02 = {nodes = {11, 14, 16, 17}},
+    receiver_04 = {nodes = {23, 26, 27, 29}},
+    receiver_05 = {nodes = {11, 14, 15, 17}},
+}
+
 return table_combine(
     _autogun_p1_m1,
     {
@@ -119,7 +132,7 @@ return table_combine(
                 {rail = "rail_01",      sight_2 = _sight_default,   lens = _lense_default,  lens_2 = _lense_default},
                 {rail = "rail_default", sight_2 = _sight_default,   lens = _lense_default,  lens_2 = _lense_default},
                 {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
-                {rail = "rail_default", sight_2 = "scope_sight_02", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
+                {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
                 {rail = "rail_default", sight_2 = "scope_sight_03", lens = "scope_lens_02", lens_2 = "scope_lens_2_02"},
                 {rail = "rail_default", sight_2 = _sight_default,   lens = _lense_default,  lens_2 = _lense_default},
             }, {
@@ -210,10 +223,10 @@ return table_combine(
                         },
                         lens = {parent = "sight", position = vector3_box(0, .033, .002), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .085, .002), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 2}},
-                        sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
+                        sight_2 = {parent = "sight", position = vector3_box(0, 0, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, .025, .009), rotation = vector3_box(.6, 0, 0)}},
+                        scope_offset = {position = vector3_box(0, -.075, -.01), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75, moving_parts = moving_parts, root = "receiver"}},
                     -- Martyr's Gaze
                     {dependencies = {"scope_01"},
                         sight = {parent = "receiver", position = vector3_box(0, -.09, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1),
@@ -221,10 +234,10 @@ return table_combine(
                         },
                         lens = {parent = "sight", position = vector3_box(0, .105, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .275, 1), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .065, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(1, .3, 1), data = {lens = 2}},
-                        sight_2 = {parent = "sight", position = vector3_box(0, .07, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
+                        sight_2 = {parent = "sight", position = vector3_box(0, 0, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, .015, .0135), rotation = vector3_box(.6, 0, 0)}},
+                        scope_offset = {position = vector3_box(0, -.075, -.0175), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65, moving_parts = moving_parts, root = "receiver"}},
                     -- Exterminatus Lens
                     {dependencies = {"scope_02"},
                         sight = {parent = "receiver", position = vector3_box(0, -.09, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1),
@@ -232,10 +245,11 @@ return table_combine(
                         },
                         lens = {parent = "sight", position = vector3_box(0, .075, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .15, .9), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .022, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .1, .9), data = {lens = 2}},
-                        sight_2 = {parent = "sight", position = vector3_box(0, .07, -.048), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}},
+                        sight_2 = {parent = "sight", position = vector3_box(0, 0, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, .17, .01), rotation = vector3_box(.6, 0, 0)}},
+                        scope_offset = {position = vector3_box(0, -.075, -.015), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65, moving_parts = moving_parts, root = "receiver"}},
+
                     {sight_2 = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                     {lens = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                     {lens_2 = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
@@ -347,97 +361,97 @@ return table_combine(
                     -- Infantry receiver / Infantry barrels
                     -- Braced sight
                     {dependencies = {_infantry_barrels, "autogun_rifle_ak_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(-.3, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .002), rotation = vector3_box(-.3, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {_infantry_barrels, "autogun_rifle_killshot_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.2, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.2, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {_infantry_barrels, "lasgun_rifle_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.0075), rotation = vector3_box(-.55, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .0075), rotation = vector3_box(-.55, 0, 0)}},
 
                     -- Infantry receiver / Braced barrels
                     -- Infantry sight
                     {dependencies = {_braced_barrels, "autogun_rifle_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.00075), rotation = vector3_box(.75, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .00075), rotation = vector3_box(.75, 0, 0)}},
                     -- Braced sight
                     {dependencies = {_braced_barrels, "autogun_rifle_ak_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(.4, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .003), rotation = vector3_box(.4, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {_braced_barrels, "autogun_rifle_killshot_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(.75, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .002), rotation = vector3_box(.75, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {_braced_barrels, "lasgun_rifle_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.008), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .008), rotation = vector3_box(-.1, 0, 0)}},
 
                     -- Infantry receiver / Headhunter barrels
                     -- Infantry sight
                     {dependencies = {"barrel_16", "autogun_rifle_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(.7, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(.7, 0, 0)}},
                     -- Braced sight
                     {dependencies = {"barrel_16", "autogun_rifle_ak_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(.5, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .003), rotation = vector3_box(.5, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "autogun_rifle_ak_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.0025), rotation = vector3_box(-.3, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .0025), rotation = vector3_box(-.3, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {"barrel_16", "autogun_rifle_killshot_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(.7, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .002), rotation = vector3_box(.7, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "autogun_rifle_killshot_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.1, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {"barrel_16", "lasgun_rifle_sight_01", "receiver_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.008), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .008), rotation = vector3_box(-.1, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "lasgun_rifle_sight_01", "receiver_01"}, 
-                        no_scope_offset = {position = vector3_box(0, 0, -.0075), rotation = vector3_box(-.5, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .0075), rotation = vector3_box(-.5, 0, 0)}},
 
                     -- Headhunter receiver / Infantry barrels
                     -- Infantry sight
                     {dependencies = {_infantry_barrels, "autogun_rifle_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.0035), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .0035), rotation = vector3_box(-.1, 0, 0)}},
                     -- Braced sight
                     {dependencies = {_infantry_barrels, "autogun_rifle_ak_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.25, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.25, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {_infantry_barrels, "autogun_rifle_killshot_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.1, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {_infantry_barrels, "lasgun_rifle_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.0065), rotation = vector3_box(-.55, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .0065), rotation = vector3_box(-.55, 0, 0)}},
 
                     -- Headhunter receiver / Braced barrels
                     -- Infantry sight
                     {dependencies = {_braced_barrels, "autogun_rifle_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.004), rotation = vector3_box(.4, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .004), rotation = vector3_box(.4, 0, 0)}},
                     -- Braced sight
                     {dependencies = {_braced_barrels, "autogun_rifle_ak_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(.5, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .002), rotation = vector3_box(.5, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {_braced_barrels, "autogun_rifle_killshot_sight_01", _headhunter_receivers},
                         no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(.75, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {_braced_barrels, "lasgun_rifle_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.007), rotation = vector3_box(0, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .007), rotation = vector3_box(0, 0, 0)}},
 
                     -- Headhunter receiver / Headhunter barrels
                     -- Infantry sight
                     {dependencies = {"barrel_16", "autogun_rifle_sight_01", _headhunter_receivers}, -- Barrel 16
-                        no_scope_offset = {position = vector3_box(0, 0, -.004), rotation = vector3_box(.3, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .004), rotation = vector3_box(.3, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "autogun_rifle_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(-.2, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .003), rotation = vector3_box(-.2, 0, 0)}},
                     -- Braced sight
                     {dependencies = {"barrel_16", "autogun_rifle_ak_sight_01", _headhunter_receivers}, -- Barrel 16
-                        no_scope_offset = {position = vector3_box(0, 0, -.0015), rotation = vector3_box(.5, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .0015), rotation = vector3_box(.5, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "autogun_rifle_ak_sight_01", _headhunter_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.1, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {"barrel_16", "autogun_rifle_killshot_sight_01", _headhunter_receivers}, -- Barrel 16
                         no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(.7, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "autogun_rifle_killshot_sight_01", _headhunter_receivers}, 
-                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(0, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(0, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {"barrel_16", "lasgun_rifle_sight_01", _headhunter_receivers}, -- Barrel 16
-                        no_scope_offset = {position = vector3_box(0, 0, -.007), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .007), rotation = vector3_box(-.1, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "lasgun_rifle_sight_01", _headhunter_receivers}, 
-                        no_scope_offset = {position = vector3_box(0, 0, -.0065), rotation = vector3_box(-.5, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .0065), rotation = vector3_box(-.5, 0, 0)}},
 
                     -- Braced receiver / Infantry barrels
                     -- Infantry sight
@@ -445,13 +459,13 @@ return table_combine(
                         no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0)}},
                     -- Braced sight
                     {dependencies = {_infantry_barrels, "autogun_rifle_ak_sight_01", _braced_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.002), rotation = vector3_box(-.25, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .002), rotation = vector3_box(-.25, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {_infantry_barrels, "autogun_rifle_killshot_sight_01", _braced_receivers},
                         no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(-.1, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {_infantry_barrels, "lasgun_rifle_sight_01", _braced_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.009), rotation = vector3_box(-.9, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .009), rotation = vector3_box(-.9, 0, 0)}},
 
                     -- Braced receiver / Braced barrels
                     -- Infantry sight
@@ -459,13 +473,13 @@ return table_combine(
                         no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(.8, 0, 0)}},
                     -- Braced sight
                     {dependencies = {_braced_barrels, "autogun_rifle_ak_sight_01", _braced_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(.5, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .003), rotation = vector3_box(.5, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {_braced_barrels, "autogun_rifle_killshot_sight_01", _braced_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(.75, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(.75, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {_braced_barrels, "lasgun_rifle_sight_01", _braced_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.009), rotation = vector3_box(0, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .009), rotation = vector3_box(0, 0, 0)}},
 
                     -- Braced receiver / Headhunter barrels
                     -- Infantry sight
@@ -475,30 +489,30 @@ return table_combine(
                         no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(-.1, 0, 0)}},
                     -- Braced sight
                     {dependencies = {"barrel_16", "autogun_rifle_ak_sight_01", _braced_receivers}, -- Barrel 16
-                        no_scope_offset = {position = vector3_box(0, 0, -.0025), rotation = vector3_box(.2, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .0025), rotation = vector3_box(.2, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "autogun_rifle_ak_sight_01", _braced_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.003), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .003), rotation = vector3_box(-.1, 0, 0)}},
                     -- Headhunter sight
                     {dependencies = {"barrel_16", "autogun_rifle_killshot_sight_01", _braced_receivers}, -- Barrel 16
-                        no_scope_offset = {position = vector3_box(0, 0, -.001), rotation = vector3_box(.7, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(.7, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "autogun_rifle_killshot_sight_01", _braced_receivers},
                         no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0)}},
                     -- Lasgun sight
                     {dependencies = {"barrel_16", "lasgun_rifle_sight_01", _braced_receivers}, -- Barrel 16
-                        no_scope_offset = {position = vector3_box(0, 0, -.009), rotation = vector3_box(-.3, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .009), rotation = vector3_box(-.3, 0, 0)}},
                     {dependencies = {_headhunter_barrels, "lasgun_rifle_sight_01", _braced_receivers},
-                        no_scope_offset = {position = vector3_box(0, 0, -.009), rotation = vector3_box(-.7, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .009), rotation = vector3_box(-.7, 0, 0)}},
                     -- Default
                     {dependencies = {"lasgun_rifle_sight_01"},
-                        no_scope_offset = {position = vector3_box(0, 0, -.008), rotation = vector3_box(-.1, 0, 0)}},
+                        no_scope_offset = {position = vector3_box(0, 0, .008), rotation = vector3_box(-.1, 0, 0)}},
                 --#endregion
                 --#region Default values
                     {dependencies = {"receiver_01"}, -- Scope Offset
-                        scope_offset = {position = vector3_box(0, 0, .0085)}},
+                        scope_offset = {position = vector3_box(0, 0, -.0085)}},
                     {dependencies = {_headhunter_receivers}, -- Scope Offset
-                        scope_offset = {position = vector3_box(0, 0, .01025)}},
+                        scope_offset = {position = vector3_box(0, 0, -.01025)}},
                     {dependencies = {_braced_receivers}, -- Scope Offset
-                        scope_offset = {position = vector3_box(0, 0, .009)}},
+                        scope_offset = {position = vector3_box(0, 0, -.009)}},
                 --#endregion
                 --#region Emblems
                     {dependencies = {"receiver_01", "emblem_left_02"}, -- Emblems

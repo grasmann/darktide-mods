@@ -243,18 +243,18 @@ end
 -- Get gear id from item
 mod.get_gear_id = function(self, item)
 	local gear_id = item and (item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id)
-	return gear_id or REWARD_ITEM --and mod.gear_id_to_offer_id[gear_id] or gear_id
+	return gear_id --or REWARD_ITEM --and mod.gear_id_to_offer_id[gear_id] or gear_id
 end
 
 mod.get_real_gear_id = function(self, item)
 	local gear_id = item and (item.__original_gear_id or item.__gear and item.__gear.uuid or item.__gear_id or item.gear_id)
-	return gear_id or REWARD_ITEM --and mod.gear_id_to_offer_id[gear_id] or gear_id
+	return gear_id --or REWARD_ITEM --and mod.gear_id_to_offer_id[gear_id] or gear_id
 end
 
 -- Get slot info id
 mod.get_slot_info_id = function(self, item)
 	local slot_info_id = item and (item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid)
-	return slot_info_id or REWARD_ITEM --and mod.gear_id_to_offer_id[slot_info_id] or slot_info_id
+	return slot_info_id --or REWARD_ITEM --and mod.gear_id_to_offer_id[slot_info_id] or slot_info_id
 end
 
 mod.is_owned_by_player = function(self, item)

@@ -160,9 +160,12 @@ mod.setup_item_definitions = function(self, master_items)
     end
 end
 
-mod:hook(CLASS.PackageSynchronizerClient, "_update_unload_delayer", function(func, self, dt, ...)
-    return
-end)
+-- mod:hook(CLASS.PackageSynchronizationManager, "release_unload_delayed_packages", function(func, self, ...)
+--     return
+-- end)
+-- mod:hook(CLASS.PackageSynchronizerClient, "_update_unload_delayer", function(func, self, dt, ...)
+--     return
+-- end)
 
 mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
 	local load_call_item = self._load_call_data[id]

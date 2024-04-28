@@ -455,6 +455,7 @@ WeaponAnimationExtension.update_move = function(self, dt, t)
         local anim_progress = math_easeInCubic(1 - progress)
         local lerp_position = vector3_lerp(position, vector3_unbox(self.new_position), anim_progress)
         if self.link_unit and unit_alive(self.link_unit) then
+            -- mod:info("mod.set_light_positions: "..tostring(self.link_unit))
             unit_set_local_position(self.link_unit, 1, lerp_position)
         end
         self.link_unit_position = vector3_box(lerp_position)
@@ -464,6 +465,7 @@ WeaponAnimationExtension.update_move = function(self, dt, t)
         mod:echot("finish move animation")
         self.move_end = nil
         if self.link_unit and unit_alive(self.link_unit) then
+            -- mod:info("mod.set_light_positions: "..tostring(self.link_unit))
             unit_set_local_position(self.link_unit, 1, vector3_unbox(self.new_position))
             self.link_unit_position = vector3_box(unit_local_position(self.link_unit, 1))
         end
@@ -494,6 +496,7 @@ WeaponAnimationExtension.update_lights = function(self, dt, t)
 			local link_difference = vector3_unbox(self.link_unit_base_position) - vector3_unbox(self.link_unit_position)
 			-- Position with offset
 			local light_position = vector3(default_position[1], default_position[2] - link_difference[2], default_position[3])
+            -- mod:info("mod.set_light_positions: "..tostring(unit_data.unit))
 			unit_set_local_position(unit_data.unit, 1, light_position)
 		end
 	end

@@ -95,9 +95,16 @@ end
 -- #####  ┴ └─┘└─┘ ┴   ┴┘└┘─┴┘└─┘┴ └─ #################################################################################
 
 mod.test_index = 1
+mod.test_float = 0
 mod.inc_test_index = function()
 	mod.test_index = mod.test_index + 1
-	mod:echo(tostring(mod.test_index))
+	mod.test_float = mod.test_float + .01
+	mod:echo("index: "..tostring(mod.test_index).." float: "..tostring(mod.test_float))
+end
+mod.dec_test_index = function()
+	mod.test_index = mod.test_index - 1
+	mod.test_float = mod.test_float - .01
+	mod:echo("index: "..tostring(mod.test_index).." float: "..tostring(mod.test_float))
 end
 
 mod.clear_chat = function()

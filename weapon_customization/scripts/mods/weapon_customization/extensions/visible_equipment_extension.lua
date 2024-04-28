@@ -49,6 +49,7 @@ local mod = get_mod("weapon_customization")
     local vector3_zero = vector3.zero
     local wc_perf_stop = wc_perf.stop
     local unit_get_data = Unit.get_data
+    local unit_set_data = Unit.set_data
     local unit_has_data = Unit.has_data
     local unit_has_node = Unit.has_node
     local QuaternionBox = QuaternionBox
@@ -477,6 +478,7 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     local rot = vector3_unbox(data.rotation[i])
                     local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
                     -- Position equipment
+                    -- mod:info("VisibleEquipmentExtension.position_equipment: "..tostring(unit))
                     unit_set_local_position(unit, 1, vector3_unbox(data.position[i]))
                     -- Rotate equipment
                     unit_set_local_rotation(unit, 1, rotation)
@@ -548,9 +550,7 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
     wc_perf_stop(perf)
 end
 
-VisibleEquipmentExtension.cb_on_unit_3p_streaming_complete = function(self, slot, perf)
-    -- Performance
-    wc_perf_stop(perf)
+VisibleEquipmentExtension.cb_on_unit_3p_streaming_complete = function(self, slot)
 end
 
 VisibleEquipmentExtension.load_slot = function(self, slot)
@@ -581,14 +581,20 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 -- Spawn dummy weapon
                 self.dummy_units[slot] = {}
                 self.dummy_units[slot].base, self.dummy_units[slot].attachments = VisualLoadoutCustomization.spawn_item(slot.item, attach_settings, self.player_unit)
+                -- mod:info("self.dummy_units[slot].base: "..tostring(self.dummy_units[slot].base))
+                -- for i, unit in pairs(self.dummy_units[slot].attachments) do
+                --     mod:info("self.dummy_units[slot].attachments"..tostring(i)..": "..tostring(self.dummy_units[slot].base))
+                -- end
+                -- unit_set_data(self.dummy_units[slot].base, "visible_equipment", true)
                 -- VisualLoadoutCustomization.add_extensions(nil, self.dummy_units[slot].attachments, attach_settings)
                 -- Performance
-                local perf = wc_perf_start("VisibleEquipmentExtension.streaming_meshes", 2)
-                local callback = callback(self, "cb_on_unit_3p_streaming_complete", slot, perf)
+                local callback = callback(self, "cb_on_unit_3p_streaming_complete", slot)
                 unit_force_stream_meshes(self.dummy_units[slot].base, callback, true)
-                -- for _, unit in pairs(self.dummy_units[slot].attachments) do
-                --     unit_force_stream_meshes(unit, callback, true)
-                -- end
+                if self.dummy_units[slot].attachments then
+                    for _, unit in pairs(self.dummy_units[slot].attachments) do
+                        unit_force_stream_meshes(unit, callback, true)
+                    end
+                end
                 -- Hide bullets
                 self:hide_bullets(slot)
                 -- Equipment data
@@ -981,6 +987,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         if unit and unit_alive(unit) then
                             -- Set position
                             local default_position = vector3_unbox(data.position[i])
+                            -- mod:info("VisibleEquipmentExtension.update_animation: "..tostring(unit))
                             unit_set_local_position(unit, 1, default_position)
                             -- Set rotation
                             local rotation = quaternion_from_vector(vector3_unbox(data.rotation[i]))
@@ -1002,6 +1009,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
                             local lerp_position = vector3_lerp(default_position, default_position + position_move, anim_progress)
+                            -- mod:info("VisibleEquipmentExtension.update_animation: "..tostring(unit))
                             unit_set_local_position(unit, 1, lerp_position)
                             -- Set rotation
                             local lerp_rotation = quaternion_from_vector(vector3_lerp(default_rotation, default_rotation + rotation_move, anim_progress))
@@ -1024,6 +1032,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
+                            -- mod:info("VisibleEquipmentExtension.update_animation: "..tostring(unit))
                             unit_set_local_position(unit, 1, default_position + position_move)
                             -- Set rotation
                             local lerp_rotation = quaternion_from_vector(default_rotation + rotation_move)
@@ -1047,6 +1056,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
                             local lerp_position = vector3_lerp(default_position + position_move, default_position, anim_progress)
+                            -- mod:info("VisibleEquipmentExtension.update_animation: "..tostring(unit))
                             unit_set_local_position(unit, 1, lerp_position)
                             -- Set rotation
                             local lerp_rotation = quaternion_from_vector(vector3_lerp(default_rotation + rotation_move, default_rotation, anim_progress))
@@ -1069,6 +1079,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
+                            -- mod:info("VisibleEquipmentExtension.update_animation: "..tostring(unit))
                             unit_set_local_position(unit, 1, default_position)
                             -- Set rotation
                             local lerp_rotation = quaternion_from_vector(default_rotation)
@@ -1096,6 +1107,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
                             local lerp_position = vector3_lerp(default_position + position_move, default_position, anim_progress)
+                            -- mod:info("VisibleEquipmentExtension.update_animation: "..tostring(unit))
                             unit_set_local_position(unit, 1, lerp_position)
                             -- Set rotation
                             local lerp_rotation = quaternion_from_vector(vector3_lerp(default_rotation + rotation_move, default_rotation, anim_progress))
@@ -1113,6 +1125,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
+                            -- mod:info("VisibleEquipmentExtension.update_animation: "..tostring(unit))
                             unit_set_local_position(unit, 1, default_position)
                             -- Set rotation
                             local rotation = quaternion_from_vector(default_rotation)
