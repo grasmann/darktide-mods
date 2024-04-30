@@ -286,7 +286,7 @@ mod.visible_equipment_offsets = {
         forcestaff_p1_m1 = {
             default = {position = vector3_box(.3, .22, .05), rotation = vector3_box(200, 80, 45), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.01, .0075, -.005), step_rotation = vector3_box(-1.5, -2.5, -1.5)},
-            backpack = {position = vector3_box(.3, .22, .175), rotation = vector3_box(200, 100, 90), scale = vector3_box(1, 1, 1),
+            backpack = {position = vector3_box(.3, .22, .175), rotation = vector3_box(200, 100, 0), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.01, .0075, -.005), step_rotation = vector3_box(-1.5, -2.5, -1.5)},
             loading = mod.visible_equipment_loading_offsets.ranged_huge,
         },

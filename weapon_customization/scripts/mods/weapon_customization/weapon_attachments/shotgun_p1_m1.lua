@@ -380,32 +380,33 @@ return table.combine(
                 -- Ranger's Vigil
                 {dependencies = {"scope_03", "barrel_10|barrel_11|barrel_12"},
                     sight = {parent = "barrel", position = vector3_box(0, -.08, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"rail"}},
-                    scope_offset = {position = vector3_box(0, -.26, -.0235)}},
+                    scope_offset = {position = vector3_box(0, -.15, -.0235), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75}},
                 {dependencies = {"scope_03"},
                     sight = {parent = "barrel", position = vector3_box(0, -.1, .075), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"rail"}},
                     lens = {parent = "sight_2", position = vector3_box(0, .08, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
                     lens_2 = {parent = "sight_2", position = vector3_box(0, .22, .034), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
                     sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, .1, .012)}},
-
+                    scope_offset = {position = vector3_box(0, -.1, -.012), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75}},
+                -- Martyr's Gaze
                 {dependencies = {"scope_01", "barrel_10|barrel_11|barrel_12"},
                     sight = {parent = "barrel", position = vector3_box(0, -.16, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1), animation_wait_attach = {"rail"}},
-                    scope_offset = {position = vector3_box(0, -.16, -.024)}},
+                    scope_offset = {position = vector3_box(0, -.16, -.024), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65}},
                 {dependencies = {"scope_01"}, -- Lasgun sight
                     sight = {parent = "barrel", position = vector3_box(0, -.12, .075), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1)},
                     lens = {parent = "sight_2", position = vector3_box(0, .12, .031), rotation = vector3_box(0, 0, 0), scale = vector3_box(.64, .6, .7), data = {lens = 1}},
                     lens_2 = {parent = "sight_2", position = vector3_box(0, .01, .031), rotation = vector3_box(180, 0, 0), scale = vector3_box(.64, .85, .7), data = {lens = 2}},
                     sight_2 = {parent = "sight", position = vector3_box(0, .07, -.0415), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, -.1, -.013)}},
+                    scope_offset = {position = vector3_box(0, -.1, -.013), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65}},
+                -- Exterminatus Lens
                 {dependencies = {"scope_02", "barrel_10|barrel_11|barrel_12"},
                     sight = {parent = "barrel", position = vector3_box(0, -.16, .14), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1), animation_wait_attach = {"rail"}},
-                    scope_offset = {position = vector3_box(0, -.1, -.025)}},
+                    scope_offset = {position = vector3_box(0, -.1, -.025), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65}},
                 {dependencies = {"scope_02"}, -- Lasgun sight
                     sight = {parent = "barrel", position = vector3_box(0, -.14, .075), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1), animation_wait_attach = {"rail"}},
                     lens = {parent = "sight_2", position = vector3_box(0, -.02, .03), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 1}},
                     lens_2 = {parent = "sight_2", position = vector3_box(0, -.14, .03), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 2}},
                     sight_2 = {parent = "sight", position = vector3_box(0, .09, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
-                    scope_offset = {position = vector3_box(0, -.1, -.0145)}},
+                    scope_offset = {position = vector3_box(0, -.1, -.0145), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65}},
                 {sight_2 = {parent = "barrel", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
@@ -423,11 +424,11 @@ return table.combine(
                 {dependencies = {"barrel_10|barrel_11|barrel_12", "reflex_sight_01|reflex_sight_02|reflex_sight_03"}, -- Grip
                     -- sight = {parent = "barrel", position = vector3_box(0, 0, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)},
                     sight = {parent = "barrel", position = vector3_box(0, -.03, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"barrel"}},
-                    scope_offset = {position = vector3_box(0, -.1, -.014)}},
+                    scope_offset = {position = vector3_box(0, -.05, -.014)}},
                 {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"}, -- Grip
                     -- sight = {parent = "barrel", position = vector3_box(0, 0, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)},
                     sight = {parent = "barrel", position = vector3_box(0, -.065, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"barrel"}},
-                    scope_offset = {position = vector3_box(0, -.1, -.0035)}},
+                    scope_offset = {position = vector3_box(0, -.05, -.0035)}},
                 {dependencies = {"barrel_10|barrel_11|barrel_12"}, -- Grip
                     ammo = {offset = true, position = vector3_box(0, 0, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)},
                     ammo_used = {offset = true, position = vector3_box(0, 0, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)},

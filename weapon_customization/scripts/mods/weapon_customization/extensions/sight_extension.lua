@@ -8,6 +8,7 @@ local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_c
 local Crouch = mod:original_require("scripts/extension_systems/character_state_machine/character_states/utilities/crouch")
 local Recoil = mod:original_require("scripts/utilities/recoil")
 local Sway = mod:original_require("scripts/utilities/sway")
+local Spread = mod:original_require("scripts/utilities/spread")
 local ScriptViewport = mod:original_require("scripts/foundation/utilities/script_viewport")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 local RecoilTemplate = mod:original_require("scripts/settings/equipment/recoil_templates")
@@ -26,7 +27,7 @@ local WieldableSlotScripts = mod:original_require("scripts/extension_systems/vis
 	local pairs = pairs
 	local CLASS = CLASS
 	local class = class
-	-- local unpack = unpack
+	local unpack = unpack
 	local Camera = Camera
 	local vector3 = Vector3
 	local wc_perf = wc_perf
@@ -90,16 +91,10 @@ local EFFECT_OPTION = "mod_option_scopes_particle"
 local EFFECT = "content/fx/particles/screenspace/screen_ogryn_dash"
 local SOUND_OPTION = "mod_option_scopes_sound"
 local SOUND = "wwise/events/weapon/play_lasgun_p3_mag_button"
--- local SIGHT_A = "#ID[7abb5fc7a4e06dcb]"
--- local SIGHT_B = "#ID[21bfd951c3d1b9fe]"
--- local LENS_A = "#ID[827a5604cb4ec7ff]"
--- local LENS_B = "#ID[c54f4d16d170cfdb]"
-
 local SIGHT = "sight_2"
 local LENS_A = "lens"
 local LENS_B = "lens_2"
 local SCOPE_OFFSET = "scope_offset"
-local SNIPER_OFFSET = "sniper_offset"
 local NO_SCOPE_OFFSET = "no_scope_offset"
 local SLOT_SECONDARY = "slot_secondary"
 local SLOT_UNARMED = "slot_unarmed"
@@ -131,11 +126,8 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 	self.default_custom_vertical_fov = nil
 	self.custom_vertical_fov = nil
 	self.offset = nil
-	-- self.sniper_offset = nil
 	self.sights = {}
 	self.lenses = {}
-	self.sniper_recoil_template = nil
-	self.sniper_sway_template = nil
 	self.first_person_component = self.unit_data:read_component("first_person")
 
 	managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
@@ -351,8 +343,6 @@ SightExtension.on_equip_slot = function(self, slot)
 	self._is_scope = nil
 	self._is_sniper = nil
 	self._is_braced = nil
-	self.sniper_recoil_template = nil
-	self.sniper_sway_template = nil
 end
 
 SightExtension.on_wield_slot = function(self, slot)
@@ -400,20 +390,6 @@ SightExtension.on_settings_changed = function(self)
 	self.scopes_recoil = mod:get("mod_option_scopes_recoil")
 	self.scopes_sway = mod:get("mod_option_scopes_sway")
 	self.weapon_dof = mod:get("mod_option_misc_weapon_dof")
-	self.sniper_recoil_template = nil
-	self.sniper_sway_template = nil
-end
-
-SightExtension.on_inspect_start = function(self, t)
-	self._is_starting_inspect = true
-	self._inspecting = true
-	self.aim_timer = t + self.reset_time
-end
-
-SightExtension.on_inspect_end = function(self, t)
-	self._is_starting_inspect = false
-	self._inspecting = false
-	self.aim_timer = t + self.reset_time
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
@@ -425,29 +401,6 @@ local reticle_multiplier = .5
 SightExtension.update = function(self, unit, dt, t)
 	local perf = wc_perf.start("SightExtension.update", 2)
 	if self.initialized then
-
-		-- local equipment_component = self.equipment_component
-		-- local equipment = self._equipment
-
-		-- self.visual_loadout_extension:_update_item_visibility(self:get_first_person())
-
-		-- equipment_component.wield_slot(self.wielded_slot, self:get_first_person())
-		-- self:_update_item_visibility(self._is_in_first_person_mode)
-
-		-- self._profile_properties = equipment_component.resolve_profile_properties(equipment, slot_name, self._archetype_property, self._selected_voice_property)
-		-- local slot_scripts = self.visual_loadout_extension._wieldable_slot_scripts and
-			-- self.visual_loadout_extension._wieldable_slot_scripts[self.wielded_slot.name]
-
-		-- if slot_scripts then
-		-- 	WieldableSlotScripts.unwield(slot_scripts)
-		-- 	WieldableSlotScripts.wield(slot_scripts)
-		-- end
-
-		-- if self.visual_loadout_extension then
-			-- self.visual_loadout_extension:unwield_slot(self.wielded_slot.name)
-			-- self.visual_loadout_extension:wield_slot(self.wielded_slot.name)
-		-- self.visual_loadout_extension:force_update_item_visibility()
-		-- end
 
 		if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position
 				and not self.is_starting_aim and not self._is_aiming then
@@ -529,7 +482,6 @@ SightExtension.update = function(self, unit, dt, t)
 					if self.offset.position then self.position_offset = self.offset.position end
 					if self.offset.rotation then self.rotation_offset = self.offset.rotation end
 				end
-				self.anim_state = Unit.animation_get_state(self.first_person_unit)
 				self.aim_timer = nil
 			end
 		else
@@ -603,275 +555,17 @@ SightExtension.update = function(self, unit, dt, t)
 	wc_perf.stop(perf)
 end
 
-local fix_items = {"stubrevolver_p1_m1"}--, "stubrevolver_p1_m2"}
-
-SightExtension.set_animation_state = function(self)
-	if self.anim_state and self:is_aiming() and table_contains(fix_items, self.item_name) then
-		if self.first_person_unit and unit_alive(self.first_person_unit) then
-			Unit.animation_set_state(self.first_person_unit, unpack(self.anim_state))
-		end
-	end
-end
-
-SightExtension.revolver_fix = function(self, t)
-	
-	-- if self:is_aiming() and table_contains(fix_items, self.item_name) then
-
-		self:set_animation_state()
-
-		-- if self.anim_state then
-		-- 	Unit.animation_set_state(self.first_person_unit, unpack(self.anim_state))
-		-- end
-
-		-- local animation_extension = script_unit.extension(self.player_unit, "animation_system")
-		-- animation_extension:inventory_slot_wielded(self.ranged_weapon.weapon_template, t)
-
-		-- local unit_data_extension = script_unit.extension(self.player_unit, "unit_data_system")
-		-- local alternate_fire_component = unit_data_extension:write_component("alternate_fire")
-		-- alternate_fire_component.is_active = true
-		-- alternate_fire_component.start_t = t
-		-- local alternate_fire_settings = self.ranged_weapon.weapon_template.alternate_fire_settings
-		-- local start_anim_event = alternate_fire_settings.start_anim_event
-		-- local start_anim_event_3p = alternate_fire_settings.start_anime_event_3p or start_anim_event
-
-		-- if start_anim_event and start_anim_event_3p then
-		-- 	animation_extension:anim_event_1p(start_anim_event)
-		-- 	animation_extension:anim_event(start_anim_event_3p)
-		-- end
-
-	-- end
-
-end
-
-local mesh_slots = {"sight", SIGHT, "sight_3", LENS_A, LENS_B}
-
 SightExtension.update_position_and_rotation = function(self)
-
-	local new_position = vector3_zero()
-
-	if self.initialized and self:get_first_person() then -- and self:is_aiming() then
-
-		-- local recoil = Quaternion.identity()
-		-- local weapon_rotation = unit_local_rotation(self.ranged_weapon.weapon_unit, 1)
-		
-		-- local gear_info = slot_infos[slot_info_id]
-		-- local position_offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
-
-		-- mod:echot("position_offset: "..tostring(position_offset).." slot_info_id: "..tostring(slot_info_id))
-
-		-- local receiver = mod:get_attachment_slot_in_attachments(self.ranged_beam.attachment_units, "receiver")
-		-- if self.ranged_weapon.weapon_unit and unit_alive(self.ranged_weapon.weapon_unit) then
-		-- 	local position_offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
-
-		-- 	unit_set_local_position(self.ranged_weapon.weapon_unit, 4, position_offset)
-		-- end
-
-		if self.ranged_weapon.attachment_units and self.ranged_weapon.weapon_unit and unit_alive(self.ranged_weapon.weapon_unit) and self.ranged_weapon.item then
-			local slot_info_id = mod:get_slot_info_id(self.ranged_weapon.item)
-			local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
-			local gear_info = slot_infos[slot_info_id]
-			if gear_info then
-			
-				
-				-- position_offset = position_offset + position_offset * ((mod.test_index - 1) * .001)
-				-- mod:echot("position_offset: "..tostring(position_offset))
-				-- if self.visual_loadout_extension and self.wielded_slot then
-				-- 	self.visual_loadout_extension:wield_slot(self.wielded_slot.name)
-				-- end
-				
-
-				if self.ranged_weapon.attachment_units and #self.ranged_weapon.attachment_units > 0 then
-					-- local children = unit_get_child_units(self.ranged_weapon.weapon_unit)
-					-- local unit = self.ranged_weapon.attachment_units[1]
-					-- for _, unit in pairs(children) do
-						local root_attachment = self.offset.root or "receiver"
-						-- local unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, root_attachment)
-						local units = table.icombine(self.ranged_weapon.attachment_units, {self.ranged_weapon.weapon_unit})
-						for _, unit in pairs(units) do
-							if unit and unit_alive(unit) then
-
-								local attachment_name = unit_get_data(unit, "attachment_name")
-								local attachment_slot = unit_get_data(unit, "attachment_slot")
-								local parent_unit = self.ranged_weapon.weapon_unit --unit_get_data(unit, "parent_unit")
-								local parent_node = 1 --unit_get_data(unit, "parent_node")
-								-- mod:echot(attachment_slot)
-
-								local gear_rotation = gear_info.unit_changed_rotation[unit] and quaternion_unbox(gear_info.unit_changed_position[unit])
-								local unit_default_rotation = gear_rotation or Quaternion.identity()
-								local gear_position = gear_info.unit_changed_position[unit] and vector3_unbox(gear_info.unit_changed_position[unit])
-								local unit_default_position = gear_position or vector3_zero()
-
-								local position_offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
-								local rotation_offset = self.rotation_offset and quaternion_unbox(self.rotation_offset) or vector3_zero()
-
-								if attachment_slot == root_attachment then
-									local mat = quaternion_matrix4x4(unit_local_rotation(parent_unit, parent_node))
-									unit_set_local_position(unit, 1, matrix4x4_transform(mat, unit_default_position + position_offset))
-									-- unit_set_local_position(unit, 1, unit_default_position + position_offset)
-								end
-
-								local moving_parts = self.offset.moving_parts and (self.offset.moving_parts[attachment_name] or self.offset.moving_parts[attachment_slot])
-
-								local nodes = moving_parts and moving_parts.nodes
-								-- if not moving_parts then moving_parts = {} end
-								if nodes then
-									local node_list = nodes[1] == 0 and table.icombine(nodes, {mod.test_index}) or nodes
-									for _, node in pairs(node_list) do
-										if node > 0 and not table_contains(node_list, node * -1) then
-											local mat = quaternion_matrix4x4(unit_local_rotation(parent_unit, parent_node))
-											unit_set_local_position(unit, node, matrix4x4_transform(mat, unit_default_position + position_offset))
-											-- unit_set_local_position(unit, node, unit_default_position + position_offset)
-										end
-									end
-								end
-
-								local meshes = moving_parts and moving_parts.meshes
-								if meshes then
-									local mesh_list = meshes[1] == 0 and table.icombine(meshes, {mod.test_index}) or meshes
-									local mesh_count = unit_num_meshes(unit)
-									for _, mesh in pairs(mesh_list) do
-										if mesh > 0 and mesh <= mesh_count and not table_contains(mesh_list, mesh * -1) then
-											local mat = quaternion_matrix4x4(unit_local_rotation(parent_unit, parent_node))
-											mesh_set_local_position(unit_mesh(unit, mesh), unit, matrix4x4_transform(mat, unit_default_position + position_offset))
-											-- mesh_set_local_position(unit_mesh(unit, mesh), unit, unit_default_position + position_offset)
-										end
-									end
-								end
-
-								if attachment_slot == root_attachment then
-									local rotation = quaternion_from_euler_angles_xyz(rotation_offset[1], rotation_offset[2], rotation_offset[3])
-									local new_rotation = Quaternion.multiply(unit_default_rotation, rotation)
-									unit_set_local_rotation(unit, 1, new_rotation)
-								end
-
-								local nodes_freeze_rotation = moving_parts and moving_parts.nodes_freeze_rotation
-								if nodes_freeze_rotation then
-									local node_list = nodes_freeze_rotation[1] == 0 and table.icombine(nodes_freeze_rotation, {mod.test_index}) or nodes_freeze_rotation
-									for _, node in pairs(node_list) do
-										if node > 0 then
-											unit_set_local_rotation(unit, node, Quaternion.identity())
-										end
-									end
-								end
-							end
-						end
-					-- end
-				end
-
-				-- if self.ranged_weapon.weapon_unit and unit_alive(self.ranged_weapon.weapon_unit) then
-				-- 	local unit = self.ranged_weapon.weapon_unit
-					
-				-- 	local unit_default_position = gear_info.unit_changed_position[unit] and vector3_unbox(gear_info.unit_changed_position[unit]) or vector3_zero()
-					-- local mesh_count = unit_num_meshes(unit)
-					-- for j = 1, mesh_count do
-					-- 	local mesh = unit_mesh(unit, j)
-					-- 	local mesh_position = mod.mesh_positions_changed[unit] and mod.mesh_positions_changed[unit][j] and vector3_unbox(mod.mesh_positions_changed[unit][j]) or unit_default_position
-					-- 	mesh_set_local_position(mesh, unit, mesh_position + position_offset)
-					-- end
-				-- 	-- local unit_position = unit_world_position(unit, 1)
-				-- 	-- unit_set_local_position(unit, 1, unit_default_position + position_offset)
-				-- 	-- mod:unit_set_local_position_mesh(slot_info_id, unit, unit_default_position + position_offset)
-				-- end
-
-				-- for i, unit in pairs(self.ranged_weapon.attachment_units) do
-
-				-- 	if unit and unit_alive(unit) then
-				-- 		-- if not gear_info.unit_default_position[unit] then
-				-- 		-- 	gear_info.unit_default_position[unit] = unit_local_position(unit, 1)
-				-- 		-- -- end
-				-- 		-- if gear_info.unit_default_position[unit] then
-				-- 		-- 	local unit_default_position = gear_info.unit_default_position[unit] and vector3_unbox(gear_info.unit_default_position[unit]) or unit_local_position(unit, 1)
-				-- 		-- -- local mesh_position = gear_info and gear_info.unit_mesh_position[unit] and vector3_unbox(gear_info.unit_mesh_position[unit]) or vector3_zero()
-				-- 		-- -- local unit_position = unit_world_position(unit, 1)
-				-- 		-- -- local mesh_rotation = gear_info and gear_info.unit_mesh_rotation[unit]
-				-- 		-- 	mod:unit_set_local_position_mesh(slot_info_id, unit, unit_default_position + position_offset)
-				-- 		-- end
-
-				-- 		local attachment_slot = unit_get_data(unit, "attachment_slot")
-				-- 		local unit_default_position = gear_info.unit_changed_position[unit] and vector3_unbox(gear_info.unit_changed_position[unit]) or vector3_zero()
-
-				-- 		if table.contains(mesh_slots, attachment_slot) then
-				-- 			local mesh_count = unit_num_meshes(unit)
-				-- 			local attachment = unit_get_data(unit, "attachment_slot")
-				-- 			-- mod:echot("attachment: "..tostring(attachment).." mesh_count: "..tostring(mesh_count))
-				-- 			for j = 1, mesh_count do
-				-- 				local mesh = unit_mesh(unit, j)
-				-- 				local mesh_position = mod.mesh_positions_changed[unit] and mod.mesh_positions_changed[unit][j] and vector3_unbox(mod.mesh_positions_changed[unit][j]) or unit_default_position
-				-- 				mesh_set_local_position(mesh, unit, mesh_position + position_offset)
-				-- 			end
-				-- 		else
-				-- 			-- mod:echot("unit not found: "..tostring(unit))
-				-- 			-- unit_set_local_position(unit, 1, unit_default_position + position_offset)
-				-- 		end
-				-- 		-- local unit_default_position = gear_info.unit_default_position[unit] and vector3_unbox(gear_info.unit_default_position[unit]) or vector3_zero()
-				-- 		-- unit_set_local_position(unit, 1, unit_default_position + position_offset)
-				-- 	-- else
-				-- 	-- 	mod:echot("unit not found: "..tostring(unit))
-				-- 	end
-
-				end
-
-				-- mod:echot("position_offset: "..tostring(position_offset))
-
-				-- world_update_unit_and_children(self.world, self.ranged_weapon.weapon_unit)
-			end
-		end
-
-	-- 	local input_ext = script_unit.extension(self.player_unit, "input_system")
-	-- 	local yaw, pitch, roll = input_ext:get_orientation()
-	-- 	local orientation = self.player and self.player.get_orientation and self.player:get_orientation()
-	-- 	if orientation then
-	-- 		yaw = orientation and orientation.yaw or yaw
-	-- 		pitch = orientation and orientation.pitch or pitch
-	-- 		roll = orientation and orientation.roll or roll
-	-- 		local orientation_rotation = Quaternion.from_yaw_pitch_roll(orientation.yaw, orientation.pitch, orientation.roll)
-	-- 		local diff = Quaternion.pitch(Quaternion.multiply(orientation_rotation, Quaternion.inverse(unit_local_rotation(self.first_person_unit, 1))))
-	-- 		mod:echot("diff: "..tostring(diff))
-	-- 		-- unit_set_local_rotation(self.first_person_unit, 1, orientation_rotation)
-	-- 		-- world_update_unit_and_children(self.world, self.first_person_unit)
-	-- 		local position_offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
-
-	-- 		if self.weapon_extension and self:is_sniper() then
-	-- 			-- local input_ext = script_unit.extension(self.player_unit, "input_system")
-	-- 			-- local yaw, pitch, roll = input_ext:get_orientation()
-	-- 			-- rotation = Quaternion.from_yaw_pitch_roll(yaw, pitch, roll)
-				
-	-- 			local recoil_template = self.weapon_extension:recoil_template()
-	-- 			local recoil_component = self.unit_data:read_component("recoil")
-	-- 			local movement_state_component = self.unit_data:read_component("movement_state")
-	-- 			local pitch_offset, yaw_offset = Recoil.first_person_offset(recoil_template, recoil_component, movement_state_component)
-	-- 			-- local level = mod.sniper_recoil_level[self.sight_name]
-	-- 			local back = mod.sniper_back_offset[self.sight_name] or .5
-	-- 			recoil = Quaternion.from_yaw_pitch_roll(yaw_offset * back, pitch_offset * back, 0)
-	-- 		local new_rotation = quaternion_from_euler_angles_xyz(Quaternion.yaw(rotation), Quaternion.pitch(rotation) - diff * 100, Quaternion.roll(rotation))
-	-- 		unit_set_local_rotation(self.ranged_weapon.weapon_unit, 1, new_rotation)
-
-	-- 			-- position_offset = position_offset + vector3(0, -pitch_offset, 0)
-	-- 		end
-
-	-- 		local rotation_offset = self.rotation_offset and vector3_unbox(self.rotation_offset) or vector3_zero()
-	-- 		rotation = Quaternion.multiply(rotation, quaternion_from_euler_angles_xyz(rotation_offset[1], rotation_offset[2], rotation_offset[3]))
-	-- 		-- rotation = Quaternion.multiply(rotation, diff)
-	-- 		rotation = Quaternion.multiply(rotation, Quaternion.inverse(recoil))
-	-- 		-- unit_set_local_rotation(self.first_person_unit, 10, rotation)
-
-	-- 		local offset = self.sniper_offset or self.offset
-	-- 		if offset then
-	-- 			local mat = quaternion_matrix4x4(rotation)
-				
-	-- 			new_position = matrix4x4_transform(mat, vector3_unbox(offset.position) + vector3(0, diff, 0))
-				
-	-- 			-- new_position = new_position + vector3(0, -1, 0)
-				
-	-- 		end
-	-- 	end
-	-- end
-
-	-- self.camera_offset = vector3_box(new_position)
-	-- unit_set_local_position(self.ranged_weapon.weapon_unit, 1, -new_position)
-
-	-- world_update_unit_and_children(self.world, self.first_person_unit)
-
+	if self.initialized and self:get_first_person() and self.ranged_weapon.weapon_unit and unit_alive(self.ranged_weapon.weapon_unit) then
+		-- Position
+		local position_offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
+		local mat = quaternion_matrix4x4(unit_local_rotation(self.ranged_weapon.weapon_unit, 1))
+		unit_set_local_position(self.first_person_unit, 7, matrix4x4_transform(mat, position_offset * -1))
+		-- Rotation
+		local rotation_offset = self.rotation_offset and quaternion_unbox(self.rotation_offset) or vector3_zero()
+		local rotation = quaternion_from_euler_angles_xyz(rotation_offset[1], rotation_offset[2], rotation_offset[3])
+		unit_set_local_rotation(self.first_person_unit, 7, rotation)
+	end
 end
 
 SightExtension.update_scope_lenses = function(self)
@@ -910,102 +604,11 @@ SightExtension.update_zoom = function(self, viewport_name)
 		local viewport = ScriptWorld.viewport(self.world, viewport_name)
 		local camera = viewport and ScriptViewport.camera(viewport)
 		if camera and self._is_aiming then
-			-- local offset = self.sniper_offset or self.offset
-			-- local unit = self.sniper_scope_unit or self.sight_unit
-			-- if offset and self:is_aiming() and not self.is_starting_aim and unit then
-			-- 	-- ScriptCamera.set_local_position(camera, -vector3_unbox(self.camera_offset))
-			-- 	-- local offset = vector3_unbox(self.camera_offset)
-			-- 	ScriptCamera.set_local_rotation(camera, unit_world_rotation(unit, 1))
-			-- 	-- local back = mod.sniper_back_offset[self.sight_name] or .5
-			-- 	local sniper_offset = offset and vector3_unbox(offset.position) or vector3_zero()
-			-- 	ScriptCamera.set_local_position(camera, unit_world_position(unit, 1)
-			-- 		+ vector3(0, 0, sniper_offset[3])
-			-- 		- quaternion_forward(ScriptCamera.rotation(camera)) * sniper_offset[2])
-			-- 		-- - quaternion_forward(ScriptCamera.rotation(camera)) * back)
-
-			-- 	-- unit_set_local_rotation(self.sight_unit, 1, unit_local_rotation(self.first_person_unit, 1))
-
-			-- 		-- + vector3(0, 0, offset[3]))
-			-- 	-- ScriptCamera.force_update(self.world, camera)
-			-- 	-- Camera.set_local_position(camera, self.sight_unit, vector3_unbox(self.camera_offset))
-
-			-- 	unit_set_local_position(self.ranged_weapon.weapon_unit, 1, -vector3_unbox(self.camera_offset))
-
-			-- end
-
-			-- local camera_unit = Camera.get_data(camera, "unit")
-			-- if camera_unit and self.camera_offset then
-			-- 	mod:echot("SightExtension.update_zoom: "..tostring(camera_unit))
-			-- 	unit_set_local_position(camera_unit, mod.test_index, -vector3_unbox(self.camera_offset))
-			-- 	world_update_unit_and_children(self.world, camera_unit)
-			-- end
-
 			self:set_default_fov(camera_vertical_fov(camera), camera_custom_vertical_fov(camera))
 			if self.custom_vertical_fov then camera_set_custom_vertical_fov(camera, self.custom_vertical_fov) end
 			if self.vertical_fov then camera_set_vertical_fov(camera, self.vertical_fov) end
-			-- local position = ScriptCamera.position(camera)
-			-- mod:info("SightExtension.update_zoom: "..tostring(camera))
-			-- ScriptCamera.set_local_position(camera, position)
 		end
 	end
-end
-
--- ##### ┬─┐┌─┐┌─┐┌─┐┬┬    ┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌─┐┬ ┬ ####################################################################
--- ##### ├┬┘├┤ │  │ │││    ├─┤│││ ││  └─┐│││├─┤└┬┘ ####################################################################
--- ##### ┴└─└─┘└─┘└─┘┴┴─┘  ┴ ┴┘└┘─┴┘  └─┘└┴┘┴ ┴ ┴  ####################################################################
-
-SightExtension.get_sniper_sway_template = function(self, sway_template)
-	if not self.sniper_sway_template and sway_template and self:is_sniper() then
-		self.sniper_sway_template = table.clone(sway_template)
-		for state, data in pairs(self.sniper_sway_template) do
-			if data.max_sway then
-				for angle_name, value in pairs(data.max_sway) do
-					local sway_state = self.sniper_sway_template[state]
-					local max_sway = sway_state.max_sway[angle_name]
-					self.sniper_sway_template[state].max_sway[angle_name] = value * self.scopes_sway
-				end
-			end
-			if data.continuous_sway then
-				for angle_name, value in pairs(data.continuous_sway) do
-					local sway_state = self.sniper_sway_template[state]
-					local continuous_sway = sway_state.continuous_sway[angle_name]
-					self.sniper_sway_template[state].continuous_sway[angle_name] = value * self.scopes_sway
-				end
-			end
-		end
-		return self.sniper_sway_template
-	elseif self.sniper_sway_template and not self:is_sniper() then
-		self.sniper_sway_template = nil
-	elseif self.sniper_sway_template and self:is_sniper() and self._is_aiming then
-		return self.sniper_sway_template
-	end
-	return sway_template
-end
-
-SightExtension.get_sniper_recoil_template = function(self, recoil_template)
-	if not self.sniper_recoil_template and recoil_template and self:is_sniper() then
-		self.sniper_recoil_template = table.clone(recoil_template)
-		for state, data in pairs(self.sniper_recoil_template) do
-			if data.offset_range then
-				for offset_data_i, offset_data in pairs(data.offset_range) do
-					if offset_data.pitch then
-						for value_i, value in pairs(offset_data.pitch) do
-							local recoil_state = self.sniper_recoil_template[state]
-							local offset_range = recoil_state.offset_range[offset_data_i]
-							local pitch_value = offset_range.pitch[value_i]
-							self.sniper_recoil_template[state].offset_range[offset_data_i].pitch[value_i] = value * self.scopes_recoil
-						end
-					end
-				end
-			end
-		end
-		return self.sniper_recoil_template
-	elseif self.sniper_recoil_template and not self:is_sniper() then
-		self.sniper_recoil_template = nil
-	elseif self.sniper_recoil_template and self:is_sniper() and self._is_aiming then
-		return self.sniper_recoil_template
-	end
-	return recoil_template
 end
 
 return SightExtension

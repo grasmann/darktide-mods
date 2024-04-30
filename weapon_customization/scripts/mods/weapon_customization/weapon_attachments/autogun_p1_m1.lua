@@ -42,19 +42,6 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
-local moving_parts = {
-    -- Infantry
-	receiver_01 = {nodes = {19, 20, 26, 43, 44, 45, 46, 47}},
-    -- Braced
-    receiver_03 = {nodes = {13, 17, 18, 21}},
-    receiver_06 = {nodes = {13, 17, 18, 21}},
-    receiver_07 = {nodes = {13, 17, 18, 21}},
-    -- Headhunter
-    receiver_02 = {nodes = {11, 14, 16, 17}},
-    receiver_04 = {nodes = {23, 26, 27, 29}},
-    receiver_05 = {nodes = {11, 14, 15, 17}},
-}
-
 return table_combine(
     _autogun_p1_m1,
     {
@@ -226,7 +213,7 @@ return table_combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, -.075, -.01), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75, moving_parts = moving_parts, root = "receiver"}},
+                        scope_offset = {position = vector3_box(0, -.075, -.01), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75}},
                     -- Martyr's Gaze
                     {dependencies = {"scope_01"},
                         sight = {parent = "receiver", position = vector3_box(0, -.09, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1),
@@ -237,7 +224,7 @@ return table_combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, -.075, -.0175), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65, moving_parts = moving_parts, root = "receiver"}},
+                        scope_offset = {position = vector3_box(0, -.075, -.0175), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65}},
                     -- Exterminatus Lens
                     {dependencies = {"scope_02"},
                         sight = {parent = "receiver", position = vector3_box(0, -.09, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1),
@@ -248,7 +235,7 @@ return table_combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, -.075, -.015), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65, moving_parts = moving_parts, root = "receiver"}},
+                        scope_offset = {position = vector3_box(0, -.075, -.015), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65}},
 
                     {sight_2 = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                     {lens = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

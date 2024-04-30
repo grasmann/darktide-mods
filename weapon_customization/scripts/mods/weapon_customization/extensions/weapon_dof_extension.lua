@@ -32,7 +32,7 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
---#regin Data
+--#region Data
     local SLOT_PRIMARY = "slot_primary"
     local SLOT_SECONDARY = "slot_secondary"
     local SLOT_UNARMED = "slot_unarmed"

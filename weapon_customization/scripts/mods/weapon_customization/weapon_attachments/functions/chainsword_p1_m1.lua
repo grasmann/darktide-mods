@@ -55,9 +55,6 @@ return {
             {name = "chain_sword_grip_08",      model = _item_melee.."/grips/chain_sword_grip_08"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-
-
     body_attachments = function(default)
         local attachments = {
             {id = "chain_sword_body_01",      name = "Body 1"},
@@ -91,9 +88,6 @@ return {
             {name = "chain_sword_body_09",      model = _item_melee.."/full/chain_sword_full_09"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-
-    
     chain_attachments = function(default)
         local attachments = {
             {id = "chain_sword_chain_01",      name = "Chain 1"},

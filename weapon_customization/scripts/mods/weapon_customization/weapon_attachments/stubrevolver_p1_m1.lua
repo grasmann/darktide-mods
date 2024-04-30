@@ -122,28 +122,6 @@ local functions = {
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
-local moving_parts = {
-    -- Infantry
-	body_01 = {nodes = {7, 9, 11, 12, 13, 15}},
-    -- body_01 = {meshes = {0}},
-    -- barrel_01 = {nodes = {0}},
-    -- ["1"] = {meshes = {0}},
-    -- [1] = {meshes = {0}},
-    j_rightweaponattach = {nodes = {4, 5, 6, 7, 8}},
-    -- barrel_01 = {0},
-    -- bullet_01 = {0},
-    -- casing_01 = {0},
-    -- bullet_02 = {0},
-    -- casing_02 = {0},
-    -- bullet_03 = {0},
-    -- casing_03 = {0},
-    -- bullet_04 = {0},
-    -- casing_04 = {0},
-    -- bullet_05 = {0},
-    -- casing_05 = {0},
-    body_02 = {},
-}
-
 return table.combine(
     functions,
     {
@@ -255,7 +233,7 @@ return table.combine(
             _common.emblem_left_models("body", 0, vector3_box(0, -4, 0), vector3_box(-.1, 0, 0))
         ),
         anchors = {
-            scope_offset = {position = vector3_box(0, 0, -.03), moving_parts = moving_parts, root = "body"},
+            scope_offset = {position = vector3_box(0, 0, -.03)},
             -- no_scope_offset = {position = vector3_box(0, 0, .2), rotation = vector3_box(0, 0, 0)},
             fixes = {
                 --#region Scopes
@@ -272,7 +250,7 @@ return table.combine(
                         lens = {parent = "sight", position = vector3_box(0, .033, .002), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .085, .002), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 2}},
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                        scope_offset = {position = vector3_box(0, -.22, -.033), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75, moving_parts = moving_parts, root = "body"}, -- sniper_offset = {position = vector3_box(0, .35, 0)}
+                        scope_offset = {position = vector3_box(0, -.22, -.033), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75}, -- sniper_offset = {position = vector3_box(0, .35, 0)}
                         },
                     -- Martyr's Gaze
                     {dependencies = {"scope_01", "barrel_04"},
@@ -287,7 +265,7 @@ return table.combine(
                         lens = {parent = "sight", position = vector3_box(0, .105, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .275, 1), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .065, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(1, .3, 1), data = {lens = 2}},
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                        scope_offset = {position = vector3_box(0, -.175, -.033), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65, moving_parts = moving_parts, root = "body"}, --sniper_offset = {position = vector3_box(0, .35, 0)}
+                        scope_offset = {position = vector3_box(0, -.175, -.033), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65}, --sniper_offset = {position = vector3_box(0, .35, 0)}
                         },
                     -- Extermination Lense
                     {dependencies = {"scope_02", "barrel_04"},
@@ -302,7 +280,7 @@ return table.combine(
                         lens = {parent = "sight", position = vector3_box(0, .075, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .15, .9), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .022, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .1, .9), data = {lens = 2}},
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.048), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
-                        scope_offset = {position = vector3_box(0, -.35, -.028), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65, moving_parts = moving_parts, root = "body"}, --sniper_offset = {position = vector3_box(0, .35, 0)}
+                        scope_offset = {position = vector3_box(0, -.35, -.028), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65}, --sniper_offset = {position = vector3_box(0, .35, 0)}
                         },
                     
                     {sight_2 = {parent = "barrel", parent_node = 9, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

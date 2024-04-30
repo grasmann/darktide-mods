@@ -180,15 +180,6 @@ local functions = {
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
-local moving_parts = {
-    -- Infantry
-	laspistol_receiver_01 = {nodes = {20, 22, 28}},
-    laspistol_receiver_02 = {nodes = {20, 22, 28}},
-    laspistol_receiver_03 = {nodes = {20, 22, 28}},
-    laspistol_receiver_05 = {nodes = {23, 24, 26, 32}},
-    laspistol_receiver_06 = {nodes = {20, 22, 28}},
-}
-
 return table.combine(
     functions,
     {
@@ -396,7 +387,7 @@ return table.combine(
                     lens = {offset = true, position = vector3_box(0, .08, .0395), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, .22, .0395), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, 1, .62), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, 0, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, -.3, .01), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75, moving_parts = moving_parts, root = "receiver"},
+                    scope_offset = {position = vector3_box(0, -.3, .01), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75},
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 -- Martyr's Gaze
                 {dependencies = {"scope_01"}, -- Lasgun sight
@@ -404,7 +395,7 @@ return table.combine(
                     lens = {offset = true, position = vector3_box(0, .12, .037), rotation = vector3_box(0, 0, 0), scale = vector3_box(.64, .6, .7), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, .01, .037), rotation = vector3_box(180, 0, 0), scale = vector3_box(.64, .85, .7), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, .07, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, -.4, .01), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65, moving_parts = moving_parts, root = "receiver"},
+                    scope_offset = {position = vector3_box(0, -.4, .01), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65},
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 -- Exterminatus Lens
                 {dependencies = {"scope_02"}, -- Lasgun sight
@@ -412,7 +403,7 @@ return table.combine(
                     lens = {offset = true, position = vector3_box(0, -.02, .036), rotation = vector3_box(0, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 1}},
                     lens_2 = {offset = true, position = vector3_box(0, -.14, .036), rotation = vector3_box(180, 0, 0), scale = vector3_box(.62, .4, .7), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, .09, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
-                    scope_offset = {position = vector3_box(0, -.4, .015), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65, moving_parts = moving_parts, root = "receiver"},
+                    scope_offset = {position = vector3_box(0, -.4, .015), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65},
                     rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 
                 {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

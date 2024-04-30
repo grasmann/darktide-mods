@@ -79,7 +79,8 @@ mod:hook(CLASS.ActionShootHitScan, "_shoot", function(func, self, position, rota
     func(self, position, rotation, power_level, charge_level, ...)
 
     -- Sights
-    mod:execute_extension(self._player_unit, "sight_system", "revolver_fix", mod:game_time())
+    local fire_config = self._action_settings.fire_configuration
+    mod:execute_extension(self._player_unit, "sight_system", "revolver_fix", mod:game_time(), fire_config)
 
     -- local visual_loadout_extension = script_unit.extension(self._player_unit, "visual_loadout_system")
     -- -- local unit_data_extension = action_context.unit_data_extension
@@ -382,24 +383,6 @@ end)
     --     mod:execute_extension(self._unit, "sight_system", "update", unit, dt, t)
     -- end)
 --#endregion
-
--- mod:hook(CLASS.PlayerUnitWeaponExtension, "recoil_template", function(func, self, ...)
---     -- Original function
---     local recoil_template = func(self, ...)
---     -- Sights sniper template
---     recoil_template = mod:execute_extension(self._unit, "sight_system", "get_sniper_recoil_template", recoil_template) or recoil_template
---     -- Return value
---     return recoil_template
--- end)
-
--- mod:hook(CLASS.PlayerUnitWeaponExtension, "sway_template", function(func, self, ...)
---     -- Original function
---     local sway_template = func(self, ...)
---     -- Sights sniper template
---     sway_template = mod:execute_extension(self._unit, "sight_system", "get_sniper_sway_template", sway_template) or sway_template
---     -- Return value
---     return sway_template
--- end)
 
 --#region Old
     -- mod:hook(CLASS.PlayerUnitWeaponExtension, "on_wieldable_slot_equipped", function(func, self, item, slot_name, weapon_unit, fx_sources,

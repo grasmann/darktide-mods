@@ -35,6 +35,7 @@ local BatteryExtension = class("BatteryExtension", "WeaponCustomizationExtension
 
 -- Initialize
 BatteryExtension.init = function(self, extension_init_context, unit, extension_init_data)
+    -- Initialize parent
     BatteryExtension.super.init(self, extension_init_context, unit, extension_init_data)
     -- Attributes
     self.consumer_template = extension_init_data.consumer_template
