@@ -2521,13 +2521,13 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 
 		-- mod:get_dropdown_positions()
 		-- mod:get_changed_weapon_settings()
-		mod:load_new_attachment()
-		if mod.reset_weapon then
-			for _, attachment_slot in pairs(mod.attachment_slots) do
-				mod:set_gear_setting(self._gear_id, attachment_slot, nil)
-			end
-			mod.reset_weapon = nil
-		end
+		-- mod:load_new_attachment()
+		-- if mod.reset_weapon then
+		-- 	for _, attachment_slot in pairs(mod.attachment_slots) do
+		-- 		mod:set_gear_setting(self._gear_id, attachment_slot, nil)
+		-- 	end
+		-- 	mod.reset_weapon = nil
+		-- end
 
 		mod.reset_start = managers.time:time("main")
 

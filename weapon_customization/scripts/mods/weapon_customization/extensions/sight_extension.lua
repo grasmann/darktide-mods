@@ -4,15 +4,17 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
-local Crouch = mod:original_require("scripts/extension_systems/character_state_machine/character_states/utilities/crouch")
-local Recoil = mod:original_require("scripts/utilities/recoil")
-local Sway = mod:original_require("scripts/utilities/sway")
-local Spread = mod:original_require("scripts/utilities/spread")
-local ScriptViewport = mod:original_require("scripts/foundation/utilities/script_viewport")
-local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
-local RecoilTemplate = mod:original_require("scripts/settings/equipment/recoil_templates")
-local WieldableSlotScripts = mod:original_require("scripts/extension_systems/visual_loadout/utilities/wieldable_slot_scripts")
+--#region Require
+	local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
+	local Crouch = mod:original_require("scripts/extension_systems/character_state_machine/character_states/utilities/crouch")
+	local Recoil = mod:original_require("scripts/utilities/recoil")
+	local Sway = mod:original_require("scripts/utilities/sway")
+	local Spread = mod:original_require("scripts/utilities/spread")
+	local ScriptViewport = mod:original_require("scripts/foundation/utilities/script_viewport")
+	local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
+	local RecoilTemplate = mod:original_require("scripts/settings/equipment/recoil_templates")
+	local WieldableSlotScripts = mod:original_require("scripts/extension_systems/visual_loadout/utilities/wieldable_slot_scripts")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -86,18 +88,21 @@ local WieldableSlotScripts = mod:original_require("scripts/extension_systems/vis
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
-local EFFECT_OPTION = "mod_option_scopes_particle"
-local EFFECT = "content/fx/particles/screenspace/screen_ogryn_dash"
-local SOUND_OPTION = "mod_option_scopes_sound"
-local SOUND = "wwise/events/weapon/play_lasgun_p3_mag_button"
-local SIGHT = "sight_2"
-local LENS_A = "lens"
-local LENS_B = "lens_2"
-local SCOPE_OFFSET = "scope_offset"
-local NO_SCOPE_OFFSET = "no_scope_offset"
-local SLOT_SECONDARY = "slot_secondary"
-local SLOT_UNARMED = "slot_unarmed"
+--#region Data
+	local REFERENCE = "weapon_customization"
+	local EFFECT_OPTION = "mod_option_scopes_particle"
+	local EFFECT = "content/fx/particles/screenspace/screen_ogryn_dash"
+	local SOUND_OPTION = "mod_option_scopes_sound"
+	local SOUND = "wwise/events/weapon/play_lasgun_p3_mag_button"
+	local SIGHT = "sight_2"
+	local LENS_A = "lens"
+	local LENS_B = "lens_2"
+	local SCOPE_OFFSET = "scope_offset"
+	local NO_SCOPE_OFFSET = "no_scope_offset"
+	local SLOT_SECONDARY = "slot_secondary"
+	local SLOT_UNARMED = "slot_unarmed"
+	local reticle_multiplier = .5
+--#endregion
 
 -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #################################################################
 -- ##### └─┐││ ┬├─┤ │ └─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ #################################################################
@@ -164,15 +169,12 @@ SightExtension.is_braced = function(self)
 end
 
 SightExtension.is_hiding_crosshair = function(self)
-	-- Check cache
-	-- if self._is_hiding_crosshair == nil then
 	-- Get value
 	local laser = self.deactivate_crosshair_laser and mod:execute_extension(self.player_unit, "laser_pointer_system", "is_active")
 	local sniper_or_scope = self:is_sniper() or self:is_scope()
 	local aiming = self.deactivate_crosshair_aiming and self._is_aiming and sniper_or_scope
 	self._is_hiding_crosshair = laser or aiming
-	-- end
-	-- Return cache
+	-- Return
 	return self._is_hiding_crosshair
 end
 
@@ -362,13 +364,7 @@ SightExtension.on_aim_stop = function(self, t)
 		self.is_starting_aim = nil
 		self._is_aiming = nil
 		self.aim_timer = t + self.reset_time
-		if self.particle_effect then
-			if self.particle_effect > 0 then
-				world_stop_spawning_particles(self.world, self.particle_effect)
-				world_destroy_particles(self.world, self.particle_effect)
-			end
-			self.particle_effect = nil
-		end
+		self:destroy_particle_effect()
 	end
 end
 
@@ -395,8 +391,6 @@ end
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
-
-local reticle_multiplier = .5
 
 SightExtension.update = function(self, unit, dt, t)
 	local perf = wc_perf.start("SightExtension.update", 2)
@@ -426,7 +420,6 @@ SightExtension.update = function(self, unit, dt, t)
 					if self.default_vertical_fov and self.default_custom_vertical_fov then
 						local custom_fov = self.offset.custom_fov and math_rad(self.offset.custom_fov) or math_rad(self.sniper_zoom)
 						local fov = self.offset.fov and math_rad(self.offset.fov) or math_rad(self.sniper_zoom)
-						-- local apply_fov = math_rad(self.sniper_zoom)
 						self.custom_vertical_fov = math_lerp(self.default_custom_vertical_fov, custom_fov, anim_progress)
 						self.vertical_fov = math_lerp(self.default_vertical_fov, fov, anim_progress)
 					end
@@ -440,7 +433,6 @@ SightExtension.update = function(self, unit, dt, t)
 							local default_offset = vector3_unbox(self.default_reticle_position)
 							local rotation = unit_local_rotation(self.lens_units[3], 1)
 							local forward = Quaternion.forward(rotation)
-							-- local max = forward * reticle_multiplier
 							local current_reticle_offset = forward * (self.reticle_size * reticle_multiplier)
 							local reticle_offset = vector3_lerp(default_offset, default_offset + current_reticle_offset, anim_progress)
 							unit_set_local_position(self.lens_units[3], 1, reticle_offset)
@@ -467,14 +459,12 @@ SightExtension.update = function(self, unit, dt, t)
 						local default_offset = vector3_unbox(self.default_reticle_position)
 						local rotation = unit_local_rotation(self.lens_units[3], 1)
 						local forward = Quaternion.forward(rotation)
-						-- local max = forward * reticle_multiplier
 						local current_reticle_offset = forward * (self.reticle_size * reticle_multiplier)
 						unit_set_local_position(self.lens_units[3], 1, default_offset + current_reticle_offset)
 					end
 
 					local custom_fov = self.offset.custom_fov and math_rad(self.offset.custom_fov) or math_rad(self.sniper_zoom)
 					local fov = self.offset.fov and math_rad(self.offset.fov) or math_rad(self.sniper_zoom)
-					-- local apply_fov = math_rad(self.sniper_zoom)
 					self.custom_vertical_fov = custom_fov
 					self.vertical_fov = fov
 				end
@@ -502,7 +492,6 @@ SightExtension.update = function(self, unit, dt, t)
 					if self.default_vertical_fov and self.default_custom_vertical_fov then
 						local custom_fov = self.offset.custom_fov and math_rad(self.offset.custom_fov) or math_rad(self.sniper_zoom)
 						local fov = self.offset.fov and math_rad(self.offset.fov) or math_rad(self.sniper_zoom)
-						-- local apply_fov = math_rad(self.sniper_zoom)
 						self.custom_vertical_fov = math_lerp(custom_fov, self.default_custom_vertical_fov, anim_progress)
 						self.vertical_fov = math_lerp(fov, self.default_vertical_fov, anim_progress)
 					end
@@ -516,7 +505,6 @@ SightExtension.update = function(self, unit, dt, t)
 							local default_offset = vector3_unbox(self.default_reticle_position)
 							local rotation = unit_local_rotation(self.lens_units[3], 1)
 							local forward = Quaternion.forward(rotation)
-							-- local max = forward * reticle_multiplier
 							local current_reticle_offset = forward * (self.reticle_size * reticle_multiplier)
 							local reticle_offset = vector3_lerp(default_offset + current_reticle_offset, default_offset, anim_progress)
 							unit_set_local_position(self.lens_units[3], 1, reticle_offset)
@@ -564,8 +552,16 @@ SightExtension.update_position_and_rotation = function(self)
 		-- Rotation
 		local rotation_offset = self.rotation_offset and quaternion_unbox(self.rotation_offset) or vector3_zero()
 		local rotation = quaternion_from_euler_angles_xyz(rotation_offset[1], rotation_offset[2], rotation_offset[3])
-		unit_set_local_rotation(self.first_person_unit, 7, rotation)
+		unit_set_local_rotation(self.ranged_weapon.weapon_unit, 1, rotation)
 	end
+end
+
+SightExtension.destroy_particle_effect = function(self)
+	if self.particle_effect and self.particle_effect > 0 then
+		world_stop_spawning_particles(self.world, self.particle_effect)
+		world_destroy_particles(self.world, self.particle_effect)
+	end
+	self.particle_effect = nil
 end
 
 SightExtension.update_scope_lenses = function(self)
@@ -590,12 +586,8 @@ SightExtension.update_scope_lenses = function(self)
 		if not self.particle_effect then
 			self.particle_effect = world_create_particles(self.world, EFFECT, vector3(0, 0, 1))
 		end
-	elseif self.particle_effect then
-		if self.particle_effect > 0 then
-			world_stop_spawning_particles(self.world, self.particle_effect)
-			world_destroy_particles(self.world, self.particle_effect)
-		end
-		self.particle_effect = nil
+	else
+		self:destroy_particle_effect()
 	end
 end
 
