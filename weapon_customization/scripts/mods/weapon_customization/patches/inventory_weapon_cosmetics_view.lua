@@ -347,14 +347,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			display_name = "loc_menu_toggle_ui_visibility_off",
 			alignment = "right_alignment"
 		}
-		if modding_tools then
-			instance.legend_inputs[#instance.legend_inputs+1] = {
-				on_pressed_callback = "_cb_on_modding_tool_toggled",
-				input_action = "hotkey_item_sort",
-				display_name = "loc_use_modding_tool",
-				alignment = "right_alignment"
-			}
-		end
+		instance.legend_inputs[#instance.legend_inputs+1] = {
+			on_pressed_callback = "_cb_on_modding_tool_toggled",
+			input_action = "hotkey_item_sort",
+			display_name = "loc_use_modding_tool",
+			alignment = "right_alignment"
+		}
 	end
 
 	instance.scenegraph_definition.weapon_presets_pivot = {

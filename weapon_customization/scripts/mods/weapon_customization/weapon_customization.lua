@@ -6,17 +6,11 @@ local mod = get_mod("weapon_customization")
 
 --#region local functions
 	local Unit = Unit
-	local math = math
-	local pairs = pairs
 	local CLASS = CLASS
 	local tostring = tostring
 	local managers = Managers
-	local math_uuid = math.uuid
 	local unit_alive = Unit.alive
 	local script_unit = ScriptUnit
-	local Application = Application
-	local unit_force_stream_meshes = Unit.force_stream_meshes
-	local application_set_time_step_policy = Application.set_time_step_policy
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
