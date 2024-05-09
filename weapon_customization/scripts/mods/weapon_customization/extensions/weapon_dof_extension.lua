@@ -186,9 +186,10 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 WeaponDOFExtension.update = function(self, dt, t)
-    local no_aim = not self:is_aiming() and self.no_aim
-    local scope = self:is_aiming() and self:is_sniper_or_scope() and self.scope
-    local sight = self:is_aiming() and self:is_sight() and self.sight
+    local is_aiming = self:is_aiming()
+    local no_aim = not is_aiming and self.no_aim
+    local scope = is_aiming and self:is_sniper_or_scope() and self.scope
+    local sight = is_aiming and self:is_sight() and self.sight
     local slot = self.wielded_slot and (self.wielded_slot.name == SLOT_SECONDARY or self.wielded_slot.name == SLOT_PRIMARY)
 
     if slot and (self._is_aiming ~= self.last_aiming or self.dirty) then
@@ -218,7 +219,7 @@ WeaponDOFExtension.update = function(self, dt, t)
     end
 
     if self.do_lerp then
-        local time = self:is_aiming() and self.start_time or self.reset_time
+        local time = is_aiming and self.start_time or self.reset_time
         self.lerp_timer = t + time
         self.do_lerp = nil
     elseif self.lerp_timer and t < self.lerp_timer then

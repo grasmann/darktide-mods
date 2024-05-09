@@ -4,142 +4,60 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_melee")
-
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-local _item = "content/items/weapons/player"
-local _item_melee = _item.."/melee"
+--#region Require
+    local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+    local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_melee")
+    local _combataxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/combataxe_p1_m1")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local string = string
-    local string_find = string.find
     local vector3_box = Vector3Box
     local table = table
-    local pairs = pairs
-    local ipairs = ipairs
-    local type = type
 --#endregion
-
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
-
-local functions = {
-    grip_attachments = function(default)
-        local attachments = {
-            {id = "axe_grip_01",  name = "Combat Axe 1"},
-            {id = "axe_grip_02",  name = "Combat Axe 2"},
-            {id = "axe_grip_03",  name = "Combat Axe 3"},
-            {id = "axe_grip_04",  name = "Combat Axe 4"},
-            {id = "axe_grip_05",  name = "Combat Axe 5"},
-            {id = "axe_grip_06",  name = "Combat Axe 6"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "grip_default",    name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "grip_default", model = ""},
-            {name = "axe_grip_01",      model = _item_melee.."/grips/axe_grip_01"},
-            {name = "axe_grip_02",      model = _item_melee.."/grips/axe_grip_02"},
-            {name = "axe_grip_03",      model = _item_melee.."/grips/axe_grip_03"},
-            {name = "axe_grip_04",      model = _item_melee.."/grips/axe_grip_04"},
-            {name = "axe_grip_05",      model = _item_melee.."/grips/axe_grip_05"},
-            {name = "axe_grip_06",      model = _item_melee.."/grips/axe_grip_06"},
-        }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    head_attachments = function(default)
-        local attachments = {
-            {id = "axe_head_01",  name = "Combat Axe 1"},
-            {id = "axe_head_02",  name = "Combat Axe 2"},
-            {id = "axe_head_03",  name = "Combat Axe 3"},
-            {id = "axe_head_04",  name = "Combat Axe 4"},
-            {id = "axe_head_05",  name = "Combat Axe 5"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "head_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "head_default", model = ""},
-            {name = "axe_head_01",      model = _item_melee.."/heads/axe_head_01"},
-            {name = "axe_head_02",      model = _item_melee.."/heads/axe_head_02"},
-            {name = "axe_head_03",      model = _item_melee.."/heads/axe_head_03"},
-            {name = "axe_head_04",      model = _item_melee.."/heads/axe_head_04"},
-            {name = "axe_head_05",      model = _item_melee.."/heads/axe_head_05"},
-        }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    pommel_attachments = function(default)
-        local attachments = {
-            {id = "axe_pommel_01",  name = "Combat Axe 1"},
-            {id = "axe_pommel_02",  name = "Combat Axe 2"},
-            {id = "axe_pommel_03",  name = "Combat Axe 3"},
-            {id = "axe_pommel_04",  name = "Combat Axe 4"},
-            {id = "axe_pommel_05",  name = "Combat Axe 5"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "pommel_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    pommel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "pommel_default", model = ""},
-            {name = "axe_pommel_01",      model = _item_melee.."/pommels/axe_pommel_01"},
-            {name = "axe_pommel_02",      model = _item_melee.."/pommels/axe_pommel_02"},
-            {name = "axe_pommel_03",      model = _item_melee.."/pommels/axe_pommel_03"},
-            {name = "axe_pommel_04",      model = _item_melee.."/pommels/axe_pommel_04"},
-            {name = "axe_pommel_05",      model = _item_melee.."/pommels/axe_pommel_05"},
-        }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-}
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local _chain_axe_grips = "chain_axe_grip_01|chain_axe_grip_02|chain_axe_grip_03|chain_axe_grip_04|chain_axe_grip_05"
+local _ogryn_club_grips = "ogryn_club_grip_01|ogryn_club_grip_02|ogryn_club_grip_03|ogryn_club_grip_04|ogryn_club_grip_05"
+
 return table.combine(
-    functions,
+    _combataxe_p1_m1,
     {
         attachments = {
             trinket_hook = _common.trinket_hook_attachments(),
             emblem_right = _common.emblem_right_attachments(),
             emblem_left = _common.emblem_left_attachments(),
-            grip = table.icombine(
-                _common_melee.axe_grip_attachments()
-            ),
+            -- grip = table.icombine(
+            --     _common_melee.axe_grip_attachments()
+            -- ),
+            grip = _common_melee.medium_grip_attachments(),
             head = table.icombine(
                 _common_melee.axe_head_attachments()
             ),
             pommel = table.icombine(
-                _common_melee.axe_pommel_attachments()
+                _common_melee.pommel_attachments(true, false, false, false)
             ),
         },
         models = table.combine(
             _common.emblem_right_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _common.emblem_left_models(nil, -3, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _common.trinket_hook_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
-            _common_melee.axe_grip_models(nil, 0, vector3_box(-.3, -2, .1), vector3_box(0, 0, 0)),
-            _common_melee.axe_head_models(nil, 0, vector3_box(0, -3, -.1), vector3_box(0, 0, .2)),
-            _common_melee.axe_pommel_models(nil, 0, vector3_box(-.5, -4, .3), vector3_box(0, 0, -.2))
+            -- _common_melee.axe_grip_models(nil, 0, vector3_box(-.3, -2, .1), vector3_box(0, 0, 0)),
+            _common_melee.medium_grip_models({
+				{parent = nil, angle = 0, move = vector3_box(-.3, -2, .1), remove = vector3_box(0, 0, -.2)}
+			}),
+            _common_melee.axe_head_models({
+                {parent = nil, angle = 0, move = vector3_box(0, -3, -.1), remove = vector3_box(0, 0, .2)}
+            }),
+            _common_melee.pommel_models({
+                {parent = nil, angle = 0, move = vector3_box(-.5, -4, .3), remove = vector3_box(0, 0, -.2)}
+            })
         ),
         anchors = {
             fixes = {
@@ -149,6 +67,17 @@ return table.combine(
                 {dependencies = {"axe_head_03"}, -- Emblems
                     emblem_left = {offset = true, position = vector3_box(-.015, .06, .16), rotation = vector3_box(90, 0, 180), scale = vector3_box(1, 1, 1)},
                     emblem_right = {offset = true, position = vector3_box(.015, .06, .16), rotation = vector3_box(90, 0, 0), scale = vector3_box(1, 1, 1)}},
+
+                {dependencies = {_chain_axe_grips}, -- Grips
+                    grip = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                    head = {offset = true, position = vector3_box(0, 0, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                    pommel = {offset = true, position = vector3_box(0, 0, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                },
+                {dependencies = {_ogryn_club_grips}, -- Grips
+                    head = {offset = true, position = vector3_box(0, 0, .03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                    grip = {offset = true, position = vector3_box(0, 0, -.2), rotation = vector3_box(0, 0, 0), scale = vector3_box(.4, .4, .6), scale_node = 5},
+                    pommel = {offset = true, position = vector3_box(0, 0, .28), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                },
             },
         },
     }

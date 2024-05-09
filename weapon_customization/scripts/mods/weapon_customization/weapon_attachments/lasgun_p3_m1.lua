@@ -4,142 +4,38 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
-local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
-local _bolter_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/bolter_p1_m1")
-
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
-local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
+--#region Require
+    local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+    local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
+    local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
+    local _bolter_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/bolter_p1_m1")
+    local _lasgun_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/lasgun_p3_m1")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local string = string
-    local string_find = string.find
     local vector3_box = Vector3Box
     local table = table
-    local pairs = pairs
-    local ipairs = ipairs
-    local type = type
 --#endregion
-
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
-
-local functions = {
-    receiver_attachments = function(default)
-        local attachments = {
-            {id = "receiver_01",        name = "Recon Lasgun 1"},
-            {id = "receiver_02",        name = "Recon Lasgun 2"},
-            {id = "receiver_03",        name = "Recon Lasgun 3"},
-            {id = "receiver_04",        name = "Recon Lasgun 4"},
-            {id = "receiver_05",        name = "Recon Lasgun 5"},
-            {id = "receiver_06",        name = "Recon Lasgun 6"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "receiver_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    receiver_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "receiver_default", model = ""},
-            {name = "receiver_01",      model = _item_ranged.."/recievers/lasgun_rifle_elysian_receiver_01"},
-            {name = "receiver_02",      model = _item_ranged.."/recievers/lasgun_rifle_elysian_receiver_02"},
-            {name = "receiver_03",      model = _item_ranged.."/recievers/lasgun_rifle_elysian_receiver_03"},
-            {name = "receiver_04",      model = _item_ranged.."/recievers/lasgun_rifle_elysian_receiver_04"},
-            {name = "receiver_05",      model = _item_ranged.."/recievers/lasgun_rifle_elysian_receiver_05"},
-            {name = "receiver_06",      model = _item_ranged.."/recievers/lasgun_rifle_elysian_receiver_06"},
-        }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    stock_attachments = function(default)
-        local attachments = {
-            {id = "stock_01",      name = "Recon Lasgun 1"},
-            {id = "stock_02",      name = "Recon Lasgun 2"},
-            {id = "stock_03",      name = "Recon Lasgun 3"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "stock_default",  name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    stock_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "stock_default", model = ""},
-            {name = "stock_01",      model = _item_ranged.."/stocks/lasgun_rifle_elysian_stock_01"},
-            {name = "stock_02",      model = _item_ranged.."/stocks/lasgun_rifle_elysian_stock_02"},
-            {name = "stock_03",      model = _item_ranged.."/stocks/lasgun_rifle_elysian_stock_03"},
-        }, parent, angle, move, remove, type or "stock", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    magazine_attachments = function(default)
-        local attachments = {
-            {id = "magazine_01",      name = "Recon Lasgun"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "magazine_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    magazine_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "magazine_default", model = ""},
-            {name = "magazine_01",      model = _item_ranged.."/magazines/lasgun_elysian_magazine_01"},
-        }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    sight_attachments = function(default)
-        local attachments = {
-            {id = "elysian_sight_01",      name = "Recon Lasgun 1"},
-            {id = "elysian_sight_02",      name = "Recon Lasgun 2"},
-            {id = "elysian_sight_03",      name = "Recon Lasgun 3"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "elysian_sight_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    sight_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "elysian_sight_default", model = ""},
-            {name = "elysian_sight_01",      model = _item_ranged.."/sights/lasgun_rifle_elysian_sight_01"},
-            {name = "elysian_sight_02",      model = _item_ranged.."/sights/lasgun_rifle_elysian_sight_02"},
-            {name = "elysian_sight_03",      model = _item_ranged.."/sights/lasgun_rifle_elysian_sight_03"},
-        }, parent, angle, move, remove, type or "sight", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-}
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
-    functions,
+    _lasgun_p3_m1,
     {
         attachments = {
             -- Native
-            receiver = functions.receiver_attachments(),
-            stock = functions.stock_attachments(),
-            magazine = functions.magazine_attachments(),
+            receiver = _lasgun_p3_m1.receiver_attachments(),
+            stock = _lasgun_p3_m1.stock_attachments(),
+            magazine = _lasgun_p3_m1.magazine_attachments(),
             -- Ranged
             sight = table.icombine(
-                functions.sight_attachments(),
+                _lasgun_p3_m1.sight_attachments(),
                 _common_ranged.reflex_sights_attachments(false),
                 _common_ranged.sights_attachments(false)
             ),
@@ -158,10 +54,10 @@ return table.combine(
         },
         models = table.combine(
             -- Native
-            functions.sight_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
-            functions.stock_models(nil, .5, vector3_box(-.5, -4, 0), vector3_box(0, -.4, -.11)),
-            functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
-            functions.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
+            _lasgun_p3_m1.sight_models(nil, .35, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0)),
+            _lasgun_p3_m1.stock_models(nil, .5, vector3_box(-.5, -4, 0), vector3_box(0, -.4, -.11)),
+            _lasgun_p3_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
+            _lasgun_p3_m1.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
             -- Ranged
             _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.3, -3, -.05), vector3_box(.2, 0, 0)),
             _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),

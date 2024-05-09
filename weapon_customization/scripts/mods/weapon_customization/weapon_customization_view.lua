@@ -1,4 +1,5 @@
 local mod = get_mod("weapon_customization")
+local modding_tools = get_mod("modding_tools")
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
@@ -15,6 +16,7 @@ local mod = get_mod("weapon_customization")
 	local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 	local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
 	local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
+	local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 	local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 	local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 	local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
@@ -23,10 +25,12 @@ local mod = get_mod("weapon_customization")
 	local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 	local ViewElementWeaponInfoDefinitions = mod:original_require("scripts/ui/view_elements/view_element_weapon_info/view_element_weapon_info_definitions")
 	local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
+	local Breeds = mod:original_require("scripts/settings/breed/breeds")
 
 	local WeaponCustomizationLocalization = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_localization")
 	local WeaponBuildAnimation = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_build_animation")
 	local CustomizationCamera = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/customization_camera")
+	local Console = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/console")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -85,6 +89,7 @@ local mod = get_mod("weapon_customization")
 	local string_split = string.split
 	local unit_get_data = Unit.get_data
 	local table_reverse = table.reverse
+	local quaternion_up = Quaternion.Up
 	local quaternion_box = QuaternionBox
 	local table_contains = table.contains
 	local vector3_unbox = vector3_box.unbox
@@ -94,6 +99,7 @@ local mod = get_mod("weapon_customization")
 	local unit_local_pose = Unit.local_pose
 	local world_link_unit = World.link_unit
 	local math_easeInCubic = math.easeInCubic
+	local quaternion_right = Quaternion.right
 	local world_unlink_unit = World.unlink_unit
 	local math_easeOutCubic = math.easeOutCubic
 	local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
@@ -288,21 +294,16 @@ mod.draw_box = function(self, unit, saved_origin)
 end
 
 mod.draw_equipment_box = function(self, dt, t)
-	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
-	if self.cosmetics_view and slot_infos and not self.dropdown_open then
-		local slot_info_id = self.cosmetics_view._slot_info_id
-		local item = self.cosmetics_view._selected_item
-		if item.attachments and not self.build_animation:is_busy() and slot_infos[slot_info_id] then
-			local found_attachment_slots = self:get_item_attachment_slots(item)
-			if #found_attachment_slots > 0 then
-				for _, attachment_slot in pairs(found_attachment_slots) do
-					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
-					if unit and unit_alive(unit) then
-						local saved_origin = self.dropdown_positions[attachment_slot]
-						if saved_origin and saved_origin[3] and saved_origin[3] == true then
-							self:draw_box(unit, saved_origin)
-							break
-						end
+	if self.cosmetics_view and self.cosmetics_view.weapon_unit and unit_alive(self.cosmetics_view.weapon_unit) and not self.dropdown_open then
+		local attachment_slots = self:get_attachment_slots(self.cosmetics_view.weapon_unit)
+		if attachment_slots and #attachment_slots > 0 then
+			for _, attachment_slot in pairs(attachment_slots) do
+				local unit = self:get_attachment_unit(self.cosmetics_view.weapon_unit, attachment_slot)
+				if unit and unit_alive(unit) then
+					local saved_origin = self.dropdown_positions[attachment_slot]
+					if saved_origin and saved_origin[3] and saved_origin[3] == true then
+						self:draw_box(unit, saved_origin)
+						break
 					end
 				end
 			end
@@ -311,33 +312,26 @@ mod.draw_equipment_box = function(self, dt, t)
 end
 
 mod.draw_equipment_lines = function(self, dt, t)
-	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
-	if self.cosmetics_view and slot_infos and not self.dropdown_open then
-		local gear_id = self.cosmetics_view._gear_id
-		local slot_info_id = self.cosmetics_view._slot_info_id
-		local item = self.cosmetics_view._selected_item
-		local gui = self.cosmetics_view._ui_forward_renderer.gui
-		local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
-		local attachments = item.attachments
-		if attachments and not self.build_animation:is_busy() and slot_infos[slot_info_id] then
-			local found_attachment_slots = self:get_item_attachment_slots(item)
-			if #found_attachment_slots > 0 then
-				for _, attachment_slot in pairs(found_attachment_slots) do
-					local unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
-					if unit and unit_alive(unit) then
-						local box = Unit.box(unit, false)
-						local center_position = matrix4x4_translation(box)
-						local world_to_screen, distance = camera_world_to_screen(camera, center_position)
-						if self.equipment_line_target then
-							world_to_screen = vector2(self.equipment_line_target[1], self.equipment_line_target[2])
-						end
-						local saved_origin = self.dropdown_positions[attachment_slot]
-						if saved_origin and saved_origin[3] and saved_origin[3] == true then
-							local origin = vector2(saved_origin[1], saved_origin[2])
-							local color = Color(255, 49, 62, 45)
-							ScriptGui.hud_line(gui, origin, world_to_screen, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
-							break
-						end
+	if self.cosmetics_view and self.cosmetics_view.weapon_unit and unit_alive(self.cosmetics_view.weapon_unit) and not self.dropdown_open then
+		local attachment_slots = self:get_attachment_slots(self.cosmetics_view.weapon_unit)
+		if attachment_slots and #attachment_slots > 0 then
+			local gui = self.cosmetics_view._ui_forward_renderer.gui
+			local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
+			for _, attachment_slot in pairs(attachment_slots) do
+				local unit = self:get_attachment_unit(self.cosmetics_view.weapon_unit, attachment_slot)
+				if unit and unit_alive(unit) then
+					local box = Unit.box(unit, false)
+					local center_position = matrix4x4_translation(box)
+					local world_to_screen, distance = camera_world_to_screen(camera, center_position)
+					if self.equipment_line_target then
+						world_to_screen = vector2(self.equipment_line_target[1], self.equipment_line_target[2])
+					end
+					local saved_origin = self.dropdown_positions[attachment_slot]
+					if saved_origin and saved_origin[3] and saved_origin[3] == true then
+						local origin = vector2(saved_origin[1], saved_origin[2])
+						local color = Color(255, 49, 62, 45)
+						ScriptGui.hud_line(gui, origin, world_to_screen, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
+						break
 					end
 				end
 			end
@@ -707,6 +701,7 @@ end
 
 mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
 	func(self, reference_name, world, camera, unit_spawner, ...)
+	modding_tools = get_mod("modding_tools")
 	if reference_name ~= "WeaponIconUI" then
 		self._rotation_angle = mod._rotation_angle or 0
 		self._default_rotation_angle = mod._last_rotation_angle or 0
@@ -728,6 +723,16 @@ mod:hook(CLASS.UIWorldSpawner, "destroy", function(func, self, ...)
 	func(self, ...)
 end)
 
+mod:hook(CLASS.UIWeaponSpawner, "_mouse_rotation_input", function(func, self, input_service, dt, ...)
+	-- if self.selected_unit and unit_alive(self.selected_unit) then
+		-- if mod:execute_extension(self.selected_unit, "unit_manipulation_system", "is_busy", input_service) then
+		if modding_tools and modding_tools:any_unit_manipulation_extension_busy() then
+			return func(self, nil, dt, ...)
+		end
+	-- end
+	return func(self, input_service, dt, ...)
+end)
+
 mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
 
 	local weapon_spawn_data = self._weapon_spawn_data
@@ -737,11 +742,23 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 			-- weapon_spawn_data.streaming_complete = true
 			self:cb_on_unit_3p_streaming_complete(weapon_spawn_data.item_unit_3p)
 		end
+
+		-- mod:execute_extension(weapon_spawn_data.item_unit_3p, "unit_manipulation_system", "update", dt, t, input_service)
+		-- local attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
+		-- for _, unit in pairs(attachment_units_3p) do
+		-- 	mod:execute_extension(unit, "unit_manipulation_system", "update", dt, t, input_service)
+		-- end
+		self._rotation_input_disabled = modding_tools and modding_tools:any_unit_manipulation_extension_busy()
+		--mod:execute_extension(weapon_spawn_data.item_unit_3p, "unit_manipulation_system", "is_busy", input_service)
 	end
 
 	-- local current_rotation = self._rotation_angle
 
 	func(self, dt, t, input_service, ...)
+
+	-- if self.selected_unit and unit_alive(self.selected_unit) then
+	-- 	mod:execute_extension(self.selected_unit, "unit_manipulation_system", "update", dt, t, input_service)
+	-- end
 
 	-- self._rotation_angle = current_rotation
 
@@ -860,11 +877,6 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 				mod.reset_start = mod.reset_start + dt
 			end
 
-			local gear_id = mod.cosmetics_view._gear_id
-			local slot_info_id = mod.cosmetics_view._slot_info_id
-			local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
-			local gear_info = slot_infos[slot_info_id]
-
 			-- Weapon part animations
 			mod.build_animation:update(dt, t)
 		end
@@ -890,18 +902,42 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 	else
 		force_highest_mip = true
 	end
+	-- local world_spawner = mod.cosmetics_view._weapon_preview._world_spawner
+	-- self._extension_manager = world_spawner._extension_manager
 	func(self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
+
 	local weapon_spawn_data = self._weapon_spawn_data
 
 	if weapon_spawn_data and mod.cosmetics_view and self._reference_name ~= "WeaponIconUI" then
 
-		-- mod.customization_camera:set({
-		-- 	ui_weapon_spawner = self,
-		-- 	world = self._world,
-		-- }, true)
+		mod.cosmetics_view.weapon_unit = weapon_spawn_data.item_unit_3p
 
-		-- local weapon_size = mod:weapon_size(weapon_spawn_data.attachment_units_3p)
-		-- mod:echot("weapon_size: "..tostring(weapon_size))
+		-- local attachment_units_3p = weapon_spawn_data.attachment_units_3p
+		-- local world_spawner = mod.cosmetics_view._weapon_preview._world_spawner
+		-- world_spawner._extension_manager:add_and_register_units(self._world, attachment_units_3p)
+		-- script_unit_add_extension({
+		-- 	world = self._world,
+		-- }, weapon_spawn_data.item_unit_3p, "UnitManipulationExtension", "unit_manipulation_system", {
+		-- 	unit = weapon_spawn_data.item_unit_3p,
+		-- 	gui = mod.cosmetics_view._ui_forward_renderer.gui,
+		-- 	camera = self._camera,
+		-- })
+		if modding_tools then
+			local gui = mod.cosmetics_view._ui_forward_renderer.gui
+			modding_tools:unit_manipulation_add(weapon_spawn_data.item_unit_3p, self._camera, self._world, gui)
+			local attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
+			for _, unit in pairs(attachment_units_3p) do
+				-- script_unit_add_extension({
+				-- 	world = self._world,
+				-- }, unit, "UnitManipulationExtension", "unit_manipulation_system", {
+				-- 	unit = unit,
+				-- 	gui = mod.cosmetics_view._ui_forward_renderer.gui,
+				-- 	camera = self._camera,
+				-- 	root_unit = weapon_spawn_data.item_unit_3p,
+				-- })
+				modding_tools:unit_manipulation_add(unit, self._camera, self._world, gui)
+			end
+		end
 
 		local item_name = mod.cosmetics_view._item_name
 		local link_unit = weapon_spawn_data.link_unit
@@ -979,12 +1015,6 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 
 			mod:set_light_positions(self)
 		end
-
-		-- Unit.set_vector3_for_materials(weapon_spawn_data.item_unit_3p, "stimmed_color", vector3(1, 0, 0), true)
-
-		local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
-		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position = slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position or {}
-		slot_infos[mod.cosmetics_view._slot_info_id].unit_default_position["root"] = vector3_box(unit_local_position(weapon_spawn_data.item_unit_3p, 1))
 	end
 end)
 
@@ -1000,10 +1030,34 @@ mod:hook(CLASS.UIWeaponSpawner, "_despawn_current_weapon", function(func, self, 
 	-- 	World.destroy_particles(self._world, mod.preview_laser)
 	-- 	mod.preview_laser = nil
 	-- end
+	local weapon_spawn_data = self._weapon_spawn_data
+	if weapon_spawn_data then
+		-- local weapon_unit = weapon_spawn_data.item_unit_3p
+		-- mod:remove_extension(weapon_spawn_data.item_unit_3p, "unit_manipulation_system")
+		if modding_tools then
+			modding_tools:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
+			local attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
+			for _, unit in pairs(attachment_units_3p) do
+				-- mod:remove_extension(unit, "unit_manipulation_system")
+				modding_tools:unit_manipulation_remove(unit)
+			end
+		end
+	end
+
 	func(self, ...)
 end)
 
 mod.ui_weapon_spawner_cb_on_unit_3p_streaming_complete = function(self, ui_weapon_spawner)
+	-- local weapon_spawn_data = ui_weapon_spawner._weapon_spawn_data
+	-- if weapon_spawn_data and self.cosmetics_view then
+	-- 	local attachment_units_3p = weapon_spawn_data.attachment_units_3p
+	-- 	local world_spawner = self.cosmetics_view._weapon_preview._world_spawner
+	-- 	local world = world_spawner and world_spawner._world
+	-- 	if world_spawner and world then
+	-- 		mod:echot("lol")
+	-- 		world_spawner._extension_manager:add_and_register_units(world, attachment_units_3p)
+	-- 	end
+	-- end
 end
 
 mod.ui_weapon_spawner_despawn_weapon = function(self, ui_weapon_spawner)
@@ -1287,6 +1341,29 @@ mod.update_dropdown = function(self, widget, input_service, dt, t)
 		self.do_rotation = true
 		self.new_rotation = new_angle
 		self.attachment_preview_index = content.selected_index
+
+		local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+		local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
+		local attachment_unit = self:get_attachment_slot_in_attachments(attachment_units_3p, entry.attachment_slot)
+		if attachment_unit and unit_alive(attachment_unit) then
+			-- if ui_weapon_spawner.selected_unit ~= attachment_unit and unit_alive(ui_weapon_spawner.selected_unit) and script_unit_has_extension(ui_weapon_spawner.selected_unit, "unit_manipulation_system") then
+			-- 	script_unit_remove_extension(ui_weapon_spawner.selected_unit, "unit_manipulation_system")
+			-- 	ui_weapon_spawner.selected_unit = nil
+			-- end
+			-- if not script_unit_has_extension(attachment_unit, "unit_manipulation_system") then
+			-- 	local camera = ui_weapon_spawner._camera
+			-- 	local world = ui_weapon_spawner._world
+			-- 	script_unit_add_extension({
+			-- 		world = world,
+			-- 	}, attachment_unit, "UnitManipulationExtension", "unit_manipulation_system", {
+			-- 		unit = attachment_unit,
+			-- 		gui = self.cosmetics_view._ui_forward_renderer.gui,
+			-- 		camera = camera,
+			-- 	})
+			-- 	ui_weapon_spawner.selected_unit = attachment_unit
+			-- end
+		end
+
 	-- else
 	-- 	mod.dropdown_positions[entry.attachment_slot][3] = false
 	end
@@ -2122,6 +2199,11 @@ end)
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
     func(self, ...)
 
+	modding_tools = get_mod("modding_tools")
+	local world_spawner = self._weapon_preview._world_spawner
+	local world = world_spawner:world()
+	self._visibility_raycast_object = PhysicsWorld.make_raycast(mod:physics_world(world), "closest", "types", "both", "collision_filter", "filter_camera_sweep")
+
 	-- mod:persistent_table(REFERENCE).temp_gear_settings[self._gear_id] = {}
 	mod:remove_extension(mod.player_unit, "visible_equipment_system")
 
@@ -2205,98 +2287,50 @@ end)
 -- end
 
 
--- mod.is_attachment_pressed = function(self, input_service)
--- 	local world = self.cosmetics_view._weapon_preview._ui_weapon_spawner._world
+-- mod.is_unit_pressed = function(self, input_service, ui_forward_renderer)
+-- 	local weapon_preview = self.cosmetics_view._weapon_preview
+-- 	local ui_weapon_spawner = weapon_preview and weapon_preview._ui_weapon_spawner
+-- 	local world = ui_weapon_spawner and ui_weapon_spawner._world
 -- 	local physics_world = world and World.physics_world(world)
+-- 	local input_pressed = input_service and input_service:get("left_pressed")
+-- 	local cursor = input_service and input_service:get("cursor") or NilCursor
+-- 	local camera = ui_weapon_spawner and ui_weapon_spawner._camera
 
--- 	if not physics_world then
--- 		return
+-- 	if self.last_raycast and ui_forward_renderer then
+-- 		local position_1 = Camera.world_to_screen(camera, Vector3Box.unbox(self.last_raycast[1]))
+-- 		local position_2 = Camera.world_to_screen(camera, Vector3Box.unbox(self.last_raycast[2]))
+-- 		ScriptGui.hud_line(ui_forward_renderer.gui, position_1, position_2, LINE_Z+1, LINE_THICKNESS, Color.black())
 -- 	end
 
--- 	local cursor_name = "cursor"
--- 	local NilCursor = {0, 0, 0}
--- 	local cursor = input_service:get(cursor_name) or NilCursor
--- 	local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
+-- 	if physics_world and camera and input_pressed then
+-- 		-- local units = World.units(world)
+-- 		-- for _, unit in ipairs(units) do
+-- 		-- 	local attachment_slot = Unit.get_data(unit, "attachment_slot")
+-- 		-- 	mod:echot("unit: "..tostring(unit).." attachment_slot: "..tostring(attachment_slot))
+-- 		-- end
 
--- 	if physics_world and camera then
 -- 		local screen_height = RESOLUTION_LOOKUP.height
 -- 		cursor[2] = screen_height - cursor[2]
--- 		local from = Camera.screen_to_world(camera, vector3(cursor[1], cursor[2], 0), 0)
+-- 		local from = Camera.screen_to_world(camera, Vector3(cursor[1], cursor[2], 0), 0)
 -- 		local direction = Camera.screen_to_world(camera, cursor, 1) - from
--- 		local to = vector3.normalize(direction)
--- 		local collision_filter = "default"
--- 		local hit_position = self:_get_raycast_hit(from, to, physics_world, collision_filter)
+-- 		local to = Vector3.normalize(direction)
 
--- 		-- local input_pressed = input_service:get("left_pressed") or input_service:get("right_pressed")
+-- 		self.last_raycast = {Vector3Box(from), Vector3Box(to)}
+-- 		local hits, num_hits = PhysicsWorld.raycast(physics_world, from, to, 1000, "all", "types", "both")
+-- 		--, "max_hits", 100, "collision_filter", "filter_player_character_shooting_raycast", "rewind_ms", 0)
 
--- 		if hit_position then
--- 			local ui_world_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
--- 			local weapon_spawn_data = ui_world_spawner and ui_world_spawner._weapon_spawn_data
--- 			local attachment_units_3p = weapon_spawn_data and weapon_spawn_data.attachment_units_3p
-	
--- 			if attachment_units_3p then
--- 				for _, unit in pairs(attachment_units_3p) do
--- 					if unit and unit_alive(unit) then
-						
--- 						local attachment_slot = unit_get_data(unit, "attachment_slot")
+-- 		local INDEX_POSITION = 1
+-- 		local INDEX_ACTOR = 4
 
--- 						if mod:is_inside_unit_bounds(unit, hit_position + direction * .1) then
--- 							self.dropdown_positions[attachment_slot][3] = true
-
--- 							local input_pressed = input_service:get("left_pressed") or input_service:get("right_pressed")
--- 							if input_pressed then
-
--- 								mod:echo("pressed")
--- 							end
--- 						end
--- 					end
--- 				end
+-- 		for i = 1, num_hits do
+-- 			local hit = hits[i]
+-- 			local hit_actor = hit[INDEX_ACTOR]
+-- 			local hit_unit = Actor.unit(hit_actor)
+-- 			if hit_unit and Unit.alive(hit_unit) then
+-- 				local attachment_slot = Unit.get_data(hit_unit, "attachment_slot")
+-- 				mod:echot("hit_unit: "..tostring(hit_unit).." attachment_slot: "..tostring(attachment_slot))
 -- 			end
--- 		else
--- 			mod:echo("nope2")
 -- 		end
-
--- 		-- if hit_unit then
--- 		-- 	mod:echot("pressed")
--- 		-- 	return true
--- 		-- end
--- 	end
--- end
-
--- mod._get_raycast_hit = function(self, from, to, physics_world, collision_filter)
--- 	local result, other = PhysicsWorld.raycast(physics_world, from, to, 1000, "all", "collision_filter", collision_filter)
-
--- 	if not result then
--- 		mod:echo("nope1")
--- 		return
--- 	end
-
--- 	local closest_distance = math.huge
--- 	local closest_hit = nil
--- 	local INDEX_POSITION = 1
--- 	local INDEX_DISTANCE = 2
--- 	local INDEX_ACTOR = 4
--- 	local num_hits = #result
-
--- 	for i = 1, num_hits do
--- 		local hit = result[i]
--- 		local hit_distance = hit[INDEX_DISTANCE]
--- 		local hit_actor = hit[INDEX_ACTOR]
--- 		local hit_position = hit[INDEX_POSITION]
--- 		local hit_unit = Actor.unit(hit_actor)
-
--- 		if hit_distance < closest_distance then
--- 			closest_distance = hit_distance
--- 			closest_hit = hit
--- 		end
--- 	end
-
--- 	if closest_hit then
--- 		-- local hit_actor = closest_hit[INDEX_ACTOR]
--- 		-- local hit_unit = Actor.unit(hit_actor)
-
--- 		-- return hit_unit, hit_actor
--- 		return closest_hit[INDEX_POSITION]
 -- 	end
 -- end
 
@@ -2315,8 +2349,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
 		mod:update_reset_button()
 	end
 
-	-- if mod:is_attachment_pressed(input_service) then
+	-- if mod:is_unit_pressed(input_service, self._ui_forward_renderer) then
 
+	-- end
+
+	-- if mod.selected_unit and unit_alive(mod.selected_unit) then
+	-- 	mod:execute_extension(mod.selected_unit, "unit_manipulation_system", "update", dt, t, input_service)
 	-- end
 
 	if mod.cosmetics_view and mod.demo then
@@ -2333,10 +2371,82 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
 	return pass_input, pass_draw
 end)
 
+mod.unit_is_pressed = function(self, world, camera, input_service)
+	local input_pressed = input_service:get("left_pressed") or input_service:get("right_pressed")
+
+	if input_pressed then
+		-- if self._forced_pressed then
+		-- 	self._forced_pressed = nil
+
+		-- 	return true
+		-- end
+
+		local physics_world = World.physics_world(world)
+
+		if not physics_world then
+			return
+		end
+
+		local cursor_name = "cursor"
+		local cursor = input_service:get(cursor_name) or NilCursor
+		-- local camera = self._camera
+
+		if physics_world and camera then
+			local screen_height = RESOLUTION_LOOKUP.height
+			cursor[2] = screen_height - cursor[2]
+			local from = Camera.screen_to_world(camera, Vector3(cursor[1], cursor[2], 0), 0)
+			local direction = Camera.screen_to_world(camera, cursor, 1) - from
+			local to = Vector3.normalize(direction)
+			local collision_filter = "filter_look_at_object_ray" --filter_look_at_object_ray
+			local hit, _, _, _, hit_actor = PhysicsWorld.raycast(physics_world, from, to, 30, "closest", "collision_filter", collision_filter)
+			-- local hit = Raycast.cast(self._visibility_raycast_object, from, Vector3.normalize(direction), direction * 100)
+			if hit then
+				mod:echot("hit: "..tostring(Actor.unit(hit_actor)))
+				return hit, Actor.unit(hit_actor)
+			end
+		end
+	end
+end
+
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, self, input_service, dt, t, ...)
 	local zoom_target = self._weapon_zoom_target
 
 	func(self, input_service, dt, t, ...)
+
+	-- if input_service:get("left_pressed") then
+	-- if self._weapon_preview and self._weapon_preview._ui_weapon_spawner then
+	-- 	local camera = self._weapon_preview._ui_weapon_spawner._camera
+	-- 	local world = self._weapon_preview._ui_weapon_spawner._world
+	-- 	-- local weapon_spawn_data = self._weapon_preview._ui_weapon_spawner._weapon_spawn_data
+	-- 	local hit, unit = mod:unit_is_pressed(world, camera, input_service)
+	-- 	if hit then
+	-- 		if self.selected_unit ~= unit and unit_alive(self.selected_unit) and script_unit_has_extension(self.selected_unit, "unit_manipulation_system") then
+	-- 			script_unit_remove_extension(self.selected_unit, "unit_manipulation_system")
+	-- 			self.selected_unit = nil
+	-- 		end
+	-- 		if unit and unit_alive(unit) and not script_unit_has_extension(unit, "unit_manipulation_system") then
+	-- 			mod:echot("first hit: "..tostring(unit))
+	-- 			script_unit_add_extension({
+	-- 				world = world,
+	-- 			}, unit, "UnitManipulationExtension", "unit_manipulation_system", {
+	-- 				unit = unit,
+	-- 				gui = self._ui_forward_renderer.gui,
+	-- 				camera = camera,
+	-- 			})
+	-- 			self.selected_unit = unit
+	-- 		end
+	-- 	end
+	-- end
+		-- local ray_origin = camera_world_position(camera)
+		-- local rotation = camera_world_rotation(camera)
+		-- local forward = quaternion_forward(rotation)
+		-- local first_ray_pos = ray_origin + forward * 10
+		-- local to_first_ray = first_ray_pos - ray_origin
+		-- local first_hit = Raycast.cast(self._visibility_raycast_object, ray_origin, Vector3.normalize(to_first_ray), Vector3.length(to_first_ray))
+		-- if first_hit then
+		-- 	mod:echot("first hit: "..tostring(first_hit))
+		-- end
+	-- end
 
 	if mod.dropdown_open then
 		self._weapon_zoom_target = zoom_target
@@ -3090,32 +3200,786 @@ mod:hook_require("scripts/ui/view_elements/view_element_inventory_weapon_preview
 	-- instance.weapon_spawn_depth = 3
 end)
 
--- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################
--- ##### ├─┤├┤ │  ├─┘ #################################################################################################
--- ##### ┴ ┴└─┘┴─┘┴   #################################################################################################
+local ContentBlueprints = mod:original_require("scripts/ui/views/options_view/options_view_content_blueprints")
+local OptionsViewSettings = mod:original_require("scripts/ui/views/options_view/options_view_settings")
 
-mod._recursive_get_child_units = function(self, unit, slot_info_id, out_units)
-	local slot_info_id = slot_info_id or self.cosmetics_view._slot_info_id
-	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
-	local attachment_slot_info = slot_infos[slot_info_id]
-	if attachment_slot_info then
-		local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]
-		local text = attachment_slot and attachment_slot or unit
-		out_units[text] = {}
-		local children = unit_get_child_units(unit)
-		if children then
-			for _, child in pairs(children) do
-				self:_recursive_get_child_units(child, out_units[text])
+mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", function(instance)
+
+	local x_base, y_base = 450, 300
+	local size = {600, 50}
+	-- Create name text pivot
+	instance.scenegraph_definition.name_text_pivot = {
+		vertical_alignment = "top",
+		parent = "screen",
+		horizontal_alignment = "center",
+		size = size,
+		position = {x_base, y_base - 175, 0},
+	}
+
+
+	-- Creat option checkbox pivots
+	for i = 1, 4, 1 do
+		instance.scenegraph_definition["option_check_"..i.."_pivot"] = {
+			vertical_alignment = "top",
+			parent = "screen",
+			horizontal_alignment = "center",
+			size = size,
+			position = {x_base - 20, y_base - 80 + 55 * (i - 1), 0},
+		}
+	end
+
+
+	-- -- Create position text pivot
+	-- instance.scenegraph_definition.position_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "screen",
+	-- 	horizontal_alignment = "center",
+	-- 	size = size,
+	-- 	position = {x_base, y_base + 150, 0},
+	-- }
+	-- -- Creat position slider pivots
+	-- for i = 1, 3, 1 do
+	-- 	instance.scenegraph_definition["position_slider_"..i.."_pivot"] = {
+	-- 		vertical_alignment = "top",
+	-- 		parent = "screen",
+	-- 		horizontal_alignment = "center",
+	-- 		size = size,
+	-- 		position = {x_base + 20, y_base + 210 + 50 * (i - 1), 0},
+	-- 	}
+	-- end
+
+
+	-- -- Create rotation text pivot
+	-- instance.scenegraph_definition.rotation_text_pivot = {
+	-- 	vertical_alignment = "top",
+	-- 	parent = "screen",
+	-- 	horizontal_alignment = "center",
+	-- 	size = size,
+	-- 	position = {x_base, y_base + 375, 0},
+	-- }
+	-- -- Create rotation slider pivots
+	-- for i = 1, 3, 1 do
+	-- 	instance.scenegraph_definition["rotation_slider_"..i.."_pivot"] = {
+	-- 		vertical_alignment = "top",
+	-- 		parent = "screen",
+	-- 		horizontal_alignment = "center",
+	-- 		size = size,
+	-- 		position = {x_base + 20, y_base + 435 + 50 * (i - 1), 0},
+	-- 	}
+	-- end
+
+
+	-- Create save button pivot
+	instance.scenegraph_definition.save_button_pivot = {
+		vertical_alignment = "top",
+		parent = "screen",
+		horizontal_alignment = "center",
+		size = size,
+		position = {x_base - 75, y_base + 625, 0},
+	}
+	-- Create save button pivot
+	instance.scenegraph_definition.reset_button_pivot = {
+		vertical_alignment = "top",
+		parent = "screen",
+		horizontal_alignment = "center",
+		size = size,
+		position = {x_base - 400, y_base + 625, 0},
+	}
+
+	
+	local title_text_font_settings = UIFontSettings.header_2
+	-- Create name text
+	instance.widget_definitions.name_text = UIWidget.create_definition({
+		{
+			value = "n/a",
+			value_id = "text",
+			pass_type = "text",
+			style = {
+				text_vertical_alignment = "top",
+				text_horizontal_alignment = "center",
+				text_color = title_text_font_settings.text_color,
+				font_type = title_text_font_settings.font_type,
+				font_size = title_text_font_settings.font_size
+			}
+		}
+	}, "name_text_pivot", nil, size)
+	-- -- Create position text
+	-- instance.widget_definitions.position_text = UIWidget.create_definition({
+	-- 	{
+	-- 		value = "Position",
+	-- 		value_id = "text",
+	-- 		pass_type = "text",
+	-- 		style = {
+	-- 			text_vertical_alignment = "top",
+	-- 			text_horizontal_alignment = "center",
+	-- 			text_color = title_text_font_settings.text_color,
+	-- 			font_type = title_text_font_settings.font_type,
+	-- 			font_size = title_text_font_settings.font_size
+	-- 		}
+	-- 	}
+	-- }, "position_text_pivot", nil, size)
+	-- -- Create rotation text
+	-- instance.widget_definitions.rotation_text = UIWidget.create_definition({
+	-- 	{
+	-- 		value = "Rotation",
+	-- 		value_id = "text",
+	-- 		pass_type = "text",
+	-- 		style = {
+	-- 			text_vertical_alignment = "top",
+	-- 			text_horizontal_alignment = "center",
+	-- 			text_color = title_text_font_settings.text_color,
+	-- 			font_type = title_text_font_settings.font_type,
+	-- 			font_size = title_text_font_settings.font_size
+	-- 		}
+	-- 	}
+	-- }, "rotation_text_pivot", nil, size)
+
+end)
+
+mod.save_visible_equipment_offset = function(self, data)
+	
+end
+
+
+-- mod.gizmos = {}
+-- mod.draw_gizmo = function(self, unit, gui, camera, input_service)
+-- 	if unit and unit_alive(unit) then
+-- 		mod.gizmos[unit] = mod.gizmos[unit] or {}
+-- 		local gizmo = mod.gizmos[unit]
+
+-- 		local faded_alpha = 128
+-- 		local faded_color = 200
+-- 		local position = unit_world_position(unit, 1)
+-- 		gizmo.original_position = gizmo.original_position or vector3_box(position)
+-- 		local rotation = unit_world_rotation(unit, 1)
+-- 		gizmo.original_rotation = gizmo.original_rotation or quaternion_box(rotation)
+
+-- 		local tm, half_size = Unit.box(unit)
+
+-- 		-- Get boundary points
+-- 		local points = {center = {}, X = {}, Y = {}, Z = {}}
+-- 		points.center.position = unit_world_position(unit, 1)
+-- 		points.X.position = position + Quaternion.right(rotation) * .1
+-- 		points.Y.position = position + Quaternion.forward(rotation) * .1
+-- 		points.Z.position = position + Quaternion.up(rotation) * .1
+
+-- 		-- Get position and distance to camera
+-- 		local results = {center = {}, X = {}, Y = {}, Z = {}}
+-- 		results.center.position, results.center.distance = camera_world_to_screen(camera, points.center.position)
+-- 		results.X.position, results.X.distance = camera_world_to_screen(camera, points.X.position)
+-- 		results.Y.position, results.Y.distance = camera_world_to_screen(camera, points.Y.position)
+-- 		results.Z.position, results.Z.distance = camera_world_to_screen(camera, points.Z.position)
+
+-- 		local hold = input_service and input_service:get("left_hold") or false
+
+-- 		local function already_collided_or_hold()
+-- 			return gizmo.position_x or gizmo.position_y or gizmo.position_z
+-- 				or gizmo.rotation_x or gizmo.rotation_y or gizmo.rotation_z
+-- 				or hold
+-- 		end
+
+-- 		local cursor = input_service and input_service:get("cursor") or vector2(0, 0)
+-- 		local position_tolerance = .02
+
+-- 		local angles = {
+-- 			{text = "X", position = results.X.position, value = "position_x", color = Color(255, 255, 0, 0), faded_color = Color(faded_alpha, faded_color, 0, 0)},
+-- 			{text = "Y", position = results.Y.position, value = "position_y", color = Color(255, 0, 255, 0), faded_color = Color(faded_alpha, 0, faded_color, 0)},
+-- 			{text = "Z", position = results.Z.position, value = "position_z", color = Color(255, 0, 0, 255), faded_color = Color(faded_alpha, 0, 0, faded_color)},
+-- 		}
+
+-- 		for _, angle in pairs(angles) do
+-- 			local distance_1 = math.distance_2d(results.center.position[1], results.center.position[2], angle.position[1], angle.position[2])
+-- 			local distance_2 = math.distance_2d(results.center.position[1], results.center.position[2], cursor.x, cursor.y)
+-- 			local distance_3 = math.distance_2d(angle.position[1], angle.position[2], cursor.x, cursor.y)
+-- 			if not hold then gizmo[angle.value] = nil end
+-- 			if not already_collided_or_hold() then gizmo[angle.value] = distance_2 + distance_3 <= distance_1 + distance_1 * position_tolerance end
+-- 			local color = gizmo[angle.value] and angle.color or angle.faded_color
+-- 			ScriptGui.hud_line(gui, results.center.position, angle.position, LINE_Z, gizmo[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
+-- 			ScriptGui.text(gui, angle.text, DevParameters.debug_text_font, 16, angle.position, angle.color, Color.gray())
+-- 		end
+
+-- 		local rotation_tolerance = 10
+
+-- 		local angles = {
+-- 			{direction = {false, false, true}, value = "rotation_x", dir_func = Quaternion.right, color = Color(255, 255, 0, 0), faded_color = Color(faded_alpha, faded_color, 0, 0)},
+-- 			{direction = {true, false, false}, value = "rotation_y", dir_func = Quaternion.up, color = Color(255, 0, 255, 0), faded_color = Color(faded_alpha, 0, faded_color, 0)},
+-- 			{direction = {false, true, false}, value = "rotation_z", dir_func = Quaternion.up, color = Color(255, 0, 0, 255), faded_color = Color(faded_alpha, 0, 0, faded_color)},
+-- 		}
+-- 		for _, angle in pairs(angles) do
+-- 			if not hold then gizmo[angle.value] = nil end
+-- 			local point_list = {}
+-- 			for i = 1, 360, 1 do
+-- 				local offset = quaternion_from_euler_angles_xyz(
+-- 					angle.direction[1] == true and i or 0,
+-- 					angle.direction[2] == true and i or 0,
+-- 					angle.direction[3] == true and i or 0
+-- 				)
+-- 				local new_rotation = quaternion_multiply(rotation, offset)
+-- 				local new_position = camera_world_to_screen(camera, position + angle.dir_func(new_rotation) * .2)
+-- 				point_list[#point_list + 1] = new_position
+-- 				if not already_collided_or_hold() then
+-- 					local distance = math.distance_2d(new_position[1], new_position[2], cursor.x, cursor.y)
+-- 					gizmo[angle.value] = gizmo[angle.value] or distance <= rotation_tolerance or nil
+-- 				end
+-- 			end
+-- 			local previous = point_list[#point_list]
+-- 			for _, pos in pairs(point_list) do
+-- 				local color = gizmo[angle.value] and angle.color or angle.faded_color
+-- 				ScriptGui.hud_line(gui, previous, pos, LINE_Z, gizmo[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
+-- 				previous = pos
+-- 			end
+-- 		end
+-- 	end
+-- end
+
+-- InventoryView._setup_offscreen_gui = function (self)
+-- 	local ui_manager = Managers.ui
+-- 	local class_name = self.__class_name
+-- 	local timer_name = "ui"
+-- 	local world_layer = 10
+-- 	local world_name = class_name .. "_ui_offscreen_world"
+-- 	local view_name = self.view_name
+-- 	self._world = ui_manager:create_world(world_name, world_layer, timer_name, view_name)
+-- 	local viewport_name = class_name .. "_ui_offscreen_world_viewport"
+-- 	local viewport_type = "overlay_offscreen"
+-- 	local viewport_layer = 1
+-- 	self._viewport = ui_manager:create_viewport(self._world, viewport_name, viewport_type, viewport_layer)
+-- 	self._viewport_name = viewport_name
+-- 	self._ui_offscreen_renderer = ui_manager:create_renderer(class_name .. "_ui_offscreen_renderer", self._world)
+-- end
+
+-- mod:hook(CLASS.InventoryView, "init", function(func, self, settings, context, ...)
+-- 	func(self, settings, context, ...)
+
+	
+-- end)
+
+mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
+	self:_destroy_forward_gui()
+
+	-- if mod.console then
+	-- 	mod.console:destroy()
+	-- 	mod.console = nil
+	-- end
+
+	func(self, ...)
+end)
+
+mod:hook(CLASS.InventoryView, "on_enter", function(func, self, ...)
+	local size = {600, 50}
+
+	func(self, ...)
+
+	modding_tools = get_mod("modding_tools")
+	local class_name = self.__class_name
+	self._unique_id = class_name .. "_" .. string.gsub(tostring(self), "table: ", "")
+
+	self._setup_forward_gui = function(self)
+		local ui_manager = managers.ui
+		local timer_name = "ui"
+		local world_layer = 101
+		local world_name = self._unique_id .. "_ui_forward_world"
+		local view_name = self.view_name
+		self._forward_world = ui_manager:create_world(world_name, world_layer, timer_name, view_name)
+		local viewport_name = self._unique_id .. "_ui_forward_world_viewport"
+		local viewport_type = "default_with_alpha"
+		local viewport_layer = 1
+		self._forward_viewport = ui_manager:create_viewport(self._forward_world, viewport_name, viewport_type, viewport_layer)
+		self._forward_viewport_name = viewport_name
+		local renderer_name = self._unique_id .. "_forward_renderer"
+		self._ui_forward_renderer = ui_manager:create_renderer(renderer_name, self._forward_world)
+		local gui = self._ui_forward_renderer.gui
+		local gui_retained = self._ui_forward_renderer.gui_retained
+		local resource_renderer_name = self._unique_id
+		local material_name = "content/ui/materials/render_target_masks/ui_render_target_straight_blur"
+		self._ui_resource_renderer = ui_manager:create_renderer(resource_renderer_name, self._forward_world, true, gui, gui_retained, material_name)
+	end
+
+	self._destroy_forward_gui = function(self)
+		if self._ui_resource_renderer then
+			local renderer_name = self._unique_id
+			self._ui_resource_renderer = nil
+	
+			managers.ui:destroy_renderer(renderer_name)
+		end
+	
+		if self._ui_forward_renderer then
+			self._ui_forward_renderer = nil
+	
+			managers.ui:destroy_renderer(self._unique_id .. "_forward_renderer")
+	
+			local world = self._forward_world
+			local viewport_name = self._forward_viewport_name
+	
+			ScriptWorld.destroy_viewport(world, viewport_name)
+			managers.ui:destroy_world(world)
+	
+			self._forward_viewport_name = nil
+			self._forward_world = nil
+		end
+	end
+
+	self:_setup_forward_gui()
+
+	-- mod.console = mod.console or Console:new({
+	-- 	gui = self._ui_forward_renderer.gui,
+	-- 	lines = {
+	-- 		"test",
+	-- 		"lol",
+	-- 		"rofl",
+	-- 		"rofl",
+	-- 		"test",
+	-- 		"lol",
+	-- 		"lol",
+	-- 	}
+	-- })
+
+	self.character_name = function(self)
+		local preview_player = self._preview_player
+		local profile = preview_player and preview_player:profile()
+		return profile and profile.name
+	end
+
+	self.weapon_unit = function(self)
+		local inventory_background_view = mod:get_view("inventory_background_view")
+		if inventory_background_view and inventory_background_view._profile_spawner then
+			local spawn_data = inventory_background_view._profile_spawner._character_spawn_data
+			local slot_id = inventory_background_view._preview_wield_slot_id == "slot_primary" and "slot_secondary" or "slot_primary"
+			if spawn_data and spawn_data.unit_3p and unit_alive(spawn_data.unit_3p) then
+				return mod:execute_extension(spawn_data.unit_3p, "visible_equipment_system", "weapon_unit", slot_id)
 			end
 		end
 	end
-end
 
-mod.map_out_unit = function(self, unit)
-	local map = {}
-	self:_recursive_get_child_units(unit, map)
-	self:dtf(map, "map", 20)
-end
+	self.weapon_item = function(self)
+		local inventory_background_view = mod:get_view("inventory_background_view")
+		if inventory_background_view then
+			local slot_id = inventory_background_view._preview_wield_slot_id
+			local preview_player = self._preview_player
+			local profile = preview_player and preview_player:profile()
+			return profile.loadout[slot_id]
+		end
+	end
+
+	self.weapon_name = function(self)
+		local inventory_background_view = mod:get_view("inventory_background_view")
+		if inventory_background_view and inventory_background_view._profile_spawner then
+			local slot_id = inventory_background_view._preview_wield_slot_id == "slot_primary" and "slot_secondary" or "slot_primary"
+			local preview_profile_equipped_items = inventory_background_view._preview_profile_equipped_items
+			local presentation_inventory = preview_profile_equipped_items
+			local slot_item = presentation_inventory[slot_id]
+			return Localize(slot_item.display_name)
+		end
+	end
+
+	self.customization_angle = function(self)
+		local inventory_background_view = mod:get_view("inventory_background_view")
+		local is_tab = self._active_category_tab_context and self._active_category_tab_context.display_name == "tab_weapon_customization"
+		if is_tab and inventory_background_view and inventory_background_view._profile_spawner then
+			local slot_id = inventory_background_view._preview_wield_slot_id == "slot_primary" and "slot_secondary" or "slot_primary"
+			return slot_id == "slot_primary" and 2 or 4.5
+		end
+	end
+
+	self.backpack_name = function(self)
+		local preview_player = self._preview_player
+		local profile = preview_player and preview_player:profile()
+		local item = profile and profile.loadout.slot_gear_extra_cosmetic
+        return item and Localize(item.display_name)
+	end
+
+	self.armour_name = function(self)
+		local preview_player = self._preview_player
+		local profile = preview_player and preview_player:profile()
+		local item = profile and profile.loadout.slot_gear_upperbody
+        return item and Localize(item.display_name)
+	end
+
+	self.button_pressed = function(self, button)
+		-- mod:echot("button: "..tostring(button))
+	end
+
+	self.freeze_animation = function(self)
+		local ibv = mod:get_view("inventory_background_view")
+		local spawn_data = ibv and ibv._profile_spawner and ibv._profile_spawner._character_spawn_data
+		local unit = spawn_data and spawn_data.unit_3p
+		if unit and unit_alive(unit) and not self.frozen then
+			-- mod:echot("freeze")
+			Unit.disable_animation_state_machine(unit)
+			self.frozen = true
+		end
+	end
+
+	self.unfreeze_animation = function(self)
+		local ibv = mod:get_view("inventory_background_view")
+		local spawn_data = ibv and ibv._profile_spawner and ibv._profile_spawner._character_spawn_data
+		local unit = spawn_data and spawn_data.unit_3p
+		if unit and unit_alive(unit) and self.frozen then
+			Unit.enable_animation_state_machine(unit)
+			-- mod:echot("unfreeze")
+			Unit.animation_event(unit, "inventory_idle_default")
+			self.frozen = nil
+		end
+	end
+
+	self.update_checktbox = function(self, checkbox)
+		checkbox.style.option_1.visible = checkbox.content.value
+		checkbox.style.option_2.visible = not checkbox.content.value
+	end
+
+	self.toggle_checkbox = function(self, checkbox)
+		checkbox.content.value = not checkbox.content.value
+		mod:set(checkbox.content.saved_option, checkbox.content.value)
+		self:update_checktbox(checkbox)
+		self:checkbox_changed(checkbox, checkbox.content.value)
+	end
+
+	self.checkbox_changed = function(self, checkbox, value)
+		-- mod:echot("checkbox: "..tostring(value))
+	end
+
+	self.add_widget = function(self, widget)
+		if widget then
+			self._widgets[#self._widgets+1] = widget
+			self._widgets_by_name[widget.name] = widget
+		end
+	end
+
+	local function button(name, size, scenegraph_id)
+		local config = {
+			display_name = "loc_"..name,
+			value_width = 275,
+		}
+		local widget = nil
+		local template = ContentBlueprints["button"]
+		local size = template.size_function and template.size_function(self, config) or template.size
+		config.size = size
+		local indentation_level = config.indentation_level or 0
+		local indentation_spacing = OptionsViewSettings.indentation_spacing * indentation_level
+		local new_size = {size[1] - 300 - indentation_spacing, size[2]}
+		local pass_template_function = template.pass_template_function
+		local pass_template = pass_template_function and pass_template_function(self, config, new_size) or template.pass_template
+		local widget_definition = pass_template and UIWidget.create_definition(pass_template, scenegraph_id, nil, new_size)
+		if widget_definition then
+			widget = self:_create_widget(name, widget_definition)
+			if widget then
+				widget.type = "button"
+				local init = template.init
+				if init then init(self, widget, config) end
+				widget.content.button_text = Localize("loc_"..name.."_prompt")
+				-- widget.content.hotspot.disabled = true
+				widget.content.hotspot.pressed_callback = callback(self, "button_pressed", widget)
+				widget.style.hotspot.size = {275, 50}
+				widget.style.hotspot.offset = {425, 0, 0}
+				widget.style.background_selected.visible = false
+				widget.style.frame_highlight.visible = false
+				widget.style.list_header.visible = false
+				-- mod:dtf(widget, "button", 5)
+				return widget
+			end
+		end
+	end
+
+	local function checkbox(name, size, scenegraph_id, option)
+		local config = {
+			display_name = "loc_"..name,
+			value_width = 425,
+		}
+		local widget = nil
+		local template = ContentBlueprints["checkbox"]
+		local size = template.size_function and template.size_function(self, config) or template.size
+		config.size = size
+		local indentation_level = config.indentation_level or 0
+		local indentation_spacing = OptionsViewSettings.indentation_spacing * indentation_level
+		local new_size = {size[1] - 350 - indentation_spacing, size[2] - 10}
+		local pass_template_function = template.pass_template_function
+		local pass_template = pass_template_function and pass_template_function(self, config, new_size) or template.pass_template
+		local widget_definition = pass_template and UIWidget.create_definition(pass_template, scenegraph_id, nil, new_size)
+		if widget_definition then
+			widget = self:_create_widget(name, widget_definition)
+			if widget then
+				widget.type = "checkbox"
+				local init = template.init
+				if init then init(self, widget, config) end
+				-- widget.content.entry.get_function = config.get_function
+				widget.content.value = mod:get(option) or false
+				widget.content.saved_option = option
+				widget.content.hotspot.pressed_callback = callback(self, "toggle_checkbox", widget)
+				widget.style.option_1.offset[1] = -20
+				widget.style.option_1.size[1] = 500
+				widget.style.option_1.text_horizontal_alignment = "right"
+				-- widget.style.option_2.visible = false
+				widget.style.option_2.offset[1] = -20
+				widget.style.option_2.size[1] = 500
+				widget.style.option_2.text_horizontal_alignment = "right"
+				widget.style.style_id_6.offset[2] = 100
+				widget.style.style_id_6.size[2] = size[2] - 10
+				self:update_checktbox(widget)
+
+				widget.style.background_selected.visible = false
+				widget.style.frame_highlight.visible = false
+				widget.content.option_1 = "n/a"
+				widget.content.option_2 = "n/a"
+				if not self:backpack_name() then
+
+				end
+				-- mod:dtf(widget, "checkbox", 5)
+				return widget
+			end
+		end
+	end
+
+	local function value_slider(name, size, scenegraph_id, value_text)
+		local config = {
+			min_value = -100,
+			step_size_value = 1,
+			max_value = 100,
+			apply_on_drag = true,
+			display_name = "loc_"..name,
+			default_value = 0,
+			slider_value = .5,
+			get_function = function()
+				return .5
+			end,
+			value_width = size[1],
+		}
+		local widget_type = "value_slider"
+		local widget = nil
+		local template = ContentBlueprints[widget_type]
+		config.size = size
+		local indentation_level = config.indentation_level or 0
+		local indentation_spacing = OptionsViewSettings.indentation_spacing * indentation_level
+		local new_size = {size[1] - indentation_spacing, size[2]}
+		local pass_template_function = template.pass_template_function
+		local pass_template = pass_template_function and pass_template_function(self, config, new_size) or template.pass_template
+		local widget_definition = pass_template and UIWidget.create_definition(pass_template, scenegraph_id, nil, new_size)
+		if widget_definition then
+			widget = self:_create_widget(name, widget_definition)
+			if widget then
+				widget.type = widget_type
+				widget.content.value_text = value_text
+				if template.init then template.init(self, widget, config) end
+				-- mod:dtf(widget, "slider", 5)
+				return widget
+			end
+		end
+	end
+
+	self.update_options_text = function(self)
+		local options_text = {
+			{self:character_name(), Localize("loc_visible_equipment_all")},
+			{Localize("loc_visible_equipment_only_this"), self:weapon_name() or ""},
+			{self:armour_name() or "", Localize("loc_visible_equipment_all")},
+			{self:backpack_name() or "", Localize("loc_visible_equipment_all")},
+		}
+		for i = 1, 4, 1 do
+			self._widgets_by_name["visible_equipment_option_"..i].content.option_1 = options_text[i][1]
+			self._widgets_by_name["visible_equipment_option_"..i].content.option_2 = options_text[i][2]
+		end
+	end
+
+	for i = 1, 4, 1 do
+		self:add_widget(checkbox("visible_equipment_option_"..i, size, "option_check_"..i.."_pivot", "visible_equipment_option_"..i))
+	end
+
+	self:add_widget(button("visible_equipment_save_button", size, "save_button_pivot"))
+	self:add_widget(button("visible_equipment_reset_button", size, "reset_button_pivot"))
+
+end)
+
+mod:hook(CLASS.InventoryView, "update", function(func, self, dt, t, input_service, ...)
+	local weapon_unit = self:weapon_unit()
+	-- mod:execute_extension(weapon_unit, "unit_manipulation_system", "update", dt, t, input_service)
+	-- if mod:execute_extension(weapon_unit, "unit_manipulation_system", "is_busy") then
+	-- 	-- self:freeze_animation()
+	-- else
+	-- 	-- self:unfreeze_animation()
+	-- end
+
+	return func(self, dt, t, input_service, ...)
+end)
+
+mod:hook(CLASS.InventoryBackgroundView, "_update_has_empty_talent_nodes", function(func, self, optional_selected_nodes, ...)
+	if not self._custom_panel_added then
+		local player = self._preview_player
+		local profile = player:profile()
+		local profile_archetype = profile.archetype
+		local archetype_name = profile_archetype.name
+		local is_ogryn = archetype_name == "ogryn"
+		self._views_settings[#self._views_settings + 1] = {
+			view_name = "inventory_view",
+			display_name = "loc_visible_equipment_customization",
+			update = function (content, style, dt)
+			end,
+			view_context = {
+				tabs = {
+					{
+						ui_animation = "cosmetics_on_enter",
+						display_name = "tab_weapon_customization",
+						draw_wallet = false,
+						allow_item_hover_information = true,
+						icon = "content/ui/materials/icons/system/settings/category_gameplay",
+						is_grid_layout = false,
+						camera_settings = {
+							{
+								"event_inventory_set_camera_position_axis_offset",
+								"x",
+								is_ogryn and 1.8 or 1.45,
+								0.5,
+								math.easeCubic
+							},
+							{
+								"event_inventory_set_camera_position_axis_offset",
+								"y",
+								2,
+								0.5,
+								math.easeCubic
+							},
+							{
+								"event_inventory_set_camera_position_axis_offset",
+								"z",
+								.3, --.1,
+								0.5,
+								math.easeCubic
+							},
+							{
+								"event_inventory_set_camera_rotation_axis_offset",
+								"x",
+								0,
+								0.5,
+								math.easeCubic
+							},
+							{
+								"event_inventory_set_camera_rotation_axis_offset",
+								"y",
+								0,
+								0.5,
+								math.easeCubic
+							},
+							{
+								"event_inventory_set_camera_rotation_axis_offset",
+								"z",
+								0,
+								0.5,
+								math.easeCubic
+							}
+						},
+						item_hover_information_offset = {
+							0
+						},
+						layout = {
+							
+						}
+					}
+				}
+			}
+		}
+		self._custom_panel_added = true
+	end
+end)
+
+mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
+	local ret = func(self, dt, t, input_service, ...)
+	if self._profile_spawner and self._profile_spawner._character_spawn_data then
+		local unit = self._profile_spawner._character_spawn_data.unit_3p
+		if unit and unit_alive(unit) then
+			local inventory_view = mod:get_view("inventory_view")
+			if inventory_view then
+				local tab_context = inventory_view._active_category_tab_context
+				local is_tab = tab_context and tab_context.display_name == "tab_weapon_customization"
+				if is_tab then
+					local ui_profile_spawner = self._profile_spawner
+					
+					local weapon_unit = inventory_view.weapon_unit and inventory_view:weapon_unit()
+
+					-- UnitManipulationExtension
+					if modding_tools then
+						local world = inventory_view._world
+						local camera = ui_profile_spawner and ui_profile_spawner._camera
+						local gui = inventory_view._ui_forward_renderer.gui
+						modding_tools:unit_manipulation_add(weapon_unit, camera, world, gui)
+					end
+					-- if camera and not script_unit_has_extension(weapon_unit, "unit_manipulation_system") then
+					-- 	script_unit_add_extension({
+					-- 		world = inventory_view._world,
+					-- 	}, weapon_unit, "UnitManipulationExtension", "unit_manipulation_system", {
+					-- 		unit = weapon_unit,
+					-- 		gui = inventory_view._ui_forward_renderer.gui,
+					-- 		camera = camera,
+					-- 	})
+					-- end
+					
+					ui_profile_spawner._rotation_input_disabled = modding_tools and modding_tools:any_unit_manipulation_extension_busy()
+					--mod:execute_extension(weapon_unit, "unit_manipulation_system", "is_busy", input_service)
+
+					local wbn = inventory_view._widgets_by_name
+					if wbn then wbn.name_text.content.text = self._item_name end
+				end
+			end
+		end
+	end
+	return ret
+end)
+
+mod:hook(CLASS.InventoryBackgroundView, "_update_presentation_wield_item", function(func, self, ...)
+	local inventory_view = mod:get_view("inventory_view")
+	if inventory_view and inventory_view.weapon_unit and inventory_view.unfreeze_animation then
+	-- 	-- mod:remove_extension(inventory_view:weapon_unit(), "unit_manipulation_system")
+		if modding_tools then
+			modding_tools:unit_manipulation_remove(inventory_view:weapon_unit())
+		end
+	-- 	-- inventory_view:unfreeze_animation()
+	end
+	
+	-- Original function
+	func(self, ...)
+
+	-- Update weapon name in inventory view
+	local inventory_view = mod:get_view("inventory_view")
+	if self._profile_spawner and inventory_view then
+		local slot_id = self._preview_wield_slot_id == "slot_primary" and "slot_secondary" or "slot_primary"
+		local preview_profile_equipped_items = self._preview_profile_equipped_items
+		local presentation_inventory = preview_profile_equipped_items
+		local slot_item = presentation_inventory[slot_id]
+		local item_name = Localize(slot_item.display_name)
+		self._item_name = item_name
+		self._profile_spawner._rotation_angle = inventory_view.customization_angle and inventory_view:customization_angle() or 0
+	end
+end)
+
+mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_context, ...)
+	func(self, tab_context, ...)
+	if tab_context then
+		local is_tab = tab_context.display_name == "tab_weapon_customization"
+		local ibv = mod:get_view("inventory_background_view")
+		local spawn_data = ibv._profile_spawner and ibv._profile_spawner._character_spawn_data
+		local unit = spawn_data and spawn_data.unit_3p
+		local weapon_unit = self:weapon_unit()
+
+		if is_tab then
+			self:update_options_text()
+			if ibv and ibv._profile_spawner then ibv._profile_spawner._rotation_angle = self:customization_angle() or 0 end
+		else
+			-- mod:remove_extension(weapon_unit, "unit_manipulation_system")
+			if modding_tools then
+				modding_tools:unit_manipulation_remove(weapon_unit)
+			end
+			if ibv and ibv._profile_spawner then ibv._profile_spawner._rotation_angle = 0 end
+		end
+
+		for i = 1, 4, 1 do
+			self._widgets_by_name["visible_equipment_option_"..i].visible = is_tab
+		end
+		
+		self._widgets_by_name.name_text.visible = is_tab
+		self._widgets_by_name.visible_equipment_save_button.visible = is_tab
+		self._widgets_by_name.visible_equipment_reset_button.visible = is_tab
+	end
+end)
+
+-- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################
+-- ##### ├─┤├┤ │  ├─┘ #################################################################################################
+-- ##### ┴ ┴└─┘┴─┘┴   #################################################################################################
 
 mod.vector3_equal = function(self, v1, v2)
 	return v1[1] == v2[1] and v1[2] == v2[2] and v1[3] == v2[3]

@@ -23,6 +23,45 @@ mod:add_global_localize_strings({
 		ru = "Включите или выключите установленный на оружии лазерный указатель.\nТакже работает как фонарик. Полезно в тёмных местах.",
 		["zh-cn"] = "开启或关闭武器挂载激光指示器。\n同时也可作为手电筒。适合黑暗区域。",
 	},
+	loc_visible_equipment_customization = {
+		en = "Visible Equipment",
+		de = "Sichtbare Ausrüstung",
+		ru = "Видимое снаряжение",
+		["zh-cn"] = "装备可见",
+	},
+	loc_visible_equipment_option_1 = {
+		en = "Character",
+		de = "Charakter",
+	},
+	loc_visible_equipment_option_2 = {
+		en = "Weapon",
+		de = "Waffe",
+	},
+	loc_visible_equipment_option_3 = {
+		en = "Armour",
+		de = "Rüstung",
+	},
+	loc_visible_equipment_option_4 = {
+		en = "Backpack",
+		de = "Rucksack",
+	},
+	loc_visible_equipment_only_this = {
+		en = "Only this weapon",
+		de = "Nur diese Waffe",
+	},
+	loc_visible_equipment_all = {
+		en = "All",
+		de = "Alle",
+	},
+	loc_visible_equipment_save_button_prompt = {
+		en = "Save",
+		de = "Speichern",
+	},
+	loc_visible_equipment_reset_button_prompt = {
+		en = "Reset",
+		de = "Zurücksetzen",
+	}
+
 })
 
 -- ##### ┬  ┌─┐┌─┐┌─┐┬    ┬  ┌─┐┌─┐┌─┐┬  ┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌ ############################################################
@@ -97,6 +136,14 @@ return {
 		de = "Spielt eine Waffenschwank-Bewegungsanimation beim Drehen",
 		ru = "Проигрываются анимации качания оружия при поворотах",
 		["zh-cn"] = "转身时播放武器摇晃动画",
+	},
+	mod_option_misc_sway_aim = {
+		en = "When Aiming",
+		de = "Beim Zielen",
+	},
+	mod_option_misc_sway_aim_tooltip = {
+		en = "Plays a weapon sway animation when aiming",
+		de = "Spielt eine Waffenschwank-Bewegungsanimation beim Zielen",
 	},
 	mod_option_misc_attachment_names = {
 		en = "Attachment Names",

@@ -66,21 +66,6 @@ local mod = get_mod("weapon_customization")
 	})
 --#endregion
 
--- mod:hook_require("scripts/managers/ui/ui_widget", function(UIWidget)
--- 	mod:hook(UIWidget, "create_definition", function(func, pass_definitions, ...)
--- 		-- Set all retained
--- 		for i = 1, #pass_definitions do
--- 			local pass_info = pass_definitions[i]
--- 			-- if not pass_info.retained_mode then
--- 			-- 	mod:echo("change retained_mode")
--- 			-- end
--- 			pass_info.retained_mode = false
--- 		end
--- 		-- Original function
--- 		return func(pass_definitions, ...)
--- 	end)
--- end)
-
 -- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐ #######################################################################################
 -- ##### │││││ │ │├─┤│  │┌─┘├┤  #######################################################################################
 -- ##### ┴┘└┘┴ ┴ ┴┴ ┴┴─┘┴└─┘└─┘ #######################################################################################
@@ -182,6 +167,32 @@ end
 mod.on_husk_unit_destroyed = function(self, husk_unit)
 end
 
+-- ##### ┬┌┐┌┌┬┐┌─┐┬─┐┌─┐┌─┐┌─┐┌─┐ ####################################################################################
+-- ##### ││││ │ ├┤ ├┬┘├┤ ├─┤│  ├┤  ####################################################################################
+-- ##### ┴┘└┘ ┴ └─┘┴└─└  ┴ ┴└─┘└─┘ ####################################################################################
+
+-- data = {
+-- 	attachments = {},
+-- 	models = {},
+-- 	anchors = {},
+-- }
+
+-- mod.add_data = function(self, data)
+	
+-- end
+
+-- mod.add_attachment = function(self, attachment)
+	
+-- end
+
+-- mod.add_model = function(self, model)
+	
+-- end
+
+-- mod.add_amchor = function(self, amchor)
+	
+-- end
+
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
@@ -219,6 +230,14 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/crouch_animation_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_animation_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/visible_equipment_extension")
+	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/unit_manipulation_extension")
+	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/console")
+	-- mod:hook(CLASS.UIManager, "update", function(func, self, dt, t, ...)
+	-- 	-- Original function
+	-- 	func(self, dt, t, ...)
+	-- 	-- Update console
+	-- 	if mod.console then mod.console:update(dt, t, self:input_service()) end
+	-- end)
 	-- Import mod files
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
@@ -234,8 +253,21 @@ mod:load_needed_packages()
 
 -- Find unused attachments
 -- mod:find_attachment_entries()
+-- mod:debug_stingray_objects()
 
 -- Reinitialize on mod reload
 if managers and managers.player._game_state ~= nil then
 	mod:on_reload()
 end
+
+-- if mod.player_unit then
+-- 	-- local test = Unit.get_data(mod.player_unit, "__nodes")
+-- 	-- local test = Unit.get_property(mod.player_unit, "nodes")
+-- 	-- local test = Unit.get_data(mod.player_unit, "unit_template")
+-- 	local first_person_extension = ScriptUnit.extension(mod.player_unit, "first_person_system")
+-- 	local first_person_unit = first_person_extension:first_person_unit()
+-- 	local test = Unit.bones(first_person_unit)
+-- 	mod:dtf(test, "unit_data", 10)
+-- 	-- local node = Unit.node(mod.player_unit, 1)
+-- 	mod:echot("test: "..tostring(test))
+-- end

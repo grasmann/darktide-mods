@@ -67,111 +67,6 @@ mod:hook_require("scripts/utilities/alternate_fire", function(instance)
     end)
 end)
 
-mod:hook(CLASS.ActionShootHitScan, "_shoot", function(func, self, position, rotation, power_level, charge_level, ...)
--- mod:hook(CLASS.ActionShoot, "start", function(func, self, action_settings, t, time_scale, params, ...)
--- mod:hook(CLASS.ActionShoot, "finish", function(func, self, reason, data, t, time_in_action, ...)
-
-    
-
-    -- Original function
-    -- func(self, reason, data, t, time_in_action, ...)
-    -- func(self, action_settings, t, time_scale, params, ...)
-    func(self, position, rotation, power_level, charge_level, ...)
-
-    -- Sights
-    local fire_config = self._action_settings.fire_configuration
-    mod:execute_extension(self._player_unit, "sight_system", "revolver_fix", mod:game_time(), fire_config)
-
-    -- local visual_loadout_extension = script_unit.extension(self._player_unit, "visual_loadout_system")
-    -- -- local unit_data_extension = action_context.unit_data_extension
-    -- local unit_data_extension = script_unit.extension(self._player_unit, "unit_data_system")
-    -- local spread_control_component = unit_data_extension:write_component("spread_control")
-	-- local sway_control_component = unit_data_extension:write_component("sway_control")
-	-- local sway_component = unit_data_extension:read_component("sway")
-    -- local first_person_extension = script_unit.has_extension(self._player_unit, "first_person_system")
-	-- -- local action_module_charge_component = unit_data_extension:read_component("action_module_charge")
-    -- local alternate_fire_component = unit_data_extension:write_component("alternate_fire")
-    -- local weapon_tweak_templates_component = unit_data_extension:write_component("weapon_tweak_templates")
-    -- local weapon_extension = script_unit.extension(self._player_unit, "weapon_system")
-	-- local animation_extension = script_unit.extension(self._player_unit, "animation_system")
-    -- local peeking_component = unit_data_extension:write_component("peeking")
-    -- local movement_state_component = unit_data_extension:read_component("movement_state")
-	-- -- -- local action_input_extension = script_unit.extension(player_unit, "action_input_system")
-	-- -- local inventory_comp = script_unit.extension(player_unit, "unit_data_system"):read_component("inventory")
-	-- local wielded_slot = self._inventory_component.wielded_slot
-    -- local t = mod:game_time()
-    -- -- visual_loadout_extension:wield_slot(wielded_slot)
-
-	-- local weapon_template = visual_loadout_extension:weapon_template_from_slot(wielded_slot)
-
-    -- local animation_state = Unit.animation_get_state(self._first_person_unit)
-    -- -- Unit.disable_animation_state_machine(self._player_unit)
-    -- -- Play animation to get index
-    -- animation_extension:inventory_slot_wielded(weapon_template, t)
-
-    -- -- AlternateFire.start(alternate_fire_component, weapon_tweak_templates_component, spread_control_component, sway_control_component, sway_component, movement_state_component, peeking_component, first_person_extension, animation_extension, weapon_extension, weapon_template, self._player_unit, t)
-    -- alternate_fire_component.is_active = true
-	-- alternate_fire_component.start_t = t
-    -- local alternate_fire_settings = weapon_template.alternate_fire_settings
-    -- local start_anim_event = alternate_fire_settings.start_anim_event
-    -- local start_anim_event_3p = alternate_fire_settings.start_anime_event_3p or start_anim_event
-
-    -- if start_anim_event and start_anim_event_3p then
-    --     animation_extension:anim_event_1p(start_anim_event)
-    --     animation_extension:anim_event(start_anim_event_3p)
-    -- end
-	
-    -- -- Unit.enable_animation_state_machine(self._player_unit)
-
-    -- -- Reset animation state
-    -- Unit.animation_set_state(self._first_person_unit, unpack(animation_state))
-
-    -- -- animation_extension:anim_event("to_unaim_ironsight")
-    -- -- animation_extension:anim_event("to_ironsight")
-	-- -- weapon_extension:on_slot_wielded(wielded_slot, t, true)
-
-    
-    -- -- local wielded_slot = self._inventory_component.wielded_slot
-    -- -- PlayerUnitVisualLoadout.wield_slot(wielded_slot, self._player_unit, t)
-
-    -- -- local anim, anim_3p = nil
-    -- -- local action_settings = self._action_settings
-	-- -- local anim = action_settings.wield_anim_event
-	-- -- local anim_3p = action_settings.wield_anim_event_3p or anim
-
-    -- -- local inventory_slot_component = self._inventory_slot_component
-
-	-- -- if ReloadStates.uses_reload_states(inventory_slot_component) then
-    -- --     local weapon_template = self._weapon_template
-	-- --     local reload_template = weapon_template.reload_template
-	-- -- 	-- local started_reload = ReloadStates.started_reload(reload_template, inventory_slot_component)
-
-	-- -- 	-- if started_reload then
-	-- -- 		anim = action_settings.wield_reload_anim_event
-	-- -- 		anim_3p = action_settings.wield_reload_anim_event_3p or anim
-
-	-- -- 		local wield_reload_anim_event_func = action_settings.wield_reload_anim_event_func
-	-- -- 		if wield_reload_anim_event_func then
-	-- -- 			anim, anim_3p = wield_reload_anim_event_func(inventory_slot_component)
-	-- -- 			anim_3p = anim_3p or anim
-	-- -- 		end
-	-- -- 	-- end
-	-- -- end
-
-    -- -- anim = action_settings.wield_reload_anim_event or anim
-	-- -- anim_3p = action_settings.wield_reload_anim_event_3p or anim_3p
-
-    -- -- local wield_reload_anim_event_func = action_settings.wield_reload_anim_event_func
-    -- -- if wield_reload_anim_event_func then
-    -- --     anim, anim_3p = wield_reload_anim_event_func(inventory_slot_component)
-    -- --     anim_3p = anim_3p or anim
-    -- -- end
-
-    -- -- self:trigger_anim_event(anim, anim_3p)
-
-    -- mod:echot("ActionShoot.finish")
-end)
-
 -- ##### ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┬─┐┌─┐┌┐┌┌─┐┌─┐┌┬┐  ┬ ┬┬┌─┐┬  ┌┬┐ ##########################################################
 -- ##### ├─┤│   │ ││ ││││  ├┬┘├─┤││││ ┬├┤  ││  ││││├┤ │   ││ ##########################################################
 -- ##### ┴ ┴└─┘ ┴ ┴└─┘┘└┘  ┴└─┴ ┴┘└┘└─┘└─┘─┴┘  └┴┘┴└─┘┴─┘─┴┘ ##########################################################
@@ -214,17 +109,6 @@ mod:hook(CLASS.ActionUnaim, "start", function(func, self, action_settings, t, ..
     -- Original function
     func(self, action_settings, t, ...)
 end)
-
---#region Old
-    -- mod:hook(CLASS.ActionUnaim, "finish", function(func, self, reason, data, t, time_in_action, ...)
-    --     -- Sights
-    --     mod:execute_extension(self._player_unit, "sight_system", "on_unaim_finish")
-    --     -- Weapon DOF
-    --     mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_finish")
-    --     -- Original function
-    --     func(self, reason, data, t, time_in_action, ...)
-    -- end)
---#endregion
 
 -- ##### ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐┬ ┬┌─┐┬─┐┌─┐┌─┐  ┌─┐┬  ┬┌─┐┬─┐┬  ┌─┐┌─┐┌┬┐ ##############################################
 -- ##### ├─┤│   │ ││ ││││  │  ├─┤├─┤├┬┘│ ┬├┤   │ │└┐┌┘├┤ ├┬┘│  │ │├─┤ ││ ##############################################
@@ -433,9 +317,9 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "extensions_ready", function(func
 end)
 
 --#region Old
-    -- mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update", function(func, self, unit, dt, t, ...)
-    --     -- Original function
-    --     func(self, unit, dt, t, ...)
+    mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update", function(func, self, unit, dt, t, ...)
+        -- Original function
+        func(self, unit, dt, t, ...)
     --     -- Add CrouchAnimationExtension
     --     if not script_unit_has_extension(self._unit, "crouch_system") then
     --         self.crouch_animation_extension = script_unit_add_extension({
@@ -454,7 +338,7 @@ end)
     --             is_local_unit = self._is_local_unit,
     --         })
     --     end
-    -- end)
+    end)
 --#endregion
 
 --#region Old
@@ -1173,12 +1057,16 @@ mod:hook(CLASS.HudElementCrosshair, "_get_current_crosshair_type", function(func
     -- Hide?
 	local player_extensions = self._parent and self._parent:player_extensions()
     local unit = player_extensions and player_extensions.unit
-    if unit and script_unit_has_extension(unit, "sight_system") then
-        local sight_extension = script_unit_extension(unit, "sight_system")
-        if mod:execute_extension(unit, "sight_system", "is_hiding_crosshair") then
-            crosshair_type = "ironsight"
-        end
+    if unit then
+        crosshair_type = mod:execute_extension(unit, "sight_system", "crosshair", crosshair_type)
     end
+
+    -- if unit and script_unit_has_extension(unit, "sight_system") then
+    --     local sight_extension = script_unit_extension(unit, "sight_system")
+    --     if mod:execute_extension(unit, "sight_system", "is_hiding_crosshair") then
+    --         crosshair_type = "ironsight"
+    --     end
+    -- end
     --  Return
     return crosshair_type
 end)

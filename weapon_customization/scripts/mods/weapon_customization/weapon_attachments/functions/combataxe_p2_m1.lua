@@ -42,18 +42,15 @@ return {
     grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
-            {name = "grip_default", model = ""},
-            {name = "hatchet_grip_01",      model = _item_melee.."/grips/hatchet_grip_01"},
-            {name = "hatchet_grip_02",      model = _item_melee.."/grips/hatchet_grip_02"},
-            {name = "hatchet_grip_03",      model = _item_melee.."/grips/hatchet_grip_03"},
-            {name = "hatchet_grip_04",      model = _item_melee.."/grips/hatchet_grip_04"},
-            {name = "hatchet_grip_05",      model = _item_melee.."/grips/hatchet_grip_05"},
-            {name = "hatchet_grip_06",      model = _item_melee.."/grips/hatchet_grip_06"},
+            {name = "grip_default",    model = ""},
+            {name = "hatchet_grip_01", model = _item_melee.."/grips/hatchet_grip_01"},
+            {name = "hatchet_grip_02", model = _item_melee.."/grips/hatchet_grip_02"},
+            {name = "hatchet_grip_03", model = _item_melee.."/grips/hatchet_grip_03"},
+            {name = "hatchet_grip_04", model = _item_melee.."/grips/hatchet_grip_04"},
+            {name = "hatchet_grip_05", model = _item_melee.."/grips/hatchet_grip_05"},
+            {name = "hatchet_grip_06", model = _item_melee.."/grips/hatchet_grip_06"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-
-    
     head_attachments = function(default)
         local attachments = {
             {id = "hatchet_head_01", name = "Tactical Axe 1"},
@@ -79,9 +76,6 @@ return {
             {name = "hatchet_head_05",      model = _item_melee.."/heads/hatchet_head_05"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-
-
     pommel_attachments = function(default)
         local attachments = {
             {id = "hatchet_pommel_01", name = "Tactical Axe 1"},
@@ -98,11 +92,11 @@ return {
     pommel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
-            {name = "pommel_default", model = ""},
-            {name = "hatchet_pommel_01",      model = _item_melee.."/pommels/hatchet_pommel_01"},
-            {name = "hatchet_pommel_02",      model = _item_melee.."/pommels/hatchet_pommel_02"},
-            {name = "hatchet_pommel_03",      model = _item_melee.."/pommels/hatchet_pommel_03"},
-            {name = "hatchet_pommel_04",      model = _item_melee.."/pommels/hatchet_pommel_04"},
+            {name = "pommel_default",    model = ""},
+            {name = "hatchet_pommel_01", model = _item_melee.."/pommels/hatchet_pommel_01"},
+            {name = "hatchet_pommel_02", model = _item_melee.."/pommels/hatchet_pommel_02"},
+            {name = "hatchet_pommel_03", model = _item_melee.."/pommels/hatchet_pommel_03"},
+            {name = "hatchet_pommel_04", model = _item_melee.."/pommels/hatchet_pommel_04"},
         }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

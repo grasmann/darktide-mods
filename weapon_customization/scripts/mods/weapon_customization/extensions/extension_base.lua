@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Local functions
+    local Unit = Unit
     local math = math
     local world = World
     local pairs = pairs
@@ -13,9 +14,12 @@ local mod = get_mod("weapon_customization")
     local wc_perf = wc_perf
     local math_abs = math.abs
     local managers = Managers
+    local unit_alive = Unit.alive
     local script_unit = ScriptUnit
     local vector3_zero = vector3.zero
+    local unit_get_data = Unit.get_data
     local world_physics_world = world.physics_world
+    local unit_data_table_size = Unit.data_table_size
     local script_unit_extension = script_unit.extension
     local script_unit_has_extension = script_unit.has_extension
     local script_unit_add_extension = script_unit.add_extension
@@ -70,6 +74,7 @@ WeaponCustomizationExtension.init = function(self, extension_init_context, unit,
     self.player = extension_init_data.player
     self.player_unit = extension_init_data.player_unit
     self.is_local_unit = extension_init_data.is_local_unit
+    self.ranged_weapon = extension_init_data.ranged_weapon
 
     self.visual_loadout_extension = script_unit_extension(self.player_unit, "visual_loadout_system")
     self.fx_extension = script_unit_extension(self.player_unit, "fx_system")
@@ -202,6 +207,22 @@ WeaponCustomizationExtension.get_vectors_almost_same = function(self, v1, v2, to
     end
 end
 
+-- ##### ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐ ############################################################################
+-- ##### ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐ ############################################################################
+-- ##### ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘ ############################################################################
+
+WeaponCustomizationExtension.get_attachment_units = function(self)
+    if self.ranged_weapon then return mod:get_attachment_units(self.ranged_weapon.weapon_unit) end
+end
+
+WeaponCustomizationExtension.get_attachment_unit = function(self, attachment_slot_or_name)
+    if self.ranged_weapon then return mod:get_attachment_unit(self.ranged_weapon.weapon_unit, attachment_slot_or_name) end
+end
+
+WeaponCustomizationExtension.get_attachment_data = function(self, attachment_slot_or_name, data)
+    if self.ranged_weapon then return mod:get_attachment_data(self.ranged_weapon.weapon_unit, attachment_slot_or_name, data) end
+end
+
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬   ###########################################################################################
 -- ##### │ ┬│  │ │├┴┐├─┤│   ###########################################################################################
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘ ###########################################################################################
@@ -225,4 +246,26 @@ mod.execute_extension = function(self, unit, system, function_name, ...)
             return extension[function_name](extension, ...)
         end
     end
+end
+
+mod.get_attachment_units = function(self, weapon_unit)
+    return unit_get_data(weapon_unit, "attachment_units")
+end
+
+mod.get_attachment_unit = function(self, weapon_unit, attachment_slot_or_name)
+    return unit_get_data(weapon_unit, attachment_slot_or_name)
+end
+
+mod.get_attachment_data = function(self, weapon_unit, attachment_slot_or_name, data)
+    local attachment_unit = unit_get_data(weapon_unit, attachment_slot_or_name)
+    if attachment_unit then return unit_get_data(attachment_unit, data) end
+end
+
+mod.get_attachment_slots = function(self, weapon_unit)
+    local attachments = {}
+    local num_attachments = unit_data_table_size(weapon_unit, "attachment_slots")
+    for i = 1, num_attachments, 1 do
+        attachments[i] = unit_get_data(weapon_unit, "attachment_slots", i)
+    end
+    return attachments
 end

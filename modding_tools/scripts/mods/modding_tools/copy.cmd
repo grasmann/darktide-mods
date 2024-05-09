@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\modding_tools\scripts\mods\modding_tools" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\modding_tools\scripts\mods\modding_tools"

@@ -4,206 +4,36 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
-local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
-local _autogun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autogun_p1_m1")
-
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
-local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
+--#region Require
+    local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+    local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
+    local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
+    local _autogun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autogun_p1_m1")
+    local _shotgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/shotgun_p1_m1")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local string = string
-    local string_find = string.find
     local vector3_box = Vector3Box
     local table = table
-    local pairs = pairs
-    local ipairs = ipairs
-    local type = type
 --#endregion
-
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
-
-local functions = {
-    sight_attachments = function(default)
-        local attachments = {
-            {id = "sight_01",      name = "Sight 1"},
-            {id = "sight_04",      name = "Sight 4"},
-            {id = "sight_05",      name = "Sight 5"},
-            {id = "sight_06",      name = "Sight 6"},
-            {id = "sight_07",      name = "Sight 7"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "sight_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    sight_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "sight_default", model = ""},
-            {name = "sight_01",      model = _item_ranged.."/sights/shotgun_rifle_sight_01"},
-            {name = "sight_04",      model = _item_ranged.."/sights/shotgun_rifle_sight_04"},
-            {name = "sight_05",      model = _item_ranged.."/sights/shotgun_pump_action_sight_01"},
-            {name = "sight_06",      model = _item_ranged.."/sights/shotgun_pump_action_sight_02"},
-            {name = "sight_07",      model = _item_ranged.."/sights/shotgun_double_barrel_sight_01"},
-        }, parent, angle, move, remove, type or "sight", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    receiver_attachments = function(default)
-        local attachments = {
-            {id = "receiver_01",      name = "Receiver 1"},
-            {id = "receiver_02",      name = "Receiver 2"},
-            {id = "receiver_03",      name = "Receiver 3"},
-            {id = "receiver_04",      name = "Receiver 4"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "receiver_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    receiver_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "receiver_default", model = ""},
-            {name = "receiver_01",      model = _item_ranged.."/recievers/shotgun_rifle_receiver_01"},
-            {name = "receiver_02",      model = _item_ranged.."/recievers/shotgun_double_barrel_receiver_01"},
-            {name = "receiver_03",      model = _item_ranged.."/recievers/shotgun_double_barrel_receiver_02"},
-            {name = "receiver_04",      model = _item_ranged.."/recievers/shotgun_double_barrel_receiver_03"},
-        }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    stock_attachments = function(default)
-        local attachments = {
-            {id = "shotgun_rifle_stock_01",      name = "Stock 1"},
-            {id = "shotgun_rifle_stock_02",      name = "Stock 2"},
-            {id = "shotgun_rifle_stock_03",      name = "Stock 3"},
-            {id = "shotgun_rifle_stock_04",      name = "Stock 4"},
-            {id = "shotgun_rifle_stock_07",      name = "Stock 7"},
-            {id = "shotgun_rifle_stock_08",      name = "Stock 8"},
-            {id = "shotgun_rifle_stock_09",      name = "Stock 9"},
-            {id = "shotgun_rifle_stock_10",      name = "Stock 10"},
-            {id = "shotgun_rifle_stock_11",      name = "Stock 11"},
-            {id = "shotgun_rifle_stock_12",      name = "Stock 12"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "shotgun_rifle_stock_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    stock_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "shotgun_rifle_stock_default", model = ""},
-            {name = "shotgun_rifle_stock_01",      model = _item_ranged.."/stocks/shotgun_rifle_stock_01"},
-            {name = "shotgun_rifle_stock_02",      model = _item_ranged.."/stocks/shotgun_rifle_stock_03"},
-            {name = "shotgun_rifle_stock_03",      model = _item_ranged.."/stocks/shotgun_rifle_stock_05"},
-            {name = "shotgun_rifle_stock_04",      model = _item_ranged.."/stocks/shotgun_rifle_stock_06"},
-            {name = "shotgun_rifle_stock_07",      model = _item_ranged.."/stocks/shotgun_rifle_stock_07"},
-            {name = "shotgun_rifle_stock_08",      model = _item_ranged.."/stocks/shotgun_rifle_stock_08"},
-            {name = "shotgun_rifle_stock_09",      model = _item_ranged.."/stocks/shotgun_rifle_stock_09"},
-            {name = "shotgun_rifle_stock_10",      model = _item_ranged.."/stocks/shotgun_double_barrel_stock_01"},
-            {name = "shotgun_rifle_stock_11",      model = _item_ranged.."/stocks/shotgun_double_barrel_stock_02"},
-            {name = "shotgun_rifle_stock_12",      model = _item_ranged.."/stocks/shotgun_double_barrel_stock_03"},
-        }, parent, angle, move, remove, type or "stock", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    barrel_attachments = function(default)
-        local attachments = {
-            {id = "barrel_01",      name = "Barrel 1"},
-            {id = "barrel_02",      name = "Barrel 2"},
-            {id = "barrel_03",      name = "Barrel 3"},
-            {id = "barrel_04",      name = "Barrel 4"},
-            {id = "barrel_07",      name = "Barrel 7"},
-            {id = "barrel_08",      name = "Barrel 8"},
-            {id = "barrel_09",      name = "Barrel 9"},
-            {id = "barrel_10",      name = "Barrel 10"},
-            {id = "barrel_11",      name = "Barrel 11"},
-            {id = "barrel_12",      name = "Barrel 12"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "barrel_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "barrel_default", model = ""},
-            {name = "barrel_01",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_01"},
-            {name = "barrel_02",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_04"},
-            {name = "barrel_03",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_05"},
-            {name = "barrel_04",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_06"},
-            {name = "barrel_07",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_07"},
-            {name = "barrel_08",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_08"},
-            {name = "barrel_09",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_09"},
-            {name = "barrel_10",      model = _item_ranged.."/barrels/shotgun_double_barrel_01"},
-            {name = "barrel_11",      model = _item_ranged.."/barrels/shotgun_double_barrel_02"},
-            {name = "barrel_12",      model = _item_ranged.."/barrels/shotgun_double_barrel_03"},
-        }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    underbarrel_attachments = function(default)
-        local attachments = {
-            {id = "underbarrel_01",      name = "Underbarrel 1"},
-            {id = "underbarrel_02",      name = "Underbarrel 2"},
-            {id = "underbarrel_03",      name = "Underbarrel 3"},
-            {id = "underbarrel_04",      name = "Underbarrel 4"},
-            {id = "underbarrel_07",      name = "Underbarrel 7"},
-            {id = "underbarrel_08",      name = "Underbarrel 8"},
-            {id = "underbarrel_09",      name = "Underbarrel 9"},
-            {id = "underbarrel_10",      name = "Underbarrel 10"},
-            {id = "underbarrel_11",      name = "Underbarrel 11"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "underbarrel_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    underbarrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "underbarrel_default", model = ""},
-            {name = "underbarrel_01",      model = _item_ranged.."/underbarrels/shotgun_rifle_underbarrel_01"},
-            {name = "underbarrel_02",      model = _item_ranged.."/underbarrels/shotgun_rifle_underbarrel_04"},
-            {name = "underbarrel_03",      model = _item_ranged.."/underbarrels/shotgun_rifle_underbarrel_05"},
-            {name = "underbarrel_04",      model = _item_ranged.."/underbarrels/shotgun_rifle_underbarrel_06"},
-            {name = "underbarrel_07",      model = _item_ranged.."/underbarrels/shotgun_rifle_underbarrel_07"},
-            {name = "underbarrel_08",      model = _item_ranged.."/underbarrels/shotgun_rifle_underbarrel_08"},
-            {name = "underbarrel_09",      model = _item_ranged.."/underbarrels/shotgun_pump_action_underbarrel_01"},
-            {name = "underbarrel_10",      model = _item_ranged.."/underbarrels/shotgun_pump_action_underbarrel_02"},
-            {name = "underbarrel_11",      model = _item_ranged.."/underbarrels/shotgun_pump_action_underbarrel_03"},
-            {name = "no_underbarrel",      model = ""},
-        }, parent, angle, move, remove, type or "underbarrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-}
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
-    functions,
+    _shotgun_p1_m1,
     {
         attachments = {
             -- Native
-            receiver = functions.receiver_attachments(),
-            stock = functions.stock_attachments(),
-            barrel = functions.barrel_attachments(),
-            underbarrel = functions.underbarrel_attachments(),
+            receiver = _shotgun_p1_m1.receiver_attachments(),
+            stock = _shotgun_p1_m1.stock_attachments(),
+            barrel = _shotgun_p1_m1.barrel_attachments(),
+            underbarrel = _shotgun_p1_m1.underbarrel_attachments(),
             -- sight = functions.sight_attachments(),
             -- Ranged
             flashlight = _common_ranged.flashlights_attachments(),
@@ -222,7 +52,7 @@ return table.combine(
         },
         models = table.combine(
             -- Native
-            functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001), nil, nil, {
+            _shotgun_p1_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001), nil, nil, {
                 {sight = "sight_07|sight_default"},
                 {sight = "sight_07|sight_default"},
                 {sight = "sight_default|sight_07", rail = "rail_default"},
@@ -239,8 +69,8 @@ return table.combine(
                 end
                 return changes
             end),
-            functions.stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
-            functions.barrel_models(nil, -.5, vector3_box(.1, -4, 0), vector3_box(0, .2, 0), nil, {
+            _shotgun_p1_m1.stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
+            _shotgun_p1_m1.barrel_models(nil, -.5, vector3_box(.1, -4, 0), vector3_box(0, .2, 0), nil, {
                 {"trinket_hook_empty"},
                 {"trinket_hook_empty"},
                 {"trinket_hook_empty"},
@@ -276,8 +106,8 @@ return table.combine(
                 end
                 return changes
             end),
-            functions.underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
-            functions.sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, 0, .1), "sight", nil, {
+            _shotgun_p1_m1.underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
+            _shotgun_p1_m1.sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, 0, .1), "sight", nil, {
                 {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"}
             }),
             -- Ranged

@@ -4,68 +4,31 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_p1_m1")
-
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-local _item = "content/items/weapons/player"
-local _item_melee = _item.."/melee"
+--#region Require
+    local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+    local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_powermaul_p1_m1")
+    local _ogryn_powermaul_slabshield_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/ogryn_powermaul_slabshield_p1_m1")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local string = string
-    local string_find = string.find
     local vector3_box = Vector3Box
     local table = table
-    local pairs = pairs
-    local ipairs = ipairs
-    local type = type
 --#endregion
-
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
-
-local functions = {
-    shield_attachments = function(default)
-        local attachments = {
-            {id = "left_01", name = "Slab Shield 1"},
-            {id = "left_02", name = "Bulwark Shield"},
-            {id = "left_03", name = "Slab Shield 2"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "left_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    shield_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "left_default", model = ""},
-            {name = "left_01",      model = _item_melee.."/ogryn_slabshield_p1_m1"},
-            {name = "left_02",      model = _item_melee.."/ogryn_bulwark_shield_01"},
-            {name = "left_03",      model = _item_melee.."/ogryn_slabshield_p1_m3"},
-        }, parent, angle, move, remove, type or "left", no_support, automatic_equip, hide_mesh, mesh_move)
-    end,
-}
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
-    functions,
+    _ogryn_powermaul_slabshield_p1_m1,
     {
         attachments = {
             -- Native
-            left = functions.shield_attachments(),
+            left = _ogryn_powermaul_slabshield_p1_m1.shield_attachments(),
             -- Power Maul
             shaft = _ogryn_powermaul_p1_m1.shaft_attachments(),
             head = _ogryn_powermaul_p1_m1.head_attachments(),
@@ -78,7 +41,7 @@ return table.combine(
         models = table.combine(
             -- {customization_default_position = vector3_box(.2, 0, 0)},
             -- Native
-            functions.shield_models(nil, 0, vector3_box(-.15, -2, .1), vector3_box(0, 0, -.2)),
+            _ogryn_powermaul_slabshield_p1_m1.shield_models(nil, 0, vector3_box(-.15, -2, .1), vector3_box(0, 0, -.2)),
             -- Power Maul
             _ogryn_powermaul_p1_m1.head_models(nil, -2.5, vector3_box(0, -5, -.4), vector3_box(0, 0, .2)),
             _ogryn_powermaul_p1_m1.pommel_models(nil, -2.5, vector3_box(0, -6, .1), vector3_box(0, 0, -.2)),

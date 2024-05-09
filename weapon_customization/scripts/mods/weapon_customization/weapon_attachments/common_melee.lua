@@ -1,13 +1,32 @@
 local mod = get_mod("weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+--#region Require
+    local _chainaxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/chainaxe_p1_m1")
+    local _combataxe_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/combataxe_p1_m1")
+    local _combataxe_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/combataxe_p2_m1")
+    local _combataxe_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/combataxe_p3_m1")
+    local _forcesword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/forcesword_p1_m1")
+    local _ogryn_club_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/ogryn_club_p1_m1")
+    local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/ogryn_powermaul_p1_m1")
+    local _powermaul_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/powermaul_2h_p1_m1")
+    local _powersword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/powersword_p1_m1")
+    local _thunderhammer_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/thunderhammer_2h_p1_m1")
+--#endregion
+
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
-local _item_melee = _item.."/melee"
-local _item_minion = "content/items/weapons/minions"
+--#region Data
+    local _item = "content/items/weapons/player"
+    local _item_ranged = _item.."/ranged"
+    local _item_melee = _item.."/melee"
+    local _item_minion = "content/items/weapons/minions"
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -18,63 +37,188 @@ local _item_minion = "content/items/weapons/minions"
     local string_find = string.find
     local vector3_box = Vector3Box
     local table = table
+    local table_icombine = table.icombine
+    local table_combine = table.combine
+    local table_model_table = table.model_table
+    local table_merge_recursive = table.merge_recursive
     local tv = table.tv
     local pairs = pairs
     local ipairs = ipairs
     local type = type
 --#endregion
 
--- head_attachments = function(default)
---     local attachments = {
---         {id = "head_01", name = "Head 1"},
---         {id = "head_02", name = "Head 2"},
---         {id = "head_03", name = "Head 3"},
---         {id = "head_04", name = "Head 4"},
---         {id = "head_05", name = "Head 5"},
---     }
---     if default == nil then default = true end
---     if default then return table.icombine(
---         {{id = "head_default", name = mod:localize("mod_attachment_default")}},
---         attachments)
---     else return attachments end
--- end,
--- head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
---     if mesh_move == nil then mesh_move = false end
---     return table.model_table({
---         {name = "head_default", model = ""},
---         {name = "head_01",      model = _item_melee.."/heads/power_maul_head_01"},
---         {name = "head_02",      model = _item_melee.."/heads/power_maul_head_02"},
---         {name = "head_03",      model = _item_melee.."/heads/power_maul_head_03"},
---         {name = "head_04",      model = _item_melee.."/heads/power_maul_head_04"},
---         {name = "head_05",      model = _item_melee.."/heads/power_maul_head_05"},
---     }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move)
--- end,
+--#region Old
+    -- head_attachments = function(default)
+    --     local attachments = {
+    --         {id = "head_01", name = "Head 1"},
+    --         {id = "head_02", name = "Head 2"},
+    --         {id = "head_03", name = "Head 3"},
+    --         {id = "head_04", name = "Head 4"},
+    --         {id = "head_05", name = "Head 5"},
+    --     }
+    --     if default == nil then default = true end
+    --     if default then return table.icombine(
+    --         {{id = "head_default", name = mod:localize("mod_attachment_default")}},
+    --         attachments)
+    --     else return attachments end
+    -- end,
+    -- head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+    --     if mesh_move == nil then mesh_move = false end
+    --     return table.model_table({
+    --         {name = "head_default", model = ""},
+    --         {name = "head_01",      model = _item_melee.."/heads/power_maul_head_01"},
+    --         {name = "head_02",      model = _item_melee.."/heads/power_maul_head_02"},
+    --         {name = "head_03",      model = _item_melee.."/heads/power_maul_head_03"},
+    --         {name = "head_04",      model = _item_melee.."/heads/power_maul_head_04"},
+    --         {name = "head_05",      model = _item_melee.."/heads/power_maul_head_05"},
+    --     }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move)
+    -- end,
 
--- head_attachments = function()
---     return {
---         {id = "2h_power_maul_head_default", name = mod:localize("mod_attachment_default")},
---         {id = "2h_power_maul_head_01",      name = "Head 1"},
---         {id = "2h_power_maul_head_02",      name = "Head 2"},
---         {id = "2h_power_maul_head_03",      name = "Head 3"},
---         {id = "2h_power_maul_head_04",      name = "Head 4"},
---         {id = "2h_power_maul_head_05",      name = "Head 5"},
---     }
--- end,
--- head_models = function(parent, angle, move, remove)
---     local a = angle or 0
---     local m = move or vector3_box(0, 0, 0)
---     local r = remove or vector3_box(0, 0, 0)
---     return {
---         ["2h_power_maul_head_default"] = {model = "",                                          type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
---         ["2h_power_maul_head_01"] =      {model = _item_melee.."/heads/2h_power_maul_head_01", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
---         ["2h_power_maul_head_02"] =      {model = _item_melee.."/heads/2h_power_maul_head_02", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
---         ["2h_power_maul_head_03"] =      {model = _item_melee.."/heads/2h_power_maul_head_03", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
---         ["2h_power_maul_head_04"] =      {model = _item_melee.."/heads/2h_power_maul_head_04", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
---         ["2h_power_maul_head_05"] =      {model = _item_melee.."/heads/2h_power_maul_head_05", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
---     }
--- end,
+    -- head_attachments = function()
+    --     return {
+    --         {id = "2h_power_maul_head_default", name = mod:localize("mod_attachment_default")},
+    --         {id = "2h_power_maul_head_01",      name = "Head 1"},
+    --         {id = "2h_power_maul_head_02",      name = "Head 2"},
+    --         {id = "2h_power_maul_head_03",      name = "Head 3"},
+    --         {id = "2h_power_maul_head_04",      name = "Head 4"},
+    --         {id = "2h_power_maul_head_05",      name = "Head 5"},
+    --     }
+    -- end,
+    -- head_models = function(parent, angle, move, remove)
+    --     local a = angle or 0
+    --     local m = move or vector3_box(0, 0, 0)
+    --     local r = remove or vector3_box(0, 0, 0)
+    --     return {
+    --         ["2h_power_maul_head_default"] = {model = "",                                          type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+    --         ["2h_power_maul_head_01"] =      {model = _item_melee.."/heads/2h_power_maul_head_01", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+    --         ["2h_power_maul_head_02"] =      {model = _item_melee.."/heads/2h_power_maul_head_02", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+    --         ["2h_power_maul_head_03"] =      {model = _item_melee.."/heads/2h_power_maul_head_03", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+    --         ["2h_power_maul_head_04"] =      {model = _item_melee.."/heads/2h_power_maul_head_04", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+    --         ["2h_power_maul_head_05"] =      {model = _item_melee.."/heads/2h_power_maul_head_05", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+    --     }
+    -- end,
+--#endregion
 
 return {
+    small_shaft_attachments = function(default)
+        local attachments = table_icombine(
+            _chainaxe_p1_m1.shaft_attachments(false),
+            _ogryn_powermaul_p1_m1.shaft_attachments(false),
+            _powermaul_2h_p1_m1.shaft_attachments(false),
+            _thunderhammer_2h_p1_m1.shaft_attachments(false)
+        )
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "shaft_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    small_shaft_models = function(content)
+        local data = {}
+        for i = 1, 100, 1 do
+            data[i] = tv(content, i)
+            if data[i].mesh_move == nil then data[i].mesh_move = false end
+        end
+        return table.combine(
+            _chainaxe_p1_m1.shaft_models(data[1].parent, data[1].angle, data[1].move, data[1].remove, data[1].type, data[1].no_support, data[1].automatic_equip, data[1].hide_mesh, data[1].mesh_move, data[1].special_resolve),
+            _ogryn_powermaul_p1_m1.shaft_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve),
+            _powermaul_2h_p1_m1.shaft_models(data[3].parent, data[3].angle, data[3].move, data[3].remove, data[3].type, data[3].no_support, data[3].automatic_equip, data[3].hide_mesh, data[3].mesh_move, data[3].special_resolve),
+            _thunderhammer_2h_p1_m1.shaft_models(data[4].parent, data[4].angle, data[4].move, data[4].remove, data[4].type, data[4].no_support, data[4].automatic_equip, data[4].hide_mesh, data[4].mesh_move, data[4].special_resolve)
+        )
+    end,
+    medium_grip_attachments = function(default)
+        local attachments = table_icombine(
+            _chainaxe_p1_m1.grip_attachments(false),
+            _combataxe_p1_m1.grip_attachments(false),
+            _combataxe_p2_m1.grip_attachments(false),
+            _combataxe_p3_m1.grip_attachments(false),
+            _ogryn_club_p1_m1.grip_attachments(false)
+        )
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "grip_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    medium_grip_models = function(content)
+        local data = {}
+        for i = 1, 100, 1 do
+            data[i] = tv(content, i)
+            if data[i].mesh_move == nil then data[i].mesh_move = false end
+        end
+        return table.combine(
+            _chainaxe_p1_m1.grip_models(data[1].parent, data[1].angle, data[1].move, data[1].remove, data[1].type, data[1].no_support, data[1].automatic_equip, data[1].hide_mesh, data[1].mesh_move, data[1].special_resolve),
+            _combataxe_p1_m1.grip_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve),
+            _combataxe_p2_m1.grip_models(data[3].parent, data[3].angle, data[3].move, data[3].remove, data[3].type, data[3].no_support, data[3].automatic_equip, data[3].hide_mesh, data[3].mesh_move, data[3].special_resolve),
+            _combataxe_p3_m1.grip_models(data[4].parent, data[4].angle, data[4].move, data[4].remove, data[4].type, data[4].no_support, data[4].automatic_equip, data[4].hide_mesh, data[4].mesh_move, data[4].special_resolve),
+            _ogryn_club_p1_m1.grip_models(data[5].parent, data[5].angle, data[5].move, data[5].remove, data[5].type, data[5].no_support, data[5].automatic_equip, data[5].hide_mesh, data[5].mesh_move, data[5].special_resolve)
+        )
+    end,
+    pommel_attachments = function(default, none, krieg, prologue)
+        local attachments = table_icombine(
+            _combataxe_p1_m1.pommel_attachments(false),
+            _combataxe_p2_m1.pommel_attachments(false),
+            _combataxe_p3_m1.pommel_attachments(false, krieg, prologue),
+            _forcesword_p1_m1.pommel_attachments(false),
+            _ogryn_club_p1_m1.pommel_attachments(false),
+            _ogryn_powermaul_p1_m1.pommel_attachments(false),
+            _powermaul_2h_p1_m1.pommel_attachments(false),
+            _powersword_p1_m1.pommel_attachments(false),
+            _thunderhammer_2h_p1_m1.pommel_attachments(false)
+        )
+        if default == nil then default = true end
+        if none then attachments[#attachments+1] = {id = "pommel_none",      name = ""} end
+        -- mod:dtf(attachments, "pommel_attachments", 5)
+        if default then return table.icombine(
+            {{id = "pommel_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    pommel_models = function(content) --parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        local data = {}
+        for i = 1, 100, 1 do
+            data[i] = tv(content, i)
+            if data[i].mesh_move == nil then data[i].mesh_move = false end
+        end
+        return table.combine(
+            _combataxe_p1_m1.pommel_models(data[1].parent, data[1].angle, data[1].move, data[1].remove, data[1].type, data[1].no_support, data[1].automatic_equip, data[1].hide_mesh, data[1].mesh_move, data[1].special_resolve),
+            _combataxe_p2_m1.pommel_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve),
+            _combataxe_p3_m1.pommel_models(data[3].parent, data[3].angle, data[3].move, data[3].remove, data[3].type, data[3].no_support, data[3].automatic_equip, data[3].hide_mesh, data[3].mesh_move, data[3].special_resolve),
+            _forcesword_p1_m1.pommel_models(data[4].parent, data[4].angle, data[4].move, data[4].remove, data[4].type, data[4].no_support, data[4].automatic_equip, data[4].hide_mesh, data[4].mesh_move, data[4].special_resolve),
+            _ogryn_club_p1_m1.pommel_models(data[5].parent, data[5].angle, data[5].move, data[5].remove, data[5].type, data[5].no_support, data[5].automatic_equip, data[5].hide_mesh, data[5].mesh_move, data[5].special_resolve),
+            _ogryn_powermaul_p1_m1.pommel_models(data[6].parent, data[6].angle, data[6].move, data[6].remove, data[6].type, data[6].no_support, data[6].automatic_equip, data[6].hide_mesh, data[6].mesh_move, data[6].special_resolve),
+            _powermaul_2h_p1_m1.pommel_models(data[7].parent, data[7].angle, data[7].move, data[7].remove, data[7].type, data[7].no_support, data[7].automatic_equip, data[7].hide_mesh, data[7].mesh_move, data[7].special_resolve),
+            _powersword_p1_m1.pommel_models(data[8].parent, data[8].angle, data[8].move, data[8].remove, data[8].type, data[8].no_support, data[8].automatic_equip, data[8].hide_mesh, data[8].mesh_move, data[8].special_resolve),
+            _thunderhammer_2h_p1_m1.pommel_models(data[9].parent, data[9].angle, data[9].move, data[9].remove, data[9].type, data[9].no_support, data[9].automatic_equip, data[9].hide_mesh, data[9].mesh_move, data[9].special_resolve)
+        )
+    end,
+    axe_head_attachments = function(default)
+        local attachments = table_icombine(
+            _combataxe_p1_m1.head_attachments(false),
+            _combataxe_p2_m1.head_attachments(false),
+            _combataxe_p3_m1.head_attachments(false)
+        )
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "head_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    axe_head_models = function(content)
+        local data = {}
+        for i = 1, 100, 1 do
+            data[i] = tv(content, i)
+            if data[i].mesh_move == nil then data[i].mesh_move = false end
+        end
+        return table.combine(
+            _combataxe_p1_m1.head_models(data[1].parent, data[1].angle, data[1].move, data[1].remove, data[1].type, data[1].no_support, data[1].automatic_equip, data[1].hide_mesh, data[1].mesh_move, data[1].special_resolve),
+            _combataxe_p2_m1.head_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve),
+            _combataxe_p3_m1.head_models(data[3].parent, data[3].angle, data[3].move, data[3].remove, data[3].type, data[3].no_support, data[3].automatic_equip, data[3].hide_mesh, data[3].mesh_move, data[3].special_resolve)
+        )
+    end,
+
+
+
     blunt_head_attachments = function(default)
         local attachments = {
             {id = "thunder_hammer_head_01",      name = "Thunderhammer 1"},
@@ -179,73 +323,88 @@ return {
             {id = "head_default",  name = mod:localize("mod_attachment_default")}
         }
     end,
-    axe_head_attachments = function()
-        return {
-            {id = "axe_head_01",     name = "Combat Axe 1"},
-            {id = "axe_head_02",     name = "Combat Axe 2"},
-            {id = "axe_head_03",     name = "Combat Axe 3"},
-            {id = "axe_head_04",     name = "Combat Axe 4"},
-            {id = "axe_head_05",     name = "Combat Axe 5"},
-            {id = "hatchet_head_01", name = "Tactical Axe 1"},
-            {id = "hatchet_head_02", name = "Tactical Axe 2"},
-            {id = "hatchet_head_03", name = "Tactical Axe 3"},
-            {id = "hatchet_head_04", name = "Tactical Axe 4"},
-            {id = "hatchet_head_05", name = "Tactical Axe 5"},
-        }
-    end,
-    axe_head_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            head_default =    {model = "",                                    type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_01 =     {model = _item_melee.."/heads/axe_head_01",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_02 =     {model = _item_melee.."/heads/axe_head_02",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_03 =     {model = _item_melee.."/heads/axe_head_03",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_04 =     {model = _item_melee.."/heads/axe_head_04",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_head_05 =     {model = _item_melee.."/heads/axe_head_05",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_head_01 = {model = _item_melee.."/heads/hatchet_head_01", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_head_02 = {model = _item_melee.."/heads/hatchet_head_02", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_head_03 = {model = _item_melee.."/heads/hatchet_head_03", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_head_04 = {model = _item_melee.."/heads/hatchet_head_04", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_head_05 = {model = _item_melee.."/heads/hatchet_head_05", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
-    end,
-    pommel_default = function()
-        return {
-            {id = "pommel_default",  name = mod:localize("mod_attachment_default")}
-        }
-    end,
-    axe_pommel_attachments = function()
-        return {
-            {id = "axe_pommel_01",     name = "Combat Axe 1"},
-            {id = "axe_pommel_02",     name = "Combat Axe 2"},
-            {id = "axe_pommel_03",     name = "Combat Axe 3"},
-            {id = "axe_pommel_04",     name = "Combat Axe 4"},
-            {id = "axe_pommel_05",     name = "Combat Axe 5"},
-            {id = "hatchet_pommel_01", name = "Tactical Axe 1"},
-            {id = "hatchet_pommel_02", name = "Tactical Axe 2"},
-            {id = "hatchet_pommel_03", name = "Tactical Axe 3"},
-            {id = "hatchet_pommel_04", name = "Tactical Axe 4"},
-        }
-    end,
-    axe_pommel_models = function(parent, angle, move, remove)
-        local a = angle or 0
-        local m = move or vector3_box(0, 0, 0)
-        local r = remove or vector3_box(0, 0, 0)
-        return {
-            pommel_default =    {model = "",                                        type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_01 =     {model = _item_melee.."/pommels/axe_pommel_01",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_02 =     {model = _item_melee.."/pommels/axe_pommel_02",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_03 =     {model = _item_melee.."/pommels/axe_pommel_03",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_04 =     {model = _item_melee.."/pommels/axe_pommel_04",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            axe_pommel_05 =     {model = _item_melee.."/pommels/axe_pommel_05",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_pommel_01 = {model = _item_melee.."/pommels/hatchet_pommel_01", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_pommel_02 = {model = _item_melee.."/pommels/hatchet_pommel_02", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_pommel_03 = {model = _item_melee.."/pommels/hatchet_pommel_03", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-            hatchet_pommel_04 = {model = _item_melee.."/pommels/hatchet_pommel_04", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
-        }
-    end,
+    --#region Old
+        -- axe_head_attachments = function()
+        --     return {
+        --         {id = "axe_head_01",     name = "Combat Axe 1"},
+        --         {id = "axe_head_02",     name = "Combat Axe 2"},
+        --         {id = "axe_head_03",     name = "Combat Axe 3"},
+        --         {id = "axe_head_04",     name = "Combat Axe 4"},
+        --         {id = "axe_head_05",     name = "Combat Axe 5"},
+        --         {id = "hatchet_head_01", name = "Tactical Axe 1"},
+        --         {id = "hatchet_head_02", name = "Tactical Axe 2"},
+        --         {id = "hatchet_head_03", name = "Tactical Axe 3"},
+        --         {id = "hatchet_head_04", name = "Tactical Axe 4"},
+        --         {id = "hatchet_head_05", name = "Tactical Axe 5"},
+        --     }
+        -- end,
+        -- axe_head_models = function(parent, angle, move, remove)
+        --     local a = angle or 0
+        --     local m = move or vector3_box(0, 0, 0)
+        --     local r = remove or vector3_box(0, 0, 0)
+        --     return {
+        --         head_default =    {model = "",                                    type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_head_01 =     {model = _item_melee.."/heads/axe_head_01",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_head_02 =     {model = _item_melee.."/heads/axe_head_02",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_head_03 =     {model = _item_melee.."/heads/axe_head_03",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_head_04 =     {model = _item_melee.."/heads/axe_head_04",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_head_05 =     {model = _item_melee.."/heads/axe_head_05",     type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_head_01 = {model = _item_melee.."/heads/hatchet_head_01", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_head_02 = {model = _item_melee.."/heads/hatchet_head_02", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_head_03 = {model = _item_melee.."/heads/hatchet_head_03", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_head_04 = {model = _item_melee.."/heads/hatchet_head_04", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_head_05 = {model = _item_melee.."/heads/hatchet_head_05", type = "head", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --     }
+        -- end,
+        -- pommel_default = function()
+        --     return {
+        --         {id = "pommel_default",  name = mod:localize("mod_attachment_default")}
+        --     }
+        -- end,
+        -- pommel_attachments = function()
+        --     return {
+        --         {id = "axe_pommel_01",     name = "Combat Axe 1"},
+        --         {id = "axe_pommel_02",     name = "Combat Axe 2"},
+        --         {id = "axe_pommel_03",     name = "Combat Axe 3"},
+        --         {id = "axe_pommel_04",     name = "Combat Axe 4"},
+        --         {id = "axe_pommel_05",     name = "Combat Axe 5"},
+        --         {id = "hatchet_pommel_01", name = "Tactical Axe 1"},
+        --         {id = "hatchet_pommel_02", name = "Tactical Axe 2"},
+        --         {id = "hatchet_pommel_03", name = "Tactical Axe 3"},
+        --         {id = "hatchet_pommel_04", name = "Tactical Axe 4"},
+        --         {id = "power_sword_pommel_01",      name = "Pommel 1"},
+        --         {id = "power_sword_pommel_02",      name = "Pommel 2"},
+        --         {id = "power_sword_pommel_03",      name = "Pommel 3"},
+        --         {id = "power_sword_pommel_04",      name = "Pommel 4"},
+        --         {id = "power_sword_pommel_05",      name = "Pommel 5"},
+        --         {id = "power_sword_2h_pommel_01",      name = "2H Power Sword 1"},
+        --         {id = "power_sword_2h_pommel_02",      name = "2H Power Sword 2"},
+        --         {id = "power_sword_2h_pommel_03",      name = "2H Power Sword 3"},
+        --         {id = "force_sword_pommel_01",      name = "Force Sword 1"},
+        --         {id = "force_sword_pommel_02",      name = "Force Sword 2"},
+        --         {id = "force_sword_pommel_03",      name = "Force Sword 3"},
+        --         {id = "force_sword_pommel_04",      name = "Force Sword 4"},
+        --         {id = "force_sword_pommel_05",      name = "Force Sword 5"},
+        --     }
+        -- end,
+        -- pommel_models = function(parent, angle, move, remove)
+        --     local a = angle or 0
+        --     local m = move or vector3_box(0, 0, 0)
+        --     local r = remove or vector3_box(0, 0, 0)
+        --     return {
+        --         pommel_default =    {model = "",                                        type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_pommel_01 =     {model = _item_melee.."/pommels/axe_pommel_01",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_pommel_02 =     {model = _item_melee.."/pommels/axe_pommel_02",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_pommel_03 =     {model = _item_melee.."/pommels/axe_pommel_03",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_pommel_04 =     {model = _item_melee.."/pommels/axe_pommel_04",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         axe_pommel_05 =     {model = _item_melee.."/pommels/axe_pommel_05",     type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_pommel_01 = {model = _item_melee.."/pommels/hatchet_pommel_01", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_pommel_02 = {model = _item_melee.."/pommels/hatchet_pommel_02", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_pommel_03 = {model = _item_melee.."/pommels/hatchet_pommel_03", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --         hatchet_pommel_04 = {model = _item_melee.."/pommels/hatchet_pommel_04", type = "pommel", parent = tv(parent, 1), angle = a, move = m, remove = r, mesh_move = false},
+        --     }
+        -- end,
+    --#endregion
     human_power_maul_shaft_attachments = function(default)
         local attachments = {
             {id = "small_shaft_01", name = "Small Shaft 1"},
@@ -327,51 +486,6 @@ return {
             {name = "small_connector_06", model = _item_melee.."/connectors/human_power_maul_connector_06"},
         }, parent, angle, move, remove, type or "connector", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-
-    pommel_attachments = function(default, none)
-        local attachments = {
-            {id = "power_sword_pommel_01",      name = "Pommel 1"},
-            {id = "power_sword_pommel_02",      name = "Pommel 2"},
-            {id = "power_sword_pommel_03",      name = "Pommel 3"},
-            {id = "power_sword_pommel_04",      name = "Pommel 4"},
-            {id = "power_sword_pommel_05",      name = "Pommel 5"},
-            {id = "power_sword_2h_pommel_01",      name = "2H Power Sword 1"},
-            {id = "power_sword_2h_pommel_02",      name = "2H Power Sword 2"},
-            {id = "power_sword_2h_pommel_03",      name = "2H Power Sword 3"},
-            {id = "force_sword_pommel_01",      name = "Force Sword 1"},
-            {id = "force_sword_pommel_02",      name = "Force Sword 2"},
-            {id = "force_sword_pommel_03",      name = "Force Sword 3"},
-            {id = "force_sword_pommel_04",      name = "Force Sword 4"},
-            {id = "force_sword_pommel_05",      name = "Force Sword 5"},
-        }
-        if default == nil then default = true end
-        if none then attachments[#attachments+1] = {id = "pommel_none",      name = ""} end
-        if default then return table.icombine(
-            {{id = "pommel_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    pommel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "pommel_default", model = ""},
-            {name = "pommel_none", model = ""},
-            {name = "power_sword_pommel_01",      model = _item_melee.."/pommels/power_sword_pommel_01"},
-            {name = "power_sword_pommel_02",      model = _item_melee.."/pommels/power_sword_pommel_02"},
-            {name = "power_sword_pommel_03",      model = _item_melee.."/pommels/power_sword_pommel_03"},
-            {name = "power_sword_pommel_04",      model = _item_melee.."/pommels/power_sword_pommel_05"},
-            {name = "power_sword_pommel_05",      model = _item_melee.."/pommels/power_sword_pommel_06"},
-            {name = "power_sword_2h_pommel_01",      model = _item_melee.."/pommels/2h_power_sword_pommel_01"},
-            {name = "power_sword_2h_pommel_02",      model = _item_melee.."/pommels/2h_power_sword_pommel_02"},
-            {name = "power_sword_2h_pommel_03",      model = _item_melee.."/pommels/2h_power_sword_pommel_03"},
-            {name = "force_sword_pommel_01",      model = _item_melee.."/pommels/force_sword_pommel_01"},
-            {name = "force_sword_pommel_02",      model = _item_melee.."/pommels/force_sword_pommel_02"},
-            {name = "force_sword_pommel_03",      model = _item_melee.."/pommels/force_sword_pommel_03"},
-            {name = "force_sword_pommel_04",      model = _item_melee.."/pommels/force_sword_pommel_04"},
-            {name = "force_sword_pommel_05",      model = _item_melee.."/pommels/force_sword_pommel_05"},
-        }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-
     sword_grip_attachments = function(default)
         local attachments = {
             {id = "power_sword_grip_01",      name = "Power Sword 1"},

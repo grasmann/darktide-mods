@@ -123,6 +123,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 	self.equipment = extension_init_data.equipment
 	self.is_starting_aim = nil
 	self._is_aiming = nil
+	self._is_unaiming = nil
 	self.aim_timer = nil
 	self.position_offset = nil
 	self.rotation_offset = nil
@@ -168,12 +169,23 @@ SightExtension.is_braced = function(self)
 	return self._is_braced
 end
 
+SightExtension.crosshair = function(self, crosshair_type)
+	if self:is_hiding_crosshair() then
+		return "ironsight"
+	end
+	-- if crosshair_type == "ironsight" then
+	-- 	local template = self.ranged_weapon.weapon_template
+	-- 	return template.crosshair.crosshair_type
+	-- end
+	return crosshair_type
+end
+
 SightExtension.is_hiding_crosshair = function(self)
 	-- Get value
 	local laser = self.deactivate_crosshair_laser and mod:execute_extension(self.player_unit, "laser_pointer_system", "is_active")
 	local sniper_or_scope = self:is_sniper() or self:is_scope()
 	local aiming = self.deactivate_crosshair_aiming and self._is_aiming and sniper_or_scope
-	self._is_hiding_crosshair = laser or aiming
+	self._is_hiding_crosshair = (laser or aiming) and self:get_first_person()
 	-- Return
 	return self._is_hiding_crosshair
 end
@@ -272,6 +284,7 @@ SightExtension.set_weapon_values = function(self)
 	end
 	self.sniper_zoom = nil
 	if self:is_sniper() then
+		-- self.camera_manager = managers.state.camera
 		self.sniper_zoom = mod.sniper_zoom_levels[self.sight_name] or 7
 		self:set_sniper_scope_unit()
 	end
@@ -373,6 +386,7 @@ SightExtension.on_unaim_start = function(self, t)
 		self._is_hiding_crosshair = nil
 		self.is_starting_aim = nil
 		self._is_aiming = nil
+		self._is_unaiming = true
 		self.aim_timer = t + self.reset_time
 	end
 end
@@ -383,8 +397,6 @@ SightExtension.on_settings_changed = function(self)
 	self.sniper_effect = mod:get("mod_option_scopes_particle")
 	self.deactivate_crosshair_laser = mod:get("mod_option_deactivate_crosshair_laser")
 	self.deactivate_crosshair_aiming = mod:get("mod_option_deactivate_crosshair_aiming")
-	self.scopes_recoil = mod:get("mod_option_scopes_recoil")
-	self.scopes_sway = mod:get("mod_option_scopes_sway")
 	self.weapon_dof = mod:get("mod_option_misc_weapon_dof")
 end
 
@@ -535,6 +547,7 @@ SightExtension.update = function(self, unit, dt, t)
 				self.position_offset = nil
 				self.rotation_offset = nil
 				self.aim_timer = nil
+				self._is_unaiming = nil
 			end
 		end
 
@@ -548,11 +561,14 @@ SightExtension.update_position_and_rotation = function(self)
 		-- Position
 		local position_offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
 		local mat = quaternion_matrix4x4(unit_local_rotation(self.ranged_weapon.weapon_unit, 1))
-		unit_set_local_position(self.first_person_unit, 7, matrix4x4_transform(mat, position_offset * -1))
+		local node = Unit.node(self.first_person_unit, "ap_aim")
+		unit_set_local_position(self.first_person_unit, node, matrix4x4_transform(mat, position_offset))
 		-- Rotation
 		local rotation_offset = self.rotation_offset and quaternion_unbox(self.rotation_offset) or vector3_zero()
 		local rotation = quaternion_from_euler_angles_xyz(rotation_offset[1], rotation_offset[2], rotation_offset[3])
 		unit_set_local_rotation(self.ranged_weapon.weapon_unit, 1, rotation)
+
+		world_update_unit_and_children(self.world, self.first_person_unit)
 	end
 end
 
@@ -595,7 +611,7 @@ SightExtension.update_zoom = function(self, viewport_name)
 	if self.initialized and self:get_first_person() then
 		local viewport = ScriptWorld.viewport(self.world, viewport_name)
 		local camera = viewport and ScriptViewport.camera(viewport)
-		if camera and self._is_aiming then
+		if camera then --and (self._is_aiming or self._is_unaiming) then
 			self:set_default_fov(camera_vertical_fov(camera), camera_custom_vertical_fov(camera))
 			if self.custom_vertical_fov then camera_set_custom_vertical_fov(camera, self.custom_vertical_fov) end
 			if self.vertical_fov then camera_set_vertical_fov(camera, self.vertical_fov) end

@@ -26,11 +26,14 @@ local mod = get_mod("weapon_customization")
 return {
     grip_attachments = function(default)
         local attachments = {
-            {id = "falchion_grip_01",      name = "Grip 1"},
-            {id = "falchion_grip_02",      name = "Grip 2"},
-            {id = "falchion_grip_03",      name = "Grip 3"},
-            {id = "falchion_grip_04",      name = "Grip 4"},
-            {id = "falchion_grip_05",      name = "Grip 5"},
+            {id = "falchion_grip_01",       name = "Grip 1"},
+            {id = "falchion_grip_02",       name = "Grip 2"},
+            {id = "falchion_grip_03",       name = "Grip 3"},
+            {id = "falchion_grip_04",       name = "Grip 4"},
+            {id = "falchion_grip_05",       name = "Grip 5"},
+            {id = "power_falchion_grip_01", name = "Power Falchion 1"},
+            {id = "power_falchion_grip_02", name = "Power Falchion 2"},
+            {id = "power_falchion_grip_03", name = "Power Falchion 3"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -41,12 +44,15 @@ return {
     grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
-            {name = "falchion_grip_default", model = ""},
-            {name = "falchion_grip_01",      model = _item_melee.."/grips/falchion_grip_01"},
-            {name = "falchion_grip_02",      model = _item_melee.."/grips/falchion_grip_02"},
-            {name = "falchion_grip_03",      model = _item_melee.."/grips/falchion_grip_03"},
-            {name = "falchion_grip_04",      model = _item_melee.."/grips/falchion_grip_04"},
-            {name = "falchion_grip_05",      model = _item_melee.."/grips/falchion_grip_05"},
+            {name = "falchion_grip_default",  model = ""},
+            {name = "falchion_grip_01",       model = _item_melee.."/grips/falchion_grip_01"},
+            {name = "falchion_grip_02",       model = _item_melee.."/grips/falchion_grip_02"},
+            {name = "falchion_grip_03",       model = _item_melee.."/grips/falchion_grip_03"},
+            {name = "falchion_grip_04",       model = _item_melee.."/grips/falchion_grip_04"},
+            {name = "falchion_grip_05",       model = _item_melee.."/grips/falchion_grip_05"},
+            {name = "power_falchion_grip_01", model = _item_melee.."/grips/power_falchion_grip_01"},
+            {name = "power_falchion_grip_02", model = _item_melee.."/grips/power_falchion_grip_02"},
+            {name = "power_falchion_grip_03", model = _item_melee.."/grips/power_falchion_grip_03"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     body_attachments = function(default)

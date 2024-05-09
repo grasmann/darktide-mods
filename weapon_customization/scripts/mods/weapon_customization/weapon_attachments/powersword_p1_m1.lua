@@ -4,130 +4,20 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_melee")
-
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-local _item = "content/items/weapons/player"
-local _item_melee = _item.."/melee"
+--#region Require
+    local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+    local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_melee")
+    local _powersword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/powersword_p1_m1")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local string = string
-    local string_find = string.find
     local vector3_box = Vector3Box
     local table = table
-    local pairs = pairs
-    local ipairs = ipairs
-    local type = type
 --#endregion
-
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
-
-local functions = {
-    grip_attachments = function(default)
-        local attachments = {
-            {id = "power_sword_grip_01",      name = "Grip 1"},
-            {id = "power_sword_grip_02",      name = "Grip 2"},
-            {id = "power_sword_grip_03",      name = "Grip 3"},
-            {id = "power_sword_grip_04",      name = "Grip 4"},
-            {id = "power_sword_grip_05",      name = "Grip 5"},
-            {id = "power_sword_grip_06",      name = "Grip 6"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "power_sword_grip_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "power_sword_grip_default", model = ""},
-            {name = "power_sword_grip_01",      model = _item_melee.."/grips/power_sword_grip_01"},
-            {name = "power_sword_grip_02",      model = _item_melee.."/grips/power_sword_grip_02"},
-            {name = "power_sword_grip_03",      model = _item_melee.."/grips/power_sword_grip_03"},
-            {name = "power_sword_grip_04",      model = _item_melee.."/grips/power_sword_grip_04"},
-            {name = "power_sword_grip_05",      model = _item_melee.."/grips/power_sword_grip_05"},
-            {name = "power_sword_grip_06",      model = _item_melee.."/grips/power_sword_grip_06"},
-        }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    blade_attachments = function(default)
-        local attachments = {
-            {id = "power_sword_blade_01",      name = "Blade 1"},
-            {id = "power_sword_blade_02",      name = "Blade 2"},
-            {id = "power_sword_blade_03",      name = "Blade 3"},
-            {id = "power_sword_blade_04",      name = "Blade 4"},
-            {id = "power_sword_blade_05",      name = "Blade 5"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "power_sword_blade_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    blade_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "power_sword_blade_default", model = ""},
-            {name = "power_sword_blade_01",      model = _item_melee.."/blades/power_sword_blade_01"},
-            {name = "power_sword_blade_02",      model = _item_melee.."/blades/power_sword_blade_02"},
-            {name = "power_sword_blade_03",      model = _item_melee.."/blades/power_sword_blade_03"},
-            {name = "power_sword_blade_04",      model = _item_melee.."/blades/power_sword_blade_05"},
-            {name = "power_sword_blade_05",      model = _item_melee.."/blades/power_sword_blade_06"},
-        }, parent, angle, move, remove, type or "blade", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    pommel_attachments = function(default)
-        local attachments = {
-            {id = "power_sword_pommel_01",      name = "Pommel 1"},
-            {id = "power_sword_pommel_02",      name = "Pommel 2"},
-            {id = "power_sword_pommel_03",      name = "Pommel 3"},
-            {id = "power_sword_pommel_04",      name = "Pommel 4"},
-            {id = "power_sword_pommel_05",      name = "Pommel 5"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "power_sword_pommel_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    pommel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "power_sword_pommel_default", model = ""},
-            {name = "power_sword_pommel_01",      model = _item_melee.."/pommels/power_sword_pommel_01"},
-            {name = "power_sword_pommel_02",      model = _item_melee.."/pommels/power_sword_pommel_02"},
-            {name = "power_sword_pommel_03",      model = _item_melee.."/pommels/power_sword_pommel_03"},
-            {name = "power_sword_pommel_04",      model = _item_melee.."/pommels/power_sword_pommel_05"},
-            {name = "power_sword_pommel_05",      model = _item_melee.."/pommels/power_sword_pommel_06"},
-        }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    hilt_attachments = function(default)
-        local attachments = {
-            {id = "power_sword_hilt_01",      name = "Hilt 1"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "power_sword_hilt_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    hilt_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "power_sword_hilt_default", model = ""},
-            {name = "power_sword_hilt_01",      model = _item_melee.."/hilts/power_sword_hilt_01"},
-        }, parent, angle, move, remove, type or "hilt", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-}
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
@@ -152,7 +42,7 @@ local _combat_sword_grips = "combat_sword_grip_01|combat_sword_grip_02|combat_sw
 local _knife_grips = "knife_grip_01|knife_grip_02|knife_grip_03|knife_grip_04|knife_grip_05|knife_grip_06|knife_grip_07"
 
 return table.combine(
-    functions,
+    _powersword_p1_m1,
     {
         attachments = {
             trinket_hook = _common.trinket_hook_attachments(),
@@ -161,7 +51,7 @@ return table.combine(
             -- grip = functions.grip_attachments(),
             grip = _common_melee.sword_grip_attachments(),
             -- pommel = functions.pommel_attachments(),
-            pommel = _common_melee.pommel_attachments(),
+            pommel = _common_melee.pommel_attachments(true, false, false, false),
             -- blade = functions.blade_attachments(),
             blade = _common_melee.sword_blade_attachments(),
             -- hilt = functions.hilt_attachments(),
@@ -354,7 +244,9 @@ return table.combine(
                 {hilt = "hilt_default|force_sword_hilt_07"},
             }),
             -- functions.pommel_models("grip", 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.1))
-            _common_melee.pommel_models("grip", 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.1))
+            _common_melee.pommel_models({
+                {parent = "grip", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.1)}
+            })
         ),
         anchors = {
             fixes = {

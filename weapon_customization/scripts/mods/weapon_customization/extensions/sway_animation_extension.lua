@@ -69,6 +69,7 @@ local Sway = mod:original_require("scripts/utilities/sway")
 
 local SLOT_SECONDARY = "slot_secondary"
 local SWAY_OPTION = "mod_option_misc_sway"
+local SWAY_OPTION_AIM = "mod_option_misc_sway_aim"
 local CROSSHAIR_POSITION_LERP_SPEED = 35
 
 -- ##### ┌─┐┬ ┬┌─┐┬ ┬  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ############################################
@@ -104,6 +105,7 @@ end
 
 SwayAnimationExtension.on_settings_changed = function(self)
     self.on = mod:get(SWAY_OPTION)
+    self.on_aim = mod:get(SWAY_OPTION_AIM)
 end
 
 SwayAnimationExtension.on_wield_slot = function(self, slot)
@@ -156,7 +158,7 @@ SwayAnimationExtension.update_animation = function(self, dt, t)
     
 
     local not_aiming_or_braced = not self:is_aiming() or self:is_braced()
-    if self.initialized and self:get_first_person() and not_aiming_or_braced then
+    if self.initialized and self:get_first_person() and (not_aiming_or_braced or self.on_aim) then
         -- Get rotation
         local original_rotation = unit_local_rotation(self.first_person_unit, 1)
         local last_player_rotation = self.last_real_rotation and quaternion_unbox(self.last_real_rotation) or original_rotation

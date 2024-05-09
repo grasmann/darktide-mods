@@ -52,6 +52,7 @@ local mod = get_mod("weapon_customization")
 	local matrix4x4_box = Matrix4x4Box
 	local wc_perf_start = wc_perf.start
 	local unit_set_data = Unit.set_data
+	local unit_get_data = Unit.get_data
 	local unit_has_node = Unit.has_node
 	local table_contains = table.contains
 	local quaternion_box = QuaternionBox
@@ -199,15 +200,19 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 			-- Set root default position
 			slot_infos[slot_info_id].unit_default_position["root"] = vector3_box(unit_local_position(item_unit, 1))
+			unit_set_data(item_unit, "default_position", vector3_box(unit_local_position(item_unit, 1)))
 
 			-- Set unit default positions
 			for _, unit in pairs(attachment_units) do
 				slot_infos[slot_info_id].unit_default_position[unit] = vector3_box(unit_local_position(unit, 1))
+				unit_set_data(unit, "default_position", vector3_box(unit_local_position(unit, 1)))
 				slot_infos[slot_info_id].unit_default_rotation[unit] = QuaternionBox(Unit.local_rotation(unit, 1))
+				unit_set_data(unit, "default_rotation", QuaternionBox(Unit.local_rotation(unit, 1)))
 			end
 
 			-- Iterate attachment units
-			for _, unit in pairs(attachment_units) do
+			for slot_index, unit in pairs(attachment_units) do
+
 				local unit_name = unit_debug_name(unit)
 				local anchor = nil
 
@@ -216,12 +221,19 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				local num_meshes = unit_num_meshes(unit)
 				for i = 1, num_meshes do
 					mod.mesh_positions[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
+					unit_set_data(unit, "mesh_positions", i, vector3_box(mesh_local_position(unit_mesh(unit, i))))
 				end
 
 				-- Handle positioning and setup infos
 				if slot_infos[slot_info_id] then
-					local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
-					local attachment_slot = slot_infos[slot_info_id].unit_to_attachment_slot[unit]
+					-- local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
+					local attachment_name = Unit.get_data(unit, "attachment_name")
+					if attachment_name then unit_set_data(item_unit, attachment_name, unit) end
+					-- local attachment_slot = slot_infos[slot_info_id].unit_to_attachment_slot[unit]
+					local attachment_slot = Unit.get_data(unit, "attachment_slot")
+					if attachment_slot then unit_set_data(item_unit, attachment_slot, unit) end
+					unit_set_data(item_unit, "attachment_slots", slot_index, attachment_slot)
+
 					local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
 					local parent_name = attachment_data and attachment_data.parent and attachment_data.parent
 					local parent_node = attachment_data and attachment_data.parent_node and attachment_data.parent_node or 1
@@ -229,6 +241,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					-- Root movement
 					local root_movement = attachment_data and attachment_data.move_root or false
 					slot_infos[slot_info_id].unit_root_movement[unit] = root_movement
+					unit_set_data(unit, "root_movement", root_movement)
 
 					-- Anchor
 					anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment_name]
@@ -256,10 +269,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 					-- Setup data
 					slot_infos[slot_info_id].unit_mesh_move[unit] = mesh_move
+					unit_set_data(unit, "mesh_move", mesh_move)
 					slot_infos[slot_info_id].unit_mesh_position[unit] = anchor and anchor.mesh_position
+					unit_set_data(unit, "mesh_position", anchor and anchor.mesh_position or {})
 					slot_infos[slot_info_id].unit_mesh_rotation[unit] = anchor and anchor.mesh_rotation
+					unit_set_data(unit, "mesh_rotation", anchor and anchor.mesh_rotation or {})
 					slot_infos[slot_info_id].unit_mesh_index[unit] = anchor and anchor.mesh_index
+					unit_set_data(unit, "mesh_index", anchor and anchor.mesh_index or {})
 					slot_infos[slot_info_id].unit_root_position[unit] = anchor and anchor.root_position
+					unit_set_data(unit, "root_position", anchor and anchor.root_position or {})
 
 					-- Anchor found?
 					if anchor then
@@ -322,13 +340,16 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				local num_meshes = unit_num_meshes(unit)
 				for i = 1, num_meshes do
 					mod.mesh_positions_changed[unit][i] = vector3_box(mesh_local_position(unit_mesh(unit, i)))
+					unit_set_data(unit, "mesh_positions_changed", i, vector3_box(mesh_local_position(unit_mesh(unit, i))))
 				end
 			end
 
 			-- Set unit changed positions
 			for _, unit in pairs(attachment_units) do
 				slot_infos[slot_info_id].unit_changed_position[unit] = vector3_box(unit_local_position(unit, 1))
+				unit_set_data(unit, "changed_position", vector3_box(unit_local_position(unit, 1)))
 				slot_infos[slot_info_id].unit_changed_rotation[unit] = QuaternionBox(Unit.local_rotation(unit, 1))
+				unit_set_data(unit, "changed_rotation", QuaternionBox(Unit.local_rotation(unit, 1)))
 			end
 
 			for _, unit in pairs(attachment_units) do

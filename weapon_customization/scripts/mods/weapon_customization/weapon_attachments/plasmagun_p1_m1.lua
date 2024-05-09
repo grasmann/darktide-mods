@@ -4,158 +4,35 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
-local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
-
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
+--#region Require
+    local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
+    local _common_ranged = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_ranged")
+    local _common_lasgun = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_lasgun")
+    local _plasmagun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/plasmagun_p1_m1")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local string = string
-    local string_find = string.find
     local vector3_box = Vector3Box
     local table = table
-    local pairs = pairs
-    local ipairs = ipairs
-    local type = type
 --#endregion
-
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
-
-local functions = {
-    receiver_attachments = function(default)
-        local attachments = {
-            {id = "receiver_01", name = "Receiver 1"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "receiver_default",   name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    receiver_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "receiver_default", model = ""},
-            {name = "receiver_01",      model = _item_ranged.."/recievers/plasma_rifle_receiver_01"},
-        }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    magazine_attachments = function(default)
-        local attachments = {
-            {id = "magazine_01", name = "Magazine 1"},
-            {id = "magazine_02", name = "Magazine 2"},
-            {id = "magazine_03", name = "Magazine 3"},
-            -- {id = "magazine_04",        name = "Magazine 4"}, -- Was removed
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "magazine_default",   name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    magazine_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "magazine_default", model = ""},
-            {name = "magazine_01",      model = _item_ranged.."/magazines/plasma_rifle_magazine_01"},
-            {name = "magazine_02",      model = _item_ranged.."/magazines/plasma_rifle_magazine_02"},
-            {name = "magazine_03",      model = _item_ranged.."/magazines/melta_gun_magazine_01"},
-            -- {name = "magazine_04",      model = _item_ranged.."/magazines/plasma_rifle_magazine_03"}, -- Was removed
-        }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    barrel_attachments = function(default)
-        local attachments = {
-            {id = "barrel_01", name = "Barrel 1"},
-            {id = "barrel_02", name = "Barrel 2"},
-            {id = "barrel_03", name = "Barrel 3"},
-            -- {id = "barrel_04",      name = "Barrel 4"}, -- Was removed
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "barrel_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "barrel_default", model = ""},
-            {name = "barrel_01",      model = _item_ranged.."/barrels/plasma_rifle_barrel_01"},
-            {name = "barrel_02",      model = _item_ranged.."/barrels/plasma_rifle_barrel_02"},
-            {name = "barrel_03",      model = _item_ranged.."/barrels/plasma_rifle_barrel_03"},
-            -- {name = "barrel_04",      model = _item_ranged.."/barrels/plasma_rifle_barrel_04"}, -- Was removed
-        }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    stock_attachments = function(default)
-        local attachments = {
-            {id = "plasma_rifle_stock_01", name = "Ventilation 1"},
-            {id = "plasma_rifle_stock_02", name = "Ventilation 2"},
-            {id = "plasma_rifle_stock_03", name = "Ventilation 3"},
-            {id = "plasma_rifle_stock_04", name = "Ventilation 4"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "plasma_rifle_stock_default", name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    stock_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "plasma_rifle_stock_default", model = ""},
-            {name = "plasma_rifle_stock_01",      model = _item_ranged.."/stocks/plasma_rifle_stock_01"},
-            {name = "plasma_rifle_stock_02",      model = _item_ranged.."/stocks/plasma_rifle_stock_02"},
-            {name = "plasma_rifle_stock_03",      model = _item_ranged.."/stocks/plasma_rifle_stock_03"},
-            {name = "plasma_rifle_stock_04",      model = _item_ranged.."/stocks/plasma_rifle_stock_04"},
-        }, parent, angle, move, remove, type or "stock", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end,
-    grip_attachments = function(default)
-        local attachments = {
-            {id = "grip_01", name = "Grip 1"},
-            {id = "grip_02", name = "Grip 2"},
-            {id = "grip_03", name = "Grip 3"},
-        }
-        if default == nil then default = true end
-        if default then return table.icombine(
-            {{id = "grip_default",   name = mod:localize("mod_attachment_default")}},
-            attachments)
-        else return attachments end
-    end,
-    grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        if mesh_move == nil then mesh_move = false end
-        return table.model_table({
-            {name = "grip_default", model = ""},
-            {name = "grip_01",      model = _item_ranged.."/grips/plasma_rifle_grip_01"},
-            {name = "grip_02",      model = _item_ranged.."/grips/plasma_rifle_grip_02"},
-            {name = "grip_03",      model = _item_ranged.."/grips/plasma_rifle_grip_03"},
-        }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-    end
-}
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 return table.combine(
-    functions,
+    _plasmagun_p1_m1,
     {
         attachments = {
             -- Native
-            receiver = functions.receiver_attachments(),
-            magazine = functions.magazine_attachments(),
-            barrel = functions.barrel_attachments(),
-            stock = functions.stock_attachments(),
+            receiver = _plasmagun_p1_m1.receiver_attachments(),
+            magazine = _plasmagun_p1_m1.magazine_attachments(),
+            barrel = _plasmagun_p1_m1.barrel_attachments(),
+            stock = _plasmagun_p1_m1.stock_attachments(),
             -- Ranged
             sight = table.icombine(
                 _common_ranged.reflex_sights_attachments()--,
@@ -170,16 +47,16 @@ return table.combine(
         },
         models = table.combine(
             -- Native
-            functions.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
-            functions.magazine_models(nil, .1, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
-            functions.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), "barrel", {
+            _plasmagun_p1_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
+            _plasmagun_p1_m1.magazine_models(nil, .1, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
+            _plasmagun_p1_m1.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0), "barrel", {
                 {"trinket_hook_empty"},
                 {"trinket_hook_empty"},
                 {"trinket_hook_empty"},
                 {"trinket_hook_empty"},
             }),
-            functions.stock_models(nil, .75, vector3_box(-.3, -4, -.1), vector3_box(0, -.015, .1)),
-            functions.grip_models(nil, .2, vector3_box(-.3, -4, .1), vector3_box(0, -.1, -.1)),
+            _plasmagun_p1_m1.stock_models(nil, .75, vector3_box(-.3, -4, -.1), vector3_box(0, -.015, .1)),
+            _plasmagun_p1_m1.grip_models(nil, .2, vector3_box(-.3, -4, .1), vector3_box(0, -.1, -.1)),
             -- Ranged
             _common_ranged.reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", nil, {
                 {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"},
@@ -245,7 +122,7 @@ return table.combine(
             _common.trinket_hook_models("barrel", -.2, vector3_box(.1, -4, .2), vector3_box(0, 0, -.2))
         ),
         anchors = {
-            scope_offset = {position = vector3_box(.063, .15, -.00675)},
+            scope_offset = {position = vector3_box(-.07, -.2, .00675)},
             fixes = {
                 --#region Scope
                     -- Ranger's Vigil
@@ -258,7 +135,7 @@ return table.combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(.05, .15, -.0145), rotation = vector3_box(-5, -7.5, 0)}},
+                        scope_offset = {position = vector3_box(.05, -.15, .0145), rotation = vector3_box(-5, -7.5, 0)}},
                     -- Martyr's Gaze
                     {dependencies = {"scope_01"},
                         sight = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 1.5, 1),
@@ -269,7 +146,7 @@ return table.combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, .015, .0135), rotation = vector3_box(.6, 0, 0)}},
+                        scope_offset = {position = vector3_box(0, -.015, -.0135), rotation = vector3_box(.6, 0, 0)}},
                     -- Exterminatus Lens
                     {dependencies = {"scope_02"},
                         sight = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 3, 1),
@@ -280,7 +157,7 @@ return table.combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.048), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, .17, .01), rotation = vector3_box(.6, 0, 0)}},
+                        scope_offset = {position = vector3_box(0, -.17, -.01), rotation = vector3_box(.6, 0, 0)}},
                     {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0),
                         animation_wait_attach = {"rail"}
                     }},

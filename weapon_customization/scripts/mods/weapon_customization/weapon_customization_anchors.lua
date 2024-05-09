@@ -15,6 +15,13 @@ local _item_minion = "content/items/weapons/minions"
 
 --#region local functions
 	local table_size = table.size
+	local ipairs = ipairs
+	local pairs = pairs
+	local type = type
+	local string = string
+	local string_find = string.find
+	local vector3_box = Vector3Box
+	local table_merge_recursive = table.merge_recursive
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐  ┌┬┐┌─┐┌┐ ┬  ┌─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###############################################
@@ -62,8 +69,8 @@ table.tv = function(t, i)
 end
 table.model_table = function(content, parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	local angle = angle or 0
-	local move = move or Vector3Box(0, 0, 0)
-	local remove = remove or Vector3Box(0, 0, 0)
+	local move = move or vector3_box(0, 0, 0)
+	local remove = remove or vector3_box(0, 0, 0)
 	local type = type or "none"
 	local no_support = no_support or {}
 	local automatic_equip = automatic_equip or {}
@@ -72,6 +79,7 @@ table.model_table = function(content, parent, angle, move, remove, type, no_supp
 	-- Build table
 	local _table = {}
 	local i = 1
+	-- local this_index = start_index or index
 	for _, content_line in pairs(content) do
 		_table[content_line.name] = {
 			model = content_line.model,
@@ -90,6 +98,7 @@ table.model_table = function(content, parent, angle, move, remove, type, no_supp
 		}
 		i = i + 1
 		index = index + 1
+		-- this_index = this_index + 1
 	end
 	return _table
 end
@@ -99,13 +108,7 @@ end
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-local string = string
-local string_find = string.find
-local vector3_box = Vector3Box
-local pairs = pairs
-local ipairs = ipairs
-local type = type
-local table = table
+	local table = table
 --#endregion
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
@@ -411,6 +414,7 @@ local table = table
 		connector = "connectors",
 		lens = "lenses",
 		lens_2 = "lenses",
+		pommel = "pommels",
 	}
 	mod.shafts = {
 		"small_shaft_01",
@@ -891,7 +895,46 @@ end
 	mod.attachment_sounds = {
 		--#region Ogryn Guns
 			ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.sounds,
-			ogryn_rippergun_p1_m1 = _ogryn_rippergun_p1_m1.sounds,
+			ogryn_rippergun_p1_m1 	 = _ogryn_rippergun_p1_m1.sounds,
+			ogryn_thumper_p1_m1      = _ogryn_thumper_p1_m1.sounds,
+			ogryn_gauntlet_p1_m1     = _ogryn_gauntlet_p1_m1.sounds,
+		--#endregion
+		--#region Ogryn Melee
+			ogryn_club_p1_m1                 = _ogryn_club_p1_m1.sounds,
+			ogryn_combatblade_p1_m1          = _ogryn_combatblade_p1_m1.sounds,
+			ogryn_powermaul_p1_m1            = _ogryn_powermaul_p1_m1.sounds,
+			ogryn_powermaul_slabshield_p1_m1 = _ogryn_powermaul_slabshield_p1_m1.sounds,
+			ogryn_club_p2_m1                 = _ogryn_club_p2_m1.sounds,
+		--#endregion
+		--#region Guns
+			autopistol_p1_m1   = _autopistol_p1_m1.sounds,
+			shotgun_p1_m1      = _shotgun_p1_m1.sounds,
+			bolter_p1_m1       = _bolter_p1_m1.sounds,
+			stubrevolver_p1_m1 = _stubrevolver_p1_m1.sounds,
+			plasmagun_p1_m1    = _plasmagun_p1_m1.sounds,
+			laspistol_p1_m1    = _laspistol_p1_m1.sounds,
+			autogun_p1_m1      = _autogun_p1_m1.sounds,
+			lasgun_p1_m1       = _lasgun_p1_m1.sounds,
+			lasgun_p2_m1       = _lasgun_p2_m1.sounds,
+			lasgun_p3_m1       = _lasgun_p3_m1.sounds,
+			flamer_p1_m1       = _flamer_p1_m1.sounds,
+			forcestaff_p1_m1   = _forcestaff_p1_m1.sounds,
+		--#endregion
+		--#region Melee
+			combataxe_p1_m1        = _combataxe_p1_m1.sounds,
+			combataxe_p2_m1        = _combataxe_p2_m1.sounds,
+			combatknife_p1_m1      = _combatknife_p1_m1.sounds,
+			powersword_p1_m1       = _powersword_p1_m1.sounds,
+			chainaxe_p1_m1         = _chainaxe_p1_m1.sounds,
+			chainsword_p1_m1       = _chainsword_p1_m1.sounds,
+			combataxe_p3_m1        = _combataxe_p3_m1.sounds,
+			combatsword_p1_m1      = _combatsword_p1_m1.sounds,
+			thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.sounds,
+			powermaul_2h_p1_m1     = _powermaul_2h_p1_m1.sounds,
+			chainsword_2h_p1_m1    = _chainsword_2h_p1_m1.sounds,
+			combatsword_p2_m1      = _combatsword_p2_m1.sounds,
+			forcesword_p1_m1       = _forcesword_p1_m1.sounds,
+			combatsword_p3_m1      = _combatsword_p3_m1.sounds,
 		--#endregion
 	}
 	--#region Copies
@@ -900,6 +943,65 @@ end
 			mod.attachment_sounds.ogryn_heavystubber_p1_m3 = mod.attachment_sounds.ogryn_heavystubber_p1_m1
 			mod.attachment_sounds.ogryn_rippergun_p1_m2 = mod.attachment_sounds.ogryn_rippergun_p1_m1
 			mod.attachment_sounds.ogryn_rippergun_p1_m3 = mod.attachment_sounds.ogryn_rippergun_p1_m1
+			mod.attachment_sounds.ogryn_thumper_p1_m2 = mod.attachment_sounds.ogryn_thumper_p1_m1
+		--#endregion
+		--#region Ogryn Melee
+			mod.attachment_sounds.ogryn_club_p1_m2        = mod.attachment_sounds.ogryn_club_p1_m1
+			mod.attachment_sounds.ogryn_club_p1_m3        = mod.attachment_sounds.ogryn_club_p1_m1
+			mod.attachment_sounds.ogryn_combatblade_p1_m2 = mod.attachment_sounds.ogryn_combatblade_p1_m1
+			mod.attachment_sounds.ogryn_combatblade_p1_m3 = mod.attachment_sounds.ogryn_combatblade_p1_m1
+			mod.attachment_sounds.ogryn_powermaul_p1_m2   = mod.attachment_sounds.ogryn_powermaul_p1_m1
+			mod.attachment_sounds.ogryn_powermaul_p1_m3   = mod.attachment_sounds.ogryn_powermaul_p1_m1
+			mod.attachment_sounds.ogryn_club_p2_m2        = mod.attachment_sounds.ogryn_club_p2_m1
+			mod.attachment_sounds.ogryn_club_p2_m3        = mod.attachment_sounds.ogryn_club_p2_m1
+		--#endregion
+		--#region Guns
+			mod.attachment_sounds.shotgun_p1_m2      = mod.attachment_sounds.shotgun_p1_m1
+			mod.attachment_sounds.shotgun_p1_m3      = mod.attachment_sounds.shotgun_p1_m1
+			mod.attachment_sounds.bolter_p1_m2       = mod.attachment_sounds.bolter_p1_m1
+			mod.attachment_sounds.bolter_p1_m3       = mod.attachment_sounds.bolter_p1_m1
+			mod.attachment_sounds.stubrevolver_p1_m2 = mod.attachment_sounds.stubrevolver_p1_m1
+			mod.attachment_sounds.stubrevolver_p1_m3 = mod.attachment_sounds.stubrevolver_p1_m1
+			mod.attachment_sounds.laspistol_p1_m3    = mod.attachment_sounds.laspistol_p1_m1
+			mod.attachment_sounds.autogun_p1_m2      = mod.attachment_sounds.autogun_p1_m1
+			mod.attachment_sounds.autogun_p1_m3      = mod.attachment_sounds.autogun_p1_m1
+			mod.attachment_sounds.autogun_p2_m1      = mod.attachment_sounds.autogun_p1_m1
+			mod.attachment_sounds.autogun_p2_m2      = mod.attachment_sounds.autogun_p1_m1
+			mod.attachment_sounds.autogun_p2_m3      = mod.attachment_sounds.autogun_p1_m1
+			mod.attachment_sounds.autogun_p3_m1      = mod.attachment_sounds.autogun_p1_m1
+			mod.attachment_sounds.autogun_p3_m2      = mod.attachment_sounds.autogun_p1_m1
+			mod.attachment_sounds.autogun_p3_m3      = mod.attachment_sounds.autogun_p1_m1
+			mod.attachment_sounds.lasgun_p1_m2       = mod.attachment_sounds.lasgun_p1_m1
+			mod.attachment_sounds.lasgun_p1_m3       = mod.attachment_sounds.lasgun_p1_m1
+			mod.attachment_sounds.lasgun_p2_m2       = mod.attachment_sounds.lasgun_p2_m1
+			mod.attachment_sounds.lasgun_p2_m3       = mod.attachment_sounds.lasgun_p2_m1
+			mod.attachment_sounds.lasgun_p3_m2       = mod.attachment_sounds.lasgun_p3_m1
+			mod.attachment_sounds.lasgun_p3_m3       = mod.attachment_sounds.lasgun_p3_m1
+			mod.attachment_sounds.forcestaff_p2_m1   = mod.attachment_sounds.forcestaff_p1_m1
+			mod.attachment_sounds.forcestaff_p3_m1   = mod.attachment_sounds.forcestaff_p1_m1
+			mod.attachment_sounds.forcestaff_p4_m1   = mod.attachment_sounds.forcestaff_p1_m1
+		--#endregion
+		--#region Melee
+			mod.attachment_sounds.combataxe_p1_m2        = mod.attachment_sounds.combataxe_p1_m1
+			mod.attachment_sounds.combataxe_p1_m3        = mod.attachment_sounds.combataxe_p1_m1
+			mod.attachment_sounds.combataxe_p2_m2        = mod.attachment_sounds.combataxe_p2_m1
+			mod.attachment_sounds.combatknife_p1_m2      = mod.attachment_sounds.combatknife_p1_m1
+			mod.attachment_sounds.combataxe_p2_m3        = mod.attachment_sounds.combataxe_p2_m1
+			mod.attachment_sounds.combataxe_p3_m2        = mod.attachment_sounds.combataxe_p3_m1
+			mod.attachment_sounds.combataxe_p3_m3        = mod.attachment_sounds.combataxe_p3_m1
+			mod.attachment_sounds.powersword_p1_m2       = mod.attachment_sounds.powersword_p1_m1
+			mod.attachment_sounds.chainaxe_p1_m2         = mod.attachment_sounds.chainaxe_p1_m1
+			mod.attachment_sounds.chainsword_p1_m2       = mod.attachment_sounds.chainsword_p1_m1
+			mod.attachment_sounds.chainsword_2h_p1_m2    = mod.attachment_sounds.chainsword_2h_p1_m1
+			mod.attachment_sounds.combatsword_p1_m2      = mod.attachment_sounds.combatsword_p1_m1
+			mod.attachment_sounds.combatsword_p1_m3      = mod.attachment_sounds.combatsword_p1_m1
+			mod.attachment_sounds.thunderhammer_2h_p1_m2 = mod.attachment_sounds.thunderhammer_2h_p1_m1
+			mod.attachment_sounds.combatsword_p2_m2      = mod.attachment_sounds.combatsword_p2_m1
+			mod.attachment_sounds.combatsword_p2_m3      = mod.attachment_sounds.combatsword_p2_m1
+			mod.attachment_sounds.forcesword_p1_m2       = mod.attachment_sounds.forcesword_p1_m1
+			mod.attachment_sounds.forcesword_p1_m3       = mod.attachment_sounds.forcesword_p1_m1
+			mod.attachment_sounds.combatsword_p3_m2      = mod.attachment_sounds.combatsword_p3_m1
+			mod.attachment_sounds.combatsword_p3_m3      = mod.attachment_sounds.combatsword_p3_m1
 		--#endregion
 	--#endregion
 --#endregion

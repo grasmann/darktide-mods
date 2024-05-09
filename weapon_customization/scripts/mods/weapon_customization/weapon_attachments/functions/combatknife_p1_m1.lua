@@ -76,13 +76,13 @@ return {
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "knife_body_default", model = ""},
-            {name = "knife_body_01",      model = _item_melee.."/grips/combat_knife_blade_01"},
-            {name = "knife_body_02",      model = _item_melee.."/grips/combat_knife_blade_02"},
-            {name = "knife_body_03",      model = _item_melee.."/grips/combat_knife_blade_03"},
-            {name = "knife_body_04",      model = _item_melee.."/grips/combat_knife_blade_04"},
-            {name = "knife_body_05",      model = _item_melee.."/grips/combat_knife_blade_05"},
-            {name = "knife_body_06",      model = _item_melee.."/grips/combat_knife_blade_06"},
-            {name = "knife_body_07",      model = _item_melee.."/grips/combat_knife_blade_07"},
+            {name = "knife_body_01",      model = _item_melee.."/blades/combat_knife_blade_01"},
+            {name = "knife_body_02",      model = _item_melee.."/blades/combat_knife_blade_02"},
+            {name = "knife_body_03",      model = _item_melee.."/blades/combat_knife_blade_03"},
+            {name = "knife_body_04",      model = _item_melee.."/blades/combat_knife_blade_04"},
+            {name = "knife_body_05",      model = _item_melee.."/blades/combat_knife_blade_05"},
+            {name = "knife_body_06",      model = _item_melee.."/blades/combat_knife_blade_06"},
+            {name = "knife_body_07",      model = _item_melee.."/blades/combat_knife_blade_07"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

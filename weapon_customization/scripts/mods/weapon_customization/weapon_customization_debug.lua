@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local Unit = Unit
 	local type = type
 	local pairs = pairs
 	local table = table
@@ -13,6 +14,7 @@ local mod = get_mod("weapon_customization")
 	local managers = Managers
 	local table_sort = table.sort
 	local string_find = string.find
+	local unit_get_child_units = Unit.get_child_units
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -123,6 +125,33 @@ mod._debug_skip_some = true
 mod.print = function(self, message, skip)
 	if self._debug then self:info(message) end
 	-- if self._debug and not skip then self:info(message) end
+end
+
+mod.debug_stingray_objects = function(self)
+	self:dtf(Unit, "Unit", 10)
+end
+
+mod._recursive_get_child_units = function(self, unit, slot_info_id, out_units)
+	local slot_info_id = slot_info_id or self.cosmetics_view._slot_info_id
+	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+	local attachment_slot_info = slot_infos[slot_info_id]
+	if attachment_slot_info then
+		local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]
+		local text = attachment_slot and attachment_slot or unit
+		out_units[text] = {}
+		local children = unit_get_child_units(unit)
+		if children then
+			for _, child in pairs(children) do
+				self:_recursive_get_child_units(child, out_units[text])
+			end
+		end
+	end
+end
+
+mod.map_out_unit = function(self, unit)
+	local map = {}
+	self:_recursive_get_child_units(unit, map)
+	self:dtf(map, "map", 20)
 end
 
 -- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐  ┬┌┬┐┌─┐┌┬┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐ ###############################################

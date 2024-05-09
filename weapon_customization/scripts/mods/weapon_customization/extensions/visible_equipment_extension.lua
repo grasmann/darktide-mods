@@ -198,6 +198,12 @@ end
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+VisibleEquipmentExtension.backpack_name = function(self)
+    if self:has_backpack() then
+        return self.backpack_name
+    end
+end
+
 VisibleEquipmentExtension.has_backpack = function(self)
     -- Performance
     local perf = wc_perf_start("VisibleEquipmentExtension.has_backpack", 2)
@@ -214,6 +220,7 @@ VisibleEquipmentExtension.has_backpack = function(self)
     end
     -- Get extra gear id
 	local item = presentation_item or real_item
+    self.backpack_name = item and mod:item_name_from_content_string(item)
     -- Trigger wobble
     if item and self.back_change ~= item then
         self.trigger_wobble = true
@@ -266,6 +273,11 @@ VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
     wc_perf_stop(perf)
     -- Return data
     return equipment_data, sounds, sounds2
+end
+
+VisibleEquipmentExtension.weapon_unit = function(self, slot_id)
+    local slot = self.equipment and self.equipment[slot_id]
+    return slot and self.dummy_units[slot] and self.dummy_units[slot].base
 end
 
 VisibleEquipmentExtension.current_back_node = function(self)
@@ -447,7 +459,9 @@ VisibleEquipmentExtension.link_equipment = function(self)
                     world_unlink_unit(self.world, unit)
                     world_link_unit(self.world, unit, 1, attach_unit, attach_node_index or node_index, true)
                     -- Scale equipment
-                    unit_set_local_scale(unit, 1, vector3_unbox(data.scale[i]))
+                    local ms = unit_get_data(unit, "unit_manipulation_scale_offset") 
+                    ms = ms and vector3_unbox(ms) or vector3(0, 0, 0)
+                    unit_set_local_scale(unit, 1, vector3_unbox(data.scale[i]) + ms)
                 end
             end
             -- Set linked
@@ -458,7 +472,9 @@ VisibleEquipmentExtension.link_equipment = function(self)
     wc_perf_stop(perf)
 end
 
-VisibleEquipmentExtension.position_equipment = function(self)
+VisibleEquipmentExtension.position_equipment = function(self) --, optional_position, optional_rotation)
+    -- local optional_position = optional_position or vector3(0, 0, 0)
+    -- local opt_rot = optional_rotation or vector3(0, 0, 0)
     -- Performance
     local perf = wc_perf_start("VisibleEquipmentExtension.position_equipment", 2)
     -- Iterate equipment
@@ -478,9 +494,13 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     local rot = vector3_unbox(data.rotation[i])
                     local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
                     -- Position equipment
-                    -- mod:info("VisibleEquipmentExtension.position_equipment: "..tostring(unit))
-                    unit_set_local_position(unit, 1, vector3_unbox(data.position[i]))
+                    local mp = unit_get_data(unit, "unit_manipulation_position_offset") 
+                    mp = mp and vector3_unbox(mp) or vector3(0, 0, 0)
+                    unit_set_local_position(unit, 1, vector3_unbox(data.position[i]) + mp)
                     -- Rotate equipment
+                    local mr = unit_get_data(unit, "unit_manipulation_rotation_offset")
+                    mr = mr and quaternion_unbox(mr) or Quaternion.identity()
+                    rotation = Quaternion.multiply(rotation, mr)
                     unit_set_local_rotation(unit, 1, rotation)
                 end
             end

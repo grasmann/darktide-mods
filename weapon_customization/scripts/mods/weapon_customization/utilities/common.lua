@@ -70,8 +70,9 @@ mod.world = function(self)
     return managers.world:world("level_world")
 end
 
-mod.physics_world = function(self)
-    return world_physics_world(self:world())
+mod.physics_world = function(self, world)
+	local world = world or self:world()
+    return world_physics_world(world)
 end
 
 mod.wwise_world = function(self, world)

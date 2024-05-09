@@ -167,6 +167,24 @@ end
 --     return
 -- end)
 
+mod:hook(CLASS.PackageManager, "_release_internal", function(func, self, package_name, ...)
+    local load_call_list = self._package_to_load_call_item[package_name]
+
+    -- Unload if possible
+    local keep_all = mod:persistent_table(REFERENCE).keep_all_packages
+    local can_unload = mod:can_package_be_unloaded(package_name) and not keep_all
+    if can_unload or self._shutdown_has_started or #load_call_list > 1 then
+        func(self, package_name, ...)
+    else
+        if mod:persistent_table(REFERENCE).prevent_unload[package_name] then
+            mod:persistent_table(REFERENCE).prevent_unload[package_name] = mod:persistent_table(REFERENCE).prevent_unload[package_name] + 1
+        else
+            mod:persistent_table(REFERENCE).prevent_unload[package_name] = 1
+        end
+        mod:print("prevented package "..tostring(package_name).." from unloading")
+    end
+end)
+
 mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
 	local load_call_item = self._load_call_data[id]
 	local package_name = load_call_item.package_name

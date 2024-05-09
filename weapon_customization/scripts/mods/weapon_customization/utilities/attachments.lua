@@ -352,29 +352,30 @@ mod.get_attachment_slot_in_attachments = function(self, attachments, attachment_
 end
 
 mod.play_attachment_sound = function(self, item, attachment_slot, attachment_name, type)
-	local item_name = self.cosmetics_view._item_name
-	if attachment_name == "default" then
-		attachment_name = self:get_actual_default_attachment(item, attachment_slot)
-	end
-	local sounds = self:get_equipment_sound_effect(item, attachment_slot, attachment_name, type)
-	if sounds then
-		-- local unit = self:get_attachment_slot_unit(attachment_slot)
-		local slot_info_id = self.cosmetics_view._slot_info_id
-		local slot_infos = slot_info_id and mod:persistent_table(REFERENCE).attachment_slot_infos
-		local gear_info = slot_infos and slot_infos[slot_info_id]
-		local player_unit = self.player_unit and unit_alive(self.player_unit) and self.player_unit
-		local unit = player_unit or gear_info and gear_info.attachment_slot_to_unit[attachment_slot]
-		if unit and unit_alive(unit) then
-			for _, sound in pairs(sounds) do
-				managers.ui:play_unit_sound(sound, unit, 1)
+	if self.cosmetics_view then --and self.cosmetics_view.weapon_unit and unit_alive(self.cosmetics_view.weapon_unit) then
+		local item_name = self.cosmetics_view._item_name
+		if attachment_name == "default" then attachment_name = self:get_actual_default_attachment(item, attachment_slot) end
+		local sounds = self:get_equipment_sound_effect(item, attachment_slot, attachment_name, type)
+		if sounds then
+			-- local unit = self:get_attachment_slot_unit(attachment_slot)
+			local slot_info_id = self.cosmetics_view._slot_info_id
+			local slot_infos = slot_info_id and mod:persistent_table(REFERENCE).attachment_slot_infos
+			local gear_info = slot_infos and slot_infos[slot_info_id]
+			local player_unit = self.player_unit and unit_alive(self.player_unit) and self.player_unit
+			local unit = player_unit or gear_info and gear_info.attachment_slot_to_unit[attachment_slot]
+			-- local unit = player_unit and self:get_attachment_unit(self.cosmetics_view.weapon_unit, attachment_slot)
+			if unit and unit_alive(unit) then
+				for _, sound in pairs(sounds) do
+					managers.ui:play_unit_sound(sound, unit, 1)
+				end
 			end
-		end
-	else
-		if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
-			for _, data in pairs(self.attachment[item_name][attachment_slot]) do
-				if data.id == attachment_name and data.sounds then
-					for _, sound in pairs(data.sounds) do
-						self.cosmetics_view:_play_sound(sound)
+		else
+			if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
+				for _, data in pairs(self.attachment[item_name][attachment_slot]) do
+					if data.id == attachment_name and data.sounds then
+						for _, sound in pairs(data.sounds) do
+							self.cosmetics_view:_play_sound(sound)
+						end
 					end
 				end
 			end
@@ -554,13 +555,14 @@ end
 
 
 mod.execute_hide_meshes = function(self, item, attachment_units)
-	local gear_id = self:get_gear_id(item)
-	local slot_info_id = self:get_slot_info_id(item)
-	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+	-- local gear_id = self:get_gear_id(item)
+	-- local slot_info_id = self:get_slot_info_id(item)
+	-- local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 	local item_name = self:item_name_from_content_string(item.name)
 	for _, unit in pairs(attachment_units) do
-		if slot_infos[slot_info_id] then
-			local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
+		-- if slot_infos[slot_info_id] then
+			-- local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
+			local attachment_name = unit_get_data(unit, "attachment_name")
 			local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
 			-- Hide meshes
 			local hide_mesh = attachment_data and attachment_data.hide_mesh
@@ -571,12 +573,14 @@ mod.execute_hide_meshes = function(self, item, attachment_units)
 			if hide_mesh then
 				-- Iterate hide mesh entries
 				for _, hide_entry in pairs(hide_mesh) do
-					-- Check more than one parameter
+					-- Check more than one paramet                 er
 					if #hide_entry > 1 then
 						-- Get attachment name - parameter 1
 						local attachment_slot = hide_entry[1]
 						-- Get attachment unit
-						local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+						-- local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+						-- local hide_unit = self:get_attachment_unit(item, attachment_slot)
+						local hide_unit = self:get_attachment_slot_in_attachments(attachment_units, attachment_slot)
 						-- Check unit
 						if hide_unit and unit_alive(hide_unit) then
 							-- Hide nodes
@@ -590,7 +594,7 @@ mod.execute_hide_meshes = function(self, item, attachment_units)
 					end
 				end
 			end
-		end
+		-- end
 	end
 end
 
@@ -913,7 +917,7 @@ mod._add_custom_attachments = function(self, item, attachments)
 			-- if attachment_slot == "slot_trinket_1" then attachment_setting = "slot_trinket_1" end
 			-- if attachment_slot == "slot_trinket_2" then attachment_setting = "slot_trinket_2" end
 			-- if attachment_slot == "help_sight" then attachment_setting = "bolter_sight_01" end
-			if table_contains(self[attachment_table], attachment_setting) then
+			-- if table_contains(self[attachment_table], attachment_setting) then
 				-- Get attachment data
 				local attachment_data = self.attachment_models[item_name] and self.attachment_models[item_name][attachment_setting]
 				if attachment_data and attachment_data.parent then
@@ -943,7 +947,7 @@ mod._add_custom_attachments = function(self, item, attachments)
             			attachment_name = attachment_setting,
 					}
 				end
-			end
+			-- end
 		end
 	end
 end
