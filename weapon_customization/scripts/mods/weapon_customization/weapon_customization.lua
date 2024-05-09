@@ -240,6 +240,11 @@ end
 	-- end)
 	-- Import mod files
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
+		-- View Patches
+		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_view")
+		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_background_view")
+		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_weapon_cosmetics_view")
+		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/ui_weapon_spawner")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/composite")

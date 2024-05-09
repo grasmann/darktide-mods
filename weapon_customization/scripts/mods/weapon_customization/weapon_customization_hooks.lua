@@ -1010,24 +1010,24 @@ end)
 -- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘ ##############################################################
 -- ##### └─┘┴  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─ ##############################################################
 
-mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
-    -- Original function
-	func(self, item_unit_3p, ...)
-    -- Stream fix
-    if self._weapon_spawn_data then
-        mod.weapon_spawning = nil
-        self._weapon_spawn_data.streaming_complete = true
-	end
-end)
+-- mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
+--     -- Original function
+-- 	func(self, item_unit_3p, ...)
+--     -- Stream fix
+--     if self._weapon_spawn_data then
+--         mod.weapon_spawning = nil
+--         self._weapon_spawn_data.streaming_complete = true
+-- 	end
+-- end)
 
-mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
-    -- Mod
-	mod:ui_weapon_spawner_despawn_weapon(self)
-    -- -- Camera
-	-- mod.customization_camera:set(false, false)
-    -- Original function
-	func(self, ...)
-end)
+-- mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
+--     -- Mod
+-- 	mod:ui_weapon_spawner_despawn_weapon(self)
+--     -- -- Camera
+-- 	-- mod.customization_camera:set(false, false)
+--     -- Original function
+-- 	func(self, ...)
+-- end)
 
 -- ##### ┬ ┬┬ ┬┌┬┐  ┌─┐┬  ┌─┐┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬┬─┐ ##################################################
 -- ##### ├─┤│ │ ││  ├┤ │  ├┤ │││├┤ │││ │   │  ├┬┘│ │└─┐└─┐├─┤├─┤│├┬┘ ##################################################

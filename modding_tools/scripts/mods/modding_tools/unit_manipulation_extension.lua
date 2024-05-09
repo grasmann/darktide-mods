@@ -131,11 +131,9 @@ UnitManipulationExtension.init = function(self, extension_init_context, unit, ex
 	self.button_scale = nil
 	self.initialized = true
 	self:add_history()
-	mod:add_unit_manipulation_extension(self)
 end
 
 UnitManipulationExtension.delete = function(self)
-	mod:remove_unit_manipulation_extension(self)
 	self.initialized = false
 end
 
@@ -375,6 +373,7 @@ UnitManipulationExtension.draw_scale_symbol = function(self, dt, t, input_servic
 	ScriptGui.hud_line(self.gui, vector3(cx+size[1]/2-2, cy+size[2]-3, LINE_Z), vector3(cx+size[1]/2+8-2, cy+size[2]-3-8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
 end
 
+-- Draw selector for extension unit
 UnitManipulationExtension.draw_selector = function(self, dt, t, input_service, position)
 	local position = unit_world_position(self.unit, 1)
 	local direction = self.root_unit and vector3.normalize(position - unit_world_position(self.root_unit, 1)) or vector3(0, 0, 0)
@@ -388,7 +387,7 @@ UnitManipulationExtension.draw_selector = function(self, dt, t, input_service, p
 	local cursor = self:cursor(input_service)
 	local hover = math.point_is_inside_2d_box(cursor, position_2d, size)
 	if self:pressed(input_service) and hover then
-		mod:select_unit_manipulation_extension(self.unit)
+		mod:unit_manipulation_select(self.unit)
 	end
 end
 

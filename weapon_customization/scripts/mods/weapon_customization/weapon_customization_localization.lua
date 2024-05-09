@@ -60,8 +60,11 @@ mod:add_global_localize_strings({
 	loc_visible_equipment_reset_button_prompt = {
 		en = "Reset",
 		de = "Zurücksetzen",
+	},
+	loc_use_modding_tool = {
+		en = "Use Modding Tool",
+		de = "Modding Tool Benutzen",
 	}
-
 })
 
 -- ##### ┬  ┌─┐┌─┐┌─┐┬    ┬  ┌─┐┌─┐┌─┐┬  ┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌ ############################################################
