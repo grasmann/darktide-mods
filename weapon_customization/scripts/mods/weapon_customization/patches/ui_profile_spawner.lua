@@ -79,6 +79,14 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 
 end)
 
+-- mod:hook(CLASS.UIProfileSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, force_highest_lod_step, optional_mission_template, ...)
+    
+--     func(self, reference_name, world, camera, unit_spawner, force_highest_lod_step, optional_mission_template, ...)
+
+--     self.hit_unit = nil
+
+-- end)
+
 mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_service, ...)
 
 	self:get_inventory_view()
@@ -153,6 +161,32 @@ mod:hook(CLASS.UIProfileSpawner, "destroy", function(func, self, ...)
     end
     -- Original function
     func(self, ...)
+end)
+
+-- mod:hook(CLASS.UIProfileSpawner, "_update_input_rotation", function(func, self, dt, ...)
+--     if self.hit_unit then
+--         func(self, dt, ...)
+--     end
+-- end)
+
+mod:hook(CLASS.UIProfileSpawner, "_is_character_pressed", function(func, self, input_service, ...)
+
+    local character_spawn_data = self._character_spawn_data
+	local unit_3p = character_spawn_data and character_spawn_data.unit_3p
+    local physics_world = World.physics_world(self._world)
+    if physics_world and input_service:get("left_pressed") then
+        local cursor = input_service:get("cursor") or NilCursor
+        local from = Camera.screen_to_world(self._camera, Vector3(cursor[1], cursor[2], 0), 0)
+        local direction = Camera.screen_to_world(self._camera, cursor, 1) - from
+        local to = Vector3.normalize(direction)
+        local hit_unit, hit_actor = self:_get_raycast_hit(from, to, physics_world, "filter_player_detection")
+        if hit_unit then
+            return unit_3p == hit_unit
+        end
+    end
+
+    return false
+
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "assign_animation_event", function(func, self, animation_event, ...)
