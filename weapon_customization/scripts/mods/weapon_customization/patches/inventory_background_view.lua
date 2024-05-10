@@ -34,6 +34,24 @@ local modding_tools = get_mod("modding_tools")
 
 --#endregion
 
+mod:hook_require("scripts/ui/views/inventory_background_view/inventory_background_view", function(instance)
+
+	instance.get_inventory_view = function(self)
+		self.inventory_view = self.inventory_view or mod:get_view("inventory_view")
+	end
+
+end)
+
+mod:hook(CLASS.InventoryBackgroundView, "on_exit", function(func, self, ...)
+
+	-- Destroy background view
+	self.inventory_view = nil
+
+	-- Original function
+	func(self, ...)
+
+end)
+
 mod:hook(CLASS.InventoryBackgroundView, "_update_has_empty_talent_nodes", function(func, self, optional_selected_nodes, ...)
 	modding_tools = get_mod("modding_tools")
 	if not self._custom_panel_added then
@@ -78,7 +96,7 @@ mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, in
 	if self._profile_spawner and self._profile_spawner._character_spawn_data then
 		local unit = self._profile_spawner._character_spawn_data.unit_3p
 		if unit and unit_alive(unit) then
-			self.inventory_view = self.inventory_view or mod:get_view("inventory_view")
+			self:get_inventory_view()
 			if self.inventory_view then
 				local tab_context = self.inventory_view._active_category_tab_context
 				local is_tab = tab_context and tab_context.display_name == "tab_weapon_customization"
@@ -106,17 +124,32 @@ mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, in
 	return ret
 end)
 
+mod:hook(CLASS.InventoryBackgroundView, "cb_on_weapon_swap_pressed", function(func, self, ...)
+
+	self:get_inventory_view()
+
+	if self.inventory_view then
+		self.inventory_view:respawn_profile()
+	end
+
+	func(self, ...)
+
+end)
+
 mod:hook(CLASS.InventoryBackgroundView, "_update_presentation_wield_item", function(func, self, ...)
-	self.inventory_view = self.inventory_view or mod:get_view("inventory_view")
+
+	self:get_inventory_view()
+
 	if self.inventory_view and self.inventory_view.weapon_unit then
 		if modding_tools then
 			modding_tools:unit_manipulation_remove(self.inventory_view:weapon_unit())
 		end
 	end
+
 	-- Original function
 	func(self, ...)
+
 	-- Update weapon name in inventory view
-	self.inventory_view = self.inventory_view or mod:get_view("inventory_view")
 	if self._profile_spawner and self.inventory_view then
 		local slot_id = self._preview_wield_slot_id == "slot_primary" and "slot_secondary" or "slot_primary"
 		local preview_profile_equipped_items = self._preview_profile_equipped_items
@@ -126,4 +159,5 @@ mod:hook(CLASS.InventoryBackgroundView, "_update_presentation_wield_item", funct
 		self._item_name = item_name
 		self._profile_spawner._rotation_angle = self.inventory_view.customization_angle and self.inventory_view:customization_angle() or 0
 	end
+
 end)

@@ -291,3 +291,10 @@ mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 		end
 	end
 end
+
+mod.with = function(self, object, callback)
+	if object and callback and type(callback) == "function" then
+		if type(object) == "unit" and not unit_alive(object) then return false end
+		return callback(object)
+	end
+end

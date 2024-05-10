@@ -882,10 +882,10 @@ mod.update_dropdown = function(self, widget, input_service, dt, t)
 		self.new_rotation = new_angle
 		self.attachment_preview_index = content.selected_index
 
-		local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
-		local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
-		local attachment_unit = self:get_attachment_slot_in_attachments(attachment_units_3p, entry.attachment_slot)
-		if attachment_unit and unit_alive(attachment_unit) then
+		-- local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+		-- local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
+		-- local attachment_unit = self:get_attachment_slot_in_attachments(attachment_units_3p, entry.attachment_slot)
+		-- if attachment_unit and unit_alive(attachment_unit) then
 			-- if ui_weapon_spawner.selected_unit ~= attachment_unit and unit_alive(ui_weapon_spawner.selected_unit) and script_unit_has_extension(ui_weapon_spawner.selected_unit, "unit_manipulation_system") then
 			-- 	script_unit_remove_extension(ui_weapon_spawner.selected_unit, "unit_manipulation_system")
 			-- 	ui_weapon_spawner.selected_unit = nil
@@ -902,7 +902,7 @@ mod.update_dropdown = function(self, widget, input_service, dt, t)
 			-- 	})
 			-- 	ui_weapon_spawner.selected_unit = attachment_unit
 			-- end
-		end
+		-- end
 
 	-- else
 	-- 	mod.dropdown_positions[entry.attachment_slot][3] = false

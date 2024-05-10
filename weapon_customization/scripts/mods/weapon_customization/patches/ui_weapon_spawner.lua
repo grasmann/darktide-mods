@@ -59,6 +59,7 @@ local modding_tools = get_mod("modding_tools")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
+	local SLOT_SECONDARY = "slot_secondary"
     local WEAPON_PART_ANIMATION_TIME = .75
     local MOVE_DURATION_OUT = .5
 	local MOVE_DURATION_IN = 1
@@ -397,7 +398,7 @@ mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(fun
 	func(self, item_unit_3p, ...)
     -- Stream fix
     if self._weapon_spawn_data then
-        mod.weapon_spawning = nil
-        self._weapon_spawn_data.streaming_complete = true
+		mod.weapon_spawning = nil
+		self._weapon_spawn_data.streaming_complete = true
 	end
 end)

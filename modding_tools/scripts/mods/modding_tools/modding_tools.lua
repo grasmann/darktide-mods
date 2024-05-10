@@ -41,6 +41,10 @@ mod.unit_manipulation_remove = function(self, unit)
     self:_remove_unit_manipulation_extension(unit)
 end
 
+mod.unit_manipulation_remove_all = function(self)
+    self:_remove_all_unit_manipulation_extensions()
+end
+
 mod.unit_manipulation_select = function(self, unit)
     self:_select_unit_manipulation_extension(unit)
 end
@@ -71,6 +75,12 @@ mod._add_unit_manipulation_extension = function(self, unit, camera, world, gui)
             })
             self:unit_manipulation_extensions()[unit] = extension
         end
+    end
+end
+
+mod._remove_all_unit_manipulation_extensions = function(self)
+    for unit, _ in pairs(self:unit_manipulation_extensions()) do
+        self:_remove_unit_manipulation_extension(unit)
     end
 end
 

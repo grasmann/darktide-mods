@@ -943,68 +943,68 @@ end)
 -- ##### │ ││  ├─┘├┬┘│ │├┤ ││  ├┤   └─┐├─┘├─┤││││││├┤ ├┬┘ #############################################################
 -- ##### └─┘┴  ┴  ┴└─└─┘└  ┴┴─┘└─┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─ #############################################################
 
-mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ...)
-    if slot_id ~= "slot_primary" and slot_id ~= SLOT_SECONDARY then
-        -- Original function
-        func(self, slot_id, ...)
-    end
-end)
+-- mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ...)
+--     if slot_id ~= "slot_primary" and slot_id ~= SLOT_SECONDARY then
+--         -- Original function
+--         func(self, slot_id, ...)
+--     end
+-- end)
 
-mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, unit_3p, ...)
-    -- Original function
-    func(self, unit_3p, ...)
-    -- Visible equipment
-    if self._character_spawn_data and not script_unit_has_extension(unit_3p, "visible_equipment_system") and mod:get(OPTION_VISIBLE_EQUIPMENT) and not self.no_spawn then
-        -- Add VisibleEquipmentExtension
-        self.visible_equipment_extension = script_unit_add_extension({
-            world = self._world,
-        }, unit_3p, "VisibleEquipmentExtension", "visible_equipment_system", {
-            profile = self._character_spawn_data.profile,
-            is_local_unit = true,
-            player_unit = unit_3p,
-            equipment_component = self._character_spawn_data.equipment_component,
-            equipment = self._character_spawn_data.slots,
-            wielded_slot = self._character_spawn_data.wielded_slot,
-            ui_profile_spawner = true,
-        })
-        self._rotation_input_disabled = false
-    end
-end)
+-- mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, unit_3p, ...)
+--     -- Original function
+--     func(self, unit_3p, ...)
+--     -- Visible equipment
+--     if self._character_spawn_data and not script_unit_has_extension(unit_3p, "visible_equipment_system") and mod:get(OPTION_VISIBLE_EQUIPMENT) and not self.no_spawn then
+--         -- Add VisibleEquipmentExtension
+--         self.visible_equipment_extension = script_unit_add_extension({
+--             world = self._world,
+--         }, unit_3p, "VisibleEquipmentExtension", "visible_equipment_system", {
+--             profile = self._character_spawn_data.profile,
+--             is_local_unit = true,
+--             player_unit = unit_3p,
+--             equipment_component = self._character_spawn_data.equipment_component,
+--             equipment = self._character_spawn_data.slots,
+--             wielded_slot = self._character_spawn_data.wielded_slot,
+--             ui_profile_spawner = true,
+--         })
+--         self._rotation_input_disabled = false
+--     end
+-- end)
 
-mod:hook(CLASS.UIProfileSpawner, "wield_slot", function(func, self, slot_id, ...)
-    -- Original function
-    func(self, slot_id, ...)
-    -- Flashlight
-    if self._character_spawn_data then
-        local slot = self._character_spawn_data.slots[SLOT_SECONDARY]
-        local flashlight = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
-        local attachment_name = flashlight and unit_get_data(flashlight, "attachment_name")
-        if flashlight and attachment_name and slot_id == SLOT_SECONDARY then
-            mod:preview_flashlight(true, self._world, flashlight, attachment_name, true)
-        else
-            mod:preview_flashlight(false, self._world, flashlight, attachment_name, true)
-        end
-    end
-end)
+-- mod:hook(CLASS.UIProfileSpawner, "wield_slot", function(func, self, slot_id, ...)
+--     -- Original function
+--     func(self, slot_id, ...)
+--     -- Flashlight
+--     if self._character_spawn_data then
+--         local slot = self._character_spawn_data.slots[SLOT_SECONDARY]
+--         local flashlight = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
+--         local attachment_name = flashlight and unit_get_data(flashlight, "attachment_name")
+--         if flashlight and attachment_name and slot_id == SLOT_SECONDARY then
+--             mod:preview_flashlight(true, self._world, flashlight, attachment_name, true)
+--         else
+--             mod:preview_flashlight(false, self._world, flashlight, attachment_name, true)
+--         end
+--     end
+-- end)
 
-mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_service, ...)
-    -- Original function
-    func(self, dt, t, input_service, ...)
-    -- Visible equipment
-    if self._character_spawn_data then
-        mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "load_slots")
-        mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "update", dt, t)
-    end
-end)
+-- mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_service, ...)
+--     -- Original function
+--     func(self, dt, t, input_service, ...)
+--     -- Visible equipment
+--     if self._character_spawn_data then
+--         mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "load_slots")
+--         mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "update", dt, t)
+--     end
+-- end)
 
-mod:hook(CLASS.UIProfileSpawner, "destroy", function(func, self, ...)
-    -- Visible equipment
-    if self._character_spawn_data then
-        mod:remove_extension(self._character_spawn_data.unit_3p, "visible_equipment_system")
-    end
-    -- Original function
-    func(self, ...)
-end)
+-- mod:hook(CLASS.UIProfileSpawner, "destroy", function(func, self, ...)
+--     -- Visible equipment
+--     if self._character_spawn_data then
+--         mod:remove_extension(self._character_spawn_data.unit_3p, "visible_equipment_system")
+--     end
+--     -- Original function
+--     func(self, ...)
+-- end)
 
 -- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐ ##############################################################
 -- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘ ##############################################################
