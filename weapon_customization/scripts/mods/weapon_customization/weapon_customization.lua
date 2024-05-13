@@ -194,11 +194,14 @@ end
 --#region Require
 	-- Patches
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/extensions")
+
 	-- Utilities
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/common")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/weapons")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/performance")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/attachments")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/save_lua")
+
 	-- Patches
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/hud")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/misc")
@@ -209,9 +212,17 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/randomization")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/weapon_templates")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/visual_loadout_customization")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/ui_weapon_spawner")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/ui_profile_spawner")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/player_husk_first_person_extension")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/player_husk_visual_loadout_extension")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/player_unit_first_person_extension")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/player_unit_visual_loadout_extension")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/equipment_component")
 
 	-- Definitions
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
+
 	-- Extensions
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/extension_base")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/sight_extension")
@@ -222,24 +233,16 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/laser_pointer_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/sway_animation_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/crouch_animation_extension")
-	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_animation_extension")
+	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_animation_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/visible_equipment_extension")
-	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/unit_manipulation_extension")
-	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/console")
-	-- mod:hook(CLASS.UIManager, "update", function(func, self, dt, t, ...)
-	-- 	-- Original function
-	-- 	func(self, dt, t, ...)
-	-- 	-- Update console
-	-- 	if mod.console then mod.console:update(dt, t, self:input_service()) end
-	-- end)
+
 	-- Import mod files
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
-		-- View Patches
+		-- Other Patches
 		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_view")
 		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_background_view")
 		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_weapon_cosmetics_view")
-		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/ui_weapon_spawner")
-		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/ui_profile_spawner")
+
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/composite")
@@ -259,15 +262,3 @@ mod:load_needed_packages()
 if managers and managers.player._game_state ~= nil then
 	mod:on_reload()
 end
-
--- if mod.player_unit then
--- 	-- local test = Unit.get_data(mod.player_unit, "__nodes")
--- 	-- local test = Unit.get_property(mod.player_unit, "nodes")
--- 	-- local test = Unit.get_data(mod.player_unit, "unit_template")
--- 	local first_person_extension = ScriptUnit.extension(mod.player_unit, "first_person_system")
--- 	local first_person_unit = first_person_extension:first_person_unit()
--- 	local test = Unit.bones(first_person_unit)
--- 	mod:dtf(test, "unit_data", 10)
--- 	-- local node = Unit.node(mod.player_unit, 1)
--- 	mod:echot("test: "..tostring(test))
--- end

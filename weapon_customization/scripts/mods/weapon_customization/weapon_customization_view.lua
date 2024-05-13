@@ -28,8 +28,8 @@ local modding_tools = get_mod("modding_tools")
 	local Breeds = mod:original_require("scripts/settings/breed/breeds")
 
 	local WeaponCustomizationLocalization = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_localization")
-	local WeaponBuildAnimation = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_build_animation")
-	local CustomizationCamera = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/customization_camera")
+	local WeaponBuildAnimation = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/weapon_build_animation")
+	local CustomizationCamera = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/customization_camera")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -134,135 +134,137 @@ local modding_tools = get_mod("modding_tools")
 mod.build_animation = WeaponBuildAnimation:new()
 -- mod.customization_camera = CustomizationCamera:new()
 
-mod.draw_box = function(self, unit, saved_origin)
-	local tm, half_size = Unit.box(unit)
-	local gui = self.cosmetics_view._ui_forward_renderer.gui
-	local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
-	local camera = ui_weapon_spawner and ui_weapon_spawner._camera
-	-- Get boundary points
-	local points = {
-		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
-		top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
-	}
-	points.bottom_01.position = Matrix4x4.transform(tm, vector3(half_size.x, half_size.y, -half_size.z))
-	points.bottom_02.position = Matrix4x4.transform(tm, vector3(half_size.x, -half_size.y, -half_size.z))
-	points.bottom_03.position = Matrix4x4.transform(tm, vector3(-half_size.x, -half_size.y, -half_size.z))
-	points.bottom_04.position = Matrix4x4.transform(tm, vector3(-half_size.x, half_size.y, -half_size.z))
-	points.top_01.position = Matrix4x4.transform(tm, vector3(half_size.x, half_size.y, half_size.z))
-	points.top_02.position = Matrix4x4.transform(tm, vector3(half_size.x, -half_size.y, half_size.z))
-	points.top_03.position = Matrix4x4.transform(tm, vector3(-half_size.x, -half_size.y, half_size.z))
-	points.top_04.position = Matrix4x4.transform(tm, vector3(-half_size.x, half_size.y, half_size.z))
-	-- Get position and distance to camera
-	local results = {
-		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
-		top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
-	}
-	results.bottom_01.position, results.bottom_01.distance = camera_world_to_screen(camera, points.bottom_01.position)
-	results.bottom_02.position, results.bottom_02.distance = camera_world_to_screen(camera, points.bottom_02.position)
-	results.bottom_03.position, results.bottom_03.distance = camera_world_to_screen(camera, points.bottom_03.position)
-	results.bottom_04.position, results.bottom_04.distance = camera_world_to_screen(camera, points.bottom_04.position)
-	results.top_01.position, results.top_01.distance = camera_world_to_screen(camera, points.top_01.position)
-	results.top_02.position, results.top_02.distance = camera_world_to_screen(camera, points.top_02.position)
-	results.top_03.position, results.top_03.distance = camera_world_to_screen(camera, points.top_03.position)
-	results.top_04.position, results.top_04.distance = camera_world_to_screen(camera, points.top_04.position)
-	-- Farthest point from camera
-	local farthest = nil
-	local last = 0
-	for name, data in pairs(results) do
-		if data.distance > last then
-			last = data.distance
-			farthest = name
-		end
-	end
-	-- Save as target for lines
-	if saved_origin then
-		local closest = nil
-		local last = math.huge
-		local saved_origin_v3 = vector3(saved_origin[1], saved_origin[2], 0)
-		for name, data in pairs(results) do
-			local position = vector3(data.position[1], data.position[2], 0)
-			local distance = vector3.distance(saved_origin_v3, position)
-			if distance < last then
-				last = distance
-				closest = name
-			end
-		end
-		if closest then
-			self.equipment_line_target = {
-				results[closest].position[1],
-				results[closest].position[2],
-			}
-		end
-	end
- 
-	-- local weapon_spawn_data = ui_weapon_spawner._weapon_spawn_data
-	-- if weapon_spawn_data then
-	-- 	local weapon_size = mod:weapon_size(weapon_spawn_data.attachment_units_3p)
-	-- 	mod:echot("weapon_size: "..tostring(weapon_size))
+--#region Old
+	-- mod.draw_box = function(self, unit, saved_origin)
+	-- 	local tm, half_size = Unit.box(unit)
+	-- 	local gui = self.cosmetics_view._ui_forward_renderer.gui
+	-- 	local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+	-- 	local camera = ui_weapon_spawner and ui_weapon_spawner._camera
+	-- 	-- Get boundary points
+	-- 	local points = {
+	-- 		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
+	-- 		top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
+	-- 	}
+	-- 	points.bottom_01.position = Matrix4x4.transform(tm, vector3(half_size.x, half_size.y, -half_size.z))
+	-- 	points.bottom_02.position = Matrix4x4.transform(tm, vector3(half_size.x, -half_size.y, -half_size.z))
+	-- 	points.bottom_03.position = Matrix4x4.transform(tm, vector3(-half_size.x, -half_size.y, -half_size.z))
+	-- 	points.bottom_04.position = Matrix4x4.transform(tm, vector3(-half_size.x, half_size.y, -half_size.z))
+	-- 	points.top_01.position = Matrix4x4.transform(tm, vector3(half_size.x, half_size.y, half_size.z))
+	-- 	points.top_02.position = Matrix4x4.transform(tm, vector3(half_size.x, -half_size.y, half_size.z))
+	-- 	points.top_03.position = Matrix4x4.transform(tm, vector3(-half_size.x, -half_size.y, half_size.z))
+	-- 	points.top_04.position = Matrix4x4.transform(tm, vector3(-half_size.x, half_size.y, half_size.z))
+	-- 	-- Get position and distance to camera
+	-- 	local results = {
+	-- 		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
+	-- 		top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
+	-- 	}
+	-- 	results.bottom_01.position, results.bottom_01.distance = camera_world_to_screen(camera, points.bottom_01.position)
+	-- 	results.bottom_02.position, results.bottom_02.distance = camera_world_to_screen(camera, points.bottom_02.position)
+	-- 	results.bottom_03.position, results.bottom_03.distance = camera_world_to_screen(camera, points.bottom_03.position)
+	-- 	results.bottom_04.position, results.bottom_04.distance = camera_world_to_screen(camera, points.bottom_04.position)
+	-- 	results.top_01.position, results.top_01.distance = camera_world_to_screen(camera, points.top_01.position)
+	-- 	results.top_02.position, results.top_02.distance = camera_world_to_screen(camera, points.top_02.position)
+	-- 	results.top_03.position, results.top_03.distance = camera_world_to_screen(camera, points.top_03.position)
+	-- 	results.top_04.position, results.top_04.distance = camera_world_to_screen(camera, points.top_04.position)
+	-- 	-- Farthest point from camera
+	-- 	local farthest = nil
+	-- 	local last = 0
+	-- 	for name, data in pairs(results) do
+	-- 		if data.distance > last then
+	-- 			last = data.distance
+	-- 			farthest = name
+	-- 		end
+	-- 	end
+	-- 	-- Save as target for lines
+	-- 	if saved_origin then
+	-- 		local closest = nil
+	-- 		local last = math.huge
+	-- 		local saved_origin_v3 = vector3(saved_origin[1], saved_origin[2], 0)
+	-- 		for name, data in pairs(results) do
+	-- 			local position = vector3(data.position[1], data.position[2], 0)
+	-- 			local distance = vector3.distance(saved_origin_v3, position)
+	-- 			if distance < last then
+	-- 				last = distance
+	-- 				closest = name
+	-- 			end
+	-- 		end
+	-- 		if closest then
+	-- 			self.equipment_line_target = {
+	-- 				results[closest].position[1],
+	-- 				results[closest].position[2],
+	-- 			}
+	-- 		end
+	-- 	end
+	
+	-- 	-- local weapon_spawn_data = ui_weapon_spawner._weapon_spawn_data
+	-- 	-- if weapon_spawn_data then
+	-- 	-- 	local weapon_size = mod:weapon_size(weapon_spawn_data.attachment_units_3p)
+	-- 	-- 	mod:echot("weapon_size: "..tostring(weapon_size))
+	-- 	-- end
+
+	-- 	-- Draw box bottom
+	-- 	if farthest ~= "bottom_01" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "bottom_01" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "bottom_02" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.bottom_02.position, results.bottom_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "bottom_03" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_03.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	-- Draw box top
+	-- 	if farthest ~= "top_01" and farthest ~= "bottom_01" then ScriptGui.hud_line(gui, results.top_01.position, results.bottom_01.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "top_02" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.top_02.position, results.bottom_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "top_03" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.top_03.position, results.bottom_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "top_04" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.top_04.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	-- Draw box sides
+	-- 	if farthest ~= "top_01" and farthest ~= "top_02" then ScriptGui.hud_line(gui, results.top_01.position, results.top_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "top_01" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_01.position, results.top_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "top_02" and farthest ~= "top_03" then ScriptGui.hud_line(gui, results.top_02.position, results.top_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
+	-- 	if farthest ~= "top_03" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_03.position, results.top_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
 	-- end
 
-	-- Draw box bottom
-	if farthest ~= "bottom_01" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "bottom_01" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_01.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "bottom_02" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.bottom_02.position, results.bottom_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "bottom_03" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.bottom_03.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	-- Draw box top
-	if farthest ~= "top_01" and farthest ~= "bottom_01" then ScriptGui.hud_line(gui, results.top_01.position, results.bottom_01.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_02" and farthest ~= "bottom_02" then ScriptGui.hud_line(gui, results.top_02.position, results.bottom_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_03" and farthest ~= "bottom_03" then ScriptGui.hud_line(gui, results.top_03.position, results.bottom_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_04" and farthest ~= "bottom_04" then ScriptGui.hud_line(gui, results.top_04.position, results.bottom_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	-- Draw box sides
-	if farthest ~= "top_01" and farthest ~= "top_02" then ScriptGui.hud_line(gui, results.top_01.position, results.top_02.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_01" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_01.position, results.top_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_02" and farthest ~= "top_03" then ScriptGui.hud_line(gui, results.top_02.position, results.top_03.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-	if farthest ~= "top_03" and farthest ~= "top_04" then ScriptGui.hud_line(gui, results.top_03.position, results.top_04.position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100)) end
-end
+	-- mod.draw_equipment_box = function(self, dt, t)
+	-- 	if self.cosmetics_view and self.cosmetics_view.weapon_unit and unit_alive(self.cosmetics_view.weapon_unit) and not self.dropdown_open then
+	-- 		local attachment_slots = self:get_attachment_slots(self.cosmetics_view.weapon_unit)
+	-- 		if attachment_slots and #attachment_slots > 0 then
+	-- 			for _, attachment_slot in pairs(attachment_slots) do
+	-- 				local unit = self:get_attachment_unit(self.cosmetics_view.weapon_unit, attachment_slot)
+	-- 				if unit and unit_alive(unit) then
+	-- 					local saved_origin = self.dropdown_positions[attachment_slot]
+	-- 					if saved_origin and saved_origin[3] and saved_origin[3] == true then
+	-- 						self:draw_box(unit, saved_origin)
+	-- 						break
+	-- 					end
+	-- 				end
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end
 
-mod.draw_equipment_box = function(self, dt, t)
-	if self.cosmetics_view and self.cosmetics_view.weapon_unit and unit_alive(self.cosmetics_view.weapon_unit) and not self.dropdown_open then
-		local attachment_slots = self:get_attachment_slots(self.cosmetics_view.weapon_unit)
-		if attachment_slots and #attachment_slots > 0 then
-			for _, attachment_slot in pairs(attachment_slots) do
-				local unit = self:get_attachment_unit(self.cosmetics_view.weapon_unit, attachment_slot)
-				if unit and unit_alive(unit) then
-					local saved_origin = self.dropdown_positions[attachment_slot]
-					if saved_origin and saved_origin[3] and saved_origin[3] == true then
-						self:draw_box(unit, saved_origin)
-						break
-					end
-				end
-			end
-		end
-	end
-end
-
-mod.draw_equipment_lines = function(self, dt, t)
-	if self.cosmetics_view and self.cosmetics_view.weapon_unit and unit_alive(self.cosmetics_view.weapon_unit) and not self.dropdown_open then
-		local attachment_slots = self:get_attachment_slots(self.cosmetics_view.weapon_unit)
-		if attachment_slots and #attachment_slots > 0 then
-			local gui = self.cosmetics_view._ui_forward_renderer.gui
-			local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
-			for _, attachment_slot in pairs(attachment_slots) do
-				local unit = self:get_attachment_unit(self.cosmetics_view.weapon_unit, attachment_slot)
-				if unit and unit_alive(unit) then
-					local box = Unit.box(unit, false)
-					local center_position = matrix4x4_translation(box)
-					local world_to_screen, distance = camera_world_to_screen(camera, center_position)
-					if self.equipment_line_target then
-						world_to_screen = vector2(self.equipment_line_target[1], self.equipment_line_target[2])
-					end
-					local saved_origin = self.dropdown_positions[attachment_slot]
-					if saved_origin and saved_origin[3] and saved_origin[3] == true then
-						local origin = vector2(saved_origin[1], saved_origin[2])
-						local color = Color(255, 49, 62, 45)
-						ScriptGui.hud_line(gui, origin, world_to_screen, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
-						break
-					end
-				end
-			end
-		end
-	end
-end
+	-- mod.draw_equipment_lines = function(self, dt, t)
+	-- 	if self.cosmetics_view and self.cosmetics_view.weapon_unit and unit_alive(self.cosmetics_view.weapon_unit) and not self.dropdown_open then
+	-- 		local attachment_slots = self:get_attachment_slots(self.cosmetics_view.weapon_unit)
+	-- 		if attachment_slots and #attachment_slots > 0 then
+	-- 			local gui = self.cosmetics_view._ui_forward_renderer.gui
+	-- 			local camera = self.cosmetics_view._weapon_preview._ui_weapon_spawner._camera
+	-- 			for _, attachment_slot in pairs(attachment_slots) do
+	-- 				local unit = self:get_attachment_unit(self.cosmetics_view.weapon_unit, attachment_slot)
+	-- 				if unit and unit_alive(unit) then
+	-- 					local box = Unit.box(unit, false)
+	-- 					local center_position = matrix4x4_translation(box)
+	-- 					local world_to_screen, distance = camera_world_to_screen(camera, center_position)
+	-- 					if self.equipment_line_target then
+	-- 						world_to_screen = vector2(self.equipment_line_target[1], self.equipment_line_target[2])
+	-- 					end
+	-- 					local saved_origin = self.dropdown_positions[attachment_slot]
+	-- 					if saved_origin and saved_origin[3] and saved_origin[3] == true then
+	-- 						local origin = vector2(saved_origin[1], saved_origin[2])
+	-- 						local color = Color(255, 49, 62, 45)
+	-- 						ScriptGui.hud_line(gui, origin, world_to_screen, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
+	-- 						break
+	-- 					end
+	-- 				end
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end
+--#endregion
 
 -- ##### ┬ ┬┬  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###################################
 -- ##### │ ││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├─┤││││││├┤ ├┬┘  ├┤ │ │││││   │ ││ ││││└─┐ ###################################
@@ -314,6 +316,7 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 
 			self:resolve_special_changes(self.cosmetics_view._presentation_item, attachment)
 			self:resolve_auto_equips(self.cosmetics_view._presentation_item)
+			self:resolve_no_support(self.cosmetics_view._presentation_item)
 			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
 			-- if attachment_data and attachment_data.special_resolve then
 			-- 	local special_changes = attachment_data.special_resolve(self.cosmetics_view._gear_id, self.cosmetics_view._presentation_item, attachment)
@@ -335,8 +338,8 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 		end
 
 		if not no_update then
-			self:resolve_special_changes(self.cosmetics_view._presentation_item, attachment)
-			self:resolve_auto_equips(self.cosmetics_view._presentation_item)
+			-- self:resolve_special_changes(self.cosmetics_view._presentation_item, attachment)
+			-- self:resolve_auto_equips(self.cosmetics_view._presentation_item)
 
 			-- mod:add_to_packages(self.cosmetics_view._selected_item)
 			-- mod:remove_from_packages(self.cosmetics_view._selected_item)
@@ -349,7 +352,7 @@ mod.load_new_attachment = function(self, item, attachment_slot, attachment, no_u
 			self.cosmetics_view:_preview_item(self.cosmetics_view._presentation_item)
 			-- end
 
-			self:resolve_no_support(self.cosmetics_view._presentation_item)
+			-- self:resolve_no_support(self.cosmetics_view._presentation_item)
 
 			self.cosmetics_view._slot_info_id = self:get_slot_info_id(self.cosmetics_view._presentation_item)
 
@@ -405,7 +408,7 @@ mod.update_attachment_previews = function(self, dt, t)
 				unit_set_local_rotation(unit, 1, unit_world_rotation(link_unit, 1))
 
 				if index == selected_index then
-					self:draw_box(unit)
+					-- self:draw_box(unit)
 				end
 
 				-- local last_slot = mod.attachment_slot_positions[7] or self.spawned_attachments_last_position[unit]
@@ -670,9 +673,31 @@ mod.check_unsaved_changes = function(self, no_animation)
 				-- 	end
 				-- end
 			end
+			-- Auto equip
+			for attachment_slot, value in pairs(self.original_weapon_settings) do
+				if not self.add_custom_attachments[attachment_slot] then
+					self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
+				end
+			end
+			for attachment_slot, value in pairs(self.original_weapon_settings) do
+				if self.add_custom_attachments[attachment_slot] then
+					self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
+				end
+			end
+			-- Special
+			for attachment_slot, value in pairs(self.original_weapon_settings) do
+				if self.add_custom_attachments[attachment_slot] then
+					self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
+				end
+			end
+			for attachment_slot, value in pairs(self.original_weapon_settings) do
+				if not self.add_custom_attachments[attachment_slot] then
+					self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
+				end
+			end
 			self.original_weapon_settings = {}
 		end
-		self:update_equip_button()
+		-- self:update_equip_button()
 	end
 end
 
@@ -698,139 +723,149 @@ mod.cb_on_demo_pressed = function(self)
 	end
 end
 
-mod.cb_on_randomize_pressed = function(self, skip_animation)
-	local random_attachments = self:randomize_weapon(self.cosmetics_view._selected_item)
-	local skip_animation = skip_animation or not self:get("mod_option_weapon_build_animation")
-
-	if self.cosmetics_view._gear_id and random_attachments then
-		-- mod:dtf(random_attachments, "random_attachments", 2)
-		local attachment_names = {}
-		-- table_reverse(random_attachments)
-		for attachment_slot, value in pairs(random_attachments) do
-			attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
-		end
-		local index = 1
-		-- mod.build_animation.animations = {}
-		for attachment_slot, value in pairs(random_attachments) do
-			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment_names[attachment_slot]]
-			-- local no_animation = attachment_data and attachment_data.no_animation
-			if not skip_animation then
-				-- self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], value, nil, nil, true)
-				self.build_animation:animate(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], value, nil, nil, true)
-				-- self.weapon_part_animation_update = true
-			else
-				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, value, index < table_size(random_attachments))
-			end
-			index = index + 1
-		end
-		-- Auto equip
-		for attachment_slot, value in pairs(random_attachments) do
-			if not self.add_custom_attachments[attachment_slot] then
-				self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
-			end
-		end
-		for attachment_slot, value in pairs(random_attachments) do
-			if self.add_custom_attachments[attachment_slot] then
-				self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
-			end
-		end
-		-- Special
-		for attachment_slot, value in pairs(random_attachments) do
-			if self.add_custom_attachments[attachment_slot] then
-				self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
-			end
-		end
-		for attachment_slot, value in pairs(random_attachments) do
-			if not self.add_custom_attachments[attachment_slot] then
-				self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
-			end
-		end
-		self.weapon_part_animation_update = true
+--#region Old
+	-- mod.cb_on_randomize_pressed = function(self, skip_animation)
 		
-		-- if not skip_animation then self.weapon_part_animation_update = true end
-	end
-end
+	-- 	-- Get random attachments
+	-- 	local random_attachments = self:randomize_weapon(self.cosmetics_view._selected_item)
 
-mod.cb_on_reset_pressed = function(self, skip_animation)
-	if self.cosmetics_view._gear_id and table_size(self.changed_weapon_settings) > 0 then
-		local skip_animation = skip_animation or not self:get("mod_option_weapon_build_animation")
+	-- 	-- Skip animation?
+	-- 	local skip_animation = skip_animation or not self:get("mod_option_weapon_build_animation")
 
-		local changed_weapon_settings = table_clone(self.changed_weapon_settings)
-		local attachment_names = {}
-		-- table_reverse(changed_weapon_settings)
-		for attachment_slot, value in pairs(changed_weapon_settings) do
-		-- for _, attachment_slot in pairs(self.attachment_slots) do
-			attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
-		end
-		local index = 1
-		-- mod.build_animation.animations = {}
-		for attachment_slot, value in pairs(changed_weapon_settings) do
-			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment_names[attachment_slot]]
-			-- local no_animation = attachment_data and attachment_data.no_animation
-			if not skip_animation then
-				-- self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], "default")
-				self.build_animation:animate(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], "default")
-			else
-				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, "default", index < #self.attachment_slots)
-			end
-			index = index + 1
-		end
-		-- Auto equip
-		for attachment_slot, value in pairs(changed_weapon_settings) do
-			if not self.add_custom_attachments[attachment_slot] then
-				self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
-			end
-		end
-		for attachment_slot, value in pairs(changed_weapon_settings) do
-			if self.add_custom_attachments[attachment_slot] then
-				self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
-			end
-		end
-		-- Special
-		for attachment_slot, value in pairs(changed_weapon_settings) do
-			if self.add_custom_attachments[attachment_slot] then
-				self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
-			end
-		end
-		for attachment_slot, value in pairs(changed_weapon_settings) do
-			if not self.add_custom_attachments[attachment_slot] then
-				self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
-			end
-		end
-		self.weapon_part_animation_update = true
-		-- if not skip_animation then mod.weapon_part_animation_update = true end
+	-- 	if self.cosmetics_view._gear_id and random_attachments then
+	-- 		-- mod:dtf(random_attachments, "random_attachments", 2)
+	-- 		local attachment_names = {}
+	-- 		-- table_reverse(random_attachments)
+	-- 		for attachment_slot, value in pairs(random_attachments) do
+	-- 			attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
+	-- 		end
+	-- 		local index = 1
+	-- 		-- mod.build_animation.animations = {}
+	-- 		self.weapon_part_animation_update = true
+	-- 		for attachment_slot, value in pairs(random_attachments) do
+	-- 			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment_names[attachment_slot]]
+	-- 			-- local no_animation = attachment_data and attachment_data.no_animation
+	-- 			if not skip_animation then
+	-- 				-- self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], value, nil, nil, true)
+	-- 				self.build_animation:animate(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], value, nil, nil, true)
+	-- 				-- self.weapon_part_animation_update = true
+	-- 			else
+	-- 				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, value, index < table_size(random_attachments))
+	-- 			end
+	-- 			index = index + 1
+	-- 		end
+	-- 		-- Auto equip
+	-- 		for attachment_slot, value in pairs(random_attachments) do
+	-- 			if not self.add_custom_attachments[attachment_slot] then
+	-- 				self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
+	-- 			end
+	-- 		end
+	-- 		for attachment_slot, value in pairs(random_attachments) do
+	-- 			if self.add_custom_attachments[attachment_slot] then
+	-- 				self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
+	-- 			end
+	-- 		end
+	-- 		-- Special
+	-- 		for attachment_slot, value in pairs(random_attachments) do
+	-- 			if self.add_custom_attachments[attachment_slot] then
+	-- 				self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
+	-- 			end
+	-- 		end
+	-- 		for attachment_slot, value in pairs(random_attachments) do
+	-- 			if not self.add_custom_attachments[attachment_slot] then
+	-- 				self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
+	-- 			end
+	-- 		end
+	-- 		-- self.weapon_part_animation_update = true
+			
+	-- 		-- if not skip_animation then self.weapon_part_animation_update = true end
+	-- 	end
+	-- end
 
-		self.reset_weapon = true
-		self:start_weapon_move()
-		self.new_rotation = 0
-		self.do_rotation = true
-	end
-end
+	-- mod.cb_on_reset_pressed = function(self, skip_animation)
+	-- 	-- self:get_changed_weapon_settings()
+	-- 	if self.cosmetics_view._gear_id and table_size(self.changed_weapon_settings) > 0 then
+	-- 		local skip_animation = skip_animation or not self:get("mod_option_weapon_build_animation")
 
-mod.update_randomize_button = function(self)
-	local button = self.cosmetics_view._widgets_by_name.randomize_button
-	local button_content = button.content
-	local disabled = self.build_animation:is_busy()
-	button_content.hotspot.disabled = disabled
-end
+	-- 		local changed_weapon_settings = table_clone(self.changed_weapon_settings)
+	-- 		local attachment_names = {}
+	-- 		-- table_reverse(changed_weapon_settings)
+	-- 		for attachment_slot, value in pairs(changed_weapon_settings) do
+	-- 		-- for _, attachment_slot in pairs(self.attachment_slots) do
+	-- 			attachment_names[attachment_slot] = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, self.cosmetics_view._selected_item)
+	-- 		end
+	-- 		local index = 1
+	-- 		-- mod.build_animation.animations = {}
+	-- 		self.weapon_part_animation_update = true
+	-- 		for attachment_slot, value in pairs(changed_weapon_settings) do
+	-- 			-- local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment_names[attachment_slot]]
+	-- 			-- local no_animation = attachment_data and attachment_data.no_animation
+	-- 			if not skip_animation then
+	-- 				-- self:detach_attachment(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], "default")
+	-- 				self.build_animation:animate(self.cosmetics_view._selected_item, attachment_slot, attachment_names[attachment_slot], "default")
+	-- 			else
+	-- 				self:load_new_attachment(self.cosmetics_view._selected_item, attachment_slot, "default", index < #self.attachment_slots)
+	-- 			end
+	-- 			index = index + 1
+	-- 		end
+	-- 		-- Auto equip
+	-- 		for attachment_slot, value in pairs(changed_weapon_settings) do
+	-- 			if not self.add_custom_attachments[attachment_slot] then
+	-- 				self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
+	-- 			end
+	-- 		end
+	-- 		for attachment_slot, value in pairs(changed_weapon_settings) do
+	-- 			if self.add_custom_attachments[attachment_slot] then
+	-- 				self:resolve_auto_equips(self.cosmetics_view._presentation_item, "default")
+	-- 			end
+	-- 		end
+	-- 		-- Special
+	-- 		for attachment_slot, value in pairs(changed_weapon_settings) do
+	-- 			if self.add_custom_attachments[attachment_slot] then
+	-- 				self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
+	-- 			end
+	-- 		end
+	-- 		for attachment_slot, value in pairs(changed_weapon_settings) do
+	-- 			if not self.add_custom_attachments[attachment_slot] then
+	-- 				self:resolve_special_changes(self.cosmetics_view._presentation_item, "default")
+	-- 			end
+	-- 		end
+	-- 		-- self.weapon_part_animation_update = true
+	-- 		-- if not skip_animation then mod.weapon_part_animation_update = true end
 
-mod.update_equip_button = function(self)
-	if self.cosmetics_view._selected_tab_index == 3 then
-		local button = self.cosmetics_view._widgets_by_name.equip_button
-		local button_content = button.content
-		local disabled = table_size(self.original_weapon_settings) == 0 or self.build_animation:is_busy()
-		button_content.hotspot.disabled = disabled
-		button_content.text = utf8_upper(disabled and self:localize("loc_weapon_inventory_equipped_button") or self:localize("loc_weapon_inventory_equip_button"))
-	end
-end
+	-- 		self.reset_weapon = true
+	-- 		self:start_weapon_move()
+	-- 		self.new_rotation = 0
+	-- 		self.do_rotation = true
+	-- 	end
+	-- end
 
-mod.update_reset_button = function(self)
-	local button = self.cosmetics_view._widgets_by_name.reset_button
-	local button_content = button.content
-	local disabled = table_size(self.changed_weapon_settings) == 0 or self.build_animation:is_busy()
-	button_content.hotspot.disabled = disabled
-	button_content.text = utf8_upper(disabled and self:localize("loc_weapon_inventory_no_reset_button") or self:localize("loc_weapon_inventory_reset_button"))
-end
+
+	-- mod.update_randomize_button = function(self)
+	-- 	local button = self.cosmetics_view._widgets_by_name.randomize_button
+	-- 	local button_content = button.content
+	-- 	local disabled = self.build_animation:is_busy()
+	-- 	button_content.hotspot.disabled = disabled
+	-- end
+
+	-- mod.update_equip_button = function(self)
+	-- 	if self.cosmetics_view._selected_tab_index == 3 then
+	-- 		local button = self.cosmetics_view._widgets_by_name.equip_button
+	-- 		local button_content = button.content
+	-- 		local disabled = table_size(self.original_weapon_settings) == 0 or self.build_animation:is_busy()
+	-- 		button_content.hotspot.disabled = disabled
+	-- 		button_content.text = utf8_upper(disabled and self:localize("loc_weapon_inventory_equipped_button") or self:localize("loc_weapon_inventory_equip_button"))
+	-- 	end
+	-- end
+
+	-- mod.update_reset_button = function(self)
+	-- 	local button = self.cosmetics_view._widgets_by_name.reset_button
+	-- 	local button_content = button.content
+	-- 	local disabled = table_size(self.changed_weapon_settings) == 0 or self.build_animation:is_busy()
+	-- 	button_content.hotspot.disabled = disabled
+	-- 	button_content.text = utf8_upper(disabled and self:localize("loc_weapon_inventory_no_reset_button") or self:localize("loc_weapon_inventory_reset_button"))
+	-- end
+--#endregion
 
 mod.update_dropdown = function(self, widget, input_service, dt, t)
 	local content = widget.content
@@ -1191,6 +1226,7 @@ mod.hide_custom_widgets = function(self, hide)
 		self.cosmetics_view._widgets_by_name.randomize_button.visible = not hide
 		local demo_mode = mod:get("demo_mode")
 		self.cosmetics_view._widgets_by_name.demo_button.visible = demo_mode and not hide
+		self.cosmetics_view._widgets_by_name.weapon_customization_scrollbar.visible = not hide and self.cosmetics_view.total_dropdown_height > 950
     end
 end
 
@@ -1237,6 +1273,14 @@ mod.add_custom_widget = function(self, widget)
 	self.cosmetics_view._custom_widgets[#self.cosmetics_view._custom_widgets+1] = widget
 end
 
+mod.find_custom_widget = function(self, name)
+	for _, widget in pairs(self.cosmetics_view._custom_widgets) do
+		if widget.name == name then
+			return widget
+		end
+	end
+end
+
 mod.generate_custom_widgets = function(self)
 	local item = self.cosmetics_view._selected_item
 	if item then
@@ -1257,13 +1301,39 @@ mod.generate_custom_widgets = function(self)
 	end
 end
 
+mod.shift_attachments = function(self, progress)
+	-- Iterate scenegraph entries
+	local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
+	for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
+		-- Make sure attachment slot is applicable
+		if not table_contains(self.cosmetics_view._not_applicable, scenegraph_name) then
+			local widget_name = ""
+			local is_text = nil
+			if string_find(scenegraph_name, "text_pivot") then
+				widget_name = string_gsub(scenegraph_name, "_text_pivot", "_custom_text")
+				is_text = true
+			else
+				widget_name = string_gsub(scenegraph_name, "_pivot", "_custom")
+			end
+			local widget = self:find_custom_widget(widget_name)
+			if widget then
+				local scenegraph_entry = self.cosmetics_view._ui_scenegraph[scenegraph_name]
+				widget.original_y = widget.original_y or widget.offset[2]
+				widget.offset[2] = widget.original_y - (self.cosmetics_view.total_dropdown_height - 950) * progress
+				local offset = widget.offset[2] + scenegraph_entry.local_position[2]
+				widget.visible = offset > 10 and offset < 950 and self.cosmetics_view._selected_tab_index == 3
+			end
+		end
+	end
+end
+
 mod.resolve_not_applicable_attachments = function(self)
 	local item = self.cosmetics_view._selected_item
 	if item then
 		-- Get item name
 		-- local item_name = self:item_name_from_content_string(item.name)
 		local item_name = self.cosmetics_view._item_name
-		local move = 0
+		local move = -10
 		-- Iterate attachment slots
 		for index, slot in pairs(self.attachment_slots) do
 			-- Check that weapon has attachment slot and more than 2 options
@@ -1293,6 +1363,8 @@ mod.resolve_not_applicable_attachments = function(self)
 			local scenegraph_entry = self.cosmetics_view._ui_scenegraph[scenegraph_name]
 			if scenegraph_entry then
 				scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - move
+				scenegraph_entry.original_y = scenegraph_entry.local_position[2]
+				self.cosmetics_view.total_dropdown_height = scenegraph_entry.local_position[2] + dropdown_height
 			end
 		end
 	end
@@ -1365,13 +1437,17 @@ mod.get_dropdown_positions = function(self)
 				local world_position = UIScenegraph.world_position(ui_scenegraph, scenegraph_name)
 				local size_width, size_height = UIScenegraph.get_size(ui_scenegraph, scenegraph_name, scale)
 
+				local widget_name = attachment_slot.."_custom"
+				local widget = self.cosmetics_view._widgets_by_name[widget_name]
+				local y = widget and widget.offset[2] or 0
+
 				if scenegraph_entry.position[1] > screen_width / 2 then
 					entry[1] = world_position[1] * scale
 				else
 					entry[1] = world_position[1] * scale + size_width * scale
 				end
 				-- entry[1] = world_position[1] * scale + size_width * scale
-				entry[2] = world_position[2] * scale + (dropdown_height * scale) / 2
+				entry[2] = world_position[2] * scale + (dropdown_height * scale) / 2 + y
 				entry[3] = entry[3] or false
 				self.dropdown_positions[attachment_slot] = entry
 			end

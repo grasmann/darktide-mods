@@ -141,7 +141,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"combataxe_p3_m3"}, nil, true)
+		-- mod:debug_attachments(item_data, attachments, {"laspistol_p1_m1", "laspistol_p1_m2", "laspistol_p1_m3"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil

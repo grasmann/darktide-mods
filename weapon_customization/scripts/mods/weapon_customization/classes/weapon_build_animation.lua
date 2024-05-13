@@ -381,7 +381,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
                 if entry.callback then entry.callback() end
             end
             if entry.type == "attach" and not entry.attach_load then
-                mod:load_new_attachment(self.item, entry.slot, entry.new, true)
+                mod:load_new_attachment(self.item, entry.slot, entry.new)
                 entry.attach_load = true
             end
         end
@@ -400,10 +400,6 @@ WeaponBuildAnimation.update = function(self, dt, t)
             -- 	managers.event:trigger("weapon_customization_hide_ui", false)
             -- end
         end
-
-        mod:update_equip_button()
-        mod:update_reset_button()
-        mod:update_randomize_button()
 
     end
 end

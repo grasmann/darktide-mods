@@ -557,7 +557,8 @@ SightExtension.update = function(self, unit, dt, t)
 end
 
 SightExtension.update_position_and_rotation = function(self)
-	if self.initialized and self:get_first_person() and self.ranged_weapon.weapon_unit and unit_alive(self.ranged_weapon.weapon_unit) then
+	if self.initialized and self:get_first_person() and self.ranged_weapon.weapon_unit and unit_alive(self.ranged_weapon.weapon_unit)
+			and self.first_person_unit and unit_alive(self.first_person_unit) then
 		-- Position
 		local position_offset = self.position_offset and vector3_unbox(self.position_offset) or vector3_zero()
 		local mat = quaternion_matrix4x4(unit_local_rotation(self.ranged_weapon.weapon_unit, 1))

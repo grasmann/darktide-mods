@@ -158,7 +158,7 @@ SwayAnimationExtension.update_animation = function(self, dt, t)
     
 
     local not_aiming_or_braced = not self:is_aiming() or self:is_braced()
-    if self.initialized and self:get_first_person() and (not_aiming_or_braced or self.on_aim) then
+    if self.initialized and self:get_first_person() and (not_aiming_or_braced or self.on_aim) and self.first_person_unit and unit_alive(self.first_person_unit) then
         -- Get rotation
         local original_rotation = unit_local_rotation(self.first_person_unit, 1)
         local last_player_rotation = self.last_real_rotation and quaternion_unbox(self.last_real_rotation) or original_rotation
@@ -207,7 +207,7 @@ SwayAnimationExtension.update_animation = function(self, dt, t)
 end
 
 SwayAnimationExtension.set_position_and_rotation = function(self, offset_position, offset_rotation)
-    if offset_position and offset_rotation then
+    if offset_position and offset_rotation and self.first_person_unit and unit_alive(self.first_person_unit) then
         local position = unit_local_position(self.first_person_unit, 1)
         local rotation = unit_local_rotation(self.first_person_unit, 1)
         -- Rotation

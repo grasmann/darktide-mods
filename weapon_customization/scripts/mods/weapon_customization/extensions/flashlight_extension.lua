@@ -15,6 +15,7 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
     local Unit = Unit
     local math = math
     local type = type
+    local World = World
     local table = table
     local light = Light
     local pairs = pairs
@@ -25,24 +26,41 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
     local math_max = math.max
     local tostring = tostring
     local managers = Managers
+    local Matrix4x4 = Matrix4x4
     local unit_alive = Unit.alive
     local unit_light = Unit.light
     local WwiseWorld = WwiseWorld
+    local Quaternion = Quaternion
     local vector3_box = Vector3Box
     local script_unit = ScriptUnit
     local table_clone = table.clone
     local math_random = math.random
     local vector3_zero = vector3.zero
+    local vector3_lerp = vector3.lerp
     local unit_get_data = Unit.get_data
+    local quaternion_box = QuaternionBox
     local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
+    local quaternion_lerp = Quaternion.lerp
+    local math_easeInCubic = math.easeInCubic
     local math_random_seed = math.random_seed
     local light_set_enabled = light.set_enabled
     local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
+    local quaternion_unbox = quaternion_box.unbox
+    local matrix4x4_transform = Matrix4x4.transform
+    local quaternion_identity = Quaternion.identity
+    local quaternion_multiply = Quaternion.multiply
+    local unit_local_rotation = Unit.local_rotation
+    local unit_local_position = Unit.local_position
     local light_set_intensity = light.set_intensity
+    local quaternion_matrix4x4 = Quaternion.matrix4x4
+    local math_ease_out_elastic = math.ease_out_elastic
     local light_set_ies_profile = light.set_ies_profile
     local light_set_falloff_end = light.set_falloff_end
     local light_set_color_filter = light.set_color_filter
+    local quaternion_from_vector = Quaternion.from_vector
+    local unit_set_local_rotation = Unit.set_local_rotation
+    local unit_set_local_position = Unit.set_local_position
     local light_set_casts_shadows = light.set_casts_shadows
     local light_set_falloff_start = light.set_falloff_start
     local light_set_spot_angle_end = light.set_spot_angle_end
@@ -51,6 +69,7 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
     local light_color_with_intensity = light.color_with_intensity
     local light_set_spot_angle_start = light.set_spot_angle_start
     local wwise_world_make_auto_source = WwiseWorld.make_auto_source
+    local world_update_unit_and_children = World.update_unit_and_children
     local unit_set_vector3_for_materials = Unit.set_vector3_for_materials
     local light_set_volumetric_intensity = light.set_volumetric_intensity
     local wwise_world_trigger_resource_event = WwiseWorld.trigger_resource_event
@@ -281,6 +300,7 @@ FlashlightExtension.update = function(self, dt, t)
         end
         -- Intensity
         self:update_intensity()
+        self:update_animation(dt, t)
         -- Save last first person
         self.last_first_person = first_person
     end
@@ -442,6 +462,7 @@ FlashlightExtension.set_enabled  = function(self, optional_value, optional_play_
             mod:set_flashlight_active(self.on)
         end
         self:set_light(play_sound, self.on)
+        self:play_animation()
     end
     -- Relay to sub extensions
     FlashlightExtension.super.set_enabled(self, self.on)
@@ -469,6 +490,62 @@ FlashlightExtension.set_light = function(self, play_sound, optional_value, optio
             end
         end
     end
+end
+
+FlashlightExtension.play_animation = function(self)
+    self.animation_start = mod:game_time()
+    self.animation_state = "move"
+    self.animation_time = .15
+    self.animation_move = vector3_box(vector3(0, -.01, -.03))
+    self.animation_spin = quaternion_box(quaternion_from_vector(vector3(1.5, 1.5, -1.5)))
+end
+
+FlashlightExtension.update_animation = function(self, dt, t)
+
+    if self.first_person_unit and unit_alive(self.first_person_unit) then
+
+        local node = Unit.node(self.first_person_unit, "ap_aim")
+        local rotation = unit_local_rotation(self.first_person_unit, node)
+        local rotation_offset = quaternion_identity()
+        local position = unit_local_position(self.first_person_unit, node)
+        local position_offset = quaternion_identity()
+
+        if self.animation_state == "move" then
+            if self.animation_start and t - self.animation_start < self.animation_time then
+                local progress = (t - self.animation_start) / self.animation_time
+                local anim_progress = math.ease_in_out_bounce(progress)
+                rotation_offset = quaternion_lerp(quaternion_identity(), quaternion_unbox(self.animation_spin), anim_progress)
+                position_offset = vector3_lerp(vector3_zero(), vector3_unbox(self.animation_move), anim_progress)
+            else
+                rotation_offset = quaternion_unbox(self.animation_spin)
+                position_offset = vector3_unbox(self.animation_move)
+                self.animation_state = "back"
+                self.animation_start = t
+            end
+
+        elseif self.animation_state == "back" then
+            if self.animation_start and t - self.animation_start < self.animation_time then
+                local progress = (t - self.animation_start) / self.animation_time
+                local anim_progress = math_easeInCubic(progress)
+                rotation_offset = quaternion_lerp(quaternion_unbox(self.animation_spin), quaternion_identity(), anim_progress)
+                position_offset = vector3_lerp(vector3_unbox(self.animation_move), vector3_zero(), anim_progress)
+            else
+                self.animation_state = nil
+                self.animation_start = nil
+            end
+
+        end
+
+        local new_rotation = quaternion_multiply(rotation, rotation_offset)
+        unit_set_local_rotation(self.first_person_unit, node, new_rotation)
+        local mat = quaternion_matrix4x4(rotation)
+        local rotated_offset = matrix4x4_transform(mat, position_offset)
+        
+        unit_set_local_position(self.first_person_unit, node, position + rotated_offset)
+        world_update_unit_and_children(self.world, self.first_person_unit)
+
+    end
+
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################

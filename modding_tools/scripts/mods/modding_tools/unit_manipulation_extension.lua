@@ -107,6 +107,7 @@ UnitManipulationExtension.init = function(self, extension_init_context, unit, ex
 	self.faded_color = extension_init_data.faded_color or 255
 	self.position_tolerance = extension_init_data.position_tolerance or .02
 	self.rotation_tolerance = extension_init_data.rotation_tolerance or 10
+	self.name = extension_init_data.name or "<NO NAME PROVIDED>"
 	self.angle_names = extension_init_data.angle_names or true
 	self.mode = extension_init_data.mode or MANIPULATION_MODES.POSITION
 	self.tm, self.half_size = Unit.box(unit)
@@ -158,7 +159,7 @@ UnitManipulationExtension.update = function(self, dt, t, input_service)
 end
 
 UnitManipulationExtension.update_controls = function(self, dt, t, input_service, all)
-	if self.held_cursor then
+	if self.held_cursor and self.unit and unit_alive(self.unit) then
 		local rotation = unit_local_rotation(self.unit, 1)
 		local position_offset = unit_get_data(self.unit, "unit_manipulation_position_offset")
 		position_offset = position_offset and vector3_unbox(position_offset) or vector3(0, 0, 0)
@@ -216,9 +217,11 @@ end
 UnitManipulationExtension.restore_history = function(self)
 	if self.history and #self.history >= self.history_index then
 		local history_entry = self.history[self.history_index]
-		unit_set_data(self.unit, "unit_manipulation_position_offset", history_entry.position_offset)
-		unit_set_data(self.unit, "unit_manipulation_rotation_offset", history_entry.rotation_offset)
-		unit_set_data(self.unit, "unit_manipulation_scale_offset", history_entry.scale_offset)
+		if self.unit and unit_alive(self.unit) then
+			unit_set_data(self.unit, "unit_manipulation_position_offset", history_entry.position_offset)
+			unit_set_data(self.unit, "unit_manipulation_rotation_offset", history_entry.rotation_offset)
+			unit_set_data(self.unit, "unit_manipulation_scale_offset", history_entry.scale_offset)
+		end
 	end
 end
 
@@ -242,11 +245,13 @@ UnitManipulationExtension.add_history = function(self)
 			self.history[i] = nil
 		end
 	end
-	self.history[#self.history + 1] = {
-		position_offset = unit_get_data(self.unit, "unit_manipulation_position_offset") or vector3_box(vector3(0, 0, 0)),
-		rotation_offset = unit_get_data(self.unit, "unit_manipulation_rotation_offset") or quaternion_box(quaternion_identity()),
-		scale_offset = unit_get_data(self.unit, "unit_manipulation_scale_offset") or vector3_box(vector3(0, 0, 0)),
-	}
+	if self.unit and unit_alive(self.unit) then
+		self.history[#self.history + 1] = {
+			position_offset = unit_get_data(self.unit, "unit_manipulation_position_offset") or vector3_box(vector3(0, 0, 0)),
+			rotation_offset = unit_get_data(self.unit, "unit_manipulation_rotation_offset") or quaternion_box(quaternion_identity()),
+			scale_offset = unit_get_data(self.unit, "unit_manipulation_scale_offset") or vector3_box(vector3(0, 0, 0)),
+		}
+	end
 	self.history_index = #self.history
 end
 
@@ -375,240 +380,247 @@ end
 
 -- Draw selector for extension unit
 UnitManipulationExtension.draw_selector = function(self, dt, t, input_service, position)
-	local position = unit_world_position(self.unit, 1)
-	local direction = self.root_unit and vector3.normalize(position - unit_world_position(self.root_unit, 1)) or vector3(0, 0, 0)
-	local position_2d = camera_world_to_screen(self.camera, position + direction * .05)
-	local attachment_slot = unit_get_data(self.unit, "attachment_slot")
-	local RES_X, RES_Y = Application.back_buffer_size()
-	local min, max, caret = Gui.text_extents(self.gui, attachment_slot, DevParameters.debug_text_font, 14)
-	local size = vector3(max[1], 16, 1)
-	ScriptGui.icrect(self.gui, RES_X, RES_Y, position_2d[1], position_2d[2] + 16, position_2d[1] + max[1], position_2d[2], 99, Color(128, 255, 255, 255))
-	ScriptGui.text(self.gui, attachment_slot, DevParameters.debug_text_font, 14, position_2d, Color.black(), Color.gray())
-	local cursor = self:cursor(input_service)
-	local hover = math.point_is_inside_2d_box(cursor, position_2d, size)
-	if self:pressed(input_service) and hover then
-		mod:unit_manipulation_select(self.unit)
+	if self.name and self.unit and unit_alive(self.unit) then
+		local position = unit_world_position(self.unit, 1)
+		local direction = self.root_unit and vector3.normalize(position - unit_world_position(self.root_unit, 1)) or vector3(0, 0, 0)
+		local position_2d = camera_world_to_screen(self.camera, position + direction * .05)
+		-- local attachment_slot = unit_get_data(self.unit, "attachment_slot")
+		local RES_X, RES_Y = Application.back_buffer_size()
+		local min, max, caret = Gui.text_extents(self.gui, self.name, DevParameters.debug_text_font, 14)
+		local size = vector3(max[1], 16, 1)
+		ScriptGui.icrect(self.gui, RES_X, RES_Y, position_2d[1], position_2d[2] + 16, position_2d[1] + max[1], position_2d[2], 99, Color(128, 255, 255, 255))
+		ScriptGui.text(self.gui, self.name, DevParameters.debug_text_font, 14, position_2d, Color.black(), Color.gray())
+		local cursor = self:cursor(input_service)
+		local hover = math.point_is_inside_2d_box(cursor, position_2d, size)
+		if self:pressed(input_service) and hover then
+			mod:unit_manipulation_select(self.unit)
+		end
 	end
 end
 
 -- Draw info panel with global and local position, rotation, scale
 UnitManipulationExtension.draw_info = function(self, dt, t, input_service)
-	local position = unit_world_position(self.unit, 1)
-	local rotation = unit_world_rotation(self.unit, 1)
-	local x, y, z = quaternion_to_euler_angles_xyz(rotation)
-	rotation = vector3(x, y, z)
-	local local_position = unit_local_position(self.unit, 1)
-	local local_rotation = unit_local_rotation(self.unit, 1)
-	local x, y, z = quaternion_to_euler_angles_xyz(local_rotation)
-	local_rotation = vector3(x, y, z)
-	local position_2d = camera_world_to_screen(self.camera, position)
-	local offset = position_2d + vector3(200, 180, 0)
-	local scale = unit_world_scale(self.unit, 1)
-	local local_scale = unit_local_scale(self.unit, 1)
-	local lines = {
-		{text = "Scale "..tostring(scale)},
-		{text = "Rotation "..tostring(rotation)},
-		{text = "Position "..tostring(position)},
-		{text = "World"},
-		{text = "Scale "..tostring(local_scale)},
-		{text = "Rotation "..tostring(local_rotation)},
-		{text = "Position "..tostring(local_position)},
-		{text = "Local"},
-	}
-	local RES_X, RES_Y = Application.back_buffer_size()
-	ScriptGui.icrect(self.gui, RES_X, RES_Y, offset[1], offset[2] + 10, offset[1] + 350, offset[2] - 140, 99, Color(128, 255, 255, 255))
-	for i, line in pairs(lines) do
-		ScriptGui.text(self.gui, line.text, DevParameters.debug_text_font, 14, vector3(offset[1] + 15, offset[2] - 16 * i, LINE_Z), Color.black(), Color.gray())
+	if self.unit and unit_alive(self.unit) then
+		local position = unit_world_position(self.unit, 1)
+		local rotation = unit_world_rotation(self.unit, 1)
+		local x, y, z = quaternion_to_euler_angles_xyz(rotation)
+		rotation = vector3(x, y, z)
+		local local_position = unit_local_position(self.unit, 1)
+		local local_rotation = unit_local_rotation(self.unit, 1)
+		local x, y, z = quaternion_to_euler_angles_xyz(local_rotation)
+		local_rotation = vector3(x, y, z)
+		local position_2d = camera_world_to_screen(self.camera, position)
+		local offset = position_2d + vector3(200, 180, 0)
+		local scale = unit_world_scale(self.unit, 1)
+		local local_scale = unit_local_scale(self.unit, 1)
+		local lines = {
+			{text = "Scale "..tostring(scale)},
+			{text = "Rotation "..tostring(rotation)},
+			{text = "Position "..tostring(position)},
+			{text = "World"},
+			{text = "Scale "..tostring(local_scale)},
+			{text = "Rotation "..tostring(local_rotation)},
+			{text = "Position "..tostring(local_position)},
+			{text = "Local"},
+		}
+		local RES_X, RES_Y = Application.back_buffer_size()
+		ScriptGui.icrect(self.gui, RES_X, RES_Y, offset[1], offset[2] + 10, offset[1] + 350, offset[2] - 140, 99, Color(128, 255, 255, 255))
+		for i, line in pairs(lines) do
+			ScriptGui.text(self.gui, line.text, DevParameters.debug_text_font, 14, vector3(offset[1] + 15, offset[2] - 16 * i, LINE_Z), Color.black(), Color.gray())
+		end
 	end
 end
 
 -- Draw button panel with history and mode buttons
 UnitManipulationExtension.draw_buttons = function(self, dt, t, input_service)
-	local position = unit_world_position(self.unit, 1)
-	local position_2d = camera_world_to_screen(self.camera, position)
-	local offset = position_2d + vector3(200, 200, 0)
-	local cursor = self:cursor(input_service)
-	local RES_X, RES_Y = Application.back_buffer_size()
-	-- for i = 1, 3, 1 do
-	for i, button in pairs(buttons) do
-		button.x = offset[1] + ((BUTTON_SIZE[1] + BUTTON_MARGIN[1]) * (i - 1))
-		button.x2 = offset[1] + ((BUTTON_SIZE[2] + BUTTON_MARGIN[2]) * (i - 1)) + BUTTON_SIZE[2]
-	end
-	for i, button in pairs(buttons) do
-		if not self:already_collided(input_service) then
-			self[button.value] = math.point_is_inside_2d_box(cursor, vector2(button.x, offset[2]), vector2(BUTTON_SIZE[1], BUTTON_SIZE[2]))
+	if self.unit and unit_alive(self.unit) then
+		local position = unit_world_position(self.unit, 1)
+		local position_2d = camera_world_to_screen(self.camera, position)
+		local offset = position_2d + vector3(200, 200, 0)
+		local cursor = self:cursor(input_service)
+		local RES_X, RES_Y = Application.back_buffer_size()
+		for i, button in pairs(buttons) do
+			button.x = offset[1] + ((BUTTON_SIZE[1] + BUTTON_MARGIN[1]) * (i - 1))
+			button.x2 = offset[1] + ((BUTTON_SIZE[2] + BUTTON_MARGIN[2]) * (i - 1)) + BUTTON_SIZE[2]
 		end
-		if self:pressed(input_service) and self[button.value] then
-			if button.mode then
-				self:change_mode(button.mode)
-				self:deactivate_buttons()
-				self:activate_button_by_index(i)
-			elseif button.value == "button_revert" then
-				self:back_history()
-			elseif button.value == "button_redo" then
-				self:forward_history()
-			elseif button.value == "button_deselect" then
-				self:set_selected(false)
+		for i, button in pairs(buttons) do
+			if not self:already_collided(input_service) then
+				self[button.value] = math.point_is_inside_2d_box(cursor, vector2(button.x, offset[2]), vector2(BUTTON_SIZE[1], BUTTON_SIZE[2]))
+			end
+			if self:pressed(input_service) and self[button.value] then
+				if button.mode then
+					self:change_mode(button.mode)
+					self:deactivate_buttons()
+					self:activate_button_by_index(i)
+				elseif button.value == "button_revert" then
+					self:back_history()
+				elseif button.value == "button_redo" then
+					self:forward_history()
+				elseif button.value == "button_deselect" then
+					self:set_selected(false)
+				end
+			end
+			local color = self[button.value] and Color.white() or Color(255, 200, 200, 200)
+			color = button.active and Color(255, 128, 255, 128) or color
+			ScriptGui.icrect(self.gui, RES_X, RES_Y, button.x, offset[2], button.x2, offset[2] + BUTTON_SIZE[2], LINE_Z, color)
+			if button.symbol_func and self[button.symbol_func] then
+				self[button.symbol_func](self, dt, t, input_service, vector3(button.x, offset[2], LINE_Z))
+			else
+				ScriptGui.text(self.gui, button.text, DevParameters.debug_text_font, 30, vector3(button.x + 15, offset[2] + 10, LINE_Z), Color.black(), Color.gray())
 			end
 		end
-		local color = self[button.value] and Color.white() or Color(255, 200, 200, 200)
-		color = button.active and Color(255, 128, 255, 128) or color
-		ScriptGui.icrect(self.gui, RES_X, RES_Y, button.x, offset[2], button.x2, offset[2] + BUTTON_SIZE[2], LINE_Z, color)
-		if button.symbol_func and self[button.symbol_func] then
-			self[button.symbol_func](self, dt, t, input_service, vector3(button.x, offset[2], LINE_Z))
-		else
-			ScriptGui.text(self.gui, button.text, DevParameters.debug_text_font, 30, vector3(button.x + 15, offset[2] + 10, LINE_Z), Color.black(), Color.gray())
-		end
-		-- ScriptGui.text(self.gui, button.text, DevParameters.debug_text_font, 30, vector3(button.x + 15, offset[2] + 10, LINE_Z), Color.black(), Color.gray())
-		-- self:draw_rotation_symbol(dt, t, input_service, vector3(button.x, offset[2], LINE_Z))
-		-- self:draw_position_symbol(dt, t, input_service, vector3(button.x, offset[2], LINE_Z))
-		-- self:draw_scale_symbol(dt, t, input_service, vector3(button.x, offset[2], LINE_Z))
 	end
 end
 
 -- Draw 3d box around unit
 UnitManipulationExtension.draw_box = function(self, dt, t, input_service)
-	local tm, half_size = Unit.box(self.unit)
-	-- Get boundary points
-	local points = {
-		bottom_01 = {vec = {true, true, false}}, bottom_02 = {vec = {true, false, false}},
-		bottom_03 = {vec = {false, false, false}}, bottom_04 = {vec = {false, true, false}},
-		top_01 = {vec = {true, true, true}}, top_02 = {vec = {true, false, true}},
-		top_03 = {vec = {false, false, true}}, top_04 = {vec = {false, true, true}},
-	}
-	for name, data in pairs(points) do
-		local position = vector3(
-			data.vec[1] == true and half_size.x or -half_size.x,
-			data.vec[2] == true and half_size.y or -half_size.y,
-			data.vec[3] == true and half_size.z or -half_size.z
-		)
-		points[name].position = Matrix4x4.transform(tm, position)
-	end
-	-- Get position and distance to camera
-	local results = {
-		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
-		top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
-	}
-	for name, data in pairs(results) do
-		results[name].position, results[name].distance = camera_world_to_screen(self.camera, points[name].position)
-	end
-	-- Farthest point from camera
-	local farthest = nil
-	local last = 0
-	for name, data in pairs(results) do
-		if data.distance > last then
-			last = data.distance
-			farthest = name
+	if self.unit and unit_alive(self.unit) then
+		local tm, half_size = Unit.box(self.unit)
+		-- Get boundary points
+		local points = {
+			bottom_01 = {vec = {true, true, false}}, bottom_02 = {vec = {true, false, false}},
+			bottom_03 = {vec = {false, false, false}}, bottom_04 = {vec = {false, true, false}},
+			top_01 = {vec = {true, true, true}}, top_02 = {vec = {true, false, true}},
+			top_03 = {vec = {false, false, true}}, top_04 = {vec = {false, true, true}},
+		}
+		for name, data in pairs(points) do
+			local position = vector3(
+				data.vec[1] == true and half_size.x or -half_size.x,
+				data.vec[2] == true and half_size.y or -half_size.y,
+				data.vec[3] == true and half_size.z or -half_size.z
+			)
+			points[name].position = Matrix4x4.transform(tm, position)
 		end
-	end
-	local draw = {
-		{a = "bottom_01", b = "bottom_02"}, {a = "bottom_01", b = "bottom_04"},
-		{a = "bottom_02", b = "bottom_03"}, {a = "bottom_03", b = "bottom_04"},
-		{a = "top_01", b = "bottom_01"}, {a = "top_02", b = "bottom_02"},
-		{a = "top_03", b = "bottom_03"}, {a = "top_04", b = "bottom_04"},
-		{a = "top_01", b = "top_02"}, {a = "top_01", b = "top_04"},
-		{a = "top_02", b = "top_03"}, {a = "top_03", b = "top_04"},
-	}
-	for name, data in pairs(draw) do
-		if farthest ~= data.a and farthest ~= data.b then
-			ScriptGui.hud_line(self.gui, results[data.a].position, results[data.b].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
+		-- Get position and distance to camera
+		local results = {
+			bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
+			top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
+		}
+		for name, data in pairs(results) do
+			results[name].position, results[name].distance = camera_world_to_screen(self.camera, points[name].position)
+		end
+		-- Farthest point from camera
+		local farthest = nil
+		local last = 0
+		for name, data in pairs(results) do
+			if data.distance > last then
+				last = data.distance
+				farthest = name
+			end
+		end
+		local draw = {
+			{a = "bottom_01", b = "bottom_02"}, {a = "bottom_01", b = "bottom_04"},
+			{a = "bottom_02", b = "bottom_03"}, {a = "bottom_03", b = "bottom_04"},
+			{a = "top_01", b = "bottom_01"}, {a = "top_02", b = "bottom_02"},
+			{a = "top_03", b = "bottom_03"}, {a = "top_04", b = "bottom_04"},
+			{a = "top_01", b = "top_02"}, {a = "top_01", b = "top_04"},
+			{a = "top_02", b = "top_03"}, {a = "top_03", b = "top_04"},
+		}
+		for name, data in pairs(draw) do
+			if farthest ~= data.a and farthest ~= data.b then
+				ScriptGui.hud_line(self.gui, results[data.a].position, results[data.b].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
+			end
 		end
 	end
 end
 
 -- Draw position / scale gizmo at unit position
 UnitManipulationExtension.draw_position_gizmo = function(self, dt, t, input_service)
-	-- Unit data
-	local position = unit_world_position(self.unit, 1)
-	local rotation = unit_world_rotation(self.unit, 1)
-	local cursor = self:cursor(input_service)
-	local hold = self:hold(input_service)
-	-- Get boundary points
-	local points = {center = {}, X = {}, Y = {}, Z = {}}
-	points.center.position = position
-	points.X.position = position + quaternion_right(rotation) * .2
-	points.Y.position = position + quaternion_forward(rotation) * .2
-	points.Z.position = position + quaternion_up(rotation) * .2
-	-- Get position and distance to camera
-	local results = {center = {}, X = {}, Y = {}, Z = {}}
-	results.center.position, results.center.distance = camera_world_to_screen(self.camera, points.center.position)
-	results.X.position, results.X.distance = camera_world_to_screen(self.camera, points.X.position)
-	results.Y.position, results.Y.distance = camera_world_to_screen(self.camera, points.Y.position)
-	results.Z.position, results.Z.distance = camera_world_to_screen(self.camera, points.Z.position)
-	local position_points = {
-		{text = "X", position = results.X.position, value = "position_x", color = Color(255, 255, 0, 0), faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)},
-		{text = "Y", position = results.Y.position, value = "position_y", color = Color(255, 0, 255, 0), faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)},
-		{text = "Z", position = results.Z.position, value = "position_z", color = Color(255, 0, 0, 255), faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)},
-	}
-	-- Iterate angles
-	for _, angle in pairs(position_points) do
-		-- Check cursor collision
-		local distance_1 = math.distance_2d(results.center.position[1], results.center.position[2], angle.position[1], angle.position[2])
-		local distance_2 = math.distance_2d(results.center.position[1], results.center.position[2], cursor.x, cursor.y)
-		local distance_3 = math.distance_2d(angle.position[1], 			angle.position[2], 			cursor.x, cursor.y)
-		-- Check controls
-		if not hold then self[angle.value] = nil end
-		if not hold and not self:already_collided(input_service) and not self[angle.value] then
-			self[angle.value] = distance_2 + distance_3 <= distance_1 + distance_1 * self.position_tolerance or nil
+	if self.unit and unit_alive(self.unit) then
+		-- Unit data
+		local position = unit_world_position(self.unit, 1)
+		local rotation = unit_world_rotation(self.unit, 1)
+		local cursor = self:cursor(input_service)
+		local hold = self:hold(input_service)
+		-- Get boundary points
+		local points = {center = {}, X = {}, Y = {}, Z = {}}
+		points.center.position = position
+		points.X.position = position + quaternion_right(rotation) * .2
+		points.Y.position = position + quaternion_forward(rotation) * .2
+		points.Z.position = position + quaternion_up(rotation) * .2
+		-- Get position and distance to camera
+		local results = {center = {}, X = {}, Y = {}, Z = {}}
+		results.center.position, results.center.distance = camera_world_to_screen(self.camera, points.center.position)
+		results.X.position, results.X.distance = camera_world_to_screen(self.camera, points.X.position)
+		results.Y.position, results.Y.distance = camera_world_to_screen(self.camera, points.Y.position)
+		results.Z.position, results.Z.distance = camera_world_to_screen(self.camera, points.Z.position)
+		local position_points = {
+			{text = "X", position = results.X.position, value = "position_x", color = Color(255, 255, 0, 0), faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)},
+			{text = "Y", position = results.Y.position, value = "position_y", color = Color(255, 0, 255, 0), faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)},
+			{text = "Z", position = results.Z.position, value = "position_z", color = Color(255, 0, 0, 255), faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)},
+		}
+		-- Iterate angles
+		for _, angle in pairs(position_points) do
+			-- Check cursor collision
+			local distance_1 = math.distance_2d(results.center.position[1], results.center.position[2], angle.position[1], angle.position[2])
+			local distance_2 = math.distance_2d(results.center.position[1], results.center.position[2], cursor.x, cursor.y)
+			local distance_3 = math.distance_2d(angle.position[1], 			angle.position[2], 			cursor.x, cursor.y)
+			-- Check controls
+			if not hold then self[angle.value] = nil end
+			if not hold and not self:already_collided(input_service) and not self[angle.value] then
+				self[angle.value] = distance_2 + distance_3 <= distance_1 + distance_1 * self.position_tolerance or nil
+			end
+			if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
+			-- Draw
+			local color = self[angle.value] and angle.color or angle.faded_color
+			ScriptGui.hud_line(self.gui, results.center.position, angle.position, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
+			if self.angle_names then ScriptGui.text(self.gui, angle.text, DevParameters.debug_text_font, 16, angle.position, angle.color, Color.gray()) end
 		end
-		if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
-		-- Draw
-		local color = self[angle.value] and angle.color or angle.faded_color
-		ScriptGui.hud_line(self.gui, results.center.position, angle.position, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
-		if self.angle_names then ScriptGui.text(self.gui, angle.text, DevParameters.debug_text_font, 16, angle.position, angle.color, Color.gray()) end
 	end
 end
 
 -- Draw rotation gizmo at unit position
 UnitManipulationExtension.draw_rotation_gizmo = function(self, dt, t, input_service)
-	-- Unit data
-	local position = unit_world_position(self.unit, 1)
-	local rotation = unit_world_rotation(self.unit, 1)
-	local cursor = self:cursor(input_service)
-	local hold = self:hold(input_service)
-	-- Define angles
-	local angles = {
-		{direction = {false, false, true}, value = "rotation_x", dir_func = quaternion_right, text = "X",
-			color = Color(255, 255, 0, 0), faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)},
-		{direction = {true, false, false}, value = "rotation_y", dir_func = quaternion_forward, text = "Y",
-			color = Color(255, 0, 255, 0), faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)},
-		{direction = {false, true, false}, value = "rotation_z", dir_func = quaternion_up, text = "Z",
-			color = Color(255, 0, 0, 255), faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)},
-	}
-	-- Iterate angles
-	for _, angle in pairs(angles) do
-		-- Check controls
-		if not hold then self[angle.value] = nil end
-		-- Define points
-		local point_list = {}
-		for i = 1, 360, 1 do
-			-- Define point
-			local offset = quaternion_from_euler_angles_xyz(
-				angle.direction[1] == true and i or 0,
-				angle.direction[2] == true and i or 0,
-				angle.direction[3] == true and i or 0
-			)
-			local new_rotation = quaternion_multiply(rotation, offset)
-			local new_position = camera_world_to_screen(self.camera, position + angle.dir_func(new_rotation) * .2)
-			point_list[#point_list + 1] = new_position
-			-- Check cursor collision
-			if not hold and not self:already_collided(input_service) and not self[angle.value] then
-				local distance = math.distance_2d(new_position[1], new_position[2], cursor.x, cursor.y)
-				self[angle.value] = distance <= self.rotation_tolerance or nil
+	if self.unit and unit_alive(self.unit) then
+		-- Unit data
+		local position = unit_world_position(self.unit, 1)
+		local rotation = unit_world_rotation(self.unit, 1)
+		local cursor = self:cursor(input_service)
+		local hold = self:hold(input_service)
+		-- Define angles
+		local angles = {
+			{direction = {false, false, true}, value = "rotation_x", dir_func = quaternion_right, text = "X",
+				color = Color(255, 255, 0, 0), faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)},
+			{direction = {true, false, false}, value = "rotation_y", dir_func = quaternion_forward, text = "Y",
+				color = Color(255, 0, 255, 0), faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)},
+			{direction = {false, true, false}, value = "rotation_z", dir_func = quaternion_up, text = "Z",
+				color = Color(255, 0, 0, 255), faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)},
+		}
+		-- Iterate angles
+		for _, angle in pairs(angles) do
+			-- Check controls
+			if not hold then self[angle.value] = nil end
+			-- Define points
+			local point_list = {}
+			for i = 1, 360, 1 do
+				-- Define point
+				local offset = quaternion_from_euler_angles_xyz(
+					angle.direction[1] == true and i or 0,
+					angle.direction[2] == true and i or 0,
+					angle.direction[3] == true and i or 0
+				)
+				local new_rotation = quaternion_multiply(rotation, offset)
+				local new_position = camera_world_to_screen(self.camera, position + angle.dir_func(new_rotation) * .2)
+				point_list[#point_list + 1] = new_position
+				-- Check cursor collision
+				if not hold and not self:already_collided(input_service) and not self[angle.value] then
+					local distance = math.distance_2d(new_position[1], new_position[2], cursor.x, cursor.y)
+					self[angle.value] = distance <= self.rotation_tolerance or nil
+				end
+				if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
 			end
-			if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
-		end
-		-- First previous is last point
-		local previous = point_list[#point_list]
-		-- Draw points
-		for _, pos in pairs(point_list) do
-			local color = self[angle.value] and angle.color or angle.faded_color
-			ScriptGui.hud_line(self.gui, previous, pos, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
-			previous = pos
-		end
-		if self.angle_names then
-			local position = camera_world_to_screen(self.camera, position + angle.dir_func(rotation) * .2)
-			ScriptGui.text(self.gui, angle.text, DevParameters.debug_text_font, 16, position, angle.color, Color.gray())
+			-- First previous is last point
+			local previous = point_list[#point_list]
+			-- Draw points
+			for _, pos in pairs(point_list) do
+				local color = self[angle.value] and angle.color or angle.faded_color
+				ScriptGui.hud_line(self.gui, previous, pos, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
+				previous = pos
+			end
+			if self.angle_names then
+				local position = camera_world_to_screen(self.camera, position + angle.dir_func(rotation) * .2)
+				ScriptGui.text(self.gui, angle.text, DevParameters.debug_text_font, 16, position, angle.color, Color.gray())
+			end
 		end
 	end
 end

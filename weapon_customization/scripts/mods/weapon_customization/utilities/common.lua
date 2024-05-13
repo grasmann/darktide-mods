@@ -70,6 +70,10 @@ mod.world = function(self)
     return managers.world:world("level_world")
 end
 
+mod.vector3_equal = function(self, v1, v2)
+	return v1[1] == v2[1] and v1[2] == v2[2] and v1[3] == v2[3]
+end
+
 mod.physics_world = function(self, world)
 	local world = world or self:world()
     return world_physics_world(world)

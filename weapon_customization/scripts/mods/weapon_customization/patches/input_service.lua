@@ -20,8 +20,10 @@ local WEAPON_EXTRA_PRESSED = "weapon_extra_pressed"
 -- ##### ││││├─┘│ │ │  ################################################################################################
 -- ##### ┴┘└┘┴  └─┘ ┴  ################################################################################################
 
-local input_hook = function (func, self, action_name, ...)
+local input_hook = function(func, self, action_name, ...)
+    -- Oiriginal function
     local pressed = func(self, action_name, ...)
+    -- Input hook
     if mod.initialized then
         if mod:is_flashlight_modded() then
             if mod:is_flashlight_wielded() then
@@ -35,6 +37,7 @@ local input_hook = function (func, self, action_name, ...)
             end
         end
     end
+    -- Return
     return pressed
 end
   

@@ -124,7 +124,7 @@ return table.combine(
                 {trinket_hook = "trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty"},
             }),
-            _common_ranged.reflex_sights_models("rail", -.5, vector3_box(-.1, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+            _common_ranged.reflex_sights_models(nil, -.5, vector3_box(-.1, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                 {rail = "rail_default", sight_2 = "sight_default"},
                 {rail = "rail_02", sight_2 = "sight_default"},
                 {rail = "rail_02", sight_2 = "sight_default"},
@@ -183,6 +183,7 @@ return table.combine(
             -- Lasgun
             _common_lasgun.rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             _common_lasgun.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
+            -- _laspistol_p1_m1.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
             -- Shotgun
             _shotgun_p1_m1.stock_models("grip", 0, vector3_box(-.6, -4, .2), vector3_box(0, -.4, -.11), "stock_3"),
             -- Common
@@ -254,6 +255,10 @@ return table.combine(
                 {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
+                {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"},
+                    sight = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                {sight = {offset = true, position = vector3_box(0, 0, .13), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
 
                 {dependencies = {"grip_27|grip_28|grip_29"}, -- Grip
                     grip = {offset = true, position = vector3_box(0, .01, -.02), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},

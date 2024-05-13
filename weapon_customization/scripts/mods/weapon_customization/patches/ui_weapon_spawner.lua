@@ -1,5 +1,4 @@
 local mod = get_mod("weapon_customization")
-local modding_tools = get_mod("modding_tools")
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
@@ -66,56 +65,124 @@ local modding_tools = get_mod("modding_tools")
     local RESET_WAIT_TIME = 5
 --#endregion
 
-mod.vector3_equal = function(self, v1, v2)
-	return v1[1] == v2[1] and v1[2] == v2[2] and v1[3] == v2[3]
-end
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
 
-mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
-	func(self, reference_name, world, camera, unit_spawner, ...)
-	modding_tools = get_mod("modding_tools")
-	if reference_name ~= "WeaponIconUI" then
-		self._rotation_angle = mod._rotation_angle or 0
-		self._default_rotation_angle = mod._last_rotation_angle or 0
+mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
-		if mod.cosmetics_view then
-			mod.build_animation:set({
-				ui_weapon_spawner = self,
-				world = self._world,
-				item = mod.cosmetics_view._presentation_item,
-			}, true)
+	instance.get_modding_tools = function(self)
+		self.modding_tools = self.modding_tools or get_mod("modding_tools")
+	end
+
+	instance.unit_manipulation_busy = function(self)
+		self:get_modding_tools()
+		if self.modding_tools and self.modding_tools.unit_manipulation_busy then
+			return self.modding_tools:unit_manipulation_busy()
 		end
 	end
+
+	instance.unit_manipulation_remove = function(self, unit)
+		self:get_modding_tools()
+		if self.modding_tools and self.modding_tools.unit_manipulation_remove then
+			self.modding_tools:unit_manipulation_remove(unit)
+		end
+	end
+
+	instance._init_custom = function(self)
+		if self._reference_name ~= "WeaponIconUI" then
+			-- Rotation
+			self._rotation_angle = mod._rotation_angle or 0
+			self._default_rotation_angle = mod._last_rotation_angle or 0
+			-- Build animation extension
+			if mod.cosmetics_view then
+				mod.build_animation:set({
+					ui_weapon_spawner = self,
+					world = self._world,
+					item = mod.cosmetics_view._presentation_item,
+				}, true)
+			end
+		end
+	end
+
+	instance.fix_streaming_without_mesh_streamer = function(self)
+		local weapon_spawn_data = self._weapon_spawn_data
+		if weapon_spawn_data then
+			if not weapon_spawn_data.visible then
+				self:cb_on_unit_3p_streaming_complete(weapon_spawn_data.item_unit_3p)
+			end
+		end
+	end
+
+	instance.fix_streaming_without_mesh_streamer_2 = function(self)
+		if self._weapon_spawn_data then
+			mod.weapon_spawning = nil
+			self._weapon_spawn_data.streaming_complete = true
+		end
+	end
+
+end)
+
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+
+mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
+
+	-- Original function
+	func(self, reference_name, world, camera, unit_spawner, ...)
+
+	-- Custom
+	self:_init_custom()
+	-- if reference_name ~= "WeaponIconUI" then
+	-- 	self._rotation_angle = mod._rotation_angle or 0
+	-- 	self._default_rotation_angle = mod._last_rotation_angle or 0
+
+	-- 	if mod.cosmetics_view then
+	-- 		mod.build_animation:set({
+	-- 			ui_weapon_spawner = self,
+	-- 			world = self._world,
+	-- 			item = mod.cosmetics_view._presentation_item,
+	-- 		}, true)
+	-- 	end
+	-- end
+
 end)
 
 mod:hook(CLASS.UIWorldSpawner, "destroy", function(func, self, ...)
+	
 	-- Build animation
 	mod.build_animation:set(false)
+
 	-- Original function
 	func(self, ...)
+
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "_mouse_rotation_input", function(func, self, input_service, dt, ...)
-	if modding_tools and modding_tools:unit_manipulation_busy() then
+
+	-- Check if rotation is disabled
+	if self:unit_manipulation_busy() or self._rotation_input_disabled or mod.dropdown_open then
+		-- Execute original function without input_service
 		return func(self, nil, dt, ...)
 	end
+	-- Original function
 	return func(self, input_service, dt, ...)
+
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
 
-	local weapon_spawn_data = self._weapon_spawn_data
-	if weapon_spawn_data then
-		if not weapon_spawn_data.visible then
-			-- mod.weapon_spawning = nil
-			-- weapon_spawn_data.streaming_complete = true
-			self:cb_on_unit_3p_streaming_complete(weapon_spawn_data.item_unit_3p)
-		end
+	-- Fix streaming issues when mesh streamer is deactivated
+	self:fix_streaming_without_mesh_streamer()
+	-- local weapon_spawn_data = self._weapon_spawn_data
+	-- if weapon_spawn_data then
+	-- 	if not weapon_spawn_data.visible then
+	-- 		self:cb_on_unit_3p_streaming_complete(weapon_spawn_data.item_unit_3p)
+	-- 	end
+	-- end
 
-		self._rotation_input_disabled = modding_tools and modding_tools:unit_manipulation_busy()
-	end
-
-	-- local current_rotation = self._rotation_angle
-
+	-- Original function
 	func(self, dt, t, input_service, ...)
 
 	-- if self.selected_unit and unit_alive(self.selected_unit) then
@@ -247,16 +314,16 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 
 end)
 
-mod:hook(CLASS.UIWeaponSpawner, "_update_input_rotation", function(func, self, dt, ...)
-	local weapon_spawn_data = self._weapon_spawn_data
-	if not weapon_spawn_data then
-		return
-	end
-	if not self._is_rotating and self._rotation_angle ~= self._default_rotation_angle and mod.dropdown_open then
-		local rotation_angle = math_lerp(self._rotation_angle, self._default_rotation_angle, dt)
-		self:_set_rotation(rotation_angle)
-	end
-end)
+-- mod:hook(CLASS.UIWeaponSpawner, "_update_input_rotation", function(func, self, dt, ...)
+-- 	local weapon_spawn_data = self._weapon_spawn_data
+-- 	if not weapon_spawn_data then
+-- 		return
+-- 	end
+-- 	if not self._is_rotating and self._rotation_angle ~= self._default_rotation_angle and mod.dropdown_open then
+-- 		local rotation_angle = math_lerp(self._rotation_angle, self._default_rotation_angle, dt)
+-- 		self:_set_rotation(rotation_angle)
+-- 	end
+-- end)
 
 mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
 	if self._reference_name == "WeaponIconUI" then
@@ -275,14 +342,15 @@ mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link
 		mod.cosmetics_view.weapon_unit = weapon_spawn_data.item_unit_3p
 		mod.cosmetics_view.attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
 
-		if modding_tools and mod.cosmetics_view._modding_tool_toggled_on then
-			local gui = mod.cosmetics_view._ui_forward_renderer.gui
-			modding_tools:unit_manipulation_add(weapon_spawn_data.item_unit_3p, self._camera, self._world, gui)
-			local attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
-			for _, unit in pairs(attachment_units_3p) do
-				modding_tools:unit_manipulation_add(unit, self._camera, self._world, gui)
-			end
-		end
+		-- if modding_tools and mod.cosmetics_view._modding_tool_toggled_on then
+		-- 	local gui = mod.cosmetics_view._ui_forward_renderer.gui
+		-- 	modding_tools:unit_manipulation_add(weapon_spawn_data.item_unit_3p, self._camera, self._world, gui, mod.cosmetics_view._item_name)
+		-- 	local attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
+		-- 	for _, unit in pairs(attachment_units_3p) do
+		-- 		local name = Unit.get_data(unit, "attachment_slot")
+		-- 		modding_tools:unit_manipulation_add(unit, self._camera, self._world, gui, name)
+		-- 	end
+		-- end
 
 		local item_name = mod.cosmetics_view._item_name
 		local link_unit = weapon_spawn_data.link_unit
@@ -381,24 +449,30 @@ mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
 			world_unlink_unit(self._world, item_unit_3p)
 		end
         -- Modding tools
-		if modding_tools and mod.cosmetics_view and mod.cosmetics_view._modding_tool_toggled_on then
-			modding_tools:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
+		if mod.cosmetics_view and mod.cosmetics_view._modding_tool_toggled_on then
+			self:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
 			local attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
 			for _, unit in pairs(attachment_units_3p) do
-				modding_tools:unit_manipulation_remove(unit)
+				self:unit_manipulation_remove(unit)
 			end
 		end
 	end
+
     -- Original function
 	func(self, ...)
+	
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
+
     -- Original function
 	func(self, item_unit_3p, ...)
+
     -- Stream fix
-    if self._weapon_spawn_data then
-		mod.weapon_spawning = nil
-		self._weapon_spawn_data.streaming_complete = true
-	end
+	self:fix_streaming_without_mesh_streamer_2()
+
+    -- if self._weapon_spawn_data then
+	-- 	mod.weapon_spawning = nil
+	-- 	self._weapon_spawn_data.streaming_complete = true
+	-- end
 end)

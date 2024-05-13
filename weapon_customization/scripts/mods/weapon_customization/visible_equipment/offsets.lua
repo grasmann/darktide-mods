@@ -451,6 +451,7 @@ mod.visible_equipment_offsets = {
         mod.visible_equipment_offsets.shotgun_p1_m3 = mod.visible_equipment_offsets.shotgun_p1_m1
         mod.visible_equipment_offsets.stubrevolver_p1_m2 = mod.visible_equipment_offsets.stubrevolver_p1_m1
         mod.visible_equipment_offsets.stubrevolver_p1_m3 = mod.visible_equipment_offsets.stubrevolver_p1_m1
+        mod.visible_equipment_offsets.laspistol_p1_m2 = mod.visible_equipment_offsets.laspistol_p1_m1
         mod.visible_equipment_offsets.laspistol_p1_m3 = mod.visible_equipment_offsets.laspistol_p1_m1
         mod.visible_equipment_offsets.forcestaff_p2_m1 = mod.visible_equipment_offsets.forcestaff_p1_m1
         mod.visible_equipment_offsets.forcestaff_p3_m1 = mod.visible_equipment_offsets.forcestaff_p1_m1

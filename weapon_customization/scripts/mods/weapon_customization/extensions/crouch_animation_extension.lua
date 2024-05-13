@@ -236,7 +236,7 @@ CrouchAnimationExtension.update_animation = function(self, dt, t)
 end
 
 CrouchAnimationExtension.set_position_and_rotation = function(self, offset_position, offset_rotation)
-    if offset_position and offset_rotation then
+    if offset_position and offset_rotation and self.first_person_unit and unit_alive(self.first_person_unit) then
         local position = unit_local_position(self.first_person_unit, 1)
         local rotation = unit_local_rotation(self.first_person_unit, 1)
         -- Rotation

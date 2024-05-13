@@ -225,6 +225,7 @@ end
 			mod.anchors.shotgun_p1_m3      = mod.anchors.shotgun_p1_m1
 			mod.anchors.bolter_p1_m2       = mod.anchors.bolter_p1_m1
 			mod.anchors.bolter_p1_m3       = mod.anchors.bolter_p1_m1
+			mod.anchors.laspistol_p1_m2    = mod.anchors.laspistol_p1_m1
 			mod.anchors.laspistol_p1_m3    = mod.anchors.laspistol_p1_m1
 			mod.anchors.autogun_p1_m2      = mod.anchors.autogun_p1_m1
 			mod.anchors.autogun_p1_m3      = mod.anchors.autogun_p1_m1
@@ -337,6 +338,7 @@ end
 			mod.attachment.bolter_p1_m3       = mod.attachment.bolter_p1_m1
 			mod.attachment.stubrevolver_p1_m2 = mod.attachment.stubrevolver_p1_m1
 			mod.attachment.stubrevolver_p1_m3 = mod.attachment.stubrevolver_p1_m1
+			mod.attachment.laspistol_p1_m2    = mod.attachment.laspistol_p1_m1
 			mod.attachment.laspistol_p1_m3    = mod.attachment.laspistol_p1_m1
 			mod.attachment.autogun_p1_m2      = mod.attachment.autogun_p1_m1
 			mod.attachment.autogun_p1_m3      = mod.attachment.autogun_p1_m1
@@ -514,6 +516,8 @@ end
 	mod.automatic_slots = {
 		"rail",
 		"help_sight",
+		"lens",
+		"lens_2",
 	}
 	mod.reflex_sights = {
 		"reflex_sight_01",
@@ -837,6 +841,7 @@ end
 			mod.attachment_models.bolter_p1_m3       = mod.attachment_models.bolter_p1_m1
 			mod.attachment_models.stubrevolver_p1_m2 = mod.attachment_models.stubrevolver_p1_m1
 			mod.attachment_models.stubrevolver_p1_m3 = mod.attachment_models.stubrevolver_p1_m1
+			mod.attachment_models.laspistol_p1_m2    = mod.attachment_models.laspistol_p1_m1
 			mod.attachment_models.laspistol_p1_m3    = mod.attachment_models.laspistol_p1_m1
 			mod.attachment_models.autogun_p1_m2      = mod.attachment_models.autogun_p1_m1
 			mod.attachment_models.autogun_p1_m3      = mod.attachment_models.autogun_p1_m1
@@ -962,6 +967,7 @@ end
 			mod.attachment_sounds.bolter_p1_m3       = mod.attachment_sounds.bolter_p1_m1
 			mod.attachment_sounds.stubrevolver_p1_m2 = mod.attachment_sounds.stubrevolver_p1_m1
 			mod.attachment_sounds.stubrevolver_p1_m3 = mod.attachment_sounds.stubrevolver_p1_m1
+			mod.attachment_sounds.laspistol_p1_m2    = mod.attachment_sounds.laspistol_p1_m1
 			mod.attachment_sounds.laspistol_p1_m3    = mod.attachment_sounds.laspistol_p1_m1
 			mod.attachment_sounds.autogun_p1_m2      = mod.attachment_sounds.autogun_p1_m1
 			mod.attachment_sounds.autogun_p1_m3      = mod.attachment_sounds.autogun_p1_m1

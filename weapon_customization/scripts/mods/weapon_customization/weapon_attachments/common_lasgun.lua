@@ -133,9 +133,9 @@ return {
         local attachments = {
             {id = "magazine_01", name = "Magazine 1"},
             {id = "magazine_02", name = "Magazine 2"},
-            -- {id = "magazine_03", name = "Magazine 3"},
+            {id = "magazine_03", name = "Magazine 3"},
             {id = "magazine_04", name = "Magazine 4"},
-            -- {id = "magazine_05", name = "Magazine 5"},
+            {id = "magazine_05", name = "Magazine 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -148,10 +148,10 @@ return {
         return table.model_table({
             {name = "magazine_default", model = ""},
             {name = "magazine_01",      model = _item_ranged.."/magazines/lasgun_pistol_magazine_01"},
-            {name = "magazine_02",      model = _item_ranged.."/magazines/lasgun_rifle_magazine_01"},
-            {name = "magazine_03",      model = _item_ranged.."/magazines/lasgun_pistol_magazine_02"},
-            {name = "magazine_04",      model = _item_ranged.."/magazines/lasgun_pistol_magazine_03"},
-            {name = "magazine_05",      model = _item_ranged.."/magazines/lasgun_pistol_magazine_04"},
+            {name = "magazine_02",      model = _item_ranged.."/magazines/lasgun_pistol_magazine_02"},
+            {name = "magazine_03",      model = _item_ranged.."/magazines/lasgun_pistol_magazine_03"},
+            {name = "magazine_04",      model = _item_ranged.."/magazines/lasgun_pistol_magazine_04"},
+            {name = "magazine_05",      model = _item_ranged.."/magazines/lasgun_rifle_magazine_01"},
         }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end
 }

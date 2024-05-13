@@ -1,5 +1,4 @@
 local mod = get_mod("weapon_customization")
-local modding_tools = get_mod("modding_tools")
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
@@ -40,13 +39,14 @@ local modding_tools = get_mod("modding_tools")
 	local WEAPON_CUSTOMIZATION_TAB = "tab_weapon_customization"
 --#endregion
 
-mod:hook(CLASS.UIProfileSpawner, "spawn_profile", function(func, self, profile, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, ...)
-	func(self, profile, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, ...)
-end)
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
 
 mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(instance)
 
 	instance._setup_forward_gui = function(self)
+		self:set_unique_id()
 		self._forward_world = managers.ui:create_world(self._unique_id.."_ui_forward_world", 101, "ui", self.view_name)
 		local viewport_name = self._unique_id.."_ui_forward_world_viewport"
 		self._forward_viewport = managers.ui:create_viewport(self._forward_world, viewport_name, "default_with_alpha", 1)
@@ -84,13 +84,19 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		self.inventory_background_view = self.inventory_background_view or mod:get_view("inventory_background_view")
 	end
 
+	instance.unequipped_slot_id = function(self)
+		self:get_inventory_background_view()
+		if self.inventory_background_view then
+			return self.inventory_background_view._preview_wield_slot_id == SLOT_PRIMARY and SLOT_SECONDARY or SLOT_PRIMARY
+		end
+	end
+
 	instance.weapon_unit = function(self)
 		self:get_inventory_background_view()
 		if self.inventory_background_view and self.inventory_background_view._profile_spawner then
 			local character_spawn_data = self.inventory_background_view._profile_spawner._character_spawn_data
-			local slot_id = self.inventory_background_view._preview_wield_slot_id == SLOT_PRIMARY and SLOT_SECONDARY or SLOT_PRIMARY
 			if character_spawn_data and character_spawn_data.unit_3p and unit_alive(character_spawn_data.unit_3p) then
-				return mod:execute_extension(character_spawn_data.unit_3p, "visible_equipment_system", "weapon_unit", slot_id)
+				return mod:execute_extension(character_spawn_data.unit_3p, "visible_equipment_system", "weapon_unit", self:unequipped_slot_id())
 			end
 		end
 	end
@@ -98,28 +104,28 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 	instance.weapon_item = function(self)
 		self:get_inventory_background_view()
 		if self.inventory_background_view then
-			local slot_id = self.inventory_background_view._preview_wield_slot_id
 			local profile = self:player_profile()
-			return profile.loadout[slot_id]
+			return profile.loadout[self:unequipped_slot_id()]
 		end
 	end
 
 	instance.weapon_name = function(self)
 		self:get_inventory_background_view()
 		if self.inventory_background_view and self.inventory_background_view._profile_spawner then
-			local slot_id = self.inventory_background_view._preview_wield_slot_id == SLOT_PRIMARY and SLOT_SECONDARY or SLOT_PRIMARY
 			local preview_profile_equipped_items = self.inventory_background_view._preview_profile_equipped_items
-			local slot_item = preview_profile_equipped_items[slot_id]
+			local slot_item = preview_profile_equipped_items[self:unequipped_slot_id()]
 			return Localize(slot_item.display_name)
 		end
 	end
 
+	instance.is_tab = function(self, tab_context)
+		local tab_context = tab_context or self._active_category_tab_context
+		return tab_context and tab_context.display_name == WEAPON_CUSTOMIZATION_TAB
+	end
+
 	instance.customization_angle = function(self)
-		self:get_inventory_background_view()
-		local is_tab = self._active_category_tab_context and self._active_category_tab_context.display_name == WEAPON_CUSTOMIZATION_TAB
-		if is_tab and self.inventory_background_view and self.inventory_background_view._profile_spawner then
-			local slot_id = self.inventory_background_view._preview_wield_slot_id == SLOT_PRIMARY and SLOT_SECONDARY or SLOT_PRIMARY
-			return slot_id == SLOT_PRIMARY and 2 or 4.5
+		if self:is_tab() then
+			return self:unequipped_slot_id() == SLOT_PRIMARY and 2 or 4.5
 		end
 	end
 
@@ -136,6 +142,11 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 	end
 
 	instance.button_pressed = function(self, button)
+		if button.name == "visible_equipment_save_button" then
+			self:save_offset()
+		elseif button.name == "visible_equipment_reset_button" then
+			self:reset_offset()
+		end
 	end
 
 	instance.update_checktbox = function(self, checkbox)
@@ -160,6 +171,22 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		end
 	end
 
+	instance.armour_option = function(self)
+		return self._widgets_by_name["visible_equipment_option_3"].content.value
+	end
+
+	instance.backpack_option = function(self)
+		return self._widgets_by_name["visible_equipment_option_4"].content.value
+	end
+
+	instance.weapon_option = function(self)
+		return self._widgets_by_name["visible_equipment_option_2"].content.value
+	end
+
+	instance.character_option = function(self)
+		return self._widgets_by_name["visible_equipment_option_1"].content.value
+	end
+
 	instance.update_options_text = function(self)
 		local options_text = {
 			{self:character_name(), Localize("loc_visible_equipment_all")},
@@ -173,44 +200,81 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		end
 	end
 
-	instance.freeze_animation = function(self)
+	instance.profile_spawner = function(self)
 		self:get_inventory_background_view()
 		if self.inventory_background_view then
-			local profile_spawner = self.inventory_background_view and self.inventory_background_view._profile_spawner
-			local character_spawn_data = profile_spawner and profile_spawner._character_spawn_data
-			local unit = character_spawn_data and character_spawn_data.unit_3p
-			if unit and unit_alive(unit) and not self.frozen then
-				Unit.disable_animation_state_machine(unit)
-				self.frozen = true
-			end
+			return self.inventory_background_view._profile_spawner
 		end
 	end
+
+	instance.profile_spawner_unit = function(self)
+		local profile_spawner = self:profile_spawner()
+		local character_spawn_data = profile_spawner and profile_spawner._character_spawn_data
+		return character_spawn_data and character_spawn_data.unit_3p
+	end
+
+	--#region Animation
+		-- instance.freeze_animation = function(self)
+		-- 	local unit = self:profile_spawner_unit()
+		-- 	if unit and unit_alive(unit) then
+		-- 		-- Unit.disable_animation_state_machine(unit)
+		-- 		self.frozen = true
+		-- 	end
+		-- end
+
+		-- instance.unfreeze_animation = function(self)
+		-- 	local unit = self:profile_spawner_unit()
+		-- 	if unit and unit_alive(unit) then
+		-- 		-- Unit.enable_animation_state_machine(unit)
+		-- 		self.frozen = nil
+		-- 	end
+		-- end
+	--#endregion
 
 	instance.respawn_profile = function(self)
-		self:get_inventory_background_view()
-		if self.inventory_background_view then
-			local profile_spawner = self.inventory_background_view and self.inventory_background_view._profile_spawner
-			if profile_spawner then
-				local rotation_angle = profile_spawner._rotation_angle
-				local profile = self.inventory_background_view._presentation_profile
-				self.inventory_background_view:_spawn_profile(profile)
-				profile_spawner._previous_rotation_angle = rotation_angle
-				profile_spawner._rotation_angle = 0
-				self.frozen = nil
-			end
+		local profile_spawner = self:profile_spawner()
+		if profile_spawner then
+			local profile = self.inventory_background_view._presentation_profile
+			self.inventory_background_view:_spawn_profile(profile)
 		end
 	end
 
-	instance.unfreeze_animation = function(self)
+	instance.set_rotation = function(self)
 		self:get_inventory_background_view()
-		if self.inventory_background_view then
-			local profile_spawner = self.inventory_background_view and self.inventory_background_view._profile_spawner
-			local character_spawn_data = profile_spawner and profile_spawner._character_spawn_data
-			local unit = character_spawn_data and character_spawn_data.unit_3p
-			if unit and unit_alive(unit) and self.frozen then
-				Unit.enable_animation_state_machine(unit)
-				self.frozen = nil
-			end
+		if self.inventory_background_view and self.inventory_background_view._profile_spawner then
+			self.inventory_background_view._profile_spawner._rotation_angle = self:customization_angle() or 0
+		end
+	end
+
+	instance.reset_rotation = function(self)
+		local profile_spawner = self:profile_spawner()
+		if profile_spawner then
+			local rotation_angle = profile_spawner._rotation_angle
+			profile_spawner._previous_rotation_angle = rotation_angle
+			profile_spawner._rotation_angle = 0
+		end
+	end
+
+	instance.reset_offset = function(self)
+		-- Func
+	end
+
+	instance.save_offset = function(self)
+		local weapon_item = self:weapon_item()
+		local weapon_unit = self:weapon_unit()
+		if weapon_item and weapon_unit and unit_alive(weapon_unit) then
+			local data = {
+				type = "visible_equipment",
+				character_option = self:character_option(),
+				weapon_option = self:weapon_option(),
+				armour_option = self:armour_option(),
+				backpack_option = self:backpack_option(),
+				profile = self:player_profile(),
+				item = weapon_item,
+				unit = weapon_unit,
+				node = 1,
+			}
+			mod:save_weapon_customization_entry(data)
 		end
 	end
 
@@ -332,7 +396,55 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		end
 	end
 
+	instance.get_modding_tools = function(self)
+		self.modding_tools = self.modding_tools or get_mod("modding_tools")
+	end
+
+	instance.add_unit_manipulation = function(self)
+		self:get_inventory_background_view()
+		if self.inventory_background_view then
+			self.inventory_background_view:add_unit_manipulation()
+		end
+	end
+
+	instance.remove_unit_manipulation_all = function(self)
+		self:get_modding_tools()
+		if self.modding_tools then
+			self.modding_tools:unit_manipulation_remove_all()
+		end
+	end
+
+	instance.set_unique_id = function(self)
+		self._unique_id = self.__class_name.."_"..string_gsub(tostring(self), "table: ", "")
+	end
+
+	instance.create_custom_widgets = function(self)
+		local size = {600, 50}
+		-- Create custom checkboxes
+		for i = 1, 4, 1 do
+			self:add_widget(self:checkbox("visible_equipment_option_"..i, size, "option_check_"..i.."_pivot", "visible_equipment_option_"..i))
+		end
+
+		-- Create custom buttons
+		self:add_widget(self:button("visible_equipment_save_button", size, "save_button_pivot"))
+		self:add_widget(self:button("visible_equipment_reset_button", size, "reset_button_pivot"))
+	end
+
+	instance.update_custom_widget_visibility = function(self)
+		local is_tab = self:is_tab()
+		for i = 1, 4, 1 do
+			self._widgets_by_name["visible_equipment_option_"..i].visible = is_tab
+		end
+		self._widgets_by_name.name_text.visible = is_tab
+		self._widgets_by_name.visible_equipment_save_button.visible = is_tab
+		self._widgets_by_name.visible_equipment_reset_button.visible = is_tab
+	end
+
 end)
+
+-- ##### ┬  ┬┬┌─┐┬ ┬  ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ #####################################################################
+-- ##### └┐┌┘│├┤ │││   ││├┤ ├┤ │││││ │ ││ ││││└─┐ #####################################################################
+-- #####  └┘ ┴└─┘└┴┘  ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ #####################################################################
 
 mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", function(instance)
 	local x_base, y_base = 450, 300
@@ -394,16 +506,11 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", f
 
 end)
 
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+
 mod:hook(CLASS.InventoryView, "on_enter", function(func, self, ...)
-
-	-- Get modding tools
-	modding_tools = get_mod("modding_tools")
-
-	-- Set unique view id
-	local class_name = self.__class_name
-	self._unique_id = class_name .. "_" .. string_gsub(tostring(self), "table: ", "")
-
-	self:unfreeze_animation()
 
 	-- Original function
 	func(self, ...)
@@ -411,20 +518,18 @@ mod:hook(CLASS.InventoryView, "on_enter", function(func, self, ...)
 	-- Setup forward gui for rendering
 	self:_setup_forward_gui()
 
-	local size = {600, 50}
+	-- Create custom widgets
+	self:create_custom_widgets()
 
-	-- Create custom checkboxes
-	for i = 1, 4, 1 do
-		self:add_widget(self:checkbox("visible_equipment_option_"..i, size, "option_check_"..i.."_pivot", "visible_equipment_option_"..i))
-	end
-
-	-- Create custom buttons
-	self:add_widget(self:button("visible_equipment_save_button", size, "save_button_pivot"))
-	self:add_widget(self:button("visible_equipment_reset_button", size, "reset_button_pivot"))
+	-- Modding tools
+	self:add_unit_manipulation()
 
 end)
 
 mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
+
+	-- Modding tools
+	self:remove_unit_manipulation_all()
 
 	-- Destroy forward gui
 	self:_destroy_forward_gui()
@@ -438,50 +543,30 @@ mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
 end)
 
 mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_context, ...)
+
+	-- Original function
 	func(self, tab_context, ...)
 
-	if tab_context and self.weapon_unit then
-		-- Get background view
-		self:get_inventory_background_view()
+	-- Check tab
+	if self:is_tab() then -- Custom tab
 
-		-- Get weapon unit
-		local weapon_unit = self:weapon_unit()
+		-- Update name text
+		self:update_options_text()
 
-		-- Check tab
-		local is_tab = tab_context.display_name == WEAPON_CUSTOMIZATION_TAB
-		if is_tab then
-			-- Custom tab
-			self:freeze_animation()
-			self:update_options_text()
-			if self.inventory_background_view and self.inventory_background_view._profile_spawner then
-				self.inventory_background_view._profile_spawner._rotation_angle = self:customization_angle() or 0
-			end
-		else
-			-- Default tab
-			if modding_tools then
-				-- Remove all unit manipulation extensions
-				modding_tools:unit_manipulation_remove_all()
-			end
-			self:respawn_profile()
-		end
+		-- Rotation
+		self:set_rotation()
 
-		-- Update widget visibility
-		for i = 1, 4, 1 do
-			self._widgets_by_name["visible_equipment_option_"..i].visible = is_tab
-		end
-		self._widgets_by_name.name_text.visible = is_tab
-		self._widgets_by_name.visible_equipment_save_button.visible = is_tab
-		self._widgets_by_name.visible_equipment_reset_button.visible = is_tab
+	else -- Default tab
+		
+		-- Modding Tools
+		self:remove_unit_manipulation_all()
+		
+		-- Rotation
+		self:reset_rotation()
+
 	end
 
+	-- Update custom widget visibility
+	self:update_custom_widget_visibility()
+
 end)
-
--- mod:hook(CLASS.InventoryView, "update", function(func, self, dt, t, input_service, ...)
--- 	func(self, dt, t, input_service, ...)
-
--- 	if self.freeze_start and t - self.freeze_start > self.freeze_delay then
--- 		self:_freeze_animation()
--- 		self.freeze_start = nil
--- 	end
-
--- end)

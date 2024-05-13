@@ -66,39 +66,39 @@ local scenegraph_definition = {
         position = {0, 0, 0}
     },
     grid_content_pivot = {
-    vertical_alignment = "top",
-    parent = "grid_start",
-    horizontal_alignment = "left",
-    size = {0, 0},
-    position = {0, 0, 1}
+        vertical_alignment = "top",
+        parent = "grid_start",
+        horizontal_alignment = "left",
+        size = {0, 0},
+        position = {0, 0, 1}
     },
     grid_mask = {
-    vertical_alignment = "center",
-    parent = "background",
-    horizontal_alignment = "center",
-    size = mask_size,
-    position = {0, 0, 0}
+        vertical_alignment = "center",
+        parent = "background",
+        horizontal_alignment = "center",
+        size = mask_size,
+        position = {0, 0, 0}
     },
     grid_interaction = {
-    vertical_alignment = "top",
-    parent = "background",
-    horizontal_alignment = "left",
-    size = {grid_width + scrollbar_width * 2, mask_size[2]},
-    position = {0, 0, 0}
+        vertical_alignment = "top",
+        parent = "background",
+        horizontal_alignment = "left",
+        size = {grid_width + scrollbar_width * 2, mask_size[2]},
+        position = {0, 0, 0}
     },
     scrollbar = {
-    vertical_alignment = "center",
-    parent = "background",
-    horizontal_alignment = "right",
-    size = {scrollbar_width, grid_height},
-    position = {50, 0, 1}
+        vertical_alignment = "center",
+        parent = "background",
+        horizontal_alignment = "right",
+        size = {scrollbar_width, grid_height},
+        position = {50, 0, 1}
     },
     button = {
-    vertical_alignment = "left",
-    parent = "grid_content_pivot",
-    horizontal_alignment = "top",
-    size = {500, 64},
-    position = {0, 0, 0}
+        vertical_alignment = "left",
+        parent = "grid_content_pivot",
+        horizontal_alignment = "top",
+        size = {500, 64},
+        position = {0, 0, 0}
     },
     title_divider = {
         vertical_alignment = "top",
