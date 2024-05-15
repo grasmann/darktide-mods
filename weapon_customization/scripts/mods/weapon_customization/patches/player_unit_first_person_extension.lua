@@ -5,7 +5,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 --#region Require
-
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -23,7 +22,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
@@ -52,31 +50,31 @@ mod:hook_require("scripts/extension_systems/first_person/player_unit_first_perso
         mod:execute_extension(self._unit, "flashlight_system", "update", dt, t)
     end
 
-end)
+    -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #########################################################################
+    -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #########################################################################
+    -- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #########################################################################
 
--- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
--- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
--- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+    mod:hook(instance, "destroy", function(func, self, ...)
 
-mod:hook(CLASS.PlayerUnitFirstPersonExtension, "destroy", function(func, self, ...)
+        -- Destroy custom extensions
+        self:destroy_custom_extensions()
 
-    -- Destroy custom extensions
-    self:destroy_custom_extensions()
+        -- Original function
+        func(self, ...)
 
-    -- Original function
-	func(self, ...)
+    end)
 
-end)
+    mod:hook(instance, "update_unit_position", function(func, self, unit, dt, t, ...)
 
-mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(func, self, unit, dt, t, ...)
+        -- Original function
+        func(self, unit, dt, t, ...)
 
-    -- Original function
-    func(self, unit, dt, t, ...)
+        -- Update custom extensions
+        self:update_custom_extensions(dt, t)
 
-    -- Update custom extensions
-    self:update_custom_extensions(dt, t)
+        -- Update first person unit
+        world_update_unit_and_children(self._world, self._first_person_unit)
 
-    -- Update first person unit
-    world_update_unit_and_children(self._world, self._first_person_unit)
+    end)
 
 end)

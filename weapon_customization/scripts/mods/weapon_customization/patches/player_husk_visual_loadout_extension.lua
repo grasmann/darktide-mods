@@ -226,113 +226,113 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_husk_visual_lo
         end
     end
 
-end)
+    -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #########################################################################
+    -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #########################################################################
+    -- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #########################################################################
 
--- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
--- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
--- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+    mod:hook(instance, "extensions_ready", function(func, self, world, unit, ...)
+        
+        -- Dependency
+        self:add_dependency_extension()
 
-mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
-    
-    -- Dependency
-    self:add_dependency_extension()
+        -- Original function
+        func(self, world, unit, ...)
 
-    -- Original function
-    func(self, world, unit, ...)
+        -- Mod
+        mod:on_husk_unit_loaded(self._unit)
+        
+    end)
 
-    -- Mod
-    mod:on_husk_unit_loaded(self._unit)
-    
-end)
+    mod:hook(instance, "_equip_item_to_slot", function(func, self, slot_name, item, optional_existing_unit_3p, ...)
 
-mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function(func, self, slot_name, item, optional_existing_unit_3p, ...)
+        -- Original function
+        func(self, slot_name, item, optional_existing_unit_3p, ...)
 
-    -- Original function
-    func(self, slot_name, item, optional_existing_unit_3p, ...)
+        -- Destroy custom extensions
+        if slot_name == SLOT_SECONDARY then
+            self:remove_custom_extensions()
+        end
 
-    -- Destroy custom extensions
-    if slot_name == SLOT_SECONDARY then
+    end)
+
+    mod:hook(instance, "wield_slot", function(func, self, slot_name, ...)
+        
+        -- Original function
+        func(self, slot_name, ...)
+        
+        -- Wield custom extensions
+        self:custom_wield(slot_name)
+
+    end)
+
+    mod:hook(instance, "unwield_slot", function(func, self, slot_name, ...)
+        
+        -- Unwield custom extensions
+        self:custom_unwield(slot_name)
+
+        -- Original function
+        func(self, slot_name, ...)
+
+    end)
+
+    mod:hook(instance, "rpc_player_unequip_item_from_slot", function(func, self, channel_id, go_id, slot_id, ...)
+        
+        -- Destroy custom extensions
         self:remove_custom_extensions()
-    end
 
-end)
+        -- Original function
+        func(self, channel_id, go_id, slot_id, ...)
 
-mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "wield_slot", function(func, self, slot_name, ...)
-    
-    -- Original function
-    func(self, slot_name, ...)
-    
-    -- Wield custom extensions
-    self:custom_wield(slot_name)
+    end)
 
-end)
+    mod:hook(instance, "destroy", function(func, self, ...)
 
-mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "unwield_slot", function(func, self, slot_name, ...)
-    
-    -- Unwield custom extensions
-    self:custom_unwield(slot_name)
+        -- Destroy custom extensions
+        self:remove_custom_extensions()
 
-    -- Original function
-    func(self, slot_name, ...)
+        -- Dependency
+        self:remove_dependency_extension()
 
-end)
+        -- Mod
+        mod:on_husk_unit_destroyed(self._unit)
 
-mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_unequip_item_from_slot", function(func, self, channel_id, go_id, slot_id, ...)
-    
-    -- Destroy custom extensions
-    self:remove_custom_extensions()
+        -- Original function
+        func(self, ...)
 
-    -- Original function
-    func(self, channel_id, go_id, slot_id, ...)
+    end)
 
-end)
+    mod:hook(instance, "update", function(func, self, unit, dt, t, ...)
 
-mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "destroy", function(func, self, ...)
+        -- Original function
+        func(self, unit, dt, t, ...)
 
-    -- Destroy custom extensions
-    self:remove_custom_extensions()
+        -- Performance
+        local perf = wc_perf.start("PlayerHuskVisualLoadoutExtension.update", 2)
 
-    -- Dependency
-    self:remove_dependency_extension()
+        -- Visible equipment
+        self:update_visible_equipment(dt, t)
 
-    -- Mod
-    mod:on_husk_unit_destroyed(self._unit)
+        -- Sightss
+        self:update_sight(dt, t)
 
-    -- Original function
-    func(self, ...)
+        -- Add SwayAnimationExtension
+        self:update_sway(dt, t)
 
-end)
+        -- Add CrouchAnimationExtension
+        self:update_crouch(dt, t)
 
-mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, unit, dt, t, ...)
+        -- Weapon DOF
+        self:update_weapon_dof(dt, t)
 
-    -- Original function
-    func(self, unit, dt, t, ...)
+        -- Flashlights
+        self:update_flashlight(dt, t)
 
-    -- Performance
-    local perf = wc_perf.start("PlayerHuskVisualLoadoutExtension.update", 2)
+        -- Aiming
+        self:update_aiming(dt, t)
+        
+        -- Performance
+        wc_perf.stop(perf)
 
-    -- Visible equipment
-    self:update_visible_equipment(dt, t)
-
-    -- Sights
-    self:update_sight(dt, t)
-
-    -- Add SwayAnimationExtension
-    self:update_sway(dt, t)
-
-    -- Add CrouchAnimationExtension
-    self:update_crouch(dt, t)
-
-    -- Weapon DOF
-    self:update_weapon_dof(dt, t)
-
-    -- Flashlights
-    self:update_flashlight(dt, t)
-
-    -- Aiming
-    self:update_aiming(dt, t)
-    
-    -- Performance
-    wc_perf.stop(perf)
+    end)
 
 end)

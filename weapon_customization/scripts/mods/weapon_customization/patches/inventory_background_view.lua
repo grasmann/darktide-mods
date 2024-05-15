@@ -184,76 +184,76 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 		end
 	end
 
-end)
+	-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #########################################################################
+	-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #########################################################################
+	-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #########################################################################
 
--- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
--- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
--- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+	mod:hook(instance, "on_enter", function(func, self, ...)
 
-mod:hook(CLASS.InventoryBackgroundView, "on_enter", function(func, self, ...)
+		-- Modding tools
+		self:remove_unit_manipulation()
 
-	-- Modding tools
-	self:remove_unit_manipulation()
+		-- Original function
+		func(self, ...)
 
-	-- Original function
-	func(self, ...)
+	end)
 
-end)
+	mod:hook(instance, "on_exit", function(func, self, ...)
 
-mod:hook(CLASS.InventoryBackgroundView, "on_exit", function(func, self, ...)
+		-- Destroy background view
+		self.inventory_view = nil
 
-	-- Destroy background view
-	self.inventory_view = nil
+		-- Modding tools
+		self:remove_unit_manipulation()
 
-	-- Modding tools
-	self:remove_unit_manipulation()
+		-- Original function
+		func(self, ...)
 
-	-- Original function
-	func(self, ...)
+	end)
 
-end)
+	mod:hook(instance, "_update_has_empty_talent_nodes", function(func, self, optional_selected_nodes, ...)
 
-mod:hook(CLASS.InventoryBackgroundView, "_update_has_empty_talent_nodes", function(func, self, optional_selected_nodes, ...)
+		-- Custom panel
+		self:add_custom_panel()
 
-	-- Custom panel
-	self:add_custom_panel()
+		-- Original function
+		func(self, optional_selected_nodes, ...)
 
-	-- Original function
-	func(self, optional_selected_nodes, ...)
+	end)
 
-end)
+	mod:hook(instance, "update", function(func, self, dt, t, input_service, ...)
 
-mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
+		-- Original function
+		local ret = func(self, dt, t, input_service, ...)
 
-	-- Original function
-	local ret = func(self, dt, t, input_service, ...)
+		-- Add unit manipulation
+		self:add_unit_manipulation()
 
-	-- Add unit manipulation
-	self:add_unit_manipulation()
+		-- Return
+		return ret
+	end)
 
-	-- Return
-	return ret
-end)
+	mod:hook(instance, "cb_on_weapon_swap_pressed", function(func, self, ...)
 
-mod:hook(CLASS.InventoryBackgroundView, "cb_on_weapon_swap_pressed", function(func, self, ...)
+		-- Rotation
+		self:reset_rotation()
 
-	-- Rotation
-	self:reset_rotation()
+		-- Original function
+		func(self, ...)
 
-	-- Original function
-	func(self, ...)
+	end)
 
-end)
+	mod:hook(instance, "_update_presentation_wield_item", function(func, self, ...)
 
-mod:hook(CLASS.InventoryBackgroundView, "_update_presentation_wield_item", function(func, self, ...)
+		-- Modding tools
+		self:remove_unit_manipulation()
 
-	-- Modding tools
-	self:remove_unit_manipulation()
+		-- Original function
+		func(self, ...)
 
-	-- Original function
-	func(self, ...)
+		-- Update weapon name
+		self:update_item_name()
 
-	-- Update weapon name
-	self:update_item_name()
+	end)
 
 end)

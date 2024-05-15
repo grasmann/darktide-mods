@@ -648,13 +648,20 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			end
 		end
 	end
+
+	instance.weapon_unit = function(self)
+		local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
+		local weapon_spawn_data = ui_weapon_spawner and ui_weapon_spawner._weapon_spawn_data
+		return weapon_spawn_data and weapon_spawn_data.item_unit_3p
+	end
 	
 	instance.draw_equipment_box = function(self, dt, t)
-		if self.weapon_unit and unit_alive(self.weapon_unit) and not mod.dropdown_open then
-			local attachment_slots = mod:get_attachment_slots(self.weapon_unit)
+		local weapon_unit = self:weapon_unit()
+		if weapon_unit and unit_alive(weapon_unit) and not mod.dropdown_open then
+			local attachment_slots = mod:get_attachment_slots(weapon_unit)
 			if attachment_slots and #attachment_slots > 0 then
 				for _, attachment_slot in pairs(attachment_slots) do
-					local unit = mod:get_attachment_unit(self.weapon_unit, attachment_slot)
+					local unit = mod:get_attachment_unit(weapon_unit, attachment_slot)
 					if unit and unit_alive(unit) then
 						local saved_origin = mod.dropdown_positions[attachment_slot]
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then
@@ -668,13 +675,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	end
 	
 	instance.draw_equipment_lines = function(self, dt, t)
-		if self.weapon_unit and unit_alive(self.weapon_unit) and not mod.dropdown_open then
-			local attachment_slots = mod:get_attachment_slots(self.weapon_unit)
+		local weapon_unit = self:weapon_unit()
+		if weapon_unit and unit_alive(weapon_unit) and not mod.dropdown_open then
+			local attachment_slots = mod:get_attachment_slots(weapon_unit)
 			if attachment_slots and #attachment_slots > 0 then
 				local gui = self._ui_forward_renderer.gui
 				local camera = self._weapon_preview._ui_weapon_spawner._camera
 				for _, attachment_slot in pairs(attachment_slots) do
-					local unit = mod:get_attachment_unit(self.weapon_unit, attachment_slot)
+					local unit = mod:get_attachment_unit(weapon_unit, attachment_slot)
 					if unit and unit_alive(unit) then
 						local box = unit_box(unit, false)
 						local center_position = matrix4x4_translation(box)
@@ -699,6 +707,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		return self._selected_tab_index == 3
 	end
 
+	instance.reevaluate_packages = function(self)
+		local package_synchronizer_client = managers.package_synchronization:synchronizer_client()
+		if package_synchronizer_client then
+			package_synchronizer_client:reevaluate_all_profiles_packages()
+		end
+	end
+
 	instance.equip_attachments = function(self)
 
 		-- Reset original settings
@@ -716,6 +731,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Load new attachments
 		mod:load_new_attachment()
 
+		-- Reevaluate packages
+		self:reevaluate_packages()
+
 		-- Reload current weapon
 		mod:redo_weapon_attachments(self._presentation_item)
 
@@ -728,36 +746,19 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	instance.reset_attachments = function(self, no_animation)
 
+		-- Get changed settings
 		mod:get_changed_weapon_settings()
 
 		-- Auto equip
 		self:resolve_auto_equips(mod.changed_weapon_settings)
-		-- for attachment_slot, value in pairs(mod.changed_weapon_settings) do
-		-- 	if not mod.add_custom_attachments[attachment_slot] then
-		-- 		mod:resolve_auto_equips(self._selected_item, "default")
-		-- 	end
-		-- end
-		-- for attachment_slot, value in pairs(mod.changed_weapon_settings) do
-		-- 	if mod.add_custom_attachments[attachment_slot] then
-		-- 		mod:resolve_auto_equips(self._selected_item, "default")
-		-- 	end
-		-- end
 
 		-- Special
 		self:resolve_special_changes(mod.changed_weapon_settings)
-		-- for attachment_slot, value in pairs(mod.changed_weapon_settings) do
-		-- 	if mod.add_custom_attachments[attachment_slot] then
-		-- 		mod:resolve_special_changes(self._selected_item, "default")
-		-- 	end
-		-- end
-		-- for attachment_slot, value in pairs(mod.changed_weapon_settings) do
-		-- 	if not mod.add_custom_attachments[attachment_slot] then
-		-- 		mod:resolve_special_changes(self._selected_item, "default")
-		-- 	end
-		-- end
 
+		-- Check unsaved
 		mod:check_unsaved_changes(no_animation)
 
+		-- Redo attachments
 		mod:redo_weapon_attachments(self._presentation_item)
 
 	end

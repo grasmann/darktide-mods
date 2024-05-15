@@ -178,95 +178,95 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         end
     end
 
-end)
+    -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+    -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+    -- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
 
--- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
--- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
--- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+    mod:hook(instance, "extensions_ready", function(func, self, world, unit, ...)
+        
+        -- Dependency
+        self:add_dependency_extension()
+        
+        -- Sights
+        mod:remove_extension(self._unit, "sight_system")
+        
+        -- Original function
+        func(self, world, unit, ...)
+        
+        -- Mod
+        mod:on_player_unit_loaded(self._unit)
 
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
-    
-    -- Dependency
-    self:add_dependency_extension()
-    
-    -- Sights
-    mod:remove_extension(self._unit, "sight_system")
-    
-    -- Original function
-    func(self, world, unit, ...)
-    
-    -- Mod
-    mod:on_player_unit_loaded(self._unit)
+    end)
 
-end)
+    mod:hook(instance, "_equip_item_to_slot", function(func, self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
+        
+        -- Original function
+        func(self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
 
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_equip_item_to_slot", function(func, self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
-    
-    -- Original function
-    func(self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
+        -- Extensions
+        if slot_name == SLOT_SECONDARY then
+            self:remove_custom_extensions()
+        end
 
-    -- Extensions
-    if slot_name == SLOT_SECONDARY then
+    end)
+
+    mod:hook(instance, "_unequip_item_from_slot", function(func, self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
+
+        -- Remove custom extensions
+        if slot_name == SLOT_SECONDARY then
+            self:remove_custom_extensions()
+        end
+
+        -- Original function
+        func(self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
+
+    end)
+
+    mod:hook(instance, "destroy", function(func, self, ...)
+
+        -- Remove custom extensions
         self:remove_custom_extensions()
-    end
 
-end)
+        -- Dependency
+        self:remove_dependency_extension()
 
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_unequip_item_from_slot", function(func, self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
+        -- Mod
+        mod:on_player_unit_destroyed(self._unit)
 
-    -- Remove custom extensions
-    if slot_name == SLOT_SECONDARY then
-        self:remove_custom_extensions()
-    end
+        -- Original function
+        func(self, ...)
 
-    -- Original function
-    func(self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
+    end)
 
-end)
+    mod:hook(instance, "update", function(func, self, unit, dt, t, ...)
 
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
+        -- Original function
+        func(self, unit, dt, t, ...)
 
-    -- Remove custom extensions
-    self:remove_custom_extensions()
+        -- Performance
+        local perf = wc_perf.start("PlayerUnitVisualLoadoutExtension.update", 2)
 
-    -- Dependency
-    self:remove_dependency_extension()
+        -- Visible equipment
+        self:update_visible_equipment(dt, t)
 
-    -- Mod
-    mod:on_player_unit_destroyed(self._unit)
+        -- Sights
+        self:update_sight(dt, t)
 
-    -- Original function
-    func(self, ...)
+        -- Weapon DOF
+        self:update_weapon_dof(dt, t)
 
-end)
+        -- CrouchAnimationExtension
+        self:update_crouch(dt, t)
 
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, unit, dt, t, ...)
+        -- SwayAnimationExtension
+        self:update_sway(dt, t)
 
-    -- Original function
-    func(self, unit, dt, t, ...)
+        -- Flashlights
+        self:update_flashlight(dt, t)
 
-    -- Performance
-    local perf = wc_perf.start("PlayerUnitVisualLoadoutExtension.update", 2)
+        -- Performance
+        wc_perf.stop(perf)
 
-    -- Visible equipment
-    self:update_visible_equipment(dt, t)
-
-    -- Sights
-    self:update_sight(dt, t)
-
-    -- Weapon DOF
-    self:update_weapon_dof(dt, t)
-
-    -- CrouchAnimationExtension
-    self:update_crouch(dt, t)
-
-    -- SwayAnimationExtension
-    self:update_sway(dt, t)
-
-    -- Flashlights
-    self:update_flashlight(dt, t)
-
-    -- Performance
-    wc_perf.stop(perf)
+    end)
 
 end)
