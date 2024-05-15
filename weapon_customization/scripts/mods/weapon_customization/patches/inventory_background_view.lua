@@ -54,7 +54,7 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 	instance.remove_unit_manipulation = function(self)
 		self:get_modding_tools()
 		if self.modding_tools and self.modding_tools.unit_manipulation_remove_all then
-			-- self.modding_tools:unit_manipulation_remove_all()
+			self.modding_tools:unit_manipulation_remove_all()
 		end
 	end
 
@@ -84,7 +84,7 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 	end
 
 	instance.add_custom_panel = function(self)
-		if not self._custom_panel_added then
+		if not self._custom_panel_added and self._views_settings then
 			local player = self._preview_player
 			local profile = player:profile()
 			local profile_archetype = profile.archetype

@@ -316,6 +316,14 @@ return {
 		ru = "Установите размер перекрестия для прицелов.",
 		["zh-cn"] = "设置瞄准镜标线尺寸。",
 	},
+	mod_option_scopes_lens_transparency = {
+		en = "Lens Transparency",
+		de = "Linsentransparenz",
+	},
+	mod_option_scopes_lens_transparency_tooltip = {
+		en = "Set lens transparency for scopes.",
+		de = "Setze Linsentransparenz für Zielfernrohre.",
+	},
 	mod_option_deactivate_crosshair_aiming = {
 		en = "Deactivate Crosshair",
 		de = "Zielkreuz Deaktivieren",

@@ -50,6 +50,7 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
     local matrix4x4_multiply = Matrix4x4.multiply
     local matrix4x4_identity = Matrix4x4.identity
     local matrix4x4_rotation = Matrix4x4.rotation
+    local quaternion_multiply = Quaternion.multiply
     local unit_world_position = Unit.world_position
     local unit_world_rotation = Unit.world_rotation
     local quaternion_identity = Quaternion.identity
@@ -60,6 +61,7 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
     local world_move_particles = World.move_particles
     local physics_world_raycast = PhysicsWorld.raycast
     local matrix4x4_translation = Matrix4x4.translation
+    local quaternion_from_vector = Quaternion.from_vector
     local world_create_particles = World.create_particles
     local world_destroy_particles = World.destroy_particles
     local matrix4x4_set_translation = Matrix4x4.set_translation
@@ -94,6 +96,8 @@ local LINE_EFFECT = {
 local SPAWNER_NAME = "slot_primary_laser_pointer_1p"
 local SPAWNER_NAME_3P = "slot_primary_laser_pointer_3p"
 local LOCK_STATES = {"walking", "sliding", "jumping", "falling", "dodging", "ledge_vaulting"}
+local SWAY_MULTIPLIER = 2.5
+local SWAY_MULTIPLIER_AIMING = 10
 -- local CROUCH_OPTION = "mod_option_misc_cover_on_crouch"
 
 -- ##### ┬  ┌─┐┌─┐┌─┐┬─┐  ┌─┐┌─┐┬┌┐┌┌┬┐┌─┐┬─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #############################################
@@ -157,6 +161,14 @@ LaserPointerExtension.get_spawner_name = function(self)
         return SPAWNER_NAME
     end
     return SPAWNER_NAME_3P
+end
+
+LaserPointerExtension.sway_multiplier = function(self)
+    if mod:execute_extension(self.player_unit, "sight_system", "is_aiming") then
+        return SWAY_MULTIPLIER_AIMING
+    else
+        return SWAY_MULTIPLIER
+    end
 end
 
 LaserPointerExtension.is_active = function(self)
@@ -236,12 +248,17 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
             local laser_forward = quaternion_forward(laser_rotation)
 
             -- Camera direction
+            local sway = mod:execute_extension(self.player_unit, "sway_system", "offset_rotation")
+            sway = (sway and vector3_unbox(sway) or vector3_zero()) * self:sway_multiplier()
+            local sway_rotation = quaternion_from_vector(sway)
             local camera_position = laser_position
-            local camera_rotation = laser_rotation
+            -- local camera_rotation = laser_rotation
+            local camera_rotation = quaternion_multiply(laser_rotation, sway_rotation)
             local camera_forward = quaternion_forward(camera_rotation)
             if managers.state.camera:has_camera(self.player.viewport_name) then
                 camera_position = managers.state.camera:camera_position(self.player.viewport_name)
-                camera_rotation = managers.state.camera:camera_rotation(self.player.viewport_name)
+                -- camera_rotation = managers.state.camera:camera_rotation(self.player.viewport_name)
+                camera_rotation = quaternion_multiply(managers.state.camera:camera_rotation(self.player.viewport_name), sway_rotation)
                 camera_forward = quaternion_forward(camera_rotation)
             end
             if not first_person then
@@ -307,6 +324,7 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
             end
             self.lock_timer = t + LOCK_TIME
         end
+
     end
 end
 
@@ -357,6 +375,7 @@ LaserPointerExtension.update_laser_particle = function(self, dt, t)
                 end
             end
         end
+        self.fx_extension:_update_aligned_vfx()
     end
 end
 
@@ -370,13 +389,18 @@ LaserPointerExtension.update_laser_dot = function(self, dt, t)
         local end_position = vector3_unbox(self.end_position)
         local distance_target = 6
 
+        local sway = mod:execute_extension(self.player_unit, "sway_system", "offset_rotation")
+        sway = (sway and vector3_unbox(sway) or vector3_zero()) * (self:sway_multiplier() * .8)
+        local sway_rotation = quaternion_from_vector(sway)
         local camera_position = unit_world_position(laser_pointer_unit, 2)
-        local camera_rotation = unit_world_rotation(laser_pointer_unit, 2)
+        -- local camera_rotation = unit_world_rotation(laser_pointer_unit, 2)
+        local camera_rotation = quaternion_multiply(unit_world_rotation(laser_pointer_unit, 2), sway_rotation)
         local camera_forward = quaternion_forward(camera_rotation)
         if self.lock and first_person then
             if managers.state.camera:has_camera(self.player.viewport_name) then
                 camera_position = managers.state.camera:camera_position(self.player.viewport_name)
-                camera_rotation = managers.state.camera:camera_rotation(self.player.viewport_name)
+                -- camera_rotation = managers.state.camera:camera_rotation(self.player.viewport_name)
+                camera_rotation = quaternion_multiply(managers.state.camera:camera_rotation(self.player.viewport_name), sway_rotation)
             end
             camera_forward = quaternion_forward(camera_rotation)
             if self.hit_enemy then
@@ -391,8 +415,9 @@ LaserPointerExtension.update_laser_dot = function(self, dt, t)
 
             if managers.state.camera:has_camera(self.player.viewport_name) then
                 camera_position = managers.state.camera:camera_position(self.player.viewport_name)
-            elseif managers.state.camera:has_camera(mod.player.viewport_name) then
-                camera_position = managers.state.camera:camera_position(mod.player.viewport_name)
+                camera_rotation = quaternion_multiply(managers.state.camera:camera_rotation(self.player.viewport_name), sway_rotation)
+            -- elseif managers.state.camera:has_camera(mod.player.viewport_name) then
+            --     camera_position = managers.state.camera:camera_position(mod.player.viewport_name)
             end
             -- camera_position = unit_world_position(self.first_person_unit, 1)
             local distance = vector3_distance(camera_position, end_position)

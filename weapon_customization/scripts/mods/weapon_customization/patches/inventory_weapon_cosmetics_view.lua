@@ -499,16 +499,16 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			local world = ui_weapon_spawner._world
 			local gui = self._ui_forward_renderer.gui
 			self:get_modding_tools()
-			if self._modding_tool_toggled_on then
+			if self.modding_tools and self._modding_tool_toggled_on then
 				self.modding_tools:unit_manipulation_add(weapon_spawn_data.item_unit_3p, camera, world, gui, self._item_name)
-			else
+			elseif self.modding_tools then
 				self.modding_tools:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
 			end
 			for _, unit in pairs(weapon_spawn_data.attachment_units_3p) do
 				local name = Unit.get_data(unit, "attachment_slot")
-				if name and self._modding_tool_toggled_on then
+				if self.modding_tools and name and self._modding_tool_toggled_on then
 					self.modding_tools:unit_manipulation_add(unit, camera, world, gui, name)
-				else
+				elseif self.modding_tools then
 					self.modding_tools:unit_manipulation_remove(unit)
 				end
 			end
@@ -729,28 +729,32 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.reset_attachments = function(self, no_animation)
 
 		mod:get_changed_weapon_settings()
+
 		-- Auto equip
-		for attachment_slot, value in pairs(mod.changed_weapon_settings) do
-			if not mod.add_custom_attachments[attachment_slot] then
-				mod:resolve_auto_equips(self._selected_item, "default")
-			end
-		end
-		for attachment_slot, value in pairs(mod.changed_weapon_settings) do
-			if mod.add_custom_attachments[attachment_slot] then
-				mod:resolve_auto_equips(self._selected_item, "default")
-			end
-		end
+		self:resolve_auto_equips(mod.changed_weapon_settings)
+		-- for attachment_slot, value in pairs(mod.changed_weapon_settings) do
+		-- 	if not mod.add_custom_attachments[attachment_slot] then
+		-- 		mod:resolve_auto_equips(self._selected_item, "default")
+		-- 	end
+		-- end
+		-- for attachment_slot, value in pairs(mod.changed_weapon_settings) do
+		-- 	if mod.add_custom_attachments[attachment_slot] then
+		-- 		mod:resolve_auto_equips(self._selected_item, "default")
+		-- 	end
+		-- end
+
 		-- Special
-		for attachment_slot, value in pairs(mod.changed_weapon_settings) do
-			if mod.add_custom_attachments[attachment_slot] then
-				mod:resolve_special_changes(self._selected_item, "default")
-			end
-		end
-		for attachment_slot, value in pairs(mod.changed_weapon_settings) do
-			if not mod.add_custom_attachments[attachment_slot] then
-				mod:resolve_special_changes(self._selected_item, "default")
-			end
-		end
+		self:resolve_special_changes(mod.changed_weapon_settings)
+		-- for attachment_slot, value in pairs(mod.changed_weapon_settings) do
+		-- 	if mod.add_custom_attachments[attachment_slot] then
+		-- 		mod:resolve_special_changes(self._selected_item, "default")
+		-- 	end
+		-- end
+		-- for attachment_slot, value in pairs(mod.changed_weapon_settings) do
+		-- 	if not mod.add_custom_attachments[attachment_slot] then
+		-- 		mod:resolve_special_changes(self._selected_item, "default")
+		-- 	end
+		-- end
 
 		mod:check_unsaved_changes(no_animation)
 

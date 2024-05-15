@@ -206,6 +206,14 @@ SwayAnimationExtension.update_animation = function(self, dt, t)
     end
 end
 
+SwayAnimationExtension.offset_position = function(self)
+    return self.position
+end
+
+SwayAnimationExtension.offset_rotation = function(self)
+    return self.rotate_animation
+end
+
 SwayAnimationExtension.set_position_and_rotation = function(self, offset_position, offset_rotation)
     if offset_position and offset_rotation and self.first_person_unit and unit_alive(self.first_person_unit) then
         local position = unit_local_position(self.first_person_unit, 1)
@@ -217,7 +225,7 @@ SwayAnimationExtension.set_position_and_rotation = function(self, offset_positio
         local rotated_pos = matrix4x4_transform(mat, offset_position)
         -- mod:info("SwayAnimationExtension.set_position_and_rotation: "..tostring(self.first_person_unit))
         unit_set_local_position(self.first_person_unit, 1, position + rotated_pos)
-        world_update_unit_and_children(self.world, self.first_person_unit)
+        -- world_update_unit_and_children(self.world, self.first_person_unit)
     end
 end
 

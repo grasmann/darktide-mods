@@ -24,6 +24,7 @@ local mod = get_mod("weapon_customization")
 	local Unit = Unit
 	local math = math
 	local type = type
+	local Mesh = Mesh
 	local table = table
 	local World = World
 	local pairs = pairs
@@ -56,6 +57,8 @@ local mod = get_mod("weapon_customization")
 	local quaternion_unbox = QuaternionBox.unbox
 	local quaternion_forward = Quaternion.forward
 	local ShadingEnvironment = ShadingEnvironment
+	local mesh_local_position = Mesh.local_position
+	local mesh_local_rotation = Mesh.local_rotation
 	local matrix4x4_transform = Matrix4x4.transform
 	local camera_vertical_fov = Camera.vertical_fov
 	local unit_world_position = Unit.world_position
@@ -90,9 +93,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
 	local REFERENCE = "weapon_customization"
-	local EFFECT_OPTION = "mod_option_scopes_particle"
 	local EFFECT = "content/fx/particles/screenspace/screen_ogryn_dash"
-	local SOUND_OPTION = "mod_option_scopes_sound"
 	local SOUND = "wwise/events/weapon/play_lasgun_p3_mag_button"
 	local SIGHT = "sight_2"
 	local LENS_A = "lens"
@@ -102,6 +103,7 @@ local mod = get_mod("weapon_customization")
 	local SLOT_SECONDARY = "slot_secondary"
 	local SLOT_UNARMED = "slot_unarmed"
 	local reticle_multiplier = .5
+	local MIN_TRANSPARENCY = .15
 --#endregion
 
 -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #################################################################
@@ -134,6 +136,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 	self.offset = nil
 	self.sights = {}
 	self.lenses = {}
+	self.lens_transparency = MIN_TRANSPARENCY
 	self.first_person_component = self.unit_data:read_component("first_person")
 
 	managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
@@ -270,7 +273,7 @@ SightExtension.set_weapon_values = function(self)
 		mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "scope_lens_01"),
 		mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "scope_lens_02"),
 	}
-	self:set_lens_units()
+	-- self:set_lens_units()
 	self.sight_unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_3")
 	    or mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_2")
 	    or mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight")
@@ -287,6 +290,7 @@ SightExtension.set_weapon_values = function(self)
 		-- self.camera_manager = managers.state.camera
 		self.sniper_zoom = mod.sniper_zoom_levels[self.sight_name] or 7
 		self:set_sniper_scope_unit()
+		self:set_lens_units()
 	end
 	self:set_lens_scales()
 	self.start_time = self.ranged_weapon.weapon_template.actions.action_zoom
@@ -319,13 +323,16 @@ SightExtension.set_lens_units = function(self)
 		mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_B, lenses)
 		if #lenses >= 2 then
 			local scope_sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight_2")
-			self.default_reticle_position = scope_sight and scope_sight.position
+			self.lens_mesh = unit_get_data(lenses[1], "lens_mesh") or 1
+			self.default_reticle_position = vector3_box(mesh_local_position(unit_mesh(reflex[1], self.lens_mesh)))
 			if unit_get_data(lenses[1], "lens") == 2 then
 				self.lens_units = {lenses[1], lenses[2], reflex[1]}
 			else
 				self.lens_units = {lenses[2], lenses[1], reflex[1]}
 			end
 			unit_set_unit_visibility(reflex[1], false)
+			Unit.set_shader_pass_flag_for_meshes(lenses[1], "one_bit_alpha", true, true)
+			Unit.set_shader_pass_flag_for_meshes(lenses[2], "one_bit_alpha", true, true)
 		end
 	end
 end
@@ -398,6 +405,7 @@ SightExtension.on_settings_changed = function(self)
 	self.deactivate_crosshair_laser = mod:get("mod_option_deactivate_crosshair_laser")
 	self.deactivate_crosshair_aiming = mod:get("mod_option_deactivate_crosshair_aiming")
 	self.weapon_dof = mod:get("mod_option_misc_weapon_dof")
+	self.lense_transparency_target = mod:get("mod_option_scopes_lens_transparency")
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
@@ -411,7 +419,7 @@ SightExtension.update = function(self, unit, dt, t)
 		if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position
 				and not self.is_starting_aim and not self._is_aiming then
 			local default_offset = vector3_unbox(self.default_reticle_position)
-			unit_set_local_position(self.lens_units[3], 1, default_offset)
+			mesh_set_local_position(unit_mesh(self.lens_units[3], self.lens_mesh), self.lens_units[3], default_offset)
 		end
 
 		if self.is_starting_aim or self._is_starting_inspect then
@@ -420,6 +428,8 @@ SightExtension.update = function(self, unit, dt, t)
 				local progress = time_in_action / self.start_time
 				local anim_progress = math.ease_sine(progress)
 				if self.sniper_zoom then
+
+					self.lens_transparency = math_lerp(MIN_TRANSPARENCY, self.lense_transparency_target, anim_progress)
 
 					if self.sniper_scope_unit and unit_alive(self.sniper_scope_unit) then
 						local sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight")
@@ -441,15 +451,17 @@ SightExtension.update = function(self, unit, dt, t)
 					if self.offset.position then
 						local position = vector3_lerp(vector3_zero(), vector3_unbox(self.offset.position), anim_progress)
 						self.position_offset = vector3_box(position)
+
 						if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
 							local default_offset = vector3_unbox(self.default_reticle_position)
 							local rotation = unit_local_rotation(self.lens_units[3], 1)
 							local forward = Quaternion.forward(rotation)
 							local current_reticle_offset = forward * (self.reticle_size * reticle_multiplier)
 							local reticle_offset = vector3_lerp(default_offset, default_offset + current_reticle_offset, anim_progress)
-							unit_set_local_position(self.lens_units[3], 1, reticle_offset)
+							mesh_set_local_position(unit_mesh(self.lens_units[3], self.lens_mesh), self.lens_units[3], reticle_offset)
 							unit_set_unit_visibility(self.lens_units[3], true)
 						end
+
 					end
 					if self.offset.rotation then
 						local rotation = vector3_lerp(vector3_zero(), vector3_unbox(self.offset.rotation), anim_progress)
@@ -459,6 +471,8 @@ SightExtension.update = function(self, unit, dt, t)
 			elseif self.aim_timer and t > self.aim_timer then
 				self.is_starting_aim = nil
 				if self.sniper_zoom then
+
+					self.lens_transparency = self.lense_transparency_target
 
 					if self.sniper_scope_unit and unit_alive(self.sniper_scope_unit) then
 						local sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight")
@@ -472,7 +486,7 @@ SightExtension.update = function(self, unit, dt, t)
 						local rotation = unit_local_rotation(self.lens_units[3], 1)
 						local forward = Quaternion.forward(rotation)
 						local current_reticle_offset = forward * (self.reticle_size * reticle_multiplier)
-						unit_set_local_position(self.lens_units[3], 1, default_offset + current_reticle_offset)
+						mesh_set_local_position(unit_mesh(self.lens_units[3], self.lens_mesh), self.lens_units[3], default_offset + current_reticle_offset)
 					end
 
 					local custom_fov = self.offset.custom_fov and math_rad(self.offset.custom_fov) or math_rad(self.sniper_zoom)
@@ -492,6 +506,8 @@ SightExtension.update = function(self, unit, dt, t)
 				local progress = time_in_action / self.reset_time
 				local anim_progress = math.ease_sine(progress)
 				if self.sniper_zoom then
+
+					self.lens_transparency = math_lerp(self.lense_transparency_target, MIN_TRANSPARENCY, anim_progress)
 
 					if self.sniper_scope_unit and unit_alive(self.sniper_scope_unit) then
 						local sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight")
@@ -513,14 +529,16 @@ SightExtension.update = function(self, unit, dt, t)
 					if self.offset.position then
 						local position = vector3_lerp(vector3_unbox(self.offset.position), vector3_zero(), anim_progress)
 						self.position_offset = vector3_box(position)
+
 						if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
 							local default_offset = vector3_unbox(self.default_reticle_position)
 							local rotation = unit_local_rotation(self.lens_units[3], 1)
 							local forward = Quaternion.forward(rotation)
 							local current_reticle_offset = forward * (self.reticle_size * reticle_multiplier)
 							local reticle_offset = vector3_lerp(default_offset + current_reticle_offset, default_offset, anim_progress)
-							unit_set_local_position(self.lens_units[3], 1, reticle_offset)
+							mesh_set_local_position(unit_mesh(self.lens_units[3], self.lens_mesh), self.lens_units[3], reticle_offset)
 						end
+
 					end
 					if self.offset.rotation then
 						local rotation = vector3_lerp(vector3_unbox(self.offset.rotation), vector3_zero(), anim_progress)
@@ -529,6 +547,8 @@ SightExtension.update = function(self, unit, dt, t)
 				end
 			elseif self.aim_timer and t > self.aim_timer then
 				if self.sniper_zoom then
+
+					self.lens_transparency = MIN_TRANSPARENCY
 
 					if self.sniper_scope_unit and unit_alive(self.sniper_scope_unit) then
 						local sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight")
@@ -539,7 +559,7 @@ SightExtension.update = function(self, unit, dt, t)
 					if self.lens_units and self.lens_units[3] and self.default_reticle_position then
 						local default_offset = vector3_unbox(self.default_reticle_position)
 						unit_set_unit_visibility(self.lens_units[3], false)
-						unit_set_local_position(self.lens_units[3], 1, default_offset)
+						mesh_set_local_position(unit_mesh(self.lens_units[3], self.lens_mesh), self.lens_units[3], default_offset)
 					end
 				end
 				self.custom_vertical_fov = nil
@@ -569,7 +589,7 @@ SightExtension.update_position_and_rotation = function(self)
 		local rotation = quaternion_from_euler_angles_xyz(rotation_offset[1], rotation_offset[2], rotation_offset[3])
 		unit_set_local_rotation(self.ranged_weapon.weapon_unit, 1, rotation)
 
-		world_update_unit_and_children(self.world, self.first_person_unit)
+		-- world_update_unit_and_children(self.world, self.first_person_unit)
 	end
 end
 
@@ -589,12 +609,15 @@ SightExtension.update_scope_lenses = function(self)
 			self.lens_scales[2] and vector3_unbox(self.lens_scales[2]) or vector3_zero(),
 		}
 	end
-	if self.sniper_zoom and self.lens_units then
+	if self.sniper_zoom and self.lens_units and self.lens_transparency then
+		
 		if self.lens_units[1] and unit_alive(self.lens_units[1]) then
-			unit_set_local_scale(self.lens_units[1], 1, scales[1])
+			-- unit_set_local_scale(self.lens_units[1], 1, scales[1])
+			Unit.set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", self.lens_transparency, true) 
 		end
 		if self.lens_units[2] and unit_alive(self.lens_units[2]) then
-			unit_set_local_scale(self.lens_units[2], 1, scales[2])
+			-- unit_set_local_scale(self.lens_units[2], 1, scales[2])
+			Unit.set_scalar_for_materials(self.lens_units[2], "inv_jitter_alpha", self.lens_transparency, true) 
 		end
 	elseif self.sniper_zoom and not self.lens_units then
 		self:set_lens_units()

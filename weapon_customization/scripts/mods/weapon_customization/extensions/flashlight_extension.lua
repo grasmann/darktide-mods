@@ -249,8 +249,8 @@ FlashlightExtension.light = function(self, optional_other_one)
     -- Optional other one
     if optional_other_one then first_person = not first_person end
     -- Return light
-    if first_person then return self.light_1p end
-    return self.light_3p
+    if first_person then return self.flashlight_unit_1p and unit_alive(self.flashlight_unit_1p) and self.light_1p end
+    return self.flashlight_unit_3p and unit_alive(self.flashlight_unit_3p) and self.light_3p
 end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
@@ -493,11 +493,14 @@ FlashlightExtension.set_light = function(self, play_sound, optional_value, optio
 end
 
 FlashlightExtension.play_animation = function(self)
+    local is_aiming = mod:execute_extension(self.player_unit, "sight_system", "is_aiming")
+    local multiplier = is_aiming and .25 or 1
+
     self.animation_start = mod:game_time()
     self.animation_state = "move"
     self.animation_time = .15
-    self.animation_move = vector3_box(vector3(0, -.01, -.03))
-    self.animation_spin = quaternion_box(quaternion_from_vector(vector3(1.5, 1.5, -1.5)))
+    self.animation_move = vector3_box(vector3(0, -.01, -.03) * multiplier)
+    self.animation_spin = quaternion_box(quaternion_from_vector(vector3(1.5, 1.5, -1.5) * multiplier))
 end
 
 FlashlightExtension.update_animation = function(self, dt, t)
@@ -542,7 +545,7 @@ FlashlightExtension.update_animation = function(self, dt, t)
         local rotated_offset = matrix4x4_transform(mat, position_offset)
         
         unit_set_local_position(self.first_person_unit, node, position + rotated_offset)
-        world_update_unit_and_children(self.world, self.first_person_unit)
+        -- world_update_unit_and_children(self.world, self.first_person_unit)
 
     end
 
