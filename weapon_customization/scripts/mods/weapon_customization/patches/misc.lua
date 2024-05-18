@@ -4,7 +4,9 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local PlayerCharacterLoopingParticleAliases = mod:original_require("scripts/settings/particles/player_character_looping_particle_aliases")
+--#region Require
+	local PlayerCharacterLoopingParticleAliases = mod:original_require("scripts/settings/particles/player_character_looping_particle_aliases")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -19,6 +21,7 @@ local PlayerCharacterLoopingParticleAliases = mod:original_require("scripts/sett
 	local Level = Level
 	local string = string
 	local vector3 = Vector3
+	local tostring = tostring
 	local unit_alive = Unit.alive
 	local vector3_box = Vector3Box
 	local string_find = string.find
@@ -37,7 +40,9 @@ local PlayerCharacterLoopingParticleAliases = mod:original_require("scripts/sett
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
+--#region Data
+	local REFERENCE = "weapon_customization"
+--#endregion
 
 -- ##### ┬─┐┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┌─┐┬ ┬┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐┬─┐ ##############################################################
 -- ##### ├┬┘│ │ │ ├─┤ │ ├┤   │  ├─┤├─┤├┬┘├─┤│   │ ├┤ ├┬┘ ##############################################################
@@ -49,20 +54,6 @@ mod:hook(CLASS.MissionIntroView, "init", function(func, self, settings, context,
 	-- Original function
 	func(self, settings, context, ...)
 end)
-
--- mod:hook(CLASS.World, "update_out_of_bounds_checker", function(func, world, hard_cap_out_of_bounds_units, soft_cap_out_of_bounds_units, ...)
---     local num_hard_cap_units, num_soft_cap_units = func(world, hard_cap_out_of_bounds_units, soft_cap_out_of_bounds_units, ...)
-
---     for _, unit in pairs(hard_cap_out_of_bounds_units) do
---         if unit_has_data(unit, "visible_equipment") or unit_has_data(unit, "attachment_name") then
---             mod:echo("unit removed")
---             hard_cap_out_of_bounds_units[_] = nil
---             num_hard_cap_units = math.max(num_hard_cap_units - 1, 0)
---         end
---     end
-
---     return num_hard_cap_units, num_soft_cap_units
--- end)
 
 mod:hook(CLASS.OutOfBoundsManager, "pre_update", function(func, self, shared_state, ...)
 	local hard_cap_out_of_bounds_units = shared_state.hard_cap_out_of_bounds_units

@@ -12,9 +12,11 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
-local WEAPON_EXTRA_HOLD = "weapon_extra_hold"
-local WEAPON_EXTRA_PRESSED = "weapon_extra_pressed"
+--#region Data
+    local REFERENCE = "weapon_customization"
+    local WEAPON_EXTRA_HOLD = "weapon_extra_hold"
+    local WEAPON_EXTRA_PRESSED = "weapon_extra_pressed"
+--#endregion
 
 -- ##### ┬┌┐┌┌─┐┬ ┬┌┬┐ ################################################################################################
 -- ##### ││││├─┘│ │ │  ################################################################################################

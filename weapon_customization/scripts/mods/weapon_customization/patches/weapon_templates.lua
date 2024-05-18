@@ -4,8 +4,10 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local WeaponTemplates = mod:original_require("scripts/settings/equipment/weapon_templates/weapon_templates")
-local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
+--#region Require
+    local WeaponTemplates = mod:original_require("scripts/settings/equipment/weapon_templates/weapon_templates")
+    local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -21,9 +23,11 @@ local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_tem
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
-local WEAPON_MELEE = "WEAPON_MELEE"
-local WEAPON_RANGED = "WEAPON_RANGED"
+--#region Data
+    local REFERENCE = "weapon_customization"
+    local WEAPON_MELEE = "WEAPON_MELEE"
+    local WEAPON_RANGED = "WEAPON_RANGED"
+--#endregion
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ################################################
 -- ##### │││├┤ ├─┤├─┘│ ││││   │ ├┤ │││├─┘│  ├─┤ │ ├┤   ├─┘├─┤ │ │  ├─┤ ################################################
@@ -77,49 +81,86 @@ end)
         --     end
         -- end
     -- end
+
+    -- mod.template_add_torch = function(self, orig_weapon_template)
+    --     if self.previewed_weapon and orig_weapon_template then
+    --         local gear_id = self:get_gear_id(self.previewed_weapon.item)
+    --         local templates = self:persistent_table(REFERENCE).weapon_templates
+
+    --         if not templates[gear_id] then
+    --             templates[gear_id] = table_clone(orig_weapon_template)
+    --         end
+    --         local weapon_template = templates[gear_id]
+                
+    --         if weapon_template.displayed_weapon_stats_table and weapon_template.displayed_weapon_stats_table.damage[3] then
+    --             weapon_template.displayed_weapon_stats_table.damage[3] = nil
+    --         end
+
+    --         if self.previewed_weapon.laser_pointer then
+    --             weapon_template.displayed_attacks.special = {
+    --                 type = "vent",
+    --                 display_name = "loc_weapon_special_laser_pointer",
+    --                 desc = "loc_stats_special_action_laser_pointer_desc",
+    --             }
+    --         elseif self.previewed_weapon.flashlight then
+    --             weapon_template.displayed_attacks.special = {
+    --                 desc = "loc_stats_special_action_flashlight_desc",
+    --                 display_name = "loc_weapon_special_flashlight",
+    --                 type = "flashlight",
+    --             }
+    --         end
+
+    --         return weapon_template
+    --     end
+    -- 	return orig_weapon_template
+    -- end
 --#endregion
 
-mod.template_add_torch = function(self, orig_weapon_template)
-    if self.previewed_weapon and orig_weapon_template then
-        local gear_id = self:get_gear_id(self.previewed_weapon.item)
-        local templates = self:persistent_table(REFERENCE).weapon_templates
-
-        if not templates[gear_id] then
-            templates[gear_id] = table_clone(orig_weapon_template)
-        end
-        local weapon_template = templates[gear_id]
-            
-        if weapon_template.displayed_weapon_stats_table and weapon_template.displayed_weapon_stats_table.damage[3] then
-            weapon_template.displayed_weapon_stats_table.damage[3] = nil
-        end
-
-        if self.previewed_weapon.laser_pointer then
-            weapon_template.displayed_attacks.special = {
-                type = "vent",
-                display_name = "loc_weapon_special_laser_pointer",
-                desc = "loc_stats_special_action_laser_pointer_desc",
-            }
-        elseif self.previewed_weapon.flashlight then
-            weapon_template.displayed_attacks.special = {
-                desc = "loc_stats_special_action_flashlight_desc",
-                display_name = "loc_weapon_special_flashlight",
-                type = "flashlight",
-            }
-        end
-
-        return weapon_template
-    end
-	return orig_weapon_template
-end
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
 
 mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
 
+    instance.template_add_torch = function(self, orig_weapon_template)
+        if mod.previewed_weapon and orig_weapon_template then
+            local gear_id = mod:get_gear_id(mod.previewed_weapon.item)
+            local templates = mod:persistent_table(REFERENCE).weapon_templates
+    
+            if not templates[gear_id] then
+                templates[gear_id] = table_clone(orig_weapon_template)
+            end
+            local weapon_template = templates[gear_id]
+                
+            if weapon_template.displayed_weapon_stats_table and weapon_template.displayed_weapon_stats_table.damage[3] then
+                weapon_template.displayed_weapon_stats_table.damage[3] = nil
+            end
+    
+            if mod.previewed_weapon.laser_pointer then
+                weapon_template.displayed_attacks.special = {
+                    type = "vent",
+                    display_name = "loc_weapon_special_laser_pointer",
+                    desc = "loc_stats_special_action_laser_pointer_desc",
+                }
+            elseif mod.previewed_weapon.flashlight then
+                weapon_template.displayed_attacks.special = {
+                    desc = "loc_stats_special_action_flashlight_desc",
+                    display_name = "loc_weapon_special_flashlight",
+                    type = "flashlight",
+                }
+            end
+    
+            return weapon_template
+        end
+        return orig_weapon_template
+    end
+
     mod:hook(instance, "current_weapon_template", function(func, weapon_action_component, ...)
-        return mod:template_add_torch(func(weapon_action_component, ...))
+        return instance:template_add_torch(func(weapon_action_component, ...))
     end)
 
     mod:hook(instance, "weapon_template_from_item", function(func, weapon_item, ...)
-        return mod:template_add_torch(func(weapon_item, ...))
+        return instance:template_add_torch(func(weapon_item, ...))
     end)
 
 end)

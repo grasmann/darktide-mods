@@ -139,7 +139,7 @@ return table.combine(
                     -- lens = {offset = true, position = vector3_box(0, .033, .002), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 1}},
                     -- lens_2 = {offset = true, position = vector3_box(0, .085, .002), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, -.033, -.033), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75}},
+                    scope_offset = {position = vector3_box(0, -.033, -.033), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75, lense_transparency = true}},
                 -- Martyr's Gaze
                 {dependencies = {"scope_01"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, 0, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1)},
@@ -148,7 +148,7 @@ return table.combine(
                     -- lens = {offset = true, position = vector3_box(0, .105, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .275, 1), data = {lens = 1}},
                     -- lens_2 = {offset = true, position = vector3_box(0, .065, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(1, .3, 1), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, .04, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                    scope_offset = {position = vector3_box(0, -.025, -.033), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65}},
+                    scope_offset = {position = vector3_box(0, -.025, -.033), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65, lense_transparency = true}},
                 -- Exterminatus Lens
                 {dependencies = {"scope_02"}, -- Lasgun sight
                     sight = {offset = true, position = vector3_box(0, -.08, .152), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1)},
@@ -157,7 +157,7 @@ return table.combine(
                     -- lens = {offset = true, position = vector3_box(0, .075, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .15, .9), data = {lens = 1}},
                     -- lens_2 = {offset = true, position = vector3_box(0, .022, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .1, .9), data = {lens = 2}},
                     sight_2 = {offset = true, position = vector3_box(0, .09, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
-                    scope_offset = {position = vector3_box(0, -.04, -.033), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65}},
+                    scope_offset = {position = vector3_box(0, -.04, -.033), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65, lense_transparency = true}},
                 
                 {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

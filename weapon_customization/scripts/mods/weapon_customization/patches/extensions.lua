@@ -20,30 +20,28 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┤ ┌┴┬┘ │ ├┤ │││ ││  │  │  ├─┤└─┐└─┐├┤ └─┐ ###################################################################
 -- ##### └─┘┴ └─ ┴ └─┘┘└┘─┴┘  └─┘┴─┘┴ ┴└─┘└─┘└─┘└─┘ ###################################################################
 
-string.trim = function(s)
-	return (s:gsub("^%s*(.-)%s*$", "%1"))
-end
-string.cap = function(str)
-	return (str:gsub("^%l", string_upper))
-end
+--#region String
+	string.trim = function(s)
+		return (s:gsub("^%s*(.-)%s*$", "%1"))
+	end
+	string.cap = function(str)
+		return (str:gsub("^%l", string_upper))
+	end
+--#endregion
 
-Quaternion.to_vector = function(quaternion)
-	local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
-	return vector3(x, y, z)
-end
-Quaternion.from_vector = function(vector)
-	return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
-end
+--#region Quaternion
+	Quaternion.to_vector = function(quaternion)
+		local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
+		return vector3(x, y, z)
+	end
+	Quaternion.from_vector = function(vector)
+		return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
+	end
+--#endregion
 
 -- ##### ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌┬┐┌┬┐┌─┐ ###############################################################################
 -- ##### ├┤ ┌┴┬┘ │ ├┤ │││ ││   │││││├┤  ###############################################################################
 -- ##### └─┘┴ └─ ┴ └─┘┘└┘─┴┘  ─┴┘┴ ┴└   ###############################################################################
-
--- mod.localize_or_global = function(self, string_id)
--- 	local localized_string = mod:localize(string_id)
--- 	if localized_string == "<"..tostring(string_id)..">" then localized_string = Localize(string_id) end
--- 	return localized_string
--- end
 
 function DMFMod:localize_or_global(string_id)
 	local localized_string = mod:localize(string_id)

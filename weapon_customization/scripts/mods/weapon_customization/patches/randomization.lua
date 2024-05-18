@@ -4,7 +4,9 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local MasterItems = mod:original_require("scripts/backend/master_items")
+--#region Require
+    local MasterItems = mod:original_require("scripts/backend/master_items")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -48,14 +50,46 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
-local REWARD_ITEM = "reward_item"
-local CARD_TYPES = table_enum("xp", "levelUp", "salary", "weaponDrop", "weapon_unlock", "talents_unlock")
+--#region Data
+    local REFERENCE = "weapon_customization"
+    local REWARD_ITEM = "reward_item"
+    local CARD_TYPES = table_enum("xp", "levelUp", "salary", "weaponDrop", "weapon_unlock", "talents_unlock")
+--#endregion
+
 mod.gear_id_to_offer_id = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+mod.randomize_item = function(self, item_instance, table, id)
+    local master_item = item_instance.__master_item or item_instance
+    local random_attachments = self:randomize_weapon(master_item)
+    if table and id then table[id] = random_attachments end
+    -- Auto equip
+    for attachment_slot, value in pairs(random_attachments) do
+        if not self.add_custom_attachments[attachment_slot] then
+            self:resolve_auto_equips(item_instance, value)
+        end
+    end
+    for attachment_slot, value in pairs(random_attachments) do
+        if self.add_custom_attachments[attachment_slot] then
+            self:resolve_auto_equips(item_instance, value)
+        end
+    end
+    -- Special resolve
+    for attachment_slot, value in pairs(random_attachments) do
+        if self.add_custom_attachments[attachment_slot] then
+            self:resolve_special_changes(item_instance, value)
+        end
+    end
+    for attachment_slot, value in pairs(random_attachments) do
+        if not self.add_custom_attachments[attachment_slot] then
+            self:resolve_special_changes(item_instance, value)
+        end
+    end
+    return random_attachments
+end
 
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
@@ -87,34 +121,6 @@ mod:hook(CLASS.StoreService, "get_credits_store", function(func, self, ignore_ev
     return promise
 end)
 
-mod.randomize_item = function(self, item_instance, table, id)
-    local master_item = item_instance.__master_item or item_instance
-    local random_attachments = self:randomize_weapon(master_item)
-    if table and id then table[id] = random_attachments end
-    -- Auto equip
-    for attachment_slot, value in pairs(random_attachments) do
-        if not self.add_custom_attachments[attachment_slot] then
-            self:resolve_auto_equips(item_instance, value)
-        end
-    end
-    for attachment_slot, value in pairs(random_attachments) do
-        if self.add_custom_attachments[attachment_slot] then
-            self:resolve_auto_equips(item_instance, value)
-        end
-    end
-    -- Special resolve
-    for attachment_slot, value in pairs(random_attachments) do
-        if self.add_custom_attachments[attachment_slot] then
-            self:resolve_special_changes(item_instance, value)
-        end
-    end
-    for attachment_slot, value in pairs(random_attachments) do
-        if not self.add_custom_attachments[attachment_slot] then
-            self:resolve_special_changes(item_instance, value)
-        end
-    end
-end
-
 mod:hook(CLASS.StoreService, "purchase_item", function(func, self, offer, ...)
     mod.offer_id = offer.offerId
     return func(self, offer, ...)
@@ -129,9 +135,11 @@ mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gea
     end
     if attachments then
         mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = nil
-        for attachment_slot, attachment in pairs(attachments) do
-            mod:set_gear_setting(gear_id, attachment_slot, attachment)
-        end
+        -- for attachment_slot, attachment in pairs(attachments) do
+        --     -- mod:set_gear_setting(gear_id, attachment_slot, attachment)
+        --     mod.gear_settings:set(gear_id, attachment_slot, attachment)
+        -- end
+        mod.gear_settings:push_attachments(gear_id, attachments)
     end
     mod.offer_id = nil
     func(self, gear_id, gear, ...)
@@ -140,13 +148,17 @@ end)
 mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...)
     local item, item_group, rarity, item_level = func(self, card_reward, ...)
     if item and card_reward.gear_id and mod:get("mod_option_randomization_reward") then
-        local attachments = {}
+        -- local attachments = {}
         item.gear_id = card_reward.gear_id
-        mod:randomize_item(item, attachments, card_reward.gear_id)
+        local attachments = mod:randomize_item(item, nil, card_reward.gear_id)
         mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = nil
-        for attachment_slot, attachment in pairs(attachments[card_reward.gear_id]) do
-            mod:set_gear_setting(card_reward.gear_id, attachment_slot, attachment)
-        end
+        -- for attachment_slot, attachment in pairs(attachments[card_reward.gear_id]) do
+        --     -- mod:set_gear_setting(card_reward.gear_id, attachment_slot, attachment)
+        --     if mod.gear_settings then
+        --         mod.gear_settings:set(card_reward.gear_id, attachment_slot, attachment)
+        --     end
+        -- end
+        mod.gear_settings:push_attachments(card_reward.gear_id, attachments)
         -- mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = attachments
     end
     return item, item_group, rarity, item_level

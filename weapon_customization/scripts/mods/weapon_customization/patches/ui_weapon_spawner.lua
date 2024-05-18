@@ -380,94 +380,94 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 		end
 	end
 
-	-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #########################################################################
-	-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #########################################################################
-	-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #########################################################################
+end)
 
-	mod:hook(instance, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
 
-		-- Original function
-		func(self, reference_name, world, camera, unit_spawner, ...)
+mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, ...)
 
-		-- Custom
-		self:_init_custom()
+	-- Original function
+	func(self, reference_name, world, camera, unit_spawner, ...)
 
-	end)
+	-- Custom
+	self:_init_custom()
 
-	mod:hook(instance, "destroy", function(func, self, ...)
-		
-		-- Build animation
-		mod.build_animation:set(false)
+end)
 
-		-- Original function
-		func(self, ...)
-
-	end)
-
-	mod:hook(instance, "_mouse_rotation_input", function(func, self, input_service, dt, ...)
-
-		-- Check if rotation is disabled
-		if self:is_rotation_disabled() then
-			-- Execute original function without input_service
-			return func(self, nil, dt, ...)
-		end
-
-		-- Original function
-		return func(self, input_service, dt, ...)
-
-	end)
-
-	mod:hook(instance, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
-
-		-- Original function
-		func(self, item_unit_3p, ...)
+mod:hook(CLASS.UIWeaponSpawner, "destroy", function(func, self, ...)
 	
-		-- Stream fix
-		self:fix_streaming_without_mesh_streamer_2()
-	
-	end)
+	-- Build animation
+	mod.build_animation:set(false)
 
-	mod:hook(instance, "_despawn_weapon", function(func, self, ...)
+	-- Original function
+	func(self, ...)
 
-		-- Unlink units
-		self:unlink_units()
-	
-		-- Remove unit manipulation
-		self:unit_manipulation_remove_all()
-	
-		-- Original function
-		func(self, ...)
-		
-	end)
+end)
 
-	mod:hook(instance, "update", function(func, self, dt, t, input_service, ...)
+mod:hook(CLASS.UIWeaponSpawner, "_mouse_rotation_input", function(func, self, input_service, dt, ...)
 
-		-- Fix streaming issues when mesh streamer is deactivated
-		self:fix_streaming_without_mesh_streamer()
-	
-		-- Original function
-		func(self, dt, t, input_service, ...)
-	
-		if self._reference_name ~= "WeaponIconUI" and mod.cosmetics_view and not self.demo then
-	
-			-- Update carousel
-			self:update_carousel(dt, t)
-	
-			-- Update animations
-			self:update_animation(dt, t)
-	
-		end
-	
-	end)
+	-- Check if rotation is disabled
+	if self:is_rotation_disabled() then
+		-- Execute original function without input_service
+		return func(self, nil, dt, ...)
+	end
 
-	mod:hook(instance, "_spawn_weapon", function(func, self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
+	-- Original function
+	return func(self, input_service, dt, ...)
 
-		-- Original function
-		func(self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
+end)
+
+mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, ...)
+
+	-- Original function
+	func(self, item_unit_3p, ...)
+
+	-- Stream fix
+	self:fix_streaming_without_mesh_streamer_2()
+
+end)
+
+mod:hook(CLASS.UIWeaponSpawner, "_despawn_weapon", function(func, self, ...)
+
+	-- Unlink units
+	self:unlink_units()
+
+	-- Remove unit manipulation
+	self:unit_manipulation_remove_all()
+
+	-- Original function
+	func(self, ...)
 	
-		-- Spawn custom weapon
-		self:spawn_weapon_custom()
-	
-	end)
+end)
+
+mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
+
+	-- Fix streaming issues when mesh streamer is deactivated
+	self:fix_streaming_without_mesh_streamer()
+
+	-- Original function
+	func(self, dt, t, input_service, ...)
+
+	if self._reference_name ~= "WeaponIconUI" and mod.cosmetics_view and not self.demo then
+
+		-- Update carousel
+		self:update_carousel(dt, t)
+
+		-- Update animations
+		self:update_animation(dt, t)
+
+	end
+
+end)
+
+mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
+
+	-- Original function
+	func(self, item, link_unit_name, loader, position, rotation, scale, force_highest_mip, ...)
+
+	-- Spawn custom weapon
+	self:spawn_weapon_custom()
 
 end)

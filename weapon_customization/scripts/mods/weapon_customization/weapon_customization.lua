@@ -1,5 +1,7 @@
 local mod = get_mod("weapon_customization")
 
+mod.version = "1.21"
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -21,10 +23,14 @@ local mod = get_mod("weapon_customization")
 	local REFERENCE = "weapon_customization"
 	local OPTION_RANDOMIZE_PLAYERS = "mod_option_randomization_players"
 	local OPTION_RANDOMIZE_STORE = "mod_option_randomization_store"
+
 	-- Persistent values
 	mod:persistent_table(REFERENCE, {
+		console_init = false,
 		-- Flashlight
 		flashlight_on = false,
+		-- Gear settings
+		loaded_gear_settings = {},
 		-- Items
 		item_definitions = nil,
 		composite_items = {},
@@ -200,7 +206,7 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/weapons")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/performance")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/attachments")
-	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/save_lua")
+	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/save_lua")
 
 	-- Patches
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/hud")
@@ -250,6 +256,9 @@ end
 	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_bolt_pistol")
 	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_daemon_host")
 --#endregion
+
+-- Console init message
+mod:console_init()
 
 -- Packages
 mod:load_needed_packages()

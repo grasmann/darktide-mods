@@ -263,18 +263,23 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		local weapon_item = self:weapon_item()
 		local weapon_unit = self:weapon_unit()
 		if weapon_item and weapon_unit and unit_alive(weapon_unit) then
-			local data = {
-				type = "visible_equipment",
-				character_option = self:character_option(),
-				weapon_option = self:weapon_option(),
-				armour_option = self:armour_option(),
-				backpack_option = self:backpack_option(),
-				profile = self:player_profile(),
-				item = weapon_item,
-				unit = weapon_unit,
-				node = 1,
-			}
-			mod:save_weapon_customization_entry(data)
+			-- local data = {
+			-- 	character_option = self:character_option(),
+			-- 	weapon_option = self:weapon_option(),
+			-- 	armour_option = self:armour_option(),
+			-- 	backpack_option = self:backpack_option(),
+			-- 	profile = self:player_profile(),
+			-- 	item = weapon_item,
+			-- 	unit = weapon_unit,
+			-- 	node = 1,
+			-- }
+			if mod.gear_settings then
+				mod.gear_settings:save(weapon_item, weapon_unit)
+			end
+			-- if self.save_lua then
+			-- 	self.save_lua:save_entry(data)
+			-- end
+			-- mod:save_weapon_customization_entry(data)
 		end
 	end
 
@@ -440,71 +445,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		self._widgets_by_name.visible_equipment_reset_button.visible = is_tab
 	end
 
-	-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #########################################################################
-	-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #########################################################################
-	-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #########################################################################
-
-	mod:hook(instance, "on_enter", function(func, self, ...)
-
-		-- Original function
-		func(self, ...)
-
-		-- Setup forward gui for rendering
-		self:_setup_forward_gui()
-
-		-- Create custom widgets
-		self:create_custom_widgets()
-
-		-- Modding tools
-		self:add_unit_manipulation()
-
-	end)
-
-	mod:hook(instance, "on_exit", function(func, self, ...)
-
-		-- Modding tools
-		self:remove_unit_manipulation_all()
-
-		-- Destroy forward gui
-		self:_destroy_forward_gui()
-
-		-- Destroy background view
-		self.inventory_background_view = nil
-
-		-- Original function
-		func(self, ...)
-
-	end)
-
-	mod:hook(instance, "_switch_active_layout", function(func, self, tab_context, ...)
-
-		-- Original function
-		func(self, tab_context, ...)
-
-		-- Check tab
-		if self:is_tab() then -- Custom tab
-
-			-- Update name text
-			self:update_options_text()
-
-			-- Rotation
-			self:set_rotation()
-
-		else -- Default tab
-			
-			-- Modding Tools
-			self:remove_unit_manipulation_all()
-			
-			-- Rotation
-			self:reset_rotation()
-
-		end
-
-		-- Update custom widget visibility
-		self:update_custom_widget_visibility()
-
-	end)
-
 end)
 
 -- ##### ┬  ┬┬┌─┐┬ ┬  ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ #####################################################################
@@ -568,5 +508,88 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", f
 			}
 		}
 	}, "name_text_pivot", nil, size)
+
+end)
+
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+
+mod:hook(CLASS.InventoryView, "init", function(func, self, settings, context, ...)
+
+	-- Original function
+	func(self, settings, context, ...)
+
+end)
+
+mod:hook(CLASS.InventoryView, "on_enter", function(func, self, ...)
+
+	-- Original function
+	func(self, ...)
+
+	-- Setup forward gui for rendering
+	self:_setup_forward_gui()
+
+	-- Create custom widgets
+	self:create_custom_widgets()
+
+	-- Modding tools
+	self:add_unit_manipulation()
+
+end)
+
+mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
+
+	-- Modding tools
+	self:remove_unit_manipulation_all()
+
+	-- Destroy forward gui
+	self:_destroy_forward_gui()
+
+	-- Destroy background view
+	self.inventory_background_view = nil
+
+	-- Original function
+	func(self, ...)
+
+end)
+
+mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_context, ...)
+
+	-- Original function
+	func(self, tab_context, ...)
+
+	-- Check tab
+	if self:is_tab() then -- Custom tab
+
+		-- Update name text
+		self:update_options_text()
+
+		-- Rotation
+		self:set_rotation()
+
+	else -- Default tab
+		
+		-- Modding Tools
+		self:remove_unit_manipulation_all()
+		
+		-- Rotation
+		self:reset_rotation()
+
+	end
+
+	-- Update custom widget visibility
+	self:update_custom_widget_visibility()
+
+end)
+
+mod:hook(CLASS.InventoryView, "cb_on_grid_entry_pressed", function(func, self, widget, element, ...)
+
+	-- Original function
+	func(self, widget, element, ...)
+
+	if not self._is_own_player or self._is_readonly then
+
+	end
 
 end)

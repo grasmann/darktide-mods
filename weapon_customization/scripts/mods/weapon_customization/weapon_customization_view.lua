@@ -363,7 +363,7 @@ end
 
 -- Change light positions
 mod.set_light_positions = function(self)
-	if self.preview_lights then
+	if self.preview_lights and self.cosmetics_view then
 		for _, unit_data in pairs(self.preview_lights) do
 			-- Get default position
 			local default_position = vector3_unbox(unit_data.position)
@@ -1647,7 +1647,7 @@ mod.generate_dropdown = function(self, scenegraph, attachment_slot, item)
 					local callback = callback(mod, "create_attachment_array", self.cosmetics_view._selected_item, attachment_slot)
 					-- mod.build_animation.animations = {}
 					mod.build_animation:clear()
-					-- self.weapon_part_animation_update = true
+					self.weapon_part_animation_update = true
 					-- self:detach_attachment(self.cosmetics_view._presentation_item, attachment_slot, nil, attachment_name, nil, nil, nil, "detach_only", callback)
 					mod.build_animation:animate(self.cosmetics_view._presentation_item, attachment_slot, nil, attachment_name, nil, nil, nil, "detach_only", callback)
 				end

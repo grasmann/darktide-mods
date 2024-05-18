@@ -46,6 +46,10 @@ local mod = get_mod("weapon_customization")
 	local SLOT_PRIMARY = "slot_primary"
 --#endregion
 
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
+
 mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 	
 	instance.get_inventory_view = function(self)
@@ -89,7 +93,7 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 		end
 	end
 
-	instance.update_extensions = function(self, dt, t)
+	instance.update_custom_extensions = function(self, dt, t)
 		if self._character_spawn_data then
 			mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "load_slots")
 			mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "update", dt, t)
@@ -109,80 +113,90 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 		end
 	end
 
-	-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #########################################################################
-	-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #########################################################################
-	-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #########################################################################
-
-	mod:hook(instance, "update", function(func, self, dt, t, input_service, ...)
-
-		-- Original function
-		func(self, dt, t, input_service, ...)
-	
-		-- Visible equipment
-		self:update_extensions(dt, t)
-	
-	end)
-	
-	mod:hook(instance, "ignore_slot", function(func, self, slot_id, ...)
-	
-		-- Skip primary and secondary slots
-		if slot_id ~= SLOT_PRIMARY and slot_id ~= SLOT_SECONDARY then
-			-- Original function
-			func(self, slot_id, ...)
+	instance.wield_custom = function(self, slot_id)
+		if self._character_spawn_data then
+			local slot = self._character_spawn_data.slots[slot_id]
+			mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "on_wield_slot", slot)
 		end
-	
-	end)
-	
-	mod:hook(instance, "cb_on_unit_3p_streaming_complete", function(func, self, unit_3p, ...)
-	
-		-- Original function
-		func(self, unit_3p, ...)
-	
-		-- Visible equipment
-		self:update_visible_equipment()
-	
-	end)
-	
-	mod:hook(instance, "wield_slot", function(func, self, slot_id, ...)
-	
+	end
+
+end)
+
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+
+mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_service, ...)
+
+	-- Original function
+	func(self, dt, t, input_service, ...)
+
+	-- Visible equipment
+	self:update_custom_extensions(dt, t)
+
+end)
+
+mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ...)
+
+	-- Skip primary and secondary slots
+	if slot_id ~= SLOT_PRIMARY and slot_id ~= SLOT_SECONDARY then
 		-- Original function
 		func(self, slot_id, ...)
-	
-		-- Flashlight
-		self:preview_flashlight(slot_id)
-	
-	end)
-	
-	mod:hook(instance, "destroy", function(func, self, ...)
-	
-		-- Extensions
-		self:remove_custom_extensions()
-	
-		-- Original function
-		func(self, ...)
-	
-	end)
-	
-	mod:hook(instance, "_get_raycast_hit", function(func, self, from, to, physics_world, collision_filter, ...)
-		local character_spawn_data = self._character_spawn_data
-		local unit_3p = character_spawn_data and character_spawn_data.unit_3p
-	
-		local result, other = physics_world_raycast(physics_world, from, to, 30, "all", "collision_filter", collision_filter)
-	
-		if not result then
-			return
-		end
-	
-		local INDEX_ACTOR = 4
-		local num_hits = #result
-		for i = 1, num_hits do
-			local hit = result[i]
-			local hit_actor = hit[INDEX_ACTOR]
-			local hit_unit = actor_unit(hit_actor)
-			if hit_unit == unit_3p then
-				return hit_unit, hit_actor
-			end
-		end
-	end)
+	end
 
+end)
+
+mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, unit_3p, ...)
+
+	-- Original function
+	func(self, unit_3p, ...)
+
+	-- Visible equipment
+	self:update_visible_equipment()
+
+end)
+
+mod:hook(CLASS.UIProfileSpawner, "wield_slot", function(func, self, slot_id, ...)
+
+	-- Original function
+	func(self, slot_id, ...)
+
+	-- Wield custom extensions
+	self:wield_custom(slot_id)
+
+	-- Flashlight
+	self:preview_flashlight(slot_id)
+
+end)
+
+mod:hook(CLASS.UIProfileSpawner, "destroy", function(func, self, ...)
+
+	-- Extensions
+	self:remove_custom_extensions()
+
+	-- Original function
+	func(self, ...)
+
+end)
+
+mod:hook(CLASS.UIProfileSpawner, "_get_raycast_hit", function(func, self, from, to, physics_world, collision_filter, ...)
+	local character_spawn_data = self._character_spawn_data
+	local unit_3p = character_spawn_data and character_spawn_data.unit_3p
+
+	local result, other = physics_world_raycast(physics_world, from, to, 30, "all", "collision_filter", collision_filter)
+
+	if not result then
+		return
+	end
+
+	local INDEX_ACTOR = 4
+	local num_hits = #result
+	for i = 1, num_hits do
+		local hit = result[i]
+		local hit_actor = hit[INDEX_ACTOR]
+		local hit_unit = actor_unit(hit_actor)
+		if hit_unit == unit_3p then
+			return hit_unit, hit_actor
+		end
+	end
 end)

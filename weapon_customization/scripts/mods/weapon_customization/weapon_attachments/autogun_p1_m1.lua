@@ -213,7 +213,7 @@ return table_combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, -.075, -.01), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75}},
+                        scope_offset = {position = vector3_box(0, -.075, -.01), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75, lense_transparency = true}},
                     -- Martyr's Gaze
                     {dependencies = {"scope_01"},
                         sight = {parent = "receiver", position = vector3_box(0, -.09, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1),
@@ -224,7 +224,7 @@ return table_combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, -.075, -.0175), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65}},
+                        scope_offset = {position = vector3_box(0, -.075, -.0175), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65, lense_transparency = true}},
                     -- Exterminatus Lens
                     {dependencies = {"scope_02"},
                         sight = {parent = "receiver", position = vector3_box(0, -.09, .15), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1),
@@ -235,7 +235,7 @@ return table_combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, -.075, -.015), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65}},
+                        scope_offset = {position = vector3_box(0, -.075, -.015), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65, lense_transparency = true}},
 
                     {sight_2 = {parent = "receiver", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                     {lens = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

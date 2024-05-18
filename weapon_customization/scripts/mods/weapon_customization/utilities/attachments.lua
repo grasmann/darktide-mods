@@ -4,9 +4,11 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local MasterItems = mod:original_require("scripts/backend/master_items")
-local WeaponCustomizationLocalization = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_localization")
-local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
+--#region Require
+	local MasterItems = mod:original_require("scripts/backend/master_items")
+	local WeaponCustomizationLocalization = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_localization")
+	local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -50,13 +52,15 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
-local SKIP = "++"
-local WEAPON_SKIN = "WEAPON_SKIN"
-local LOCALIZATION_NOT_FOUND = "<mod_attachment_remove>"
-local LANGUAGE_ID = Application.user_setting("language_id")
-local MK = mod:localize("mod_attachment_mk")
-local KASR = mod:localize("mod_attachment_kasr")
+--#region Data
+	local REFERENCE = "weapon_customization"
+	local SKIP = "++"
+	local WEAPON_SKIN = "WEAPON_SKIN"
+	local LOCALIZATION_NOT_FOUND = "<mod_attachment_remove>"
+	local LANGUAGE_ID = Application.user_setting("language_id")
+	local MK = mod:localize("mod_attachment_mk")
+	local KASR = mod:localize("mod_attachment_kasr")
+--#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################

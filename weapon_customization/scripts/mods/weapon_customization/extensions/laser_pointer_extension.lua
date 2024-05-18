@@ -166,9 +166,8 @@ end
 LaserPointerExtension.sway_multiplier = function(self)
     if mod:execute_extension(self.player_unit, "sight_system", "is_aiming") then
         return SWAY_MULTIPLIER_AIMING
-    else
-        return SWAY_MULTIPLIER
     end
+    return SWAY_MULTIPLIER
 end
 
 LaserPointerExtension.is_active = function(self)
@@ -247,10 +246,12 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
             local laser_rotation = unit_world_rotation(laser_pointer_unit, 2)
             local laser_forward = quaternion_forward(laser_rotation)
 
-            -- Camera direction
+            -- Sway
             local sway = mod:execute_extension(self.player_unit, "sway_system", "offset_rotation")
             sway = (sway and vector3_unbox(sway) or vector3_zero()) * self:sway_multiplier()
             local sway_rotation = quaternion_from_vector(sway)
+
+            -- Camera direction
             local camera_position = laser_position
             -- local camera_rotation = laser_rotation
             local camera_rotation = quaternion_multiply(laser_rotation, sway_rotation)
@@ -267,6 +268,7 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
                     local movement_state_component = self.unit_data:read_component("movement_state")
                     shoot_rotation = Recoil.apply_weapon_recoil_rotation(self.weapon_extension:recoil_template(), self.unit_data:read_component("recoil"), movement_state_component, shoot_rotation)
                     shoot_rotation = Sway.apply_sway_rotation(self.weapon_extension:sway_template(), self.unit_data:read_component("sway"), movement_state_component, shoot_rotation)
+                    shoot_rotation = quaternion_multiply(shoot_rotation, sway_rotation)
                 end
                 camera_forward = quaternion_forward(shoot_rotation)
                 camera_position = unit_world_position(self.first_person_unit, 1)
@@ -364,9 +366,9 @@ LaserPointerExtension.update_laser_particle = function(self, dt, t)
             end
             world_set_particles_variable(self.world, laser_effect_id, variable_index, vector3(scale, distance, distance))
             -- Weapon FOV compatibility
-            local first_person = not self:get_first_person()
+            -- local first_person = not self:get_first_person()
             -- if self:is_weapon_fov_installed() and first_person then
-            world_set_particles_use_custom_fov(self.world, laser_effect_id, false)
+            -- world_set_particles_use_custom_fov(self.world, laser_effect_id, false)
             -- end
             -- Update end position
             for index, data in pairs(aligned_vfx.buffer) do

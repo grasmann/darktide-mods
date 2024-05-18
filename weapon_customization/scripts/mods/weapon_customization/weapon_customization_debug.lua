@@ -158,9 +158,36 @@ end
 -- #####  ││├┤ ├┴┐│ ││ ┬  │ │ ├┤ │││  ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐ ###############################################
 -- ##### ─┴┘└─┘└─┘└─┘└─┘  ┴ ┴ └─┘┴ ┴  ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘ ###############################################
 
+mod.generate_console_title = function(self, text)
+	local title = text or " Weapon Customization "..tostring(mod.version).." "
+	local title_length = string.len(title)
+	local fill = 100 - title_length
+	for i = 1, fill / 2, 1 do
+		title = "#"..title
+	end
+	local title_length = string.len(title)
+	for i = title_length, 99, 1 do
+		title = title.."#"
+	end
+	return title
+end
+
+mod.console_init = function(self)
+	if not mod:persistent_table(REFERENCE).console_init then
+		local title = self:generate_console_title(" Weapon Customization "..tostring(mod.version).." initialized! ")
+
+		self:info("####################################################################################################")
+		self:info(title)
+		self:info("####################################################################################################")
+		
+		mod:persistent_table(REFERENCE).console_init = true
+	end
+end
+
 mod.console_output = function(self)
+	local title = self:generate_console_title()
 	self:info("####################################################################################################")
-	self:info("###################################### Weapon Customization ########################################")
+	self:info(title)
 	self:info("####################################################################################################")
 	self:info("Highest Processing Times")
 	local processing = {}
@@ -182,8 +209,10 @@ mod.console_output = function(self)
 			self:info(tostring(name).." "..tostring(count).." times")
 		end
 	end
+	
+
 	self:info("####################################################################################################")
-	self:info("###################################### Weapon Customization ########################################")
+	self:info(title)
 	self:info("####################################################################################################")
 end
 

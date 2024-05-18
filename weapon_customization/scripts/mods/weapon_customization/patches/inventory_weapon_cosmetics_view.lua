@@ -76,6 +76,8 @@ local mod = get_mod("weapon_customization")
     local dropdown_height = 32
     local label_height = 30
 	local LINE_Z = 100
+	local ignore_slots = {"slot_trinket_1", "slot_trinket_2", "magazine2", "1"}
+	local REFERENCE = "weapon_customization"
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################
@@ -405,6 +407,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- mod:dtf(instance.widget_definitions, "instance.widget_definitions", 10)
 
+
 end)
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
@@ -499,17 +502,19 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			local world = ui_weapon_spawner._world
 			local gui = self._ui_forward_renderer.gui
 			self:get_modding_tools()
-			if self.modding_tools and self._modding_tool_toggled_on then
-				self.modding_tools:unit_manipulation_add(weapon_spawn_data.item_unit_3p, camera, world, gui, self._item_name)
-			elseif self.modding_tools then
-				self.modding_tools:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
-			end
+			-- if self.modding_tools and self._modding_tool_toggled_on then
+			-- 	self.modding_tools:unit_manipulation_add(weapon_spawn_data.item_unit_3p, camera, world, gui, self._item_name)
+			-- elseif self.modding_tools then
+			-- 	self.modding_tools:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
+			-- end
 			for _, unit in pairs(weapon_spawn_data.attachment_units_3p) do
 				local name = Unit.get_data(unit, "attachment_slot")
-				if self.modding_tools and name and self._modding_tool_toggled_on then
-					self.modding_tools:unit_manipulation_add(unit, camera, world, gui, name)
-				elseif self.modding_tools then
-					self.modding_tools:unit_manipulation_remove(unit)
+				if not table.contains(ignore_slots, name) then
+					if self.modding_tools and name and self._modding_tool_toggled_on then
+						self.modding_tools:unit_manipulation_add(unit, camera, world, gui, name)
+					elseif self.modding_tools then
+						self.modding_tools:unit_manipulation_remove(unit)
+					end
 				end
 			end
 			-- if self._modding_tool_toggled_on then
@@ -731,6 +736,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Load new attachments
 		mod:load_new_attachment()
 
+		-- Save gear settings
+		if mod.gear_settings then
+			mod.gear_settings:save(self._presentation_item)
+		end
+
 		-- Reevaluate packages
 		self:reevaluate_packages()
 
@@ -830,7 +840,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	instance.attach_attachments = function(self, attachment_settings, attachment_names, skip_animation)
 		local index = 1
-		mod.weapon_part_animation_update = true
+		mod.weapon_part_animation_update = not skip_animation
 		for attachment_slot, value in pairs(attachment_settings) do
 			if not skip_animation then
 				mod.build_animation:animate(self._selected_item, attachment_slot, attachment_names[attachment_slot], value, nil, nil, true)
@@ -900,10 +910,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			self:attach_attachments(changed_weapon_settings, attachment_names, skip_animation)
 
 			-- Auto equip
-			-- self:resolve_auto_equips(changed_weapon_settings)
+			self:resolve_auto_equips(changed_weapon_settings)
 
 			-- Special
-			-- self:resolve_special_changes(changed_weapon_settings)
+			self:resolve_special_changes(changed_weapon_settings)
 	
 			mod:start_weapon_move()
 			mod.new_rotation = 0
@@ -940,6 +950,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			-- Special
 			self:resolve_special_changes(random_attachments)
 
+			-- Get changed settings
 			mod:get_changed_weapon_settings()
 
 		end
@@ -974,6 +985,8 @@ end)
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
 	-- Fetch instance
 	mod.cosmetics_view = self
+
+	mod:persistent_table(REFERENCE).temp_gear_settings[self._gear_id] = {}
 
     func(self, ...)
 
@@ -1038,7 +1051,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 	managers.event:register(self, "weapon_customization_hide_ui", "hide_ui")
 
 	mod:get_changed_weapon_settings()
-	mod:dtf(mod.changed_weapon_settings, "mod.changed_weapon_settings", 5)
+	-- mod:dtf(mod.changed_weapon_settings, "mod.changed_weapon_settings", 5)
 	mod.start_weapon_settings = table_clone(mod.changed_weapon_settings)
 
 end)
@@ -1194,6 +1207,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
 	managers.event:unregister(self, "weapon_customization_hide_ui")
 	
 	-- mod:redo_weapon_attachments(self._presentation_item)
+
+	mod:persistent_table(REFERENCE).temp_gear_settings[self._gear_id] = nil
 
 	func(self, ...)
 

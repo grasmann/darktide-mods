@@ -161,12 +161,16 @@ end
 UnitManipulationExtension.update_controls = function(self, dt, t, input_service, all)
 	if self.held_cursor and self.unit and unit_alive(self.unit) then
 		local rotation = unit_local_rotation(self.unit, 1)
+
 		local position_offset = unit_get_data(self.unit, "unit_manipulation_position_offset")
 		position_offset = position_offset and vector3_unbox(position_offset) or vector3(0, 0, 0)
+
 		local rotation_offset = unit_get_data(self.unit, "unit_manipulation_rotation_offset")
 		rotation_offset = rotation_offset and quaternion_unbox(rotation_offset) or quaternion_identity()
+
 		local scale_offset = unit_get_data(self.unit, "unit_manipulation_scale_offset")
 		scale_offset = scale_offset and vector3_unbox(scale_offset) or vector3(0, 0, 0)
+
 		local cursor = self:cursor(input_service)
 		local diff_vector = (cursor - vector3_unbox(self.held_cursor))
 		local diff = (diff_vector[1] + diff_vector[2])
@@ -181,22 +185,18 @@ UnitManipulationExtension.update_controls = function(self, dt, t, input_service,
 						-- Position
 						local add_offset = self:orient_to(vector3(x, y, z), rotation)
 						local offset = position_offset + add_offset
-						unit_set_local_position(self.unit, 1, vector3_unbox(self.original_position) + offset)
-						unit_set_data(self.unit, "unit_manipulation_position_offset", vector3_box(offset))
+						self:position_unit(offset)
 					end
 					if self.mode == MANIPULATION_MODES.SCALE or all then
 						-- Scale
 						local offset = scale_offset + vector3(x, y, z)
-						unit_set_local_scale(self.unit, 1, vector3_unbox(self.original_scale) + offset)
-						unit_set_data(self.unit, "unit_manipulation_scale_offset", vector3_box(offset))
+						self:scale_unit(offset)
 					end
 				end
 				if input.type == "rotation" or all then
 					-- Rotation
 					local offset = Quaternion.multiply(rotation_offset, quaternion_from_euler_angles_xyz(x, y, z))
-					local new_rotation = Quaternion.multiply(quaternion_unbox(self.original_rotation), rotation_offset)
-					unit_set_local_rotation(self.unit, 1, new_rotation)
-					unit_set_data(self.unit, "unit_manipulation_rotation_offset", quaternion_box(offset))
+					self:rotate_unit(offset)
 				end
 			end
 		end
@@ -210,6 +210,22 @@ UnitManipulationExtension.update_controls = function(self, dt, t, input_service,
 	end
 end
 
+UnitManipulationExtension.position_unit = function(self, offset)
+	unit_set_local_position(self.unit, 1, vector3_unbox(self.original_position) + offset)
+	unit_set_data(self.unit, "unit_manipulation_position_offset", vector3_box(offset))
+end
+
+UnitManipulationExtension.rotate_unit = function(self, offset)
+	local new_rotation = Quaternion.multiply(quaternion_unbox(self.original_rotation), offset)
+	unit_set_local_rotation(self.unit, 1, new_rotation)
+	unit_set_data(self.unit, "unit_manipulation_rotation_offset", quaternion_box(offset))
+end
+
+UnitManipulationExtension.scale_unit = function(self, offset)
+	unit_set_local_scale(self.unit, 1, vector3_unbox(self.original_scale) + offset)
+	unit_set_data(self.unit, "unit_manipulation_scale_offset", vector3_box(offset))
+end
+
 -- ##### ┬ ┬┬┌─┐┌┬┐┌─┐┬─┐┬ ┬ ##########################################################################################
 -- ##### ├─┤│└─┐ │ │ │├┬┘└┬┘ ##########################################################################################
 -- ##### ┴ ┴┴└─┘ ┴ └─┘┴└─ ┴  ##########################################################################################
@@ -218,9 +234,12 @@ UnitManipulationExtension.restore_history = function(self)
 	if self.history and #self.history >= self.history_index then
 		local history_entry = self.history[self.history_index]
 		if self.unit and unit_alive(self.unit) then
-			unit_set_data(self.unit, "unit_manipulation_position_offset", history_entry.position_offset)
-			unit_set_data(self.unit, "unit_manipulation_rotation_offset", history_entry.rotation_offset)
-			unit_set_data(self.unit, "unit_manipulation_scale_offset", history_entry.scale_offset)
+			-- unit_set_data(self.unit, "unit_manipulation_position_offset", history_entry.position_offset)
+			-- unit_set_data(self.unit, "unit_manipulation_rotation_offset", history_entry.rotation_offset)
+			-- unit_set_data(self.unit, "unit_manipulation_scale_offset", history_entry.scale_offset)
+			self:position_unit(vector3_unbox(history_entry.position_offset))
+			self:rotate_unit(quaternion_unbox(history_entry.rotation_offset))
+			self:scale_unit(vector3_unbox(history_entry.scale_offset))
 		end
 	end
 end

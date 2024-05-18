@@ -135,7 +135,7 @@ return table.combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(.05, -.15, .0145), rotation = vector3_box(-5, -7.5, 0)}},
+                        scope_offset = {position = vector3_box(.05, -.15, .0145), rotation = vector3_box(-5, -7.5, 0), lense_transparency = true}},
                     -- Martyr's Gaze
                     {dependencies = {"scope_01"},
                         sight = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 1.5, 1),
@@ -146,7 +146,7 @@ return table.combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.045), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, -.015, -.0135), rotation = vector3_box(.6, 0, 0)}},
+                        scope_offset = {position = vector3_box(0, -.015, -.0135), rotation = vector3_box(.6, 0, 0), lense_transparency = true}},
                     -- Exterminatus Lens
                     {dependencies = {"scope_02"},
                         sight = {parent = "receiver", position = vector3_box(-.046, .01, .150), rotation = vector3_box(0, -52, 0), scale = vector3_box(1, 3, 1),
@@ -157,7 +157,7 @@ return table.combine(
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.048), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}},
                             animation_wait_attach = {"rail"}
                         },
-                        scope_offset = {position = vector3_box(0, -.17, -.01), rotation = vector3_box(.6, 0, 0)}},
+                        scope_offset = {position = vector3_box(0, -.17, -.01), rotation = vector3_box(.6, 0, 0), lense_transparency = true}},
                     {sight_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0),
                         animation_wait_attach = {"rail"}
                     }},

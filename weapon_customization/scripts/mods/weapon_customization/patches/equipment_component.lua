@@ -1,12 +1,5 @@
 local mod = get_mod("weapon_customization")
 
--- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
--- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
--- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
-
---#region Require
---#endregion
-
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -15,13 +8,6 @@ local mod = get_mod("weapon_customization")
     local CLASS = CLASS
     local ScriptUnit = ScriptUnit
     local script_unit_extension = ScriptUnit.extension
---#endregion
-
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
---#region Data
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################
@@ -91,58 +77,58 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         mod:execute_extension(unit_3p, "visible_equipment_system", "on_update_item_visibility", wielded_slot)
     end
 
-    -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #########################################################################
-    -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #########################################################################
-    -- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #########################################################################
+end)
 
-    mod:hook(instance, "wield_slot", function(func, slot, first_person_mode, ...)
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
 
-        -- Original function
-        func(slot, first_person_mode, ...)
+mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_person_mode, ...)
+
+    -- Original function
+    func(slot, first_person_mode, ...)
+
+    -- Extensions
+    mod:execute_equipment_component(slot.parent_unit_3p, "wield_custom", slot)
+
+end)
+
+mod:hook(CLASS.EquipmentComponent, "unwield_slot", function(func, slot, first_person_mode, ...)
     
-        -- Extensions
-        mod:execute_equipment_component(slot.parent_unit_3p, "wield_custom", slot)
+    -- Extensions
+    mod:execute_equipment_component(slot.parent_unit_3p, "unwield_custom", slot)
     
-    end)
+    -- Original function
+    func(slot, first_person_mode, ...)
+
+end)
+
+mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
     
-    mod:hook(instance, "unwield_slot", function(func, slot, first_person_mode, ...)
-        
-        -- Extensions
-        mod:execute_equipment_component(slot.parent_unit_3p, "unwield_custom", slot)
-        
-        -- Original function
-        func(slot, first_person_mode, ...)
+    -- Original function
+    func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
+
+    -- Extensions
+    self:equip_custom(slot)
+
+end)
+
+mod:hook(CLASS.EquipmentComponent, "unequip_item", function(func, self, slot, ...)
     
-    end)
+    -- Extensions
+    self:unequip_custom(slot)
+
+    -- Original function
+    func(self, slot, ...)
+
+end)
+
+mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
     
-    mod:hook(instance, "equip_item", function(func, self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
-        
-        -- Original function
-        func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
-    
-        -- Extensions
-        self:equip_custom(slot)
-    
-    end)
-    
-    mod:hook(instance, "unequip_item", function(func, self, slot, ...)
-        
-        -- Extensions
-        self:unequip_custom(slot)
-    
-        -- Original function
-        func(self, slot, ...)
-    
-    end)
-    
-    mod:hook(instance, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
-        
-        -- Original function
-        func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
-    
-        -- Extensions
-        mod:execute_equipment_component(unit_3p, "update_visibility_custom", wielded_slot, unit_3p)
-    
-    end)
+    -- Original function
+    func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
+
+    -- Extensions
+    mod:execute_equipment_component(unit_3p, "update_visibility_custom", wielded_slot, unit_3p)
 
 end)

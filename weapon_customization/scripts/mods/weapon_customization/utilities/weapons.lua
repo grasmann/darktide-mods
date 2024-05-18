@@ -4,14 +4,18 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
+--#region Require
+	local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
+
+	local GearSettings = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/gear_settings")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-local color = Color
+	local color = Color
 	local math = math
 	local unit_alive = Unit.alive
 	local type = type
@@ -49,12 +53,16 @@ local color = Color
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
-local REWARD_ITEM = "reward_item"
+--#region Data
+	local REFERENCE = "weapon_customization"
+	local REWARD_ITEM = "reward_item"
+--#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+mod.gear_settings = GearSettings:new()
 
 mod.spawn_premium_effects = function(self, item, item_unit, attachment_units, world)
 	if attachment_units and self:has_premium_skin(item) then
@@ -197,26 +205,6 @@ mod.randomize_weapon = function(self, item)
     return random_attachments
 end
 
--- -- Get currently wielded weapon
--- mod.get_wielded_weapon = function(self)
--- 	if self.initialized then
--- 		local inventory_component = self.weapon_extension._inventory_component
--- 		local weapons = self.weapon_extension._weapons
--- 		return self.weapon_extension:_wielded_weapon(inventory_component, weapons)
--- 	end
--- end
-
--- -- Get wielded slot
--- mod.get_wielded_slot = function(self)
--- 	local inventory_component = self.weapon_extension._inventory_component
--- 	return inventory_component.wielded_slot
--- end
-
--- -- Get wielded 3p unit
--- mod.get_wielded_weapon_3p = function(self)
--- 	return self.visual_loadout_extension:unit_3p_from_slot("slot_secondary")
--- end
-
 -- Get equipped weapon from gear id
 mod.get_weapon_from_gear_id = function(self, from_gear_id)
 	if self.weapon_extension and self.weapon_extension._weapons then
@@ -274,10 +262,6 @@ mod.is_premium_store_item = function(self, item)
 	return mod:get_view("store_view") or mod:get_view("store_item_detail_view")
 end
 
--- mod.save_equipment_file = function(self, gear_id)
-
--- end
-
 -- Set attachment for specified gear id and slot
 mod.set_gear_setting = function(self, gear_id, attachment_slot, optional_attachment_or_nil)
 	if self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
@@ -287,11 +271,19 @@ mod.set_gear_setting = function(self, gear_id, attachment_slot, optional_attachm
 			self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot] = optional_attachment_or_nil
 		end
 	else
-		if not optional_attachment_or_nil or (optional_attachment_or_nil and (string_find(optional_attachment_or_nil, "default") or optional_attachment_or_nil == "default")) then
-			self:set(tostring(gear_id).."_"..attachment_slot, nil)
-		else
-			self:set(tostring(gear_id).."_"..attachment_slot, optional_attachment_or_nil)
+		if self.gear_settings and self.gear_settings:player_item(gear_id) then
+			self.gear_settings:set(gear_id, attachment_slot, optional_attachment_or_nil)
+			-- local entry = self.gear_settings:load(gear_id)
+			-- if entry then
+
+			-- end
+			-- attachment = entry and entry.attachments and entry.attachments[attachment_slot]
 		end
+	-- 	if not optional_attachment_or_nil or (optional_attachment_or_nil and (string_find(optional_attachment_or_nil, "default") or optional_attachment_or_nil == "default")) then
+	-- 		self:set(tostring(gear_id).."_"..attachment_slot, nil)
+	-- 	else
+	-- 		self:set(tostring(gear_id).."_"..attachment_slot, optional_attachment_or_nil)
+	-- 	end
 	end
 end
 
@@ -361,14 +353,21 @@ mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or
 	-- 		end
 	-- 	end
 	-- end
-	-- Check manual changes
-	if not attachment then
-		attachment = self:get(tostring(gear_id).."_"..attachment_slot)
-	end
+
 	-- Check temp
 	if not attachment and self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
 		attachment = self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot]
 	end
+	-- Check file
+	if not attachment and self.gear_settings and self.gear_settings:player_item(gear_id) then
+		local entry = self.gear_settings:load(gear_id)
+		attachment = entry and entry.attachments and entry.attachments[attachment_slot]
+	end
+	-- -- Check manual changes
+	-- if not attachment then
+	-- 	attachment = self:get(tostring(gear_id).."_"..attachment_slot)
+	-- end
+	
 	-- Check default
 	if not attachment and optional_item_or_nil then
 		-- Get real vanilla attachment
@@ -386,9 +385,7 @@ mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or
 	-- end
 end
 
-mod.get_gear_size = function(self)
-
-end
+mod.get_gear_size = function(self) end
 
 -- Redo weapon attachments by unequipping and reequipping weapon
 mod.redo_weapon_attachments = function(self, item)

@@ -4,8 +4,10 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
-local MasterItems = mod:original_require("scripts/backend/master_items")
+--#region Performance
+    local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
+    local MasterItems = mod:original_require("scripts/backend/master_items")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -44,7 +46,9 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
+--#region Data
+    local REFERENCE = "weapon_customization"
+--#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################
 -- ##### │ ┬│  │ │├┴┐├─┤│    ├┤ │ │││││   │ ││ ││││└─┐ ################################################################
@@ -121,10 +125,10 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
         local result = func(item, items_dictionary, out_result, optional_mission_template, ...)
 
-        if item and item.attachments and gear_id and not mod:is_premium_store_item() then
+        if item and item.attachments then
 
             -- Add custom resources
-            instance:add_custom_resources(item, result)
+            instance:add_custom_resources(item.__master_item or item, result)
 
         end
 
@@ -133,4 +137,44 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
     end)
 
+end)
+
+-- ##### ┌┬┐┬┌─┐┌─┐┬─┐┌─┐┌┬┐┬┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌┐┌┌┬┐┬  ┌─┐┬─┐ #####################################
+-- ##### ││││└─┐├─┘├┬┘├┤  ││││   │   ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┤├─┤│││ │││  ├┤ ├┬┘ #####################################
+-- ##### ┴ ┴┴└─┘┴  ┴└─└─┘─┴┘┴└─┘ ┴   ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴ ┴┴ ┴┘└┘─┴┘┴─┘└─┘┴└─ #####################################
+
+mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
+	local dependencies = ItemPackage.compile_item_instance_dependencies(item, self._item_definitions, nil, self._mission)
+	for package_name, _ in pairs(dependencies) do
+        if self._loaded_packages and self._loaded_packages[package_name] then
+            local loaded_packages = self._loaded_packages[package_name]
+            local load_id = table_remove(loaded_packages, #loaded_packages)
+            managers.package:release(load_id)
+            if table_is_empty(loaded_packages) then
+                self._loaded_packages[package_name] = nil
+            end
+        else
+            mod:print("MispredictPackageHandler - not loaded "..tostring(package_name))
+        end
+	end
+end)
+
+mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)
+    for fixed_frame, items in pairs(self._pending_unloads) do
+		for i = 1, #items do
+			local item = items[i]
+			self:_unload_item_packages(item)
+		end
+	end
+    -- Unload rest
+    if self._loaded_packages then
+        for package_name, load_ids in pairs(self._loaded_packages) do
+            for _, load_id in pairs(load_ids) do
+                managers.package:release(load_id)
+                mod:print("MispredictPackageHandler - unloaded left over "..tostring(package_name))
+            end
+        end
+    end
+	self._pending_unloads = nil
+	self._loaded_packages = nil
 end)

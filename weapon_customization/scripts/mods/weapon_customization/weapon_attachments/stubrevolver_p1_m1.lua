@@ -155,7 +155,7 @@ return table.combine(
                         lens = {parent = "sight", position = vector3_box(0, .033, .002), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .085, .002), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .4, .9), data = {lens = 2}},
                         sight_2 = {parent = "sight", position = vector3_box(0, 0, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                        scope_offset = {position = vector3_box(0, -.22, -.033), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75}, -- sniper_offset = {position = vector3_box(0, .35, 0)}
+                        scope_offset = {position = vector3_box(0, -.22, -.033), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75, lense_transparency = true}, -- sniper_offset = {position = vector3_box(0, .35, 0)}
                         },
                     -- Martyr's Gaze
                     {dependencies = {"scope_01", "barrel_04"},
@@ -170,7 +170,7 @@ return table.combine(
                         lens = {parent = "sight", position = vector3_box(0, .105, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .275, 1), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .065, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(1, .3, 1), data = {lens = 2}},
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 5}}},
-                        scope_offset = {position = vector3_box(0, -.175, -.033), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65}, --sniper_offset = {position = vector3_box(0, .35, 0)}
+                        scope_offset = {position = vector3_box(0, -.175, -.033), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65, lense_transparency = true}, --sniper_offset = {position = vector3_box(0, .35, 0)}
                         },
                     -- Extermination Lense
                     {dependencies = {"scope_02", "barrel_04"},
@@ -185,7 +185,7 @@ return table.combine(
                         lens = {parent = "sight", position = vector3_box(0, .075, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.9, .15, .9), data = {lens = 1}},
                         lens_2 = {parent = "sight", position = vector3_box(0, .022, 0), rotation = vector3_box(180, 0, 0), scale = vector3_box(.9, .1, .9), data = {lens = 2}},
                         sight_2 = {parent = "sight", position = vector3_box(0, .07, -.048), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, .4, 1.35), hide_mesh = {{"sight_2", 3, 4, 5}}},
-                        scope_offset = {position = vector3_box(0, -.35, -.028), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65}, --sniper_offset = {position = vector3_box(0, .35, 0)}
+                        scope_offset = {position = vector3_box(0, -.35, -.028), fov = 9, custom_fov = 24, fov_multiplier = 2, aim_scale = .65, lense_transparency = true}, --sniper_offset = {position = vector3_box(0, .35, 0)}
                         },
                     
                     {sight_2 = {parent = "barrel", parent_node = 9, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},

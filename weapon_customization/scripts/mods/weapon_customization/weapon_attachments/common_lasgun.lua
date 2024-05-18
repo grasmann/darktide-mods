@@ -132,9 +132,9 @@ return {
     magazine_attachments = function(default)
         local attachments = {
             {id = "magazine_01", name = "Magazine 1"},
-            {id = "magazine_02", name = "Magazine 2"},
+            -- {id = "magazine_02", name = "Magazine 2"},
             {id = "magazine_03", name = "Magazine 3"},
-            {id = "magazine_04", name = "Magazine 4"},
+            -- {id = "magazine_04", name = "Magazine 4"},
             {id = "magazine_05", name = "Magazine 5"},
         }
         if default == nil then default = true end

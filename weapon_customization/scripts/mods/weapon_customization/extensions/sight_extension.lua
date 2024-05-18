@@ -79,12 +79,14 @@ local mod = get_mod("weapon_customization")
 	local unit_set_unit_visibility = Unit.set_unit_visibility
 	local script_unit_has_extension = script_unit.has_extension
 	local camera_custom_vertical_fov = Camera.custom_vertical_fov
+	local unit_set_scalar_for_materials = Unit.set_scalar_for_materials
 	local world_stop_spawning_particles = World.stop_spawning_particles
 	local shading_environment_set_scalar = ShadingEnvironment.set_scalar
 	local camera_set_custom_vertical_fov = Camera.set_custom_vertical_fov
 	local world_update_unit_and_children = World.update_unit_and_children
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
 	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+	local unit_set_shader_pass_flag_for_meshes = Unit.set_shader_pass_flag_for_meshes
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -111,6 +113,15 @@ local mod = get_mod("weapon_customization")
 -- ##### └─┘┴└─┘┴ ┴ ┴ └─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ #################################################################
 
 local SightExtension = class("SightExtension", "WeaponCustomizationExtension")
+
+-- ##### TEMP FIX #####################################################################################################
+SightExtension.lense_transparency_temp_fix = function(self)
+	local lenses_transparency_temp = {"scope_lens_02", "scope_lens_2_02"}
+	local lens_1 = self.lenses[1] and table_contains(lenses_transparency_temp, self.lenses[1].attachment_name)
+	local lens_2 = self.lenses[2] and table_contains(lenses_transparency_temp, self.lenses[2].attachment_name)
+	self.offset.lense_transparency = lens_1 and lens_2
+end
+-- ##### TEMP FIX #####################################################################################################
 
 -- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
@@ -269,10 +280,6 @@ SightExtension.set_weapon_values = function(self)
 		mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
 		mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
 	}
-	self.lenses = {
-		mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "scope_lens_01"),
-		mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "scope_lens_02"),
-	}
 	-- self:set_lens_units()
 	self.sight_unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_3")
 	    or mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_2")
@@ -290,6 +297,13 @@ SightExtension.set_weapon_values = function(self)
 		-- self.camera_manager = managers.state.camera
 		self.sniper_zoom = mod.sniper_zoom_levels[self.sight_name] or 7
 		self:set_sniper_scope_unit()
+		self.lenses = {
+			mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "lens"),
+			mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "lens_2"),
+		}
+		-- ##### TEMP FIX #############################################################################################
+		self:lense_transparency_temp_fix()
+		-- ##### TEMP FIX #############################################################################################
 		self:set_lens_units()
 	end
 	self:set_lens_scales()
@@ -331,8 +345,8 @@ SightExtension.set_lens_units = function(self)
 				self.lens_units = {lenses[2], lenses[1], reflex[1]}
 			end
 			unit_set_unit_visibility(reflex[1], false)
-			Unit.set_shader_pass_flag_for_meshes(lenses[1], "one_bit_alpha", true, true)
-			Unit.set_shader_pass_flag_for_meshes(lenses[2], "one_bit_alpha", true, true)
+			unit_set_shader_pass_flag_for_meshes(lenses[1], "one_bit_alpha", true, true)
+			unit_set_shader_pass_flag_for_meshes(lenses[2], "one_bit_alpha", true, true)
 		end
 	end
 end
@@ -416,7 +430,7 @@ SightExtension.update = function(self, unit, dt, t)
 	local perf = wc_perf.start("SightExtension.update", 2)
 	if self.initialized then
 
-		if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position
+		if self.sniper_zoom and self.lens_units and self.lens_units[3] and unit_alive(self.lens_units[3]) and self.default_reticle_position
 				and not self.is_starting_aim and not self._is_aiming then
 			local default_offset = vector3_unbox(self.default_reticle_position)
 			mesh_set_local_position(unit_mesh(self.lens_units[3], self.lens_mesh), self.lens_units[3], default_offset)
@@ -452,7 +466,7 @@ SightExtension.update = function(self, unit, dt, t)
 						local position = vector3_lerp(vector3_zero(), vector3_unbox(self.offset.position), anim_progress)
 						self.position_offset = vector3_box(position)
 
-						if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
+						if self.sniper_zoom and self.lens_units and self.lens_units[3] and unit_alive(self.lens_units[3]) and self.default_reticle_position then
 							local default_offset = vector3_unbox(self.default_reticle_position)
 							local rotation = unit_local_rotation(self.lens_units[3], 1)
 							local forward = Quaternion.forward(rotation)
@@ -481,7 +495,7 @@ SightExtension.update = function(self, unit, dt, t)
 						unit_set_local_scale(self.sniper_scope_unit, 1, vector3(scale_default[1], aim_scale, scale_default[3]))
 					end
 
-					if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
+					if self.sniper_zoom and self.lens_units and self.lens_units[3] and unit_alive(self.lens_units[3]) and self.default_reticle_position then
 						local default_offset = vector3_unbox(self.default_reticle_position)
 						local rotation = unit_local_rotation(self.lens_units[3], 1)
 						local forward = Quaternion.forward(rotation)
@@ -530,7 +544,7 @@ SightExtension.update = function(self, unit, dt, t)
 						local position = vector3_lerp(vector3_unbox(self.offset.position), vector3_zero(), anim_progress)
 						self.position_offset = vector3_box(position)
 
-						if self.sniper_zoom and self.lens_units and self.lens_units[3] and self.default_reticle_position then
+						if self.sniper_zoom and self.lens_units and self.lens_units[3] and unit_alive(self.lens_units[3]) and self.default_reticle_position then
 							local default_offset = vector3_unbox(self.default_reticle_position)
 							local rotation = unit_local_rotation(self.lens_units[3], 1)
 							local forward = Quaternion.forward(rotation)
@@ -556,7 +570,7 @@ SightExtension.update = function(self, unit, dt, t)
 						unit_set_local_scale(self.sniper_scope_unit, 1, scale_default)
 					end
 
-					if self.lens_units and self.lens_units[3] and self.default_reticle_position then
+					if self.sniper_zoom and self.lens_units and self.lens_units[3] and unit_alive(self.lens_units[3]) and self.default_reticle_position then
 						local default_offset = vector3_unbox(self.default_reticle_position)
 						unit_set_unit_visibility(self.lens_units[3], false)
 						mesh_set_local_position(unit_mesh(self.lens_units[3], self.lens_mesh), self.lens_units[3], default_offset)
@@ -610,14 +624,23 @@ SightExtension.update_scope_lenses = function(self)
 		}
 	end
 	if self.sniper_zoom and self.lens_units and self.lens_transparency then
-		
 		if self.lens_units[1] and unit_alive(self.lens_units[1]) then
-			-- unit_set_local_scale(self.lens_units[1], 1, scales[1])
-			Unit.set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", self.lens_transparency, true) 
+			if self.offset.lense_transparency then
+				if self.lens_transparency >= 1 then unit_set_local_scale(self.lens_units[2], 1, scales[2]) end
+				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", self.lens_transparency, true)
+			else
+				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", 1, true)
+				unit_set_local_scale(self.lens_units[1], 1, scales[1])
+			end
 		end
 		if self.lens_units[2] and unit_alive(self.lens_units[2]) then
-			-- unit_set_local_scale(self.lens_units[2], 1, scales[2])
-			Unit.set_scalar_for_materials(self.lens_units[2], "inv_jitter_alpha", self.lens_transparency, true) 
+			if self.offset.lense_transparency then
+				if self.lens_transparency >= 1 then unit_set_local_scale(self.lens_units[2], 1, scales[2]) end
+				unit_set_scalar_for_materials(self.lens_units[2], "inv_jitter_alpha", self.lens_transparency, true)
+			else
+				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", 1, true)
+				unit_set_local_scale(self.lens_units[2], 1, scales[2])
+			end
 		end
 	elseif self.sniper_zoom and not self.lens_units then
 		self:set_lens_units()

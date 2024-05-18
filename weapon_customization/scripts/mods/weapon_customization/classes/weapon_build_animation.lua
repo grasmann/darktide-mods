@@ -160,9 +160,12 @@ WeaponBuildAnimation.update = function(self, dt, t)
             -- 	anchor = Unit.get_data(unit, "anchor") or anchor
             -- end
 
+            --Unit.set_scalar_for_materials(self.lens_units[2], "inv_jitter_alpha", self.lens_transparency, true)
+            --Unit.set_shader_pass_flag_for_meshes(lenses[1], "one_bit_alpha", true, true)
+
             animation_wait_attach = anchor and anchor.animation_wait_attach or animation_wait_attach
             animation_wait_detach = anchor and anchor.animation_wait_detach or animation_wait_detach
-            local default_position0 = unit and vector3_unbox(gear_info.unit_default_position[unit])
+            local default_position0 = (unit_good and gear_info.unit_default_position[unit] and vector3_unbox(gear_info.unit_default_position[unit])) or vector3_zero()
             local default_position1 = unit_good and unit_local_position(unit, 1)
             local default_position = anchor and anchor.position and vector3_unbox(anchor.position) or default_position0 or default_position1 or vector3_zero()
 

@@ -178,95 +178,112 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         end
     end
 
-    -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
-    -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
-    -- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
-
-    mod:hook(instance, "extensions_ready", function(func, self, world, unit, ...)
-        
-        -- Dependency
-        self:add_dependency_extension()
-        
-        -- Sights
-        mod:remove_extension(self._unit, "sight_system")
-        
-        -- Original function
-        func(self, world, unit, ...)
-        
-        -- Mod
-        mod:on_player_unit_loaded(self._unit)
-
-    end)
-
-    mod:hook(instance, "_equip_item_to_slot", function(func, self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
-        
-        -- Original function
-        func(self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
-
-        -- Extensions
-        if slot_name == SLOT_SECONDARY then
-            self:remove_custom_extensions()
+    instance.destroy_mispredict_handler = function(self)
+        if self._mispredict_package_handler then
+            -- self._mispredict_package_handler:destroy()
+            self._mispredict_package_handler = nil
         end
+    end
 
-    end)
+end)
 
-    mod:hook(instance, "_unequip_item_from_slot", function(func, self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #################################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #################################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #################################################################################
 
-        -- Remove custom extensions
-        if slot_name == SLOT_SECONDARY then
-            self:remove_custom_extensions()
-        end
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, game_object_data_or_game_session, unit_spawn_parameter_or_game_object_id, ...)
 
-        -- Original function
-        func(self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
+    -- Original function
+    func(self, extension_init_context, unit, extension_init_data, game_object_data_or_game_session, unit_spawn_parameter_or_game_object_id, ...)
 
-    end)
+    -- Destroy mispredict handler
+    self:destroy_mispredict_handler()
 
-    mod:hook(instance, "destroy", function(func, self, ...)
+end)
 
-        -- Remove custom extensions
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)
+    
+    -- Dependency
+    self:add_dependency_extension()
+    
+    -- Sights
+    mod:remove_extension(self._unit, "sight_system")
+    
+    -- Original function
+    func(self, world, unit, ...)
+    
+    -- Mod
+    mod:on_player_unit_loaded(self._unit)
+
+end)
+
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_equip_item_to_slot", function(func, self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
+    
+    -- Original function
+    func(self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
+
+    -- Extensions
+    if slot_name == SLOT_SECONDARY then
         self:remove_custom_extensions()
+    end
 
-        -- Dependency
-        self:remove_dependency_extension()
+end)
 
-        -- Mod
-        mod:on_player_unit_destroyed(self._unit)
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_unequip_item_from_slot", function(func, self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
 
-        -- Original function
-        func(self, ...)
+    -- Remove custom extensions
+    if slot_name == SLOT_SECONDARY then
+        self:remove_custom_extensions()
+    end
 
-    end)
+    -- Original function
+    func(self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
 
-    mod:hook(instance, "update", function(func, self, unit, dt, t, ...)
+end)
 
-        -- Original function
-        func(self, unit, dt, t, ...)
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
 
-        -- Performance
-        local perf = wc_perf.start("PlayerUnitVisualLoadoutExtension.update", 2)
+    -- Remove custom extensions
+    self:remove_custom_extensions()
 
-        -- Visible equipment
-        self:update_visible_equipment(dt, t)
+    -- Dependency
+    self:remove_dependency_extension()
 
-        -- Sights
-        self:update_sight(dt, t)
+    -- Mod
+    mod:on_player_unit_destroyed(self._unit)
 
-        -- Weapon DOF
-        self:update_weapon_dof(dt, t)
+    -- Original function
+    func(self, ...)
 
-        -- CrouchAnimationExtension
-        self:update_crouch(dt, t)
+end)
 
-        -- SwayAnimationExtension
-        self:update_sway(dt, t)
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, unit, dt, t, ...)
 
-        -- Flashlights
-        self:update_flashlight(dt, t)
+    -- Original function
+    func(self, unit, dt, t, ...)
 
-        -- Performance
-        wc_perf.stop(perf)
+    -- Performance
+    local perf = wc_perf.start("PlayerUnitVisualLoadoutExtension.update", 2)
 
-    end)
+    -- Visible equipment
+    self:update_visible_equipment(dt, t)
+
+    -- Sights
+    self:update_sight(dt, t)
+
+    -- Weapon DOF
+    self:update_weapon_dof(dt, t)
+
+    -- CrouchAnimationExtension
+    self:update_crouch(dt, t)
+
+    -- SwayAnimationExtension
+    self:update_sway(dt, t)
+
+    -- Flashlights
+    self:update_flashlight(dt, t)
+
+    -- Performance
+    wc_perf.stop(perf)
 
 end)

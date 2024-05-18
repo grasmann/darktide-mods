@@ -4,7 +4,9 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local MasterItems = mod:original_require("scripts/backend/master_items")
+--#region Require
+    local MasterItems = mod:original_require("scripts/backend/master_items")
+--#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -35,7 +37,10 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
+--#region Data
+    local REFERENCE = "weapon_customization"
+--#endregion
+
 mod.player_items = {}
 
 -- ##### ┌┬┐┌─┐┌─┐┌┬┐┌─┐┬─┐  ┬┌┬┐┌─┐┌┬┐  ┌┬┐┌─┐┌┬┐┬┌─┐┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐┬─┐┌─┐┌─┐┬ ┬ ##############################
@@ -338,7 +343,7 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
             local master_item = item_instance.__master_item or item_instance
             local cached_gear_list = cached_gear_list()
             if gear_id and cached_gear_list and cached_gear_list[gear_id] ~= nil then
-                mod.player_items[gear_id] = true
+                mod.player_items[gear_id] = master_item
             elseif gear_id then
                 mod.player_items[gear_id] = nil
                 -- Get attributes

@@ -248,3 +248,5 @@ WeaponDOFExtension.apply_weapon_dof = function(self, shading_env)
     shading_environment_set_scalar(shading_env, "dof_focal_near_scale", self.dof_near_scale)
     shading_environment_set_scalar(shading_env, "dof_focal_far_scale", .5)
 end
+
+return WeaponDOFExtension
