@@ -263,23 +263,9 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		local weapon_item = self:weapon_item()
 		local weapon_unit = self:weapon_unit()
 		if weapon_item and weapon_unit and unit_alive(weapon_unit) then
-			-- local data = {
-			-- 	character_option = self:character_option(),
-			-- 	weapon_option = self:weapon_option(),
-			-- 	armour_option = self:armour_option(),
-			-- 	backpack_option = self:backpack_option(),
-			-- 	profile = self:player_profile(),
-			-- 	item = weapon_item,
-			-- 	unit = weapon_unit,
-			-- 	node = 1,
-			-- }
 			if mod.gear_settings then
 				mod.gear_settings:save(weapon_item, weapon_unit)
 			end
-			-- if self.save_lua then
-			-- 	self.save_lua:save_entry(data)
-			-- end
-			-- mod:save_weapon_customization_entry(data)
 		end
 	end
 

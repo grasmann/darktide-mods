@@ -42,6 +42,10 @@ local mod = get_mod("weapon_customization")
 
 local GearSettings = class("GearSettings")
 
+-- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
+-- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
+-- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
+
 -- Initialize
 GearSettings.init = function(self)
     self.save_lua = SaveLua:new(self)
@@ -70,7 +74,9 @@ end
 
 -- Get gear id from item
 GearSettings.gear_id = function(self, item)
+    -- Get real item
     local item = self:_real_item(item)
+    -- Return gear id
     return item and self:is_table(item) and (item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id)
 end
 
@@ -247,6 +253,7 @@ GearSettings.add_cache = function(self, gear_id_or_item, gear_settings)
         -- Debug
         self:debug(gear_id_or_item, "Cache added: ")
     else
+        -- Update cache
         self:update_cache(gear_id_or_item, gear_settings)
     end
 end
@@ -299,12 +306,6 @@ GearSettings.get = function(self, gear_id_or_item, attachment_slot)
         -- Return attachment
         return gear_settings and gear_settings.attachments[attachment_slot]
     end
-    -- -- Gear id
-    -- local gear_id = self:item_to_gear_id(gear_id_or_item)
-    -- -- Item
-    -- local item = self:item_from_gear_id(gear_id_or_item)
-    -- -- Return old settings
-    -- return mod:get_gear_setting(gear_id_or_item, attachment_slot)
 end
 
 -- Set single attachment in settings
@@ -316,16 +317,11 @@ GearSettings.set = function(self, gear_id_or_item, attachment_slot, attachment_n
         gear_settings.attachments[attachment_slot] = attachment_name
         -- Update cache
         self:update_cache(gear_id_or_item, gear_settings)
-        -- Break
-        return
     end
-    -- -- Gear id
-    -- local gear_id = self:item_to_gear_id(gear_id_or_item)
-    -- -- Return old settings
-    -- return mod:set_gear_setting(gear_id, attachment_slot, attachment_name)
 end
 
-GearSettings.push_attachments = function(self, gear_id_or_item, attachments)
+-- Set all attachments in settings
+GearSettings.push = function(self, gear_id_or_item, attachments)
     -- Get entry
     local gear_settings = self:get_cache(gear_id_or_item) or self:load_file(gear_id_or_item) or {}
     -- Set attachments in entry
@@ -336,9 +332,7 @@ end
 
 -- Load gear settings
 GearSettings.load = function(self, gear_id_or_item)
-    -- Return gear settings
-    local gear_settings = self:get_cache(gear_id_or_item)
-    return gear_settings or self:load_file(gear_id_or_item)
+    return self:get_cache(gear_id_or_item) or self:load_file(gear_id_or_item)
 end
 
 -- Save gear settings

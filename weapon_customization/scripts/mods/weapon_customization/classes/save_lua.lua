@@ -56,6 +56,7 @@ local DMF = get_mod("DMF")
 
 --#region Data
 	local REFERENCE = "weapon_customization"
+	local DEBUG = true
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -64,23 +65,22 @@ local DMF = get_mod("DMF")
 
 local SaveLua = class("SaveLua")
 
+-- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
+-- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
+-- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
+
 SaveLua.init = function(self, gear_settings)
 	self.gear_settings = gear_settings
 end
 
--- Lua implementation of PHP scandir function
-SaveLua._scan_dir = function(self, directory)
-	local i, t, popen = 0, {}, _io.popen
-	local pfile = popen('dir "'..directory..'" /b')
-	for filename in pfile:lines() do
-		i = i + 1
-		t[i] = filename
-	end
-	pfile:close()
-	local text = mod:localize("weapon_customization_cached")
-	mod:echot(text)
-	return t
+SaveLua.debug = function(self, file_name, message)
+    -- Print message to console
+    if DEBUG then mod:echot(tostring(message)..tostring(file_name)) end
 end
+
+-- ##### ┬┌┐┌┌─┐┌─┐ ###################################################################################################
+-- ##### ││││├┤ │ │ ###################################################################################################
+-- ##### ┴┘└┘└  └─┘ ###################################################################################################
 
 -- Check if a file or directory exists in this path
 SaveLua._exists = function(self, file)
@@ -106,6 +106,24 @@ SaveLua._file_exists = function(self, name)
 	if f ~= nil then _io.close(f) return true else return false end
 end
 
+-- ##### ┌┬┐┬┬─┐┌─┐┌─┐┌┬┐┌─┐┬─┐┬ ┬ ####################################################################################
+-- #####  │││├┬┘├┤ │   │ │ │├┬┘└┬┘ ####################################################################################
+-- ##### ─┴┘┴┴└─└─┘└─┘ ┴ └─┘┴└─ ┴  ####################################################################################
+
+-- Lua implementation of PHP scandir function
+SaveLua._scan_dir = function(self, directory)
+	local i, t, popen = 0, {}, _io.popen
+	local pfile = popen('dir "'..directory..'" /b')
+	for filename in pfile:lines() do
+		i = i + 1
+		t[i] = filename
+	end
+	pfile:close()
+	local text = mod:localize("weapon_customization_cached")
+	mod:echot(text)
+	return t
+end
+
 -- Get appdata path
 SaveLua._appdata_path = function(self)
 	local appdata = _os.getenv('APPDATA')
@@ -126,6 +144,10 @@ SaveLua._create_entry_path = function(self, data)
 	local file_name = tostring(gear_id)..".lua"
 	return self:_appdata_path()..file_name, file_name
 end
+
+-- ##### ┌─┐┌─┐┌─┐┬ ┬┌─┐ ##############################################################################################
+-- ##### │  ├─┤│  ├─┤├┤  ##############################################################################################
+-- ##### └─┘┴ ┴└─┘┴ ┴└─┘ ##############################################################################################
 
 SaveLua.get_entries = function(self, data, scan_dir)
 	local entries = {}
@@ -164,61 +186,44 @@ SaveLua._set_cache = function(self, entries)
     mod:set("weapon_customization_entries", entries)
 end
 
-SaveLua.delete_entry = function(self, data)
-	local path, file_name = self:_create_entry_path(data)
-	if self:_file_exists(path) then
-		if _os.remove(path) then
-			-- Remove from cache
-			local cache = self:_get_entries_cache()
-			local new_cache = {}
-			for _, c in pairs(cache) do
-				if c ~= file_name then
-					new_cache[#new_cache+1] = c
-				end
-			end
-			self:_set_cache(new_cache)
-			return true
-		end
-	end
+SaveLua._read_file = function(self, path)
+	local file = assert(_io.open(path, "rb"))
+	if not file then return nil end
+	local content = file:read("*all")
+	file:close()
+	return content
 end
 
-SaveLua._cast_vector3_to_string = function(self, vector)
-	local str = tostring(vector)
-	if not string_find(str, "Vector3Box") then
-		str = string_gsub(str, "Vector3", "Vector3Box")
-	end
-	return str
+-- ##### ┬  ┌─┐┌─┐┌┬┐ #################################################################################################
+-- ##### │  │ │├─┤ ││ #################################################################################################
+-- ##### ┴─┘└─┘┴ ┴─┴┘ #################################################################################################
+
+SaveLua._load_entry = function(self, path)
+	local file_string = self:_read_file(path)
+	local loaded_function = file_string and _loadstring(file_string)
+	-- Debug
+	self:debug(path, "File loaded: ")
+	return loaded_function and type(loaded_function) == "function" and loaded_function()
 end
 
-SaveLua._cast_quaternion_to_string = function(self, quaternion)
-	return string_gsub(tostring(quaternion), "Vector4", "QuaternionBox")
-end
-
-SaveLua.save_entry = function(self, data)
-	-- if type(data) == "string" then
-	-- 	data = {gear_id = data}
-	-- end
-	if data and data.item then
-		local gear_id = mod:get_gear_id(data.item)
-		local entry = self:_save_entry(data)
-		return entry
-	end
-end
+-- ##### ┌─┐┌─┐┬  ┬┌─┐ ################################################################################################
+-- ##### └─┐├─┤└┐┌┘├┤  ################################################################################################
+-- ##### └─┘┴ ┴ └┘ └─┘ ################################################################################################
 
 SaveLua._save_entry = function(self, data)
 
+	-- Infos
 	local unit_good = data.unit and unit_alive(data.unit)
 	local node = data.node or 1
-
--- if data.unit and unit_alive(data.unit) then
+	local previous = nil
 
 	-- Create appdata folder
 	self:_create_directory()
 
-
+	-- Create entry path
 	local path, file_name = self:_create_entry_path(data)
-	local previous = nil
-
+	
+	-- Load previous entry
 	if self:_file_exists(path) then
 		previous = self.gear_settings:get_cache(data.item) or self:_load_entry(path)
 	end
@@ -268,23 +273,12 @@ SaveLua._save_entry = function(self, data)
 	file:write(tt.."},\n")
 	if data.item then
 		-- Attachments
-		-- local attachments = mod:get_attachment_slots(data.unit)
-		-- local attachments = mod:get_item_attachment_slots(data.item)
 		local attachments = self.gear_settings:attachments(data.item)
 		if attachments then
 			file:write(tt.."attachments = {\n")
 			for attachment_slot, attachment_name in pairs(attachments) do
 				file:write(ttt..tostring(attachment_slot).." = '"..tostring(attachment_name).."',\n")
 			end
-			-- for _, attachment_slot in pairs(attachments) do
-			-- 	-- local unit = mod:get_attachment_unit(data.unit, attachment_slot)
-			-- 	-- local attachment_name = unit_get_data(unit, "attachment_name")
-			-- 	local slot = mod:_recursive_find_attachment(data.item.attachments, attachment_slot)
-			-- 	local attachment_name = slot and slot.attachment_name
-			-- 	if attachment_name then
-			-- 		file:write(ttt..tostring(attachment_slot).." = '"..tostring(attachment_name).."',\n")
-			-- 	end
-			-- end
 			file:write(tt.."},\n")
 		end
 	end
@@ -293,6 +287,7 @@ SaveLua._save_entry = function(self, data)
 	-- Close file
 	file:close()
 
+	-- Load new entry
 	local new_entry = self:_load_entry(path)
 
 	-- Add to cache
@@ -303,22 +298,61 @@ SaveLua._save_entry = function(self, data)
 		self:_set_cache(cache)
 	end
 
-	mod:echot("Setting saved: "..file_name)
+	-- Debug
+	self:debug(file_name, "File saved: ")
 
 	-- Save user settings
     Application.save_user_settings()
 
+	-- Return
 	return new_entry
--- end
 
 end
 
-SaveLua._read_file = function(self, path)
-	local file = assert(_io.open(path, "rb"))
-	if not file then return nil end
-	local content = file:read("*all")
-	file:close()
-	return content
+-- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################
+-- ##### ├─┤├┤ │  ├─┘ #################################################################################################
+-- ##### ┴ ┴└─┘┴─┘┴   #################################################################################################
+
+SaveLua._cast_vector3_to_string = function(self, vector)
+	local str = tostring(vector)
+	if not string_find(str, "Vector3Box") then
+		str = string_gsub(str, "Vector3", "Vector3Box")
+	end
+	return str
+end
+
+SaveLua._cast_quaternion_to_string = function(self, quaternion)
+	return string_gsub(tostring(quaternion), "Vector4", "QuaternionBox")
+end
+
+-- ##### ┬┌┐┌┌┬┐┌─┐┬─┐┌─┐┌─┐┌─┐┌─┐ ####################################################################################
+-- ##### ││││ │ ├┤ ├┬┘├┤ ├─┤│  ├┤  ####################################################################################
+-- ##### ┴┘└┘ ┴ └─┘┴└─└  ┴ ┴└─┘└─┘ ####################################################################################
+
+SaveLua.save_entry = function(self, data)
+	if data and data.item then
+		local gear_id = mod:get_gear_id(data.item)
+		local entry = self:_save_entry(data)
+		return entry
+	end
+end
+
+SaveLua.delete_entry = function(self, data)
+	local path, file_name = self:_create_entry_path(data)
+	if self:_file_exists(path) then
+		if _os.remove(path) then
+			-- Remove from cache
+			local cache = self:_get_entries_cache()
+			local new_cache = {}
+			for _, c in pairs(cache) do
+				if c ~= file_name then
+					new_cache[#new_cache+1] = c
+				end
+			end
+			self:_set_cache(new_cache)
+			return true
+		end
+	end
 end
 
 SaveLua.load_entry = function(self, gear_id)
@@ -326,21 +360,10 @@ SaveLua.load_entry = function(self, gear_id)
 		-- Load file
 		local path = self:_appdata_path()..tostring(gear_id)..".lua"
 		if self:_file_exists(path) then
-			mod:echot("Reading file: "..tostring(path))
 			local entry = self:_load_entry(path)
 			return entry
 		end
 	end
-end
-
-SaveLua._load_entry = function(self, path)
-	local file_string = self:_read_file(path)
-	local loaded_function = file_string and _loadstring(file_string)
-	return loaded_function and type(loaded_function) == "function" and loaded_function()
-	-- local result = loaded_function and loaded_function()
-	-- if result then
-	-- 	return result
-	-- end
 end
 
 return SaveLua

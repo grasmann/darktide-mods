@@ -280,8 +280,6 @@ mod.start_weapon_move = function(self, position, no_reset)
 
 	-- mod.customization_camera:move(position)
 
-	if self.demo then return end
-
 	if position then
 		self.move_position = position
 		self.do_move = true
@@ -704,24 +702,6 @@ end
 -- ##### ┬ ┬┬  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ##############################################################################
 -- ##### │ ││  ├┤ │ │││││   │ ││ ││││└─┐ ##############################################################################
 -- ##### └─┘┴  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ##############################################################################
-
-mod.cb_on_demo_pressed = function(self)
-	self.demo = true
-	self.demo_time = .5
-	self.demo_timer = 0
-	self:persistent_table(REFERENCE).keep_all_packages = true
-	self.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
-	-- self:start_weapon_move(vector3_box(vector3(-.15, -1, 0)))
-	local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
-	ui_weapon_spawner._link_unit_position = vector3_box(vector3_unbox(ui_weapon_spawner._link_unit_base_position) + vector3(-.2, -2, 0))
-	mod.link_unit_position = ui_weapon_spawner._link_unit_position
-	local weapon_spawn_data = ui_weapon_spawner._weapon_spawn_data
-	if weapon_spawn_data then
-		local link_unit = weapon_spawn_data.link_unit
-		-- mod:info("mod.set_light_positions: "..tostring(link_unit))
-		unit_set_local_position(link_unit, 1, vector3_unbox(ui_weapon_spawner._link_unit_position))
-	end
-end
 
 --#region Old
 	-- mod.cb_on_randomize_pressed = function(self, skip_animation)
@@ -1217,15 +1197,8 @@ mod.hide_custom_widgets = function(self, hide)
 				widget.visible = false
 			end
         end
-		if self.cosmetics_view._custom_widgets_overlapping > 0 then
-			self.cosmetics_view._widgets_by_name.panel_extension.visible = not hide
-		else
-			self.cosmetics_view._widgets_by_name.panel_extension.visible = false
-		end
 		self.cosmetics_view._widgets_by_name.reset_button.visible = not hide
 		self.cosmetics_view._widgets_by_name.randomize_button.visible = not hide
-		local demo_mode = mod:get("demo_mode")
-		self.cosmetics_view._widgets_by_name.demo_button.visible = demo_mode and not hide
 		self.cosmetics_view._widgets_by_name.weapon_customization_scrollbar.visible = not hide and self.cosmetics_view.total_dropdown_height > 950
     end
 end
@@ -1370,58 +1343,6 @@ mod.resolve_not_applicable_attachments = function(self)
 	end
 end
 
-mod.resolve_overlapping_widgets = function(self)
-	local move = 0
-	local overlapping = {}
-	-- Iterate scenegraph entries
-	local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
-	for _, scenegraph_entry in pairs(cosmetics_scenegraphs) do
-		-- Make sure attachment slot is applicable
-		if not table_contains(self.cosmetics_view._not_applicable, scenegraph_entry) then
-			-- Differentiate text and dropdown
-			if string_find(scenegraph_entry, "text_pivot") then
-				move = move + label_height
-			else
-				move = move + dropdown_height
-			end
-			-- Check if widget is overlapping
-			if self.cosmetics_view._ui_scenegraph[scenegraph_entry].local_position[2] > grid_size[2] then
-				-- Count overlapping attachment slots
-				if not string_find(scenegraph_entry, "text_pivot") then
-					self.cosmetics_view._custom_widgets_overlapping = self.cosmetics_view._custom_widgets_overlapping + 1
-				end
-				-- Add overlapping widget to list
-				overlapping[#overlapping+1] = scenegraph_entry
-			end
-		end
-	end
-	-- Change extension panels size
-	local extension_panel_pivot = self.cosmetics_view._ui_scenegraph.panel_extension_pivot
-	extension_panel_pivot.size[2] = (85 * self.cosmetics_view._custom_widgets_overlapping) + (edge * 2)
-	-- extension_panel_pivot.local_position[1] = grid_size[2] - 85 * (self.cosmetics_view._custom_widgets_overlapping + 1)
-	-- extension_panel_pivot.local_position[2] = grid_size[2] - 85 * (self.cosmetics_view._custom_widgets_overlapping + 1)
-	-- Change overlapping widgets positions
-	local y = -85
-	for _, scenegraph_name in pairs(overlapping) do
-		local scenegraph_entry = self.cosmetics_view._ui_scenegraph[scenegraph_name]
-		-- position = {-90 -(grid_width / 2), 0, z}
-		-- local screen_width = RESOLUTION_LOOKUP.width
-		-- local screen_height = RESOLUTION_LOOKUP.height
-		local corner_top_right = self.cosmetics_view._ui_scenegraph.corner_top_right.world_position
-		local grid_pos = self.cosmetics_view._ui_scenegraph.item_grid_pivot.world_position
-		local extension_pos = self.cosmetics_view._ui_scenegraph.panel_extension_pivot.world_position
-		if string_find(scenegraph_name, "text_pivot") then
-			y = y + label_height
-		else
-			y = y + dropdown_height
-		end
-		scenegraph_entry.position[1] = extension_pos[1] - grid_pos[1] + 35 -- grid_width / 2 - edge --extension_pos[1] - 
-		scenegraph_entry.local_position[2] = extension_pos[2] + y
-		scenegraph_entry.local_position[3] = 100
-		
-	end
-end
-
 mod.get_dropdown_positions = function(self)
 	if self.cosmetics_view then
 		local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
@@ -1480,7 +1401,6 @@ end
 
 mod.reset_stuff = function(self)
 	self:persistent_table(REFERENCE).keep_all_packages = false
-	self.demo = nil
 	self.move_position = nil
 	self.new_position = nil
 	self.last_move_position = nil
@@ -1779,13 +1699,4 @@ mod.destroy_bar_breakdown_widgets = function(self)
 	table.clear(self.cosmetics_view.bar_breakdown_widgets_by_name)
 
 	self.cosmetics_view.bar_breakdown_name = nil
-end
-
-mod.get_cosmetics_scenegraphs = function(self)
-	local cosmetics_scenegraphs = {}
-	for _, attachment_slot in pairs(self.attachment_slots) do
-		cosmetics_scenegraphs[#cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
-		cosmetics_scenegraphs[#cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
-	end
-	return cosmetics_scenegraphs
 end

@@ -139,7 +139,7 @@ mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gea
         --     -- mod:set_gear_setting(gear_id, attachment_slot, attachment)
         --     mod.gear_settings:set(gear_id, attachment_slot, attachment)
         -- end
-        mod.gear_settings:push_attachments(gear_id, attachments)
+        mod.gear_settings:push(gear_id, attachments)
     end
     mod.offer_id = nil
     func(self, gear_id, gear, ...)
@@ -158,7 +158,7 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
         --         mod.gear_settings:set(card_reward.gear_id, attachment_slot, attachment)
         --     end
         -- end
-        mod.gear_settings:push_attachments(card_reward.gear_id, attachments)
+        mod.gear_settings:push(card_reward.gear_id, attachments)
         -- mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = attachments
     end
     return item, item_group, rarity, item_level
