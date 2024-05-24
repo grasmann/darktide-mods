@@ -102,6 +102,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_husk_visual_lo
             script_unit_add_extension({
                 world = self._equipment_component._world,
             }, self._unit, "VisibleEquipmentExtension", "visible_equipment_system", {
+                player = self._player,
                 player_unit = self._unit,
                 profile = self._player:profile(),
                 is_local_unit = self._is_local_unit,

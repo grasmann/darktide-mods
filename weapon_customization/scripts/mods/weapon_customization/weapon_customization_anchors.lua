@@ -95,6 +95,7 @@ table.model_table = function(content, parent, angle, move, remove, type, no_supp
 			hide_mesh = table.tv(hide_mesh, i),
 			special_resolve = table.tv(special_resolve, i),
 			index = index,
+			slot_index = i,
 		}
 		i = i + 1
 		index = index + 1

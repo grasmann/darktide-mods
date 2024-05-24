@@ -206,7 +206,11 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/weapons")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/performance")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/attachments")
-	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/save_lua")
+	
+	local WeaponBuildAnimation = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/weapon_build_animation")
+	mod.build_animation = WeaponBuildAnimation:new()
+	local GearSettings = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/gear_settings")
+	mod.gear_settings = GearSettings:new()
 
 	-- Patches
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/hud")
@@ -239,7 +243,6 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/laser_pointer_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/sway_animation_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/crouch_animation_extension")
-	-- mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_animation_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/visible_equipment_extension")
 
 	-- Import mod files

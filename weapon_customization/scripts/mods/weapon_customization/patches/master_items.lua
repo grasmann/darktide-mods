@@ -326,11 +326,11 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         end
     --#endregion Original Code
 
-    local function cached_gear_list()
-        local data_service = managers and managers.data_service
-        local gear_data = data_service and data_service.gear
-        return gear_data and gear_data._cached_gear_list
-    end
+    -- local function cached_gear_list()
+    --     local data_service = managers and managers.data_service
+    --     local gear_data = data_service and data_service.gear
+    --     return gear_data and gear_data._cached_gear_list
+    -- end
 
     mod:hook(MasterItems, "get_item_instance", function(func, gear, gear_id, ...)
         -- Check instance
@@ -341,13 +341,13 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
             -- Process
             local item_instance = _item_plus_overrides(gear, gear_id)
             local master_item = item_instance.__master_item or item_instance
-            local cached_gear_list = cached_gear_list()
+            -- local cached_gear_list = cached_gear_list()
+            local cached_gear_list = mod.gear_settings:player_gear_list()
             if gear_id and cached_gear_list and cached_gear_list[gear_id] ~= nil then
                 mod.player_items[gear_id] = master_item
             elseif gear_id then
                 mod.player_items[gear_id] = nil
                 -- Get attributes
-                local in_possesion_of_player = mod:is_owned_by_player(item_instance)
                 local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
                 local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
                 local in_premium_store = mod:is_premium_store_item(item_instance)
@@ -380,13 +380,12 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
 
     mod:hook(MasterItems, "get_store_item_instance", function(func, description, ...)
         local item_instance = _store_item_plus_overrides(description)
-        local gear_id = mod:get_gear_id(item_instance)
+        local gear_id = mod.gear_settings:item_to_gear_id(item_instance)
         local offer_id = description.offer_id
         if gear_id and offer_id then
             local master_item = item_instance.__master_item or item_instance
             if not mod:is_premium_store_item() then
                 -- Get attributes
-                local in_possesion_of_player = mod:is_owned_by_player(item_instance)
                 local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
                 local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
                 local in_premium_store = mod:is_premium_store_item(item_instance)

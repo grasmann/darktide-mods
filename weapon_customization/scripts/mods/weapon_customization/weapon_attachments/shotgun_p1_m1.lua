@@ -61,10 +61,10 @@ return table.combine(
             }, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if attachment == "receiver_02" or attachment == "receiver_03" or attachment == "receiver_04" then
-                    local barrel = mod:get_gear_setting(gear_id, "barrel", item)
+                    local barrel = mod.gear_settings:get(item, "barrel")
                     if barrel ~= "barrel_10" and barrel ~= "barrel_11" and barrel ~= "barrel_12" then changes["barrel"] = "barrel_10" end
                 else
-                    local barrel = mod:get_gear_setting(gear_id, "barrel", item)
+                    local barrel = mod.gear_settings:get(item, "barrel")
                     if barrel == "barrel_10" or barrel == "barrel_11" or barrel == "barrel_12" then changes["barrel"] = "barrel_01" end
                 end
                 return changes
@@ -97,10 +97,10 @@ return table.combine(
             }, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if attachment == "barrel_10" or attachment == "barrel_11" or attachment == "barrel_12" then
-                    local receiver = mod:get_gear_setting(gear_id, "receiver", item)
+                    local receiver = mod.gear_settings:get(item, "receiver")
                     if receiver ~= "receiver_02" and receiver ~= "receiver_03" and receiver ~= "receiver_04" then changes["receiver"] = "receiver_02" end
                 else
-                    local receiver = mod:get_gear_setting(gear_id, "receiver", item)
+                    local receiver = mod.gear_settings:get(item, "receiver")
                     if receiver == "receiver_02" or receiver == "receiver_03" or receiver == "receiver_04" then changes["receiver"] = "receiver_01" end
                 end
                 return changes
@@ -163,7 +163,7 @@ return table.combine(
             -- Autogun
             _autogun_p1_m1.muzzle_models("barrel", -.5, vector3_box(0, 0, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
-                changes["muzzle_2"] = mod:get_gear_setting(gear_id, "muzzle", item)
+                changes["muzzle_2"] = mod.gear_settings:get(item, "muzzle")
                 return changes
             end),
             -- Common

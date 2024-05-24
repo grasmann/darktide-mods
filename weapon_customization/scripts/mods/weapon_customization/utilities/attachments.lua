@@ -187,7 +187,7 @@ end
 
 mod.resolve_special_changes = function(self, item, attachment)
 	local item_name = self:item_name_from_content_string(item.name)
-	local gear_id = self:get_gear_id(item)
+	local gear_id = mod.gear_settings:item_to_gear_id(item)
 	local attachment_data = self.attachment_models[item_name][attachment]
 	if attachment_data and attachment_data.special_resolve then
 		local special_changes = attachment_data.special_resolve(gear_id, item, attachment)
@@ -195,11 +195,11 @@ mod.resolve_special_changes = function(self, item, attachment)
 			for special_slot, special_attachment in pairs(special_changes) do
 
 				if self.cosmetics_view then
-					if not self.original_weapon_settings[special_slot] and not table_contains(self.automatic_slots, special_slot) then
-						if not self:get_gear_setting(gear_id, special_slot) then
-							self.original_weapon_settings[special_slot] = "default"
+					if not self.cosmetics_view.original_weapon_settings[special_slot] and not table_contains(self.automatic_slots, special_slot) then
+						if not self.gear_settings:get(item, special_slot) then
+							self.cosmetics_view.original_weapon_settings[special_slot] = "default"
 						else
-							self.original_weapon_settings[special_slot] = self:get_gear_setting(gear_id, special_slot)
+							self.cosmetics_view.original_weapon_settings[special_slot] = self.gear_settings:get(item, special_slot)
 						end
 					end
 				end
@@ -210,7 +210,7 @@ mod.resolve_special_changes = function(self, item, attachment)
 					special_attachment = possibilities[rnd]
 				end
 
-				self:set_gear_setting(gear_id, special_slot, special_attachment)
+				self.gear_settings:set(gear_id, special_slot, special_attachment)
 			end
 		end
 	end
@@ -232,8 +232,7 @@ mod.resolve_no_support = function(self, item)
 	end
 	-- Disable no supported
 	for _, attachment_slot in pairs(self.attachment_slots) do
-		-- local item = self.cosmetics_view._selected_item
-		local attachment = item and self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item)
+		local attachment = self.gear_settings:get(self.cosmetics_view._selected_item, attachment_slot)
 		if attachment and self.attachment_models[self.cosmetics_view._item_name] and self.attachment_models[self.cosmetics_view._item_name][attachment] then
 			local attachment_data = self.attachment_models[self.cosmetics_view._item_name][attachment]
 			local no_support = attachment_data.no_support
@@ -264,9 +263,9 @@ end
 
 mod.resolve_auto_equips = function(self, item)
 	local item_name = self:item_name_from_content_string(item.name)
-	local gear_id = self:get_gear_id(item)
+	local gear_id = mod.gear_settings:item_to_gear_id(item)
 	for _, attachment_slot in pairs(self.attachment_slots) do
-		local attachment = item and self:get_gear_setting(gear_id, attachment_slot, item)
+		local attachment = self.gear_settings:get(item, attachment_slot)
 		if attachment then
 			if self.attachment_models[item_name] and self.attachment_models[item_name][attachment] then
 				local attachment_data = self.attachment_models[item_name][attachment]
@@ -280,16 +279,16 @@ mod.resolve_auto_equips = function(self, item)
 							if #parameters == 2 then
 								local negative = string_find(parameters[1], "!")
 								parameters[1] = string_gsub(parameters[1], "!", "")
-								local attachment_name = self:get_gear_setting(gear_id, auto_type, item)
+								local attachment_name = self.gear_settings:get(item, auto_type)
 								if attachment_name then
 									if negative and attachment_name ~= parameters[1] then
-										self:set_gear_setting(gear_id, auto_type, parameters[2])
+										self.gear_settings:set(gear_id, auto_type, parameters[2])
 									elseif attachment_name == parameters[1] then
-										self:set_gear_setting(gear_id, auto_type, parameters[2])
+										self.gear_settings:set(gear_id, auto_type, parameters[2])
 									end
 								else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
 							else
-								self:set_gear_setting(gear_id, auto_type, parameters[1])
+								self.gear_settings:set(gear_id, auto_type, parameters[1])
 							end
 						end
 					else mod:print("Automatic equip for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil", true) end
@@ -302,7 +301,7 @@ end
 mod.load_attachment_sounds = function(self, item)
 	local attachments = self:get_item_attachment_slots(item)
 	for _, attachment_slot in pairs(attachments) do
-		local attachment_name = self:get_gear_setting(self.cosmetics_view._gear_id, attachment_slot, item)
+		local attachment_name = self.gear_settings:get(item, attachment_slot)
 		local detach_sounds = self:get_equipment_sound_effect(item, attachment_slot, attachment_name, "detach", true)
 		if detach_sounds then
 			for _, detach_sound in pairs(detach_sounds) do
@@ -558,9 +557,7 @@ end
 
 
 
-mod.execute_hide_meshes = function(self, item, attachment_units)
-	-- local gear_id = self:get_gear_id(item)
-	-- local slot_info_id = self:get_slot_info_id(item)
+mod.execute_hide_meshes = function(self, item, weapon_unit, attachment_units)
 	-- local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 	local item_name = self:item_name_from_content_string(item.name)
 	for _, unit in pairs(attachment_units) do
@@ -584,7 +581,8 @@ mod.execute_hide_meshes = function(self, item, attachment_units)
 						-- Get attachment unit
 						-- local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
 						-- local hide_unit = self:get_attachment_unit(item, attachment_slot)
-						local hide_unit = self:get_attachment_slot_in_attachments(attachment_units, attachment_slot)
+						-- local hide_unit = self:get_attachment_slot_in_attachments(attachment_units, attachment_slot)
+						local hide_unit = mod.gear_settings:attachment_unit(weapon_unit, attachment_slot)
 						-- Check unit
 						if hide_unit and unit_alive(hide_unit) then
 							-- Hide nodes
@@ -769,13 +767,13 @@ mod._recursive_find_attachment_name = function(self, attachments, attachment_nam
 end
 
 mod._overwrite_attachments = function(self, item_data, attachments)
-    local gear_id = self:get_gear_id(item_data)
+	local gear_id = mod.gear_settings:item_to_gear_id(item_data)
     local item_name = self:item_name_from_content_string(item_data.name)
     local automatic_equip_entries = {}
     for _, attachment_slot in pairs(self.attachment_slots) do
         -- Don't handle trinkets
         if self:not_trinket(attachment_slot) and self.attachment_models[item_name] then
-            local attachment = self:get_gear_setting(gear_id, attachment_slot)
+			local attachment = self.gear_settings:get(gear_id, attachment_slot)
             
             -- Customize
             if attachment and self.attachment_models[item_name][attachment] then
@@ -818,7 +816,7 @@ mod._overwrite_attachments = function(self, item_data, attachments)
                 local attachment_data = self:_recursive_find_attachment(master_item.attachments, attachment_slot)
                 -- Get attachment
                 local item = item_data.__master_item or item_data
-                local attachment = self:get_gear_setting(gear_id, attachment_slot, item_data)
+				local attachment = self.gear_settings:get(item, attachment_slot)
                 -- -- Get fixes
                 -- attachment_data = self:_apply_anchor_fixes(item_data, attachment_slot) or attachment_data
                 -- Set attachment
@@ -899,7 +897,7 @@ local attachment_setting_overwrite = {
 }
 
 mod._add_custom_attachments = function(self, item, attachments)
-	local gear_id = self:get_gear_id(item)
+	local gear_id = mod.gear_settings:item_to_gear_id(item)
 	if gear_id and attachments then
 		-- Get item name
 		local item_name = self:item_name_from_content_string(item.name)
@@ -912,7 +910,7 @@ mod._add_custom_attachments = function(self, item, attachments)
 		-- Iterate custom attachment slots
 		for attachment_slot, attachment_table in pairs(self.add_custom_attachments) do
 			-- Get weapon setting for attachment slot
-			local attachment_setting = self:get_gear_setting(gear_id, attachment_slot, item)
+			local attachment_setting = self.gear_settings:get(item, attachment_slot)
 			local attachment = self:_recursive_find_attachment(attachments, attachment_slot)
 			-- Overwrite specific attachment settings
 			if table_contains(attachment_setting_overwrite, attachment_slot) then
@@ -956,6 +954,12 @@ mod._add_custom_attachments = function(self, item, attachments)
 	end
 end
 
+-- Get slot info id
+-- mod.get_slot_info_id = function(self, item)
+-- 	local slot_info_id = item and (item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid)
+-- 	return slot_info_id --or REWARD_ITEM --and mod.gear_id_to_offer_id[slot_info_id] or slot_info_id
+-- end
+
 mod._apply_anchor_fixes = function(self, item, unit_or_name)
 	-- if item and self:is_composite_item(item.name) then
 	-- 	if item.anchors[unit_or_name] then
@@ -963,23 +967,18 @@ mod._apply_anchor_fixes = function(self, item, unit_or_name)
 	-- 		return item.anchors[unit_or_name]
 	-- 	end
 	-- end
+	local item = item.__master_item or item
 	if item and item.attachments then
-		local gear_id = self:get_gear_id(item)
+		-- local gear_id = mod.gear_settings:item_to_gear_id(item)
 		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
-		local slot_info_id = self:get_slot_info_id(item)
-		local item_name = self:item_name_from_content_string(item.name)
+		local slot_info_id = mod.gear_settings:slot_info_id(item)
+		-- local slot_info_id = self:get_slot_info_id(item)
+		-- mod:echot("slot_info_id: "..tostring(slot_info_id).." valid: "..tostring(slot_infos and slot_infos[slot_info_id]))
+		-- local item_name = self:item_name_from_content_string(item.name)
+		local item_name = mod.gear_settings:short_name(item.name)
 
-		-- -- Default
-		-- if type(unit_or_name) == "string" and string_find(unit_or_name, "default") then
-		-- 	mod:echo("default: "..tostring(unit_or_name))
-		-- 	local attachment_data = self.attachment_models[item_name][unit_or_name]
-		-- 	local attachment_slot = attachment_data and attachment_data.type
-		-- 	unit_or_name = attachment_slot and self:get_gear_setting(gear_id, attachment_slot, item) or unit_or_name
-		-- 	mod:echo("attachment: "..tostring(unit_or_name))
-		-- end
-
-		local attachments = item.attachments
-		if gear_id then
+		-- local attachments = item.attachments
+		-- if gear_id then
 			-- Fixes
 			if self.anchors[item_name] and self.anchors[item_name].fixes then
 				local fixes = self.anchors[item_name].fixes
@@ -1001,16 +1000,23 @@ mod._apply_anchor_fixes = function(self, item, unit_or_name)
 									if self.attachment_models[item_name] and self.attachment_models[item_name][dependency_possibility] then
 										-- local model_string = self.attachment_models[item_name][dependency].model
 										if negative then
-											has_dependency_possibility = not self:_recursive_find_attachment_name(attachments, dependency_possibility)
+											has_dependency_possibility = not self:_recursive_find_attachment_name(item.attachments, dependency_possibility)
 										else
-											has_dependency_possibility = self:_recursive_find_attachment_name(attachments, dependency_possibility)
+											has_dependency_possibility = self:_recursive_find_attachment_name(item.attachments, dependency_possibility)
 										end
 										if has_dependency_possibility then break end
 									elseif table_contains(self.attachment_slots, dependency_possibility) then
 										if negative then
-											has_dependency_possibility = not self:_recursive_find_attachment(attachments, dependency_possibility)
+											has_dependency_possibility = not self:_recursive_find_attachment(item.attachments, dependency_possibility)
 										else
-											has_dependency_possibility = self:_recursive_find_attachment(attachments, dependency_possibility)
+											has_dependency_possibility = self:_recursive_find_attachment(item.attachments, dependency_possibility)
+										end
+										if has_dependency_possibility then break end
+									elseif self.attachment_models[item_name] then
+										if negative then
+											has_dependency_possibility = dependency_possibility ~= item_name
+										else
+											has_dependency_possibility = dependency_possibility == item_name
 										end
 										if has_dependency_possibility then break end
 									end
@@ -1030,7 +1036,7 @@ mod._apply_anchor_fixes = function(self, item, unit_or_name)
 								local attachment_slot_info = slot_infos[slot_info_id]
 								if self.attachment_models[item_name] and self.attachment_models[item_name][fix_attachment] then
 									-- local model_string = self.attachment_models[item_name][fix_attachment].model
-									local has_fix_attachment = self:_recursive_find_attachment_name(attachments, fix_attachment)
+									local has_fix_attachment = self:_recursive_find_attachment_name(item.attachments, fix_attachment)
 									local fix_attachment_slot = self.attachment_models[item_name][fix_attachment].type
 									if has_fix_attachment and fix_attachment_slot and unit_or_name == attachment_slot_info.attachment_slot_to_unit[fix_attachment_slot] then
 										return fix
@@ -1049,7 +1055,7 @@ mod._apply_anchor_fixes = function(self, item, unit_or_name)
 					end
 				end
 			end
-		else self:print("slot_info is nil") end
+		-- else self:print("slot_info is nil") end
 	end
 end
 

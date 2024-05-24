@@ -729,8 +729,7 @@ end
 mod.preview_laser = {}
 
 mod.has_laser_pointer = function(self, item)
-	local gear_id = self:get_gear_id(item)
-    local laser_pointer = gear_id and self:get_gear_setting(gear_id, "flashlight")
+    local laser_pointer = self.gear_settings:get(item, "flashlight")
 	return laser_pointer and laser_pointer == "laser_pointer"
 end
 

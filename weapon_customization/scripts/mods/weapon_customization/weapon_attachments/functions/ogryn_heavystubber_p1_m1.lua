@@ -41,7 +41,7 @@ return {
             attachments)
         else return attachments end
     end,
-    barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+    barrel_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
         if mesh_move == nil then mesh_move = false end
         return table_model_table({
             {name = "barrel_default", model = ""},
@@ -53,7 +53,7 @@ return {
             {name = "barrel_06",      model = _item_ranged.."/barrels/stubgun_ogryn_barrel_01"},
             {name = "barrel_07",      model = _item_ranged.."/barrels/stubgun_ogryn_barrel_02"},
             {name = "barrel_08",      model = _item_ranged.."/barrels/stubgun_ogryn_barrel_03"},
-        }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move)
+        }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     receiver_attachments = function(default)
         local attachments = {
@@ -71,7 +71,7 @@ return {
             attachments)
         else return attachments end
     end,
-    receiver_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+    receiver_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
         if mesh_move == nil then mesh_move = false end
         return table_model_table({
             {name = "receiver_default", model = ""},
@@ -82,7 +82,7 @@ return {
             {name = "receiver_05",      model = _item_ranged.."/recievers/stubgun_ogryn_receiver_01"},
             {name = "receiver_06",      model = _item_ranged.."/recievers/stubgun_ogryn_receiver_02"},
             {name = "receiver_07",      model = _item_ranged.."/recievers/stubgun_ogryn_receiver_03"},
-        }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move)
+        }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     magazine_attachments = function(default)
         local attachments = {
@@ -101,7 +101,7 @@ return {
             attachments)
         else return attachments end
     end,
-    magazine_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+    magazine_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
         if mesh_move == nil then mesh_move = false end
         return table_model_table({
             {name = "magazine_default", model = ""},
@@ -113,7 +113,7 @@ return {
             {name = "magazine_06",      model = _item_ranged.."/magazines/stubgun_ogryn_magazine_01"},
             {name = "magazine_07",      model = _item_ranged.."/magazines/stubgun_ogryn_magazine_02"},
             {name = "magazine_08",      model = _item_ranged.."/magazines/stubgun_ogryn_magazine_03"},
-        }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move)
+        }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     grip_attachments = function(default)
         local attachments = {
@@ -130,7 +130,7 @@ return {
             attachments)
         else return attachments end
     end,
-    grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+    grip_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
         if mesh_move == nil then mesh_move = false end
         return table_model_table({
             {name = "grip_default", model = ""},
@@ -140,6 +140,6 @@ return {
             {name = "grip_04",      model = _item_ranged.."/grips/stubgun_ogryn_grip_01"},
             {name = "grip_05",      model = _item_ranged.."/grips/stubgun_ogryn_grip_02"},
             {name = "grip_06",      model = _item_ranged.."/grips/stubgun_ogryn_grip_03"},
-        }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move)
+        }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

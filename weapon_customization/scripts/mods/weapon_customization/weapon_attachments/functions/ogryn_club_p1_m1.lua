@@ -26,13 +26,13 @@ local mod = get_mod("weapon_customization")
 return {
     head_attachments = function(default)
         local attachments = {
-            {id = "head_01", name = "Head 1"},
-            {id = "head_02", name = "Head 2"},
-            {id = "head_03", name = "Head 3"},
-            {id = "head_04", name = "Head 4"},
-            {id = "head_05", name = "Head 5"},
-            {id = "head_06", name = "Krieg", no_randomize = true},
-            {id = "head_07", name = "Prologue", no_randomize = true},
+            {id = "ogryn_club_head_01", name = "Ogryn Club 1"},
+            {id = "ogryn_club_head_02", name = "Ogryn Club 2"},
+            {id = "ogryn_club_head_03", name = "Ogryn Club 3"},
+            {id = "ogryn_club_head_04", name = "Ogryn Club 4"},
+            {id = "ogryn_club_head_05", name = "Ogryn Club 5"},
+            {id = "ogryn_club_head_06", name = "Krieg", no_randomize = true},
+            {id = "ogryn_club_head_07", name = "Prologue", no_randomize = true},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -43,14 +43,14 @@ return {
     head_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
         if mesh_move == nil then mesh_move = false end
         return table_model_table({
-            {name = "head_default", model = ""},
-            {name = "head_01",      model = _item_melee.."/heads/shovel_ogryn_head_01"},
-            {name = "head_02",      model = _item_melee.."/heads/shovel_ogryn_head_02"},
-            {name = "head_03",      model = _item_melee.."/heads/shovel_ogryn_head_03"},
-            {name = "head_04",      model = _item_melee.."/heads/shovel_ogryn_head_04"},
-            {name = "head_05",      model = _item_melee.."/heads/shovel_ogryn_head_05"},
-            {name = "head_06",      model = _item_melee.."/full/krieg_shovel_ogryn_full_01"},
-            {name = "head_07",      model = _item_melee.."/full/prologue_shovel_ogryn_full_01"},
+            {name = "head_default",       model = ""},
+            {name = "ogryn_club_head_01", model = _item_melee.."/heads/shovel_ogryn_head_01"},
+            {name = "ogryn_club_head_02", model = _item_melee.."/heads/shovel_ogryn_head_02"},
+            {name = "ogryn_club_head_03", model = _item_melee.."/heads/shovel_ogryn_head_03"},
+            {name = "ogryn_club_head_04", model = _item_melee.."/heads/shovel_ogryn_head_04"},
+            {name = "ogryn_club_head_05", model = _item_melee.."/heads/shovel_ogryn_head_05"},
+            {name = "ogryn_club_head_06", model = _item_melee.."/full/krieg_shovel_ogryn_full_01"},
+            {name = "ogryn_club_head_07", model = _item_melee.."/full/prologue_shovel_ogryn_full_01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     grip_attachments = function(default)

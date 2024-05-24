@@ -135,10 +135,6 @@ mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gea
     end
     if attachments then
         mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = nil
-        -- for attachment_slot, attachment in pairs(attachments) do
-        --     -- mod:set_gear_setting(gear_id, attachment_slot, attachment)
-        --     mod.gear_settings:set(gear_id, attachment_slot, attachment)
-        -- end
         mod.gear_settings:push(gear_id, attachments)
     end
     mod.offer_id = nil
@@ -152,12 +148,6 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
         item.gear_id = card_reward.gear_id
         local attachments = mod:randomize_item(item, nil, card_reward.gear_id)
         mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = nil
-        -- for attachment_slot, attachment in pairs(attachments[card_reward.gear_id]) do
-        --     -- mod:set_gear_setting(card_reward.gear_id, attachment_slot, attachment)
-        --     if mod.gear_settings then
-        --         mod.gear_settings:set(card_reward.gear_id, attachment_slot, attachment)
-        --     end
-        -- end
         mod.gear_settings:push(card_reward.gear_id, attachments)
         -- mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = attachments
     end

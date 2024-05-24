@@ -155,7 +155,7 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     self.light_3p = unit_light(self.flashlight_unit_3p, 1)
     -- Get item
     self.item = extension_init_data.item or self.visual_loadout_extension and self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
-    self.gear_id = self.item and mod:get_gear_id(self.item)
+    self.gear_id = self.item and mod.gear_settings:item_to_gear_id(self.item)
     -- Set attachment
     self:set_flashlight_attachment()
     -- Properties
@@ -266,7 +266,7 @@ FlashlightExtension.is_laser_pointer = function(self)
 end
 
 FlashlightExtension.is_modded = function(self)
-    return mod:get_gear_setting(self.gear_id, "flashlight") ~= nil
+    return mod.gear_settings:get(self.gear_id, "flashlight") ~= nil
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
@@ -650,13 +650,7 @@ end
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘ ###########################################################################################
 
 mod.is_flashlight_modded = function(self, item_or_gear_id)
-    -- local gear_id = item_or_gear_id
-    -- if type(item_or_gear_id) == "table" then
-    --     item_or_gear_id = item_or_gear_id.__master_item or item_or_gear_id
-    --     gear_id = self:get_gear_id(item_or_gear_id)
-    -- end
     return self:execute_extension(self.player_unit, "flashlight_system", "is_modded")
-    -- return gear_id and mod:get_gear_setting(gear_id, "flashlight") ~= nil
 end
 
 mod.is_flashlight_wielded = function(self)
@@ -676,8 +670,7 @@ mod.flashlight_active = function(self)
 end
 
 mod.has_flashlight = function(self, item)
-    local gear_id = self:get_gear_id(item)
-    local flashlight = gear_id and self:get_gear_setting(gear_id, "flashlight")
+    local flashlight = self.gear_settings:get(item, "flashlight")
     return flashlight and flashlight ~= "laser_pointer"
 end
 

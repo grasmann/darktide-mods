@@ -56,7 +56,7 @@ local DMF = get_mod("DMF")
 
 --#region Data
 	local REFERENCE = "weapon_customization"
-	local DEBUG = true
+	local DEBUG = false
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -140,7 +140,7 @@ SaveLua._create_directory = function(self)
 end
 
 SaveLua._create_entry_path = function(self, data)
-	local gear_id = mod:get_gear_id(data.item)
+	local gear_id = self.gear_settings:item_to_gear_id(data.item)
 	local file_name = tostring(gear_id)..".lua"
 	return self:_appdata_path()..file_name, file_name
 end
@@ -231,32 +231,32 @@ SaveLua._save_entry = function(self, data)
 	-- Open file
 	local file = assert(_io.open(path, "w+"))
 
-	-- Position offset
-	local position_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_position_offset")
-	position_offset = position_offset and vector3_unbox(position_offset)
-	position_offset = position_offset or previous and previous.position_offset and vector3_unbox(previous.position_offset)
-	position_offset = position_offset or unit_good and unit_local_position(data.unit, node)
-	position_offset = position_offset or vector3_zero()
+	-- -- Position offset
+	-- local position_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_position_offset")
+	-- position_offset = position_offset and vector3_unbox(position_offset)
+	-- position_offset = position_offset or previous and previous.position_offset and vector3_unbox(previous.position_offset)
+	-- position_offset = position_offset or unit_good and unit_local_position(data.unit, node)
+	-- position_offset = position_offset or vector3_zero()
 
-	-- Rotation offset
-	local rotation_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_rotation_offset")
-	rotation_offset = rotation_offset and quaternion_unbox(rotation_offset)
-	rotation_offset = rotation_offset or previous and previous.rotation_offset and quaternion_unbox(previous.rotation_offset)
-	rotation_offset = rotation_offset or unit_good and unit_local_rotation(data.unit, node)
-	rotation_offset = rotation_offset or quaternion_box(quaternion_identity())
+	-- -- Rotation offset
+	-- local rotation_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_rotation_offset")
+	-- rotation_offset = rotation_offset and quaternion_unbox(rotation_offset)
+	-- rotation_offset = rotation_offset or previous and previous.rotation_offset and quaternion_unbox(previous.rotation_offset)
+	-- rotation_offset = rotation_offset or unit_good and unit_local_rotation(data.unit, node)
+	-- rotation_offset = rotation_offset or quaternion_box(quaternion_identity())
 
-	-- Scale offset
-	local scale_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_scale_offset")
-	scale_offset = scale_offset and vector3_unbox(scale_offset)
-	scale_offset = scale_offset or previous and previous.scale_offset and vector3_unbox(previous.scale_offset)
-	scale_offset = scale_offset or unit_good and unit_local_scale(data.unit, node)
-	scale_offset = scale_offset or vector3_box(1, 1, 1)
+	-- -- Scale offset
+	-- local scale_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_scale_offset")
+	-- scale_offset = scale_offset and vector3_unbox(scale_offset)
+	-- scale_offset = scale_offset or previous and previous.scale_offset and vector3_unbox(previous.scale_offset)
+	-- scale_offset = scale_offset or unit_good and unit_local_scale(data.unit, node)
+	-- scale_offset = scale_offset or vector3_box(1, 1, 1)
 
-	-- Center of mass
-	local center_mass = unit_good and unit_get_data(data.unit, "unit_manipulation_center_mass")
-	center_mass = center_mass and vector3_unbox(center_mass)
-	center_mass = center_mass or previous and previous.center_mass and vector3_unbox(previous.center_mass)
-	center_mass = center_mass or vector3_zero()
+	-- -- Center of mass
+	-- local center_mass = unit_good and unit_get_data(data.unit, "unit_manipulation_center_mass")
+	-- center_mass = center_mass and vector3_unbox(center_mass)
+	-- center_mass = center_mass or previous and previous.center_mass and vector3_unbox(previous.center_mass)
+	-- center_mass = center_mass or vector3_zero()
 
 	-- Stuff
 	local tt = "	"
@@ -264,13 +264,13 @@ SaveLua._save_entry = function(self, data)
 
 	-- Write lines
 	file:write("return {\n")
-	file:write(tt.."visible_equipment = {\n")
-	file:write(ttt.."center_mass = "..self:_cast_vector3_to_string(center_mass)..",\n")
-	file:write(ttt.."position_offset = "..self:_cast_vector3_to_string(position_offset)..",\n")
-	file:write(ttt.."rotation_offset = "..self:_cast_quaternion_to_string(rotation_offset)..",\n")
-	file:write(ttt.."scale_offset = "..self:_cast_vector3_to_string(scale_offset)..",\n")
-	file:write(ttt.."node = "..tostring(node)..",\n")
-	file:write(tt.."},\n")
+	-- file:write(tt.."visible_equipment = {\n")
+	-- file:write(ttt.."center_mass = "..self:_cast_vector3_to_string(center_mass)..",\n")
+	-- file:write(ttt.."position_offset = "..self:_cast_vector3_to_string(position_offset)..",\n")
+	-- file:write(ttt.."rotation_offset = "..self:_cast_quaternion_to_string(rotation_offset)..",\n")
+	-- file:write(ttt.."scale_offset = "..self:_cast_vector3_to_string(scale_offset)..",\n")
+	-- file:write(ttt.."node = "..tostring(node)..",\n")
+	-- file:write(tt.."},\n")
 	if data.item then
 		-- Attachments
 		local attachments = self.gear_settings:attachments(data.item)
@@ -279,6 +279,7 @@ SaveLua._save_entry = function(self, data)
 			for attachment_slot, attachment_name in pairs(attachments) do
 				file:write(ttt..tostring(attachment_slot).." = '"..tostring(attachment_name).."',\n")
 			end
+			file:write(ttt.."gear_node = "..tostring(data.gear_node or "'default'")..",\n")
 			file:write(tt.."},\n")
 		end
 	end
@@ -331,7 +332,7 @@ end
 
 SaveLua.save_entry = function(self, data)
 	if data and data.item then
-		local gear_id = mod:get_gear_id(data.item)
+		local gear_id = self.gear_settings:item_to_gear_id(data.item)
 		local entry = self:_save_entry(data)
 		return entry
 	end

@@ -6,8 +6,6 @@ local mod = get_mod("weapon_customization")
 
 --#region Require
 	local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
-
-	local GearSettings = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/gear_settings")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -61,8 +59,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
-
-mod.gear_settings = GearSettings:new()
 
 mod.spawn_premium_effects = function(self, item, item_unit, attachment_units, world)
 	if attachment_units and self:has_premium_skin(item) then
@@ -119,7 +115,7 @@ mod.randomize_weapon = function(self, item)
     local trigger_move_entries = {}
     local item_name = self:item_name_from_content_string(item.name)
     local attachment_slots = self:get_item_attachment_slots(item)
-    local gear_id = self:get_gear_id(item)
+	local gear_id = mod.gear_settings:item_to_gear_id(item)
     for _, attachment_slot in pairs(attachment_slots) do
         if self.attachment[item_name][attachment_slot] and not table_contains(self.automatic_slots, attachment_slot) then
             local chance_success = true
@@ -200,7 +196,7 @@ mod.randomize_weapon = function(self, item)
     end
     -- Trigger move
     for _, trigger_move_entry in pairs(trigger_move_entries) do
-        random_attachments[trigger_move_entry] = self:get_gear_setting(gear_id, trigger_move_entry, item)
+		random_attachments[trigger_move_entry] = self.gear_settings:get(item, trigger_move_entry)
     end
     return random_attachments
 end
@@ -211,7 +207,7 @@ mod.get_weapon_from_gear_id = function(self, from_gear_id)
 		-- Iterate equipped itemslots
 		for slot_name, weapon in pairs(self.weapon_extension._weapons) do
 			-- Check gear id
-			local gear_id = mod:get_gear_id(weapon.item)
+			local gear_id = mod.gear_settings:item_to_gear_id(weapon.item)
 			if from_gear_id == gear_id then
 				-- Check weapon unit
 				if weapon.weapon_unit then
@@ -223,35 +219,13 @@ mod.get_weapon_from_gear_id = function(self, from_gear_id)
 end
 
 mod.has_flashlight = function(self, item)
-	local gear_id = self:get_gear_id(item)
-	local flashlight = gear_id and self:get_gear_setting(gear_id, "flashlight")
+	local flashlight = self.gear_settings:get(item, "flashlight")
 	return flashlight and flashlight ~= "laser_pointer"
 end
 
--- Get gear id from item
-mod.get_gear_id = function(self, item)
-	local gear_id = item and (item.__gear and item.__gear.uuid or item.__original_gear_id or item.__gear_id or item.gear_id)
-	return gear_id --or REWARD_ITEM --and mod.gear_id_to_offer_id[gear_id] or gear_id
-end
-
-mod.get_real_gear_id = function(self, item)
-	local gear_id = item and (item.__original_gear_id or item.__gear and item.__gear.uuid or item.__gear_id or item.gear_id)
-	return gear_id --or REWARD_ITEM --and mod.gear_id_to_offer_id[gear_id] or gear_id
-end
-
--- Get slot info id
-mod.get_slot_info_id = function(self, item)
-	local slot_info_id = item and (item.gear_id or item.__gear_id or item.__original_gear_id or item.__gear and item.__gear.uuid)
-	return slot_info_id --or REWARD_ITEM --and mod.gear_id_to_offer_id[slot_info_id] or slot_info_id
-end
-
-mod.is_owned_by_player = function(self, item)
-	local gear_id = self:get_gear_id(item)
-	return gear_id and mod.player_items[gear_id] or mod:get_view("inventory_view") or mod:get_view("inventory_weapons_view") or mod:get_cosmetic_view()
-end
-
 mod.is_owned_by_other_player = function(self, item)
-	return not self:is_owned_by_player(item) and not self:is_store_item(item) and not self:is_premium_store_item(item)
+	-- local in_possesion_of_player = mod.gear_settings:player_item(item_data)
+	return not self.gear_settings:player_item(item) and not self:is_store_item(item) and not self:is_premium_store_item(item)
 end
 
 mod.is_store_item = function(self, item)
@@ -260,31 +234,6 @@ end
 
 mod.is_premium_store_item = function(self, item)
 	return mod:get_view("store_view") or mod:get_view("store_item_detail_view")
-end
-
--- Set attachment for specified gear id and slot
-mod.set_gear_setting = function(self, gear_id, attachment_slot, optional_attachment_or_nil)
-	if self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-		if not optional_attachment_or_nil or (optional_attachment_or_nil and (string_find(optional_attachment_or_nil, "default") or optional_attachment_or_nil == "default")) then
-			self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot] = nil
-		else
-			self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot] = optional_attachment_or_nil
-		end
-	else
-		if self.gear_settings and self.gear_settings:player_item(gear_id) then
-			self.gear_settings:set(gear_id, attachment_slot, optional_attachment_or_nil)
-			-- local entry = self.gear_settings:load(gear_id)
-			-- if entry then
-
-			-- end
-			-- attachment = entry and entry.attachments and entry.attachments[attachment_slot]
-		end
-	-- 	if not optional_attachment_or_nil or (optional_attachment_or_nil and (string_find(optional_attachment_or_nil, "default") or optional_attachment_or_nil == "default")) then
-	-- 		self:set(tostring(gear_id).."_"..attachment_slot, nil)
-	-- 	else
-	-- 		self:set(tostring(gear_id).."_"..attachment_slot, optional_attachment_or_nil)
-	-- 	end
-	end
 end
 
 mod.not_trinket = function(self, attachment_slot)
@@ -314,82 +263,11 @@ mod.has_premium_skin = function(self, item)
 	end
 end
 
--- Get attachment from specified gear id and slot
--- Optional: Item to get real default attachment
-mod.get_gear_setting = function(self, gear_id, attachment_slot, optional_item_or_nil)
-	-- local item = optional_item_or_nil and optional_item_or_nil.__master_item or optional_item_or_nil
-	local in_premium_store = mod:is_premium_store_item()
-	-- if mod:not_trinket(attachment_slot) then
-	local attachment = nil
-	-- Check skin
-	-- if optional_item_or_nil then
-	-- 	if mod:has_premium_skin(optional_item_or_nil) then
-	-- 		mod:echot("Premium Skin!")
-	-- 		attachment = self:get_actual_default_attachment(optional_item_or_nil, attachment_slot)
-	-- 	end
-	-- end
-	-- if optional_item_or_nil and mod:has_premium_skin(optional_item_or_nil) then
-	-- 	mod:echot("Premium Skin!")
-	-- 	local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
-	-- 	local weapon_skin = optional_item_or_nil.slot_weapon_skin
-	-- 	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
-	-- 		self:setup_item_definitions()
-	-- 		weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
-	-- 	end
-	-- 	if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
-	-- 		local attachment_data = self:_recursive_find_attachment(weapon_skin.attachments, attachment_slot)
-	-- 		if attachment_data and self.attachment_models[item_name] then
-	-- 			for attachment_name, model_data in pairs(self.attachment_models[item_name]) do
-	-- 				if model_data.model == attachment_data.item then
-	-- 					attachment = attachment_name
-	-- 					break
-	-- 				end
-	-- 			end
-	-- 			-- attachment = attachment_data.attachment_name
-	-- 			-- mod:echo("attachment_name: "..tostring(attachment_data.attachment_name))
-	-- 			-- attachment = mod:get_actual_default_attachment(optional_item_or_nil, attachment_slot)
-	-- 			-- mod:echo("attachment_name: "..tostring(attachment))
-	-- 			-- mod:echo("attachment: "..tostring(attachment))
-	-- 		end
-	-- 	end
-	-- end
-
-	-- Check temp
-	if not attachment and self:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-		attachment = self:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot]
-	end
-	-- Check file
-	if not attachment and self.gear_settings and self.gear_settings:player_item(gear_id) then
-		local entry = self.gear_settings:load(gear_id)
-		attachment = entry and entry.attachments and entry.attachments[attachment_slot]
-	end
-	-- -- Check manual changes
-	-- if not attachment then
-	-- 	attachment = self:get(tostring(gear_id).."_"..attachment_slot)
-	-- end
-	
-	-- Check default
-	if not attachment and optional_item_or_nil then
-		-- Get real vanilla attachment
-		attachment = self:get_actual_default_attachment(optional_item_or_nil, attachment_slot)
-	end
-	-- Check mod default
-	if not attachment and optional_item_or_nil then
-		local item_name = self:item_name_from_content_string(optional_item_or_nil.name)
-		-- Get custom slot default
-		if self.attachment[item_name] and self.attachment[item_name][attachment_slot] and #self.attachment[item_name][attachment_slot] > 0 then
-			attachment = self.attachment[item_name][attachment_slot][1].id
-		end
-	end
-	return attachment
-	-- end
-end
-
 mod.get_gear_size = function(self) end
 
 -- Redo weapon attachments by unequipping and reequipping weapon
 mod.redo_weapon_attachments = function(self, item)
-	local gear_id = mod:get_gear_id(item)
+	local gear_id = mod.gear_settings:item_to_gear_id(item)
 	local slot_name, weapon = self:get_weapon_from_gear_id(gear_id)
 	if weapon then
 		-- Get gameplay time

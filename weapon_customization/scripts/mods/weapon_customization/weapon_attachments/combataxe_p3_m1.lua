@@ -46,62 +46,38 @@ return table.combine(
                 {parent = nil, angle = 0, move = vector3_box(.1, -4, -.1), remove = vector3_box(0, 0, .4), type = nil, no_support = nil, automatic_equip = nil, hide_mesh = nil, mesh_move = nil, special_resolve = function(gear_id, item, attachment)
                     local changes = {}
                     if string_find(attachment, "default") then
-                        if mod:get_gear_setting(gear_id, "grip", item) ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
-                        if mod:get_gear_setting(gear_id, "pommel", item) ~= "pommel_default" then changes["pommel"] = "pommel_default" end
+                        if mod.gear_settings:get(item, "grip") ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
+                        if mod.gear_settings:get(item, "pommel") ~= "pommel_default" then changes["pommel"] = "pommel_default" end
                     else
-                        if mod:get_gear_setting(gear_id, "grip", item) == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
-                        local pommel = mod:get_gear_setting(gear_id, "pommel", item)
+                        if mod.gear_settings:get(item, "grip") == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
+                        local pommel = mod.gear_settings:get(item, "pommel")
                         if pommel == "pommel_default" or pommel == "shovel_pommel_06" then changes["pommel"] = "shovel_pommel_01" end
                     end
                     return changes
                 end}
             }),
-            -- _combataxe_p3_m1.head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-            --     local changes = {}
-            --     if string_find(attachment, "default") then
-            --         if mod:get_gear_setting(gear_id, "grip", item) ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
-            --         if mod:get_gear_setting(gear_id, "pommel", item) ~= "pommel_default" then changes["pommel"] = "pommel_default" end
-            --     else
-            --         if mod:get_gear_setting(gear_id, "grip", item) == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
-            --         local pommel = mod:get_gear_setting(gear_id, "pommel", item)
-            --         if pommel == "pommel_default" or pommel == "shovel_pommel_06" then changes["pommel"] = "shovel_pommel_01" end
-            --     end
-            --     return changes
-            -- end),
             _common_melee.medium_grip_models({
                 {parent = nil, angle = 0, move = vector3_box(-.1, -4, .2), remove = vector3_box(0, 0, 0), type = nil, no_support = nil, automatic_equip = nil, hide_mesh = nil, mesh_move = nil, special_resolve = function(gear_id, item, attachment)
                     local changes = {}
                     if string_find(attachment, "default") then
-                        if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
-                        if mod:get_gear_setting(gear_id, "pommel", item) ~= "pommel_default" then changes["pommel"] = "pommel_default" end
+                        if mod.gear_settings:get(item, "head") ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
+                        if mod.gear_settings:get(item, "pommel") ~= "pommel_default" then changes["pommel"] = "pommel_default" end
                     else
-                        if mod:get_gear_setting(gear_id, "head", item) == "shovel_head_default" then changes["head"] = "shovel_head_01" end
-                        local pommel = mod:get_gear_setting(gear_id, "pommel", item)
+                        if mod.gear_settings:get(item, "head") == "shovel_head_default" then changes["head"] = "shovel_head_01" end
+                        local pommel = mod.gear_settings:get(item, "pommel")
                         if pommel == "pommel_default" or pommel == "shovel_pommel_06" then changes["pommel"] = "shovel_pommel_01" end
                     end
                     return changes
                 end}
             }),
-            -- _combataxe_p3_m1.grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-            --     local changes = {}
-            --     if string_find(attachment, "default") then
-            --         if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
-            --         if mod:get_gear_setting(gear_id, "pommel", item) ~= "pommel_default" then changes["pommel"] = "pommel_default" end
-            --     else
-            --         if mod:get_gear_setting(gear_id, "head", item) == "shovel_head_default" then changes["head"] = "shovel_head_01" end
-            --         local pommel = mod:get_gear_setting(gear_id, "pommel", item)
-            --         if pommel == "pommel_default" or pommel == "shovel_pommel_06" then changes["pommel"] = "shovel_pommel_01" end
-            --     end
-            --     return changes
-            -- end),
             _combataxe_p3_m1.pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if string_find(attachment, "default") or string_find(attachment, "shovel_pommel_06") then
-                    if mod:get_gear_setting(gear_id, "head", item) ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
-                    if mod:get_gear_setting(gear_id, "grip", item) ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
+                    if mod.gear_settings:get(item, "head") ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
+                    if mod.gear_settings:get(item, "grip") ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
                 else
-                    if mod:get_gear_setting(gear_id, "head", item) == "shovel_head_default" then changes["head"] = "shovel_head_01" end
-                    if mod:get_gear_setting(gear_id, "grip", item) == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
+                    if mod.gear_settings:get(item, "head") == "shovel_head_default" then changes["head"] = "shovel_head_01" end
+                    if mod.gear_settings:get(item, "grip") == "shovel_grip_default" then changes["grip"] = "shovel_grip_01" end
                 end
                 return changes
             end)

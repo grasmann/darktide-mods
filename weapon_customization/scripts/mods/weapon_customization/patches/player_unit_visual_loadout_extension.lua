@@ -73,6 +73,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
             script_unit_add_extension({
                 world = self._equipment_component._world,
             }, self._unit, "VisibleEquipmentExtension", "visible_equipment_system", {
+                player = self._player,
                 player_unit = self._unit,
                 profile = self._player:profile(),
                 is_local_unit = self._is_local_unit,
@@ -86,7 +87,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         elseif visible_equipment_system and visible_equipment_system_option then
             -- Update VisibleEquipmentExtension
             mod:execute_extension(self._unit, "visible_equipment_system", "load_slots")
-            mod:execute_extension(self._unit, "visible_equipment_system", "update", dt, t)
+            -- mod:execute_extension(self._unit, "visibl                    _equipment_system", "update", dt, t)
         end
     end
 
@@ -254,6 +255,16 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
 
     -- Original function
     func(self, ...)
+
+end)
+
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "post_update", function(func, self, unit, dt, t, context, ...)
+
+    -- Original function
+    func(self, unit, dt, t, context, ...)
+
+    -- Visibile equipment
+    mod:execute_extension(self._unit, "visible_equipment_system", "update", dt, t)
 
 end)
 

@@ -33,8 +33,8 @@ local mod = get_mod("modding_tools")
 
 mod:io_dofile("modding_tools/scripts/mods/modding_tools/unit_manipulation_extension")
 
-mod.unit_manipulation_add = function(self, unit, camera, world, gui, name)
-    return self:_add_unit_manipulation_extension(unit, camera, world, gui, name)
+mod.unit_manipulation_add = function(self, data)
+    return self:_add_unit_manipulation_extension(data)
 end
 
 mod.unit_manipulation_remove = function(self, unit)
@@ -69,15 +69,13 @@ end
 -- ##### ││││ │ ├┤ ├┬┘│││├─┤│   #######################################################################################
 -- ##### ┴┘└┘ ┴ └─┘┴└─┘└┘┴ ┴┴─┘ #######################################################################################
 
-mod._add_unit_manipulation_extension = function(self, unit, camera, world, gui, name)
-    if unit and unit_alive(unit) and camera and world and gui then
-        if not script_unit_has_extension(unit, "unit_manipulation_system") then
+mod._add_unit_manipulation_extension = function(self, data)
+    if data.unit and unit_alive(data.unit) and data.camera and data.world and data.gui then
+        if not script_unit_has_extension(data.unit, "unit_manipulation_system") then
             local extension = script_unit_add_extension({
-                world = world,
-            }, unit, "UnitManipulationExtension", "unit_manipulation_system", {
-                unit = unit, gui = gui, camera = camera, name = name,
-            })
-            self:unit_manipulation_extensions()[unit] = extension
+                world = data.world,
+            }, data.unit, "UnitManipulationExtension", "unit_manipulation_system", data)
+            self:unit_manipulation_extensions()[data.unit] = extension
             return extension
         end
     end

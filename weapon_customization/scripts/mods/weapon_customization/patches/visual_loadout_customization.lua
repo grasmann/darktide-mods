@@ -125,9 +125,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 		local item_name = mod:item_name_from_content_string(item_data.name)
 		local attachments = item_data.attachments
-		local gear_id = mod:get_gear_id(item_data)
-		local slot_info_id = mod:get_slot_info_id(item_data)
-		local in_possesion_of_player = mod:is_owned_by_player(item_data)
+		local gear_id = mod.gear_settings:item_to_gear_id(item_data)
+		local slot_info_id = mod.gear_settings:slot_info_id(item_data)
+		local in_possesion_of_player = mod.gear_settings:player_item(item_data)
 		local attachment_slot_info = {}
 		
 		if item_unit and attachments and gear_id and in_possesion_of_player and not mod:is_premium_store_item() then
@@ -440,8 +440,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 	instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 		local weapon_skin = instance._validate_item_name(item_data.slot_weapon_skin)
-		local gear_id = mod:get_gear_id(item_data)
-		local in_possesion_of_player = mod:is_owned_by_player(item_data)
+		local gear_id = mod.gear_settings:item_to_gear_id(item_data)
+		local in_possesion_of_player = mod.gear_settings:player_item(item_data)
 		local in_store = mod:is_store_item(item_data)
 
 		if type(weapon_skin) == "string" then
@@ -728,7 +728,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	instance.generate_attachment_overrides_lookup = function (item_data, override_item_data, in_possesion_of_player)
 		if override_item_data then
 			local attachments = override_item_data.attachments
-			local gear_id = mod:get_gear_id(item_data)
+			local gear_id = mod.gear_settings:item_to_gear_id(item_data)
 
 			if gear_id and not mod:is_premium_store_item() then
 				mod:setup_item_definitions()

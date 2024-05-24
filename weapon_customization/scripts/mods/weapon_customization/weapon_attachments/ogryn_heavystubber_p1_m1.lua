@@ -18,6 +18,9 @@ local mod = get_mod("weapon_customization")
 --#region local functions
     local vector3_box = Vector3Box
     local table = table
+    local string = string
+    local string_find = string.find
+    local table_contains = table.contains
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
@@ -43,9 +46,54 @@ return table.combine(
         },
         models = table.combine(
             -- Native
-            _ogryn_heavystubber_p1_m1.barrel_models(nil, -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0)),
-            _ogryn_heavystubber_p1_m1.receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
-            _ogryn_heavystubber_p1_m1.magazine_models(nil, 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2)),
+            _ogryn_heavystubber_p1_m1.barrel_models(nil, -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
+                local changes = {}
+                local receiver = mod.gear_settings:get(item, "receiver")
+                local magazine = mod.gear_settings:get(item, "magazine")
+                local grip = mod.gear_settings:get(item, "grip")
+                if table_contains({"barrel_06", "barrel_07", "barrel_08"}, attachment) then
+                    if not table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_05" end
+                    if not table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_06" end
+                    if not table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_04" end
+                else
+                    if table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_01" end
+                    if table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_01" end
+                    if table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_01" end
+                end
+                return changes
+            end),
+            _ogryn_heavystubber_p1_m1.receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
+                local changes = {}
+                local barrel = mod.gear_settings:get(item, "barrel")
+                local magazine = mod.gear_settings:get(item, "magazine")
+                local grip = mod.gear_settings:get(item, "grip")
+                if table_contains({"receiver_05", "receiver_06", "receiver_07"}, attachment) then
+                    if not table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_06" end
+                    if not table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_06" end
+                    if not table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_04" end
+                else
+                    if table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_01" end
+                    if table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_01" end
+                    if table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_01" end
+                end
+                return changes
+            end),
+            _ogryn_heavystubber_p1_m1.magazine_models("receiver", 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
+                local changes = {}
+                local barrel = mod.gear_settings:get(item, "barrel")
+                local receiver = mod.gear_settings:get(item, "receiver")
+                local grip = mod.gear_settings:get(item, "grip")
+                if table_contains({"magazine_06", "magazine_07", "magazine_08"}, attachment) then
+                    if not table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_06" end
+                    if not table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_05" end
+                    if not table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_04" end
+                else
+                    if table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_01" end
+                    if table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_01" end
+                    if table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_01" end
+                end
+                return changes
+            end),
             _ogryn_heavystubber_p1_m1.grip_models(nil, .3, vector3_box(-.4, -3, 0), vector3_box(0, -.2, 0), "grip", {
                 {"trinket_hook_default"},
                 {"trinket_hook"},
@@ -56,7 +104,22 @@ return table.combine(
                 {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
                 {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
-            }),
+            }, nil, nil, function(gear_id, item, attachment)
+                local changes = {}
+                local barrel = mod.gear_settings:get(item, "barrel")
+                local magazine = mod.gear_settings:get(item, "magazine")
+                local receiver = mod.gear_settings:get(item, "receiver")
+                if table_contains({"grip_04", "grip_05", "grip_06"}, attachment) then
+                    if not table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_06" end
+                    if not table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_05" end
+                    if not table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_06" end
+                else
+                    if table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_01" end
+                    if table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_01" end
+                    if table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_01" end
+                end
+                return changes
+            end),
             -- Ranged
             _common_ranged.flashlight_models("receiver", -2.25, vector3_box(0, -3, -.2), vector3_box(.4, 0, .4)),
             _common_ranged.ogryn_bayonet_models("receiver", -.5, vector3_box(.4, -2, 0), vector3_box(0, .4, 0)),
@@ -77,7 +140,7 @@ return table.combine(
                 {flashlight = {position = vector3_box(.09, .9, .13), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)}},
                 -- Magazines
                 {dependencies = {"magazine_06|magazine_07|magazine_08"},
-                    magazine = {offset = true, position = vector3_box(.1, -.05, .2), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                    magazine = {parent = "receiver", position = vector3_box(0, .4, -.125), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 -- Emblems
                 {dependencies = {"emblem_left_02"},
                     emblem_left = {offset = true, position = vector3_box(-.09, .42, .085), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, -2, 2)}},

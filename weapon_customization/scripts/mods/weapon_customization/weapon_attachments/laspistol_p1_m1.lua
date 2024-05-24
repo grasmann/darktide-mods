@@ -184,7 +184,7 @@ return table.combine(
             _common_lasgun.rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             _common_lasgun.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
 				local changes = {}
-                changes["magazine2"] = mod:get_gear_setting(gear_id, "magazine", item)
+                changes["magazine2"] = mod.gear_settings:get(item, "magazine")
 				return changes
 			end),
             -- _laspistol_p1_m1.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
@@ -262,7 +262,7 @@ return table.combine(
 
                 {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"},
                     sight = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {sight = {offset = true, position = vector3_box(0, 0, .13), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                -- {sight = {offset = true, position = vector3_box(0, 0, .13), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
 
                 {dependencies = {"grip_27|grip_28|grip_29"}, -- Grip
                     grip = {offset = true, position = vector3_box(0, .01, -.02), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},

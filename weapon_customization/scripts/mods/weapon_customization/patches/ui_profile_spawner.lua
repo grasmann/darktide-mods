@@ -14,6 +14,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Performance
 	local Unit = Unit
+	local pairs = pairs
 	local CLASS = CLASS
 	local Actor = Actor
 	local World = World
@@ -88,6 +89,15 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 	end
 
 	instance.remove_custom_extensions = function(self)
+
+		if self.help_units then
+			for _, data in pairs(self.help_units) do
+				World.unlink_unit(self._world, data.unit)
+				World.destroy_unit(self._world, data.unit)
+			end
+			self.help_units = nil
+		end
+
 		if self._character_spawn_data then
 			mod:remove_extension(self._character_spawn_data.unit_3p, "visible_equipment_system")
 		end

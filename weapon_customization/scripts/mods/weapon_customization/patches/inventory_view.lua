@@ -401,7 +401,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 	instance.remove_unit_manipulation_all = function(self)
 		self:get_modding_tools()
 		if self.modding_tools then
-			self.modding_tools:unit_manipulation_remove_all()
+			self.inventory_background_view:remove_unit_manipulation()
 		end
 	end
 

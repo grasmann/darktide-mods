@@ -54,11 +54,11 @@ return table.combine(
             _ogryn_club_p2_m1.body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if attachment ~= "body_none" then
-                    if mod:get_gear_setting(gear_id, "shaft", item) ~= "shaft_default" then changes["shaft"] = "shaft_default" end
-                    if mod:get_gear_setting(gear_id, "head", item) ~= "head_default" then changes["head"] = "head_default" end
+                    if mod.gear_settings:get(item, "shaft") ~= "shaft_default" then changes["shaft"] = "shaft_default" end
+                    if mod.gear_settings:get(item, "head") ~= "head_default" then changes["head"] = "head_default" end
                 elseif attachment == "body_none" then
-                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = _small_shafts end
-                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = _small_heads end
+                    if mod.gear_settings:get(item, "shaft") == "shaft_default" then changes["shaft"] = _small_shafts end
+                    if mod.gear_settings:get(item, "head") == "head_default" then changes["head"] = _small_heads end
                 end
                 return changes
             end),
@@ -66,26 +66,26 @@ return table.combine(
             _common_melee.human_power_maul_shaft_models("body", 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if string_find(attachment, "default") then
-                    if mod:get_gear_setting(gear_id, "shaft", item) ~= "shaft_default" then changes["shaft"] = "shaft_default" end
-                    if mod:get_gear_setting(gear_id, "head", item) ~= "head_default" then changes["head"] = "head_default" end
-                    if mod:get_gear_setting(gear_id, "body", item) == "body_none" then changes["body"] = _bodies end
+                    if mod.gear_settings:get(item, "shaft") ~= "shaft_default" then changes["shaft"] = "shaft_default" end
+                    if mod.gear_settings:get(item, "head") ~= "head_default" then changes["head"] = "head_default" end
+                    if mod.gear_settings:get(item, "body") == "body_none" then changes["body"] = _bodies end
                 else
-                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = _small_shafts end
-                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = _small_heads end
-                    if mod:get_gear_setting(gear_id, "body", item) ~= "body_none" then changes["body"] = "body_none" end
+                    if mod.gear_settings:get(item, "shaft") == "shaft_default" then changes["shaft"] = _small_shafts end
+                    if mod.gear_settings:get(item, "head") == "head_default" then changes["head"] = _small_heads end
+                    if mod.gear_settings:get(item, "body") ~= "body_none" then changes["body"] = "body_none" end
                 end
                 return changes
             end),
             _common_melee.human_power_maul_head_models("shaft", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
                 if string_find(attachment, "default") then
-                    if mod:get_gear_setting(gear_id, "shaft", item) ~= "shaft_default" then changes["shaft"] = "shaft_default" end
-                    if mod:get_gear_setting(gear_id, "head", item) ~= "head_default" then changes["head"] = "head_default" end
-                    if mod:get_gear_setting(gear_id, "body", item) == "body_none" then changes["body"] = _bodies end
+                    if mod.gear_settings:get(item, "shaft") ~= "shaft_default" then changes["shaft"] = "shaft_default" end
+                    if mod.gear_settings:get(item, "head") ~= "head_default" then changes["head"] = "head_default" end
+                    if mod.gear_settings:get(item, "body") == "body_none" then changes["body"] = _bodies end
                 else
-                    if mod:get_gear_setting(gear_id, "shaft", item) == "shaft_default" then changes["shaft"] = _small_shafts end
-                    if mod:get_gear_setting(gear_id, "head", item) == "head_default" then changes["head"] = _small_heads end
-                    if mod:get_gear_setting(gear_id, "body", item) ~= "body_none" then changes["body"] = "body_none" end
+                    if mod.gear_settings:get(item, "shaft") == "shaft_default" then changes["shaft"] = _small_shafts end
+                    if mod.gear_settings:get(item, "head") == "head_default" then changes["head"] = _small_heads end
+                    if mod.gear_settings:get(item, "body") ~= "body_none" then changes["body"] = "body_none" end
                 end
                 return changes
             end),

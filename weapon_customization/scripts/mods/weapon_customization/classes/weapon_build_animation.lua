@@ -60,8 +60,8 @@ WeaponBuildAnimation.set = function(self, data, active)
         self.ui_weapon_spawner = data.ui_weapon_spawner
         self.world = data.world
         self.item = data.item
-        self.gear_id = mod:get_gear_id(data.item)
-        self.slot_info_id = mod:get_slot_info_id(data.item)
+        self.gear_id = mod.gear_settings:item_to_gear_id(data.item)
+        self.slot_info_id = mod.gear_settings:slot_info_id(data.item)
         self.item_name = mod:item_name_from_content_string(data.item.name)
     end
     -- Init
@@ -138,7 +138,8 @@ WeaponBuildAnimation.update = function(self, dt, t)
         local gear_info = slot_infos[self.slot_info_id]
 
         for _, entry in pairs(self.animations) do
-            local attachment = mod:get_gear_setting(self.gear_id, entry.slot, self.item)
+
+            local attachment = mod.gear_settings:get(self.gear_id, entry.slot)
             local attachment_data = attachment and mod.attachment_models[self.item_name][attachment]
             local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
             local animation_wait_attach = attachment_data and attachment_data.animation_wait_attach
@@ -237,6 +238,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
                             if entry.no_detach_animation or not unit_good then
                                 -- Not processed
                                 entry.end_time = t
+                                entry.detach_done = true
                                 if entry.detach_only and not self.wobble then entry.finished = true end
                             elseif not entry.no_detach_animation then
                                 mod:preview_flashlight(false, world, unit, attachment, true)
@@ -248,6 +250,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
 
                         -- When attaching
                         elseif entry.type == "attach" then
+                            entry.detach_done = true
                             if not entry.attach_only_load and entry.attach_only then
                                 entry.attach_only_load = true
                             elseif entry.no_attach_animation or not unit_good then
@@ -265,6 +268,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
 
                         -- When wobble
                         elseif entry.type == "wobble" then
+                            entry.detach_done = true
                             if not unit_good then
                                 -- Not processed
                                 entry.finished = true
@@ -281,6 +285,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
 
                         -- When wobble alt
                         elseif entry.type == "wobble_detach" then
+                            entry.detach_done = true
                             if not unit_good then
                                 entry.finished = true
                                 entry.end_time = t
@@ -383,16 +388,29 @@ WeaponBuildAnimation.update = function(self, dt, t)
             if entry.detach_done then
                 if entry.callback then entry.callback() end
             end
-            if entry.type == "attach" and not entry.attach_load then
-                mod:load_new_attachment(self.item, entry.slot, entry.new)
-                entry.attach_load = true
+            -- if entry.type == "attach" and not entry.attach_load then
+            --     mod.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new)
+            --     entry.attach_load = true
+            -- end
+        end
+
+        if self:is_detach_finished() then
+            for i, entry in pairs(self.animations) do
+                if (entry.detach_done or entry.type == "attach") and not entry.attach_load then
+                    mod.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new)
+                    entry.attach_load = true
+                end
             end
         end
 
-        if self:is_detach_finished() and mod.weapon_part_animation_update then
-            mod:load_new_attachment(weapon_spawn_data.item)
-            mod.weapon_part_animation_update = nil
-        end
+
+        -- if self:is_detach_finished() and mod.weapon_part_animation_update then
+        --     mod:echot("yes")
+        --     mod.cosmetics_view:load_new_attachment(weapon_spawn_data.item)
+        --     mod.weapon_part_animation_update = nil
+        -- else
+        --     mod:echot("nope")
+        -- end
 
         if self:is_all_finished() then
             mod.build_animation:clear()
@@ -434,7 +452,7 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
             slot = attachment_slot,
             type = real_type,
             new = new_attachment,
-            old = mod:get_gear_setting(self.gear_id, attachment_slot, item),
+            old = mod.gear_settings:get(self.gear_id, attachment_slot),
             children = slot and slot.children and #slot.children or 0,
             speed = speed,
             detach_only = detach_only,
@@ -466,8 +484,8 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
             -- Iterate children
             for i, child in pairs(children) do
                 if not self:animation_exists(child.slot) then
-                    local new_child_attachment = mod:get_gear_setting(self.gear_id, child.slot, item)
-                    local old_child_attachment = mod:get_gear_setting(self.gear_id, child.slot, item)
+                    local new_child_attachment = mod.gear_settings:get(self.gear_id, child.slot)
+                    local old_child_attachment = mod.gear_settings:get(self.gear_id, child.slot)
                     self:animate(item, child.slot, nil, new_child_attachment, no_children, speed, hide_ui, attachment_type)
                 end
             end

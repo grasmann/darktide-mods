@@ -207,22 +207,6 @@ WeaponCustomizationExtension.get_vectors_almost_same = function(self, v1, v2, to
     end
 end
 
--- ##### ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐ ############################################################################
--- ##### ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐ ############################################################################
--- ##### ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘ ############################################################################
-
-WeaponCustomizationExtension.get_attachment_units = function(self)
-    if self.ranged_weapon then return mod:get_attachment_units(self.ranged_weapon.weapon_unit) end
-end
-
-WeaponCustomizationExtension.get_attachment_unit = function(self, attachment_slot_or_name)
-    if self.ranged_weapon then return mod:get_attachment_unit(self.ranged_weapon.weapon_unit, attachment_slot_or_name) end
-end
-
-WeaponCustomizationExtension.get_attachment_data = function(self, attachment_slot_or_name, data)
-    if self.ranged_weapon then return mod:get_attachment_data(self.ranged_weapon.weapon_unit, attachment_slot_or_name, data) end
-end
-
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬   ###########################################################################################
 -- ##### │ ┬│  │ │├┴┐├─┤│   ###########################################################################################
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘ ###########################################################################################
@@ -246,26 +230,4 @@ mod.execute_extension = function(self, unit, system, function_name, ...)
             return extension[function_name](extension, ...)
         end
     end
-end
-
-mod.get_attachment_units = function(self, weapon_unit)
-    return unit_get_data(weapon_unit, "attachment_units")
-end
-
-mod.get_attachment_unit = function(self, weapon_unit, attachment_slot_or_name)
-    return unit_get_data(weapon_unit, attachment_slot_or_name)
-end
-
-mod.get_attachment_data = function(self, weapon_unit, attachment_slot_or_name, data)
-    local attachment_unit = unit_get_data(weapon_unit, attachment_slot_or_name)
-    if attachment_unit then return unit_get_data(attachment_unit, data) end
-end
-
-mod.get_attachment_slots = function(self, weapon_unit)
-    local attachments = {}
-    local num_attachments = unit_data_table_size(weapon_unit, "attachment_slots")
-    for i = 1, num_attachments, 1 do
-        attachments[i] = unit_get_data(weapon_unit, "attachment_slots", i)
-    end
-    return attachments
 end

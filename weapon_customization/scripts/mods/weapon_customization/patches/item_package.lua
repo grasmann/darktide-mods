@@ -85,12 +85,12 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
     instance.add_custom_resources = function(self, item, result_out)
         mod:setup_item_definitions()
-        local gear_id = mod:get_gear_id(item)
+        local gear_id = mod.gear_settings:item_to_gear_id(item)
         if gear_id then
             local item_name = mod:item_name_from_content_string(item.name)
             local attachment_slots = mod:get_item_attachment_slots(item)
             for _, attachment_slot in pairs(attachment_slots) do
-                local attachment = mod:get_gear_setting(gear_id, attachment_slot)
+                local attachment = mod.gear_settings:get(item, attachment_slot)
                 local item_data = attachment and mod.attachment_models[item_name]
                 local attachment_data = item_data and item_data[attachment]
                 local model = attachment_data and attachment_data.model
@@ -110,7 +110,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
         mod:setup_item_definitions()
 
         -- Get gear id
-        local gear_id = mod:get_gear_id(item)
+        local gear_id = mod.gear_settings:item_to_gear_id(item)
 
         -- Check item and attachments
         if item and item.attachments and gear_id and not mod:is_premium_store_item() then

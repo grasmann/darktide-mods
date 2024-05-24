@@ -101,20 +101,26 @@ local UnitManipulationExtension = class("UnitManipulationExtension")
 
 UnitManipulationExtension.init = function(self, extension_init_context, unit, extension_init_data)
 	self.unit = unit
+	self.node = extension_init_data.node or 1
+	self.font_size = extension_init_data.font_size or 14
 	self.gui = extension_init_data.gui
 	self.camera = extension_init_data.camera
 	self.faded_alpha = extension_init_data.faded_alpha or 128
 	self.faded_color = extension_init_data.faded_color or 255
 	self.position_tolerance = extension_init_data.position_tolerance or .02
 	self.rotation_tolerance = extension_init_data.rotation_tolerance or 10
+	self.show = true
 	self.name = extension_init_data.name or "<NO NAME PROVIDED>"
 	self.angle_names = extension_init_data.angle_names or true
 	self.mode = extension_init_data.mode or MANIPULATION_MODES.POSITION
 	self.tm, self.half_size = Unit.box(unit)
-	self.original_position = vector3_box(unit_local_position(unit, 1))
-	self.original_rotation = quaternion_box(unit_local_rotation(unit, 1))
-	self.original_scale = vector3_box(unit_local_scale(unit, 1))
+	self.original_position = vector3_box(unit_local_position(unit, self.node))
+	self.original_rotation = quaternion_box(unit_local_rotation(unit, self.node))
+	self.original_scale = vector3_box(unit_local_scale(unit, self.node))
 	self.root_unit = extension_init_data.root_unit
+	self.button = extension_init_data.button
+	self.pressed_callback = extension_init_data.pressed_callback
+	self.changed_callback = extension_init_data.changed_callback
 	self.selected = false
 	self.history = {}
 	self.history_index = 1
@@ -144,14 +150,14 @@ end
 
 UnitManipulationExtension.update = function(self, dt, t, input_service)
 	if self.initialized and self.unit and unit_alive(self.unit) then
-		if self.selected then
+		if self.selected and self.show then
 			self:draw_box(dt, t, input_service)
 			if SHOW_BUTTONS then self:draw_buttons(dt, t, input_service) end
 			if SHOW_INFO then self:draw_info(dt, t, input_service) end
 			if self.mode == MANIPULATION_MODES.POSITION then self:draw_position_gizmo(dt, t, input_service)
 			elseif self.mode == MANIPULATION_MODES.ROTATION then self:draw_rotation_gizmo(dt, t, input_service)
 			elseif self.mode == MANIPULATION_MODES.SCALE then self:draw_position_gizmo(dt, t, input_service) end
-		else
+		elseif self.show then
 			self:draw_selector(dt, t, input_service)
 		end
 		self:update_controls(dt, t, input_service)
@@ -160,7 +166,7 @@ end
 
 UnitManipulationExtension.update_controls = function(self, dt, t, input_service, all)
 	if self.held_cursor and self.unit and unit_alive(self.unit) then
-		local rotation = unit_local_rotation(self.unit, 1)
+		local rotation = unit_local_rotation(self.unit, self.node)
 
 		local position_offset = unit_get_data(self.unit, "unit_manipulation_position_offset")
 		position_offset = position_offset and vector3_unbox(position_offset) or vector3(0, 0, 0)
@@ -198,6 +204,9 @@ UnitManipulationExtension.update_controls = function(self, dt, t, input_service,
 					local offset = Quaternion.multiply(rotation_offset, quaternion_from_euler_angles_xyz(x, y, z))
 					self:rotate_unit(offset)
 				end
+				if self.changed_callback and type(self.changed_callback) == "function" then
+					self.changed_callback(self)
+				end
 			end
 		end
 		if not self:hold(input_service) then
@@ -211,18 +220,18 @@ UnitManipulationExtension.update_controls = function(self, dt, t, input_service,
 end
 
 UnitManipulationExtension.position_unit = function(self, offset)
-	unit_set_local_position(self.unit, 1, vector3_unbox(self.original_position) + offset)
+	unit_set_local_position(self.unit, self.mode, vector3_unbox(self.original_position) + offset)
 	unit_set_data(self.unit, "unit_manipulation_position_offset", vector3_box(offset))
 end
 
 UnitManipulationExtension.rotate_unit = function(self, offset)
 	local new_rotation = Quaternion.multiply(quaternion_unbox(self.original_rotation), offset)
-	unit_set_local_rotation(self.unit, 1, new_rotation)
+	unit_set_local_rotation(self.unit, self.mode, new_rotation)
 	unit_set_data(self.unit, "unit_manipulation_rotation_offset", quaternion_box(offset))
 end
 
 UnitManipulationExtension.scale_unit = function(self, offset)
-	unit_set_local_scale(self.unit, 1, vector3_unbox(self.original_scale) + offset)
+	unit_set_local_scale(self.unit, self.mode, vector3_unbox(self.original_scale) + offset)
 	unit_set_data(self.unit, "unit_manipulation_scale_offset", vector3_box(offset))
 end
 
@@ -234,9 +243,6 @@ UnitManipulationExtension.restore_history = function(self)
 	if self.history and #self.history >= self.history_index then
 		local history_entry = self.history[self.history_index]
 		if self.unit and unit_alive(self.unit) then
-			-- unit_set_data(self.unit, "unit_manipulation_position_offset", history_entry.position_offset)
-			-- unit_set_data(self.unit, "unit_manipulation_rotation_offset", history_entry.rotation_offset)
-			-- unit_set_data(self.unit, "unit_manipulation_scale_offset", history_entry.scale_offset)
 			self:position_unit(vector3_unbox(history_entry.position_offset))
 			self:rotate_unit(quaternion_unbox(history_entry.rotation_offset))
 			self:scale_unit(vector3_unbox(history_entry.scale_offset))
@@ -400,19 +406,23 @@ end
 -- Draw selector for extension unit
 UnitManipulationExtension.draw_selector = function(self, dt, t, input_service, position)
 	if self.name and self.unit and unit_alive(self.unit) then
-		local position = unit_world_position(self.unit, 1)
+		local position = unit_world_position(self.unit, self.node)
 		local direction = self.root_unit and vector3.normalize(position - unit_world_position(self.root_unit, 1)) or vector3(0, 0, 0)
 		local position_2d = camera_world_to_screen(self.camera, position + direction * .05)
 		-- local attachment_slot = unit_get_data(self.unit, "attachment_slot")
 		local RES_X, RES_Y = Application.back_buffer_size()
-		local min, max, caret = Gui.text_extents(self.gui, self.name, DevParameters.debug_text_font, 14)
-		local size = vector3(max[1], 16, 1)
-		ScriptGui.icrect(self.gui, RES_X, RES_Y, position_2d[1], position_2d[2] + 16, position_2d[1] + max[1], position_2d[2], 99, Color(128, 255, 255, 255))
-		ScriptGui.text(self.gui, self.name, DevParameters.debug_text_font, 14, position_2d, Color.black(), Color.gray())
+		local min, max, caret = Gui.text_extents(self.gui, self.name, DevParameters.debug_text_font, self.font_size)
+		local size = vector3(max[1], max[2]+2, 1)
+		ScriptGui.icrect(self.gui, RES_X, RES_Y, position_2d[1], position_2d[2] + max[2]+2, position_2d[1] + max[1], position_2d[2], 99, Color(128, 255, 255, 255))
+		ScriptGui.text(self.gui, self.name, DevParameters.debug_text_font, self.font_size, position_2d, Color.black(), Color.gray())
 		local cursor = self:cursor(input_service)
 		local hover = math.point_is_inside_2d_box(cursor, position_2d, size)
 		if self:pressed(input_service) and hover then
-			mod:unit_manipulation_select(self.unit)
+			if not self.button then
+				mod:unit_manipulation_select(self.unit)
+			elseif self.pressed_callback and type(self.pressed_callback) == "function" then
+				self.pressed_callback(self)
+			end
 		end
 	end
 end
@@ -420,18 +430,18 @@ end
 -- Draw info panel with global and local position, rotation, scale
 UnitManipulationExtension.draw_info = function(self, dt, t, input_service)
 	if self.unit and unit_alive(self.unit) then
-		local position = unit_world_position(self.unit, 1)
-		local rotation = unit_world_rotation(self.unit, 1)
+		local position = unit_world_position(self.unit, self.node)
+		local rotation = unit_world_rotation(self.unit, self.node)
 		local x, y, z = quaternion_to_euler_angles_xyz(rotation)
 		rotation = vector3(x, y, z)
-		local local_position = unit_local_position(self.unit, 1)
-		local local_rotation = unit_local_rotation(self.unit, 1)
+		local local_position = unit_local_position(self.unit, self.node)
+		local local_rotation = unit_local_rotation(self.unit, self.node)
 		local x, y, z = quaternion_to_euler_angles_xyz(local_rotation)
 		local_rotation = vector3(x, y, z)
 		local position_2d = camera_world_to_screen(self.camera, position)
 		local offset = position_2d + vector3(200, 180, 0)
-		local scale = unit_world_scale(self.unit, 1)
-		local local_scale = unit_local_scale(self.unit, 1)
+		local scale = unit_world_scale(self.unit, self.node)
+		local local_scale = unit_local_scale(self.unit, self.node)
 		local lines = {
 			{text = "Scale "..tostring(scale)},
 			{text = "Rotation "..tostring(rotation)},
@@ -453,7 +463,7 @@ end
 -- Draw button panel with history and mode buttons
 UnitManipulationExtension.draw_buttons = function(self, dt, t, input_service)
 	if self.unit and unit_alive(self.unit) then
-		local position = unit_world_position(self.unit, 1)
+		local position = unit_world_position(self.unit, self.node)
 		local position_2d = camera_world_to_screen(self.camera, position)
 		local offset = position_2d + vector3(200, 200, 0)
 		local cursor = self:cursor(input_service)
@@ -547,8 +557,8 @@ end
 UnitManipulationExtension.draw_position_gizmo = function(self, dt, t, input_service)
 	if self.unit and unit_alive(self.unit) then
 		-- Unit data
-		local position = unit_world_position(self.unit, 1)
-		local rotation = unit_world_rotation(self.unit, 1)
+		local position = unit_world_position(self.unit, self.node)
+		local rotation = unit_world_rotation(self.unit, self.node)
 		local cursor = self:cursor(input_service)
 		local hold = self:hold(input_service)
 		-- Get boundary points
@@ -592,8 +602,8 @@ end
 UnitManipulationExtension.draw_rotation_gizmo = function(self, dt, t, input_service)
 	if self.unit and unit_alive(self.unit) then
 		-- Unit data
-		local position = unit_world_position(self.unit, 1)
-		local rotation = unit_world_rotation(self.unit, 1)
+		local position = unit_world_position(self.unit, self.node)
+		local rotation = unit_world_rotation(self.unit, self.node)
 		local cursor = self:cursor(input_service)
 		local hold = self:hold(input_service)
 		-- Define angles

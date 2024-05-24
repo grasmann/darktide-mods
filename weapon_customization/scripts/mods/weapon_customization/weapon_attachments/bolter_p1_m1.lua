@@ -78,15 +78,16 @@ return table_combine(
 			_bolter_p1_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
 				local changes = {}
 				if attachment == "receiver_06" then
-					if mod:get_gear_setting(gear_id, "barrel", item) ~= "bolter_barrel_03" then changes["barrel"] = "bolter_barrel_03" end
-					if mod:get_gear_setting(gear_id, "magazine", item) ~= "bolter_magazine_03" then changes["magazine"] = "bolter_magazine_03" end
-					if mod:get_gear_setting(gear_id, "underbarrel", item) ~= "no_underbarrel" then changes["underbarrel"] = "no_underbarrel" end
-					if mod:get_gear_setting(gear_id, "sight", item) ~= "bolter_sight_03" then changes["sight"] = "bolter_sight_03" end
+					if mod.gear_settings:get(item, "barrel") ~= "bolter_barrel_03" then changes["barrel"] = "bolter_barrel_03" end
+					if mod.gear_settings:get(item, "magazine") ~= "bolter_magazine_03" then changes["magazine"] = "bolter_magazine_03" end
+					if mod.gear_settings:get(item, "underbarrel") ~= "no_underbarrel" then changes["underbarrel"] = "no_underbarrel" end
+					if mod.gear_settings:get(item, "sight") ~= "bolter_sight_03" then changes["sight"] = "bolter_sight_03" end
+					
 				else
-					if mod:get_gear_setting(gear_id, "barrel", item) == "bolter_barrel_03" then changes["barrel"] = _barrels end
-					if mod:get_gear_setting(gear_id, "magazine", item) == "bolter_magazine_03" then changes["magazine"] = _magazines end
-					if mod:get_gear_setting(gear_id, "underbarrel", item) == "no_underbarrel" then changes["underbarrel"] = _underbarrels end
-					if mod:get_gear_setting(gear_id, "sight", item) == "bolter_sight_03" then changes["sight"] = _sights end
+					if mod.gear_settings:get(item, "barrel") == "bolter_barrel_03" then changes["barrel"] = _barrels end
+					if mod.gear_settings:get(item, "magazine") == "bolter_magazine_03" then changes["magazine"] = _magazines end
+					if mod.gear_settings:get(item, "underbarrel") == "no_underbarrel" then changes["underbarrel"] = _underbarrels end
+					if mod.gear_settings:get(item, "sight") == "bolter_sight_03" then changes["sight"] = _sights end
 				end
 				return changes
 			end),

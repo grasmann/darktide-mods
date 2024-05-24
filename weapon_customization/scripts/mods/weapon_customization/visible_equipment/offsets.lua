@@ -191,7 +191,7 @@ mod.visible_equipment_offsets = {
                 step_move = vector3_box(.02, -.03, -.04), step_rotation = vector3_box(2.5, -2.5, .5)},
             loading = mod.visible_equipment_loading_offsets.ranged_bulky,
             init = function(visible_equipment_extension, slot)
-                local slot_info_id = mod:get_slot_info_id(slot.item)
+                local slot_info_id = mod.gear_settings:slot_info_id(slot.item)
                 local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
                 local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
                 if attachment_slot_info then
@@ -200,6 +200,7 @@ mod.visible_equipment_offsets = {
                     if receiver and unit_alive(receiver) then
                         local node_index = 17
                         if attachment == "receiver_04" then node_index = 21 end
+                        if attachment == "receiver_05" or attachment == "receiver_06" or attachment == "receiver_07" then node_index = 15 end
                         local rot = vector3(0, 0, 90)
                         local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
                         unit_set_local_rotation(receiver, node_index, rotation)
@@ -215,7 +216,7 @@ mod.visible_equipment_offsets = {
             loading = mod.visible_equipment_loading_offsets.ranged_bulky,
             init = function(visible_equipment_extension, slot)
                 -- Get slot info
-                local slot_info_id = mod:get_slot_info_id(slot.item)
+                local slot_info_id = mod.gear_settings:slot_info_id(slot.item)
                 local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
                 local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
                 if attachment_slot_info then
@@ -276,6 +277,18 @@ mod.visible_equipment_offsets = {
         },
     --#endregion
     --#region Guns
+        -- autogun_p1_m1 = {
+        --     default = {
+        --         position = vector3_box(.3, .22, .125), rotation = vector3_box(200, -10, 90), scale = vector3_box(1, 1, 1),
+        --         step_move = vector3_box(-.01, .0075, .005), step_rotation = vector3_box(-5, -2.5, -5),
+        --         -- center_mass = vector3_box(0, .128, .044)
+        --     },
+        --     backpack = {position = vector3_box(.1, .3, .18), rotation = vector3_box(230, 10, 90), scale = vector3_box(1, 1, 1),
+        --         step_move = vector3_box(-.01, .0075, .005), step_rotation = vector3_box(-5, -2.5, -5),
+        --         -- center_mass = vector3_box(0, .128, .044)
+        --     },
+        --     loading = mod.visible_equipment_loading_offsets.default,
+        -- },
         autopistol_p1_m1 = {
             default = {position = vector3_box(.1, .22, .125), rotation = vector3_box(200, -10, 90), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.01, .0075, .01), step_rotation = vector3_box(-5, -2.5, -5)},
@@ -338,6 +351,18 @@ mod.visible_equipment_offsets = {
         },
     --#endregion
     --#region Melee
+        -- combataxe_p3_m1 = {
+        --     default = {position = vector3_box(.3, .25, -.1), rotation = vector3_box(180, -90, 110), scale = vector3_box(1, 1, 1),
+        --         step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5),
+        --         -- center_mass = vector3_box(0, 0, .075)
+        --     },
+        --     backpack = {position = vector3_box(.2, .23, -.225), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
+        --         step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5),
+        --         -- center_mass = vector3_box(0, 0, .075)
+        --     },
+        --     loading = mod.visible_equipment_loading_offsets.melee_medium,
+        --     step_sounds = {SoundEventAliases.sfx_equip.events.ogryn_combatblade_p1_m1, SoundEventAliases.sfx_equip_03.events.combatknife_p1_m2},
+        -- },
         thunderhammer_2h_p1_m1 = {
             default = {position = vector3_box(.3, .25, -.1), rotation = vector3_box(180, -90, 130), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.02, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
