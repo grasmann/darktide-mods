@@ -266,7 +266,7 @@ FlashlightExtension.is_laser_pointer = function(self)
 end
 
 FlashlightExtension.is_modded = function(self)
-    return mod.gear_settings:get(self.gear_id, "flashlight") ~= nil
+    return mod.gear_settings:get(self.item, "flashlight") ~= nil
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################

@@ -39,6 +39,10 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
     local REFERENCE = "weapon_customization"
+    local WEAPON_MELEE = "WEAPON_MELEE"
+    local WEAPON_RANGED = "WEAPON_RANGED"
+    local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
+    local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
 --#endregion
 
 mod.player_items = {}
@@ -341,11 +345,16 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
             -- Process
             local item_instance = _item_plus_overrides(gear, gear_id)
             local master_item = item_instance.__master_item or item_instance
+            local player_item = master_item.item_list_faction == "Player"
+            local weapon_item = master_item.item_type == WEAPON_MELEE or master_item.item_type == WEAPON_RANGED
+            local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
+            local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+            local in_possesion_of_player = mod.gear_settings:player_item(master_item) or (visible_equipment_system_option and hub)
             -- local cached_gear_list = cached_gear_list()
             local cached_gear_list = mod.gear_settings:player_gear_list()
-            if gear_id and cached_gear_list and cached_gear_list[gear_id] ~= nil then
+            if gear_id and cached_gear_list and cached_gear_list[gear_id] ~= nil and player_item and weapon_item and in_possesion_of_player then
                 mod.player_items[gear_id] = master_item
-            elseif gear_id then
+            elseif gear_id and player_item and weapon_item and in_possesion_of_player then
                 mod.player_items[gear_id] = nil
                 -- Get attributes
                 local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
@@ -365,10 +374,10 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 if gear_id then
                     -- Setup definitions
                     mod:setup_item_definitions()
-                    -- Add custom attachment slot
-                    mod:_add_custom_attachments(master_item, master_item.attachments)
+                    -- Add custom attachments
+                    mod.gear_settings:_add_custom_attachments(master_item, master_item.attachments)
                     -- Overwrite attachment slots
-                    mod:_overwrite_attachments(master_item, master_item.attachments)
+                    mod.gear_settings:_overwrite_attachments(master_item, master_item.attachments)
                 end
             end
             -- Add special templates
@@ -405,10 +414,10 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 if gear_id then
                     -- Setup definitions
                     mod:setup_item_definitions()
-                    -- Add custom attachment slot
-                    mod:_add_custom_attachments(master_item, master_item.attachments)
+                    -- Add custom attachments
+                    mod.gear_settings:_add_custom_attachments(master_item, master_item.attachments)
                     -- Overwrite attachment slots
-                    mod:_overwrite_attachments(master_item, master_item.attachments)
+                    mod.gear_settings:_overwrite_attachments(master_item, master_item.attachments)
                 end
             end
         end

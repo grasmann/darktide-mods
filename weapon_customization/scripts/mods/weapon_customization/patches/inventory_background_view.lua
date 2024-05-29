@@ -148,6 +148,7 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 	end
 
 	instance.add_unit_manipulation = function(self)
+		self:get_inventory_view()
 		-- Check modding tools
 		self:get_modding_tools()
 		-- Check if unit manipulation is already added
@@ -161,8 +162,6 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 				local weapon_item = self.inventory_view:weapon_item()
 
 				if unit and unit_alive(unit) and not self._unit_manipulation_added then
-
-					self:get_inventory_view()
 					
 					if self.inventory_view._ui_forward_renderer then
 						
@@ -227,7 +226,10 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 										-- mod:echot("unit manipulation pressed: "..tostring(point.text))
 										local name = ui_profile_spawner.help_units[point.text]
 										name = name and name.data and name.data.name
-										-- if name then mod:echot("unit manipulation pressed: "..tostring(name)) end
+										if name then
+											mod:echot("unit manipulation pressed: "..tostring(name))
+											mod.gear_settings:set(weapon_item, "gear_node", name)
+										end
 									end),
 								}
 							end
@@ -277,8 +279,10 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 				ui_profile_spawner._rotation_input_disabled = self:unit_manipulation_busy()
 			end
 		end
-		local wbn = self.inventory_view._widgets_by_name
-			if wbn then wbn.name_text.content.text = self._item_name or "n/a" end
+		if self.inventory_view then
+			local wbn = self.inventory_view._widgets_by_name
+				if wbn then wbn.name_text.content.text = self._item_name or "n/a" end
+		end
 	end
 
 	instance.update_item_name = function(self)

@@ -48,6 +48,10 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
     local REFERENCE = "weapon_customization"
+    local WEAPON_MELEE = "WEAPON_MELEE"
+    local WEAPON_RANGED = "WEAPON_RANGED"
+    local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
+    local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################
@@ -83,21 +87,31 @@ end
 
 mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
 
-    instance.add_custom_resources = function(self, item, result_out)
+    instance.add_custom_resources = function(self, item, out_result)
+        -- Setup master items backup
         mod:setup_item_definitions()
-        local gear_id = mod.gear_settings:item_to_gear_id(item)
-        if gear_id then
-            local item_name = mod:item_name_from_content_string(item.name)
-            local attachment_slots = mod:get_item_attachment_slots(item)
-            for _, attachment_slot in pairs(attachment_slots) do
+        -- Check item
+        if item and item.name then
+            -- Get item name
+            local item_name = mod.gear_settings:short_name(item.name)
+            -- Iter attachment slots
+            for _, attachment_slot in pairs(mod.attachment_slots) do
+                -- Get attachment
                 local attachment = mod.gear_settings:get(item, attachment_slot)
+                -- Get item data
                 local item_data = attachment and mod.attachment_models[item_name]
+                -- Get attachment data
                 local attachment_data = item_data and item_data[attachment]
+                -- Get model
                 local model = attachment_data and attachment_data.model
+                -- Get original item
                 local original_item = model and mod:persistent_table(REFERENCE).item_definitions[model]
+                -- Check original item and dependencies
                 if original_item and original_item.resource_dependencies then
+                    -- Iterate dependencies
                     for resource, _ in pairs(original_item.resource_dependencies) do
-                        result_out[resource] = true
+                        -- Add resource
+                        out_result[resource] = true
                     end
                 end
             end
@@ -107,28 +121,35 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
     mod:hook(instance, "compile_item_instance_dependencies", function(func, item, items_dictionary, out_result, optional_mission_template, ...)
 
         -- Mod definitions
-        mod:setup_item_definitions()
+        -- mod:setup_item_definitions()
 
         -- Get gear id
-        local gear_id = mod.gear_settings:item_to_gear_id(item)
+        -- local gear_id = mod.gear_settings:item_to_gear_id(item)
+
+        local player_item = item.item_list_faction == "Player"
+        local weapon_item = item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED
+        local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
+		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+		local in_possesion_of_player = mod.gear_settings:player_item(item) or (visible_equipment_system_option and hub)
 
         -- Check item and attachments
-        if item and item.attachments and gear_id and not mod:is_premium_store_item() then
+        if item and item.attachments and not mod:is_premium_store_item() and player_item and weapon_item and in_possesion_of_player then
             
-            -- Add flashlight slot
-            mod:_add_custom_attachments(item, item.attachments)
+            -- Add custom attachments
+            mod.gear_settings:_add_custom_attachments(item, item.attachments)
             
             -- Overwrite attachments
-            mod:_overwrite_attachments(item, item.attachments)
+            mod.gear_settings:_overwrite_attachments(item, item.attachments)
 
         end
 
         local result = func(item, items_dictionary, out_result, optional_mission_template, ...)
 
-        if item and item.attachments then
+        if item and item.attachments and not mod:is_premium_store_item() and player_item and weapon_item then
 
             -- Add custom resources
-            instance:add_custom_resources(item.__master_item or item, result)
+            instance:add_custom_resources(item, result)
+            out_result = result
 
         end
 

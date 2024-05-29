@@ -66,28 +66,6 @@ mod.randomize_item = function(self, item_instance, table, id)
     local master_item = item_instance.__master_item or item_instance
     local random_attachments = self:randomize_weapon(master_item)
     if table and id then table[id] = random_attachments end
-    -- Auto equip
-    for attachment_slot, value in pairs(random_attachments) do
-        if not self.add_custom_attachments[attachment_slot] then
-            self:resolve_auto_equips(item_instance, value)
-        end
-    end
-    for attachment_slot, value in pairs(random_attachments) do
-        if self.add_custom_attachments[attachment_slot] then
-            self:resolve_auto_equips(item_instance, value)
-        end
-    end
-    -- Special resolve
-    for attachment_slot, value in pairs(random_attachments) do
-        if self.add_custom_attachments[attachment_slot] then
-            self:resolve_special_changes(item_instance, value)
-        end
-    end
-    for attachment_slot, value in pairs(random_attachments) do
-        if not self.add_custom_attachments[attachment_slot] then
-            self:resolve_special_changes(item_instance, value)
-        end
-    end
     return random_attachments
 end
 
@@ -148,7 +126,7 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
         item.gear_id = card_reward.gear_id
         local attachments = mod:randomize_item(item, nil, card_reward.gear_id)
         mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = nil
-        mod.gear_settings:push(card_reward.gear_id, attachments)
+        mod.gear_settings:push(item, attachments)
         -- mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = attachments
     end
     return item, item_group, rarity, item_level

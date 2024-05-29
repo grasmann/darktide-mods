@@ -114,22 +114,25 @@ mod.randomize_weapon = function(self, item)
     local no_support_entries = {}
     local trigger_move_entries = {}
     local item_name = self:item_name_from_content_string(item.name)
-    local attachment_slots = self:get_item_attachment_slots(item)
+    -- local attachment_slots = self:get_item_attachment_slots(item)
+	local attachment_slots = mod.gear_settings:possible_attachment_slots(item)
 	local gear_id = mod.gear_settings:item_to_gear_id(item)
+	local base_mod_only = self:get("mod_option_randomization_only_base_mod")
     for _, attachment_slot in pairs(attachment_slots) do
         if self.attachment[item_name][attachment_slot] and not table_contains(self.automatic_slots, attachment_slot) then
             local chance_success = true
             if self.random_chance[attachment_slot] then
                 local chance_option = self.random_chance[attachment_slot]
                 local chance = self:get(chance_option)
-                local already_has_attachment = self:get_actual_default_attachment(item, attachment_slot)
+                -- local already_has_attachment = self:get_actual_default_attachment(item, attachment_slot)
+				local already_has_attachment = mod.gear_settings:default_attachment(item, attachment_slot)
                 if already_has_attachment then chance = 100 end
                 local random_chance = math_random(100)
                 chance_success = random_chance <= chance
             end
             if chance_success then
                 for _, data in pairs(self.attachment[item_name][attachment_slot]) do
-                    if not string_find(data.id, "default") and not data.no_randomize and self.attachment_models[item_name][data.id] then
+                    if not string_find(data.id, "default") and not data.no_randomize and self.attachment_models[item_name][data.id] and (data.original_mod or not base_mod_only) then
                         possible_attachments[attachment_slot] = possible_attachments[attachment_slot] or {}
                         possible_attachments[attachment_slot][#possible_attachments[attachment_slot]+1] = data.id
                     end
@@ -141,7 +144,7 @@ mod.randomize_weapon = function(self, item)
                     local attachment_data = self.attachment_models[item_name][random_attachment]
                     local no_support = attachment_data and attachment_data.no_support
                     -- local trigger_move = attachment_data and attachment_data.trigger_move
-                    attachment_data = self:_apply_anchor_fixes(item, attachment_slot) or attachment_data
+                    attachment_data = mod.gear_settings:apply_fixes(item, attachment_slot) or attachment_data
                     no_support = attachment_data.no_support or no_support
                     -- trigger_move = attachment_data.trigger_move or trigger_move
                     -- if trigger_move then
@@ -160,28 +163,6 @@ mod.randomize_weapon = function(self, item)
             end
         end
     end
-	-- -- Auto equip
-	-- for attachment_slot, value in pairs(random_attachments) do
-	-- 	if not mod.add_custom_attachments[attachment_slot] then
-	-- 		mod:resolve_auto_equips(item, value)
-	-- 	end
-	-- end
-	-- for attachment_slot, value in pairs(random_attachments) do
-	-- 	if mod.add_custom_attachments[attachment_slot] then
-	-- 		mod:resolve_auto_equips(item, value)
-	-- 	end
-	-- end
-	-- -- Special resolve
-	-- for attachment_slot, value in pairs(random_attachments) do
-	-- 	if mod.add_custom_attachments[attachment_slot] then
-	-- 		mod:resolve_special_changes(item, value)
-	-- 	end
-	-- end
-	-- for attachment_slot, value in pairs(random_attachments) do
-	-- 	if not mod.add_custom_attachments[attachment_slot] then
-	-- 		mod:resolve_special_changes(item, value)
-	-- 	end
-	-- end
     -- No support
     for _, no_support_entry in pairs(no_support_entries) do
         for attachment_slot, random_attachment in pairs(random_attachments) do

@@ -65,6 +65,25 @@ local mod = get_mod("weapon_customization")
     local RESET_WAIT_TIME = 5
 --#endregion
 
+-- Change light positions
+mod.set_light_positions = function(self)
+	if self.preview_lights and self.cosmetics_view then
+		for _, unit_data in pairs(self.preview_lights) do
+			-- Get default position
+			local default_position = vector3_unbox(unit_data.position)
+			-- Get difference to link unit position
+			local weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
+			if weapon_spawner then
+				local link_difference = vector3_unbox(weapon_spawner._link_unit_base_position) - vector3_unbox(weapon_spawner._link_unit_position)
+				-- Position with offset
+				local light_position = vector3(default_position[1], default_position[2] - link_difference[2], default_position[3])
+				-- mod:info("mod.set_light_positions: "..tostring(unit_data.unit))
+				unit_set_local_position(unit_data.unit, 1, light_position)
+			end
+		end
+	end
+end
+
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
@@ -156,9 +175,9 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 	end
 
 	instance.update_carousel = function(self, dt, t)
-		if mod:get("mod_option_carousel") then
-			mod:try_spawning_previews()
-			mod:update_attachment_previews(dt, t)
+		if mod.cosmetics_view and mod:get("mod_option_carousel") then
+			mod.cosmetics_view:try_spawning_previews()
+			mod.cosmetics_view:update_attachment_previews(dt, t)
 		end
 	end
 
@@ -308,9 +327,11 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
 			unit_set_unit_visibility(weapon_spawn_data.item_unit_3p, true, true)
 
-			mod:hide_bullets(weapon_spawn_data.attachment_units_3p)
+			mod.gear_settings:hide_bullets(weapon_spawn_data.attachment_units_3p)
 
-			local flashlight = mod:get_attachment_slot_in_attachments(weapon_spawn_data.attachment_units_3p, "flashlight")
+			-- local flashlight = mod:get_attachment_slot_in_attachments(weapon_spawn_data.attachment_units_3p, "flashlight")
+			local flashlight = mod.gear_settings:attachment_unit(weapon_spawn_data.attachment_units_3p, "flashlight")
+			
 			local attachment_name = flashlight and unit_get_data(flashlight, "attachment_name")
 			if flashlight then
 				mod:preview_flashlight(true, self._world, flashlight, attachment_name, true)

@@ -153,8 +153,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
     instance.update_flashlight = function(self, dt, t)
         local slot = self._equipment[SLOT_SECONDARY]
         if not script_unit_has_extension(self._unit, "flashlight_system") and slot then
-            local flashlight_unit_1p = mod:get_attachment_slot_in_attachments(slot.attachments_1p, "flashlight")
-            local flashlight_unit_3p = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
+            -- local flashlight_unit_1p = mod:get_attachment_slot_in_attachments(slot.attachments_1p, "flashlight")
+            -- local flashlight_unit_3p = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
+            local flashlight_unit_1p = mod.gear_settings:attachment_unit(slot.attachments_1p, "flashlight")
+            local flashlight_unit_3p = mod.gear_settings:attachment_unit(slot.attachments_3p, "flashlight")
+            
             -- local inventory_component = self._inventory_component
             -- local wielded_slot_name = inventory_component and inventory_component.wielded_slot
             if flashlight_unit_1p and flashlight_unit_3p then

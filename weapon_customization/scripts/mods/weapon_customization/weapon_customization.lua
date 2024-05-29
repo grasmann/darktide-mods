@@ -11,7 +11,6 @@ mod.version = "1.21"
 	local CLASS = CLASS
 	local tostring = tostring
 	local managers = Managers
-	local unit_alive = Unit.alive
 	local script_unit = ScriptUnit
 --#endregion
 
@@ -39,6 +38,7 @@ mod.version = "1.21"
 		weapon_templates = {},
 		temp_gear_settings = {},
 		extensions = {
+			visible_equipment = {},
 			dependencies = {},
 		},
 		-- Pakcages
@@ -63,6 +63,9 @@ mod.version = "1.21"
 			measurements = {},
 			result_cache = {},
 		},
+		split_cache = {},
+		negative_cache = {},
+		default_cache = {},
 	})
 --#endregion
 
@@ -92,21 +95,12 @@ end
 
 -- Gamestate changed
 mod.on_game_state_changed = function(status, state_name)
-	-- Release hub packages
-	mod:release_non_essential_packages()
-	mod:persistent_table(REFERENCE).used_packages.hub = {}
-	-- Turn off package safety
-	mod.keep_all_packages = nil
 end
 
 -- Mod settings changed
 mod.on_setting_changed = function(setting_id)
 	-- Update mod settings
 	mod.update_option(setting_id)
-	-- Update randomization
-	if setting_id == OPTION_RANDOMIZE_PLAYERS or setting_id == OPTION_RANDOMIZE_STORE then
-		mod.keep_all_packages = true
-	end
 	-- Trigger Events
 	managers.event:trigger("weapon_customization_settings_changed")
 	-- Debug
@@ -121,27 +115,28 @@ end
 mod.on_reload = function(self)
 	self:init()
 	self:setup_item_definitions()
-	if self.player_unit and unit_alive(self.player_unit) then
-		-- if self._debug then
-		self:remove_extension(self.player_unit, "crouch_system")
-		self:remove_extension(self.player_unit, "sway_system")
-		self:remove_extension(self.player_unit, "sight_system")
-		self:remove_extension(self.player_unit, "visible_equipment_system")
-		self:remove_extension(self.player_unit, "flashlight_system")
-		self:remove_extension(self.player_unit, "weapon_dof_system")
-		-- end
+	if self.player_unit and Unit.alive(self.player_unit) then
+		if self._debug then
+			self:remove_extension(self.player_unit, "crouch_system")
+			self:remove_extension(self.player_unit, "sway_system")
+			self:remove_extension(self.player_unit, "sight_system")
+			self:remove_extension(self.player_unit, "visible_equipment_system")
+			self:remove_extension(self.player_unit, "flashlight_system")
+			self:remove_extension(self.player_unit, "weapon_dof_system")
+		end
 	end
 end
 
 -- When all mods are loaded
 mod.on_all_mods_loaded = function()
+	-- Recreate hud
 	mod:recreate_hud()
-	mod:persistent_table(REFERENCE).keep_all_packages = false
+
+	mod.gear_settings:prepare_fixes()
 end
 
 -- Mod is unloaded
 mod.on_unload = function(exit_game)
-	if not exit_game then mod:persistent_table(REFERENCE).keep_all_packages = true end
 	if exit_game then mod:console_output() end
 end
 
@@ -166,32 +161,6 @@ end
 -- Teammate visual extension destroyed
 mod.on_husk_unit_destroyed = function(self, husk_unit)
 end
-
--- ##### ┬┌┐┌┌┬┐┌─┐┬─┐┌─┐┌─┐┌─┐┌─┐ ####################################################################################
--- ##### ││││ │ ├┤ ├┬┘├┤ ├─┤│  ├┤  ####################################################################################
--- ##### ┴┘└┘ ┴ └─┘┴└─└  ┴ ┴└─┘└─┘ ####################################################################################
-
--- data = {
--- 	attachments = {},
--- 	models = {},
--- 	anchors = {},
--- }
-
--- mod.add_data = function(self, data)
-	
--- end
-
--- mod.add_attachment = function(self, attachment)
-	
--- end
-
--- mod.add_model = function(self, model)
-	
--- end
-
--- mod.add_amchor = function(self, amchor)
-	
--- end
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
@@ -245,12 +214,10 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/crouch_animation_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/visible_equipment_extension")
 
-	-- Import mod files
-	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_view")
-		-- Other Patches
-		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_view")
-		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_background_view")
-		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_weapon_cosmetics_view")
+	-- Other Patches
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_view")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_background_view")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_weapon_cosmetics_view")
 
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")

@@ -201,9 +201,11 @@ VisibleEquipmentExtension.delete = function(self)
     end
     -- Helper units
     if self.helper_units and #self.helper_units > 0 then
-        for _, unit in pairs(self.helper_units) do
-            world_unlink_unit(self.world, unit)
-            world_destroy_unit(self.world, unit)
+        for attach_name, unit in pairs(self.helper_units) do
+            if unit and unit_alive(unit) then
+                world_unlink_unit(self.world, unit)
+                world_destroy_unit(self.world, unit)
+            end
         end
         self.helper_units = {}
     end
@@ -296,7 +298,7 @@ VisibleEquipmentExtension.spawn_gear_attach_points = function(self, unit_or_nil)
             local point_unit = World.spawn_unit_ex(self.world, "core/units/empty_root", nil, Unit.world_pose(unit, node))
             World.link_unit(self.world, point_unit, 1, unit, node)
             Unit.set_local_position(point_unit, 1, point.offset)
-            unit_list[#unit_list+1] = point_unit
+            unit_list[point.name] = point_unit
         end
         return unit_list
     end
@@ -505,7 +507,7 @@ VisibleEquipmentExtension.set_estimated_weapon_data = function(self, slot)
 end
 
 VisibleEquipmentExtension.hide_bullets = function(self, slot)
-    mod:hide_bullets(self.dummy_units[slot].attachments)
+    mod.gear_settings:hide_bullets(self.dummy_units[slot].attachments)
 end
 
 VisibleEquipmentExtension.trigger_step = function(self, optional_time_overwrite)
@@ -530,6 +532,7 @@ VisibleEquipmentExtension.link_equipment = function(self)
     for slot_name, slot in pairs(self.equipment) do
         -- Check dummies
         if self.dummy_units[slot] and not self.is_linked[slot] then
+            
             -- Data
             local data = self.equipment_data[slot]
             local attach_node = data.attach_node
@@ -537,6 +540,12 @@ VisibleEquipmentExtension.link_equipment = function(self)
             if attach_node and unit_has_node(self.player_unit, attach_node) then
                 attach_node_index = unit_node(self.player_unit, attach_node)
             end
+
+            -- Get attach node
+            -- local gear_node = mod.gear_settings:get(slot.item, "gear_node")
+            -- if gear_node and self.helper_units[gear_node] then
+            --     attach_node_index, attach_unit = 1, self.helper_units[gear_node]
+            -- end
 
             local item = slot.item and slot.item.__master_item or slot.item
             -- Get list of units ( Slab shield )
@@ -590,6 +599,8 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     local rot = vector3_unbox(data.rotation[i])
                     local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
 
+                    -- local gear_node = mod.gear_settings:get(slot.item, "gear_node")
+
                     -- Position equipment
                     local position = vector3_unbox(data.position[i])
                     if self.position_overwrite[slot] then
@@ -598,6 +609,9 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     if unit_get_data(unit, "unit_manipulation_position_offset") then
                         position = position + vector3_unbox(unit_get_data(unit, "unit_manipulation_position_offset"))
                     end
+                    -- if gear_node and self.helper_units[gear_node] then
+                    --     position = vector3_zero()
+                    -- end
                     -- if gear_settings and gear_settings.position_offset then
                     --     position = vector3_unbox(gear_settings.position_offset)
                     -- end
@@ -610,6 +624,9 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     if unit_get_data(unit, "unit_manipulation_rotation_offset") then
                         rotation = Quaternion.multiply(rotation, quaternion_unbox(unit_get_data(unit, "unit_manipulation_rotation_offset")))
                     end
+                    -- if gear_node and self.helper_units[gear_node] then
+                    --     rotation = Quaternion.identity()
+                    -- end
                     -- if gear_settings and gear_settings.rotation_offset then
                     --     rotation = quaternion_unbox(gear_settings.rotation_offset)
                     -- end
@@ -623,6 +640,9 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     if unit_get_data(unit, "unit_manipulation_scale_offset") then
                         scale = scale + vector3_unbox(unit_get_data(unit, "unit_manipulation_scale_offset"))
                     end
+                    -- if gear_node and self.helper_units[gear_node] then
+                    --     scale = vector3_one()
+                    -- end
                     -- if gear_settings and gear_settings.scale_offset then
                     --     scale = vector3_unbox(gear_settings.scale_offset)
                     -- end
@@ -742,7 +762,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                     end
                 end
                 -- Hide bullets
-                self:hide_bullets(slot)
+                mod.gear_settings:hide_bullets(slot)
                 -- Equipment data
                 local data, sounds_1, sounds_2 = self:equipment_data_by_slot(slot)
                 local sounds_3 = SoundEventAliases.sfx_ads_up.events[self.item_names[slot]]
@@ -770,7 +790,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                     sounds_4,
                 }
                 -- Custom values
-                local anchor = mod:_apply_anchor_fixes(slot.item, "visible_equipment")
+                local anchor = mod.gear_settings:apply_fixes(slot.item, "visible_equipment")
                 if anchor then
                     self.position_overwrite[slot] = anchor.position
                     self.rotation_overwrite[slot] = anchor.rotation

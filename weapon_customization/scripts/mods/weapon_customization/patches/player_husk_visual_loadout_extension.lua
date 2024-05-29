@@ -192,8 +192,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_husk_visual_lo
     instance.update_flashlight = function(self, dt, t)
         local slot = self._equipment[SLOT_SECONDARY]
         if not script_unit_has_extension(self._unit, "flashlight_system") and slot then
-            local flashlight_unit_1p = mod:get_attachment_slot_in_attachments(slot.attachments_1p, "flashlight")
-            local flashlight_unit_3p = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
+            -- local flashlight_unit_1p = mod:get_attachment_slot_in_attachments(slot.attachments_1p, "flashlight")
+            -- local flashlight_unit_3p = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
+            local flashlight_unit_1p = mod.gear_settings:attachment_unit(slot.attachments_1p, "flashlight")
+            local flashlight_unit_3p = mod.gear_settings:attachment_unit(slot.attachments_3p, "flashlight")
+            
             if flashlight_unit_1p and flashlight_unit_3p then
                 -- Add FlashlightExtension
                 script_unit_add_extension({

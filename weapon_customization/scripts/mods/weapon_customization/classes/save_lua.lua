@@ -279,7 +279,9 @@ SaveLua._save_entry = function(self, data)
 			for attachment_slot, attachment_name in pairs(attachments) do
 				file:write(ttt..tostring(attachment_slot).." = '"..tostring(attachment_name).."',\n")
 			end
-			file:write(ttt.."gear_node = "..tostring(data.gear_node or "'default'")..",\n")
+			local gear_node = self.gear_settings:get(data.item, "gear_node")
+			gear_node = gear_node and "'"..tostring(gear_node).."'"
+			file:write(ttt.."gear_node = "..tostring(gear_node or "nil")..",\n")
 			file:write(tt.."},\n")
 		end
 	end

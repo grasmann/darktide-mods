@@ -80,8 +80,8 @@ end
 
 WeaponDOFExtension.set_weapon_values = function(self)
     self.sights = {
-        mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
-        mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
+        mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
+        mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
     }
     self.sight = self.sights[2] or self.sights[1]
     self.sight_name = self.sights[1] and mod:item_name_from_content_string(self.sights[1].item)

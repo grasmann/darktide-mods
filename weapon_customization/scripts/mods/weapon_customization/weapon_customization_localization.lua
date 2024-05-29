@@ -357,6 +357,14 @@ return {
 		ru = "Случайные варианты оружия",
 		["zh-cn"] = "随机化",
 	},
+	mod_option_randomization_only_base_mod = {
+		en = "Base mod only",
+		de = "Nur Basismod",
+	},
+	mod_option_randomization_only_base_mod_tooltip = {
+		en = "Randomization is limited to base mod weapon attachments",
+		de = "Randomisierung ist beschränkt auf Basismod Waffenteile",
+	},
 	mod_option_randomization_store = {
 		en = "Store",
 		de = "Geschäft",

@@ -123,21 +123,25 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	}
 
 	instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
-		local item_name = mod:item_name_from_content_string(item_data.name)
+		local item_name = mod.gear_settings:short_name(item_data.name)
 		local attachments = item_data.attachments
 		local gear_id = mod.gear_settings:item_to_gear_id(item_data)
 		local slot_info_id = mod.gear_settings:slot_info_id(item_data)
-		local in_possesion_of_player = mod.gear_settings:player_item(item_data)
+		local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
+		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+        local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
 		local attachment_slot_info = {}
+
+		local player_item = item_data.item_list_faction == "Player"
 		
-		if item_unit and attachments and gear_id and in_possesion_of_player and not mod:is_premium_store_item() then
+		if item_unit and attachments and in_possesion_of_player and not mod:is_premium_store_item() and player_item then
 			mod:setup_item_definitions()
 
-			-- Add flashlight slot
-			mod:_add_custom_attachments(item_data, attachments)
+			-- Add custom attachments
+			mod.gear_settings:_add_custom_attachments(item_data, attachments)
 			
 			-- Overwrite attachments
-			mod:_overwrite_attachments(item_data, attachments)
+			mod.gear_settings:_overwrite_attachments(item_data, attachments)
 		end
 
 		-- mod:echo(item_name)
@@ -174,7 +178,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 		-- ############################################################################################################
 
-		if attachment_units and item_unit and attachments and gear_id and not mod:is_premium_store_item() then
+		if attachment_units and item_unit and attachments and gear_id and not mod:is_premium_store_item() and player_item and in_possesion_of_player then
 
 			unit_set_data(item_unit, "attachment_units", attachment_units)
 
@@ -245,7 +249,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 					-- Anchor
 					anchor = mod.anchors[item_name] and mod.anchors[item_name][attachment_name]
-					anchor = mod:_apply_anchor_fixes(item_data, unit) or anchor
+					anchor = mod.gear_settings:apply_fixes(item_data, unit) or anchor
 
 					-- if self:is_composite_item(item_data.name) then
 					-- 	-- anchor = item_data.anchors[attachment_slot] or anchor
@@ -361,7 +365,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					-- Hide meshes
 					local hide_mesh = attachment_data and attachment_data.hide_mesh
 					-- Get fixes
-					local fixes = mod:_apply_anchor_fixes(item_data, unit)
+					local fixes = mod.gear_settings:apply_fixes(item_data, unit)
 					hide_mesh = fixes and fixes.hide_mesh or hide_mesh
 					-- Check hide mesh
 					if hide_mesh then
@@ -617,18 +621,22 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			end
 		--#endregion Original
 
-		local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
-		attachment_slot_info = attachment_slot_info or {}
-		attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
-		attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
-		attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
-		attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
-		attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
-		attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
-		Unit.set_data(spawned_unit, "attachment_name", attachment_name)
-		Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
-		Unit.set_data(spawned_unit, "parent_unit", parent_unit)
-		Unit.set_data(spawned_unit, "parent_node", attach_node_index)
+		local player_item = item_data.item_list_faction == "Player"
+
+		if player_item then
+			local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
+			attachment_slot_info = attachment_slot_info or {}
+			attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
+			attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
+			attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
+			attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
+			attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
+			attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
+			Unit.set_data(spawned_unit, "attachment_name", attachment_name)
+			Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
+			Unit.set_data(spawned_unit, "parent_unit", parent_unit)
+			Unit.set_data(spawned_unit, "parent_node", attach_node_index)
+		end
 	
 		--#region Original
 			local item_type = item_data.item_type
@@ -726,18 +734,24 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	end
 
 	instance.generate_attachment_overrides_lookup = function (item_data, override_item_data, in_possesion_of_player)
-		if override_item_data then
+
+		local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
+		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+		local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
+		local player_item = item_data.item_list_faction == "Player"
+
+		if override_item_data and player_item and in_possesion_of_player then
 			local attachments = override_item_data.attachments
 			local gear_id = mod.gear_settings:item_to_gear_id(item_data)
 
 			if gear_id and not mod:is_premium_store_item() then
 				mod:setup_item_definitions()
 
-				-- Add flashlight slot
-				mod:_add_custom_attachments(item_data, attachments)
+				-- Add custom attachments
+				mod.gear_settings:_add_custom_attachments(item_data, attachments)
 				
 				-- Overwrite attachments
-				mod:_overwrite_attachments(item_data, attachments)
+				mod.gear_settings:_overwrite_attachments(item_data, attachments)
 			end
 		end
 

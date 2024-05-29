@@ -132,6 +132,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 
 	self.wielded_slot = extension_init_data.wielded_slot or SLOT_UNARMED
 	self.ranged_weapon = extension_init_data.ranged_weapon
+	self.gear_id = mod.gear_settings:item_to_gear_id(self.ranged_weapon.item)
 	self.equipment_component = extension_init_data.equipment_component
 	self.equipment = extension_init_data.equipment
 	self.is_starting_aim = nil
@@ -257,8 +258,8 @@ SightExtension.set_aiming = function(self, aiming, t)
 end
 
 SightExtension.set_lens_scales = function(self)
-	local lens_2 = mod:_apply_anchor_fixes(self.ranged_weapon.item, "lens_2")
-	local lens = mod:_apply_anchor_fixes(self.ranged_weapon.item, "lens")
+	local lens_2 = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "lens_2")
+	local lens = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "lens")
 	self.lens_scales = {
 		lens_2 and lens_2.scale or vector3_box(vector3_zero()),
 		lens and lens.scale or vector3_box(vector3_zero()),
@@ -277,13 +278,17 @@ SightExtension.set_weapon_values = function(self)
 	self.custom_vertical_fov = nil
 	self.item_name = mod:item_name_from_content_string(self.ranged_weapon.item.name)
 	self.sights = {
-		mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
-		mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
+		mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
+		mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
 	}
 	-- self:set_lens_units()
-	self.sight_unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_3")
-	    or mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_2")
-	    or mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight")
+	-- self.sight_unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_3")
+	--     or mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight_2")
+	--     or mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight")
+	self.sight_unit = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, "sight_3")
+	    or mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, "sight_2")
+	    or mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, "sight")
+
 	self.sight = self.sights[2] or self.sights[1] --self:get_sight()
 	self.sight_name = self.sights[1] and mod:item_name_from_content_string(self.sights[1].item)
 	self.offset = nil
@@ -298,8 +303,8 @@ SightExtension.set_weapon_values = function(self)
 		self.sniper_zoom = mod.sniper_zoom_levels[self.sight_name] or 7
 		self:set_sniper_scope_unit()
 		self.lenses = {
-			mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "lens"),
-			mod:_recursive_find_attachment(self.ranged_weapon.item.attachments, "lens_2"),
+			mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "lens"),
+			mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "lens_2"),
 		}
 		-- ##### TEMP FIX #############################################################################################
 		self:lense_transparency_temp_fix()
@@ -319,24 +324,29 @@ SightExtension.set_sight_offset = function(self, offset_type)
 	local offset_type = offset_type or SCOPE_OFFSET
 	local anchor = mod.anchors[self.ranged_weapon.weapon_template.name]
 	local sight_offset = anchor and anchor[offset_type]
-	self.offset = mod:_apply_anchor_fixes(self.ranged_weapon.item, offset_type) or sight_offset or {position = vector3_box(vector3_zero())}
+	self.offset = mod.gear_settings:apply_fixes(self.ranged_weapon.item, offset_type) or sight_offset or {position = vector3_box(vector3_zero())}
 end
 
 SightExtension.set_sniper_scope_unit = function(self)
 	if self.ranged_weapon.attachment_units then
-		self.sniper_scope_unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight")
+		-- self.sniper_scope_unit = mod:get_attachment_slot_in_attachments(self.ranged_weapon.attachment_units, "sight")
+		self.sniper_scope_unit = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, "sight")
+		self.sniper_sight_data  = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "sight")
 	end
 end
 
 SightExtension.set_lens_units = function(self)
 	local reflex = {}
-	mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, SIGHT, reflex)
+	-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, SIGHT, reflex)
+	reflex[1] = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, SIGHT)
 	if #reflex >= 1 then
 		local lenses = {}
-		mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_A, lenses)
-		mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_B, lenses)
+		-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_A, lenses)
+		-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_B, lenses)
+		lenses[1] = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, LENS_A)
+		lenses[2] = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, LENS_B)
 		if #lenses >= 2 then
-			local scope_sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight_2")
+			local scope_sight = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "sight_2")
 			self.lens_mesh = unit_get_data(lenses[1], "lens_mesh") or 1
 			self.default_reticle_position = vector3_box(mesh_local_position(unit_mesh(reflex[1], self.lens_mesh)))
 			if unit_get_data(lenses[1], "lens") == 2 then
@@ -446,8 +456,9 @@ SightExtension.update = function(self, unit, dt, t)
 					self.lens_transparency = math_lerp(MIN_TRANSPARENCY, self.lense_transparency_target, anim_progress)
 
 					if self.sniper_scope_unit and unit_alive(self.sniper_scope_unit) then
-						local sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight")
-						local scale_default = sight and sight.scale and vector3_unbox(sight.scale) or vector3(1, 1, 1)
+						-- local sight = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "sight")
+						local scale_default = self.sniper_sight_data and self.sniper_sight_data.scale
+							and vector3_unbox(self.sniper_sight_data.scale) or vector3(1, 1, 1)
 						local aim_scale = self.offset.aim_scale or .5
 						local apply_scale = vector3_lerp(scale_default, vector3(scale_default[1], aim_scale, scale_default[3]), anim_progress)
 						unit_set_local_scale(self.sniper_scope_unit, 1, apply_scale)
@@ -489,9 +500,10 @@ SightExtension.update = function(self, unit, dt, t)
 					self.lens_transparency = self.lense_transparency_target
 
 					if self.sniper_scope_unit and unit_alive(self.sniper_scope_unit) then
-						local sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight")
+						-- local sight = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "sight")
 						local aim_scale = self.offset.aim_scale or .5
-						local scale_default = sight and sight.scale and vector3_unbox(sight.scale) or vector3(1, 1, 1)
+						local scale_default = self.sniper_sight_data and self.sniper_sight_data.scale
+							and vector3_unbox(self.sniper_sight_data.scale) or vector3(1, 1, 1)
 						unit_set_local_scale(self.sniper_scope_unit, 1, vector3(scale_default[1], aim_scale, scale_default[3]))
 					end
 
@@ -524,8 +536,9 @@ SightExtension.update = function(self, unit, dt, t)
 					self.lens_transparency = math_lerp(self.lense_transparency_target, MIN_TRANSPARENCY, anim_progress)
 
 					if self.sniper_scope_unit and unit_alive(self.sniper_scope_unit) then
-						local sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight")
-						local scale_default = sight and sight.scale and vector3_unbox(sight.scale) or vector3(1, 1, 1)
+						-- local sight = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "sight")
+						local scale_default = self.sniper_sight_data and self.sniper_sight_data.scale
+							and vector3_unbox(self.sniper_sight_data.scale) or vector3(1, 1, 1)
 						local aim_scale = self.offset.aim_scale or .5
 						local apply_scale = vector3_lerp(vector3(scale_default[1], aim_scale, scale_default[3]), scale_default, anim_progress)
 						unit_set_local_scale(self.sniper_scope_unit, 1, apply_scale)
@@ -565,8 +578,9 @@ SightExtension.update = function(self, unit, dt, t)
 					self.lens_transparency = MIN_TRANSPARENCY
 
 					if self.sniper_scope_unit and unit_alive(self.sniper_scope_unit) then
-						local sight = mod:_apply_anchor_fixes(self.ranged_weapon.item, "sight")
-						local scale_default = sight and sight.scale and vector3_unbox(sight.scale) or vector3(1, 1, 1)
+						-- local sight = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "sight")
+						local scale_default = self.sniper_sight_data and self.sniper_sight_data.scale
+							and vector3_unbox(self.sniper_sight_data.scale) or vector3(1, 1, 1)
 						unit_set_local_scale(self.sniper_scope_unit, 1, scale_default)
 					end
 

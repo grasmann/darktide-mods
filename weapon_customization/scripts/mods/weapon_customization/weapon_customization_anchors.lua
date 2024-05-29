@@ -8,6 +8,7 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
 local _item_minion = "content/items/weapons/minions"
+local REFERENCE = "weapon_customization"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -22,6 +23,7 @@ local _item_minion = "content/items/weapons/minions"
 	local string_find = string.find
 	local vector3_box = Vector3Box
 	local table_merge_recursive = table.merge_recursive
+	local string_split = string.split
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐  ┌┬┐┌─┐┌┐ ┬  ┌─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ###############################################
@@ -94,6 +96,7 @@ table.model_table = function(content, parent, angle, move, remove, type, no_supp
 			automatic_equip = table.tv(automatic_equip, i),
 			hide_mesh = table.tv(hide_mesh, i),
 			special_resolve = table.tv(special_resolve, i),
+			original_mod = true,
 			index = index,
 			slot_index = i,
 		}
@@ -383,6 +386,14 @@ end
 		--#endregion
 	--#endregion
 --#endregion
+
+for item_name, attachments in pairs(mod.attachment) do
+	for attachment_slot, slot_attachments in pairs(attachments) do
+		for _, attachment_data in pairs(slot_attachments) do
+			attachment_data.original_mod = true
+		end
+	end
+end
 
 --#region Data
 	mod.special_types = {
@@ -892,7 +903,7 @@ for weapon_name, weapon_data in pairs(mod.attachment_models) do
 	mod.default_attachment_models[weapon_name] = {}
 	for attachment_name, attachment_data in pairs(weapon_data) do
 		if attachment_data.index then
-			mod.default_attachment_models[weapon_name][attachment_data.index] = attachment_name
+			mod.default_attachment_models[weapon_name][#mod.default_attachment_models[weapon_name]+1] = attachment_name
 		end
 	end
 end

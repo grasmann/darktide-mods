@@ -38,17 +38,17 @@ return table_combine(
 	_chainsword_2h_p1_m1,
 	{
 		attachments = {
-			trinket_hook = _common.trinket_hook_attachments(),
-			emblem_right = _common.emblem_right_attachments(),
-			emblem_left = _common.emblem_left_attachments(),
 			grip = _chainsword_2h_p1_m1.grip_attachments(),
 			body = _chainsword_2h_p1_m1.body_attachments(),
 			chain = _chainsword_2h_p1_m1.chain_attachments(),
+			trinket_hook = _common.trinket_hook_attachments(),
+			emblem_right = _common.emblem_right_attachments(),
+			emblem_left = _common.emblem_left_attachments(),
 		},
 		models = table_combine(
 			-- {customization_default_position = vector3_box(0, 3, .35)},
-			_common.emblem_right_models("head", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
-			_common.emblem_left_models("head", -3, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
+			_common.emblem_right_models("body", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
+			_common.emblem_left_models("body", -3, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
 			_common.trinket_hook_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
 			_chainsword_2h_p1_m1.chain_models(nil, 0, vector3_box(-.3, -3, .2), vector3_box(0, 0, 0)),
 			_chainsword_2h_p1_m1.body_models(nil, 0, vector3_box(0, -5.5, -.4), vector3_box(0, 0, .2)),
