@@ -34,8 +34,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-	local SLOT_PRIMARY = "slot_primary"
-	local SLOT_SECONDARY = "slot_secondary"
 	local WEAPON_CUSTOMIZATION_TAB = "tab_weapon_customization"
 --#endregion
 
@@ -87,7 +85,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 	instance.unequipped_slot_id = function(self)
 		self:get_inventory_background_view()
 		if self.inventory_background_view then
-			return self.inventory_background_view._preview_wield_slot_id == SLOT_PRIMARY and SLOT_SECONDARY or SLOT_PRIMARY
+			return self.inventory_background_view._preview_wield_slot_id == mod.SLOT_PRIMARY and mod.SLOT_SECONDARY or mod.SLOT_PRIMARY
 		end
 	end
 
@@ -96,7 +94,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		if self.inventory_background_view and self.inventory_background_view._profile_spawner then
 			local character_spawn_data = self.inventory_background_view._profile_spawner._character_spawn_data
 			if character_spawn_data and character_spawn_data.unit_3p and unit_alive(character_spawn_data.unit_3p) then
-				return mod:execute_extension(character_spawn_data.unit_3p, "visible_equipment_system", "weapon_unit", self:unequipped_slot_id())
+				return mod:execute_extension(character_spawn_data.unit_3p, mod.SYSTEM_VISIBLE_EQUIPMENT, "weapon_unit", self:unequipped_slot_id())
 			end
 		end
 	end
@@ -125,7 +123,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 
 	instance.customization_angle = function(self)
 		if self:is_tab() then
-			return self:unequipped_slot_id() == SLOT_PRIMARY and 2 or 4.5
+			return self:unequipped_slot_id() == mod.SLOT_PRIMARY and 2 or 4.5
 		end
 	end
 

@@ -53,7 +53,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-	local REFERENCE = "weapon_customization"
 	local SKIP = "++"
 	local WEAPON_SKIN = "WEAPON_SKIN"
 	local LANGUAGE_ID = Application.user_setting("language_id")
@@ -74,7 +73,7 @@ mod.play_attachment_sound = function(self, item, attachment_slot, attachment_nam
 		if sounds then
 			-- local unit = self:get_attachment_slot_unit(attachment_slot)
 			local slot_info_id = self.cosmetics_view._slot_info_id
-			local slot_infos = slot_info_id and mod:persistent_table(REFERENCE).attachment_slot_infos
+			local slot_infos = slot_info_id and mod:persistent_table(mod.REFERENCE).attachment_slot_infos
 			local gear_info = slot_infos and slot_infos[slot_info_id]
 			local player_unit = self.player_unit and unit_alive(self.player_unit) and self.player_unit
 			local unit = player_unit or gear_info and gear_info.attachment_slot_to_unit[attachment_slot]
@@ -110,7 +109,7 @@ mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachmen
 	-- return {sound}
 	local load = load or false
 	local item_name = self.cosmetics_view._item_name
-	-- if item.item_type == "WEAPON_RANGED" then
+	-- if item.item_type == mod.WEAPON_RANGED then
 		if attachment_slot == "magazine" or attachment_slot == "magazine2" then
 			if type == "select" then return {SoundEventAliases.sfx_inspect.events.autogun_p2_m2, SoundEventAliases.sfx_inspect.events.ogryn_heavystubber_p1_m1} end
 			if type == "detach" then return {SoundEventAliases.sfx_magazine_eject.events[item_name] or SoundEventAliases.sfx_magazine_eject.events.default} end
@@ -178,7 +177,7 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 			local item_name = self:item_name_from_content_string(item.name)
 			local attachment_data = self.attachment_models[item_name][attachment_name]
 			if attachment_data and attachment_data.model ~= "" then
-				local item_definitions = self:persistent_table(REFERENCE).item_definitions
+				local item_definitions = self:persistent_table(mod.REFERENCE).item_definitions
 				-- Search only weapons
 				for _, entry in pairs(item_definitions) do
 					if entry.attachments and entry.item_type ~= WEAPON_SKIN and entry.display_name ~= "" and entry.display_name ~= "n/a" then
@@ -231,7 +230,7 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 				name = company_name
 			end
 			if name then
-				local split_cache = mod:persistent_table(REFERENCE).split_cache
+				local split_cache = mod:persistent_table(mod.REFERENCE).split_cache
 				local attachment_remove_string = mod:localize("mod_attachment_remove")
 				local replace = split_cache[attachment_remove_string] or string_split(attachment_remove_string, "|")
 				if not split_cache[attachment_remove_string] then

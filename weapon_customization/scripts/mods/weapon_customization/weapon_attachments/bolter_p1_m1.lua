@@ -18,7 +18,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-	local REFERENCE = "weapon_customization"
 	local _sights = "bolter_sight_01|bolter_sight_02"
 	local _barrels = "bolter_barrel_01|bolter_barrel_02"
 	local _magazines = "bolter_magazine_01|bolter_magazine_02"

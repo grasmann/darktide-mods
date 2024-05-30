@@ -99,10 +99,6 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
---#region Data
-	local REFERENCE = "weapon_customization"
---#endregion
-
 mod.mesh_positions = {}
 mod.mesh_positions_changed = {}
 
@@ -127,8 +123,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local attachments = item_data.attachments
 		local gear_id = mod.gear_settings:item_to_gear_id(item_data)
 		local slot_info_id = mod.gear_settings:slot_info_id(item_data)
-		local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
-		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+		local visible_equipment_system_option = mod:get(mod.OPTION_VISIBLE_EQUIPMENT)
+		local hub = not mod:is_in_hub() or not mod:get(mod.OPTION_VISIBLE_EQUIPMENT_NO_HUB)
         local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
 		local attachment_slot_info = {}
 
@@ -182,7 +178,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 			unit_set_data(item_unit, "attachment_units", attachment_units)
 
-			local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+			local slot_infos = mod:persistent_table(mod.REFERENCE).attachment_slot_infos
 			slot_infos[slot_info_id] = attachment_slot_info
 
 			slot_infos[slot_info_id].attachment_slot_to_unit = 	slot_infos[slot_info_id].attachment_slot_to_unit or {}
@@ -735,8 +731,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 	instance.generate_attachment_overrides_lookup = function (item_data, override_item_data, in_possesion_of_player)
 
-		local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
-		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+		local visible_equipment_system_option = mod:get(mod.OPTION_VISIBLE_EQUIPMENT)
+		local hub = not mod:is_in_hub() or not mod:get(mod.OPTION_VISIBLE_EQUIPMENT_NO_HUB)
 		local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
 		local player_item = item_data.item_list_faction == "Player"
 

@@ -67,7 +67,6 @@ local Sway = mod:original_require("scripts/utilities/sway")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local SLOT_SECONDARY = "slot_secondary"
 local SWAY_OPTION = "mod_option_misc_sway"
 local SWAY_OPTION_AIM = "mod_option_misc_sway_aim"
 local CROSSHAIR_POSITION_LERP_SPEED = 35
@@ -86,7 +85,7 @@ local SwayAnimationExtension = class("SwayAnimationExtension", "WeaponCustomizat
 SwayAnimationExtension.init = function(self, extension_init_context, unit, extension_init_data)
     SwayAnimationExtension.super.init(self, extension_init_context, unit, extension_init_data)
 
-    managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
+    managers.event:register(self, mod.EVENT_SETTINGS_CHANGED, "on_settings_changed")
 
     self:on_settings_changed()
 
@@ -94,7 +93,7 @@ SwayAnimationExtension.init = function(self, extension_init_context, unit, exten
 end
 
 SwayAnimationExtension.delete = function(self)
-    managers.event:unregister(self, "weapon_customization_settings_changed")
+    managers.event:unregister(self, mod.EVENT_SETTINGS_CHANGED)
     self.initialized = false
     SwayAnimationExtension.super.delete(self)
 end
@@ -110,7 +109,7 @@ end
 
 SwayAnimationExtension.on_wield_slot = function(self, slot)
     self.weapon_template = slot and WeaponTemplate.weapon_template_from_item(slot.item)
-    self.ranged_weapon = slot and slot.name == SLOT_SECONDARY
+    self.ranged_weapon = slot and slot.name == mod.SLOT_SECONDARY
 end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################

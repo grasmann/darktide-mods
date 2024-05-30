@@ -42,29 +42,17 @@ local mod = get_mod("weapon_customization")
     local script_unit_remove_extension = script_unit.remove_extension
 --#endregion
 
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
---#region Data
-    local REFERENCE = "weapon_customization"
-    local WEAPON_MELEE = "WEAPON_MELEE"
-    local WEAPON_RANGED = "WEAPON_RANGED"
-    local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
-    local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
---#endregion
-
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################
 -- ##### │ ┬│  │ │├┴┐├─┤│    ├┤ │ │││││   │ ││ ││││└─┐ ################################################################
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ################################################################
 
 mod.setup_item_definitions = function(self, master_items)
-    if self:persistent_table(REFERENCE).item_definitions == nil then
+    if self:persistent_table(mod.REFERENCE).item_definitions == nil then
         local master_items = master_items or MasterItems.get_cached(true)
         if master_items then
-            self:persistent_table(REFERENCE).item_definitions = table_clone_instance(master_items)
+            self:persistent_table(mod.REFERENCE).item_definitions = table_clone_instance(master_items)
             -- Bulwark shield
-            local definitions = self:persistent_table(REFERENCE).item_definitions
+            local definitions = self:persistent_table(mod.REFERENCE).item_definitions
             local bulwark_shield_string = "content/items/weapons/player/melee/ogryn_bulwark_shield_01"
             if not definitions[bulwark_shield_string] then
                 local bulwark_shield_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
@@ -105,7 +93,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
                 -- Get model
                 local model = attachment_data and attachment_data.model
                 -- Get original item
-                local original_item = model and mod:persistent_table(REFERENCE).item_definitions[model]
+                local original_item = model and mod:persistent_table(mod.REFERENCE).item_definitions[model]
                 -- Check original item and dependencies
                 if original_item and original_item.resource_dependencies then
                     -- Iterate dependencies
@@ -127,9 +115,9 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
         -- local gear_id = mod.gear_settings:item_to_gear_id(item)
 
         local player_item = item.item_list_faction == "Player"
-        local weapon_item = item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED
-        local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
-		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+        local weapon_item = item.item_type == mod.WEAPON_MELEE or item.item_type == mod.WEAPON_RANGED
+        local visible_equipment_system_option = mod:get(mod.OPTION_VISIBLE_EQUIPMENT)
+		local hub = not mod:is_in_hub() or not mod:get(mod.OPTION_VISIBLE_EQUIPMENT_NO_HUB)
 		local in_possesion_of_player = mod.gear_settings:player_item(item) or (visible_equipment_system_option and hub)
 
         -- Check item and attachments

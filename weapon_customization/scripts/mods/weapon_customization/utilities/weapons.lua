@@ -52,7 +52,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-	local REFERENCE = "weapon_customization"
 	local REWARD_ITEM = "reward_item"
 --#endregion
 
@@ -227,7 +226,7 @@ mod.has_premium_skin = function(self, item)
 	local weapon_skin = item.slot_weapon_skin
 	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
 		self:setup_item_definitions()
-		weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
+		weapon_skin = self:persistent_table(mod.REFERENCE).item_definitions[weapon_skin]
 	end
 	if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
 		-- mod:echot(weapon_skin.name)
@@ -257,7 +256,7 @@ mod.redo_weapon_attachments = function(self, item)
 		local latest_frame = FixedFrame.get_latest_fixed_time()
 		-- Reset flashlight cache
 		-- self.attached_flashlights[gear_id] = {}
-		-- self:persistent_table(REFERENCE).flashlight_on = false
+		-- self:persistent_table(mod.REFERENCE).flashlight_on = false
 		-- Reset laser pointer cache
 		-- self:reset_laser_pointer()
 		-- self.attached_laser_pointers[gear_id] = {}

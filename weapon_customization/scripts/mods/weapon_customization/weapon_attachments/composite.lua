@@ -89,10 +89,8 @@ local test = {
     },
 }
 
-local REFERENCE = "weapon_customization"
-
 mod.is_composite_item = function(self, name)
-    return self:persistent_table(REFERENCE).composite_items[name]
+    return self:persistent_table(mod.REFERENCE).composite_items[name]
 end
 
 mod.register_composite_item = function(self, name, description)
@@ -101,7 +99,7 @@ mod.register_composite_item = function(self, name, description)
     -- self:setup_item_definitions()
 
     -- local function get_dependencies(item_name, dependencies)
-    --     local item_definition = self:persistent_table(REFERENCE).item_definitions[item_name]
+    --     local item_definition = self:persistent_table(mod.REFERENCE).item_definitions[item_name]
     --     if item_definition then
     --         for package_name, _ in pairs(item_definition.resource_dependencies) do
     --             dependencies[package_name] = true
@@ -111,7 +109,7 @@ mod.register_composite_item = function(self, name, description)
 
     
     -- for attachment_slot, data in pairs(description) do
-    --     local item_definition = self:persistent_table(REFERENCE).item_definitions[data.model]
+    --     local item_definition = self:persistent_table(mod.REFERENCE).item_definitions[data.model]
     --     if item_definition then
     --         for package_name, _ in pairs(item_definition.resource_dependencies) do
     --             dependencies[package_name] = true
@@ -145,7 +143,7 @@ mod.register_composite_item = function(self, name, description)
 
             local master_items = MasterItems.get_cached()
 
-            -- local item_definition = self:persistent_table(REFERENCE).item_definitions[data.model]
+            -- local item_definition = self:persistent_table(mod.REFERENCE).item_definitions[data.model]
             local item_definition = master_items[data.model]
             if item_definition then
                 for package_name, _ in pairs(item_definition.resource_dependencies) do
@@ -189,10 +187,10 @@ mod.register_composite_item = function(self, name, description)
         item_list_faction = "Player",
     }
 
-    self:persistent_table(REFERENCE).composite_items[name] = true
-    self:persistent_table(REFERENCE).item_definitions[name] = item_definition
+    self:persistent_table(mod.REFERENCE).composite_items[name] = true
+    self:persistent_table(mod.REFERENCE).item_definitions[name] = item_definition
 
-    -- mod:dtf(self:persistent_table(REFERENCE).item_definitions[name], "item_definition", 10)
+    -- mod:dtf(self:persistent_table(mod.REFERENCE).item_definitions[name], "item_definition", 10)
 
 end
 

@@ -1,6 +1,6 @@
 local mod = get_mod("weapon_customization")
 
-mod.version = "1.21"
+mod.version = "1.3a"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -19,12 +19,28 @@ mod.version = "1.21"
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-	local REFERENCE = "weapon_customization"
-	local OPTION_RANDOMIZE_PLAYERS = "mod_option_randomization_players"
-	local OPTION_RANDOMIZE_STORE = "mod_option_randomization_store"
+	mod.REFERENCE = "weapon_customization"
+	
+	mod.WEAPON_MELEE = "WEAPON_MELEE"
+    mod.WEAPON_RANGED = "WEAPON_RANGED"
+	mod.DEFAULT = "default"
+	mod.SLOT_PRIMARY = "slot_primary"
+	mod.SLOT_SECONDARY = "slot_secondary"
+	mod.SLOT_UNARMED = "slot_unarmed"
+
+	mod.OPTION_RANDOMIZE_PLAYERS = "mod_option_randomization_players"
+	mod.OPTION_RANDOMIZE_STORE = "mod_option_randomization_store"
+	mod.OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
+	mod.OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
+	mod.OPTION_CROUCH_ANIMATION = "mod_option_misc_cover_on_crouch"
+
+	mod.EVENT_SETTINGS_CHANGED = "weapon_customization_settings_changed"
+
+	mod.SYSTEM_VISIBLE_EQUIPMENT = "visible_equipment_system"
+	mod.SYSTEM_BATTERY = "battery_system"
 
 	-- Persistent values
-	mod:persistent_table(REFERENCE, {
+	mod:persistent_table(mod.REFERENCE, {
 		console_init = false,
 		-- Flashlight
 		flashlight_on = false,
@@ -102,7 +118,7 @@ mod.on_setting_changed = function(setting_id)
 	-- Update mod settings
 	mod.update_option(setting_id)
 	-- Trigger Events
-	managers.event:trigger("weapon_customization_settings_changed")
+	managers.event:trigger(mod.EVENT_SETTINGS_CHANGED)
 	-- Debug
 	mod._debug = mod:get("mod_option_debug")
 end
@@ -114,17 +130,17 @@ end
 -- Mod reload
 mod.on_reload = function(self)
 	self:init()
-	self:setup_item_definitions()
-	if self.player_unit and Unit.alive(self.player_unit) then
-		if self._debug then
-			self:remove_extension(self.player_unit, "crouch_system")
-			self:remove_extension(self.player_unit, "sway_system")
-			self:remove_extension(self.player_unit, "sight_system")
-			self:remove_extension(self.player_unit, "visible_equipment_system")
-			self:remove_extension(self.player_unit, "flashlight_system")
-			self:remove_extension(self.player_unit, "weapon_dof_system")
-		end
-	end
+	-- self:setup_item_definitions()
+	-- if self.player_unit and Unit.alive(self.player_unit) then
+	-- 	if self._debug then
+	-- 		self:remove_extension(self.player_unit, "crouch_system")
+	-- 		self:remove_extension(self.player_unit, "sway_system")
+	-- 		self:remove_extension(self.player_unit, "sight_system")
+	-- 		self:remove_extension(self.player_unit, mod.SYSTEM_VISIBLE_EQUIPMENT)
+	-- 		self:remove_extension(self.player_unit, "flashlight_system")
+	-- 		self:remove_extension(self.player_unit, "weapon_dof_system")
+	-- 	end
+	-- end
 end
 
 -- When all mods are loaded

@@ -76,8 +76,6 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local REFERENCE = "weapon_customization"
-local SLOT_SECONDARY = "slot_secondary"
 local LASER_PARTICLE_EFFECT = "content/fx/particles/enemies/sniper_laser_sight"
 local LASER_DOT = "content/fx/particles/enemies/red_glowing_eyes"
 local LOCK_TIME = .15
@@ -117,7 +115,7 @@ LaserPointerExtension.init = function(self, extension_init_context, unit, extens
 	self.laser_pointer_unit_3p = extension_init_data.flashlight_unit_3p
     self.on = extension_init_data.on or self.is_local_unit and mod:flashlight_active() or false
     local wielded_slot = extension_init_data.wielded_slot
-    self.wielded = wielded_slot and wielded_slot.name == SLOT_SECONDARY
+    self.wielded = wielded_slot and wielded_slot.name == mod.SLOT_SECONDARY
     self.weapon_fov_last_mode = nil
     self.end_position = nil
     self.hit_position = nil
@@ -143,6 +141,7 @@ LaserPointerExtension.delete = function(self)
     self:despawn_laser()
     self:despawn_weapon_dot()
     self:despawn_laser_dot()
+
 end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
@@ -635,12 +634,12 @@ LaserPointerExtension.particles_wrapper_created = function(self, particle_name, 
 end
 
 LaserPointerExtension.on_wield_slot = function(self, slot)
-    self.wielded = slot.name == SLOT_SECONDARY
+    self.wielded = slot.name == mod.SLOT_SECONDARY
     self:spawn_all()
 end
 
 LaserPointerExtension.on_unwield_slot = function(self, slot)
-    if slot.name == SLOT_SECONDARY then
+    if slot.name == mod.SLOT_SECONDARY then
         self.wielded = false
         self:despawn_all()
     end

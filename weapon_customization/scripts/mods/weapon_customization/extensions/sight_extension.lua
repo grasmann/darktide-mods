@@ -94,7 +94,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-	local REFERENCE = "weapon_customization"
 	local EFFECT = "content/fx/particles/screenspace/screen_ogryn_dash"
 	local SOUND = "wwise/events/weapon/play_lasgun_p3_mag_button"
 	local SIGHT = "sight_2"
@@ -102,8 +101,6 @@ local mod = get_mod("weapon_customization")
 	local LENS_B = "lens_2"
 	local SCOPE_OFFSET = "scope_offset"
 	local NO_SCOPE_OFFSET = "no_scope_offset"
-	local SLOT_SECONDARY = "slot_secondary"
-	local SLOT_UNARMED = "slot_unarmed"
 	local reticle_multiplier = .5
 	local MIN_TRANSPARENCY = .15
 --#endregion
@@ -130,7 +127,7 @@ end
 SightExtension.init = function(self, extension_init_context, unit, extension_init_data)
 	SightExtension.super.init(self, extension_init_context, unit, extension_init_data)
 
-	self.wielded_slot = extension_init_data.wielded_slot or SLOT_UNARMED
+	self.wielded_slot = extension_init_data.wielded_slot or mod.SLOT_UNARMED
 	self.ranged_weapon = extension_init_data.ranged_weapon
 	self.gear_id = mod.gear_settings:item_to_gear_id(self.ranged_weapon.item)
 	self.equipment_component = extension_init_data.equipment_component
@@ -151,7 +148,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 	self.lens_transparency = MIN_TRANSPARENCY
 	self.first_person_component = self.unit_data:read_component("first_person")
 
-	managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
+	managers.event:register(self, mod.EVENT_SETTINGS_CHANGED, "on_settings_changed")
 	managers.event:register(self, "weapon_customization_update_zoom", "update_zoom")
 
 	self:on_settings_changed()
@@ -161,10 +158,11 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 end
 
 SightExtension.delete = function(self)
-	managers.event:unregister(self, "weapon_customization_settings_changed")
+	managers.event:unregister(self, mod.EVENT_SETTINGS_CHANGED)
 	managers.event:unregister(self, "weapon_customization_update_zoom")
 	self.initialized = false
 	self.offset = vector3_zero()
+
 	SightExtension.super.delete(self)
 end
 
@@ -238,7 +236,7 @@ SightExtension.is_sniper_or_scope = function(self)
 end
 
 SightExtension.is_wielded = function(self)
-	return self.wielded_slot and self.wielded_slot.name == SLOT_SECONDARY
+	return self.wielded_slot and self.wielded_slot.name == mod.SLOT_SECONDARY
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################

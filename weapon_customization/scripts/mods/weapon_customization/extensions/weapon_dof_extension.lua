@@ -28,17 +28,6 @@ local mod = get_mod("weapon_customization")
     local shading_environment_set_scalar = ShadingEnvironment.set_scalar
 --#endregion
 
--- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
--- #####  ││├─┤ │ ├─┤ #################################################################################################
--- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
---#region Data
-    local SLOT_PRIMARY = "slot_primary"
-    local SLOT_SECONDARY = "slot_secondary"
-    local SLOT_UNARMED = "slot_unarmed"
-    local REFERENCE = "weapon_customization"
---#endregion
-
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
 -- ##### │  │  ├─┤└─┐└─┐ ##############################################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘ ##############################################################################################
@@ -52,13 +41,13 @@ local WeaponDOFExtension = class("WeaponDOFExtension", "WeaponCustomizationExten
 WeaponDOFExtension.init = function(self, extension_init_context, unit, extension_init_data)
     WeaponDOFExtension.super.init(self, extension_init_context, unit, extension_init_data)
     -- Attributes
-    self.wielded_slot = extension_init_data.wielded_slot or SLOT_UNARMED
+    self.wielded_slot = extension_init_data.wielded_slot or mod.SLOT_UNARMED
     self.ranged_weapon = extension_init_data.ranged_weapon
     self.dof_near_scale = 0
     self.last_target = 0
     self.target = 0
     -- Events
-    managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
+    managers.event:register(self, mod.EVENT_SETTINGS_CHANGED, "on_settings_changed")
     -- Set values
     self:on_settings_changed()
     self:set_weapon_values()
@@ -67,7 +56,7 @@ WeaponDOFExtension.init = function(self, extension_init_context, unit, extension
 end
 
 WeaponDOFExtension.delete = function(self)
-    managers.event:unregister(self, "weapon_customization_settings_changed")
+    managers.event:unregister(self, mod.EVENT_SETTINGS_CHANGED)
     -- Set uninitialized
     self.initialized = false
     -- Delete
@@ -190,7 +179,7 @@ WeaponDOFExtension.update = function(self, dt, t)
     local no_aim = not is_aiming and self.no_aim
     local scope = is_aiming and self:is_sniper_or_scope() and self.scope
     local sight = is_aiming and self:is_sight() and self.sight
-    local slot = self.wielded_slot and (self.wielded_slot.name == SLOT_SECONDARY or self.wielded_slot.name == SLOT_PRIMARY)
+    local slot = self.wielded_slot and (self.wielded_slot.name == mod.SLOT_SECONDARY or self.wielded_slot.name == mod.SLOT_PRIMARY)
 
     if slot and (self._is_aiming ~= self.last_aiming or self.dirty) then
         local target = 0
