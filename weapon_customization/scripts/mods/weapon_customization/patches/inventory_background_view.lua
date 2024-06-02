@@ -175,7 +175,7 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 							local camera = ui_profile_spawner and ui_profile_spawner._camera
 							local gui = self.inventory_view._ui_forward_renderer.gui
 
-							local has_backpack = mod:execute_extension(unit, mod.SYSTEM_VISIBLE_EQUIPMENT, "has_backpack")
+							local has_backpack = mod:execute_extension(unit, "visible_equipment_system", "has_backpack")
 
 							local points = unit_has_node(unit, "j_frontchestplate") and unit_has_node(unit, "j_backchestplate") and {
 								{node = "j_hips", offset = vector3(0, .2, .1), text = "Hips Front", name = "hips_front"},
@@ -288,7 +288,7 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 	instance.update_item_name = function(self)
 		self:get_inventory_view()
 		if self._profile_spawner and self.inventory_view then
-			local slot_id = self._preview_wield_slot_id == mod.SLOT_PRIMARY and mod.SLOT_SECONDARY or mod.SLOT_PRIMARY
+			local slot_id = self._preview_wield_slot_id == "slot_primary" and "slot_secondary" or "slot_primary"
 			local preview_profile_equipped_items = self._preview_profile_equipped_items
 			local presentation_inventory = preview_profile_equipped_items
 			local slot_item = presentation_inventory[slot_id]

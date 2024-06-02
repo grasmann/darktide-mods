@@ -1,6 +1,6 @@
 local mod = get_mod("weapon_customization")
 
-mod.version = "1.3a"
+mod.version = "1.21"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -19,28 +19,12 @@ mod.version = "1.3a"
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-	mod.REFERENCE = "weapon_customization"
-	
-	mod.WEAPON_MELEE = "WEAPON_MELEE"
-    mod.WEAPON_RANGED = "WEAPON_RANGED"
-	mod.DEFAULT = "default"
-	mod.SLOT_PRIMARY = "slot_primary"
-	mod.SLOT_SECONDARY = "slot_secondary"
-	mod.SLOT_UNARMED = "slot_unarmed"
-
-	mod.OPTION_RANDOMIZE_PLAYERS = "mod_option_randomization_players"
-	mod.OPTION_RANDOMIZE_STORE = "mod_option_randomization_store"
-	mod.OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
-	mod.OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
-	mod.OPTION_CROUCH_ANIMATION = "mod_option_misc_cover_on_crouch"
-
-	mod.EVENT_SETTINGS_CHANGED = "weapon_customization_settings_changed"
-
-	mod.SYSTEM_VISIBLE_EQUIPMENT = "visible_equipment_system"
-	mod.SYSTEM_BATTERY = "battery_system"
+	local REFERENCE = "weapon_customization"
+	local OPTION_RANDOMIZE_PLAYERS = "mod_option_randomization_players"
+	local OPTION_RANDOMIZE_STORE = "mod_option_randomization_store"
 
 	-- Persistent values
-	mod:persistent_table(mod.REFERENCE, {
+	mod:persistent_table(REFERENCE, {
 		console_init = false,
 		-- Flashlight
 		flashlight_on = false,
@@ -82,6 +66,16 @@ mod.version = "1.3a"
 		split_cache = {},
 		negative_cache = {},
 		default_cache = {},
+
+		cache = {
+			initialized = false,
+			item_names = {},
+			item_strings = {},
+			attachments = {},
+			attachment_slots = {},
+			attachment_list = {},
+			default_attachments = {},
+		},
 	})
 --#endregion
 
@@ -118,29 +112,30 @@ mod.on_setting_changed = function(setting_id)
 	-- Update mod settings
 	mod.update_option(setting_id)
 	-- Trigger Events
-	managers.event:trigger(mod.EVENT_SETTINGS_CHANGED)
+	managers.event:trigger("weapon_customization_settings_changed")
 	-- Debug
 	mod._debug = mod:get("mod_option_debug")
 end
 
 -- Update loop
 mod.update = function(main_dt)
+	mod:try_init_cache()
 end
 
 -- Mod reload
 mod.on_reload = function(self)
 	self:init()
-	-- self:setup_item_definitions()
-	-- if self.player_unit and Unit.alive(self.player_unit) then
-	-- 	if self._debug then
-	-- 		self:remove_extension(self.player_unit, "crouch_system")
-	-- 		self:remove_extension(self.player_unit, "sway_system")
-	-- 		self:remove_extension(self.player_unit, "sight_system")
-	-- 		self:remove_extension(self.player_unit, mod.SYSTEM_VISIBLE_EQUIPMENT)
-	-- 		self:remove_extension(self.player_unit, "flashlight_system")
-	-- 		self:remove_extension(self.player_unit, "weapon_dof_system")
-	-- 	end
-	-- end
+	self:setup_item_definitions()
+	if self.player_unit and Unit.alive(self.player_unit) then
+		if self._debug then
+			self:remove_extension(self.player_unit, "crouch_system")
+			self:remove_extension(self.player_unit, "sway_system")
+			self:remove_extension(self.player_unit, "sight_system")
+			self:remove_extension(self.player_unit, "visible_equipment_system")
+			self:remove_extension(self.player_unit, "flashlight_system")
+			self:remove_extension(self.player_unit, "weapon_dof_system")
+		end
+	end
 end
 
 -- When all mods are loaded
@@ -148,7 +143,9 @@ mod.on_all_mods_loaded = function()
 	-- Recreate hud
 	mod:recreate_hud()
 
-	mod.gear_settings:prepare_fixes()
+	-- mod.gear_settings:prepare_fixes()
+
+	mod.all_mods_loaded = true
 end
 
 -- Mod is unloaded
@@ -183,6 +180,7 @@ end
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 --#region Require
+
 	-- Patches
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/extensions")
 
@@ -191,7 +189,8 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/weapons")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/performance")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/attachments")
-	
+
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/data_cache")
 	local WeaponBuildAnimation = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/weapon_build_animation")
 	mod.build_animation = WeaponBuildAnimation:new()
 	local GearSettings = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/gear_settings")
@@ -222,7 +221,6 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/extension_base")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/sight_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/battery_extension")
-	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/dependency_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/flashlight_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/weapon_dof_extension")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/extensions/laser_pointer_extension")

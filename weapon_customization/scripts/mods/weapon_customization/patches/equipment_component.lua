@@ -32,7 +32,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
 
     instance.wield_custom = function(self, slot)
         -- Visible equipment
-        mod:execute_extension(slot.parent_unit_3p, mod.SYSTEM_VISIBLE_EQUIPMENT, "on_wield_slot", slot)
+        mod:execute_extension(slot.parent_unit_3p, "visible_equipment_system", "on_wield_slot", slot)
         -- Flashlights
         mod:execute_extension(slot.parent_unit_3p, "flashlight_system", "on_wield_slot", slot)
         -- Crouch
@@ -48,7 +48,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
     instance.unwield_custom = function(self, slot)
         if slot and slot.name then
             -- Visible equipment
-            mod:execute_extension(slot.parent_unit_3p, mod.SYSTEM_VISIBLE_EQUIPMENT, "on_unwield_slot", slot)
+            mod:execute_extension(slot.parent_unit_3p, "visible_equipment_system", "on_unwield_slot", slot)
             -- Flashlights
             mod:execute_extension(slot.parent_unit_3p, "flashlight_system", "on_unwield_slot", slot)
         end
@@ -63,18 +63,18 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         mod:execute_extension(slot.parent_unit_3p, "weapon_dof_system", "on_equip_slot", slot)
         -- Visible equipment
         if slot.name == "slot_gear_extra_cosmetic" then
-            mod:execute_extension(slot.parent_unit_3p, mod.SYSTEM_VISIBLE_EQUIPMENT, "position_equipment")
+            mod:execute_extension(slot.parent_unit_3p, "visible_equipment_system", "position_equipment")
         end
     end
 
     instance.unequip_custom = function(self, slot)
         -- Visible equipment
-        mod:execute_extension(slot.parent_unit_3p, mod.SYSTEM_VISIBLE_EQUIPMENT, "on_unequip_slot", slot)
+        mod:execute_extension(slot.parent_unit_3p, "visible_equipment_system", "on_unequip_slot", slot)
     end
 
     instance.update_visibility_custom = function(self, wielded_slot, unit_3p)
         -- Visible equipment
-        mod:execute_extension(unit_3p, mod.SYSTEM_VISIBLE_EQUIPMENT, "on_update_item_visibility", wielded_slot)
+        mod:execute_extension(unit_3p, "visible_equipment_system", "on_update_item_visibility", wielded_slot)
     end
 
 end)

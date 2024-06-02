@@ -58,6 +58,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
+	local SLOT_SECONDARY = "slot_secondary"
     local WEAPON_PART_ANIMATION_TIME = .75
     local MOVE_DURATION_OUT = .5
 	local MOVE_DURATION_IN = 1
@@ -89,11 +90,6 @@ end
 
 mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
-	instance.get_cosmetics_view = function(self)
-		self.cosmetics_view = self.cosmetics_view or mod:get_view("inventory_weapon_cosmetics_view")
-		return self.cosmetics_view
-	end
-
 	instance.get_modding_tools = function(self)
 		self.modding_tools = self.modding_tools or get_mod("modding_tools")
 	end
@@ -114,16 +110,15 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
 	instance._init_custom = function(self)
 		if self._reference_name ~= "WeaponIconUI" then
-			self:get_cosmetics_view()
 			-- Rotation
 			self._rotation_angle = mod._rotation_angle or 0
-			self._default_rotation_angle = self.cosmetics_view._last_rotation_angle or 0
+			self._default_rotation_angle = mod._last_rotation_angle or 0
 			-- Build animation extension
-			if self.cosmetics_view then
+			if mod.cosmetics_view then
 				mod.build_animation:set({
 					ui_weapon_spawner = self,
 					world = self._world,
-					item = self.cosmetics_view._presentation_item,
+					item = mod.cosmetics_view._presentation_item,
 				}, true)
 			end
 		end
@@ -180,9 +175,9 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 	end
 
 	instance.update_carousel = function(self, dt, t)
-		if self.cosmetics_view and mod:get("mod_option_carousel") then
-			self.cosmetics_view:try_spawning_previews()
-			self.cosmetics_view:update_attachment_previews(dt, t)
+		if mod.cosmetics_view and mod:get("mod_option_carousel") then
+			mod.cosmetics_view:try_spawning_previews()
+			mod.cosmetics_view:update_attachment_previews(dt, t)
 		end
 	end
 
@@ -197,56 +192,56 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 			local item_unit_3p = weapon_spawn_data.item_unit_3p
 
 			-- Camera movement
-			if self.cosmetics_view.do_move and mod:get("mod_option_camera_zoom") then
-				if self.cosmetics_view.move_position then
-					local last_move_position = self.cosmetics_view.last_move_position and vector3_unbox(self.cosmetics_view.last_move_position) or vector3_zero()
-					local move_position = vector3_unbox(self.cosmetics_view.move_position)
+			if mod.do_move and mod:get("mod_option_camera_zoom") then
+				if mod.move_position then
+					local last_move_position = mod.last_move_position and vector3_unbox(mod.last_move_position) or vector3_zero()
+					local move_position = vector3_unbox(mod.move_position)
 					if not mod:vector3_equal(last_move_position, move_position) then
-						self.cosmetics_view.new_position = vector3_box(vector3_unbox(self._link_unit_base_position) + move_position)
-						self.cosmetics_view.move_end = t + MOVE_DURATION_IN
+						mod.new_position = vector3_box(vector3_unbox(self._link_unit_base_position) + move_position)
+						mod.move_end = t + MOVE_DURATION_IN
 						mod.current_move_duration = MOVE_DURATION_IN
-						self.cosmetics_view.last_move_position = self.cosmetics_view.move_position
-						self.cosmetics_view:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
+						mod.last_move_position = mod.move_position
+						mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
 					end
 
 				elseif self._link_unit_base_position then
 					local last_move_position = vector3_unbox(self._link_unit_position)
 					local move_position = vector3_unbox(self._link_unit_base_position)
 					if not mod:vector3_equal(move_position, last_move_position) then
-						self.cosmetics_view.new_position = self._link_unit_base_position
-						self.cosmetics_view.move_end = t + MOVE_DURATION_OUT
+						mod.new_position = self._link_unit_base_position
+						mod.move_end = t + MOVE_DURATION_OUT
 						mod.current_move_duration = MOVE_DURATION_OUT
-						self.cosmetics_view.last_move_position = vector3_zero()
-						self.cosmetics_view:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
+						mod.last_move_position = vector3_zero()
+						mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
 					end
 
 				end
-				self.cosmetics_view.do_move = nil
-				self.cosmetics_view.do_reset = nil
-				self.cosmetics_view.reset_start = nil
+				mod.do_move = nil
+				mod.do_reset = nil
+				mod.reset_start = nil
 			else
-				if self.cosmetics_view.move_end and t <= self.cosmetics_view.move_end then
-					local progress = (self.cosmetics_view.move_end - t) / mod.current_move_duration
+				if mod.move_end and t <= mod.move_end then
+					local progress = (mod.move_end - t) / mod.current_move_duration
 					local anim_progress = math_easeInCubic(1 - progress)
-					local lerp_position = vector3_lerp(position, vector3_unbox(self.cosmetics_view.new_position), anim_progress)
-					self.cosmetics_view.link_unit_position = vector3_box(lerp_position)
+					local lerp_position = vector3_lerp(position, vector3_unbox(mod.new_position), anim_progress)
+					mod.link_unit_position = vector3_box(lerp_position)
 					if link_unit and unit_alive(link_unit) then
 						-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 						unit_set_local_position(link_unit, 1, lerp_position)
 					end
 					self._link_unit_position = vector3_box(lerp_position)
 
-				elseif self.cosmetics_view.move_end and t > self.cosmetics_view.move_end then
-					self.cosmetics_view.move_end = nil
+				elseif mod.move_end and t > mod.move_end then
+					mod.move_end = nil
 					if link_unit and unit_alive(link_unit) then
 						-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
-						unit_set_local_position(link_unit, 1, vector3_unbox(self.cosmetics_view.new_position))
+						unit_set_local_position(link_unit, 1, vector3_unbox(mod.new_position))
 					end
 					if link_unit and unit_alive(link_unit) then
-						self.cosmetics_view.link_unit_position = vector3_box(unit_local_position(link_unit, 1))
+						mod.link_unit_position = vector3_box(unit_local_position(link_unit, 1))
 					end
-					if mod.current_move_duration == MOVE_DURATION_IN and not mod:vector3_equal(vector3_unbox(self.cosmetics_view.new_position), vector3_zero()) then
-						self.cosmetics_view.do_reset = true
+					if mod.current_move_duration == MOVE_DURATION_IN and not mod:vector3_equal(vector3_unbox(mod.new_position), vector3_zero()) then
+						mod.do_reset = true
 					end
 
 				end
@@ -265,17 +260,17 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 					end
 					-- self._rotation_angle = mod._last_rotation_angle or 0
 					self._default_rotation_angle = new_rotation
-					self.cosmetics_view._last_rotation_angle = self._default_rotation_angle
+					mod._last_rotation_angle = self._default_rotation_angle
 					mod.check_rotation = true
-					self.cosmetics_view.do_reset = nil
-					self.cosmetics_view.reset_start = nil
+					mod.do_reset = nil
+					mod.reset_start = nil
 					mod.do_rotation = nil
 				end
 
 			elseif mod.check_rotation and not mod.dropdown_open then
 				if math_round_with_precision(self._rotation_angle, 1) == math_round_with_precision(self._default_rotation_angle, 1) then
 					if math_round_with_precision(self._rotation_angle, 1) ~= 0 then
-						self.cosmetics_view.do_reset = true
+						mod.do_reset = true
 					end
 					mod.check_rotation = nil
 				end
@@ -283,22 +278,22 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 			end
 
 			-- Reset
-			if self.cosmetics_view.do_reset and not mod.dropdown_open then
-				self.cosmetics_view.reset_start = t + RESET_WAIT_TIME
-				self.cosmetics_view.do_reset = nil
+			if mod.do_reset and not mod.dropdown_open then
+				mod.reset_start = t + RESET_WAIT_TIME
+				mod.do_reset = nil
 
-			elseif self.cosmetics_view.reset_start and t >= self.cosmetics_view.reset_start and not mod.dropdown_open then
-				if self.cosmetics_view.move_position then
-					self.cosmetics_view:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
+			elseif mod.reset_start and t >= mod.reset_start and not mod.dropdown_open then
+				if mod.move_position then
+					mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
 				end
-				self.cosmetics_view.move_position = nil
-				self.cosmetics_view.do_move = true
-				self.cosmetics_view.reset_start = nil
+				mod.move_position = nil
+				mod.do_move = true
+				mod.reset_start = nil
 				self._default_rotation_angle = 0
-				self.cosmetics_view._last_rotation_angle = 0
+				mod._last_rotation_angle = 0
 
-			elseif self.cosmetics_view.reset_start and mod.dropdown_open then
-				self.cosmetics_view.reset_start = self.cosmetics_view.reset_start + dt
+			elseif mod.reset_start and mod.dropdown_open then
+				mod.reset_start = mod.reset_start + dt
 
 			end
 
@@ -311,12 +306,12 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 		local weapon_spawn_data = self._weapon_spawn_data
 		if weapon_spawn_data and self._reference_name ~= "WeaponIconUI" then
 
-			-- self.cosmetics_view.weapon_unit = weapon_spawn_data.item_unit_3p
-			-- self.cosmetics_view.attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
+			-- mod.cosmetics_view.weapon_unit = weapon_spawn_data.item_unit_3p
+			-- mod.cosmetics_view.attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
 
-			-- if modding_tools and self.cosmetics_view._modding_tool_toggled_on then
-			-- 	local gui = self.cosmetics_view._ui_forward_renderer.gui
-			-- 	modding_tools:unit_manipulation_add(weapon_spawn_data.item_unit_3p, self._camera, self._world, gui, self.cosmetics_view._item_name)
+			-- if modding_tools and mod.cosmetics_view._modding_tool_toggled_on then
+			-- 	local gui = mod.cosmetics_view._ui_forward_renderer.gui
+			-- 	modding_tools:unit_manipulation_add(weapon_spawn_data.item_unit_3p, self._camera, self._world, gui, mod.cosmetics_view._item_name)
 			-- 	local attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
 			-- 	for _, unit in pairs(attachment_units_3p) do
 			-- 		local name = Unit.get_data(unit, "attachment_slot")
@@ -324,7 +319,7 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 			-- 	end
 			-- end
 
-			-- local item_name = self.cosmetics_view._item_name
+			-- local item_name = mod.cosmetics_view._item_name
 			local item_name = mod:item_name_from_content_string(weapon_spawn_data.item.name)
 			local link_unit = weapon_spawn_data.link_unit
 
@@ -371,12 +366,12 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 				end
 
 				if self._last_item_name and self._last_item_name ~= item_name then
-					self.cosmetics_view.do_reset = nil
-					self.cosmetics_view.reset_start = nil
-					self.cosmetics_view.move_end = nil
-					self.cosmetics_view.do_move = nil
-					self.cosmetics_view.last_move_position = nil
-					self.cosmetics_view.move_position = nil
+					mod.do_reset = nil
+					mod.reset_start = nil
+					mod.move_end = nil
+					mod.do_move = nil
+					mod.last_move_position = nil
+					mod.move_position = nil
 				end
 				
 				if mod.attachment_models[item_name] and mod.attachment_models[item_name].customization_default_position then
@@ -392,8 +387,8 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 					self._link_unit_base_position = vector3_box(unit_local_position(link_unit, 1))
 				end
 
-				if self.cosmetics_view.link_unit_position then
-					local position = vector3_unbox(self.cosmetics_view.link_unit_position)
+				if mod.link_unit_position then
+					local position = vector3_unbox(mod.link_unit_position)
 					-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 					unit_set_local_position(link_unit, 1, position)
 				end
@@ -476,7 +471,7 @@ mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_serv
 	-- Original function
 	func(self, dt, t, input_service, ...)
 
-	if self._reference_name ~= "WeaponIconUI" and self.cosmetics_view and not self.demo then
+	if self._reference_name ~= "WeaponIconUI" and mod.cosmetics_view and not self.demo then
 
 		-- Update carousel
 		self:update_carousel(dt, t)

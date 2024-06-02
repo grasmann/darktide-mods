@@ -8,6 +8,7 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
 local _item_minion = "content/items/weapons/minions"
+local REFERENCE = "weapon_customization"
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -901,6 +902,7 @@ mod.default_attachment_models = {}
 for weapon_name, weapon_data in pairs(mod.attachment_models) do
 	mod.default_attachment_models[weapon_name] = {}
 	for attachment_name, attachment_data in pairs(weapon_data) do
+		attachment_data.original_mod = true
 		if attachment_data.index then
 			mod.default_attachment_models[weapon_name][#mod.default_attachment_models[weapon_name]+1] = attachment_name
 		end

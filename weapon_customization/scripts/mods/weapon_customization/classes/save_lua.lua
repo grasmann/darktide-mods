@@ -55,6 +55,7 @@ local DMF = get_mod("DMF")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
+	local REFERENCE = "weapon_customization"
 	local DEBUG = false
 --#endregion
 

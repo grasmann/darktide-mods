@@ -21,6 +21,7 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local REFERENCE = "weapon_customization"
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
@@ -69,7 +70,7 @@ mod.find_attachment_entries = function(self)
 	self:setup_item_definitions()
 	local ranged_definitions = {}
 	local melee_definitions = {}
-	local item_definitions = self:persistent_table(mod.REFERENCE).item_definitions
+	local item_definitions = self:persistent_table(REFERENCE).item_definitions
 	for name, data in pairs(item_definitions) do
 		local filter_ok = true
 		for _, phrase in pairs(filter) do
@@ -113,7 +114,7 @@ mod.clear_chat = function()
 end
 
 mod.dump_perf = function()
-	mod:dtf(mod:persistent_table(mod.REFERENCE).performance.result_cache, "perf_results", 10)
+	mod:dtf(mod:persistent_table(REFERENCE).performance.result_cache, "perf_results", 10)
 end
 
 --  Debug
@@ -132,7 +133,7 @@ end
 
 mod._recursive_get_child_units = function(self, unit, slot_info_id, out_units)
 	local slot_info_id = slot_info_id or self.cosmetics_view._slot_info_id
-	local slot_infos = mod:persistent_table(mod.REFERENCE).attachment_slot_infos
+	local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 	local attachment_slot_info = slot_infos[slot_info_id]
 	if attachment_slot_info then
 		local attachment_slot = attachment_slot_info.unit_to_attachment_slot[unit]
@@ -172,14 +173,14 @@ mod.generate_console_title = function(self, text)
 end
 
 mod.console_init = function(self)
-	if not mod:persistent_table(mod.REFERENCE).console_init then
+	if not mod:persistent_table(REFERENCE).console_init then
 		local title = self:generate_console_title(" Weapon Customization "..tostring(mod.version).." initialized! ")
 
 		self:info("####################################################################################################")
 		self:info(title)
 		self:info("####################################################################################################")
 		
-		mod:persistent_table(mod.REFERENCE).console_init = true
+		mod:persistent_table(REFERENCE).console_init = true
 	end
 end
 
@@ -190,12 +191,26 @@ mod.console_output = function(self)
 	self:info("####################################################################################################")
 	self:info("Highest Processing Times")
 	local processing = {}
-	local performance = mod:persistent_table(mod.REFERENCE).performance
+	local performance = mod:persistent_table(REFERENCE).performance
 	for name, t in pairs(performance.result_cache) do
 		table_sort(t, function(a, b) return a > b end)
 		processing[name] = t[1]
 		self:info(tostring(name).." ("..tostring(#t)..") "..tostring(t[1]).."ms")
 	end
+	self:info("####################################################################################################")
+	local prevented = mod:persistent_table(REFERENCE).prevent_unload
+	local total = 0
+	for name, count in pairs(prevented) do
+		total = total + count
+	end
+	self:info("Packages prevented from unloading "..tostring(total))
+	if self._debug then
+		for name, count in pairs(prevented) do
+			self:info(tostring(name).." "..tostring(count).." times")
+		end
+	end
+	
+
 	self:info("####################################################################################################")
 	self:info(title)
 	self:info("####################################################################################################")

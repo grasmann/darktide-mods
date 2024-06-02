@@ -51,6 +51,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
+    local REFERENCE = "weapon_customization"
     local REWARD_ITEM = "reward_item"
     local CARD_TYPES = table_enum("xp", "levelUp", "salary", "weaponDrop", "weapon_unlock", "talents_unlock")
 --#endregion
@@ -106,12 +107,12 @@ end)
 mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gear, ...)
     local create_id = mod.offer_id or gear_id
     local attachments = nil
-    if create_id and mod:persistent_table(mod.REFERENCE).temp_gear_settings[create_id] then
-        attachments = table_clone(mod:persistent_table(mod.REFERENCE).temp_gear_settings[create_id])
-        mod:persistent_table(mod.REFERENCE).temp_gear_settings[create_id] = nil
+    if create_id and mod:persistent_table(REFERENCE).temp_gear_settings[create_id] then
+        attachments = table_clone(mod:persistent_table(REFERENCE).temp_gear_settings[create_id])
+        mod:persistent_table(REFERENCE).temp_gear_settings[create_id] = nil
     end
     if attachments then
-        mod:persistent_table(mod.REFERENCE).temp_gear_settings[gear_id] = nil
+        mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = nil
         mod.gear_settings:push(gear_id, attachments)
     end
     mod.offer_id = nil
@@ -124,9 +125,9 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
         -- local attachments = {}
         item.gear_id = card_reward.gear_id
         local attachments = mod:randomize_item(item, nil, card_reward.gear_id)
-        mod:persistent_table(mod.REFERENCE).temp_gear_settings[card_reward.gear_id] = nil
+        mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = nil
         mod.gear_settings:push(item, attachments)
-        -- mod:persistent_table(mod.REFERENCE).temp_gear_settings[card_reward.gear_id] = attachments
+        -- mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = attachments
     end
     return item, item_group, rarity, item_level
 end)

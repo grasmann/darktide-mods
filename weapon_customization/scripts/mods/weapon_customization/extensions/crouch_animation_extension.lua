@@ -38,8 +38,8 @@ local mod = get_mod("weapon_customization")
     local quaternion_box = QuaternionBox
     local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
-    local math_easeInCubic = math.easeInCubic
     local math_easeOutCubic = math.easeOutCubic
+    local math_easeInCubic = math.easeInCubic
     local quaternion_unbox = quaternion_box.unbox
     local unit_world_position = Unit.world_position
     local unit_world_rotation = Unit.world_rotation
@@ -70,13 +70,12 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
-    local PLAY_EQUIPMENT_SOUND = "play_equipment_sound"
-    local CROUCH_POSITION = vector3_box(-.05, 0, -.2)
-    local CROUCH_ROTATION = vector3_box(0, -60, 0)
+    local CROUCH_TIME = .5
+    local SLOT_SECONDARY = "slot_secondary"
     local IGNORE_STATES = {"ledge_vaulting"}
     local CROSSHAIR_POSITION_LERP_SPEED = 35
-    local TO_BRACED = "to_braced"
-    local CROUCH_TIME = .5
+    local CROUCH_ROTATION = vector3_box(0, -60, 0)
+    local CROUCH_POSITION = vector3_box(-.05, 0, -.2)
 --#endregion
 
 -- ##### ┌─┐┬─┐┌─┐┬ ┬┌─┐┬ ┬  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ######################################
@@ -93,9 +92,7 @@ local CrouchAnimationExtension = class("CrouchAnimationExtension", "WeaponCustom
 CrouchAnimationExtension.init = function(self, extension_init_context, unit, extension_init_data)
     CrouchAnimationExtension.super.init(self, extension_init_context, unit, extension_init_data)
     -- Events
-    managers.event:register(self, mod.EVENT_SETTINGS_CHANGED, "on_settings_changed")
-    -- Attributes
-    self.weapon_template = {}
+    managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
     -- Settings
     self:on_settings_changed()
     -- Init
@@ -103,10 +100,10 @@ CrouchAnimationExtension.init = function(self, extension_init_context, unit, ext
 end
 
 CrouchAnimationExtension.delete = function(self)
+    -- Events
+    managers.event:unregister(self, "weapon_customization_settings_changed")
     -- Init
     self.initialized = false
-    -- Events
-    managers.event:unregister(self, mod.EVENT_SETTINGS_CHANGED)
     -- Delete
     CrouchAnimationExtension.super.delete(self)
 end
@@ -116,18 +113,14 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 CrouchAnimationExtension.on_settings_changed = function(self)
-    self.on = mod:get(mod.OPTION_VISIBLE_EQUIPMENT_NO_HUB)
+    self.on = mod:get("mod_option_misc_cover_on_crouch")
 end
 
 CrouchAnimationExtension.on_wield_slot = function(self, slot)
     -- Template
-    if slot and not self.weapon_template[slot] then
-        self.weapon_template[slot] = WeaponTemplate.weapon_template_from_item(slot.item)
-    end
-    -- Braced
-    self._is_braced = self:is_braced(slot)
+    self.weapon_template = slot and WeaponTemplate.weapon_template_from_item(slot.item)
     -- Ranged weapon
-    self.ranged_weapon = slot and slot.name == mod.SLOT_SECONDARY
+    self.ranged_weapon = slot and slot.name == SLOT_SECONDARY
 end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
@@ -138,9 +131,11 @@ CrouchAnimationExtension.is_aiming = function(self)
     return self.alternate_fire_component and self.alternate_fire_component.is_active
 end
 
-CrouchAnimationExtension.is_braced = function(self, slot)
-    local alt_fire = self.weapon_template[slot] and self.weapon_template[slot].alternate_fire_settings
-    return alt_fire and alt_fire.start_anim_event == TO_BRACED
+CrouchAnimationExtension.is_braced = function(self)
+    local template = self.weapon_template
+    local alt_fire = template and template.alternate_fire_settings
+    local braced = alt_fire and alt_fire.start_anim_event == "to_braced"
+    return braced
 end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
@@ -148,11 +143,15 @@ end
 -- ##### └─┘└─┘ ┴    └┘ ┴ ┴┴─┘└─┘└─┘└─┘ ###############################################################################
 
 CrouchAnimationExtension.set_spectated = function(self, spectated)
-    self.spectated = spectated
+    if self.initialized then
+        self.spectated = spectated
+    end
 end
 
 CrouchAnimationExtension.set_overwrite = function(self, overwrite)
-    self.overwrite = overwrite
+    if self.initialized then
+        self.overwrite = overwrite
+    end
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
@@ -166,46 +165,31 @@ end
 
 -- Update
 CrouchAnimationExtension.update = function(self, dt, t)
-    -- Performance
     local perf = wc_perf.start("CrouchAnimationExtension.update", 2)
-    -- First person
-    self._is_first_person = self:get_first_person()
-    -- Update
-    if self.initialized and self.on and self._is_first_person then
-        -- Aiming
-        self._is_aiming = self:is_aiming()
-        -- Character state
+    if self.initialized and self.on and self:get_first_person() then
         self:update_character_state()
-        -- Check braced
-        if not self._is_braced then
-            -- Update animation
+        if not self:is_braced() then
             self:update_animation(dt, t)
         end
     end
-    -- Performance
     wc_perf.stop(perf)
 end
 
 -- Update animation
 CrouchAnimationExtension.update_animation = function(self, dt, t)
-    -- Performance
-    local perf = wc_perf.start("CrouchAnimationExtension.update", 2)
-    -- Update animation
-    if self.initialized and self._is_first_person then
+    if self.initialized and self:get_first_person() then
         -- Get parameters
-        -- local is_aiming = self:is_aiming()
-        -- local is_crouching = self.movement_state_component.is_crouching
-        -- local state_valid = not table_contains(IGNORE_STATES, self.character_state)
+        local is_aiming = self:is_aiming()
+        local is_crouching = self.movement_state_component.is_crouching
+        local state_valid = not table_contains(IGNORE_STATES, self.character_state)
 
         -- Start animation
-        if self.ranged_weapon and self.movement_state_component.is_crouching and not table_contains(IGNORE_STATES, self.character_state)
-                and not self._is_aiming and not self.is_crouched and not self.overwrite then
+        if self.ranged_weapon and is_crouching and state_valid and not is_aiming and not self.is_crouched and not self.overwrite then
             -- Start crouch animation
             self.is_crouched = true
             self.sound_played = nil
             self.crouch_end = t + CROUCH_TIME
-        elseif (not self.movement_state_component.is_crouching or not not table_contains(IGNORE_STATES, self.character_state)
-                or self._is_aiming or self.overwrite or not self.ranged_weapon) and self.is_crouched then
+        elseif (not is_crouching or not state_valid or is_aiming or self.overwrite or not self.ranged_weapon) and self.is_crouched then
             -- Start uncrouch animation
             self.is_crouched = false
             self.sound_played = nil
@@ -220,7 +204,7 @@ CrouchAnimationExtension.update_animation = function(self, dt, t)
         if self.crouch_end and self.crouch_end > t then
             -- Play equipment sound
             if not self.sound_played then
-                mod:execute_extension(self.player_unit, mod.SYSTEM_VISIBLE_EQUIPMENT, PLAY_EQUIPMENT_SOUND, nil, nil, true, true)
+                mod:execute_extension(self.player_unit, "visible_equipment_system", "play_equipment_sound", nil, nil, true, true)
                 self.sound_played = true
             end
             -- Lerp values
@@ -249,8 +233,6 @@ CrouchAnimationExtension.update_animation = function(self, dt, t)
         -- Set position and rotation
         self:set_position_and_rotation(position, rotation)
     end
-    -- Performance
-    wc_perf.stop(perf)
 end
 
 CrouchAnimationExtension.set_position_and_rotation = function(self, offset_position, offset_rotation)

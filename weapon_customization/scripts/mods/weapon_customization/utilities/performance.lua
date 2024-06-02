@@ -20,34 +20,38 @@ local DMF = get_mod("DMF")
     local tostring = tostring
     local os_clock = _os.clock
     local math_round_with_precision = math.round_with_precision
-    local use_performance_logging = false
+--#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+--#region Data
+    local REFERENCE = "weapon_customization"
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod:persistent_table(mod.REFERENCE).performance.result_cache = {}
+mod:persistent_table(REFERENCE).performance.result_cache = {}
 
 local start_performance_measure = function(name, threshold)
-    if not use_performance_logging then return end
-    local performance = mod:persistent_table(mod.REFERENCE).performance
+    local performance = mod:persistent_table(REFERENCE).performance
     local id = #performance.measurements + 1
     performance.measurements[id] = {name = name, start = os_clock(), threshold = threshold or 0}
     return id
 end
 
 local pause_performance_measure = function(id)
-    if not use_performance_logging then return end
-    local performance = mod:persistent_table(mod.REFERENCE).performance
+    local performance = mod:persistent_table(REFERENCE).performance
     if performance.measurements[id] then
         performance.measurements[id].pause = os_clock()
     end
 end
 
 local resume_performance_measure = function(id)
-    if not use_performance_logging then return end
-    local performance = mod:persistent_table(mod.REFERENCE).performance
+    local performance = mod:persistent_table(REFERENCE).performance
     if performance.measurements[id] and performance.measurements[id].pause then
         local minus = performance.measurements[id].minus or 0
         minus = minus + (performance.measurements[id].pause - os_clock())
@@ -56,8 +60,7 @@ local resume_performance_measure = function(id)
 end
 
 local stop_performance_measure = function(id, echo)
-    if not use_performance_logging then return end
-    local performance = mod:persistent_table(mod.REFERENCE).performance
+    local performance = mod:persistent_table(REFERENCE).performance
     if performance.measurements[id] then
         local time = os_clock()
         local minus = performance.measurements[id].minus or 0

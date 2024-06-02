@@ -30,14 +30,17 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local REFERENCE = "weapon_customization"
+
 mod.systems = {
     FlashlightExtension       = "flashlight_system",
     LaserPointerExtension     = "laser_pointer_system",
-    BatteryExtension          = mod.SYSTEM_BATTERY,
+    BatteryExtension          = "battery_system",
     CrouchAnimationExtension  = "crouch_system",
     SwayAnimationExtension    = "sway_system",
     SightExtension            = "sight_system",
-    VisibleEquipmentExtension = mod.SYSTEM_VISIBLE_EQUIPMENT,
+    VisibleEquipmentExtension = "visible_equipment_system",
+    WeaponAnimationExtension  = "weapon_animation_system",
 }
 mod.extensions = {
     flashlight_system        = "FlashlightExtension",
@@ -47,6 +50,7 @@ mod.extensions = {
     sway_system              = "SwayAnimationExtension",
     sight_system             = "SightExtension",
     visible_equipment_system = "VisibleEquipmentExtension",
+    weapon_animation_system  = "WeaponAnimationExtension",
 }
 
 -- ##### ┌┐ ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #####################################################################

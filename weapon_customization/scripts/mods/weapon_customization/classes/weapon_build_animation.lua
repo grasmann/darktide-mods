@@ -32,6 +32,7 @@ local mod = get_mod("weapon_customization")
     local MOVE_RESET_TIME = 1
     local MOVE_IN_DURATION = 1
     local MOVE_OUT_DURATION = .5
+    local REFERENCE = "weapon_customization"
 --#endregion
 
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┐ ┬ ┬┬┬  ┌┬┐  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌ ###################################################
@@ -44,20 +45,20 @@ local WeaponBuildAnimation = class("WeaponBuildAnimation")
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
 -- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
 
-WeaponBuildAnimation.init = function(self, cosmetics_view_instance)
+WeaponBuildAnimation.init = function(self)
     -- Data
     self.cached_data = {}
     self.animations = {}
 	self.animation_time = .75
     -- Events
-    managers.event:register(self, mod.EVENT_SETTINGS_CHANGED, "on_settings_changed")
+    managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
     -- Settings
     self:on_settings_changed()
 end
 
 WeaponBuildAnimation.delete = function(self)
     -- Events
-    managers.event:unregister(self, mod.EVENT_SETTINGS_CHANGED)
+    managers.event:unregister(self, "weapon_customization_settings_changed")
     -- Init
     self.initialized = false
 end
@@ -127,18 +128,11 @@ WeaponBuildAnimation.is_all_finished = function(self)
     return true
 end
 
-WeaponBuildAnimation.get_cosmetics_view = function(self)
-    self.cosmetics_view = self.cosmetics_view or mod:get_view("inventory_weapon_cosmetics_view")
-    return self.cosmetics_view
-end
-
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 WeaponBuildAnimation.update = function(self, dt, t)
-    self:get_cosmetics_view()
-
     local index = 1
     -- Data
     local ui_weapon_spawner = self.ui_weapon_spawner
@@ -147,7 +141,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
     -- Check data
     if weapon_spawn_data and world and #self.animations > 0 then
 
-        local slot_infos = mod:persistent_table(mod.REFERENCE).attachment_slot_infos
+        local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
         local gear_info = slot_infos[self.slot_info_id]
 
         for _, entry in pairs(self.animations) do
@@ -313,9 +307,8 @@ WeaponBuildAnimation.update = function(self, dt, t)
                             end
 
                             -- if not entry.detach_done then
-                            -- 	mod:play_attachment_sound(self.cosmetics_view._selected_item, entry.slot, entry.new, "detach")
+                            -- 	mod:play_attachment_sound(mod.cosmetics_view._selected_item, entry.slot, entry.new, "detach")
                             entry.detach_done = true
-                            if entry.callback then entry.callback() end
                             -- end
 
                             -- local attachment = entry.new == "default" and mod:get_actual_default_attachment(self.item, entry.slot) or entry.new
@@ -394,7 +387,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
                 if entry.callback then entry.callback() end
             end
             -- if entry.type == "attach" and not entry.attach_load then
-            --     self.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new)
+            --     mod.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new)
             --     entry.attach_load = true
             -- end
         end
@@ -403,20 +396,34 @@ WeaponBuildAnimation.update = function(self, dt, t)
             local something_ready = false
             for i, entry in pairs(self.animations) do
                 if (entry.detach_done or entry.type == "attach") and not entry.attach_load then
-                    self.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new, true)
+                    mod.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new, true)
                     entry.attach_load = true
                     something_ready = true
                 end
             end
             if something_ready then
                 self.cached_data[self.item_name] = nil
-                self.cosmetics_view:load_new_attachment()
+                mod.cosmetics_view:load_new_attachment()
             end
         end
+
+
+        -- if self:is_detach_finished() and mod.weapon_part_animation_update then
+        --     mod:echot("yes")
+        --     mod.cosmetics_view:load_new_attachment(weapon_spawn_data.item)
+        --     mod.weapon_part_animation_update = nil
+        -- else
+        --     mod:echot("nope")
+        -- end
 
         if self:is_all_finished() then
             self:clear()
             managers.event:trigger("weapon_customization_hide_ui", false)
+            -- mod.cosmetics_view._visibility_toggled_on = false
+            -- mod.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
+            -- if self.hide_ui then
+            -- 	managers.event:trigger("weapon_customization_hide_ui", false)
+            -- end
         end
 
     end

@@ -16,6 +16,8 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
+	local REFERENCE = "weapon_customization"
+	local SLOT_SECONDARY = "slot_secondary"
 	local hud_element_script = "weapon_customization/scripts/mods/weapon_customization/hud/hud_element_battery"
 	local hud_element_class = "HudElementBattery"
 --#endregion

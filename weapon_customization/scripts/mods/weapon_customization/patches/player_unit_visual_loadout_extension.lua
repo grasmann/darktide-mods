@@ -25,6 +25,16 @@ local mod = get_mod("weapon_customization")
     local script_unit_remove_extension = script_unit.remove_extension
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+--#region Data
+    local SLOT_SECONDARY = "slot_secondary"
+    local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
+    local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
+--#endregion
+
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
@@ -39,18 +49,18 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         -- Flashlights
         mod:remove_extension(self._unit, "flashlight_system")
         -- Visible equipment
-        mod:remove_extension(self._unit, mod.SYSTEM_VISIBLE_EQUIPMENT)
+        mod:remove_extension(self._unit, "visible_equipment_system")
     end
 
     instance.update_visible_equipment = function(self, dt, t)
-        local visible_equipment_system = script_unit_has_extension(self._unit, mod.SYSTEM_VISIBLE_EQUIPMENT)
-        local visible_equipment_system_option = mod:get(mod.OPTION_VISIBLE_EQUIPMENT)
-        local hub = not mod:is_in_hub() or not mod:get(mod.OPTION_VISIBLE_EQUIPMENT_NO_HUB)
+        local visible_equipment_system = script_unit_has_extension(self._unit, "visible_equipment_system")
+        local visible_equipment_system_option = mod:get(OPTION_VISIBLE_EQUIPMENT)
+        local hub = not mod:is_in_hub() or not mod:get(OPTION_VISIBLE_EQUIPMENT_NO_HUB)
         if not visible_equipment_system and visible_equipment_system_option and not managers.ui:has_active_view() and hub then
             -- Add VisibleEquipmentExtension
             script_unit_add_extension({
                 world = self._equipment_component._world,
-            }, self._unit, "VisibleEquipmentExtension", mod.SYSTEM_VISIBLE_EQUIPMENT, {
+            }, self._unit, "VisibleEquipmentExtension", "visible_equipment_system", {
                 player = self._player,
                 player_unit = self._unit,
                 profile = self._player:profile(),
@@ -59,18 +69,18 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
                 equipment = self._equipment,
                 wielded_slot = self._equipment[self._inventory_component.wielded_slot],
             })
-        elseif visible_equipment_system and (not mod:get(mod.OPTION_VISIBLE_EQUIPMENT) or not hub) then
+        elseif visible_equipment_system and (not mod:get(OPTION_VISIBLE_EQUIPMENT) or not hub) then
             -- Remove VisibleEquipmentExtension
-            mod:remove_extension(self._unit, mod.SYSTEM_VISIBLE_EQUIPMENT)
+            mod:remove_extension(self._unit, "visible_equipment_system")
         elseif visible_equipment_system and visible_equipment_system_option then
             -- Update VisibleEquipmentExtension
-            mod:execute_extension(self._unit, mod.SYSTEM_VISIBLE_EQUIPMENT, "load_slots")
+            mod:execute_extension(self._unit, "visible_equipment_system", "load_slots")
             -- mod:execute_extension(self._unit, "visibl                    _equipment_system", "update", dt, t)
         end
     end
 
     instance.update_sight = function(self, dt, t)
-        if not script_unit_has_extension(self._unit, "sight_system") and self._weapon_extension._weapons[mod.SLOT_SECONDARY] then
+        if not script_unit_has_extension(self._unit, "sight_system") and self._weapon_extension._weapons[SLOT_SECONDARY] then
             -- Add SightExtension
             script_unit_add_extension({
                 world = self._equipment_component._world,
@@ -78,8 +88,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
                 player = self._player,
                 player_unit = self._player.player_unit,
                 is_local_unit = self._is_local_unit,
-                ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[mod.SLOT_SECONDARY],
-                    {attachment_units = self._equipment[mod.SLOT_SECONDARY].attachments_1p}),
+                ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
+                    {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p}),
                 wielded_slot = self._equipment[self._inventory_component.wielded_slot],
                 equipment_component = self._equipment_component,
                 equipment = self._equipment,
@@ -91,7 +101,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
     end
 
     instance.update_weapon_dof = function(self, dt, t)
-        if not script_unit_has_extension(self._unit, "weapon_dof_system") and self._weapon_extension._weapons[mod.SLOT_SECONDARY] then
+        if not script_unit_has_extension(self._unit, "weapon_dof_system") and self._weapon_extension._weapons[SLOT_SECONDARY] then
             -- Add WeaponDOFExtension
             script_unit_add_extension({
                 world = self._equipment_component._world,
@@ -99,8 +109,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
                 player = self._player,
                 player_unit = self._player.player_unit,
                 is_local_unit = self._is_local_unit,
-                ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[mod.SLOT_SECONDARY],
-                    {attachment_units = self._equipment[mod.SLOT_SECONDARY].attachments_1p}),
+                ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
+                    {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p}),
                 wielded_slot = self._equipment[self._inventory_component.wielded_slot],
             })
         end
@@ -129,7 +139,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
     end
 
     instance.update_flashlight = function(self, dt, t)
-        local slot = self._equipment[mod.SLOT_SECONDARY]
+        local slot = self._equipment[SLOT_SECONDARY]
         if not script_unit_has_extension(self._unit, "flashlight_system") and slot then
             -- local flashlight_unit_1p = mod:get_attachment_slot_in_attachments(slot.attachments_1p, "flashlight")
             -- local flashlight_unit_3p = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
@@ -150,8 +160,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
                     flashlight_unit_3p = flashlight_unit_3p,
                     -- wielded_slot = wielded_slot_name and self._equipment[wielded_slot_name],
                     wielded_slot = self._equipment[self._inventory_component.wielded_slot],
-                    ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[mod.SLOT_SECONDARY],
-                        {attachment_units = self._equipment[mod.SLOT_SECONDARY].attachments_1p}),
+                    ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
+                        {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p}),
                 })
             end
         else
@@ -202,7 +212,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_equip_item_to_slot", function
     func(self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
 
     -- Extensions
-    if slot_name == mod.SLOT_SECONDARY then
+    if slot_name == SLOT_SECONDARY then
         self:remove_custom_extensions()
     end
 
@@ -211,7 +221,7 @@ end)
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_unequip_item_from_slot", function(func, self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
 
     -- Remove custom extensions
-    if slot_name == mod.SLOT_SECONDARY then
+    if slot_name == SLOT_SECONDARY then
         self:remove_custom_extensions()
     end
 
@@ -239,7 +249,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "post_update", function(func, s
     func(self, unit, dt, t, context, ...)
 
     -- Visibile equipment
-    mod:execute_extension(self._unit, mod.SYSTEM_VISIBLE_EQUIPMENT, "update", dt, t)
+    mod:execute_extension(self._unit, "visible_equipment_system", "update", dt, t)
 
 end)
 

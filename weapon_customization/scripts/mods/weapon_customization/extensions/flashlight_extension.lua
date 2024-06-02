@@ -80,6 +80,9 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local REFERENCE = "weapon_customization"
+local SLOT_SECONDARY = "slot_secondary"
+
 mod.flashlight_templates = {
 	flashlight_01 = table.combine(
         table_clone(FlashlightTemplates.assault), {battery = {max = 10, interval = .1, drain = .002, charge = .004}}
@@ -151,7 +154,7 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     self.light_1p = unit_light(self.flashlight_unit_1p, 1)
     self.light_3p = unit_light(self.flashlight_unit_3p, 1)
     -- Get item
-    self.item = extension_init_data.item or self.visual_loadout_extension and self.visual_loadout_extension:item_from_slot(mod.SLOT_SECONDARY)
+    self.item = extension_init_data.item or self.visual_loadout_extension and self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
     self.gear_id = self.item and mod.gear_settings:item_to_gear_id(self.item)
     -- Set attachment
     self:set_flashlight_attachment()
@@ -159,7 +162,7 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     self.on = extension_init_data.on or self.is_local_unit and mod:flashlight_active() or false
     self.start_flicker_now = false
     local wielded_slot = extension_init_data.wielded_slot
-    self.wielded = wielded_slot and wielded_slot.name == mod.SLOT_SECONDARY
+    self.wielded = wielded_slot and wielded_slot.name == SLOT_SECONDARY
     self.spectated = false
     self.has_flashlight = self.flashlight_attachment ~= nil
     self.flashlight_template = self.flashlight_attachment and mod.flashlight_templates[self.flashlight_attachment]
@@ -170,7 +173,7 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     end
     -- Create battery extension
     if self.has_flashlight and self.flashlight_template and self.flashlight_template.battery and self:is_modded() then
-        self:add_extension(self.player_unit, mod.SYSTEM_BATTERY, extension_init_context, {
+        self:add_extension(self.player_unit, "battery_system", extension_init_context, {
             player_unit = extension_init_data.player_unit,
             battery_template = self.flashlight_template.battery,
             consumer = self,
@@ -184,9 +187,9 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     end
     -- Register events
     -- self:register_event("weapon_customization_cutscene", "set_cutscene")
-    -- self:register_event(mod.EVENT_SETTINGS_CHANGED, "on_settings_changed")
+    -- self:register_event("weapon_customization_settings_changed", "on_settings_changed")
     managers.event:register("weapon_customization_cutscene", "set_cutscene")
-    managers.event:register(mod.EVENT_SETTINGS_CHANGED, "on_settings_changed")
+    managers.event:register("weapon_customization_settings_changed", "on_settings_changed")
     -- Register synchronized calls
     self:register_synchronized_call("set_enabled")
     self:register_synchronized_call("set_spectated")
@@ -203,7 +206,7 @@ end
 FlashlightExtension.delete = function(self)
     -- Unregister events
     managers.event:unregister(self, "weapon_customization_cutscene")
-    managers.event:unregister(self, mod.EVENT_SETTINGS_CHANGED)
+    managers.event:unregister(self, "weapon_customization_settings_changed")
     -- Deactivate
     self.initialized = false
     self.on = false
@@ -405,7 +408,7 @@ FlashlightExtension.set_flashlight_attachment = function(self)
 end
 
 FlashlightExtension.update_intensity = function(self)
-    local charge_fraction = math.clamp(mod:execute_extension(self.player_unit, mod.SYSTEM_BATTERY, "fraction") or 1, .3, 1)
+    local charge_fraction = math.clamp(mod:execute_extension(self.player_unit, "battery_system", "fraction") or 1, .3, 1)
     local light = self:light()
     local template = self:light_template()
     if light and template then
@@ -508,7 +511,7 @@ FlashlightExtension.update_animation = function(self, dt, t)
         local rotation = unit_local_rotation(self.first_person_unit, node)
         local rotation_offset = quaternion_identity()
         local position = unit_local_position(self.first_person_unit, node)
-        local position_offset = quaternion_identity()
+        local position_offset = vector3_zero()
 
         if self.animation_state == "move" then
             if self.animation_start and t - self.animation_start < self.animation_time then
@@ -567,7 +570,7 @@ end
 
 FlashlightExtension.on_wield_slot = function(self, slot)
     if self.initialized then
-        self.wielded = slot.name == mod.SLOT_SECONDARY
+        self.wielded = slot.name == SLOT_SECONDARY
         self:set_light(false)
         -- Relay to sub extensions
         FlashlightExtension.super.on_wield_slot(self, slot)
@@ -576,7 +579,7 @@ end
 
 FlashlightExtension.on_unwield_slot = function(self, slot)
     if self.initialized then
-        if slot.name == mod.SLOT_SECONDARY then
+        if slot.name == SLOT_SECONDARY then
             self.wielded = false
             self:set_light(false)
         end
@@ -659,11 +662,11 @@ mod.toggle_flashlight = function(self)
 end
 
 mod.set_flashlight_active = function(self, active)
-    mod:persistent_table(mod.REFERENCE).flashlight_on = active
+    mod:persistent_table(REFERENCE).flashlight_on = active
 end
 
 mod.flashlight_active = function(self)
-    return mod:persistent_table(mod.REFERENCE).flashlight_on
+    return mod:persistent_table(REFERENCE).flashlight_on
 end
 
 mod.has_flashlight = function(self, item)

@@ -25,6 +25,14 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
     local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local REFERENCE = "weapon_customization"
+local WEAPON_MELEE = "WEAPON_MELEE"
+local WEAPON_RANGED = "WEAPON_RANGED"
+
 -- ##### ┌─┐┌─┐┌─┐┌─┐┌─┐┌┬┐┌─┐ ########################################################################################
 -- ##### │ │├┤ ├┤ └─┐├┤  │ └─┐ ########################################################################################
 -- ##### └─┘└  └  └─┘└─┘ ┴ └─┘ ########################################################################################
@@ -184,7 +192,7 @@ mod.visible_equipment_offsets = {
             loading = mod.visible_equipment_loading_offsets.ranged_bulky,
             init = function(visible_equipment_extension, slot)
                 local slot_info_id = mod.gear_settings:slot_info_id(slot.item)
-                local slot_infos = mod:persistent_table(mod.REFERENCE).attachment_slot_infos
+                local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
                 local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
                 if attachment_slot_info then
                     local receiver = attachment_slot_info.attachment_slot_to_unit["receiver"]
@@ -209,7 +217,7 @@ mod.visible_equipment_offsets = {
             init = function(visible_equipment_extension, slot)
                 -- Get slot info
                 local slot_info_id = mod.gear_settings:slot_info_id(slot.item)
-                local slot_infos = mod:persistent_table(mod.REFERENCE).attachment_slot_infos
+                local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
                 local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
                 if attachment_slot_info then
                     local handle = attachment_slot_info.attachment_slot_to_unit["handle"]
@@ -399,31 +407,31 @@ mod.visible_equipment_offsets = {
 }
 --#region Other weapons
     --#region Ogryn Melee
-        mod.visible_equipment_offsets.ogryn_club_p1_m1 = mod.visible_equipment_offsets.ogryn[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.ogryn_combatblade_p1_m1 = mod.visible_equipment_offsets.ogryn[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.ogryn_club_p2_m1 = mod.visible_equipment_offsets.ogryn[mod.WEAPON_MELEE]
+        mod.visible_equipment_offsets.ogryn_club_p1_m1 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
+        mod.visible_equipment_offsets.ogryn_combatblade_p1_m1 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
+        mod.visible_equipment_offsets.ogryn_club_p2_m1 = mod.visible_equipment_offsets.ogryn[WEAPON_MELEE]
     --#endregion
     --#region Guns
-        mod.visible_equipment_offsets.shotgun_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_RANGED]
-        mod.visible_equipment_offsets.autogun_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_RANGED]
-        mod.visible_equipment_offsets.lasgun_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_RANGED]
-        mod.visible_equipment_offsets.lasgun_p2_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_RANGED]
-        mod.visible_equipment_offsets.lasgun_p3_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_RANGED]
+        mod.visible_equipment_offsets.shotgun_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_RANGED]
+        mod.visible_equipment_offsets.autogun_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_RANGED]
+        mod.visible_equipment_offsets.lasgun_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_RANGED]
+        mod.visible_equipment_offsets.lasgun_p2_m1 = mod.visible_equipment_offsets.human[WEAPON_RANGED]
+        mod.visible_equipment_offsets.lasgun_p3_m1 = mod.visible_equipment_offsets.human[WEAPON_RANGED]
     --#endregion
     --#region Melee
-        mod.visible_equipment_offsets.combataxe_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.combataxe_p2_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.combataxe_p3_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.combatknife_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.powersword_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.combatsword_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.combatsword_p1_m2 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.combatsword_p1_m3 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.combatsword_p2_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.forcesword_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.combatsword_p3_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.chainaxe_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
-        mod.visible_equipment_offsets.chainsword_p1_m1 = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE]
+        mod.visible_equipment_offsets.combataxe_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.combataxe_p2_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.combataxe_p3_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.combatknife_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.powersword_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.combatsword_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.combatsword_p1_m2 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.combatsword_p1_m3 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.combatsword_p2_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.forcesword_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.combatsword_p3_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.chainaxe_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
+        mod.visible_equipment_offsets.chainsword_p1_m1 = mod.visible_equipment_offsets.human[WEAPON_MELEE]
     --#endregion
 --#endregion
 

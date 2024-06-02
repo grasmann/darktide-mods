@@ -99,13 +99,20 @@ local mod = get_mod("weapon_customization")
     local WALK = "walk"
     local SPRINT = "sprint"
     local STEP_STATE = "step"
+    local DEFAULT = "default"
     local ANIM_TIME_MELEE = .3
     local ANIM_TIME_RANGED = .3
     local BACKPACK = "backpack"
     local STEP_WOBBLE = "wobble"
     local ANIM_TIME_WOBBLE_MELEE = .6
     local ANIM_TIME_WOBBLE_RANGED = .6
+    local WEAPON_MELEE = "WEAPON_MELEE"
     local STEP_STATE_BACK = "step_back"
+    local SLOT_UNARMED = "slot_unarmed"
+    local SLOT_PRIMARY = "slot_primary"
+    local WEAPON_RANGED = "WEAPON_RANGED"
+    local SLOT_SECONDARY = "slot_secondary"
+    local REFERENCE = "weapon_customization"
     local BACKPACK_ATTACH = "j_backpackattach"
     local BACKPACK_OFFSET = "j_backpackoffset"
     local EMPTY_UNIT = "core/units/empty_root"
@@ -139,7 +146,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.loading_spawn_point = extension_init_data.loading_spawn_point
     self.equipment_component = extension_init_data.equipment_component
     self.equipment = extension_init_data.equipment
-    self.wielded_slot = extension_init_data.wielded_slot or mod.SLOT_UNARMED
+    self.wielded_slot = extension_init_data.wielded_slot or SLOT_UNARMED
     self.ui_profile_spawner = extension_init_data.ui_profile_spawner
     self.back_node = self:current_back_node()
     self.position_overwrite = {}
@@ -171,7 +178,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.weight = {}
     self.visible = {}
     -- Events
-    managers.event:register(self, mod.EVENT_SETTINGS_CHANGED, "on_settings_changed")
+    managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
     -- Settings
     self:on_settings_changed()
     -- Initialized
@@ -184,7 +191,7 @@ VisibleEquipmentExtension.delete = function(self)
     -- Performance
     local perf = wc_perf_start("VisibleEquipmentExtension.delete", 2)
     -- Events
-    managers.event:unregister(self, mod.EVENT_SETTINGS_CHANGED)
+    managers.event:unregister(self, "weapon_customization_settings_changed")
     -- Uninitialize
     self.initialized = false
     -- Iterate slots
@@ -301,7 +308,7 @@ VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
     -- Performance
     local perf = wc_perf_start("VisibleEquipmentExtension.equipment_data_by_slot", 2)
     -- Check if has backpack
-    local data_type = self:has_backpack() and BACKPACK or mod.DEFAULT
+    local data_type = self:has_backpack() and BACKPACK or DEFAULT
     local offsets = mod.visible_equipment_offsets
     -- Get data
     local item_data = offsets[self.item_names[slot]]
@@ -313,9 +320,9 @@ VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
         item_equipment_data = item_data and item_data.loading[self.loading_spawn_point]
         if not item_equipment_data then
             if slot.name == "slot_scondary" then
-                item_equipment_data = mod.visible_equipment_offsets.human[mod.WEAPON_RANGED].loading[self.loading_spawn_point]
+                item_equipment_data = mod.visible_equipment_offsets.human[WEAPON_RANGED].loading[self.loading_spawn_point]
             else
-                item_equipment_data = mod.visible_equipment_offsets.human[mod.WEAPON_MELEE].loading[self.loading_spawn_point]
+                item_equipment_data = mod.visible_equipment_offsets.human[WEAPON_MELEE].loading[self.loading_spawn_point]
             end
         end
     end
@@ -405,7 +412,7 @@ VisibleEquipmentExtension.get_foot_step_interval = function(self)
 end
 
 VisibleEquipmentExtension.is_weapon_slot = function(self, slot)
-    return slot.name == mod.SLOT_SECONDARY or slot.name == mod.SLOT_PRIMARY
+    return slot.name == SLOT_SECONDARY or slot.name == SLOT_PRIMARY
 end
 
 VisibleEquipmentExtension.is_alt_fire = function(self)
@@ -437,7 +444,7 @@ VisibleEquipmentExtension.set_foot_step_interval = function(self)
             local item = wielded_slot and wielded_slot.item
             local weapon_template = self.weapon_template[wielded_slot]
             self.footstep_intervals = weapon_template and weapon_template.footstep_intervals
-        elseif not wielded_slot or wielded_slot.name == mod.SLOT_UNARMED then
+        elseif not wielded_slot or wielded_slot.name == SLOT_UNARMED then
             local breed = self:get_breed()
             local hub = self.is_in_hub and "_hub" or ""
             local name = "unarmed_"..tostring(breed)..tostring(hub)
@@ -724,7 +731,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
     if self.initialized and self:is_weapon_slot(slot) then
         local item = slot.item and slot.item.__master_item or slot.item
         if not self.slot_loaded[slot] and not self.slot_is_loading[slot] then
-            local item_good = item and (item.item_type == mod.WEAPON_MELEE or item.item_type == mod.WEAPON_RANGED)
+            local item_good = item and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED)
             local loaded = slot.item_loaded or slot.attachment_spawn_status == ATTACHMENT_SPAWN_STATUS.fully_spawned
             if item_good and loaded then
                 self.slot_is_loading[slot] = true
@@ -734,8 +741,8 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 self.item_types[slot] = item.item_type
                 -- Animation
                 self.step_animation[slot] = {}
-                self.step_animation[slot].time = self.time_overwrite or self.item_types[slot] == mod.WEAPON_MELEE and ANIM_TIME_MELEE or ANIM_TIME_RANGED
-                self.step_animation[slot].time_wobble = self.time_overwrite or self.item_types[slot] == mod.WEAPON_MELEE and ANIM_TIME_WOBBLE_MELEE or ANIM_TIME_WOBBLE_RANGED
+                self.step_animation[slot].time = self.time_overwrite or self.item_types[slot] == WEAPON_MELEE and ANIM_TIME_MELEE or ANIM_TIME_RANGED
+                self.step_animation[slot].time_wobble = self.time_overwrite or self.item_types[slot] == WEAPON_MELEE and ANIM_TIME_WOBBLE_MELEE or ANIM_TIME_WOBBLE_RANGED
                 self.rotate_animation[slot] = {}
                 self.weapon_template[slot] = WeaponTemplate.weapon_template_from_item(slot.item)
                 -- Attach settings
@@ -816,7 +823,7 @@ VisibleEquipmentExtension.play_equipment_sound = function(self, slot, index, all
     -- Performance
     local perf = wc_perf_start("VisibleEquipmentExtension.play_equipment_sound", 2)
     -- Play
-    local wielded_slot_name = self.wielded_slot and self.wielded_slot.name or mod.SLOT_UNARMED
+    local wielded_slot_name = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
     local slot = slot or self.equipment[wielded_slot_name]
     local index = index or 1
     -- Play sound
@@ -855,7 +862,7 @@ VisibleEquipmentExtension.get_dependencies = function(self, slot)
     -- Get master item
     local item = slot.item and slot.item.__master_item or slot.item
     -- Get definition
-    local item_definition = mod:persistent_table(mod.REFERENCE).item_definitions[item.name]
+    local item_definition = mod:persistent_table(REFERENCE).item_definitions[item.name]
     -- Check resource dependencies
     if item_definition and item_definition.resource_dependencies then
         -- Iterate dependencies
@@ -901,7 +908,7 @@ VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
         -- Check if loaded
         if not self.packages[slot][package_name] then
             -- Load package
-            local ref = mod.REFERENCE.."_"..tostring(self.player_unit)
+            local ref = REFERENCE.."_"..tostring(self.player_unit)
             self.packages[slot][package_name] = managers.package:load(package_name, ref)
             
             count = count + 1
@@ -982,7 +989,7 @@ VisibleEquipmentExtension.on_footstep = function(self)
 end
 
 VisibleEquipmentExtension.on_settings_changed = function(self)
-    self.on = mod:get(mod.OPTION_VISIBLE_EQUIPMENT)
+    self.on = mod:get("mod_option_visible_equipment")
     self.sound = mod:get("mod_option_visible_equipment_sounds")
     self.sound_fp = mod:get("mod_option_visible_equipment_own_sounds_fp")
 end
@@ -1021,7 +1028,7 @@ VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
     -- Performance
     local perf = wc_perf_start("VisibleEquipmentExtension.update_equipment_visibility", 2)
     -- Values
-    local wielded_slot = self.wielded_slot and self.wielded_slot.name or mod.SLOT_UNARMED
+    local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
     local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
     local spectated = not self.is_local_unit and (not self.spectated or not first_person)
     local player = self.is_local_unit and not first_person
@@ -1121,7 +1128,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         self.step_animation[slot].state = STEP_WOBBLE
                         self.step_animation[slot].end_time = t + self.step_animation[slot].wobble_length
                     elseif self.step_animation[slot].state ~= STEP_STATE and self.step_animation[slot].state ~= STEP_STATE_BACK then
-                        if slot.name == mod.SLOT_SECONDARY then
+                        if slot.name == SLOT_SECONDARY then
                             self.step_animation[slot].state = STEP_STATE
                             self.step_animation[slot].end_time = t + self.step_animation[slot].step_length * 1
                         else
@@ -1257,7 +1264,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                 elseif self.step_animation[slot].state == STEP_WOBBLE and t < self.step_animation[slot].end_time then
                     -- Start part wobble
                     if locomotion > 0 then
-                        if slot.name == mod.SLOT_SECONDARY then
+                        if slot.name == SLOT_SECONDARY then
                             self.step_animation[slot].state = STEP_STATE
                             self.step_animation[slot].end_time = t + self.step_animation[slot].step_length * 1
                         else
@@ -1316,7 +1323,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     angle = angle * -1
 
                     local new_diff = vector3(math.abs(angle) * .5, angle, -angle)
-                    if slot.name == mod.SLOT_SECONDARY then
+                    if slot.name == SLOT_SECONDARY then
                         new_diff = vector3(angle, -angle, -math.abs(angle) * .5)
                     end
                     
@@ -1330,14 +1337,14 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         current = current + rotated_pos
                     end
 
-                    if slot.name == mod.SLOT_SECONDARY then
+                    if slot.name == SLOT_SECONDARY then
                         current = current - current * (dt * 8)
                     else
                         current = current - current * (dt * 6)
                     end
 
                     for i = 1, 3 do
-                        if slot.name == mod.SLOT_SECONDARY then
+                        if slot.name == SLOT_SECONDARY then
                             current[i] = math.clamp(current[i], -15, 10)
                         else
                             current[i] = math.clamp(current[i], -10, 15)

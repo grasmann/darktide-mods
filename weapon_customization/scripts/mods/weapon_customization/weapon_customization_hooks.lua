@@ -44,6 +44,10 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
+    local SLOT_SECONDARY = "slot_secondary"
+    local REFERENCE = "weapon_customization"
+    local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
+    local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
     local DELETION_STATES = table_enum("default", "in_network_layers", "removing_units")
 --#endregion
 
@@ -187,8 +191,8 @@ end)
 
 mod:hook(CLASS.ActionReloadState, "_update_functionality", function(func, self, reload_state, time_in_action, time_scale, dt, t, ...)
     -- Crouch
-    -- local action_reload_component = self._action_reload_component
-    if self._action_reload_component.has_refilled_ammunition then
+    local action_reload_component = self._action_reload_component
+    if action_reload_component.has_refilled_ammunition then
         mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", false)
     end
     -- Original function
@@ -245,28 +249,28 @@ mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewpor
     -- Original function
     func(self, dt, t, viewport_name, ...)
     -- Get unit
-    -- local camera_nodes = self._camera_nodes[viewport_name]
-    -- local current_node = self:_current_node(self._camera_nodes[viewport_name])
-    -- local root_unit = self:_current_node(self._camera_nodes[viewport_name]):root_unit()
+    local camera_nodes = self._camera_nodes[viewport_name]
+    local current_node = self:_current_node(camera_nodes)
+    local root_unit = current_node:root_unit()
     -- Sights
-    mod:execute_extension(self:_current_node(self._camera_nodes[viewport_name]):root_unit(), "sight_system", "update_zoom", viewport_name)
+    mod:execute_extension(root_unit, "sight_system", "update_zoom", viewport_name)
 end)
 
 mod:hook(CLASS.CameraManager, "shading_callback", function(func, self, world, shading_env, viewport, default_shading_environment_resource, ...)
     -- Original function
     func(self, world, shading_env, viewport, default_shading_environment_resource, ...)
     -- Camera data
-    -- local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
+    local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
     -- Extensions
     if self._world == world then
         -- Get unit
-        -- local viewport_name = Viewport.get_data(viewport, "name")
-        -- local camera_nodes = self._camera_nodes[Viewport.get_data(viewport, "name")]
-        -- local current_node = self:_current_node(self._camera_nodes[Viewport.get_data(viewport, "name")])
-        -- local root_unit = self:_current_node(self._camera_nodes[Viewport.get_data(viewport, "name")]):root_unit()
+        local viewport_name = Viewport.get_data(viewport, "name")
+        local camera_nodes = self._camera_nodes[viewport_name]
+        local current_node = self:_current_node(camera_nodes)
+        local root_unit = current_node:root_unit()
         -- Sight
         -- mod:execute_extension(root_unit, "sight_system", "apply_weapon_dof", shading_env)
-        mod:execute_extension(self:_current_node(self._camera_nodes[Viewport.get_data(viewport, "name")]):root_unit(), "weapon_dof_system", "apply_weapon_dof", shading_env)
+        mod:execute_extension(root_unit, "weapon_dof_system", "apply_weapon_dof", shading_env)
     end
 end)
 
@@ -309,10 +313,10 @@ mod:hook(CLASS.HudElementCrosshair, "_get_current_crosshair_type", function(func
     -- Original function
     local crosshair_type = func(self, crosshair_settings, ...)
     -- Hide?
-	local player_extensions = self._parent:player_extensions()
-    -- local unit = player_extensions and player_extensions.unit
-    if player_extensions and player_extensions.unit then
-        crosshair_type = mod:execute_extension(player_extensions.unit, "sight_system", "crosshair", crosshair_type)
+	local player_extensions = self._parent and self._parent:player_extensions()
+    local unit = player_extensions and player_extensions.unit
+    if unit then
+        crosshair_type = mod:execute_extension(unit, "sight_system", "crosshair", crosshair_type)
     end
 
     -- if unit and script_unit_has_extension(unit, "sight_system") then
@@ -326,19 +330,17 @@ mod:hook(CLASS.HudElementCrosshair, "_get_current_crosshair_type", function(func
 end)
 
 mod:hook(CLASS.HudElementCrosshair, "_crosshair_position", function(func, self, dt, t, ui_renderer, ...)
-    -- local parent = self._parent
-    local player_extensions = self._parent:player_extensions()
-    -- local unit = player_extensions and player_extensions.unit
-    if player_extensions and player_extensions.unit then
-        local x, y = func(self, dt, t, ui_renderer, ...)
-        if script_unit_has_extension(player_extensions.unit, "crouch_system") then
-            -- return mod:execute_extension(unit, "crouch_system", "crosshair_position", self, dt, t, ui_renderer)
-            return mod:execute_extension(player_extensions.unit, "crouch_system", "adjust_crosshair", self, x, y)
-        else
-            return x, y
-        end
-        -- return mod:execute_extension(unit, "crouch_system", "adjust_crosshair", self)
+    local parent = self._parent
+    local player_extensions = parent and parent:player_extensions()
+    local unit = player_extensions and player_extensions.unit
+    local x, y = func(self, dt, t, ui_renderer, ...)
+    if script_unit_has_extension(unit, "crouch_system") then
+        -- return mod:execute_extension(unit, "crouch_system", "crosshair_position", self, dt, t, ui_renderer)
+        return mod:execute_extension(unit, "crouch_system", "adjust_crosshair", self, x, y)
+    else
+        return x, y
     end
+    -- return mod:execute_extension(unit, "crouch_system", "adjust_crosshair", self)
 end)
 
 -- ##### ┌┐ ┌─┐┌─┐┌─┐  ┬  ┬┬┌─┐┬ ┬ ####################################################################################
@@ -361,7 +363,7 @@ end)
 -- Capture footsteps for equipment animation
 mod:hook_require("scripts/utilities/footstep", function(instance)
     mod:hook(instance, "trigger_material_footstep", function(func, sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, ...)
-        mod:execute_extension(unit, mod.SYSTEM_VISIBLE_EQUIPMENT, "on_footstep")
+        mod:execute_extension(unit, "visible_equipment_system", "on_footstep")
         return func(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, ...)
     end)
 end)
@@ -384,10 +386,10 @@ end)
     --                 mod:echo("process load slot "..tostring(slot.index))
     --                 -- Extensions
     --                 profile_spawner.no_spawn = true
-    --                 mod:remove_extension(player_unit, mod.SYSTEM_VISIBLE_EQUIPMENT)
+    --                 mod:remove_extension(player_unit, "visible_equipment_system")
     --                 self.visible_equipment_extension = script_unit_add_extension({
     --                     world = self._world_spawner:world(),
-    --                 }, slot.spawn_point_unit, "VisibleEquipmentExtension", mod.SYSTEM_VISIBLE_EQUIPMENT, {
+    --                 }, slot.spawn_point_unit, "VisibleEquipmentExtension", "visible_equipment_system", {
     --                     -- player = mod:player_from_unit(unit_3p),
     --                     profile = spawn_data.profile,
     --                     player_unit = slot.spawn_point_unit,
@@ -398,11 +400,11 @@ end)
     --                 slot.was_processed = true
     --             end
     --         elseif not slot.occupied then
-    --             mod:remove_extension(slot.spawn_point_unit, mod.SYSTEM_VISIBLE_EQUIPMENT)
+    --             mod:remove_extension(slot.spawn_point_unit, "visible_equipment_system")
     --             slot.was_processed = nil
     --         elseif slot.occupied and slot.was_processed then
-    --             mod:execute_extension(slot.spawn_point_unit, mod.SYSTEM_VISIBLE_EQUIPMENT, "load_slots")
-    --             mod:execute_extension(slot.spawn_point_unit, mod.SYSTEM_VISIBLE_EQUIPMENT, "update", dt, t)
+    --             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "load_slots")
+    --             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "update", dt, t)
     --         end
     --     end
     -- end)
@@ -411,7 +413,7 @@ end)
     --     -- Extensions
     --     for i, slot in pairs(self._spawn_slots) do
     --         if slot.occupied and slot.was_processed then
-    --             mod:remove_extension(slot.spawn_point_unit, mod.SYSTEM_VISIBLE_EQUIPMENT)
+    --             mod:remove_extension(slot.spawn_point_unit, "visible_equipment_system")
     --         end
     --     end
     --     -- Original function
@@ -422,7 +424,7 @@ end)
     --     -- Extensions
     --     for i, slot in pairs(self._spawn_slots) do
     --         if slot.occupied and slot.was_processed then
-    --             mod:execute_extension(slot.spawn_point_unit, mod.SYSTEM_VISIBLE_EQUIPMENT, "trigger_step", 1, 3)
+    --             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "trigger_step", 1, 3)
     --         end
     --     end
     --     -- Original function

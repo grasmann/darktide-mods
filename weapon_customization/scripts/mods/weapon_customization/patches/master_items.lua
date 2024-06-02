@@ -37,6 +37,14 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+--#region Data
+    local REFERENCE = "weapon_customization"
+    local WEAPON_MELEE = "WEAPON_MELEE"
+    local WEAPON_RANGED = "WEAPON_RANGED"
+    local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
+    local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
+--#endregion
+
 mod.player_items = {}
 
 -- ##### ┌┬┐┌─┐┌─┐┌┬┐┌─┐┬─┐  ┬┌┬┐┌─┐┌┬┐  ┌┬┐┌─┐┌┬┐┬┌─┐┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐┬─┐┌─┐┌─┐┬ ┬ ##############################
@@ -338,9 +346,9 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
             local item_instance = _item_plus_overrides(gear, gear_id)
             local master_item = item_instance.__master_item or item_instance
             local player_item = master_item.item_list_faction == "Player"
-            local weapon_item = master_item.item_type == mod.WEAPON_MELEE or master_item.item_type == mod.WEAPON_RANGED
-            local visible_equipment_system_option = mod:get(mod.OPTION_VISIBLE_EQUIPMENT)
-            local hub = not mod:is_in_hub() or not mod:get(mod.OPTION_VISIBLE_EQUIPMENT_NO_HUB)
+            local weapon_item = master_item.item_type == WEAPON_MELEE or master_item.item_type == WEAPON_RANGED
+            local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
+            local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
             local in_possesion_of_player = mod.gear_settings:player_item(master_item) or (visible_equipment_system_option and hub)
             -- local cached_gear_list = cached_gear_list()
             local cached_gear_list = mod.gear_settings:player_gear_list()
@@ -358,8 +366,8 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 local randomize = store or other_player
                 -- Randomize
                 if randomize and gear_id then
-                    if not mod:persistent_table(mod.REFERENCE).temp_gear_settings[gear_id] then
-                        mod:randomize_item(item_instance, mod:persistent_table(mod.REFERENCE).temp_gear_settings, gear_id)
+                    if not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
+                        mod:randomize_item(item_instance, mod:persistent_table(REFERENCE).temp_gear_settings, gear_id)
                     end
                 end
                 -- Add / overwrite attachments
@@ -396,12 +404,12 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 local randomize = store or other_player
                 -- Randomize
                 if randomize and offer_id then
-                    if not mod:persistent_table(mod.REFERENCE).temp_gear_settings[offer_id] then
-                        mod:randomize_item(item_instance, mod:persistent_table(mod.REFERENCE).temp_gear_settings, offer_id)
+                    if not mod:persistent_table(REFERENCE).temp_gear_settings[offer_id] then
+                        mod:randomize_item(item_instance, mod:persistent_table(REFERENCE).temp_gear_settings, offer_id)
                     end
                 end
 
-                mod:persistent_table(mod.REFERENCE).temp_gear_settings[gear_id] = mod:persistent_table(mod.REFERENCE).temp_gear_settings[offer_id]
+                mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = mod:persistent_table(REFERENCE).temp_gear_settings[offer_id]
                 -- Add / overwrite attachments
                 if gear_id then
                     -- Setup definitions
@@ -422,9 +430,9 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
     mod:hook(MasterItems, "get_cached", function(func, original, ...)
         local master_items = func(original, ...)
         -- Setup definitions
-        if not mod:persistent_table(mod.REFERENCE).item_definitions and master_items then mod:setup_item_definitions(master_items) end
+        if not mod:persistent_table(REFERENCE).item_definitions and master_items then mod:setup_item_definitions(master_items) end
         -- Return custom definitions
-        if not original and mod:persistent_table(mod.REFERENCE).item_definitions then return mod:persistent_table(mod.REFERENCE).item_definitions end
+        if not original and mod:persistent_table(REFERENCE).item_definitions then return mod:persistent_table(REFERENCE).item_definitions end
         -- Return original definitions
         return master_items
     end)

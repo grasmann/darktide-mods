@@ -14,6 +14,15 @@ local mod = get_mod("weapon_customization")
     local script_unit_has_extension = script_unit.has_extension
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+--#region Data
+    local SLOT_SECONDARY = "slot_secondary"
+    local REFERENCE = "weapon_customization"
+--#endregion
+
 -- ##### ┌┐ ┌─┐┌┬┐┌┬┐┌─┐┬─┐┬ ┬  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ############################################################
 -- ##### ├┴┐├─┤ │  │ ├┤ ├┬┘└┬┘  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ############################################################
 -- ##### └─┘┴ ┴ ┴  ┴ └─┘┴└─ ┴   └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ############################################################
@@ -36,15 +45,7 @@ BatteryExtension.init = function(self, extension_init_context, unit, extension_i
     self.current_charge = self.battery_template.max
     self.timer = 0
     self.on = extension_init_data.on or self.is_local_unit and mod:flashlight_active() or false
-    -- Init
     self.initialized = true
-end
-
-BatteryExtension.delete = function(self)
-    -- Deinit
-    self.initialized = false
-    -- Delete parent
-    BatteryExtension.super.delete(self)
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -54,15 +55,6 @@ end
 -- Recharge battery instantly
 BatteryExtension.recharge_battery = function(self)
 	self.current_charge = self.battery_template.max
-end
-
--- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
--- ##### └─┐├┤  │   └┐┌┘├─┤│  │ │├┤ └─┐ ###############################################################################
--- ##### └─┘└─┘ ┴    └┘ ┴ ┴┴─┘└─┘└─┘└─┘ ###############################################################################
-
--- Set battery enabled / disabled
-BatteryExtension.set_enabled = function(self, value)
-    self.on = value
 end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
@@ -89,6 +81,10 @@ BatteryExtension.fraction = function(self)
     return current / max
 end
 
+BatteryExtension.is_wielded = function(self)
+    return self.wielded
+end
+
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
@@ -99,11 +95,13 @@ BatteryExtension.update = function(self, dt, t)
     -- Check battery template
     if self.battery_template then
         -- Battery interval
+        self.timer = self.timer or 0
         if t > self.timer then
             -- Check if consumer is switched on
-            if self.on and self.wielded then
+            if self.on and self:is_wielded() then
                 -- Drain battery
-                self.current_charge = math_clamp(self.current_charge - self.battery_template.drain, 0, self.battery_template.max)
+                local drain = self.battery_template.drain
+                self.current_charge = math_clamp(self.current_charge - drain, 0, self.battery_template.max)
             else
                 -- Charge battery
                 self.current_charge = math_clamp(self.current_charge + self.battery_template.charge, 0, self.battery_template.max)
@@ -115,17 +113,81 @@ BatteryExtension.update = function(self, dt, t)
     wc_perf.stop(perf)
 end
 
--- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
--- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
--- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
-
 BatteryExtension.on_wield_slot = function(self, slot)
-    self.wielded = slot.name == mod.SLOT_SECONDARY
+    self.wielded = slot.name == SLOT_SECONDARY
 end
 
 BatteryExtension.on_unwield_slot = function(self, slot)
-    if slot.name == mod.SLOT_SECONDARY then self.wielded = false end
+    if slot.name == SLOT_SECONDARY then
+        self.wielded = false
+    end
 end
+
+-- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
+-- ##### └─┐├┤  │   └┐┌┘├─┤│  │ │├┤ └─┐ ###############################################################################
+-- ##### └─┘└─┘ ┴    └┘ ┴ ┴┴─┘└─┘└─┘└─┘ ###############################################################################
+
+-- Set battery enabled / disabled
+BatteryExtension.set_enabled = function(self, value)
+    self.on = value
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬   ###########################################################################################
 -- ##### │ ┬│  │ │├┴┐├─┤│   ###########################################################################################
@@ -133,27 +195,27 @@ end
 
 -- Get current battery charge
 mod.get_battery_charge = function(self)
-    if self.player_unit and script_unit_has_extension(self.player_unit, mod.SYSTEM_BATTERY) then
-        -- local battery_extension = script_unit_extension(self.player_unit, mod.SYSTEM_BATTERY)
-        return script_unit_extension(self.player_unit, mod.SYSTEM_BATTERY):charge()
+    if self.player_unit and script_unit_has_extension(self.player_unit, "battery_system") then
+        local battery_extension = script_unit_extension(self.player_unit, "battery_system")
+        return battery_extension and battery_extension:charge()
     end
     return 0
 end
 
 -- Get maximum battery charge
 mod.get_battery_max = function(self)
-    if self.player_unit and script_unit_has_extension(self.player_unit, mod.SYSTEM_BATTERY) then
-        -- local battery_extension = script_unit_extension(self.player_unit, mod.SYSTEM_BATTERY)
-        return script_unit_extension(self.player_unit, mod.SYSTEM_BATTERY):max()
+    if self.player_unit and script_unit_has_extension(self.player_unit, "battery_system") then
+        local battery_extension = script_unit_extension(self.player_unit, "battery_system")
+        return battery_extension and battery_extension:max()
     end
 	return 0
 end
 
 -- Get battery charge fraction
 mod.get_battery_fraction = function(self)
-    if self.player_unit and script_unit_has_extension(self.player_unit, mod.SYSTEM_BATTERY) then
-        -- local battery_extension = script_unit_extension(self.player_unit, mod.SYSTEM_BATTERY)
-        return script_unit_extension(self.player_unit, mod.SYSTEM_BATTERY):fraction()
+    if self.player_unit and script_unit_has_extension(self.player_unit, "battery_system") then
+        local battery_extension = script_unit_extension(self.player_unit, "battery_system")
+        return battery_extension and battery_extension:fraction()
     end
 	return 0
 end

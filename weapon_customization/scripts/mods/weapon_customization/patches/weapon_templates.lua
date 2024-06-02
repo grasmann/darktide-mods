@@ -19,6 +19,16 @@ local mod = get_mod("weapon_customization")
     local table_clone = table.clone
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+--#region Data
+    local REFERENCE = "weapon_customization"
+    local WEAPON_MELEE = "WEAPON_MELEE"
+    local WEAPON_RANGED = "WEAPON_RANGED"
+--#endregion
+
 -- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐  ┌─┐┌─┐┌┬┐┌─┐┬ ┬ ################################################
 -- ##### │││├┤ ├─┤├─┘│ ││││   │ ├┤ │││├─┘│  ├─┤ │ ├┤   ├─┘├─┤ │ │  ├─┤ ################################################
 -- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘  ┴  ┴ ┴ ┴ └─┘┴ ┴ ################################################
@@ -52,7 +62,7 @@ mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
     instance.template_add_torch = function(self, orig_weapon_template)
         if mod.previewed_weapon and orig_weapon_template then
             local gear_id = mod.gear_settings:item_to_gear_id(mod.previewed_weapon.item)
-            local templates = mod:persistent_table(mod.REFERENCE).weapon_templates
+            local templates = mod:persistent_table(REFERENCE).weapon_templates
     
             if not templates[gear_id] then
                 templates[gear_id] = table_clone(orig_weapon_template)

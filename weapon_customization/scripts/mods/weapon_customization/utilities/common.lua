@@ -56,6 +56,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
+	local REFERENCE = "weapon_customization"
 	local COSMETIC_VIEW = "inventory_cosmetics_view"
 --#endregion
 
@@ -173,11 +174,11 @@ mod.release_non_essential_packages = function(self)
 	local unloaded_packages = {}
 	local lists = {"visible_equipment", "view_weapon_sounds"}
 	for _, list in pairs(lists) do
-		for package_name, package_id in pairs(self:persistent_table(mod.REFERENCE).loaded_packages[list]) do
+		for package_name, package_id in pairs(self:persistent_table(REFERENCE).loaded_packages[list]) do
 			unloaded_packages[package_name] = package_id
-			self:persistent_table(mod.REFERENCE).used_packages[list][package_name] = nil
+			self:persistent_table(REFERENCE).used_packages[list][package_name] = nil
 		end
-		self:persistent_table(mod.REFERENCE).loaded_packages[list] = {}
+		self:persistent_table(REFERENCE).loaded_packages[list] = {}
 	end
 	for package_name, package_id in pairs(unloaded_packages) do
 		managers.package:release(package_id)
@@ -206,16 +207,16 @@ mod.load_needed_packages = function(self)
 		"wwise/events/weapon/play_lasgun_p3_mag_button",
     }
     for _, package_name in pairs(_needed_packages) do
-		if not self:persistent_table(mod.REFERENCE).loaded_packages.needed[package_name] then
-			self:persistent_table(mod.REFERENCE).used_packages.needed[package_name] = true
-            self:persistent_table(mod.REFERENCE).loaded_packages.needed[package_name] = managers.package:load(package_name, mod.REFERENCE)
+		if not self:persistent_table(REFERENCE).loaded_packages.needed[package_name] then
+			self:persistent_table(REFERENCE).used_packages.needed[package_name] = true
+            self:persistent_table(REFERENCE).loaded_packages.needed[package_name] = managers.package:load(package_name, REFERENCE)
         end
     end
 end
 
 mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 	if unit and unit_alive(unit) then
-		local slot_infos = self:persistent_table(mod.REFERENCE).attachment_slot_infos
+		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
 		local gear_info = slot_infos[slot_info_id]
 		local mesh_move = gear_info and gear_info.unit_mesh_move[unit]
 		local unit_and_meshes = mesh_move == "both" or false
