@@ -42,6 +42,7 @@ local mod = get_mod("weapon_customization")
 	local get_mod = get_mod
 	local vector3 = Vector3
 	local vector2 = Vector2
+	local math_abs = math.abs
 	local Localize = Localize
     local managers = Managers
     local tostring = tostring
@@ -59,10 +60,12 @@ local mod = get_mod("weapon_customization")
 	local Quaternion = Quaternion
 	local string_gsub = string.gsub
     local vector3_box = Vector3Box
+	local table_clear = table.clear
     local table_clone = table.clone
     local string_find = string.find
 	local vector3_lerp = vector3.lerp
 	local vector3_zero = vector3.zero
+	local table_insert = table.insert
 	local table_reverse = table.reverse
 	local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
@@ -93,17 +96,17 @@ local mod = get_mod("weapon_customization")
 	mod.weapon_changed = nil
 	mod.cosmetics_view = nil
 	-- mod.mesh_positions = {}
-	mod.dropdown_positions = {}
-	mod.spawned_attachments = {}
-	mod.attachment_preview_count = 0
-	mod.spawned_attachments_last_position = {}
-	mod.spawned_attachments_target_position = {}
-	mod.spawned_attachments_timer = {}
-	mod.attachment_index_updated = {}
-	mod.attachment_index = {}
-	mod.preview_attachment_name = {}
-	mod.preview_attachment_slot = nil
-	mod.load_previews = {}
+	-- mod.dropdown_positions = {}
+	-- mod.spawned_attachments = {}
+	-- mod.attachment_preview_count = 0
+	-- mod.spawned_attachments_last_position = {}
+	-- mod.spawned_attachments_target_position = {}
+	-- mod.spawned_attachments_timer = {}
+	-- mod.attachment_index_updated = {}
+	-- mod.attachment_index = {}
+	-- mod.preview_attachment_name = {}
+	-- mod.preview_attachment_slot = nil
+	-- mod.load_previews = {}
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################
@@ -801,7 +804,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				for attachment_slot, _ in pairs(attachments) do
 					local unit = mod.gear_settings:attachment_unit(attachment_units, attachment_slot)
 					if unit and unit_alive(unit) then
-						local saved_origin = mod.dropdown_positions[attachment_slot]
+						local saved_origin = self.dropdown_positions[attachment_slot]
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then
 							self:draw_box(unit, saved_origin)
 							break
@@ -838,7 +841,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						if mod.equipment_line_target then
 							world_to_screen = vector2(mod.equipment_line_target[1], mod.equipment_line_target[2])
 						end
-						local saved_origin = mod.dropdown_positions[attachment_slot]
+						local saved_origin = self.dropdown_positions[attachment_slot]
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then
 							local origin = vector2(saved_origin[1], saved_origin[2])
 							local color = Color(255, 49, 62, 45)
@@ -1498,7 +1501,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				local screen_width = RESOLUTION_LOOKUP.width
 				local attachment_slot = string_gsub(scenegraph_name, "_pivot", "")
 				local scenegraph_entry = ui_scenegraph[scenegraph_name]
-				local entry = mod.dropdown_positions[attachment_slot] or {}
+				local entry = self.dropdown_positions[attachment_slot] or {}
 
 				local scale = RESOLUTION_LOOKUP.scale
 				local world_position = UIScenegraph.world_position(ui_scenegraph, scenegraph_name)
@@ -1516,7 +1519,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				-- entry[1] = world_position[1] * scale + size_width * scale
 				entry[2] = world_position[2] * scale + (dropdown_height * scale) / 2 + y
 				entry[3] = entry[3] or false
-				mod.dropdown_positions[attachment_slot] = entry
+				self.dropdown_positions[attachment_slot] = entry
 			end
 		end
 	end
@@ -1529,13 +1532,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					pivot_name = string_gsub(pivot_name, "_custom", "")
 					local scenegraph_entry = self._ui_scenegraph[pivot_name]
 					local any_active = false
-					for _, data in pairs(mod.dropdown_positions) do
+					for _, data in pairs(self.dropdown_positions) do
 						if data[3] == true then
 							any_active = true
 							break
 						end
 					end
-					local entry = mod.dropdown_positions[widget.content.entry.attachment_slot]
+					local entry = self.dropdown_positions[widget.content.entry.attachment_slot]
 					local text = self._widgets_by_name[widget.content.entry.attachment_slot.."_custom_text"]
 					local active = entry and entry[3]
 					if active or not any_active or not entry then
@@ -1643,7 +1646,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
 			if content.reset and ui_weapon_spawner._weapon_spawn_data then
 				content.reset = nil
-				mod.dropdown_positions[entry.attachment_slot][3] = false
+				self.dropdown_positions[entry.attachment_slot][3] = false
 				local unit_3p = ui_weapon_spawner._weapon_spawn_data.unit_3p
 				local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
 				-- local unit = mod:get_attachment_slot_in_attachments(attachment_units_3p, entry.attachment_slot)
@@ -1670,11 +1673,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			return
 		end
 	
-		mod.dropdown_positions[entry.attachment_slot] = mod.dropdown_positions[entry.attachment_slot] or {}
-		mod.dropdown_positions[entry.attachment_slot][3] = (not mod.dropdown_open and content.hotspot.is_hover) or content.hotspot.is_selected
+		self.dropdown_positions[entry.attachment_slot] = self.dropdown_positions[entry.attachment_slot] or {}
+		self.dropdown_positions[entry.attachment_slot][3] = (not mod.dropdown_open and content.hotspot.is_hover) or content.hotspot.is_selected
 	
 		if (content.hotspot.is_hover or content.hotspot.is_selected) and not mod.dropdown_open and not mod.build_animation:is_busy() then
-			mod.dropdown_positions[entry.attachment_slot][3] = true
+			self.dropdown_positions[entry.attachment_slot][3] = true
 			local weapon_attachments = mod.attachment_models[self._item_name]
 			local attachment_data = weapon_attachments[value]
 			local new_angle = attachment_data and attachment_data.angle or 0
@@ -1843,7 +1846,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					mod.new_rotation = new_angle + 1 * (actual_i / #options) - .5
 	
 					-- mod.build_animation.animations = {}
-					mod.dropdown_positions[entry.attachment_slot][3] = true
+					self.dropdown_positions[entry.attachment_slot][3] = true
 					mod.attachment_preview_index = actual_i
 					if attachment_data and attachment_data.move then self:start_weapon_move(attachment_data.move) end
 					entry.preview_attachment = option.value
@@ -1860,7 +1863,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					content.selected_index = actual_i
 					mod.dropdown_closing = true
 					content.option_disabled = false
-					mod.dropdown_positions[entry.attachment_slot][3] = false
+					self.dropdown_positions[entry.attachment_slot][3] = false
 				end
 			elseif option_hotspot.on_pressed and option.disabled then
 				content.option_disabled = true
@@ -1956,8 +1959,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.create_bar_breakdown_widgets = function(self)
 		self:destroy_bar_breakdown_widgets()
 	
-		table.clear(self.bar_breakdown_widgets)
-		table.clear(self.bar_breakdown_widgets_by_name)
+		table_clear(self.bar_breakdown_widgets)
+		table_clear(self.bar_breakdown_widgets_by_name)
 	
 		local bar_breakdown_widgets = self.bar_breakdown_widgets
 		local bar_breakdown_widgets_by_name = self.bar_breakdown_widgets_by_name
@@ -2016,8 +2019,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	end
 	
 	instance.destroy_bar_breakdown_widgets = function(self)
-		table.clear(self.bar_breakdown_widgets)
-		table.clear(self.bar_breakdown_widgets_by_name)
+		table_clear(self.bar_breakdown_widgets)
+		table_clear(self.bar_breakdown_widgets_by_name)
 	
 		self.bar_breakdown_name = nil
 	end
@@ -2026,11 +2029,60 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │   ├─┘├┬┘├┤ └┐┌┘│├┤ │││└─┐
 	-- ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴   ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘└─┘
 
+	-- Load attachment packages
+	local possible_attachments = {}
+	instance.load_attachment_packages = function(self, item, attachment_slot)
+		mod:setup_item_definitions()
+
+		local attachments = mod.attachment[self._item_name]
+		local slot_attachments = attachments and attachments[attachment_slot]
+		table_clear(possible_attachments)
+
+		for index, attachment_data in pairs(slot_attachments) do
+			local model_data = mod.attachment_models[self._item_name][attachment_data.id]
+			local attachment_item = model_data and mod:persistent_table(REFERENCE).item_definitions[model_data.model]
+
+			if attachment_item then
+				local priority = false
+				if index == mod.attachment_preview_index then
+					priority = true
+				else
+					local diff = index - mod.attachment_preview_index
+					if math_abs(diff) <= 2 then priority = true end
+				end
+				local target_index = #possible_attachments + 1
+				if priority then target_index = 1 end
+				table_insert(possible_attachments, target_index, {
+					item = attachment_item,
+					name = attachment_data.id,
+					base_unit = attachment_item.base_unit,
+					index = index,
+				})
+			end
+		end
+		
+		self.attachment_preview_count = #possible_attachments
+
+		for _, attachment_data in pairs(possible_attachments) do
+			if attachment_data.item.resource_dependencies then
+				for package_name, _ in pairs(attachment_data.item.resource_dependencies) do
+					local package_key = attachment_slot.."_"..attachment_data.name
+					local callback = callback(mod.cosmetics_view, "attachment_package_loaded", attachment_data.index, attachment_slot, attachment_data.name, attachment_data.base_unit)
+					if not mod:persistent_table(REFERENCE).loaded_packages.customization[package_key] then
+						mod:persistent_table(REFERENCE).used_packages.customization[package_key] = true
+						mod:persistent_table(REFERENCE).loaded_packages.customization[package_key] = managers.package:load(package_name, REFERENCE, callback)
+					end
+				end
+			end
+
+		end
+	end
+
 	instance.update_attachment_previews = function(self, dt, t)
 		local selected_index = mod.attachment_preview_index or 1
-		local attachment_slot = mod.preview_attachment_slot
+		local attachment_slot = self.preview_attachment_slot
 		if self._weapon_preview._ui_weapon_spawner._weapon_spawn_data then
-			for _, unit in pairs(mod.spawned_attachments) do
+			for _, unit in pairs(self.spawned_attachments) do
 				
 				local link_unit = self._weapon_preview._ui_weapon_spawner._weapon_spawn_data.link_unit
 				if unit and unit_alive(unit) then
@@ -2039,7 +2091,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					-- else
 					-- 	Unit.set_local_scale(unit, 1, vector3(1, 1, 1))
 					-- end
-					local index = mod.attachment_index[unit]
+					local index = self.attachment_index[unit]
 					Unit.set_local_rotation(unit, 1, Unit.world_rotation(link_unit, 1))
 	
 					if index == selected_index then
@@ -2048,7 +2100,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	
 					-- local last_slot = mod.attachment_slot_positions[7] or self.spawned_attachments_last_position[unit]
 					-- self.dropdown_positions[attachment_slot][3] = index == self.attachment_preview_index
-					if mod.attachment_index_updated[unit] ~= mod.attachment_preview_index then
+					if self.attachment_index_updated[unit] ~= mod.attachment_preview_index then
 						-- local max = self.attachment_preview_count / 2
 						-- local selected = selected_index / max
 						-- local fraction = index / max
@@ -2071,7 +2123,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						local world = self._weapon_preview._ui_weapon_spawner._world
 						local target_position = mod.attachment_slot_positions[6]
 						-- local index = self.attachment_index[unit]
-						local attachment_name = mod.preview_attachment_name[unit]
+						local attachment_name = self.preview_attachment_name[unit]
 						if index == mod.attachment_preview_index then
 							local item = self._selected_item
 							-- local attachment_slot = self.preview_attachment_slot
@@ -2085,7 +2137,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 							
 							-- self.attachment_slot_positions[3] = attachment_unit and Unit.world_position(attachment_unit, 1) or self.attachment_slot_positions[3]
 							target_position = mod.attachment_slot_positions[3]
-							mod.spawned_attachments_last_position[unit] = attachment_unit and Unit.world_position(attachment_unit, 1)
+							self.spawned_attachments_last_position[unit] = attachment_unit and Unit.world_position(attachment_unit, 1)
 							Unit.set_unit_visibility(unit, true, true)
 	
 							-- local attachment_name = attachment_unit and Unit.get_data(attachment_unit, "attachment_name")
@@ -2107,7 +2159,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 							-- target_position = self.attachment_slot_positions[3]
 							-- Unit.set_unit_visibility(unit, true, true)
 						elseif index ~= mod.attachment_preview_index then
-							mod.spawned_attachments_last_position[unit] = mod.spawned_attachments_last_position[unit] 
+							self.spawned_attachments_last_position[unit] = self.spawned_attachments_last_position[unit] 
 								or mod.attachment_slot_positions[3]
 							local diff = index - mod.attachment_preview_index
 							if math.abs(diff) <= 2 then
@@ -2125,24 +2177,24 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						local scale = .08 / math_max(radius, half_size.z * 2)
 						Unit.set_local_scale(unit, 1, vector3(scale, scale, scale))					
 	
-						mod.spawned_attachments_last_position[unit] = mod.spawned_attachments_target_position[unit] or mod.attachment_slot_positions[6]
-						mod.spawned_attachments_target_position[unit] = target_position
+						self.spawned_attachments_last_position[unit] = self.spawned_attachments_target_position[unit] or mod.attachment_slot_positions[6]
+						self.spawned_attachments_target_position[unit] = target_position
 	
-						mod.attachment_index_updated[unit] = mod.attachment_preview_index
-						mod.spawned_attachments_timer[unit] = t + 1
+						self.attachment_index_updated[unit] = mod.attachment_preview_index
+						self.spawned_attachments_timer[unit] = t + 1
 	
-					elseif mod.spawned_attachments_timer[unit] and mod.spawned_attachments_timer[unit] > t then
-						local target_position = mod.spawned_attachments_target_position[unit]
-						local last_position = mod.spawned_attachments_last_position[unit]
-						local progress = (mod.spawned_attachments_timer[unit] - t) / 1
+					elseif self.spawned_attachments_timer[unit] and self.spawned_attachments_timer[unit] > t then
+						local target_position = self.spawned_attachments_target_position[unit]
+						local last_position = self.spawned_attachments_last_position[unit]
+						local progress = (self.spawned_attachments_timer[unit] - t) / 1
 						local anim_progress = math.easeOutCubic(1 - progress)
 						local lerp_position = vector3_lerp(vector3_unbox(last_position), vector3_unbox(target_position), anim_progress)
 						-- mod:info("mod.update_attachment_previews: "..tostring(unit))
 						Unit.set_local_position(unit, 1, lerp_position)
 	
-					elseif mod.spawned_attachments_timer[unit] and mod.spawned_attachments_timer[unit] <= t then
-						mod.spawned_attachments_timer[unit] = nil
-						local target_position = mod.spawned_attachments_target_position[unit]
+					elseif self.spawned_attachments_timer[unit] and self.spawned_attachments_timer[unit] <= t then
+						self.spawned_attachments_timer[unit] = nil
+						local target_position = self.spawned_attachments_target_position[unit]
 						-- mod:info("mod.update_attachment_previews: "..tostring(unit))
 						Unit.set_local_position(unit, 1, vector3_unbox(target_position))
 						-- self.spawned_attachments_overwrite_position[unit] = nil
@@ -2169,25 +2221,26 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		scale = attachment_data and attachment_data.scale or scale
 		Unit.set_local_scale(unit, 1, scale)
 		-- mod:preview_flashlight(true, false, world, unit, attachment_name)
-		mod.preview_attachment_name[unit] = attachment_name
-		mod.attachment_index[unit] = index
-		mod.spawned_attachments[#mod.spawned_attachments+1] = unit
+		self.preview_attachment_name[unit] = attachment_name
+		self.attachment_index[unit] = index
+		self.spawned_attachments[#self.spawned_attachments+1] = unit
 		return unit
 	end
 	
 	instance.try_spawning_previews = function(self)
-		if self._weapon_preview._ui_weapon_spawner._weapon_spawn_data then
-			for i = #mod.load_previews, 1, -1 do
-				local preview = mod.load_previews[i]
+		local weapon_spawn_data = self:weapon_spawn_data()
+		if weapon_spawn_data then
+			for i = #self.load_previews, 1, -1 do
+				local preview = self.load_previews[i]
 				self:spawn_attachment_preview(preview.index, preview.attachment_slot, preview.attachment_name, preview.base_unit)
-				mod.load_previews[i] = nil
+				self.load_previews[i] = nil
 			end
 		end
 	end
 	
 	instance.attachment_package_loaded = function(self, index, attachment_slot, attachment_name, base_unit)
 		-- local attachment_unit = self:spawn_attachment_preview(index, attachment_slot, attachment_name, base_unit)
-		mod.load_previews[#mod.load_previews+1] = {
+		self.load_previews[#self.load_previews+1] = {
 			index = index,
 			attachment_slot = attachment_slot,
 			attachment_name = attachment_name,
@@ -2206,17 +2259,18 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	
 	instance.destroy_attachment_previews = function(self)
 		local world = self._weapon_preview._ui_weapon_spawner._world
-		for _, unit in pairs(mod.spawned_attachments) do
+		for _, unit in pairs(self.spawned_attachments) do
 			if unit and unit_alive(unit) then
 				World.unlink_unit(world, unit)
 			end
 		end
-		for _, unit in pairs(mod.spawned_attachments) do
+		for _, unit in pairs(self.spawned_attachments) do
 			if unit and unit_alive(unit) then
 				World.destroy_unit(world, unit)
 			end
 		end
-		mod.spawned_attachments = {}
+		-- mod.spawned_attachments = {}
+		table_clear(self.spawned_attachments)
 	end
 	
 	instance.setup_attachment_slot_positions = function(self)
@@ -2238,7 +2292,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	end
 	
 	instance.create_attachment_array = function(self, item, attachment_slot)
-		mod.preview_attachment_slot = attachment_slot
+		self.preview_attachment_slot = attachment_slot
 		if self._weapon_preview._ui_weapon_spawner._camera then
 			local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
 			if ui_weapon_spawner._weapon_spawn_data then
@@ -2252,11 +2306,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					local attachment_data = attachment_name and mod.attachment_models[self._item_name][attachment_name]
 					local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
 					self:setup_attachment_slot_positions()
-					mod.gear_settings:load_attachment_packages(item, attachment_slot)
+					self:load_attachment_packages(item, attachment_slot)
 					self:unit_hide_meshes(attachment_unit, true)
 				else
 					self:setup_attachment_slot_positions()
-					mod.gear_settings:load_attachment_packages(item, attachment_slot)
+					self:load_attachment_packages(item, attachment_slot)
 				end
 			end
 		end
@@ -2268,6 +2322,17 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Init custom
 	instance.init_custom = function(self)
+		self.preview_attachment_slot = nil
+		self.preview_attachment_name = {}
+		self.attachment_index = {}
+		self.attachment_index_updated = {}
+		self.spawned_attachments_timer = {}
+		self.spawned_attachments_target_position = {}
+		self.attachment_preview_count = 0
+		self.spawned_attachments_last_position = {}
+		self.load_previews = {}
+		self.spawned_attachments = {}
+		self.dropdown_positions = {}
 		self._custom_widgets = {}
 		self._not_applicable = {}
 		self._custom_widgets_overlapping = 0

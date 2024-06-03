@@ -33,7 +33,6 @@ local mod = get_mod("weapon_customization")
 	local unpack = unpack
 	local Camera = Camera
 	local vector3 = Vector3
-	local wc_perf = wc_perf
 	local math_rad = math.rad
 	local managers = Managers
 	local Viewport = Viewport
@@ -437,7 +436,6 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 SightExtension.update = function(self, unit, dt, t)
-	local perf = wc_perf.start("SightExtension.update", 2)
 	if self.initialized then
 
 		if self.sniper_zoom and self.lens_units and self.lens_units[3] and unit_alive(self.lens_units[3]) and self.default_reticle_position
@@ -601,7 +599,6 @@ SightExtension.update = function(self, unit, dt, t)
 
 		self:update_scope_lenses()
 	end
-	wc_perf.stop(perf)
 end
 
 SightExtension.update_position_and_rotation = function(self)

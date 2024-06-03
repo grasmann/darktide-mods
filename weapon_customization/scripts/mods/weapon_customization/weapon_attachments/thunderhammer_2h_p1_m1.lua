@@ -23,6 +23,7 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local changes = {}
 return table.combine(
     _thunderhammer_2h_p1_m1,
     {
@@ -85,7 +86,7 @@ return table.combine(
             }, nil, {
                 false,
             }, function(gear_id, item, attachment)
-                local changes = {}
+                changes = {}
                 local list_a = {"thunder_hammer_connector_03", "thunder_hammer_connector_04", "thunder_hammer_connector_05", "body_01", "body_02", "body_03", "body_04", "body_05", "2h_power_maul_connector_01", "2h_power_maul_connector_02", "2h_power_maul_connector_03", "2h_power_maul_connector_04", "2h_power_maul_connector_05"}
                 if table.contains(list_a, attachment) then
                     local trinket_hook = mod.gear_settings:get(item, "trinket_hook")

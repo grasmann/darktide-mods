@@ -27,6 +27,7 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local changes = {}
 return table.combine(
     _ogryn_heavystubber_p1_m1,
     {
@@ -47,7 +48,7 @@ return table.combine(
         models = table.combine(
             -- Native
             _ogryn_heavystubber_p1_m1.barrel_models(nil, -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-                local changes = {}
+                changes = {}
                 local receiver = mod.gear_settings:get(item, "receiver")
                 local magazine = mod.gear_settings:get(item, "magazine")
                 local grip = mod.gear_settings:get(item, "grip")
@@ -63,7 +64,7 @@ return table.combine(
                 return changes
             end),
             _ogryn_heavystubber_p1_m1.receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-                local changes = {}
+                changes = {}
                 local barrel = mod.gear_settings:get(item, "barrel")
                 local magazine = mod.gear_settings:get(item, "magazine")
                 local grip = mod.gear_settings:get(item, "grip")
@@ -79,7 +80,7 @@ return table.combine(
                 return changes
             end),
             _ogryn_heavystubber_p1_m1.magazine_models("receiver", 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-                local changes = {}
+                changes = {}
                 local barrel = mod.gear_settings:get(item, "barrel")
                 local receiver = mod.gear_settings:get(item, "receiver")
                 local grip = mod.gear_settings:get(item, "grip")
@@ -105,7 +106,7 @@ return table.combine(
                 {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01"},
             }, nil, nil, function(gear_id, item, attachment)
-                local changes = {}
+                changes = {}
                 local barrel = mod.gear_settings:get(item, "barrel")
                 local magazine = mod.gear_settings:get(item, "magazine")
                 local receiver = mod.gear_settings:get(item, "receiver")
@@ -131,8 +132,13 @@ return table.combine(
         anchors = {
             fixes = {
                 -- Bayonet
+                {dependencies = {"bayonet_blade_01", "receiver_05|receiver_06|receiver_07"},
+                    bayonet = {position = vector3_box(0, .85, -0.13), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)}},
                 {dependencies = {"bayonet_blade_01"},
                     bayonet = {position = vector3_box(0, 1.04, -0.39), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)}},
+                    
+                {dependencies = {"receiver_05|receiver_06|receiver_07"},
+                    bayonet = {position = vector3_box(0, .9, -0.12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {bayonet = {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 -- Laser Pointer / Flashlight
                 {dependencies = {"flashlight_04|laser_pointer"},

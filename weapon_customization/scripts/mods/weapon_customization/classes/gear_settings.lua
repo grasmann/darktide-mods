@@ -348,44 +348,19 @@ end
 
 -- Get vanilla default attachment of specified item and slot
 GearSettings.default_attachment = function(self, gear_id_or_item, attachment_slot)
-
-    -- local item = self:item_from_gear_id(gear_id_or_item)
-
-    -- if item and item.name then
-
-    --     local item_name = self:short_name(item.name)
-
-    --     if not mod.data_cache or not mod.data_cache:item_name_to_default_attachment(item_name, attachment_slot) then
-
-    --         -- Get original item
-    --         local original_item = self:original_item(gear_id_or_item)
-    --         -- Find attachment
-    --         local attachment = self:_recursive_find_attachment(original_item.attachments, attachment_slot)
-
-    --         local attachment_list = self:possible_attachments(gear_id_or_item, attachment_slot)
-
-    --         return mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] and mod.attachment[item_name][attachment_slot][1] and mod.attachment[item_name][attachment_slot][1].id
-
-    --     end
-
-    --     return mod.data_cache:item_name_to_default_attachment(item_name, attachment_slot)
-
-    -- end
-
-    local default = nil
     -- Get original item
     local original_item = self:original_item(gear_id_or_item)
     -- Check item
     if original_item and original_item.attachments then
         -- Get item name
         local item_name = self:short_name(original_item.name)
-
+        -- Check if not in cache
         if not mod.data_cache or not mod.data_cache:item_name_to_default_attachment(item_name, attachment_slot) then
+            local default = nil
             -- Find attachment
             local item_attachment = self:_recursive_find_attachment(original_item.attachments, attachment_slot)
             -- Check attachment
             if item_attachment and mod.attachment_models[item_name] then
-
                 local function attachment_in_slot(attachment_name, attachment_slot)
                     if mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] then
                         for _, attachment in pairs(mod.attachment[item_name][attachment_slot]) do
@@ -395,30 +370,20 @@ GearSettings.default_attachment = function(self, gear_id_or_item, attachment_slo
                         end
                     end
                 end
-
-                -- if attachment.attachment_name then return attachment.attachment_name end
-                -- -- Get item data
-                -- local item_data = item_name and mod.default_attachment_models[item_name]
-                -- Check attachment data
-                -- if item_data then
-                    -- Iterate attachments
-                    for attachment_name, attachment_data in pairs(mod.attachment_models[item_name]) do
-                        -- Get attachment data
-                        -- local attachment_data = mod.attachment_models[item_name][attachment_name]
-                        local is_default = string_find(attachment_name, DEFAULT)
-                        local orig = attachment_data.original_mod
-                        -- Check attachment
-                        if orig and not is_default and attachment_in_slot(attachment_name, attachment_slot) and attachment_data.model == item_attachment.item then
-                            default = attachment_name
-                            break
-                        -- elseif orig and attachment_in_slot(attachment_name, attachment_slot) and attachment_data.model == item_attachment.item then
-                        --     default = attachment_name
-                        end
+                -- Iterate attachments
+                for attachment_name, attachment_data in pairs(mod.attachment_models[item_name]) do
+                    -- Get attachment data
+                    -- local attachment_data = mod.attachment_models[item_name][attachment_name]
+                    local is_default = string_find(attachment_name, DEFAULT)
+                    local orig = attachment_data.original_mod
+                    -- Check attachment
+                    if orig and not is_default and attachment_in_slot(attachment_name, attachment_slot) and attachment_data.model == item_attachment.item then
+                        default = attachment_name
+                        break
+                    -- elseif orig and attachment_in_slot(attachment_name, attachment_slot) and attachment_data.model == item_attachment.item then
+                    --     default = attachment_name
                     end
-                -- end
-
-
-
+                end
             end
             -- Return default
             return default
@@ -684,121 +649,9 @@ end
 -- ##### ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │   ├┤ │┌┴┬┘├┤ └─┐ ###############################################################
 -- ##### ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴   └  ┴┴ └─└─┘└─┘ ###############################################################
 
--- GearSettings.prepare_fixes = function(self)
---     for item_name, anchors in pairs(mod.anchors) do
---         if mod.anchors[item_name].fixes then
---             for fix_index, fix_data in pairs(mod.anchors[item_name].fixes) do
---                 if fix_data.dependencies then
---                     for _, dependency_entry in pairs(fix_data.dependencies) do
---                         self.split_cache[dependency_entry] = string_split(dependency_entry, "|")
---                         for i, dependency_possibility in pairs(self.split_cache[dependency_entry]) do
---                             self.negative_cache[dependency_possibility] = not not string_find(dependency_possibility, "!")
---                         end
---                     end
---                 end
---             end
---         end
---     end
--- end
-
--- Get attachment fixes from item or gear id
--- GearSettings.attachment_fixes = function(self, gear_id_or_item)
---     local fixes = {}
---     -- Get item from potential gear id
---     local item = self:item_from_gear_id(gear_id_or_item)
---     -- Get attachment slots
---     local current_attachments_by_slot = {}
---     local current_attachments = {}
---     -- Get possible attachment slots
---     local attachment_slots = self:possible_attachment_slots(gear_id_or_item)
---     -- Iterate attachment slots
---     for _, attachment_slot in pairs(attachment_slots) do
---         current_attachments_by_slot[attachment_slot] = self:get(gear_id_or_item, attachment_slot)
---         current_attachments[#current_attachments+1] = current_attachments_by_slot[attachment_slot]
---     end
---     -- Check item
---     if item and item.attachments then
---         -- Get item name 
---         local item_name = self:short_name(item.name)
---         -- Check if item has fixes
---         if mod.anchors[item_name] and mod.anchors[item_name].fixes then
---             -- Get fixes
---             local fix_list = mod.anchors[item_name].fixes
---             -- Iterate fixes
---             for fix_index, fix_data in pairs(fix_list) do
---                 -- Determine skip
---                 local skip = true
---                 for fix_attachment, _ in pairs(fix_data) do
---                     -- Check attachment slot is valid
---                     if fix_attachment ~= "dependencies" and (current_attachments_by_slot[fix_attachment]
---                             or not table_contains(mod.attachment_slots, fix_attachment)) then
---                         -- Skip false
---                         skip = false
---                         break
---                     end
---                 end
---                 -- Check skip
---                 if not skip then
---                     -- Dependencies
---                     local has_dependencies = false
---                     local no_dependencies = false
---                     -- Check dependencies
---                     if fix_data.dependencies then
---                         -- Iterate dependencies
---                         for _, dependency_entry in pairs(fix_data.dependencies) do
---                             -- Split dependency possibilities
---                             local dependency_possibilities = string_split(dependency_entry, "|")
---                             local has_dependency_possibility = false
---                             -- Iterate dependency possibilities
---                             for i, dependency_possibility in pairs(dependency_possibilities) do
---                                 local negative = string_find(dependency_possibility, "!")
---                                 dependency_possibility = negative and string_gsub(dependency_possibility, "!", "") or dependency_possibility
-
---                                 if mod.attachment_models[item_name] and mod.attachment_models[item_name][dependency_possibility] then
---                                     if negative then
---                                         has_dependency_possibility = not table_contains(current_attachments, dependency_possibility)
---                                     else
---                                         has_dependency_possibility = table_contains(current_attachments, dependency_possibility)
---                                     end
---                                 elseif table_contains(attachment_slots, dependency_possibility) then
---                                     if negative then
---                                         has_dependency_possibility = current_attachments_by_slot[dependency_possibility] == nil
---                                     else
---                                         has_dependency_possibility = current_attachments_by_slot[dependency_possibility] ~= nil
---                                     end
---                                 elseif mod.attachment_models[item_name] then
---                                     if negative then
---                                         has_dependency_possibility = dependency_possibility ~= item_name
---                                     else
---                                         has_dependency_possibility = dependency_possibility == item_name
---                                     end
---                                 end
---                                 if has_dependency_possibility then break end
---                             end
-
---                             has_dependencies = has_dependency_possibility
---                             if not has_dependencies then break end
---                         end
---                     else
---                         no_dependencies = true
---                     end
---                     -- Check if has dependencies or no dependencies
---                     if has_dependencies or no_dependencies then
---                         -- Add to list
---                         fixes[#fixes+1] = fix_data
---                     end
---                 end
---             end
---         end
---     end
---     -- Return fixes
---     return fixes
--- end
-
+-- Apply attachment fixes
 local current_attachments_by_slot = {}
 local current_attachments = {}
-
--- Apply attachment fixes
 GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
     -- Get item from potential gear id
     local item = self:item_from_gear_id(gear_id_or_item)
@@ -816,8 +669,10 @@ GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
             -- Check if item has fixes
             if mod.anchors[item_name] and mod.anchors[item_name].fixes and #mod.anchors[item_name].fixes > 0 then
                 -- Get attachment slots
-                current_attachments_by_slot = {}
-                current_attachments = {}
+                table.clear(current_attachments_by_slot)
+                table.clear(current_attachments)
+                -- current_attachments_by_slot = {}
+                -- current_attachments = {}
                 -- Get possible attachment slots
                 local attachment_slots = self:possible_attachment_slots(gear_id_or_item)
                 -- Iterate attachment slots
@@ -915,56 +770,6 @@ GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
                 end
             end
 		else mod:print("slot_info is nil") end
-	end
-end
-
--- Load attachment packages
-GearSettings.load_attachment_packages = function(self, item, attachment_slot)
-	mod:setup_item_definitions()
-
-	local attachments = mod.attachment[self._item_name]
-	local slot_attachments = attachments and attachments[attachment_slot] or {}
-	local possible_attachments = {}
-	for index, attachment_data in pairs(slot_attachments) do
-		local model_data = mod.attachment_models[self._item_name][attachment_data.id]
-		local attachment_item = model_data and mod:persistent_table(REFERENCE).item_definitions[model_data.model]
-        local is_default = self.default_cache[attachment_data.id] or string_find(attachment_data.id, DEFAULT)
-        if not self.default_cache[attachment_data.id] then
-            self.default_cache[attachment_data.id] = not not is_default
-        end
-		if attachment_item and not self.default_cache[attachment_data.id] then
-			local priority = false
-			if index == mod.attachment_preview_index then
-				priority = true
-			else
-				local diff = index - mod.attachment_preview_index
-				if math_abs(diff) <= 2 then priority = true end
-			end
-			local target_index = #possible_attachments + 1
-			if priority then target_index = 1 end
-			table_insert(possible_attachments, target_index, {
-				item = attachment_item,
-				name = attachment_data.id,
-				base_unit = attachment_item.base_unit,
-				index = index,
-			})
-		end
-	end
-	
-	mod.attachment_preview_count = #possible_attachments
-
-	for _, attachment_data in pairs(possible_attachments) do
-		if attachment_data.item.resource_dependencies then
-			for package_name, _ in pairs(attachment_data.item.resource_dependencies) do
-				local package_key = attachment_slot.."_"..attachment_data.name
-				local callback = callback(mod.cosmetics_view, "attachment_package_loaded", attachment_data.index, attachment_slot, attachment_data.name, attachment_data.base_unit)
-				if not mod:persistent_table(REFERENCE).loaded_packages.customization[package_key] then
-					mod:persistent_table(REFERENCE).used_packages.customization[package_key] = true
-					mod:persistent_table(REFERENCE).loaded_packages.customization[package_key] = managers.package:load(package_name, REFERENCE, callback)
-				end
-			end
-		end
-
 	end
 end
 
@@ -1281,7 +1086,7 @@ end
 
 -- Get single attachment from settings
 GearSettings.get = function(self, gear_id_or_item, attachment_slot, no_default)
-    
+
     local attachment_name = nil
 
     -- Get gear id from potential item

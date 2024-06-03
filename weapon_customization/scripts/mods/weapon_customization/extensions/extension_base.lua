@@ -11,7 +11,6 @@ local mod = get_mod("weapon_customization")
     local pairs = pairs
     local class = class
     local vector3 = Vector3
-    local wc_perf = wc_perf
     local math_abs = math.abs
     local managers = Managers
     local unit_alive = Unit.alive
@@ -58,8 +57,6 @@ mod.extensions = {
 -- ##### └─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ #####################################################################
 
 local WeaponCustomizationExtension = class("WeaponCustomizationExtension")
-
-WeaponCustomizationExtension.perf = wc_perf
 
 -- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
@@ -115,11 +112,9 @@ end
 
 -- Update
 WeaponCustomizationExtension.update = function(self, ...)
-    local perf = wc_perf.start("WeaponCustomizationExtension.update", 2)
     for system, extension in pairs(self.sub_extensions) do
         mod:execute_extension(self.player_unit, system, "update", ...)
     end
-    wc_perf.stop(perf)
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################

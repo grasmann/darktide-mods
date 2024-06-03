@@ -150,7 +150,7 @@ end
 
 -- Mod is unloaded
 mod.on_unload = function(exit_game)
-	if exit_game then mod:console_output() end
+	-- if exit_game then mod:console_output() end
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
@@ -187,7 +187,6 @@ end
 	-- Utilities
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/common")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/weapons")
-	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/performance")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/utilities/attachments")
 
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/data_cache")

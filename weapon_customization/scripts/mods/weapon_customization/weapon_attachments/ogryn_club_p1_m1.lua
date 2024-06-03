@@ -24,6 +24,7 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local changes = {}
 return table.combine(
     _ogryn_club_p1_m1,
     {
@@ -42,7 +43,7 @@ return table.combine(
             _ogryn_club_p1_m1.head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), "head", {
                 {"trinket_hook_empty"},
             }, nil, nil, "both", function(gear_id, item, attachment)
-                local changes = {}
+                changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
                     -- mod:echot(tostring(item_name).." changed "..tostring(attachment))
@@ -62,7 +63,7 @@ return table.combine(
                 return changes
             end),
             _ogryn_club_p1_m1.grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), "grip", nil, nil, nil, true, function(gear_id, item, attachment)
-                local changes = {}
+                changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
                     -- mod:echot(tostring(item_name).." changed "..tostring(attachment))
@@ -79,7 +80,7 @@ return table.combine(
                 return changes
             end),
             _ogryn_club_p1_m1.pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), "pommel", nil, nil, nil, "both", function(gear_id, item, attachment)
-                local changes = {}
+                changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
                     -- mod:echot(tostring(item_name).." changed "..tostring(attachment))

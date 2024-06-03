@@ -24,7 +24,6 @@ local mod = get_mod("weapon_customization")
 	local Level = Level
 	local string = string
 	local rawget = rawget
-	local wc_perf = wc_perf
 	local vector2 = Vector2
 	local vector3 = Vector3
 	local managers= Managers
@@ -48,9 +47,7 @@ local mod = get_mod("weapon_customization")
 	local table_append = table.append
 	local string_split = string.split
 	local vector3_zero = vector3.zero
-	local wc_perf_stop = wc_perf.stop
 	local matrix4x4_box = Matrix4x4Box
-	local wc_perf_start = wc_perf.start
 	local unit_set_data = Unit.set_data
 	local unit_get_data = Unit.get_data
 	local unit_has_node = Unit.has_node
@@ -106,8 +103,7 @@ local mod = get_mod("weapon_customization")
 mod.mesh_positions = {}
 mod.mesh_positions_changed = {}
 
-mod.visual_loadout_customization_stream_complete = function(self, perf)
-	-- wc_perf_stop(perf)
+mod.visual_loadout_customization_stream_complete = function(self)
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -456,7 +452,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local skin_overrides = instance.generate_attachment_overrides_lookup(item_data, weapon_skin, in_possesion_of_player)
 		local attachment_units, attachment_name_to_unit, attachment_units_bind_poses = instance.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template)
 
-		-- local perf = wc_perf_start("VisualLoadoutCustomization.spawn_item", 2)
 		local callback = callback(mod, "visual_loadout_customization_stream_complete")
 		Unit.force_stream_meshes(item_unit, callback, true)
 		if attachment_units then

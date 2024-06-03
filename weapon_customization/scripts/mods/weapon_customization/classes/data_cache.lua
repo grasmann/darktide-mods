@@ -89,44 +89,30 @@ end
 DataCache.cache_attachment_data = function(self)
     if not self.cache.initialized or true then
 
-        -- Cache full item string -> item names
-        -- Cache item names -> full item string
         for item_name, attachments in pairs(mod.attachment) do
             local melee = "content/items/weapons/player/melee/"..item_name
             local ranged = "content/items/weapons/player/ranged/"..item_name
             local item_string = self.item_definitions[melee] and melee or self.item_definitions[ranged] and ranged
             local item = self.item_definitions[item_string]
             if item then
+                -- Cache full item string -> item name
                 self.cache.item_names[item_string] = item_name
+                -- Cache item name -> full item string
                 self.cache.item_strings[item_name] = item_string
+                -- Cache item name -> attachment slots
                 self.cache.attachment_slots[item_name] = mod.gear_settings:possible_attachment_slots(item)
                 self.cache.attachment_list[item_name] = {}
                 for _, slot in pairs(self.cache.attachment_slots[item_name]) do
+                    -- Cache item name -> possible attachments by slot
                     self.cache.attachment_list[item_name][slot] = mod.gear_settings:possible_attachments(item, slot)
                 end
                 self.cache.default_attachments[item_name] = {}
                 for _, slot in pairs(self.cache.attachment_slots[item_name]) do
+                    -- Cache item name -> default attachment by slot
                     self.cache.default_attachments[item_name][slot] = mod.gear_settings:default_attachment(item, slot)
                 end
             end
-            -- if self.item_definitions[melee] then
-                
-            -- else
-            --     self.cache.item_names[ranged] = item_name
-            --     self.cache.item_strings[item_name] = ranged
-            --     self.cache.attachment_slots[item_name] = mod.gear_settings:possible_attachment_slots(ranged)
-            --     self.cache.attachment_list[item_name]["all"] = mod.gear_settings:possible_attachments(ranged)
-            --     for _, slot in pairs(self.cache.attachment_slots[item_name]) do
-            --         self.cache.attachment_list[item_name][slot] = mod.gear_settings:possible_attachments(melee, slot)
-            --     end
-            -- end
         end
-
-        -- -- Cache possible attachment slots
-        -- for item_name, attachments in pairs(mod.attachment) do
-        --     local melee = "content/items/weapons/player/melee/"..item_name
-        --     local ranged = "content/items/weapons/player/ranged/"..item_name
-        -- end
 
         -- Cache initialized
         self.cache.initialized = true
@@ -134,15 +120,6 @@ DataCache.cache_attachment_data = function(self)
         self:debug_dump()
     end
 end
-
--- DataCache.cache_item_attachment_list = function(self, item, attachment_list, attachment_slot_or_nil)
---     self.cache.attachment_list[item] = self.cache.attachment_list[item] or {}
---     if attachment_slot_or_nil then
---         self.cache.attachment_list[item][attachment_slot_or_nil] = attachment_list
---     else
---         self.cache.attachment_list[item]["all"] = attachment_list
---     end
--- end
 
 DataCache.item_name_to_default_attachment = function(self, item_name, attachment_slot)
     return self.cache.default_attachments[item_name] and self.cache.default_attachments[item_name][attachment_slot]
@@ -156,17 +133,9 @@ DataCache.item_name_to_attachment_list = function(self, item_name, attachment_sl
     end
 end
 
--- DataCache.cache_item_attachment_slots = function(self, item, attachment_slots)
---     self.cache.attachment_slots[item] = attachment_slots
--- end
-
 DataCache.item_name_to_attachment_slots = function(self, item)
     return self.cache.attachment_slots[item]
 end
-
--- DataCache.cache_item_attachments = function(self, item, attachments)
---     self.cache.attachments[item] = attachments
--- end
 
 DataCache.item_name_to_attachments = function(self, item_name)
     return self.cache.attachments[item_name]

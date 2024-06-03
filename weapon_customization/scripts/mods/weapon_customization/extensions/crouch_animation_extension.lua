@@ -23,7 +23,6 @@ local mod = get_mod("weapon_customization")
     local table = table
     local World = World
     local Camera = Camera
-    local wc_perf = wc_perf
     local vector3 = Vector3
     local managers = Managers
     local math_abs = math.abs
@@ -165,14 +164,12 @@ end
 
 -- Update
 CrouchAnimationExtension.update = function(self, dt, t)
-    local perf = wc_perf.start("CrouchAnimationExtension.update", 2)
     if self.initialized and self.on and self:get_first_person() then
         self:update_character_state()
         if not self:is_braced() then
             self:update_animation(dt, t)
         end
     end
-    wc_perf.stop(perf)
 end
 
 -- Update animation

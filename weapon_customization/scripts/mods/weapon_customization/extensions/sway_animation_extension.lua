@@ -21,7 +21,6 @@ local Sway = mod:original_require("scripts/utilities/sway")
     local table = table
     local World = World
     local Camera = Camera
-    local wc_perf = wc_perf
     local vector3 = Vector3
     local managers = Managers
     local math_abs = math.abs
@@ -144,11 +143,9 @@ end
 
 -- Update
 SwayAnimationExtension.update = function(self, dt, t)
-    local perf = wc_perf.start("SwayAnimationExtension.update", 2)
     if self.initialized and self.on and self:get_first_person() then
         self:update_animation(dt, t)
     end
-    wc_perf.stop(perf)
 end
 
 -- Update animation

@@ -16,7 +16,6 @@ local mod = get_mod("weapon_customization")
 --#region Performance
     local table = table
     local CLASS = CLASS
-    local wc_perf = wc_perf
     local managers = Managers
     local script_unit = ScriptUnit
     local table_merge_recursive = table.merge_recursive
@@ -258,9 +257,6 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
     -- Original function
     func(self, unit, dt, t, ...)
 
-    -- Performance
-    local perf = wc_perf.start("PlayerUnitVisualLoadoutExtension.update", 2)
-
     -- Visible equipment
     self:update_visible_equipment(dt, t)
 
@@ -278,8 +274,5 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
 
     -- Flashlights
     self:update_flashlight(dt, t)
-
-    -- Performance
-    wc_perf.stop(perf)
 
 end)

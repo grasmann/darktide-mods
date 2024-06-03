@@ -24,7 +24,6 @@ local mod = get_mod("weapon_customization")
     local CLASS = CLASS
     local pairs = pairs
     local table = table
-    local wc_perf = wc_perf
     local managers = Managers
     local Viewport = Viewport
     local table_enum = table.enum

@@ -27,7 +27,6 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
     local CLASS = CLASS
     local vector3 = Vector3
     local get_mod = get_mod
-    local wc_perf = wc_perf
     local math_abs = math.abs
     local managers = Managers
     local Matrix4x4 = Matrix4x4
@@ -200,10 +199,8 @@ LaserPointerExtension.update_all = function(self, dt, t)
 end
 
 LaserPointerExtension.update = function(self, dt, t)
-    local perf = wc_perf.start("LaserPointerExtension.update", 2)
     self:update_all(dt, t)
     self.last_first_person = self:get_first_person()
-    wc_perf.stop(perf)
 end
 
 LaserPointerExtension.update_lock = function(self, dt, t)
@@ -511,7 +508,8 @@ LaserPointerExtension.despawn_laser = function(self)
             world_destroy_particles(self.world, laser_effect_id)
         end
     end
-    self.laser_effect_ids = {}
+    -- self.laser_effect_ids = {}
+    table.clear(self.laser_effect_ids)
 end
 
 LaserPointerExtension.spawn_weapon_dot = function(self)

@@ -440,6 +440,7 @@ local _children_sort_function = function(entry_1, entry_2)
 	return distance_1 < distance_2
 end
 
+local children = {}
 WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment, new_attachment, no_children, speed, hide_ui, attachment_type, callback)
     local existing_animation = self:animation_exists(attachment_slot)
     if not existing_animation then
@@ -469,7 +470,8 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
             managers.event:trigger("weapon_customization_hide_ui", true)
         end
         -- Chilrden
-        local children = {}
+        -- local children = {}
+        table.clear(children)
         -- Trigger move
         local attachment_data = mod.attachment_models[self.item_name][new_attachment]
         local trigger_move = attachment_data and attachment_data.trigger_move
@@ -511,7 +513,8 @@ WeaponBuildAnimation.remove_animation = function(self, attachment_slot)
 end
 
 WeaponBuildAnimation.clear = function(self)
-    self.animations = {}
+    -- self.animations = {}
+    table.clear(self.animations)
 end
 
 return WeaponBuildAnimation

@@ -22,7 +22,6 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
     local CLASS = CLASS
     local ipairs = ipairs
     local vector3 = Vector3
-    local wc_perf = wc_perf
     local math_max = math.max
     local tostring = tostring
     local managers = Managers
@@ -284,7 +283,6 @@ FlashlightExtension.update_husk = function(self, dt, t)
 end
 
 FlashlightExtension.update = function(self, dt, t)
-    local perf = wc_perf.start("FlashlightExtension.update", 2)
     local first_person = self:get_first_person()
     if self.initialized then
         self:update_husk(dt, t)
@@ -306,7 +304,6 @@ FlashlightExtension.update = function(self, dt, t)
     end
     -- Relay to sub extensions
     FlashlightExtension.super.update(self, dt, t)
-    wc_perf.stop(perf)
 end
 
 FlashlightExtension.update_flicker = function(self, dt, t)

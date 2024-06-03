@@ -32,7 +32,6 @@ local mod = get_mod("weapon_customization")
     local string = string
     local vector3 = Vector3
     local vector3 = vector3
-    local wc_perf = wc_perf
     local callback = callback
     local math_abs = math.abs
     local managers = Managers
@@ -49,14 +48,12 @@ local mod = get_mod("weapon_customization")
     local string_find = string.find
     local vector3_lerp = vector3.lerp
     local vector3_zero = vector3.zero
-    local wc_perf_stop = wc_perf.stop
     local unit_get_data = Unit.get_data
     local unit_set_data = Unit.set_data
     local unit_has_data = Unit.has_data
     local unit_has_node = Unit.has_node
     local QuaternionBox = QuaternionBox
     local table_combine = table.combine
-    local wc_perf_start = wc_perf.start
     local quaternion_box = QuaternionBox
     local table_icombine = table.icombine
     local unit_flow_event = Unit.flow_event
@@ -140,8 +137,6 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension", "WeaponCust
 VisibleEquipmentExtension.init = function(self, extension_init_context, unit, extension_init_data)
     -- Parent
     VisibleEquipmentExtension.super.init(self, extension_init_context, unit, extension_init_data)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.init", 2)
     -- Attributes
     self.loading_spawn_point = extension_init_data.loading_spawn_point
     self.equipment_component = extension_init_data.equipment_component
@@ -183,13 +178,9 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self:on_settings_changed()
     -- Initialized
     self.initialized = true
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.delete = function(self)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.delete", 2)
     -- Events
     managers.event:unregister(self, "weapon_customization_settings_changed")
     -- Uninitialize
@@ -209,8 +200,6 @@ VisibleEquipmentExtension.delete = function(self)
         end
         self.helper_units = {}
     end
-    -- Performance
-    wc_perf_stop(perf)
     -- Parent
     VisibleEquipmentExtension.super.delete(self)
 end
@@ -226,8 +215,6 @@ VisibleEquipmentExtension.backpack_name = function(self)
 end
 
 VisibleEquipmentExtension.has_backpack = function(self)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.has_backpack", 2)
     -- Get cosmetic extra slot gear
     local gear_extra = self.equipment[SLOT_GEAR_EXTRA_COSMETIC]
 	local real_item = gear_extra and gear_extra.item and gear_extra.item.name
@@ -247,12 +234,11 @@ VisibleEquipmentExtension.has_backpack = function(self)
         self.trigger_wobble = true
         self.back_change = item
     end
-    -- Performance
-    wc_perf_stop(perf)
     -- Check if not empty backpack
 	return item and item ~= BACKPACK_EMPTY
 end
 
+local unit_list = {}
 VisibleEquipmentExtension.spawn_gear_attach_points = function(self, unit_or_nil)
     local unit = unit_or_nil and unit_alive(unit_or_nil) and unit_or_nil or self.player_unit
     if not self.helper_units then
@@ -292,7 +278,8 @@ VisibleEquipmentExtension.spawn_gear_attach_points = function(self, unit_or_nil)
                 points[#points+1] = {node = "j_spine2", offset = vector3(.25, .5, 0), text = "Back Right", name = "back_right"}
             end
         end
-        local unit_list = {}
+        -- local unit_list = {}
+        table.clear(unit_list)
         for _, point in pairs(points) do
             local node = Unit.node(unit, point.node)
             local point_unit = World.spawn_unit_ex(self.world, "core/units/empty_root", nil, Unit.world_pose(unit, node))
@@ -305,8 +292,6 @@ VisibleEquipmentExtension.spawn_gear_attach_points = function(self, unit_or_nil)
 end
 
 VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.equipment_data_by_slot", 2)
     -- Check if has backpack
     local data_type = self:has_backpack() and BACKPACK or DEFAULT
     local offsets = mod.visible_equipment_offsets
@@ -359,8 +344,6 @@ VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
             end
         end
     end
-    -- Performance
-    wc_perf_stop(perf)
     -- Return data
     return equipment_data, sounds, sounds2
 end
@@ -522,8 +505,6 @@ VisibleEquipmentExtension.trigger_step = function(self, optional_time_overwrite)
 end
 
 VisibleEquipmentExtension.link_equipment = function(self)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.link_equipment", 2)
     -- Spawn attach units
     self.helper_units = self.helper_units or self:spawn_gear_attach_points()
     -- Attach to node
@@ -572,13 +553,9 @@ VisibleEquipmentExtension.link_equipment = function(self)
             self.is_linked[slot] = true
         end
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.position_equipment = function(self)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.position_equipment", 2)
     -- Iterate equipment
     for slot_name, slot in pairs(self.equipment) do
         -- Check dummies
@@ -653,13 +630,9 @@ VisibleEquipmentExtension.position_equipment = function(self)
             end
         end
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.delete_slot = function(self, slot)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.delete_slot", 2)
     local extension_manager = managers.state.extension
     -- Check base unit
     if self.dummy_units[slot] and self.dummy_units[slot].base then
@@ -717,16 +690,12 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
     self.position_overwrite[slot] = nil
     self.rotation_overwrite[slot] = nil
     self.scale_overwrite[slot] = nil
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.cb_on_unit_3p_streaming_complete = function(self, slot)
 end
 
 VisibleEquipmentExtension.load_slot = function(self, slot)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.load_slot", 2)
     -- Load
     if self.initialized and self:is_weapon_slot(slot) then
         local item = slot.item and slot.item.__master_item or slot.item
@@ -815,13 +784,9 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
             end
         end
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.play_equipment_sound = function(self, slot, index, allow_crouching, allow_wielded)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.play_equipment_sound", 2)
     -- Play
     local wielded_slot_name = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
     local slot = slot or self.equipment[wielded_slot_name]
@@ -845,41 +810,13 @@ VisibleEquipmentExtension.play_equipment_sound = function(self, slot, index, all
             self.fx_extension:trigger_wwise_event(sound, husk, true, self.player_unit, 1, "foley_speed", self.step_speed)
         end
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 -- ##### ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐┌─┐ #####################################################################################
 -- ##### ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #####################################################################################
 -- ##### ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #####################################################################################
 
-VisibleEquipmentExtension.get_dependencies = function(self, slot)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.get_dependencies", 2)
-    -- Setup definitions
-    mod:setup_item_definitions()
-    local found_packages = {}
-    -- Get master item
-    local item = slot.item and slot.item.__master_item or slot.item
-    -- Get definition
-    local item_definition = mod:persistent_table(REFERENCE).item_definitions[item.name]
-    -- Check resource dependencies
-    if item_definition and item_definition.resource_dependencies then
-        -- Iterate dependencies
-        for package_name, _ in pairs(item_definition.resource_dependencies) do
-            -- Add package
-            found_packages[#found_packages+1] = package_name
-        end
-    end
-    -- Performance
-    wc_perf_stop(perf)
-    -- Return package list
-    return found_packages
-end
-
 VisibleEquipmentExtension.release_slot_packages = function(self, slot)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.release_slot_packages", 2)
     -- Release
     local count = 0
     if self.packages[slot] then
@@ -895,13 +832,9 @@ VisibleEquipmentExtension.release_slot_packages = function(self, slot)
     if count > 0 then
         mod:print("Release "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.load_slot_packages", 2)
     -- Load
     local count = 0
     for _, package_name in pairs(packages) do
@@ -917,8 +850,6 @@ VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
     if count > 0 then
         mod:print("Load "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
@@ -1007,8 +938,6 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 VisibleEquipmentExtension.update = function(self, dt, t)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.update", 2)
     -- Update
     if self.initialized then
         -- Equipment data
@@ -1020,13 +949,9 @@ VisibleEquipmentExtension.update = function(self, dt, t)
         -- Visibility
         self:on_update_item_visibility()
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.update_equipment_visibility", 2)
     -- Values
     local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
     local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
@@ -1060,13 +985,9 @@ VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
             end
         end
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.update_equipment_data = function(self)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.update_equipment_data", 2)
     -- Iterate equipment
     for slot_name, slot in pairs(self.equipment) do
         -- Check slot
@@ -1075,8 +996,6 @@ VisibleEquipmentExtension.update_equipment_data = function(self)
             self.equipment_data[slot] = self:equipment_data_by_slot(slot)
         end
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 VisibleEquipmentExtension.get_vectors_almost_same = function(self, v1, v2, tolerance)
@@ -1089,8 +1008,6 @@ VisibleEquipmentExtension.get_vectors_almost_same = function(self, v1, v2, toler
 end
 
 VisibleEquipmentExtension.update_animation = function(self, dt, t)
-    -- Performance
-    local perf = wc_perf_start("VisibleEquipmentExtension.update_animation", 2)
     -- Update
     local locomotion = (self.locomotion_ext and self.locomotion_ext:move_speed() or 0)
     self.step_speed = math.max(math.abs(locomotion), 1)
@@ -1359,8 +1276,6 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
             end
         end
     end
-    -- Performance
-    wc_perf_stop(perf)
 end
 
 return VisibleEquipmentExtension

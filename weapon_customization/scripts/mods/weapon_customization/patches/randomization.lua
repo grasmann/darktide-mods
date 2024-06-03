@@ -21,7 +21,6 @@ local mod = get_mod("weapon_customization")
     local CLASS = CLASS
     local Camera = Camera
     local string = string
-    local wc_perf = wc_perf
     local Localize = Localize
     local managers = Managers
     local tostring = tostring

@@ -19,6 +19,7 @@ local mod = get_mod("weapon_customization")
 --#region Performance
 	local Unit = Unit
 	local math = math
+	local table = table
 	local pairs = pairs
 	local World = World
 	local CLASS = CLASS
@@ -147,6 +148,9 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 		end
 	end
 
+	local unit_list = {}
+	local entry_distance = {}
+	local closest_4 = {}
 	instance.add_unit_manipulation = function(self)
 		self:get_inventory_view()
 		-- Check modding tools
@@ -213,7 +217,8 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 								end
 							end
 
-							local unit_list = {}
+							-- local unit_list = {}
+							table.clear(unit_list)
 							for _, point in pairs(points) do
 								local node = unit_node(unit, point.node)
 								local point_unit = world_spawn_unit_ex(world, "core/units/empty_root", nil, unit_world_pose(unit, node))
@@ -245,14 +250,16 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 
 					if ui_profile_spawner.help_units then
 
-						local entry_distance = {}
+						-- local entry_distance = {}
+						table.clear(entry_distance)
 						
 						for attach_name, entry in pairs(ui_profile_spawner.help_units) do
 							local camera_position = camera_world_position(ui_profile_spawner._camera)
 							local distance = vector3_distance(camera_position, unit_world_position(entry.unit, 1))
 							entry_distance[attach_name] = distance
 						end
-						local closest_4 = {}
+						-- local closest_4 = {}
+						table.clear(closest_4)
 						for i = 1, 4, 1 do
 							local last = math.huge
 							local closest = nil

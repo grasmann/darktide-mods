@@ -99,6 +99,7 @@ local mod = get_mod("weapon_customization")
     -- end,
 --#endregion
 
+local data = {}
 return {
     small_shaft_attachments = function(default)
         local attachments = table_icombine(
@@ -114,7 +115,7 @@ return {
         else return attachments end
     end,
     small_shaft_models = function(content)
-        local data = {}
+        data = {}
         for i = 1, 100, 1 do
             data[i] = tv(content, i)
             if data[i].mesh_move == nil then data[i].mesh_move = false end
@@ -141,7 +142,7 @@ return {
         else return attachments end
     end,
     medium_grip_models = function(content)
-        local data = {}
+        data = {}
         for i = 1, 100, 1 do
             data[i] = tv(content, i)
             if data[i].mesh_move == nil then data[i].mesh_move = false end
@@ -175,7 +176,7 @@ return {
         else return attachments end
     end,
     pommel_models = function(content) --parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
-        local data = {}
+        data = {}
         for i = 1, 100, 1 do
             data[i] = tv(content, i)
             if data[i].mesh_move == nil then data[i].mesh_move = false end
@@ -205,7 +206,7 @@ return {
         else return attachments end
     end,
     axe_head_models = function(content)
-        local data = {}
+        data = {}
         for i = 1, 100, 1 do
             data[i] = tv(content, i)
             if data[i].mesh_move == nil then data[i].mesh_move = false end

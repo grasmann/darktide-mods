@@ -40,6 +40,7 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local changes = {}
 return table_combine(
 	_bolter_p1_m1,
 	{
@@ -75,7 +76,7 @@ return table_combine(
 		models = table_combine(
 			-- Native
 			_bolter_p1_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-				local changes = {}
+				changes = {}
 				if attachment == "receiver_06" then
 					if mod.gear_settings:get(item, "barrel") ~= "bolter_barrel_03" then changes["barrel"] = "bolter_barrel_03" end
 					if mod.gear_settings:get(item, "magazine") ~= "bolter_magazine_03" then changes["magazine"] = "bolter_magazine_03" end

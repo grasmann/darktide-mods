@@ -274,8 +274,9 @@ mod.redo_weapon_attachments = function(self, item)
 	else self:print("redo_weapon_attachments - weapon is nil") end
 end
 
+local points = {}
 mod.weapon_points = function(self, attachments)
-	local points = {}
+	points = {}
 	for _, unit in pairs(attachments) do
 		if unit and Unit.alive(unit) then
 			local tm, half_size = Unit.box(unit)

@@ -23,7 +23,6 @@ local mod = get_mod("weapon_customization")
     local IS_XBS = IS_XBS
     local rawget = rawget
     local string = string
-    local wc_perf = wc_perf
     local managers = Managers
     local tostring = tostring
     local callback = callback

@@ -25,6 +25,7 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local changes = {}
 return table.combine(
     _laspistol_p1_m1,
     {
@@ -183,7 +184,7 @@ return table.combine(
             -- Lasgun
             _common_lasgun.rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             _common_lasgun.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-				local changes = {}
+				changes = {}
                 changes["magazine2"] = mod.gear_settings:get(item, "magazine")
 				return changes
 			end),
