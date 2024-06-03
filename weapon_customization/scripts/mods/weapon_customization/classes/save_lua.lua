@@ -38,6 +38,7 @@ local DMF = get_mod("DMF")
 	local vector3_box = Vector3Box
 	local string_gsub = string.gsub
 	local string_find = string.find
+	local table_clear = table.clear
 	local vector3_zero = vector3.zero
 	local unit_get_data = Unit.get_data
 	local quaternion_box = QuaternionBox
@@ -149,8 +150,10 @@ end
 -- ##### │  ├─┤│  ├─┤├┤  ##############################################################################################
 -- ##### └─┘┴ ┴└─┘┴ ┴└─┘ ##############################################################################################
 
+local entries = {}
 SaveLua.get_entries = function(self, data, scan_dir)
-	local entries = {}
+	-- local entries = {}
+	table_clear(entries)
 	local appdata = self:_appdata_path()
     local cache = self:_get_entries_cache()
 	local files = cache
@@ -340,13 +343,15 @@ SaveLua.save_entry = function(self, data)
 	end
 end
 
+local new_cache = {}
 SaveLua.delete_entry = function(self, data)
 	local path, file_name = self:_create_entry_path(data)
 	if self:_file_exists(path) then
 		if _os.remove(path) then
 			-- Remove from cache
 			local cache = self:_get_entries_cache()
-			local new_cache = {}
+			-- local new_cache = {}
+			table_clear(new_cache)
 			for _, c in pairs(cache) do
 				if c ~= file_name then
 					new_cache[#new_cache+1] = c

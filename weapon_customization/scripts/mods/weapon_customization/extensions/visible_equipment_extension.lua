@@ -160,6 +160,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.item_types = {}
     -- self.center_mass_units = {}
     self.dummy_units = {}
+    self.slot_units = {}
     self.helper_units = nil
     self.is_linked = {}
     self.equipment_data = {}
@@ -327,12 +328,12 @@ VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
         wield = item_data and item_data.wield,
         attach_node = attach_node,
     }
-    local units = {self.dummy_units[slot].base}
-    if self.item_names[slot] == SLAB_SHIELD then
-        units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
-    end
+    -- local units = {self.dummy_units[slot].base}
+    -- if self.item_names[slot] == SLAB_SHIELD then
+    --     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+    -- end
     -- Iterate units
-    for i, unit in pairs(units) do
+    for i, unit in pairs(self.slot_units[slot]) do
         if unit and unit_alive(unit) then
             if equipment_data.center_mass and equipment_data.center_mass[i] then
                 local rotation = unit_local_rotation(unit, 1)
@@ -530,12 +531,12 @@ VisibleEquipmentExtension.link_equipment = function(self)
 
             local item = slot.item and slot.item.__master_item or slot.item
             -- Get list of units ( Slab shield )
-            local units = {self.dummy_units[slot].base}
-            if self.item_names[slot] == SLAB_SHIELD then
-                units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
-            end
+            -- local units = {self.dummy_units[slot].base}
+            -- if self.item_names[slot] == SLAB_SHIELD then
+            --     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+            -- end
             -- Iterate units
-            for i, unit in pairs(units) do
+            for i, unit in pairs(self.slot_units[slot]) do
                 if unit and unit_alive(unit) then
                     -- Link unit to attachment node
                     world_unlink_unit(self.world, unit, true)
@@ -565,13 +566,13 @@ VisibleEquipmentExtension.position_equipment = function(self)
             
             local item = slot.item and slot.item.__master_item or slot.item
             -- Get list of units ( Slab shield )
-            local units = {self.dummy_units[slot].base}
-            if self.item_names[slot] == SLAB_SHIELD then
-                units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
-            end
+            -- local units = {self.dummy_units[slot].base}
+            -- if self.item_names[slot] == SLAB_SHIELD then
+            --     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+            -- end
 
             -- Iterate units
-            for i, unit in pairs(units) do
+            for i, unit in pairs(self.slot_units[slot]) do
                 if unit and unit_alive(unit) then
                     local rot = vector3_unbox(data.rotation[i])
                     local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
@@ -690,6 +691,7 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
     self.position_overwrite[slot] = nil
     self.rotation_overwrite[slot] = nil
     self.scale_overwrite[slot] = nil
+    self.slot_units[slot] = nil
 end
 
 VisibleEquipmentExtension.cb_on_unit_3p_streaming_complete = function(self, slot)
@@ -722,6 +724,12 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 self.dummy_units[slot] = {}
                 -- self.helper_units[slot] = {}
                 self.dummy_units[slot].base, self.dummy_units[slot].attachments = VisualLoadoutCustomization.spawn_item(slot.item, attach_settings, self.player_unit)
+                -- Get list of units ( Slab shield )
+                if self.item_names[slot] == SLAB_SHIELD then
+                    self.slot_units[slot] = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+                else
+                    self.slot_units[slot] = {self.dummy_units[slot].base}
+                end
                 -- Performance
                 local callback = callback(self, "cb_on_unit_3p_streaming_complete", slot)
                 unit_force_stream_meshes(self.dummy_units[slot].base, callback, true)
@@ -780,6 +788,8 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 self:on_update_item_visibility()
                 -- Set flags
                 self.slot_loaded[slot] = true
+                -- Equipment data
+                self:update_equipment_data()
                 self.slot_is_loading[slot] = nil
             end
         end
@@ -940,8 +950,8 @@ end
 VisibleEquipmentExtension.update = function(self, dt, t)
     -- Update
     if self.initialized then
-        -- Equipment data
-        self:update_equipment_data()
+        -- -- Equipment data
+        -- self:update_equipment_data()
         -- Position
         self:position_equipment()
         -- Animation
@@ -966,12 +976,12 @@ VisibleEquipmentExtension.update_equipment_visibility = function(self, dt, t)
         if self.dummy_units[slot] then
             local item = slot.item and slot.item.__master_item
             -- Get units
-            local units = table_combine({self.dummy_units[slot].base}, self.dummy_units[slot].attachments)
+            -- local units = table_combine({self.dummy_units[slot].base}, self.dummy_units[slot].attachments)
             -- if self.item_names[slot] == SLAB_SHIELD then
             --     units = self.dummy_units[slot].attachments
             -- end
             -- Iterate units
-            for i, unit in pairs(units) do
+            for i, unit in pairs(self.slot_units[slot]) do
                 -- Check unit
                 if unit and unit_alive(unit) then
                     -- Set equipment visibility
@@ -1026,10 +1036,10 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
             local weight = self.weight[slot]
             local weight_factor = weight and WEIGHT_FACTORS[weight] or .33
             -- Get units
-            local units = {self.dummy_units[slot].base}
-            if self.item_names[slot] == SLAB_SHIELD then
-                units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
-            end
+            -- local units = {self.dummy_units[slot].base}
+            -- if self.item_names[slot] == SLAB_SHIELD then
+            --     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+            -- end
             -- Get data
             local data = self.equipment_data[slot]
             -- Animation
@@ -1072,7 +1082,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         self.step_animation[slot].end_time = t + self.step_animation[slot].wobble_length
                     end
                     -- Play sound
-                    for i, unit in pairs(units) do
+                    for i, unit in pairs(self.slot_units[slot]) do
                         -- Set default position
                         if unit and unit_alive(unit) then
                             -- Set position
@@ -1092,7 +1102,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         self.step_animation[slot].end_time = t + self.step_animation[slot].wobble_length
                     end
                     -- Lerp values
-                    for i, unit in pairs(units) do
+                    for i, unit in pairs(self.slot_units[slot]) do
                         local progress = (self.step_animation[slot].end_time - t) / self.step_animation[slot].step_length
                         local anim_progress = math.ease_sine(1 - progress)
                         if unit and unit_alive(unit) then
@@ -1117,7 +1127,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         self.step_animation[slot].state = STEP_WOBBLE
                         self.step_animation[slot].end_time = t + self.step_animation[slot].wobble_length
                     end
-                    for i, unit in pairs(units) do
+                    for i, unit in pairs(self.slot_units[slot]) do
                         -- Set move position and rotation
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
@@ -1139,7 +1149,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         self.step_animation[slot].end_time = t + self.step_animation[slot].wobble_length
                     end
                     -- Lerp values
-                    for i, unit in pairs(units) do
+                    for i, unit in pairs(self.slot_units[slot]) do
                         local progress = (self.step_animation[slot].end_time - t) / self.step_animation[slot].back_length
                         local anim_progress = math.ease_sine(1 - progress)
                         if unit and unit_alive(unit) then
@@ -1164,7 +1174,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         self.step_animation[slot].state = STEP_WOBBLE
                         self.step_animation[slot].end_time = t + self.step_animation[slot].wobble_length
                     end
-                    for i, unit in pairs(units) do
+                    for i, unit in pairs(self.slot_units[slot]) do
                         -- Set move position and rotation
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
@@ -1192,7 +1202,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     -- Lerp values
                     local progress = (self.step_animation[slot].end_time - t) / self.step_animation[slot].wobble_length
                     local anim_progress = math_ease_out_elastic(1 - progress)
-                    for i, unit in pairs(units) do
+                    for i, unit in pairs(self.slot_units[slot]) do
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
                             -- Set position
@@ -1210,7 +1220,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     -- -- End animation
                     self.step_animation[slot].state = nil
                     self.step_animation[slot].end_time = nil
-                    for i, unit in pairs(units) do
+                    for i, unit in pairs(self.slot_units[slot]) do
                         -- Set default position and rotation
                         if unit and unit_alive(unit) then
                             local default_position, position_move, default_rotation, rotation_move = get_values(i)
@@ -1225,7 +1235,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                 end
             end
             -- Rotation
-            for i, unit in pairs(units) do
+            for i, unit in pairs(self.slot_units[slot]) do
                 -- Set default position and rotation
                 if unit and unit_alive(unit) then
                     local rotation = unit_local_rotation(unit, 1)

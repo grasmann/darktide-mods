@@ -273,10 +273,14 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 							entry_distance[closest] = nil
 						end
 						for attach_name, entry in pairs(ui_profile_spawner.help_units) do
-							entry.unit_manipulation.show = false
+							if entry.unit_manipulation then
+								entry.unit_manipulation.show = false
+							end
 						end
 						for _, entry in pairs(closest_4) do
-							entry.unit_manipulation.show = true
+							if entry.unit_manipulation then
+								entry.unit_manipulation.show = true
+							end
 						end
 					end
 

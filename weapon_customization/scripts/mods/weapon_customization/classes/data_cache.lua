@@ -117,7 +117,7 @@ DataCache.cache_attachment_data = function(self)
         -- Cache initialized
         self.cache.initialized = true
 
-        self:debug_dump()
+        -- self:debug_dump()
     end
 end
 

@@ -334,12 +334,16 @@ SightExtension.set_sniper_scope_unit = function(self)
 	end
 end
 
+local reflex = {}
+local lenses = {}
 SightExtension.set_lens_units = function(self)
-	local reflex = {}
+	-- local reflex = {}
+	table.clear(reflex)
 	-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, SIGHT, reflex)
 	reflex[1] = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, SIGHT)
 	if #reflex >= 1 then
-		local lenses = {}
+		-- local lenses = {}
+		table.clear(lenses)
 		-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_A, lenses)
 		-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_B, lenses)
 		lenses[1] = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, LENS_A)
@@ -627,30 +631,28 @@ SightExtension.destroy_particle_effect = function(self)
 end
 
 SightExtension.update_scope_lenses = function(self)
-	local scales = {vector3_zero(), vector3_zero()}
+	local scales1, scales2 = vector3_zero(), vector3_zero()
 	if (not self._is_aiming and not self._inspecting) and self.aim_timer == nil and self.lens_scales then
-		scales = {
-			self.lens_scales[1] and vector3_unbox(self.lens_scales[1]) or vector3_zero(),
-			self.lens_scales[2] and vector3_unbox(self.lens_scales[2]) or vector3_zero(),
-		}
+		scales1, scales2 = self.lens_scales[1] and vector3_unbox(self.lens_scales[1]) or vector3_zero(),
+			self.lens_scales[2] and vector3_unbox(self.lens_scales[2]) or vector3_zero()
 	end
 	if self.sniper_zoom and self.lens_units and self.lens_transparency then
 		if self.lens_units[1] and unit_alive(self.lens_units[1]) then
 			if self.offset.lense_transparency then
-				if self.lens_transparency >= 1 then unit_set_local_scale(self.lens_units[2], 1, scales[2]) end
+				if self.lens_transparency >= 1 then unit_set_local_scale(self.lens_units[1], 1, scales1) end
 				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", self.lens_transparency, true)
 			else
 				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", 1, true)
-				unit_set_local_scale(self.lens_units[1], 1, scales[1])
+				unit_set_local_scale(self.lens_units[1], 1, scales1)
 			end
 		end
 		if self.lens_units[2] and unit_alive(self.lens_units[2]) then
 			if self.offset.lense_transparency then
-				if self.lens_transparency >= 1 then unit_set_local_scale(self.lens_units[2], 1, scales[2]) end
+				if self.lens_transparency >= 1 then unit_set_local_scale(self.lens_units[2], 1, scales2) end
 				unit_set_scalar_for_materials(self.lens_units[2], "inv_jitter_alpha", self.lens_transparency, true)
 			else
 				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", 1, true)
-				unit_set_local_scale(self.lens_units[2], 1, scales[2])
+				unit_set_local_scale(self.lens_units[2], 1, scales2)
 			end
 		end
 	elseif self.sniper_zoom and not self.lens_units then

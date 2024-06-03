@@ -289,6 +289,7 @@ return {
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "trinket_hook_default",     model = ""},
+            {name = "trinket_hook_empty",       model = _item.."/trinkets/trinket_hook_empty"},
             {name = "trinket_hook_02_90",       model = _item.."/trinkets/trinket_hook_02_90"},
             {name = "trinket_hook_01_v",        model = _item.."/trinkets/trinket_hook_01_v"},
             {name = "trinket_hook_04_gold_v",   model = _item.."/trinkets/trinket_hook_04_gold_v"},
@@ -302,7 +303,6 @@ return {
             {name = "trinket_hook_01",          model = _item.."/trinkets/trinket_hook_01"},
             {name = "trinket_hook_04_steel",    model = _item.."/trinkets/trinket_hook_04_steel"},
             {name = "trinket_hook_02_45",       model = _item.."/trinkets/trinket_hook_02_45"},
-            {name = "trinket_hook_empty",       model = _item.."/trinkets/trinket_hook_empty"},
             {name = "trinket_hook_05_gold",     model = _item.."/trinkets/trinket_hook_05_gold"},
             {name = "trinket_hook_05_carbon",   model = _item.."/trinkets/trinket_hook_05_carbon"},
             {name = "trinket_hook_05_coated_v", model = _item.."/trinkets/trinket_hook_05_coated_v"},

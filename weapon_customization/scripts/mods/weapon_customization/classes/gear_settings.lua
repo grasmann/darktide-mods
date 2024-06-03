@@ -26,6 +26,7 @@ local mod = get_mod("weapon_customization")
     local math_abs = math.abs
     local callback = callback
     local unit_alive = Unit.alive
+    local table_clear = table.clear
     local table_clone = table.clone
     local math_random = math.random
     local string_gsub = string.gsub
@@ -325,6 +326,7 @@ GearSettings._recursive_find_attachment_item_string = function(self, attachments
 end
 
 -- Get attachment list from item or gear id
+-- local attachments = {}
 GearSettings.attachments = function(self, gear_id_or_item)
     -- Get item from potential gear id
     local item = self:item_from_gear_id(gear_id_or_item)
@@ -336,6 +338,7 @@ GearSettings.attachments = function(self, gear_id_or_item)
         if not mod.data_cache or not mod.data_cache:item_name_to_attachments(item_name) then
             -- Get attachments
             local attachments = {}
+            -- table_clear(attachments)
             -- Get attachments from item
             self:_recursive_get_attachments(item.attachments, true, attachments)
             -- Cache
@@ -461,7 +464,7 @@ GearSettings._overwrite_attachments = function(self, gear_id_or_item, attachment
                 -- Get item data
                 local item_data = mod.attachment_models[item_name]
                 -- Get attachment
-                local attachment = self:get(gear_id_or_item, attachment_slot, true)
+                local attachment = self:get(gear_id_or_item, attachment_slot)
                 -- Customize
                 if attachment and item_data[attachment] then
                     -- Get attachment data
@@ -486,6 +489,7 @@ GearSettings._overwrite_attachments = function(self, gear_id_or_item, attachment
 end
 
 -- Add custom attachments
+-- local original_children = {}
 GearSettings._add_custom_attachments = function(self, gear_id_or_item, attachments)
     -- Get item from potential gear id
     local item = self:item_from_gear_id(gear_id_or_item)
@@ -519,6 +523,7 @@ GearSettings._add_custom_attachments = function(self, gear_id_or_item, attachmen
                 parent = parent_slot and parent_slot.children or parent
                 -- Children
                 local original_children = {}
+                -- table_clear(original_children)
                 if attachment and attachment.children then
                     original_children = table_clone(attachment.children)
                 end
@@ -539,11 +544,45 @@ GearSettings._add_custom_attachments = function(self, gear_id_or_item, attachmen
 	end
 end
 
+GearSettings.add_custom_resources = function(self, gear_id_or_item, out_result)
+    -- Setup master items backup
+    mod:setup_item_definitions()
+
+    local item = self:item_from_gear_id(gear_id_or_item)
+    -- Check item
+    if item and item.name then
+        -- Get item name
+        local item_name = self:short_name(item.name)
+        -- Iter attachment slots
+        for _, attachment_slot in pairs(mod.attachment_slots) do
+            -- Get attachment
+            local attachment = self:get(item, attachment_slot)
+            -- Get item data
+            local item_data = attachment and mod.attachment_models[item_name]
+            -- Get attachment data
+            local attachment_data = item_data and item_data[attachment]
+            -- Get model
+            local model = attachment_data and attachment_data.model
+            -- Get original item
+            local original_item = model and mod:persistent_table(REFERENCE).item_definitions[model]
+            -- Check original item and dependencies
+            if original_item and original_item.resource_dependencies then
+                -- Iterate dependencies
+                for resource, _ in pairs(original_item.resource_dependencies) do
+                    -- Add resource
+                    out_result[resource] = true
+                end
+            end
+        end
+    end
+end
+
 -- ##### ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐ ############################################################################
 -- ##### ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐ ############################################################################
 -- ##### ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘ ############################################################################
 
 -- Get possible attachment slots from item
+-- local possible_attachment_slots = {}
 GearSettings.possible_attachment_slots = function(self, gear_id_or_item)
     -- Get item from potential gear id
     local item = self:item_from_gear_id(gear_id_or_item)
@@ -554,6 +593,7 @@ GearSettings.possible_attachment_slots = function(self, gear_id_or_item)
         -- Check if not in cache
         if not mod.data_cache or not mod.data_cache:item_name_to_attachment_slots(item_name) then
             local possible_attachment_slots = {}
+            -- table_clear(possible_attachment_slots)
             -- Get item attachments
             local list = mod.attachment[item_name]
             -- Check list
@@ -576,6 +616,7 @@ GearSettings.possible_attachment_slots = function(self, gear_id_or_item)
 end
 
 -- Get possible attachments from item optionally for attachment_slot
+-- local possible_attachments = {}
 GearSettings.possible_attachments = function(self, gear_id_or_item, attachment_slot_or_nil)
     -- Get item from potential gear id
     local item = self:item_from_gear_id(gear_id_or_item)
@@ -586,6 +627,7 @@ GearSettings.possible_attachments = function(self, gear_id_or_item, attachment_s
         -- Check if not in cache
         if not mod.data_cache or not mod.data_cache:item_name_to_attachment_list(item_name, attachment_slot_or_nil) then
             local possible_attachments = {}
+            -- table_clear(possible_attachments)
             -- Get attachments
             local attachments = self:attachments(gear_id_or_item)
             -- Check item and attachments
@@ -669,8 +711,8 @@ GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
             -- Check if item has fixes
             if mod.anchors[item_name] and mod.anchors[item_name].fixes and #mod.anchors[item_name].fixes > 0 then
                 -- Get attachment slots
-                table.clear(current_attachments_by_slot)
-                table.clear(current_attachments)
+                table_clear(current_attachments_by_slot)
+                table_clear(current_attachments)
                 -- current_attachments_by_slot = {}
                 -- current_attachments = {}
                 -- Get possible attachment slots
@@ -774,8 +816,10 @@ GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
 end
 
 -- Release attachment packages
+local unloaded_packages = {}
 GearSettings.release_attachment_sounds = function(self)
-	local unloaded_packages = {}
+	-- local unloaded_packages = {}
+    table_clear(unloaded_packages)
 	for sound, package_id in pairs(mod:persistent_table(REFERENCE).loaded_packages.view_weapon_sounds) do
 		unloaded_packages[#unloaded_packages+1] = sound
 		mod:persistent_table(REFERENCE).used_packages.view_weapon_sounds[sound] = nil
@@ -1066,7 +1110,8 @@ GearSettings.destroy_temp_settings = function(self, gear_id_or_item)
 end
 
 GearSettings.destroy_all_temp_settings = function(self)
-    mod:persistent_table(REFERENCE).temp_gear_settings = {}
+    -- mod:persistent_table(REFERENCE).temp_gear_settings = {}
+    table_clear(mod:persistent_table(REFERENCE).temp_gear_settings)
 end
 
 -- ##### ┌─┐┌─┐┌┬┐┌┬┐┬┌┐┌┌─┐┌─┐ #######################################################################################

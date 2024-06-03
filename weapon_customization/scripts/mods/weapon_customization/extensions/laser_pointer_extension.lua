@@ -298,7 +298,8 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
 
         else
             target_position = laser_position + laser_forward * MAX_DISTANCE
-            self.end_position = vector3_box(target_position)
+            self.end_position = not vector3.equal(self.end_position and vector3_unbox(self.end_position) or vector3_zero(), target_position)
+                and vector3_box(target_position) or self.end_position
 
             self.last_unlock = {
                 end_position = self.end_position,
@@ -460,8 +461,10 @@ LaserPointerExtension.do_ray_cast = function(self, from, to, distance)
 		hit_position = from + direction * distance
 	end
     self.hit_distance = vector3_distance(from, hit_position)
-    self.hit_position = vector3_box(hit_position)
-    self.hit_direction = vector3_box(direction)
+    self.hit_position = not vector3.equal(self.hit_position and vector3_unbox(self.hit_position) or vector3_zero(), hit_position)
+        and vector3_box(hit_position) or self.hit_position
+    self.hit_direction = not vector3.equal(self.hit_direction and vector3_unbox(self.hit_direction) or vector3_zero(), direction)
+        and vector3_box(direction) or self.hit_direction
     self.hit_actor = hit_actor
     local hit_unit = self.hit_actor and actor_unit(self.hit_actor)
     self.hit_enemy = hit_unit and self.side_extension and self.side_extension:is_enemy(self.player_unit, hit_unit)

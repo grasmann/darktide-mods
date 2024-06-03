@@ -86,36 +86,36 @@ end
 
 mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
 
-    instance.add_custom_resources = function(self, item, out_result)
-        -- Setup master items backup
-        mod:setup_item_definitions()
-        -- Check item
-        if item and item.name then
-            -- Get item name
-            local item_name = mod.gear_settings:short_name(item.name)
-            -- Iter attachment slots
-            for _, attachment_slot in pairs(mod.attachment_slots) do
-                -- Get attachment
-                local attachment = mod.gear_settings:get(item, attachment_slot)
-                -- Get item data
-                local item_data = attachment and mod.attachment_models[item_name]
-                -- Get attachment data
-                local attachment_data = item_data and item_data[attachment]
-                -- Get model
-                local model = attachment_data and attachment_data.model
-                -- Get original item
-                local original_item = model and mod:persistent_table(REFERENCE).item_definitions[model]
-                -- Check original item and dependencies
-                if original_item and original_item.resource_dependencies then
-                    -- Iterate dependencies
-                    for resource, _ in pairs(original_item.resource_dependencies) do
-                        -- Add resource
-                        out_result[resource] = true
-                    end
-                end
-            end
-        end
-    end
+    -- instance.add_custom_resources = function(self, item, out_result)
+    --     -- Setup master items backup
+    --     mod:setup_item_definitions()
+    --     -- Check item
+    --     if item and item.name then
+    --         -- Get item name
+    --         local item_name = mod.gear_settings:short_name(item.name)
+    --         -- Iter attachment slots
+    --         for _, attachment_slot in pairs(mod.attachment_slots) do
+    --             -- Get attachment
+    --             local attachment = mod.gear_settings:get(item, attachment_slot)
+    --             -- Get item data
+    --             local item_data = attachment and mod.attachment_models[item_name]
+    --             -- Get attachment data
+    --             local attachment_data = item_data and item_data[attachment]
+    --             -- Get model
+    --             local model = attachment_data and attachment_data.model
+    --             -- Get original item
+    --             local original_item = model and mod:persistent_table(REFERENCE).item_definitions[model]
+    --             -- Check original item and dependencies
+    --             if original_item and original_item.resource_dependencies then
+    --                 -- Iterate dependencies
+    --                 for resource, _ in pairs(original_item.resource_dependencies) do
+    --                     -- Add resource
+    --                     out_result[resource] = true
+    --                 end
+    --             end
+    --         end
+    --     end
+    -- end
 
     mod:hook(instance, "compile_item_instance_dependencies", function(func, item, items_dictionary, out_result, optional_mission_template, ...)
 
@@ -147,7 +147,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
         if item and item.attachments and not mod:is_premium_store_item() and player_item and weapon_item then
 
             -- Add custom resources
-            instance:add_custom_resources(item, result)
+            mod.gear_settings:add_custom_resources(item, result)
             out_result = result
 
         end
