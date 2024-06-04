@@ -374,6 +374,8 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 if gear_id then
                     -- Setup definitions
                     mod:setup_item_definitions()
+                    -- Resolve issues
+                    mod.gear_settings:resolve_issues(gear_id)
                     -- Add custom attachments
                     mod.gear_settings:_add_custom_attachments(master_item, master_item.attachments)
                     -- Overwrite attachment slots
@@ -414,6 +416,8 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 if gear_id then
                     -- Setup definitions
                     mod:setup_item_definitions()
+                    -- Resolve issues
+                    mod.gear_settings:resolve_issues(gear_id)
                     -- Add custom attachments
                     mod.gear_settings:_add_custom_attachments(master_item, master_item.attachments)
                     -- Overwrite attachment slots

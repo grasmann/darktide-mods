@@ -113,15 +113,6 @@ local mod = get_mod("weapon_customization")
 
 local SightExtension = class("SightExtension", "WeaponCustomizationExtension")
 
--- ##### TEMP FIX #####################################################################################################
-SightExtension.lense_transparency_temp_fix = function(self)
-	local lenses_transparency_temp = {"scope_lens_02", "scope_lens_2_02"}
-	local lens_1 = self.lenses[1] and table_contains(lenses_transparency_temp, self.lenses[1].attachment_name)
-	local lens_2 = self.lenses[2] and table_contains(lenses_transparency_temp, self.lenses[2].attachment_name)
-	self.offset.lense_transparency = lens_1 and lens_2
-end
--- ##### TEMP FIX #####################################################################################################
-
 -- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
 -- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
@@ -138,8 +129,8 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 	self._is_aiming = nil
 	self._is_unaiming = nil
 	self.aim_timer = nil
-	self.position_offset = nil
-	self.rotation_offset = nil
+	self.position_offset = vector3_box(vector3_zero())
+	self.rotation_offset = vector3_box(vector3_zero())
 	self.default_vertical_fov = nil
 	self.vertical_fov = nil
 	self.default_custom_vertical_fov = nil
@@ -147,6 +138,11 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 	self.offset = nil
 	self.sights = {}
 	self.lenses = {}
+	self.lens_scales = {
+		vector3_box(vector3_zero()),
+		vector3_box(vector3_zero()),
+	}
+	self.default_reticle_position = vector3_box(vector3_zero())
 	self.lens_transparency = MIN_TRANSPARENCY
 	self.first_person_component = self.unit_data:read_component("first_person")
 
@@ -259,18 +255,14 @@ end
 SightExtension.set_lens_scales = function(self)
 	local lens_2 = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "lens_2")
 	local lens = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "lens")
-	self.lens_scales = {
-		lens_2 and lens_2.scale or vector3_box(vector3_zero()),
-		lens and lens.scale or vector3_box(vector3_zero()),
-	}
+	self.lens_scales[1]:store(lens_2 and lens_2.scale and vector3_unbox(lens_2.scale) or vector3_zero())
+	self.lens_scales[2]:store(lens and lens.scale and vector3_unbox(lens.scale) or vector3_zero())
 end
 
 SightExtension.set_weapon_values = function(self)
 	self.is_starting_aim = nil
 	self._is_aiming = nil
 	self.aim_timer = nil
-	self.position_offset = nil
-	self.rotation_offset = nil
 	self.default_vertical_fov = nil
 	self.vertical_fov = nil
 	self.default_custom_vertical_fov = nil
@@ -305,9 +297,6 @@ SightExtension.set_weapon_values = function(self)
 			mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "lens"),
 			mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "lens_2"),
 		}
-		-- ##### TEMP FIX #############################################################################################
-		self:lense_transparency_temp_fix()
-		-- ##### TEMP FIX #############################################################################################
 		self:set_lens_units()
 	end
 	self:set_lens_scales()
@@ -323,7 +312,7 @@ SightExtension.set_sight_offset = function(self, offset_type)
 	local offset_type = offset_type or SCOPE_OFFSET
 	local anchor = mod.anchors[self.ranged_weapon.weapon_template.name]
 	local sight_offset = anchor and anchor[offset_type]
-	self.offset = mod.gear_settings:apply_fixes(self.ranged_weapon.item, offset_type) or sight_offset or {position = vector3_box(vector3_zero())}
+	self.offset = mod.gear_settings:apply_fixes(self.ranged_weapon.item, offset_type) or sight_offset --or {position = vector3_box(vector3_zero())}
 end
 
 SightExtension.set_sniper_scope_unit = function(self)
@@ -351,7 +340,7 @@ SightExtension.set_lens_units = function(self)
 		if #lenses >= 2 then
 			local scope_sight = mod.gear_settings:apply_fixes(self.ranged_weapon.item, "sight_2")
 			self.lens_mesh = unit_get_data(lenses[1], "lens_mesh") or 1
-			self.default_reticle_position = vector3_box(mesh_local_position(unit_mesh(reflex[1], self.lens_mesh)))
+			self.default_reticle_position:store(mesh_local_position(unit_mesh(reflex[1], self.lens_mesh)))
 			if unit_get_data(lenses[1], "lens") == 2 then
 				self.lens_units = {lenses[1], lenses[2], reflex[1]}
 			else
@@ -477,7 +466,7 @@ SightExtension.update = function(self, unit, dt, t)
 				if self.offset then
 					if self.offset.position then
 						local position = vector3_lerp(vector3_zero(), vector3_unbox(self.offset.position), anim_progress)
-						self.position_offset = vector3_box(position)
+						self.position_offset:store(position)
 
 						if self.sniper_zoom and self.lens_units and self.lens_units[3] and unit_alive(self.lens_units[3]) and self.default_reticle_position then
 							local default_offset = vector3_unbox(self.default_reticle_position)
@@ -492,7 +481,7 @@ SightExtension.update = function(self, unit, dt, t)
 					end
 					if self.offset.rotation then
 						local rotation = vector3_lerp(vector3_zero(), vector3_unbox(self.offset.rotation), anim_progress)
-						self.rotation_offset = vector3_box(rotation)
+						self.rotation_offset:store(rotation)
 					end
 				end
 			elseif self.aim_timer and t > self.aim_timer then
@@ -523,8 +512,8 @@ SightExtension.update = function(self, unit, dt, t)
 					self.vertical_fov = fov
 				end
 				if self.offset then
-					if self.offset.position then self.position_offset = self.offset.position end
-					if self.offset.rotation then self.rotation_offset = self.offset.rotation end
+					if self.offset.position then self.position_offset:store(vector3_unbox(self.offset.position)) end
+					if self.offset.rotation then self.rotation_offset:store(vector3_unbox(self.offset.rotation)) end
 				end
 				self.aim_timer = nil
 			end
@@ -557,7 +546,7 @@ SightExtension.update = function(self, unit, dt, t)
 				if self.offset then
 					if self.offset.position then
 						local position = vector3_lerp(vector3_unbox(self.offset.position), vector3_zero(), anim_progress)
-						self.position_offset = vector3_box(position)
+						self.position_offset:store(position)
 
 						if self.sniper_zoom and self.lens_units and self.lens_units[3] and unit_alive(self.lens_units[3]) and self.default_reticle_position then
 							local default_offset = vector3_unbox(self.default_reticle_position)
@@ -571,7 +560,7 @@ SightExtension.update = function(self, unit, dt, t)
 					end
 					if self.offset.rotation then
 						local rotation = vector3_lerp(vector3_unbox(self.offset.rotation), vector3_zero(), anim_progress)
-						self.rotation_offset = vector3_box(rotation)
+						self.rotation_offset:store(rotation)
 					end
 				end
 			elseif self.aim_timer and t > self.aim_timer then
@@ -594,8 +583,8 @@ SightExtension.update = function(self, unit, dt, t)
 				end
 				self.custom_vertical_fov = nil
 				self.vertical_fov = nil
-				self.position_offset = nil
-				self.rotation_offset = nil
+				self.position_offset:store(vector3_zero())
+				self.rotation_offset:store(vector3_zero())
 				self.aim_timer = nil
 				self._is_unaiming = nil
 			end
@@ -655,8 +644,8 @@ SightExtension.update_scope_lenses = function(self)
 				unit_set_local_scale(self.lens_units[2], 1, scales2)
 			end
 		end
-	elseif self.sniper_zoom and not self.lens_units then
-		self:set_lens_units()
+	-- elseif self.sniper_zoom and not self.lens_units then
+	-- 	self:set_lens_units()
 	end
 	if self.sniper_effect and self:get_first_person() and (self._is_aiming or self._inspecting) and self.sniper_zoom then
 		if not self.particle_effect then

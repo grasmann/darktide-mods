@@ -90,6 +90,7 @@ local CrouchAnimationExtension = class("CrouchAnimationExtension", "WeaponCustom
 -- Initialize
 CrouchAnimationExtension.init = function(self, extension_init_context, unit, extension_init_data)
     CrouchAnimationExtension.super.init(self, extension_init_context, unit, extension_init_data)
+    self.position = vector3_box(vector3_zero())
     -- Events
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
     -- Settings
@@ -224,8 +225,7 @@ CrouchAnimationExtension.update_animation = function(self, dt, t)
         end
 
         -- Save values
-        self.position = vector3_box(position)
-        self.rotation = quaternion_box(rotation)
+        self.position:store(position)
 
         -- Set position and rotation
         self:set_position_and_rotation(position, rotation)

@@ -267,8 +267,10 @@ end)
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_unequip_item_from_slot", function(func, self, channel_id, go_id, slot_id, ...)
     
-    -- Destroy custom extensions
-    self:remove_custom_extensions()
+    -- -- Destroy custom extensions
+    if NetworkLookup.player_inventory_slot_names[slot_id] == SLOT_SECONDARY then
+        self:remove_custom_extensions()
+    end
 
     -- Original function
     func(self, channel_id, go_id, slot_id, ...)

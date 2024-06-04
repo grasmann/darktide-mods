@@ -383,8 +383,8 @@ GearSettings.default_attachment = function(self, gear_id_or_item, attachment_slo
                     if orig and not is_default and attachment_in_slot(attachment_name, attachment_slot) and attachment_data.model == item_attachment.item then
                         default = attachment_name
                         break
-                    -- elseif orig and attachment_in_slot(attachment_name, attachment_slot) and attachment_data.model == item_attachment.item then
-                    --     default = attachment_name
+                    elseif orig and (is_default and attachment_data.model ~= "") and attachment_in_slot(attachment_name, attachment_slot) and attachment_data.model == item_attachment.item then
+                        default = attachment_name
                     end
                 end
             end
@@ -451,8 +451,8 @@ GearSettings._overwrite_attachments = function(self, gear_id_or_item, attachment
     -- Check item and attachments
     -- if item and attachments then
     if item and attachments and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED) then
-        -- Resolve issues
-        self:resolve_issues(gear_id_or_item)
+        -- -- Resolve issues
+        -- self:resolve_issues(gear_id_or_item)
         -- Get item name
         local item_name = self:short_name(item.name)
         -- Get attachment slots
@@ -471,16 +471,16 @@ GearSettings._overwrite_attachments = function(self, gear_id_or_item, attachment
                     local attachment_data = item_data[attachment]
                     -- Set attachment
                     self:_recursive_set_attachment(attachments, attachment, attachment_slot, attachment_data.model)
-                else
-                    -- Get default attachment
-                    local default_attachment = self:default_attachment(gear_id_or_item, attachment_slot)
-                    -- Check attachment
-                    if default_attachment and item_data[default_attachment] then
-                        -- Get attachment data
-                        local attachment_data = item_data[default_attachment]
-                        -- Set attachment
-                        self:_recursive_set_attachment(attachments, default_attachment, attachment_slot, attachment_data.model)
-                    end
+                -- else
+                --     -- Get default attachment
+                --     local default_attachment = self:default_attachment(gear_id_or_item, attachment_slot)
+                --     -- Check attachment
+                --     if default_attachment and item_data[default_attachment] then
+                --         -- Get attachment data
+                --         local attachment_data = item_data[default_attachment]
+                --         -- Set attachment
+                --         self:_recursive_set_attachment(attachments, default_attachment, attachment_slot, attachment_data.model)
+                --     end
                 end
             end
         end
@@ -496,8 +496,8 @@ GearSettings._add_custom_attachments = function(self, gear_id_or_item, attachmen
     -- Check item and attachments
 	-- if item and attachments then
     if item and attachments and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED) then
-        -- Resolve issues
-        self:resolve_issues(gear_id_or_item)
+        -- -- Resolve issues
+        -- self:resolve_issues(gear_id_or_item)
 		-- Get item name
 		local item_name = self:short_name(item.name)
 		-- Iterate custom attachment slots
@@ -551,6 +551,8 @@ GearSettings.add_custom_resources = function(self, gear_id_or_item, out_result)
     local item = self:item_from_gear_id(gear_id_or_item)
     -- Check item
     if item and item.name then
+        -- -- Resolve issues
+        -- self:resolve_issues(gear_id_or_item)
         -- Get item name
         local item_name = self:short_name(item.name)
         -- Iter attachment slots
@@ -898,21 +900,21 @@ end
 
 -- Resolve auto equips
 GearSettings.resolve_auto_equips = function(self, gear_id_or_item)
-
     local attachment_slots = self:possible_attachment_slots(gear_id_or_item)
-
-    -- Iterate through attachment settings
-    for _, attachment_slot in pairs(attachment_slots) do
-        -- Custom attachments
-        if not mod.add_custom_attachments[attachment_slot] then
-            self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
+    if attachment_slots then
+        -- Iterate through attachment settings
+        for _, attachment_slot in pairs(attachment_slots) do
+            -- Custom attachments
+            if not mod.add_custom_attachments[attachment_slot] then
+                self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
+            end
         end
-    end
-    -- Iterate through attachment settings
-    for _, attachment_slot in pairs(attachment_slots) do
-        -- Non-Custom attachments
-        if mod.add_custom_attachments[attachment_slot] then
-            self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
+        -- Iterate through attachment settings
+        for _, attachment_slot in pairs(attachment_slots) do
+            -- Non-Custom attachments
+            if mod.add_custom_attachments[attachment_slot] then
+                self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
+            end
         end
     end
 end
@@ -1170,7 +1172,7 @@ GearSettings.get = function(self, gear_id_or_item, attachment_slot, no_default)
     attachment_name = self:correct(gear_id_or_item, attachment_slot, attachment_name)
 
     -- Check if no default
-    if no_default then return attachment_name end
+    -- if no_default then return attachment_name end
 
     -- Check vanilla default
     if not attachment_name then

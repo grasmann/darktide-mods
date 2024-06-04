@@ -197,7 +197,8 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 					local last_move_position = mod.last_move_position and vector3_unbox(mod.last_move_position) or vector3_zero()
 					local move_position = vector3_unbox(mod.move_position)
 					if not mod:vector3_equal(last_move_position, move_position) then
-						mod.new_position = vector3_box(vector3_unbox(self._link_unit_base_position) + move_position)
+						-- mod.new_position = vector3_box(vector3_unbox(self._link_unit_base_position) + move_position)
+						mod.new_position:store(vector3_unbox(self._link_unit_base_position) + move_position)
 						mod.move_end = t + MOVE_DURATION_IN
 						mod.current_move_duration = MOVE_DURATION_IN
 						mod.last_move_position = mod.move_position
@@ -208,7 +209,8 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 					local last_move_position = vector3_unbox(self._link_unit_position)
 					local move_position = vector3_unbox(self._link_unit_base_position)
 					if not mod:vector3_equal(move_position, last_move_position) then
-						mod.new_position = self._link_unit_base_position
+						-- mod.new_position = self._link_unit_base_position
+						mod.new_position:store(vector3_unbox(self._link_unit_base_position))
 						mod.move_end = t + MOVE_DURATION_OUT
 						mod.current_move_duration = MOVE_DURATION_OUT
 						mod.last_move_position = vector3_zero()
@@ -224,7 +226,8 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 					local progress = (mod.move_end - t) / mod.current_move_duration
 					local anim_progress = math_easeInCubic(1 - progress)
 					local lerp_position = vector3_lerp(position, vector3_unbox(mod.new_position), anim_progress)
-					mod.link_unit_position = vector3_box(lerp_position)
+					-- mod.link_unit_position = vector3_box(lerp_position)
+					mod.link_unit_position:store(lerp_position)
 					if link_unit and unit_alive(link_unit) then
 						-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 						unit_set_local_position(link_unit, 1, lerp_position)
@@ -238,7 +241,8 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 						unit_set_local_position(link_unit, 1, vector3_unbox(mod.new_position))
 					end
 					if link_unit and unit_alive(link_unit) then
-						mod.link_unit_position = vector3_box(unit_local_position(link_unit, 1))
+						-- mod.link_unit_position = vector3_box(unit_local_position(link_unit, 1))
+						mod.link_unit_position:store(unit_local_position(link_unit, 1))
 					end
 					if mod.current_move_duration == MOVE_DURATION_IN and not mod:vector3_equal(vector3_unbox(mod.new_position), vector3_zero()) then
 						mod.do_reset = true
@@ -286,7 +290,8 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 				if mod.move_position then
 					mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
 				end
-				mod.move_position = nil
+				-- mod.move_position = nil
+				mod.move_position:store(vector3_zero())
 				mod.do_move = true
 				mod.reset_start = nil
 				self._default_rotation_angle = 0
@@ -371,7 +376,8 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 					mod.move_end = nil
 					mod.do_move = nil
 					mod.last_move_position = nil
-					mod.move_position = nil
+					-- mod.move_position = nil
+					mod.move_position:store(vector3_zero())
 				end
 				
 				if mod.attachment_models[item_name] and mod.attachment_models[item_name].customization_default_position then

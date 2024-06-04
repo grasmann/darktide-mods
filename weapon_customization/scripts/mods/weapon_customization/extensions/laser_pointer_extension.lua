@@ -118,9 +118,9 @@ LaserPointerExtension.init = function(self, extension_init_context, unit, extens
     local wielded_slot = extension_init_data.wielded_slot
     self.wielded = wielded_slot and wielded_slot.name == SLOT_SECONDARY
     self.weapon_fov_last_mode = nil
-    self.end_position = nil
-    self.hit_position = nil
-    self.hit_direction = nil
+    self.end_position = vector3_box(vector3_zero())
+    self.hit_position = vector3_box(vector3_zero())
+    self.hit_direction = vector3_box(vector3_zero())
     self.hit_actor = nil
     self.hit_distance = nil
     self.lock = nil
@@ -229,7 +229,7 @@ LaserPointerExtension.target_fallback = function(self)
     local laser_position = unit_world_position(laser_pointer_unit, 2)
     local laser_rotation = unit_world_rotation(laser_pointer_unit, 2)
     local laser_forward = quaternion_forward(laser_rotation)
-    return vector3_box(laser_position + laser_forward * MAX_DISTANCE)
+    return vector3(laser_position + laser_forward * MAX_DISTANCE)
 end
 
 LaserPointerExtension.update_laser_end_point = function(self, dt, t)
@@ -274,7 +274,7 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
 
         local target_position = camera_position + camera_forward * MAX_DISTANCE
         self:do_ray_cast(camera_position, target_position, MAX_DISTANCE)
-        self.end_position = self.hit_position or target_position and vector3_box(target_position)
+        self.end_position:store(self.hit_position and vector3_unbox(self.hit_position) or target_position)
 
         if self.lock and self:get_vectors_almost_same(camera_forward, laser_forward, LOCK_TOLERANCE) then
             self.last_lock = {
@@ -290,7 +290,7 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
                 local anim_progress = math_easeCubic(1 - progress)
                 local lock_position = vector3_unbox(self.last_unlock.end_position)
                 local lerp_end_position = vector3_lerp(lock_position, target_position, anim_progress)
-                self.end_position = vector3_box(lerp_end_position)
+                self.end_position:store(lerp_end_position)
             elseif self.lock_timer and self.lock_timer < t then
                 self.lock_timer = nil
             end
@@ -298,8 +298,7 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
 
         else
             target_position = laser_position + laser_forward * MAX_DISTANCE
-            self.end_position = not vector3.equal(self.end_position and vector3_unbox(self.end_position) or vector3_zero(), target_position)
-                and vector3_box(target_position) or self.end_position
+            self.end_position:store(target_position)
 
             self.last_unlock = {
                 end_position = self.end_position,
@@ -314,10 +313,10 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
                 local anim_progress = math_easeCubic(1 - progress)
                 local lock_position = vector3_unbox(self.last_lock.end_position)
                 local lerp_end_position = vector3_lerp(lock_position, target_position, anim_progress)
-                self.end_position = vector3_box(lerp_end_position)
+                self.end_position:store(lerp_end_position)
                 if not self:get_vectors_almost_same(camera_forward, laser_forward, LOCK_TOLERANCE) then
                     self.unlock_timer = nil
-                    self.end_position = vector3_box(target_position)
+                    self.end_position:store(target_position)
                 end
             elseif self.unlock_timer and self.unlock_timer < t then
                 self.unlock_timer = nil
@@ -354,15 +353,15 @@ LaserPointerExtension.update_laser_particle = function(self, dt, t)
         local hit_direction = vector3_unbox(self.hit_direction)
         local variable_index = world_find_particles_variable(self.world, LASER_PARTICLE_EFFECT, "hit_distance")
         for laser_index, laser_effect_id in pairs(self.laser_effect_ids) do
-            local scale = .1
-            if laser_index / self.laser_count > .66 then
-                scale = .025
-            elseif laser_index / self.laser_count > .33 then
-                scale = .05
-            elseif laser_index > 2 then
-                scale = .075
-            end
-            world_set_particles_variable(self.world, laser_effect_id, variable_index, vector3(scale, distance, distance))
+            -- local scale = .1
+            -- if laser_index / self.laser_count > .66 then
+            --     scale = .025
+            -- elseif laser_index / self.laser_count > .33 then
+            --     scale = .05
+            -- elseif laser_index > 2 then
+            --     scale = .075
+            -- end
+            world_set_particles_variable(self.world, laser_effect_id, variable_index, vector3(.025, distance, distance))
             -- Weapon FOV compatibility
             -- local first_person = not self:get_first_person()
             -- if self:is_weapon_fov_installed() and first_person then
@@ -449,22 +448,17 @@ end
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 LaserPointerExtension.do_ray_cast = function(self, from, to, distance)
-    local physics_world = self.physics_world
-    local rewind_ms = LagCompensation.rewind_ms(false, true, self.player)
-	local collision_filter = "filter_player_character_shooting_projectile"
 	local to_target = to - from
 	local direction = vector3_normalize(to_target)
-	local _, hit_position, _, _, hit_actor = physics_world_raycast(physics_world,
+	local _, hit_position, _, _, hit_actor = physics_world_raycast(self.physics_world,
         from, direction, MAX_DISTANCE, "closest", "types", "both",
-        "collision_filter", collision_filter, "rewind_ms", rewind_ms)
+        "collision_filter", "filter_player_character_shooting_projectile", "rewind_ms", LagCompensation.rewind_ms(false, true, self.player))
 	if not hit_position then
 		hit_position = from + direction * distance
 	end
     self.hit_distance = vector3_distance(from, hit_position)
-    self.hit_position = not vector3.equal(self.hit_position and vector3_unbox(self.hit_position) or vector3_zero(), hit_position)
-        and vector3_box(hit_position) or self.hit_position
-    self.hit_direction = not vector3.equal(self.hit_direction and vector3_unbox(self.hit_direction) or vector3_zero(), direction)
-        and vector3_box(direction) or self.hit_direction
+    self.hit_position:store(hit_position)
+    self.hit_direction:store(direction)
     self.hit_actor = hit_actor
     local hit_unit = self.hit_actor and actor_unit(self.hit_actor)
     self.hit_enemy = hit_unit and self.side_extension and self.side_extension:is_enemy(self.player_unit, hit_unit)
@@ -497,7 +491,8 @@ LaserPointerExtension.spawn_laser = function(self)
     if self.on and common and particle and husk and slot then
         self:set_fx_spawner()
         local spawner_name = self:get_spawner_name()
-        self.end_position = self.end_position or self:target_fallback()
+        -- self.end_position = self.end_position or self:target_fallback()
+        self.end_position:store(self.end_position and vector3_unbox(self.end_position) or self:target_fallback())
         for i = 1, self.laser_count do
             self.fx_extension:_spawn_unit_fx_line(LINE_EFFECT, true, spawner_name, vector3_unbox(self.end_position), true, "destroy", vector3(1, 1, 1), false)
         end

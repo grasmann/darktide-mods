@@ -149,6 +149,8 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     -- Get flashlight units 1p / 3p
 	self.flashlight_unit_1p = extension_init_data.flashlight_unit_1p
 	self.flashlight_unit_3p = extension_init_data.flashlight_unit_3p
+    self.animation_move = vector3_box(vector3_zero())
+    self.animation_spin = quaternion_box(quaternion_identity())
     -- Get lights 1p / 3p
     self.light_1p = unit_light(self.flashlight_unit_1p, 1)
     self.light_3p = unit_light(self.flashlight_unit_3p, 1)
@@ -496,8 +498,8 @@ FlashlightExtension.play_animation = function(self)
     self.animation_start = mod:game_time()
     self.animation_state = "move"
     self.animation_time = .15
-    self.animation_move = vector3_box(vector3(0, -.01, -.03) * multiplier)
-    self.animation_spin = quaternion_box(quaternion_from_vector(vector3(1.5, 1.5, -1.5) * multiplier))
+    self.animation_move:store(vector3(0, -.01, -.03) * multiplier)
+    self.animation_spin:store(quaternion_from_vector(vector3(1.5, 1.5, -1.5) * multiplier))
 end
 
 FlashlightExtension.update_animation = function(self, dt, t)

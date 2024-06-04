@@ -133,6 +133,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		if item_unit and attachments and in_possesion_of_player and not mod:is_premium_store_item() and player_item then
 			mod:setup_item_definitions()
 
+			-- Resolve issues
+            mod.gear_settings:resolve_issues(gear_id)
+
 			-- Add custom attachments
 			mod.gear_settings:_add_custom_attachments(item_data, attachments)
 			
@@ -741,6 +744,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 			if gear_id and not mod:is_premium_store_item() then
 				mod:setup_item_definitions()
+
+				-- Resolve issues
+				mod.gear_settings:resolve_issues(gear_id)
 
 				-- Add custom attachments
 				mod.gear_settings:_add_custom_attachments(item_data, attachments)

@@ -95,6 +95,9 @@ local mod = get_mod("weapon_customization")
 
 	mod.weapon_changed = nil
 	mod.cosmetics_view = nil
+	mod.move_position = vector3_box(vector3_zero())
+	mod.new_position = vector3_box(vector3_zero())
+	
 	-- mod.mesh_positions = {}
 	-- mod.dropdown_positions = {}
 	-- mod.spawned_attachments = {}
@@ -367,7 +370,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			mod.do_move = true
 			mod.no_reset = no_reset
 		elseif mod.link_unit_position then
-			mod.move_position = vector3_box(vector3_zero())
+			-- mod.move_position = vector3_box(vector3_zero())
+			mod.move_position:store(vector3_zero())
 			mod.do_move = true
 		end
 	end
@@ -2387,10 +2391,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	instance.reset_stuff = function(self)
 		mod:persistent_table(REFERENCE).keep_all_packages = false
-		mod.move_position = nil
-		mod.new_position = nil
+		-- mod.move_position = vector3_box(vector3_zero())
+		mod.move_position:store(vector3_zero())
+		-- mod.new_position = nil
+		mod.new_position:store(vector3_zero())
 		mod.last_move_position = nil
-		mod.link_unit_position = nil
+		-- mod.link_unit_position = nil
+		mod.link_unit_position:store(vector3_zero())
 		mod.do_move = nil
 		mod.move_end = nil
 		mod.do_reset = nil

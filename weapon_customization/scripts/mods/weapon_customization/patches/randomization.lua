@@ -125,7 +125,7 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
         item.gear_id = card_reward.gear_id
         local attachments = mod:randomize_item(item, nil, card_reward.gear_id)
         mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = nil
-        mod.gear_settings:push(item, attachments)
+        mod.gear_settings:push(card_reward.gear_id, attachments)
         -- mod:persistent_table(REFERENCE).temp_gear_settings[card_reward.gear_id] = attachments
     end
     return item, item_group, rarity, item_level

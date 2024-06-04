@@ -147,6 +147,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.position_overwrite = {}
     self.rotation_overwrite = {}
     self.scale_overwrite = {}
+    self.last_player_rotation = vector3_box(vector3_zero())
     self:set_foot_step_interval()
     self.trigger_wobble = nil
     self.back_change = nil
@@ -333,18 +334,18 @@ VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
     --     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
     -- end
     -- Iterate units
-    for i, unit in pairs(self.slot_units[slot]) do
-        if unit and unit_alive(unit) then
-            if equipment_data.center_mass and equipment_data.center_mass[i] then
-                local rotation = unit_local_rotation(unit, 1)
-                local mat = Quaternion.matrix4x4(Quaternion.multiply(rotation, quaternion_from_vector(vector3(0, 0, 0))))
-                local rotated_center = Matrix4x4.transform(mat, vector3_unbox(equipment_data.center_mass[i]))
-                local position = equipment_data.position[i]
-                local new_position = vector3_unbox(position) - rotated_center
-                equipment_data.position[i] = vector3_box(new_position)
-            end
-        end
-    end
+    -- for i, unit in pairs(self.slot_units[slot]) do
+    --     if unit and unit_alive(unit) then
+    --         if equipment_data.center_mass and equipment_data.center_mass[i] then
+    --             local rotation = unit_local_rotation(unit, 1)
+    --             local mat = Quaternion.matrix4x4(Quaternion.multiply(rotation, quaternion_from_vector(vector3(0, 0, 0))))
+    --             local rotated_center = Matrix4x4.transform(mat, vector3_unbox(equipment_data.center_mass[i]))
+    --             local position = equipment_data.position[i]
+    --             local new_position = vector3_unbox(position) - rotated_center
+    --             equipment_data.position[i] = vector3_box(new_position)
+    --         end
+    --     end
+    -- end
     -- Return data
     return equipment_data, sounds, sounds2
 end
@@ -714,7 +715,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 self.step_animation[slot] = {}
                 self.step_animation[slot].time = self.time_overwrite or self.item_types[slot] == WEAPON_MELEE and ANIM_TIME_MELEE or ANIM_TIME_RANGED
                 self.step_animation[slot].time_wobble = self.time_overwrite or self.item_types[slot] == WEAPON_MELEE and ANIM_TIME_WOBBLE_MELEE or ANIM_TIME_WOBBLE_RANGED
-                self.rotate_animation[slot] = {}
+                self.rotate_animation[slot] = vector3_box(vector3_zero())
                 self.weapon_template[slot] = WeaponTemplate.weapon_template_from_item(slot.item)
                 -- Attach settings
                 local attach_settings = self.equipment_component:_attach_settings()
@@ -1027,7 +1028,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
     local parent_rotation = quaternion_to_vector(unit_world_rotation(rotation_unit, 1))
     local last_player_rotation = self.last_player_rotation and vector3_unbox(self.last_player_rotation) or parent_rotation
     local rotation_diff = last_player_rotation - parent_rotation
-    self.last_player_rotation = vector3_box(parent_rotation)
+    self.last_player_rotation:store(parent_rotation)
     -- Process animation part step
     for slot_name, slot in pairs(self.equipment) do
         -- Check slot
@@ -1254,7 +1255,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                         new_diff = vector3(angle, -angle, -math.abs(angle) * .5)
                     end
                     
-                    local saved_current = self.rotate_animation[slot].current
+                    local saved_current = self.rotate_animation[slot]
                     local current_rotation = saved_current and vector3_unbox(saved_current)
                     local current = current_rotation or vector3_zero()
                     local mat = quaternion_matrix4x4(rotation)
@@ -1281,7 +1282,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     local new_euler_rotation = quaternion_from_vector(current)
                     local new_rotation = Quaternion.multiply(rotation, new_euler_rotation)
                     unit_set_local_rotation(unit, 1, new_rotation)
-                    self.rotate_animation[slot].current = vector3_box(current)
+                    self.rotate_animation[slot] = vector3_box(current)
                 end
             end
         end

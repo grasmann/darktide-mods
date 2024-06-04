@@ -87,6 +87,9 @@ SwayAnimationExtension.init = function(self, extension_init_context, unit, exten
 
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
 
+    self.position = vector3_box(vector3_zero())
+    self.rotate_animation = vector3_box(vector3_zero())
+
     self:on_settings_changed()
 
     self.initialized = true
@@ -194,12 +197,11 @@ SwayAnimationExtension.update_animation = function(self, dt, t)
         new_rotation = Quaternion.multiply(quaternion_from_vector(rotation), new_euler_rotation)
         new_position = position + vector3(current[3] * .75, 0, current[1]) * .05
 
-        self.position = vector3_box(new_position)
-        self.rotation = quaternion_box(new_rotation)
+        self.position:store(new_position)
 
         self:set_position_and_rotation(new_position, new_rotation)
 
-        self.rotate_animation = vector3_box(current)
+        self.rotate_animation:store(current)
     end
 end
 
