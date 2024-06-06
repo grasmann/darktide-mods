@@ -374,8 +374,8 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 if gear_id then
                     -- Setup definitions
                     mod:setup_item_definitions()
-                    -- Resolve issues
-                    mod.gear_settings:resolve_issues(master_item)
+                    -- -- Resolve issues
+                    -- mod.gear_settings:resolve_issues(master_item)
                     -- Add custom attachments
                     mod.gear_settings:_add_custom_attachments(master_item, master_item.attachments)
                     -- Overwrite attachment slots
@@ -391,10 +391,10 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
 
     mod:hook(MasterItems, "get_store_item_instance", function(func, description, ...)
         local item_instance = _store_item_plus_overrides(description)
-        local gear_id = mod.gear_settings:item_to_gear_id(item_instance)
+        local master_item = item_instance.__master_item or item_instance
+        local gear_id = mod.gear_settings:item_to_gear_id(master_item)
         local offer_id = description.offer_id
         if gear_id and offer_id then
-            local master_item = item_instance.__master_item or item_instance
             if not mod:is_premium_store_item() then
                 -- Get attributes
                 local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
@@ -416,8 +416,8 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 if gear_id then
                     -- Setup definitions
                     mod:setup_item_definitions()
-                    -- Resolve issues
-                    mod.gear_settings:resolve_issues(master_item)
+                    -- -- Resolve issues
+                    -- mod.gear_settings:resolve_issues(master_item)
                     -- Add custom attachments
                     mod.gear_settings:_add_custom_attachments(master_item, master_item.attachments)
                     -- Overwrite attachment slots

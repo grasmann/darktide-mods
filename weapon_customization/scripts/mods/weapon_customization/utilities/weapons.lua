@@ -119,7 +119,7 @@ mod.randomize_weapon = function(self, item)
 	local gear_id = mod.gear_settings:item_to_gear_id(item)
 	local base_mod_only = self:get("mod_option_randomization_only_base_mod")
     for _, attachment_slot in pairs(attachment_slots) do
-        if self.attachment[item_name][attachment_slot] and not table_contains(self.automatic_slots, attachment_slot) then
+        if self.attachment[item_name] and self.attachment[item_name][attachment_slot] and not table_contains(self.automatic_slots, attachment_slot) then
             local chance_success = true
             if self.random_chance[attachment_slot] then
                 local chance_option = self.random_chance[attachment_slot]

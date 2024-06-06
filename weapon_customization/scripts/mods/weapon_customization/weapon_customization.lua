@@ -151,6 +151,7 @@ end
 -- Mod is unloaded
 mod.on_unload = function(exit_game)
 	-- if exit_game then mod:console_output() end
+	if not exit_game then mod:reload_cache() end
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################

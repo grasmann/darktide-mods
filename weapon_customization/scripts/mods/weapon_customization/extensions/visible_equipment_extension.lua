@@ -745,13 +745,13 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 local data, sounds_1, sounds_2 = self:equipment_data_by_slot(slot)
                 local sounds_3 = SoundEventAliases.sfx_ads_up.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
-                    or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
-                    or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
+                    -- or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+                    -- or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_equip.events.default
                 local sounds_4 = SoundEventAliases.sfx_weapon_foley_left_hand_01.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
-                    or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
-                    or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
+                    -- or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+                    -- or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_ads_down.events.default
                 self.equipment_data[slot] = data
                 -- Load sound packages

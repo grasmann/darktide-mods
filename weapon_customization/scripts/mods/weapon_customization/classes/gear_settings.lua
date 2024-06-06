@@ -466,18 +466,18 @@ GearSettings._overwrite_attachments = function(self, gear_id_or_item, attachment
     local item = self:item_from_gear_id(gear_id_or_item)
     -- Check item and attachments
     -- if item and attachments then
-    if item and attachments and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED) then
+    if item and item.name and attachments and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED) then
         -- -- Resolve issues
         -- self:resolve_issues(gear_id_or_item)
         -- Get item name
         local item_name = self:short_name(item.name)
         -- Get attachment slots
-        local attachment_slots = self:possible_attachment_slots(gear_id_or_item, true)
-        -- local attachment_slots = {}
+        local possible_attachment_slots = self:possible_attachment_slots(gear_id_or_item, true)
+        -- local attachment_slots = mod.attachment_slots
         -- self:_recursive_get_attachment_slots(attachments, attachment_slots)
         -- mod:dtf(attachment_slots, "attachment_slots", 10)
         -- Iterate attachment slots
-        for _, attachment_slot in pairs(attachment_slots) do
+        for _, attachment_slot in pairs(possible_attachment_slots) do
             -- Don't handle trinkets
             if mod:not_trinket(attachment_slot) and mod.attachment_models[item_name] then
                 -- Get item data
@@ -606,7 +606,7 @@ end
 
 -- Get possible attachment slots from item
 -- local possible_attachment_slots = {}
-GearSettings.possible_attachment_slots = function(self, gear_id_or_item, all)
+GearSettings.possible_attachment_slots = function(self, gear_id_or_item)
     -- Get item from potential gear id
     local item = self:item_from_gear_id(gear_id_or_item)
     -- Check item and attachments
@@ -616,25 +616,16 @@ GearSettings.possible_attachment_slots = function(self, gear_id_or_item, all)
         -- Check if not in cache
         if not mod.data_cache or not mod.data_cache:item_name_to_attachment_slots(item_name) then
             local possible_attachment_slots = {}
-            -- table_clear(possible_attachment_slots)
-            local found_slots = {}
-            self:_recursive_get_attachment_slots(item.attachments, found_slots)
-            for _, attachment_slot in pairs(found_slots) do
-                -- Check if not in list
-                if not table_contains(possible_attachment_slots, attachment_slot) then
-                    possible_attachment_slots[#possible_attachment_slots+1] = attachment_slot
-                end
-            end
             -- Get item attachments
-            local list = mod.attachment[item_name]
+            local list = mod.attachment_models[item_name]
             -- Check list
             if list then
                 -- Iterate list
-                for attachment_slot, _ in pairs(list) do
+                for attachment_name, attachment_data in pairs(list) do
                     -- Check if not in list
-                    if not table_contains(possible_attachment_slots, attachment_slot) then
+                    if not table_contains(possible_attachment_slots, attachment_data.type) then
                         -- Add to list
-                        possible_attachment_slots[#possible_attachment_slots+1] = attachment_slot
+                        possible_attachment_slots[#possible_attachment_slots+1] = attachment_data.type
                     end
                 end
             end
@@ -747,9 +738,9 @@ GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
                 -- current_attachments_by_slot = {}
                 -- current_attachments = {}
                 -- Get possible attachment slots
-                local attachment_slots = self:possible_attachment_slots(gear_id_or_item, true)
+                local possible_attachment_slots = self:possible_attachment_slots(gear_id_or_item)
                 -- Iterate attachment slots
-                for _, attachment_slot in pairs(attachment_slots) do
+                for _, attachment_slot in pairs(possible_attachment_slots) do
                     current_attachments_by_slot[attachment_slot] = self:get(gear_id_or_item, attachment_slot)
                     current_attachments[#current_attachments+1] = current_attachments_by_slot[attachment_slot]
                 end
@@ -763,7 +754,7 @@ GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
                     for fix_attachment, _ in pairs(fix_data) do
                         -- Check attachment slot is valid
                         if fix_attachment ~= "dependencies" and (current_attachments_by_slot[fix_attachment]
-                                or not table_contains(mod.attachment_slots, fix_attachment)) then
+                                or not table_contains(possible_attachment_slots, fix_attachment)) then
                             -- Skip false
                             skip = false
                             break
@@ -792,7 +783,7 @@ GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
                                         else
                                             has_dependency_possibility = table_contains(current_attachments, dependency_possibility)
                                         end
-                                    elseif table_contains(attachment_slots, dependency_possibility) then
+                                    elseif table_contains(possible_attachment_slots, dependency_possibility) then
                                         if negative then
                                             has_dependency_possibility = current_attachments_by_slot[dependency_possibility] == nil
                                         else
@@ -864,7 +855,7 @@ end
 -- Load attachment sounds
 GearSettings.load_attachment_sounds = function(self, item)
 	-- local attachments = self:get_item_attachment_slots(item)
-	local attachments = self:possible_attachment_slots(item, true)
+	local attachments = self:possible_attachment_slots(item)
 	for _, attachment_slot in pairs(attachments) do
 		local attachment_name = self:get(item, attachment_slot)
 		local detach_sounds = mod:get_equipment_sound_effect(item, attachment_slot, attachment_name, "detach", true)
@@ -932,17 +923,17 @@ GearSettings.resolve_auto_equips = function(self, gear_id_or_item, attachment_sl
     if attachment_slot then
         self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
     else
-        local attachment_slots = self:possible_attachment_slots(gear_id_or_item)
-        if attachment_slots then
+        local possible_attachment_slots = self:possible_attachment_slots(gear_id_or_item)
+        if possible_attachment_slots then
             -- Iterate through attachment settings
-            for _, attachment_slot in pairs(attachment_slots) do
+            for _, attachment_slot in pairs(possible_attachment_slots) do
                 -- Custom attachments
                 if not mod.add_custom_attachments[attachment_slot] then
                     self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
                 end
             end
             -- Iterate through attachment settings
-            for _, attachment_slot in pairs(attachment_slots) do
+            for _, attachment_slot in pairs(possible_attachment_slots) do
                 -- Non-Custom attachments
                 if mod.add_custom_attachments[attachment_slot] then
                     self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
@@ -998,18 +989,18 @@ GearSettings.resolve_special_changes = function(self, gear_id_or_item, attachmen
         self:_resolve_special_changes(gear_id_or_item, self:get(gear_id_or_item, attachment_slot))
     else
         -- Get attachment slots
-        local attachment_slots = self:possible_attachment_slots(gear_id_or_item, true)
+        local possible_attachment_slots = self:possible_attachment_slots(gear_id_or_item, true)
         -- Check attachments
-        if attachment_slots then
+        if possible_attachment_slots then
             -- Iterate through attachment settings
-            for _, attachment_slot in pairs(attachment_slots) do
+            for _, attachment_slot in pairs(possible_attachment_slots) do
                 -- Custom attachments
                 if mod.add_custom_attachments[attachment_slot] then
                     self:_resolve_special_changes(gear_id_or_item, self:get(gear_id_or_item, attachment_slot))
                 end
             end
             -- Iterate through attachment settings
-            for _, attachment_slot in pairs(attachment_slots) do
+            for _, attachment_slot in pairs(possible_attachment_slots) do
                 -- Non-Custom attachments
                 if not mod.add_custom_attachments[attachment_slot] then
                     self:_resolve_special_changes(gear_id_or_item, self:get(gear_id_or_item, attachment_slot))

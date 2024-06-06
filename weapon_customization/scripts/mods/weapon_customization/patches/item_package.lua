@@ -137,8 +137,8 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
         -- Check item and attachments
         if item and item.attachments and not mod:is_premium_store_item() and player_item and weapon_item and in_possesion_of_player then
             
-            -- Resolve issues
-            mod.gear_settings:resolve_issues(item)
+            -- -- Resolve issues
+            -- mod.gear_settings:resolve_issues(item)
 
             -- Add custom attachments
             mod.gear_settings:_add_custom_attachments(item, item.attachments)

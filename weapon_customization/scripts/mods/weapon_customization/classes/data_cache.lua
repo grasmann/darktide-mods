@@ -17,6 +17,7 @@ local mod = get_mod("weapon_customization")
     local class = class
     local table = table
     local CLASS = CLASS
+    local managers = Managers
     local table_clone = table.clone
     local table_clone_instance = table.clone_instance
 --#endregion
@@ -27,7 +28,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
     local REFERENCE = "weapon_customization"
-    local DEBUG = false
+    local DEBUG = true
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -41,10 +42,17 @@ local DataCache = class("DataCache")
 -- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
 
 mod.try_init_cache = function(self)
-    if self.all_mods_loaded and (not self.data_cache or DEBUG) then
+    if self.all_mods_loaded and not self.data_cache then
         if MasterItems.get_cached() then
             self.data_cache = DataCache:new()
         end
+    end
+end
+
+mod.reload_cache = function(self)
+    if (DEBUG) then
+        mod:echo("Reloading Weapon Customization Cache")
+        self.data_cache = nil
     end
 end
 
@@ -59,6 +67,10 @@ DataCache.init = function(self)
     self:cache_attachment_data()
 
     self.initialized = true
+end
+
+DataCache.delete = function(self)
+    self.initialized = false
 end
 
 DataCache.setup_item_definitions = function(self)
@@ -100,7 +112,7 @@ DataCache.cache_attachment_data = function(self)
                 -- Cache item name -> full item string
                 self.cache.item_strings[item_name] = item_string
                 -- Cache item name -> attachment slots
-                self.cache.attachment_slots[item_name] = mod.gear_settings:possible_attachment_slots(item, true)
+                self.cache.attachment_slots[item_name] = mod.gear_settings:possible_attachment_slots(item)
                 self.cache.attachment_list[item_name] = {}
                 for _, slot in pairs(self.cache.attachment_slots[item_name]) do
                     -- Cache item name -> possible attachments by slot
