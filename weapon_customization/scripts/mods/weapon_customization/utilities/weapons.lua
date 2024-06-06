@@ -263,6 +263,7 @@ mod.redo_weapon_attachments = function(self, item)
 		-- self.attached_laser_pointers[gear_id] = {}
 		-- Sights
 		-- local sights_extension = script_unit.extension(self.player_unit, "sights_system")
+		mod:remove_extension(mod.player_unit, "visible_equipment_system")
 		-- Unequip
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, latest_frame)
 		-- Equip

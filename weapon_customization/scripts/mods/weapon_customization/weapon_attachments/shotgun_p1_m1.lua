@@ -25,7 +25,6 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
-local changes = {}
 return table.combine(
     _shotgun_p1_m1,
     {
@@ -60,13 +59,13 @@ return table.combine(
                 {sight = "sight_default|sight_07", rail = "rail_default"},
                 {sight = "sight_default|sight_07", rail = "rail_default"},
             }, nil, nil, function(gear_id, item, attachment)
-                changes = {}
-                if attachment == "receiver_02" or attachment == "receiver_03" or attachment == "receiver_04" then
-                    local barrel = mod.gear_settings:get(item, "barrel")
-                    if barrel ~= "barrel_10" and barrel ~= "barrel_11" and barrel ~= "barrel_12" then changes["barrel"] = "barrel_10" end
-                else
-                    local barrel = mod.gear_settings:get(item, "barrel")
-                    if barrel == "barrel_10" or barrel == "barrel_11" or barrel == "barrel_12" then changes["barrel"] = "barrel_01" end
+                local changes = {}
+                local barrel = mod.gear_settings:get(gear_id, "barrel")
+                local receiver = mod.gear_settings:get(gear_id, "receiver")
+                if table.contains({"receiver_02", "receiver_03", "receiver_04"}, receiver) and not table.contains({"barrel_10", "barrel_11", "barrel_12"}, barrel) then
+                    changes["barrel"] = "barrel_10"
+                elseif not table.contains({"receiver_02", "receiver_03", "receiver_04"}, receiver) and table.contains({"barrel_10", "barrel_11", "barrel_12"}, barrel) then
+                    changes["barrel"] = "barrel_01"
                 end
                 return changes
             end),
@@ -96,13 +95,13 @@ return table.combine(
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01",     underbarrel = "!no_underbarrel|no_underbarrel"},
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01",     underbarrel = "!no_underbarrel|no_underbarrel"},
             }, nil, nil, function(gear_id, item, attachment)
-                changes = {}
-                if attachment == "barrel_10" or attachment == "barrel_11" or attachment == "barrel_12" then
-                    local receiver = mod.gear_settings:get(item, "receiver")
-                    if receiver ~= "receiver_02" and receiver ~= "receiver_03" and receiver ~= "receiver_04" then changes["receiver"] = "receiver_02" end
-                else
-                    local receiver = mod.gear_settings:get(item, "receiver")
-                    if receiver == "receiver_02" or receiver == "receiver_03" or receiver == "receiver_04" then changes["receiver"] = "receiver_01" end
+                local changes = {}
+                local barrel = mod.gear_settings:get(gear_id, "barrel")
+                local receiver = mod.gear_settings:get(gear_id, "receiver")
+                if table.contains({"barrel_10", "barrel_11", "barrel_12"}, barrel) and not table.contains({"receiver_02", "receiver_03", "receiver_04"}, receiver) then
+                    changes["receiver"] = "receiver_02"
+                elseif not table.contains({"barrel_10", "barrel_11", "barrel_12"}, barrel) and table.contains({"receiver_02", "receiver_03", "receiver_04"}, receiver) then
+                    changes["receiver"] = "receiver_01"
                 end
                 return changes
             end),
@@ -163,7 +162,7 @@ return table.combine(
             _common_lasgun.rail_models("barrel", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             -- Autogun
             _autogun_p1_m1.muzzle_models("barrel", -.5, vector3_box(0, 0, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-                changes = {}
+                local changes = {}
                 changes["muzzle_2"] = mod.gear_settings:get(item, "muzzle")
                 return changes
             end),

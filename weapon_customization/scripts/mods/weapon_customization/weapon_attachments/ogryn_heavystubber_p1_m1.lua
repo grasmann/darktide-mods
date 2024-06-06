@@ -49,10 +49,11 @@ return table.combine(
             -- Native
             _ogryn_heavystubber_p1_m1.barrel_models(nil, -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 changes = {}
+                local barrel = mod.gear_settings:get(item, "barrel")
                 local receiver = mod.gear_settings:get(item, "receiver")
                 local magazine = mod.gear_settings:get(item, "magazine")
                 local grip = mod.gear_settings:get(item, "grip")
-                if table_contains({"barrel_06", "barrel_07", "barrel_08"}, attachment) then
+                if table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then
                     if not table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_05" end
                     if not table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_06" end
                     if not table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_04" end
@@ -65,10 +66,11 @@ return table.combine(
             end),
             _ogryn_heavystubber_p1_m1.receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 changes = {}
+                local receiver = mod.gear_settings:get(item, "receiver")
                 local barrel = mod.gear_settings:get(item, "barrel")
                 local magazine = mod.gear_settings:get(item, "magazine")
                 local grip = mod.gear_settings:get(item, "grip")
-                if table_contains({"receiver_05", "receiver_06", "receiver_07"}, attachment) then
+                if table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then
                     if not table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_06" end
                     if not table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_06" end
                     if not table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_04" end
@@ -81,10 +83,11 @@ return table.combine(
             end),
             _ogryn_heavystubber_p1_m1.magazine_models("receiver", 0, vector3_box(0, -3, .1), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
                 changes = {}
+                local magazine = mod.gear_settings:get(item, "magazine")
                 local barrel = mod.gear_settings:get(item, "barrel")
                 local receiver = mod.gear_settings:get(item, "receiver")
                 local grip = mod.gear_settings:get(item, "grip")
-                if table_contains({"magazine_06", "magazine_07", "magazine_08"}, attachment) then
+                if table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then
                     if not table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_06" end
                     if not table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_05" end
                     if not table_contains({"grip_04", "grip_05", "grip_06"}, grip) then changes["grip"] = "grip_04" end
@@ -110,7 +113,8 @@ return table.combine(
                 local barrel = mod.gear_settings:get(item, "barrel")
                 local magazine = mod.gear_settings:get(item, "magazine")
                 local receiver = mod.gear_settings:get(item, "receiver")
-                if table_contains({"grip_04", "grip_05", "grip_06"}, attachment) then
+                local grip = mod.gear_settings:get(item, "grip")
+                if table_contains({"grip_04", "grip_05", "grip_06"}, grip) then
                     if not table_contains({"barrel_06", "barrel_07", "barrel_08"}, barrel) then changes["barrel"] = "barrel_06" end
                     if not table_contains({"receiver_05", "receiver_06", "receiver_07"}, receiver) then changes["receiver"] = "receiver_05" end
                     if not table_contains({"magazine_06", "magazine_07", "magazine_08"}, magazine) then changes["magazine"] = "magazine_06" end

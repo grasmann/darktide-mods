@@ -95,8 +95,9 @@ local mod = get_mod("weapon_customization")
 
 	mod.weapon_changed = nil
 	mod.cosmetics_view = nil
-	mod.move_position = vector3_box(vector3_zero())
-	mod.new_position = vector3_box(vector3_zero())
+	-- mod.move_position = vector3_box(vector3_zero())
+	-- mod.new_position = vector3_box(vector3_zero())
+	-- mod.link_unit_position = vector3_box(vector3_zero())
 	
 	-- mod.mesh_positions = {}
 	-- mod.dropdown_positions = {}
@@ -117,12 +118,14 @@ local mod = get_mod("weapon_customization")
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ################################################################
 
 mod.get_cosmetics_scenegraphs = function(self)
-	local cosmetics_scenegraphs = {}
-	for _, attachment_slot in pairs(self.attachment_slots) do
-		cosmetics_scenegraphs[#cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
-		cosmetics_scenegraphs[#cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
+	if not self.cosmetics_scenegraphs then
+		self.cosmetics_scenegraphs = {}
+		for _, attachment_slot in pairs(self.attachment_slots) do
+			self.cosmetics_scenegraphs[#self.cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
+			self.cosmetics_scenegraphs[#self.cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
+		end
 	end
-	return cosmetics_scenegraphs
+	return self.cosmetics_scenegraphs
 end
 
 mod.play_zoom_sound = function(self, t, sound)
@@ -364,40 +367,45 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- ##### │  ├─┤│││├┤ ├┬┘├─┤  ││││ │└┐┌┘├┤ │││├┤ │││ │  ############################################################
 	-- ##### └─┘┴ ┴┴ ┴└─┘┴└─┴ ┴  ┴ ┴└─┘ └┘ └─┘┴ ┴└─┘┘└┘ ┴  ############################################################
 	
-	instance.start_weapon_move = function(self, position, no_reset)
-		if position then
-			mod.move_position = position
-			mod.do_move = true
-			mod.no_reset = no_reset
-		elseif mod.link_unit_position then
-			-- mod.move_position = vector3_box(vector3_zero())
-			mod.move_position:store(vector3_zero())
-			mod.do_move = true
+	instance.start_weapon_move = function(self, position)
+		local ui_weapon_spawner = self:ui_weapon_spawner()
+		if ui_weapon_spawner then
+			ui_weapon_spawner:start_camera_movement(position)
 		end
+		-- if position then
+		-- 	-- mod.move_position = position
+		-- 	mod.move_position:store(vector3_unbox(position))
+		-- 	mod.do_move = true
+		-- 	mod.no_reset = no_reset
+		-- elseif not vector3.equal(vector3_unbox(mod.link_unit_position), vector3_zero()) then
+		-- 	-- mod.move_position = vector3_box(vector3_zero())
+		-- 	mod.move_position:store(vector3_zero())
+		-- 	mod.do_move = true
+		-- end
 	end
 
-	instance.init_custom_weapon_zoom = function(self)
-		local item = self._selected_item
-		if item then
-			-- Get item name
-			-- local item_name = self:item_name_from_content_string(item.name)
-			local item_name = self._item_name
-			-- Check for weapon in data
-			if mod.attachment_models[item_name] then
-				-- Check for custom weapon zoom
-				if mod.attachment_models[item_name].customization_min_zoom then
-					local min_zoom = mod.attachment_models[item_name].customization_min_zoom
-					self._min_zoom = min_zoom
-				else
-					self._min_zoom = -2
-				end
-				-- Set zoom
-				self._weapon_zoom_target = self._min_zoom
-				self._weapon_zoom_fraction = self._min_zoom
-				self:_set_weapon_zoom(self._min_zoom)
-			end
-		end
-	end
+	-- instance.init_custom_weapon_zoom = function(self)
+	-- 	local item = self._selected_item
+	-- 	if item then
+	-- 		-- Get item name
+	-- 		-- local item_name = self:item_name_from_content_string(item.name)
+	-- 		local item_name = self._item_name
+	-- 		-- Check for weapon in data
+	-- 		if mod.attachment_models[item_name] then
+	-- 			-- Check for custom weapon zoom
+	-- 			if mod.attachment_models[item_name].customization_min_zoom then
+	-- 				local min_zoom = mod.attachment_models[item_name].customization_min_zoom
+	-- 				self._min_zoom = min_zoom
+	-- 			else
+	-- 				self._min_zoom = -2
+	-- 			end
+	-- 			-- Set zoom
+	-- 			self._weapon_zoom_target = self._min_zoom
+	-- 			self._weapon_zoom_fraction = self._min_zoom
+	-- 			self:_set_weapon_zoom(self._min_zoom)
+	-- 		end
+	-- 	end
+	-- end
 
 	-- ┌─┐┬  ┬┌─┐┬─┐┬ ┬┬─┐┬┌┬┐┌─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
 	-- │ │└┐┌┘├┤ ├┬┘│││├┬┘│ │ ├┤   ├┤ │ │││││   │ ││ ││││└─┐
@@ -803,9 +811,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.draw_equipment_box = function(self, dt, t)
 		local attachment_units = self:attachment_units()
 		if attachment_units and not mod.dropdown_open then
-			local attachments = mod.gear_settings:attachments(self._presentation_item)
-			if attachments and table_size(attachments) > 0 then
-				for attachment_slot, _ in pairs(attachments) do
+			-- local attachments = mod.gear_settings:attachments(self._presentation_item)
+			local attachment_slots = mod.gear_settings:possible_attachment_slots(self._presentation_item, true)
+			if attachment_slots then
+				for _, attachment_slot in pairs(attachment_slots) do
 					local unit = mod.gear_settings:attachment_unit(attachment_units, attachment_slot)
 					if unit and unit_alive(unit) then
 						local saved_origin = self.dropdown_positions[attachment_slot]
@@ -826,15 +835,16 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Check if weapon unit is valid and dropdown is not open
 		if attachment_units and not mod.dropdown_open then
 			-- Get attachments
-			local attachments = mod.gear_settings:attachments(self._presentation_item)
+			-- local attachments = mod.gear_settings:attachments(self._presentation_item)
+			local attachment_slots = mod.gear_settings:possible_attachment_slots(self._presentation_item, true)
 			-- Check if attachments are valid
-			if attachments and table_size(attachments) > 0 then
+			if attachment_slots then
 				-- Get objects
 				local gui = self:forward_gui()
 				local ui_weapon_spawner = self:ui_weapon_spawner()
 				local camera = ui_weapon_spawner and ui_weapon_spawner._camera
 				-- Iterate through attachment slots
-				for attachment_slot, _ in pairs(attachments) do
+				for _, attachment_slot in pairs(attachment_slots) do
 					-- Get attachment unit
 					local unit = mod.gear_settings:attachment_unit(attachment_units, attachment_slot)
 					-- Check if attachment unit is valid
@@ -1117,8 +1127,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.equip_attachments = function(self)
 		-- Reset original settings
 		self.original_weapon_settings = {}
-		-- Reset animation
-		mod.reset_start = mod:main_time() --managers.time:time("main")
+		-- -- Reset animation
+		-- mod.reset_start = mod:main_time() --managers.time:time("main")
 		-- Update equip button
 		self:update_equip_button()
 		-- Get changed settings
@@ -1413,6 +1423,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					local weapon_attachments = mod.attachment_models[item_name]
 					local attachment_data = weapon_attachments[new_value]
 					local new_angle = attachment_data.angle or 0
+					local ui_weapon_spawner = self:ui_weapon_spawner()
+					if ui_weapon_spawner then
+						ui_weapon_spawner:initiate_weapon_rotation(new_angle, 1)
+					end
 	
 					-- if string_find(new_value, "default") then
 					-- 	self.new_rotation = 0
@@ -1467,6 +1481,19 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						hotspot.is_selected = selected
 					end
 					mod.dropdown_open = true
+
+					local weapon_attachments = mod.attachment_models[self._item_name]
+					local selected_option = content.options[content.selected_index]
+					local attachment_data = weapon_attachments[selected_option.value]
+					if attachment_data and attachment_data.move then self:start_weapon_move(attachment_data.move) end
+					-- local weapon_attachments = mod.attachment_models[self._item_name]
+					-- local selected_option = content.options[content.selected_index]
+					-- local attachment_data = weapon_attachments[selected_option.value]
+					-- local new_angle = attachment_data and attachment_data.angle or 0
+					-- local ui_weapon_spawner = self:ui_weapon_spawner()
+					-- if ui_weapon_spawner then
+					-- 	ui_weapon_spawner:initiate_weapon_rotation(new_angle)
+					-- end
 				end
 			end
 		end
@@ -1644,7 +1671,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	
 		if content.close_setting then
 			content.close_setting = nil
-	
+
 			self:release_attachment_packages()
 			
 			local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
@@ -1662,7 +1689,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				mod.weapon_part_animation_update = true
 				-- self:detach_attachment(self.cosmetics_view._presentation_item, entry.attachment_slot, nil, selected_option.value, nil, nil, nil, "attach")
 				mod.build_animation:animate(self._presentation_item, entry.attachment_slot, nil, selected_option.value, nil, nil, nil, "attach")
-				self:start_weapon_move()
+				
 			end
 	
 			content.exclusive_focus = false
@@ -1673,7 +1700,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			end
 			mod.dropdown_open = false
 			self._widgets_by_name.attachment_display_name.content.text = ""
-	
+
 			return
 		end
 	
@@ -1681,12 +1708,23 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self.dropdown_positions[entry.attachment_slot][3] = (not mod.dropdown_open and content.hotspot.is_hover) or content.hotspot.is_selected
 	
 		if (content.hotspot.is_hover or content.hotspot.is_selected) and not mod.dropdown_open and not mod.build_animation:is_busy() then
-			self.dropdown_positions[entry.attachment_slot][3] = true
+			
 			local weapon_attachments = mod.attachment_models[self._item_name]
 			local attachment_data = weapon_attachments[value]
+			local attachment_name = attachment_data and attachment_data.name
 			local new_angle = attachment_data and attachment_data.angle or 0
-			mod.do_rotation = true
-			mod.new_rotation = new_angle
+			-- mod.do_rotation = true
+			-- mod.new_rotation = new_angle
+			
+			if mod.attachment_preview_index ~= content.selected_index then
+				mod:play_attachment_sound(self._selected_item, entry.attachment_slot, entry.preview_attachment, "select")
+			end
+			self.dropdown_positions[entry.attachment_slot][3] = true
+
+			local ui_weapon_spawner = self:ui_weapon_spawner()
+			if ui_weapon_spawner then
+				ui_weapon_spawner:initiate_weapon_rotation(new_angle, 1)
+			end
 			mod.attachment_preview_index = content.selected_index
 	
 			-- local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
@@ -1846,13 +1884,17 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					-- local attachment_name = self:attachment_
 					local attachment_data = weapon_attachments[option.value]
 					local new_angle = attachment_data and attachment_data.angle or 0
-					mod.do_rotation = true
-					mod.new_rotation = new_angle + 1 * (actual_i / #options) - .5
+					-- mod.do_rotation = true
+					-- mod.new_rotation = new_angle + 1 * (actual_i / #options) - .5
+					local ui_weapon_spawner = self:ui_weapon_spawner()
+					if ui_weapon_spawner then
+						ui_weapon_spawner:initiate_weapon_rotation(new_angle + .1 * (actual_i / #options), 1)
+					end
 	
 					-- mod.build_animation.animations = {}
 					self.dropdown_positions[entry.attachment_slot][3] = true
 					mod.attachment_preview_index = actual_i
-					if attachment_data and attachment_data.move then self:start_weapon_move(attachment_data.move) end
+					-- if attachment_data and attachment_data.move then self:start_weapon_move(attachment_data.move) end
 					entry.preview_attachment = option.value
 	
 					self:set_attachment_info(option.display_name, attachment_data.data)
@@ -1899,8 +1941,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		if value_changed and new_value ~= value then
 			local on_activated = entry.on_activated
 	
-			mod.reset_start = nil
-			mod.do_reset = nil
+			-- mod.reset_start = nil
+			-- mod.do_reset = nil
 	
 			on_activated(new_value, entry)
 		-- elseif self.dropdown_positions[entry.attachment_slot][3] and not value_changed and #mod.build_animation.animations == 0 then
@@ -1933,6 +1975,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			content.close_setting = true
 			mod.dropdown_open = false
 			mod.dropdown_closing = false
+
+			self:start_weapon_move()
+			local ui_weapon_spawner = self:ui_weapon_spawner()
+			if ui_weapon_spawner then
+				ui_weapon_spawner:initiate_weapon_rotation(0, 1)
+			end
 	
 			return
 		elseif content.wait_next_frame and content.option_disabled then
@@ -2353,14 +2401,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.custom_enter = function(self)
 		-- Switch off modding tool
 		self._modding_tool_toggled_on = false
-		-- Remove player visible equipment
-		self:remove_player_visible_equipment()
+		-- -- Remove player visible equipment
+		-- self:remove_player_visible_equipment()
 		-- Generate custom widgets
 		self:generate_custom_widgets()
 		-- Resolve attachments not applicable
 		self:resolve_not_applicable_attachments()
-		-- Init custom weapon zoom
-		self:init_custom_weapon_zoom()
+		-- -- Init custom weapon zoom
+		-- self:init_custom_weapon_zoom()
 		-- Get changed settings
 		self:get_changed_weapon_settings()
 		-- Update start settings
@@ -2392,21 +2440,38 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.reset_stuff = function(self)
 		mod:persistent_table(REFERENCE).keep_all_packages = false
 		-- mod.move_position = vector3_box(vector3_zero())
-		mod.move_position:store(vector3_zero())
+		-- mod.move_position:store(vector3_zero())
 		-- mod.new_position = nil
-		mod.new_position:store(vector3_zero())
-		mod.last_move_position = nil
+		-- mod.new_position:store(vector3_zero())
+		-- mod.last_move_position = nil
 		-- mod.link_unit_position = nil
-		mod.link_unit_position:store(vector3_zero())
-		mod.do_move = nil
-		mod.move_end = nil
-		mod.do_reset = nil
-		mod.reset_start = nil
-		mod._last_rotation_angle = 0
+		-- mod.link_unit_position:store(vector3_zero())
+		-- mod.do_move = nil
+		-- mod.move_end = nil
+		-- mod.do_reset = nil
+		-- mod.reset_start = nil
+		-- mod._last_rotation_angle = 0
 		mod.mesh_positions = {}
 		mod.weapon_part_animation_update = nil
 		mod.build_animation:clear()
 		mod.preview_flashlight_state = false
+
+
+		mod.start_rotation = nil
+		mod._rotation_angle = nil
+		mod._target_rotation_angle = nil
+		mod._last_rotation_angle = nil
+		mod.is_doing_rotation = nil
+		mod.rotation_time = nil
+		mod.do_rotation = nil
+
+		mod.do_move = nil
+		mod.last_move_position = nil
+		mod.move_position = nil
+		mod.new_position = nil
+		mod._link_unit_position = nil
+		mod.move_end = nil
+		mod.current_move_duration = nil
 	end
 
 	-- Custom exit
@@ -2516,8 +2581,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			self:attach_attachments(changed_weapon_settings, skip_animation)
 			-- Reset animation
 			self:start_weapon_move()
-			mod.new_rotation = 0
-			mod.do_rotation = true
+			-- mod.new_rotation = 0
+			-- mod.do_rotation = true
 		end
 	end
 
@@ -2557,8 +2622,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			self.original_weapon_settings = {}
 			self:get_changed_weapon_settings()
 		else
-			local t = managers.time:time("main")
-			mod.reset_start = t
+			-- local t = managers.time:time("main")
+			-- mod.reset_start = t
 			self:check_unsaved_changes(true)
 			self:hide_custom_widgets(true)
 		end

@@ -55,7 +55,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         local visible_equipment_system = script_unit_has_extension(self._unit, "visible_equipment_system")
         local visible_equipment_system_option = mod:get(OPTION_VISIBLE_EQUIPMENT)
         local hub = not mod:is_in_hub() or not mod:get(OPTION_VISIBLE_EQUIPMENT_NO_HUB)
-        if not visible_equipment_system and visible_equipment_system_option and not managers.ui:has_active_view() and hub then
+        if not visible_equipment_system and visible_equipment_system_option and hub then
             -- Add VisibleEquipmentExtension
             script_unit_add_extension({
                 world = self._equipment_component._world,

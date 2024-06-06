@@ -41,7 +41,7 @@ local DataCache = class("DataCache")
 -- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
 
 mod.try_init_cache = function(self)
-    if self.all_mods_loaded and not self.data_cache then
+    if self.all_mods_loaded and (not self.data_cache or DEBUG) then
         if MasterItems.get_cached() then
             self.data_cache = DataCache:new()
         end
@@ -100,7 +100,7 @@ DataCache.cache_attachment_data = function(self)
                 -- Cache item name -> full item string
                 self.cache.item_strings[item_name] = item_string
                 -- Cache item name -> attachment slots
-                self.cache.attachment_slots[item_name] = mod.gear_settings:possible_attachment_slots(item)
+                self.cache.attachment_slots[item_name] = mod.gear_settings:possible_attachment_slots(item, true)
                 self.cache.attachment_list[item_name] = {}
                 for _, slot in pairs(self.cache.attachment_slots[item_name]) do
                     -- Cache item name -> possible attachments by slot
@@ -117,7 +117,7 @@ DataCache.cache_attachment_data = function(self)
         -- Cache initialized
         self.cache.initialized = true
 
-        -- self:debug_dump()
+        self:debug_dump()
     end
 end
 

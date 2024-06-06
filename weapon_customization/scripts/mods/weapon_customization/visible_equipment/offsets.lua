@@ -173,7 +173,7 @@ mod.visible_equipment_offsets = {
             backpack = {position = vector3_box(.4, .25, -.225), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
             loading = mod.visible_equipment_loading_offsets.melee_medium,
-            step_sounds = {SoundEventAliases.sfx_equip.events.ogryn_combatblade_p1_m1, SoundEventAliases.sfx_equip_03.events.combatknife_p1_m2},
+            step_sounds = {SoundEventAliases.sfx_equip_03.events.combatknife_p1_m2},
         },
         WEAPON_RANGED = {
             default = {position = vector3_box(.3, .22, .125), rotation = vector3_box(200, -10, 90), scale = vector3_box(1, 1, 1),
@@ -401,7 +401,7 @@ mod.visible_equipment_offsets = {
             backpack = {position = vector3_box(.5, .25, -.225), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
                 step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
             loading = mod.visible_equipment_loading_offsets.melee_medium,
-            step_sounds = {SoundEventAliases.sfx_equip.events.ogryn_combatblade_p1_m1, SoundEventAliases.sfx_equip_03.events.combatknife_p1_m2},
+            step_sounds = {SoundEventAliases.sfx_equip_03.events.combatknife_p1_m2},
         }
     --#endregion
 }

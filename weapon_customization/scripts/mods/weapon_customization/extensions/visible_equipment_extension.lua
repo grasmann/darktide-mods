@@ -746,9 +746,12 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 local sounds_3 = SoundEventAliases.sfx_ads_up.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+                    or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_equip.events.default
                 local sounds_4 = SoundEventAliases.sfx_weapon_foley_left_hand_01.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
+                    or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+                    or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
                     or SoundEventAliases.sfx_ads_down.events.default
                 self.equipment_data[slot] = data
                 -- Load sound packages
@@ -1282,7 +1285,8 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                     local new_euler_rotation = quaternion_from_vector(current)
                     local new_rotation = Quaternion.multiply(rotation, new_euler_rotation)
                     unit_set_local_rotation(unit, 1, new_rotation)
-                    self.rotate_animation[slot] = vector3_box(current)
+                    -- self.rotate_animation[slot] = vector3_box(current)
+                    self.rotate_animation[slot]:store(current)
                 end
             end
         end

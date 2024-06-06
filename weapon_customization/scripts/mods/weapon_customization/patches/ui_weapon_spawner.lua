@@ -90,6 +90,10 @@ end
 
 mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
+	-- ┌┬┐┌─┐┌┬┐┌┬┐┬┌┐┌┌─┐  ┌┬┐┌─┐┌─┐┬  ┌─┐
+	-- ││││ │ ││ │││││││ ┬   │ │ ││ ││  └─┐
+	-- ┴ ┴└─┘─┴┘─┴┘┴┘└┘└─┘   ┴ └─┘└─┘┴─┘└─┘
+
 	instance.get_modding_tools = function(self)
 		self.modding_tools = self.modding_tools or get_mod("modding_tools")
 	end
@@ -108,11 +112,66 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 		end
 	end
 
-	instance._init_custom = function(self)
+	instance.toggle_modding_tools = function(self, value)
+		self._modding_tool_toggled_on = value
+	end
+
+	instance.unit_manipulation_remove_all = function(self)
+		if self._weapon_spawn_data and self._modding_tool_toggled_on then
+			self:unit_manipulation_remove(self._weapon_spawn_data.item_unit_3p)
+			local attachment_units_3p = self._weapon_spawn_data.attachment_units_3p or {}
+			for _, unit in pairs(attachment_units_3p) do
+				self:unit_manipulation_remove(unit)
+			end
+		end
+	end
+
+	-- ┌─┐┌─┐┌┬┐┌─┐┬─┐┌─┐  ┌┬┐┌─┐┬  ┬┌─┐┌┬┐┌─┐┌┐┌┌┬┐
+	-- │  ├─┤│││├┤ ├┬┘├─┤  ││││ │└┐┌┘├┤ │││├┤ │││ │ 
+	-- └─┘┴ ┴┴ ┴└─┘┴└─┴ ┴  ┴ ┴└─┘ └┘ └─┘┴ ┴└─┘┘└┘ ┴ 
+
+	instance.start_camera_movement = function(self, position)
+		if position then
+			self.move_position:store(vector3_unbox(position))
+		else
+			self.move_position:store(vector3_zero())
+		end
+		self.do_move = true
+		-- mod:echot("start_camera_movement: "..tostring(self.move_position))
+		mod.move_position = self.move_position
+		mod.do_move = self.do_move
+	end
+
+	-- instance.update_camera_movement = function(self, dt, t)
+
+	-- end
+
+	-- ┌─┐┌─┐┌┬┐┌─┐┬─┐┌─┐  ┌─┐┌─┐┌─┐┌┬┐
+	-- │  ├─┤│││├┤ ├┬┘├─┤  ┌─┘│ ││ ││││
+	-- └─┘┴ ┴┴ ┴└─┘┴└─┴ ┴  └─┘└─┘└─┘┴ ┴
+
+	instance.custom_init = function(self)
 		if self._reference_name ~= "WeaponIconUI" then
+			self._link_unit_position = vector3_box(vector3_zero())
 			-- Rotation
+
+			self.do_move = mod.do_move
+			self.move_end = mod.move_end
+			self.current_move_duration = mod.current_move_duration or MOVE_DURATION_IN
+			self.last_move_position = mod.last_move_position or vector3_box(vector3_zero())
+			self.move_position = mod.move_position or vector3_box(vector3_zero())
+			self.new_position = mod.new_position or vector3_box(vector3_zero())
+			self._link_unit_position = mod._link_unit_position or vector3_box(vector3_zero())
+
+			self.do_rotation = mod.do_rotation
 			self._rotation_angle = mod._rotation_angle or 0
-			self._default_rotation_angle = mod._last_rotation_angle or 0
+			self._target_rotation_angle = mod._target_rotation_angle or self._rotation_angle
+			self._last_rotation_angle = mod._last_rotation_angle or self._rotation_angle
+			self.is_doing_rotation = mod.is_doing_rotation
+			self._default_rotation_angle = self._last_rotation_angle or 0
+			self.start_rotation = mod.start_rotation
+			self.rotation_time = mod.rotation_time
+
 			-- Build animation extension
 			if mod.cosmetics_view then
 				mod.build_animation:set({
@@ -121,32 +180,48 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 					item = mod.cosmetics_view._presentation_item,
 				}, true)
 			end
+			self:init_custom_weapon_zoom()
 		end
 	end
 
-	instance.fix_streaming_without_mesh_streamer = function(self)
-		local weapon_spawn_data = self._weapon_spawn_data
-		if weapon_spawn_data and not weapon_spawn_data.visible then
-			self:cb_on_unit_3p_streaming_complete(weapon_spawn_data.item_unit_3p)
+	instance.init_custom_weapon_zoom = function(self)
+		local item = self._weapon_spawn_data and self._weapon_spawn_data.item
+		item = item or self._loading_weapon_data and self._loading_weapon_data
+		if item then
+			-- Get item name
+			
+			-- local item_name = self:item_name_from_content_string(item.name)
+			-- local item_name = self._item_name
+			local item_name = mod.gear_settings:short_name(item.name)
+			-- Check for weapon in data
+			if mod.attachment_models[item_name] then
+				-- Check for custom weapon zoom
+				if mod.attachment_models[item_name].customization_min_zoom then
+					local min_zoom = mod.attachment_models[item_name].customization_min_zoom
+					self._min_zoom = min_zoom
+				else
+					self._min_zoom = -2
+				end
+				-- Set zoom
+				self._weapon_zoom_target = self._min_zoom
+				self._weapon_zoom_fraction = self._min_zoom
+				self:_set_weapon_zoom(self._min_zoom)
+			end
 		end
 	end
 
-	instance.fix_streaming_without_mesh_streamer_2 = function(self)
-		if self._weapon_spawn_data then
-			mod.weapon_spawning = nil
-			self._weapon_spawn_data.streaming_complete = true
-		end
-	end
+	-- ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┬─┐┌─┐┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌
+	-- │││├┤ ├─┤├─┘│ ││││  ├┬┘│ │ │ ├─┤ │ ││ ││││
+	-- └┴┘└─┘┴ ┴┴  └─┘┘└┘  ┴└─└─┘ ┴ ┴ ┴ ┴ ┴└─┘┘└┘
 
 	instance.is_rotation_disabled = function(self)
-		return self:unit_manipulation_busy() or self._rotation_input_disabled or mod.dropdown_open
+		return not self.is_doing_rotation and (self:unit_manipulation_busy() or self._rotation_input_disabled or mod.dropdown_open)
 	end
 
 	instance.unlink_units = function(self)
-		local weapon_spawn_data = self._weapon_spawn_data
-		if weapon_spawn_data then
-			local item_unit_3p = weapon_spawn_data.item_unit_3p
-			local attachment_units_3p = weapon_spawn_data.attachment_units_3p
+		if self._weapon_spawn_data then
+			local item_unit_3p = self._weapon_spawn_data.item_unit_3p
+			local attachment_units_3p = self._weapon_spawn_data.attachment_units_3p
 			for i = #attachment_units_3p, 1, -1 do
 				local unit = attachment_units_3p[i]
 				if unit and unit_alive(unit) then
@@ -159,20 +234,81 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 		end
 	end
 
-	instance.toggle_modding_tools = function(self, value)
-		self._modding_tool_toggled_on = value
+	instance.initiate_weapon_rotation = function(self, new_angle, length)
+		if not self.is_doing_rotation or (new_angle and new_angle ~= self._target_rotation_angle) then
+			-- mod:echot("initiate_weapon_rotation: "..tostring(new_angle))
+			self._last_rotation_angle = self._rotation_angle
+			if new_angle then
+				self._target_rotation_angle = new_angle
+			else
+				self._target_rotation_angle = 0
+			end
+			self.do_rotation = true
+			self.rotation_time = length or 1
+		end
+		mod.rotation_time = self.rotation_time
+		mod._target_rotation_angle = self._target_rotation_angle
+		mod._last_rotation_angle = self._last_rotation_angle
 	end
 
-	instance.unit_manipulation_remove_all = function(self)
-		local weapon_spawn_data = self._weapon_spawn_data
-		if weapon_spawn_data and self._modding_tool_toggled_on then
-			self:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
-			local attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
-			for _, unit in pairs(attachment_units_3p) do
-				self:unit_manipulation_remove(unit)
-			end
+	instance.update_weapon_rotation = function(self, dt, t)
+
+		local function ease_out_elastic(t)
+			if t == 0 or t == 1 then return t end
+			return 2^(-10 * t) * math_sin((t - 1.4 * 0.25) * (2 * math.pi) / 1.4) + 1
 		end
+
+		if self.do_rotation then
+			self.is_doing_rotation = true
+			self.do_rotation = nil
+			self.start_rotation = t
+
+		elseif self.start_rotation and t < self.start_rotation + self.rotation_time then
+			local progress = (t - self.start_rotation) / self.rotation_time
+			local anim_progress = ease_out_elastic(progress)
+			self._rotation_angle = math.lerp(self._last_rotation_angle, self._target_rotation_angle, anim_progress)
+
+		elseif self.start_rotation and t > self.start_rotation + self.rotation_time then
+			self._rotation_angle = self._target_rotation_angle
+			self.start_rotation = nil
+			self.is_doing_rotation = nil
+			
+		end
+		
+		mod.do_rotation = self.do_rotation
+		mod.start_rotation = self.start_rotation
+		mod._rotation_angle = self._rotation_angle
+		mod._last_rotation_angle = self._last_rotation_angle
+		mod.is_doing_rotation = self.is_doing_rotation
+
+		-- -- Camera rotation
+		-- if self.do_rotation then
+		-- 	local new_rotation = mod.new_rotation
+		-- 	if new_rotation then
+		-- 		if new_rotation ~= 0 and self._default_rotation_angle ~= new_rotation then
+		-- 			-- mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
+		-- 		end
+		-- 		-- self._rotation_angle = mod._last_rotation_angle or 0
+		-- 		self._default_rotation_angle = new_rotation
+		-- 		self._last_rotation_angle = self._default_rotation_angle
+		-- 		self.check_rotation = true
+		-- 		self.do_reset = nil
+		-- 		self.reset_start = nil
+		-- 		self.do_rotation = nil
+		-- 	end
+
+		-- -- elseif self.check_rotation and not mod.dropdown_open then
+		-- -- 	if math_round_with_precision(self._rotation_angle, 1) == math_round_with_precision(self._default_rotation_angle, 1) then
+		-- -- 		if math_round_with_precision(self._rotation_angle, 1) ~= 0 then
+		-- -- 			self.do_reset = true
+		-- -- 		end
+		-- -- 		self.check_rotation = nil
+		-- -- 	end
+
+		-- end
 	end
+
+	
 
 	instance.update_carousel = function(self, dt, t)
 		if mod.cosmetics_view and mod:get("mod_option_carousel") then
@@ -182,70 +318,70 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 	end
 
 	instance.update_animation = function(self, dt, t)
-		local weapon_spawn_data = self._weapon_spawn_data
-		if weapon_spawn_data and self._link_unit_position then
+		if self._weapon_spawn_data and self._link_unit_position then
 			
-			local link_unit = weapon_spawn_data.link_unit
+			local link_unit = self._weapon_spawn_data.link_unit
 			local position = vector3_unbox(self._link_unit_position)
 			local animation_speed = mod:get("mod_option_weapon_build_animation_speed")
 			local animation_time = WEAPON_PART_ANIMATION_TIME
-			local item_unit_3p = weapon_spawn_data.item_unit_3p
+			local item_unit_3p = self._weapon_spawn_data.item_unit_3p
 
 			-- Camera movement
-			if mod.do_move and mod:get("mod_option_camera_zoom") then
-				if mod.move_position then
-					local last_move_position = mod.last_move_position and vector3_unbox(mod.last_move_position) or vector3_zero()
-					local move_position = vector3_unbox(mod.move_position)
-					if not mod:vector3_equal(last_move_position, move_position) then
+			if self.do_move and mod:get("mod_option_camera_zoom") then
+				if not vector3.equal(vector3_unbox(self.move_position), vector3_zero()) then
+					local last_move_position = self.last_move_position and vector3_unbox(self.last_move_position) or vector3_zero()
+					local move_position = vector3_unbox(self.move_position)
+					-- if not vector3.equal(last_move_position, move_position) then
 						-- mod.new_position = vector3_box(vector3_unbox(self._link_unit_base_position) + move_position)
-						mod.new_position:store(vector3_unbox(self._link_unit_base_position) + move_position)
-						mod.move_end = t + MOVE_DURATION_IN
-						mod.current_move_duration = MOVE_DURATION_IN
-						mod.last_move_position = mod.move_position
+						self.new_position:store(vector3_unbox(self._link_unit_base_position) + move_position)
+						self.move_end = t + MOVE_DURATION_IN
+						self.current_move_duration = MOVE_DURATION_IN
+						self.last_move_position = self.move_position
 						mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
-					end
+					-- end
 
-				elseif self._link_unit_base_position then
+				elseif not vector3.equal(vector3_unbox(self.move_position), vector3_unbox(self._link_unit_base_position)) then --self._link_unit_base_position then
 					local last_move_position = vector3_unbox(self._link_unit_position)
 					local move_position = vector3_unbox(self._link_unit_base_position)
-					if not mod:vector3_equal(move_position, last_move_position) then
+					-- if not vector3.equal(move_position, last_move_position) then
 						-- mod.new_position = self._link_unit_base_position
-						mod.new_position:store(vector3_unbox(self._link_unit_base_position))
-						mod.move_end = t + MOVE_DURATION_OUT
-						mod.current_move_duration = MOVE_DURATION_OUT
-						mod.last_move_position = vector3_zero()
+						self.new_position:store(vector3_unbox(self._link_unit_base_position))
+						self.move_end = t + MOVE_DURATION_OUT
+						self.current_move_duration = MOVE_DURATION_OUT
+						self.last_move_position:store(vector3_zero())
 						mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
-					end
+					-- end
 
 				end
-				mod.do_move = nil
-				mod.do_reset = nil
-				mod.reset_start = nil
+				self.do_move = nil
+				self.do_reset = nil
+				self.reset_start = nil
 			else
-				if mod.move_end and t <= mod.move_end then
-					local progress = (mod.move_end - t) / mod.current_move_duration
+				if self.move_end and t <= self.move_end then
+					local progress = (self.move_end - t) / self.current_move_duration
 					local anim_progress = math_easeInCubic(1 - progress)
-					local lerp_position = vector3_lerp(position, vector3_unbox(mod.new_position), anim_progress)
+					local lerp_position = vector3_lerp(position, vector3_unbox(self.new_position), anim_progress)
 					-- mod.link_unit_position = vector3_box(lerp_position)
-					mod.link_unit_position:store(lerp_position)
+					-- self.link_unit_position:store(lerp_position)
 					if link_unit and unit_alive(link_unit) then
 						-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 						unit_set_local_position(link_unit, 1, lerp_position)
 					end
-					self._link_unit_position = vector3_box(lerp_position)
+					-- self._link_unit_position = vector3_box(lerp_position)
+					self._link_unit_position:store(lerp_position)
 
-				elseif mod.move_end and t > mod.move_end then
-					mod.move_end = nil
+				elseif self.move_end and t > self.move_end then
+					self.move_end = nil
 					if link_unit and unit_alive(link_unit) then
 						-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
-						unit_set_local_position(link_unit, 1, vector3_unbox(mod.new_position))
+						unit_set_local_position(link_unit, 1, vector3_unbox(self.new_position))
 					end
 					if link_unit and unit_alive(link_unit) then
 						-- mod.link_unit_position = vector3_box(unit_local_position(link_unit, 1))
-						mod.link_unit_position:store(unit_local_position(link_unit, 1))
+						self._link_unit_position:store(unit_local_position(link_unit, 1))
 					end
-					if mod.current_move_duration == MOVE_DURATION_IN and not mod:vector3_equal(vector3_unbox(mod.new_position), vector3_zero()) then
-						mod.do_reset = true
+					if self.current_move_duration == MOVE_DURATION_IN and not mod:vector3_equal(vector3_unbox(self.new_position), vector3_zero()) then
+						self.do_reset = true
 					end
 
 				end
@@ -255,52 +391,60 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 			-- Lights
 			mod:set_light_positions(self)
 			
-			-- Camera rotation
-			if mod.do_rotation then
-				local new_rotation = mod.new_rotation
-				if new_rotation then
-					if new_rotation ~= 0 and self._default_rotation_angle ~= new_rotation then
-						-- mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
-					end
-					-- self._rotation_angle = mod._last_rotation_angle or 0
-					self._default_rotation_angle = new_rotation
-					mod._last_rotation_angle = self._default_rotation_angle
-					mod.check_rotation = true
-					mod.do_reset = nil
-					mod.reset_start = nil
-					mod.do_rotation = nil
-				end
+			-- -- Camera rotation
+			-- if self.do_rotation then
+			-- 	local new_rotation = mod.new_rotation
+			-- 	if new_rotation then
+			-- 		if new_rotation ~= 0 and self._default_rotation_angle ~= new_rotation then
+			-- 			-- mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
+			-- 		end
+			-- 		-- self._rotation_angle = mod._last_rotation_angle or 0
+			-- 		self._default_rotation_angle = new_rotation
+			-- 		self._last_rotation_angle = self._default_rotation_angle
+			-- 		self.check_rotation = true
+			-- 		self.do_reset = nil
+			-- 		self.reset_start = nil
+			-- 		self.do_rotation = nil
+			-- 	end
 
-			elseif mod.check_rotation and not mod.dropdown_open then
-				if math_round_with_precision(self._rotation_angle, 1) == math_round_with_precision(self._default_rotation_angle, 1) then
-					if math_round_with_precision(self._rotation_angle, 1) ~= 0 then
-						mod.do_reset = true
-					end
-					mod.check_rotation = nil
-				end
+			-- elseif self.check_rotation and not mod.dropdown_open then
+			-- 	if math_round_with_precision(self._rotation_angle, 1) == math_round_with_precision(self._default_rotation_angle, 1) then
+			-- 		if math_round_with_precision(self._rotation_angle, 1) ~= 0 then
+			-- 			self.do_reset = true
+			-- 		end
+			-- 		self.check_rotation = nil
+			-- 	end
 
-			end
+			-- end
 
 			-- Reset
-			if mod.do_reset and not mod.dropdown_open then
-				mod.reset_start = t + RESET_WAIT_TIME
-				mod.do_reset = nil
+			if self.do_reset and not mod.dropdown_open then
+				self.reset_start = t + RESET_WAIT_TIME
+				self.do_reset = nil
 
-			elseif mod.reset_start and t >= mod.reset_start and not mod.dropdown_open then
-				if mod.move_position then
+			elseif self.reset_start and t >= self.reset_start and not mod.dropdown_open then
+				if self.move_position then
 					mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
 				end
 				-- mod.move_position = nil
-				mod.move_position:store(vector3_zero())
-				mod.do_move = true
-				mod.reset_start = nil
+				self.move_position:store(vector3_zero())
+				self.do_move = true
+				self.reset_start = nil
 				self._default_rotation_angle = 0
-				mod._last_rotation_angle = 0
+				self._last_rotation_angle = 0
 
-			elseif mod.reset_start and mod.dropdown_open then
-				mod.reset_start = mod.reset_start + dt
+			elseif self.reset_start and mod.dropdown_open then
+				self.reset_start = self.reset_start + dt
 
 			end
+
+			mod.move_position = self.move_position
+			mod.do_move = self.do_move
+			mod.last_move_position = self.last_move_position
+			mod.new_position = self.new_position
+			mod._link_unit_position = self._link_unit_position
+			mod.move_end = self.move_end
+			mod.current_move_duration = self.current_move_duration
 
 			-- Weapon part animations
 			mod.build_animation:update(dt, t)
@@ -308,8 +452,7 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 	end
 
 	instance.spawn_weapon_custom = function(self)
-		local weapon_spawn_data = self._weapon_spawn_data
-		if weapon_spawn_data and self._reference_name ~= "WeaponIconUI" then
+		if self._weapon_spawn_data and self._reference_name ~= "WeaponIconUI" then
 
 			-- mod.cosmetics_view.weapon_unit = weapon_spawn_data.item_unit_3p
 			-- mod.cosmetics_view.attachment_units_3p = weapon_spawn_data.attachment_units_3p or {}
@@ -325,17 +468,17 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 			-- end
 
 			-- local item_name = mod.cosmetics_view._item_name
-			local item_name = mod:item_name_from_content_string(weapon_spawn_data.item.name)
-			local link_unit = weapon_spawn_data.link_unit
+			local item_name = mod:item_name_from_content_string(self._weapon_spawn_data.item.name)
+			local link_unit = self._weapon_spawn_data.link_unit
 
 			mod.weapon_spawning = true
 
-			unit_set_unit_visibility(weapon_spawn_data.item_unit_3p, true, true)
+			unit_set_unit_visibility(self._weapon_spawn_data.item_unit_3p, true, true)
 
-			mod.gear_settings:hide_bullets(weapon_spawn_data.attachment_units_3p)
+			mod.gear_settings:hide_bullets(self._weapon_spawn_data.attachment_units_3p)
 
 			-- local flashlight = mod:get_attachment_slot_in_attachments(weapon_spawn_data.attachment_units_3p, "flashlight")
-			local flashlight = mod.gear_settings:attachment_unit(weapon_spawn_data.attachment_units_3p, "flashlight")
+			local flashlight = mod.gear_settings:attachment_unit(self._weapon_spawn_data.attachment_units_3p, "flashlight")
 			
 			local attachment_name = flashlight and unit_get_data(flashlight, "attachment_name")
 			if flashlight then
@@ -358,7 +501,7 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 			local rotation = quaternion_axis_angle(vector3(0, auto_tilt_angle, 1), -(auto_turn_angle + start_angle))
 			if link_unit then
 
-				local initial_rotation = weapon_spawn_data.rotation and quaternion_unbox(weapon_spawn_data.rotation)
+				local initial_rotation = self._weapon_spawn_data.rotation and quaternion_unbox(self._weapon_spawn_data.rotation)
 
 				if initial_rotation then
 					rotation = quaternion_multiply(rotation, initial_rotation)
@@ -371,13 +514,13 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 				end
 
 				if self._last_item_name and self._last_item_name ~= item_name then
-					mod.do_reset = nil
-					mod.reset_start = nil
-					mod.move_end = nil
-					mod.do_move = nil
-					mod.last_move_position = nil
+					self.do_reset = nil
+					self.reset_start = nil
+					self.move_end = nil
+					self.do_move = nil
+					self.last_move_position:store(vector3_zero())
 					-- mod.move_position = nil
-					mod.move_position:store(vector3_zero())
+					self.move_position:store(vector3_zero())
 				end
 				
 				if mod.attachment_models[item_name] and mod.attachment_models[item_name].customization_default_position then
@@ -393,13 +536,14 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 					self._link_unit_base_position = vector3_box(unit_local_position(link_unit, 1))
 				end
 
-				if mod.link_unit_position then
-					local position = vector3_unbox(mod.link_unit_position)
+				if not vector3.equal(vector3_unbox(self._link_unit_position), vector3_zero()) then
+					local position = vector3_unbox(self._link_unit_position)
 					-- mod:info("CLASS.UIWeaponSpawner: "..tostring(link_unit))
 					unit_set_local_position(link_unit, 1, position)
 				end
 
-				self._link_unit_position = vector3_box(unit_local_position(link_unit, 1))
+				-- self._link_unit_position = vector3_box(unit_local_position(link_unit, 1))
+				self._link_unit_position:store(unit_local_position(link_unit, 1))
 				self._last_item_name = item_name
 
 				mod:set_light_positions(self)
@@ -418,13 +562,15 @@ mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, wor
 	-- Original function
 	func(self, reference_name, world, camera, unit_spawner, ...)
 
-	-- Custom
-	self:_init_custom()
+	-- Custom init
+	self:custom_init()
 
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "destroy", function(func, self, ...)
 	
+	-- mod._last_rotation_angle = self._rotation_angle
+
 	-- Build animation
 	mod.build_animation:set(false)
 
@@ -452,7 +598,12 @@ mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(fun
 	func(self, item_unit_3p, ...)
 
 	-- Stream fix
-	self:fix_streaming_without_mesh_streamer_2()
+	if self._weapon_spawn_data then
+		-- Weapon not spawning anymore
+		mod.weapon_spawning = nil
+		-- Set streaming complete
+		self._weapon_spawn_data.streaming_complete = true
+	end
 
 end)
 
@@ -472,18 +623,22 @@ end)
 mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
 
 	-- Fix streaming issues when mesh streamer is deactivated
-	self:fix_streaming_without_mesh_streamer()
+	if self._weapon_spawn_data and not self._weapon_spawn_data.visible then
+		self:cb_on_unit_3p_streaming_complete(self._weapon_spawn_data.item_unit_3p)
+	end
 
 	-- Original function
 	func(self, dt, t, input_service, ...)
 
-	if self._reference_name ~= "WeaponIconUI" and mod.cosmetics_view and not self.demo then
+	if self._reference_name ~= "WeaponIconUI" and mod.cosmetics_view then --and not self.demo then
 
 		-- Update carousel
 		self:update_carousel(dt, t)
 
 		-- Update animations
 		self:update_animation(dt, t)
+
+		self:update_weapon_rotation(dt, t)
 
 	end
 
