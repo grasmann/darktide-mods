@@ -206,7 +206,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
             end
 
             if process then
-                if not mod.weapon_spawning then
+                if not self.ui_weapon_spawner.weapon_spawning then
                     local this_animation_speed = entry.speed or self.animation_speed or .1
                     -- No timer yet - start new state
                     if not entry.end_time then
@@ -371,7 +371,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
                         end
                     end
                 else
-                    if mod.weapon_spawning then
+                    if self.ui_weapon_spawner.weapon_spawning then
                         if unit_good then
                             mod:unit_set_local_position_mesh(self.slot_info_id, unit, movement)
                         end

@@ -188,7 +188,8 @@ VisibleEquipmentExtension.delete = function(self)
     -- Uninitialize
     self.initialized = false
     -- Iterate slots
-    for slot_name, slot in pairs(self.equipment) do
+    -- for slot_name, slot in pairs(self.equipment) do
+    for slot, _ in pairs(self.dummy_units) do
         -- Delete
         self:delete_slot(slot)
     end
@@ -649,6 +650,8 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
                     end
                     -- Unlink unit
                     world_unlink_unit(self.world, unit)
+                else
+                    mod:echot("lol: "..tostring(unit))
                 end
             end
             for _, unit in pairs(self.dummy_units[slot].attachments) do
@@ -668,6 +671,8 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
             world_unlink_unit(self.world, self.dummy_units[slot].base)
             -- Delete unit
             world_destroy_unit(self.world, self.dummy_units[slot].base)
+        else
+            mod:echot("lol: "..tostring(self.dummy_units[slot].base))
         end
     end
     -- Package

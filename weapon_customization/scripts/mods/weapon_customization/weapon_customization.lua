@@ -75,6 +75,7 @@ mod.version = "1.21"
 			attachment_slots = {},
 			attachment_list = {},
 			default_attachments = {},
+			cosmetics_scenegraphs = {},
 		},
 	})
 --#endregion

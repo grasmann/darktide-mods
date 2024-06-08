@@ -347,8 +347,10 @@ SightExtension.set_lens_units = function(self)
 				self.lens_units = {lenses[2], lenses[1], reflex[1]}
 			end
 			unit_set_unit_visibility(reflex[1], false)
-			unit_set_shader_pass_flag_for_meshes(lenses[1], "one_bit_alpha", true, true)
-			unit_set_shader_pass_flag_for_meshes(lenses[2], "one_bit_alpha", true, true)
+			if self.offset.lense_transparency then
+				unit_set_shader_pass_flag_for_meshes(lenses[1], "one_bit_alpha", true, true)
+				unit_set_shader_pass_flag_for_meshes(lenses[2], "one_bit_alpha", true, true)
+			end
 		end
 	end
 end
@@ -625,10 +627,10 @@ SightExtension.update_scope_lenses = function(self)
 		scales1, scales2 = self.lens_scales[1] and vector3_unbox(self.lens_scales[1]) or vector3_zero(),
 			self.lens_scales[2] and vector3_unbox(self.lens_scales[2]) or vector3_zero()
 	end
-	if self.sniper_zoom and self.lens_units and self.lens_transparency then
+	if self.sniper_zoom and self.lens_units then
 		if self.lens_units[1] and unit_alive(self.lens_units[1]) then
 			if self.offset.lense_transparency then
-				if self.lens_transparency >= 1 then unit_set_local_scale(self.lens_units[1], 1, scales1) end
+				if self.lens_transparency > 1 then unit_set_local_scale(self.lens_units[1], 1, scales1) end
 				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", self.lens_transparency, true)
 			else
 				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", 1, true)
@@ -637,10 +639,10 @@ SightExtension.update_scope_lenses = function(self)
 		end
 		if self.lens_units[2] and unit_alive(self.lens_units[2]) then
 			if self.offset.lense_transparency then
-				if self.lens_transparency >= 1 then unit_set_local_scale(self.lens_units[2], 1, scales2) end
+				if self.lens_transparency > 1 then unit_set_local_scale(self.lens_units[2], 1, scales2) end
 				unit_set_scalar_for_materials(self.lens_units[2], "inv_jitter_alpha", self.lens_transparency, true)
 			else
-				unit_set_scalar_for_materials(self.lens_units[1], "inv_jitter_alpha", 1, true)
+				unit_set_scalar_for_materials(self.lens_units[2], "inv_jitter_alpha", 1, true)
 				unit_set_local_scale(self.lens_units[2], 1, scales2)
 			end
 		end

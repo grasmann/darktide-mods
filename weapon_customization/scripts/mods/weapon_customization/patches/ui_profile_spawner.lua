@@ -181,6 +181,16 @@ mod:hook(CLASS.UIProfileSpawner, "wield_slot", function(func, self, slot_id, ...
 
 end)
 
+mod:hook(CLASS.UIProfileSpawner, "_despawn_players_characters", function(func, self, ...)
+
+	-- Extensions
+	self:remove_custom_extensions()
+
+	-- Original function
+	func(self, ...)
+
+end)
+
 mod:hook(CLASS.UIProfileSpawner, "destroy", function(func, self, ...)
 
 	-- Extensions

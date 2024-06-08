@@ -530,6 +530,9 @@ end
 		"help_sight",
 		"lens",
 		"lens_2",
+		"slot_trinket_1",
+		"slot_trinket_2",
+		"zzz_shared_material_overrides",
 	}
 	mod.reflex_sights = {
 		"reflex_sight_01",

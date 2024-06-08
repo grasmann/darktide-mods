@@ -5,22 +5,22 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 --#region Require
-    local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
-    local MasterItems = mod:original_require("scripts/backend/master_items")
-    local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
+	local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
+	local MasterItems = mod:original_require("scripts/backend/master_items")
+	local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
 	local UIAnimation = mod:original_require("scripts/managers/ui/ui_animation")
 	local UIScenegraph = mod:original_require("scripts/managers/ui/ui_scenegraph")
-    local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
+	local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 	local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
 	local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
 	local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
-    local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
-    local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
+	local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
+	local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 	local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
 	local ScrollbarPassTemplates = mod:original_require("scripts/ui/pass_templates/scrollbar_pass_templates")
-    local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
+	local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
 	local ViewElementWeaponInfoDefinitions = mod:original_require("scripts/ui/view_elements/view_element_weapon_info/view_element_weapon_info_definitions")
-    local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
+	local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -28,47 +28,47 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region Performance
-    local Utf8 = Utf8
+	local Utf8 = Utf8
 	local Unit = Unit
 	local math = math
-    local table = table
-    local pairs = pairs
+	local table = table
+	local pairs = pairs
 	local CLASS = CLASS
-    local Color = Color
+	local Color = Color
 	local World = World
-    local ipairs = ipairs
-    local string = string
+	local ipairs = ipairs
+	local string = string
 	local Camera = Camera
 	local get_mod = get_mod
 	local vector3 = Vector3
 	local vector2 = Vector2
 	local math_abs = math.abs
 	local Localize = Localize
-    local managers = Managers
-    local tostring = tostring
-    local callback = callback
-    local math_min = math.min
-    local math_max = math.max
+	local managers = Managers
+	local tostring = tostring
+	local callback = callback
+	local math_min = math.min
+	local math_max = math.max
 	local unit_box = Unit.box
 	local Matrix4x4 = Matrix4x4
 	local math_ceil = math.ceil
 	local math_lerp = math.lerp
 	local unit_alive = Unit.alive
 	local table_find = table.find
-    local utf8_upper = Utf8.upper
+	local utf8_upper = Utf8.upper
 	local table_size = table.size
 	local Quaternion = Quaternion
 	local string_gsub = string.gsub
-    local vector3_box = Vector3Box
+	local vector3_box = Vector3Box
 	local table_clear = table.clear
-    local table_clone = table.clone
-    local string_find = string.find
+	local table_clone = table.clone
+	local string_find = string.find
 	local vector3_lerp = vector3.lerp
 	local vector3_zero = vector3.zero
 	local table_insert = table.insert
 	local table_reverse = table.reverse
 	local table_contains = table.contains
-    local vector3_unbox = vector3_box.unbox
+	local vector3_unbox = vector3_box.unbox
 	local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
 --#endregion
 
@@ -78,15 +78,15 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
 	local MOD_OPTION_BUILD_ANIMATION = "mod_option_weapon_build_animation"
-    local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
-    local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
-    local grid_width = grid_size[1] + edge_padding
-    local tab_panel_width = grid_size[1] * .75    
-    local button_width = tab_panel_width * 0.3
-    local edge = edge_padding * 0.5
+	local edge_padding = inventory_weapon_cosmetics_view_definitions.grid_settings.edge_padding
+	local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
+	local grid_width = grid_size[1] + edge_padding
+	local tab_panel_width = grid_size[1] * .75    
+	local button_width = tab_panel_width * 0.3
+	local edge = edge_padding * 0.5
 	local LINE_THICKNESS = 2
-    local dropdown_height = 32
-    local label_height = 30
+	local dropdown_height = 32
+	local label_height = 30
 	local LINE_Z = 100
 	local ignore_slots = {"slot_trinket_1", "slot_trinket_2", "magazine2", "1"}
 	local REFERENCE = "weapon_customization"
@@ -117,16 +117,16 @@ local mod = get_mod("weapon_customization")
 -- ##### │ ┬│  │ │├┴┐├─┤│    ├┤ │ │││││   │ ││ ││││└─┐ ################################################################
 -- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ################################################################
 
-mod.get_cosmetics_scenegraphs = function(self)
-	if not self.cosmetics_scenegraphs then
-		self.cosmetics_scenegraphs = {}
-		for _, attachment_slot in pairs(self.attachment_slots) do
-			self.cosmetics_scenegraphs[#self.cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
-			self.cosmetics_scenegraphs[#self.cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
-		end
-	end
-	return self.cosmetics_scenegraphs
-end
+-- mod.get_cosmetics_scenegraphs = function(self)
+-- 	if not self.cosmetics_scenegraphs then
+-- 		self.cosmetics_scenegraphs = {}
+-- 		for _, attachment_slot in pairs(self.attachment_slots) do
+-- 			self.cosmetics_scenegraphs[#self.cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
+-- 			self.cosmetics_scenegraphs[#self.cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
+-- 		end
+-- 	end
+-- 	return self.cosmetics_scenegraphs
+-- end
 
 mod.play_zoom_sound = function(self, t, sound)
 	if not self.sound_end or t >= self.sound_end then
@@ -147,6 +147,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Get attachment slot scenegraph names
 	local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
+	-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
 
 	-- Iterate through attachment slot scenegraphs
 	for _, scenegraph_id in pairs(cosmetics_scenegraphs) do
@@ -330,12 +331,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Create scrollbar scenegraph
 	instance.scenegraph_definition.weapon_customization_scrollbar = {
-        vertical_alignment = "top",
-        parent = "item_grid_pivot",
-        horizontal_alignment = "right",
-        size = {10, 970 - 40},
-        position = {grid_width, 20, 0}
-    }
+		vertical_alignment = "top",
+		parent = "item_grid_pivot",
+		horizontal_alignment = "right",
+		size = {10, 970 - 40},
+		position = {grid_width, 20, 0}
+	}
 	-- Create scrollbar widget
 	instance.widget_definitions.weapon_customization_scrollbar = UIWidget.create_definition(ScrollbarPassTemplates.default_scrollbar, "weapon_customization_scrollbar")
 
@@ -370,7 +371,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.start_weapon_move = function(self, position)
 		local ui_weapon_spawner = self:ui_weapon_spawner()
 		if ui_weapon_spawner then
-			ui_weapon_spawner:start_camera_movement(position)
+			ui_weapon_spawner:initiate_camera_movement(position)
 		end
 		-- if position then
 		-- 	-- mod.move_position = position
@@ -412,7 +413,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- └─┘ └┘ └─┘┴└─└┴┘┴└─┴ ┴ └─┘  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘
 
 	-- Overwrite draw function
-    -- Draw legend elements
+	-- Draw legend elements
 	instance.draw = function(self, dt, t, input_service, layer)
 		local render_scale = self._render_scale
 		local render_settings = self._render_settings
@@ -704,6 +705,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.shift_attachments = function(self, progress)
 		-- Iterate scenegraph entries
 		local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
+		-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
 		for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
 			-- Make sure attachment slot is applicable
 			if not table_contains(self._not_applicable, scenegraph_name) then
@@ -1044,6 +1046,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			end
 			-- Move widgets according to their applicable status
 			local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
+			-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
 			for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
 				if table_contains(self._not_applicable, scenegraph_name) then
 					-- Differentiate text and dropdown
@@ -1271,6 +1274,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		if self._selected_item then
 			-- Iterate scenegraphs additions
 			local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
+			-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
 			for _, added_scenegraph in pairs(cosmetics_scenegraphs) do
 				-- Differentiate text and dropdown
 				if string_find(added_scenegraph, "text_pivot") then
@@ -1426,6 +1430,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					local ui_weapon_spawner = self:ui_weapon_spawner()
 					if ui_weapon_spawner then
 						ui_weapon_spawner:initiate_weapon_rotation(new_angle, 1)
+						ui_weapon_spawner:initiate_camera_movement()
 					end
 	
 					-- if string_find(new_value, "default") then
@@ -1441,7 +1446,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					-- else
 					-- 	self:start_weapon_move()
 					-- end
-					self:start_weapon_move()
+					-- self:start_weapon_move()
+					
 				end
 			end,
 			get_function = function()
@@ -1485,7 +1491,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					local weapon_attachments = mod.attachment_models[self._item_name]
 					local selected_option = content.options[content.selected_index]
 					local attachment_data = weapon_attachments[selected_option.value]
-					if attachment_data and attachment_data.move then self:start_weapon_move(attachment_data.move) end
+					local ui_weapon_spawner = self:ui_weapon_spawner()
+					if attachment_data and attachment_data.move and ui_weapon_spawner then
+						-- self:start_weapon_move(attachment_data.move)
+						ui_weapon_spawner:initiate_camera_movement(attachment_data.move)
+					end
 					-- local weapon_attachments = mod.attachment_models[self._item_name]
 					-- local selected_option = content.options[content.selected_index]
 					-- local attachment_data = weapon_attachments[selected_option.value]
@@ -1526,6 +1536,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Get dropdown positions
 	instance.get_dropdown_positions = function(self)
 		local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
+		-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
 		for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
 			if not string_find(scenegraph_name, "text_pivot") then
 				local ui_scenegraph = self._ui_scenegraph
@@ -1713,6 +1724,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			local attachment_data = weapon_attachments[value]
 			local attachment_name = attachment_data and attachment_data.name
 			local new_angle = attachment_data and attachment_data.angle or 0
+			local new_move = attachment_data and attachment_data.move
 			-- mod.do_rotation = true
 			-- mod.new_rotation = new_angle
 			
@@ -1723,6 +1735,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 			local ui_weapon_spawner = self:ui_weapon_spawner()
 			if ui_weapon_spawner then
+				ui_weapon_spawner:initiate_camera_movement(new_move)
 				ui_weapon_spawner:initiate_weapon_rotation(new_angle, 1)
 			end
 			mod.attachment_preview_index = content.selected_index
@@ -1884,10 +1897,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					-- local attachment_name = self:attachment_
 					local attachment_data = weapon_attachments[option.value]
 					local new_angle = attachment_data and attachment_data.angle or 0
+					local new_move = attachment_data and attachment_data.move
 					-- mod.do_rotation = true
 					-- mod.new_rotation = new_angle + 1 * (actual_i / #options) - .5
 					local ui_weapon_spawner = self:ui_weapon_spawner()
 					if ui_weapon_spawner then
+						ui_weapon_spawner:initiate_camera_movement(new_move)
 						ui_weapon_spawner:initiate_weapon_rotation(new_angle + .1 * (actual_i / #options), 1)
 					end
 	
@@ -1976,10 +1991,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			mod.dropdown_open = false
 			mod.dropdown_closing = false
 
-			self:start_weapon_move()
+			-- self:start_weapon_move()
 			local ui_weapon_spawner = self:ui_weapon_spawner()
 			if ui_weapon_spawner then
 				ui_weapon_spawner:initiate_weapon_rotation(0, 1)
+				ui_weapon_spawner:initiate_camera_movement()
 			end
 	
 			return
@@ -2374,6 +2390,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Init custom
 	instance.init_custom = function(self)
+		self.total_dropdown_height = 950
 		self.preview_attachment_slot = nil
 		self.preview_attachment_name = {}
 		self.attachment_index = {}
@@ -2580,7 +2597,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			-- Attach default attachments
 			self:attach_attachments(changed_weapon_settings, skip_animation)
 			-- Reset animation
-			self:start_weapon_move()
+			-- self:start_weapon_move()
+			local ui_weapon_spawner = self:ui_weapon_spawner()
+			if ui_weapon_spawner then
+				ui_weapon_spawner:initiate_camera_movement()
+				ui_weapon_spawner:initiate_weapon_rotation(0, 1)
+			end
 			-- mod.new_rotation = 0
 			-- mod.do_rotation = true
 		end
@@ -2653,6 +2675,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self:update_equip_button()
 		self:update_reset_button()
 		self:update_randomize_button()
+
+		if not self:is_busy() then
+			ui_weapon_spawner:initiate_camera_movement()
+			ui_weapon_spawner:initiate_weapon_rotation()
+		end
 	end
 
 end)
@@ -2687,7 +2714,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 	mod.gear_settings:create_temp_settings(self._gear_id)
 
 	-- Original function
-    func(self, ...)
+	func(self, ...)
 
 	-- Custom enter
 	self:custom_enter()
