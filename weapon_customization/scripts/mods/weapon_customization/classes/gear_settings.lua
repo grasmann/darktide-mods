@@ -26,6 +26,7 @@ local mod = get_mod("weapon_customization")
 	local math_abs = math.abs
 	local callback = callback
 	local unit_alive = Unit.alive
+	local table_size = table.size
 	local table_clear = table.clear
 	local table_clone = table.clone
 	local math_random = math.random
@@ -38,6 +39,7 @@ local mod = get_mod("weapon_customization")
 	local table_contains = table.contains
 	local unit_data_table_size = Unit.data_table_size
 	local unit_set_local_scale = Unit.set_local_scale
+	local math_random_array_entry = math.random_array_entry
 	local unit_set_unit_visibility = Unit.set_unit_visibility
 --#endregion
 
@@ -76,6 +78,7 @@ local GearSettings = class("GearSettings")
 -- Initialize
 GearSettings.init = function(self)
 	self.save_lua = SaveLua:new(self)
+	self.generated_gear_ids = {}
 end
 
 -- Debug
@@ -100,6 +103,13 @@ GearSettings.is_unit = function(self, unit)
 	return unit and type(unit) == "userdata" and unit_alive(unit)
 end
 
+GearSettings.is_weapon_item = function(self, gear_id_or_item)
+	-- Get item from potential gear id
+	local item = self:item_from_gear_id(gear_id_or_item)
+	-- Return item type is weapon
+	return item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED or item.item_type == nil
+end
+
 -- Get real item from item
 GearSettings._real_item = function(self, gear_id_or_item)
 	return gear_id_or_item and self:is_table(gear_id_or_item)
@@ -108,11 +118,11 @@ end
 
 -- Get gear id from item
 GearSettings.gear_id = function(self, gear_id_or_item)
-	-- Get real item
-	local item = self:_real_item(gear_id_or_item)
+	-- -- Get real item
+	-- local item = self:_real_item(gear_id_or_item)
 	-- Return gear id
-	return item and self:is_table(item) and (item.__gear and item.__gear.uuid
-		or item.__original_gear_id or item.__gear_id or item.gear_id) or gear_id_or_item
+	return gear_id_or_item and self:is_table(gear_id_or_item) and (gear_id_or_item.__gear and gear_id_or_item.__gear.uuid
+		or gear_id_or_item.__original_gear_id or gear_id_or_item.__gear_id or gear_id_or_item.gear_id) or gear_id_or_item
 end
 
 -- Get slot info from item or gear id
@@ -347,7 +357,7 @@ GearSettings.attachments = function(self, gear_id_or_item)
 	-- Get item from potential gear id
 	local item = self:item_from_gear_id(gear_id_or_item)
 	-- Check item and name
-	if item and item.name then
+	if item and item.name and self:is_weapon_item(gear_id_or_item) then
 		-- Get item name
 		local item_name = self:short_name(item.name)
 		-- Check if not in cache
@@ -372,19 +382,24 @@ GearSettings.default_attachment = function(self, gear_id_or_item, attachment_slo
 	-- Check item
 	-- if original_item and original_item.attachments then
 	-- local item = self:item_from_gear_id(gear_id_or_item)
-	if original_item and original_item.attachments and original_item.name then
+	if original_item and original_item.attachments and original_item.name and self:is_weapon_item(original_item) then
 		-- Get item name
 		local item_name = self:short_name(original_item.name)
 		-- Check if not in cache
 		if not mod.data_cache or not mod.data_cache:item_name_to_default_attachment(item_name, attachment_slot) then
 			local default = nil
 
+			local item_models = mod.attachment_models[item_name]
+			local item_attachments = mod.attachment[item_name]
+			local slot_attachments = item_attachments and item_attachments[attachment_slot]
+			local custom_slot = mod.add_custom_attachments[attachment_slot] ~= nil
+
 			-- Original default
 			local item_attachment = self:_recursive_find_attachment(original_item.attachments, attachment_slot)
 			-- Check attachment
-			if item_attachment and mod.attachment_models[item_name] then
+			if item_attachment and item_models then
 				-- Iterate attachments
-				for attachment_name, attachment_data in pairs(mod.attachment_models[item_name]) do
+				for attachment_name, attachment_data in pairs(item_models) do
 					-- Get attachment data
 					local function is_default(attachment_name)
 						return string_find(attachment_name, DEFAULT)
@@ -400,13 +415,13 @@ GearSettings.default_attachment = function(self, gear_id_or_item, attachment_slo
 			end
 
 			-- Custom slot default
-			if not default and mod.add_custom_attachments[attachment_slot] and mod.attachment[item_name] and mod.attachment[item_name][attachment_slot]
-					and #mod.attachment[item_name][attachment_slot] > 0 then
-				default = mod.attachment[item_name][attachment_slot][1].id
+			if not default and custom_slot and item_attachments and item_attachments[attachment_slot]
+					and #item_attachments[attachment_slot] > 0 then
+				default = item_attachments[attachment_slot][1].id
 			end
 
 			-- Default slot
-			if not default and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_slot.."_default"] then
+			if not default and custom_slot and item_models and item_models[attachment_slot.."_default"] then
 				default = attachment_slot.."_default"
 			end
 
@@ -475,14 +490,12 @@ GearSettings.is_trinket_or_skin = function(self, attachment_slot)
 end
 
 -- Recursively overwrite attachments
-GearSettings._overwrite_attachments = function(self, gear_id_or_item, attachments)
+GearSettings._overwrite_attachments = function(self, gear_id_or_item, attachments, gear_id_or_nil)
 	-- Get item from potential gear id
 	local item = self:item_from_gear_id(gear_id_or_item)
 	-- Check item and attachments
 	-- if item and attachments then
-	if item and item.name and attachments and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED) then
-		-- -- Resolve issues
-		-- self:resolve_issues(gear_id_or_item)
+	if item and attachments and item.name and self:is_weapon_item(gear_id_or_item) then
 		-- Get item name
 		local item_name = self:short_name(item.name)
 		-- Get attachment slots
@@ -494,7 +507,7 @@ GearSettings._overwrite_attachments = function(self, gear_id_or_item, attachment
 				-- Get item data
 				local item_data = mod.attachment_models[item_name]
 				-- Get attachment
-				local attachment = self:get(gear_id_or_item, attachment_slot)
+				local attachment = self:get(gear_id_or_nil or gear_id_or_item, attachment_slot)
 				-- Customize
 				if attachment and item_data[attachment] then
 					-- Get attachment data
@@ -510,18 +523,18 @@ end
 
 -- Add custom attachments
 -- local original_children = {}
-GearSettings._add_custom_attachments = function(self, gear_id_or_item, attachments)
+GearSettings._add_custom_attachments = function(self, gear_id_or_item, attachments, gear_id_or_nil)
 	-- Get item from potential gear id
 	local item = self:item_from_gear_id(gear_id_or_item)
 	-- Check item and attachments
 	-- if item and attachments then
-	if item and attachments and (item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED) then
+	if item and attachments and item.name and self:is_weapon_item(gear_id_or_item) then
 		-- Get item name
 		local item_name = self:short_name(item.name)
 		-- Iterate custom attachment slots
 		for attachment_slot, attachment_table in pairs(mod.add_custom_attachments) do
 			-- Get weapon setting for attachment slot
-			local attachment_setting = self:get(item, attachment_slot)
+			local attachment_setting = self:get(gear_id_or_nil or item, attachment_slot)
 			local attachment = self:_recursive_find_attachment(attachments, attachment_slot)
 			-- Overwrite specific attachment settings
 			if table_contains(attachment_setting_overwrite, attachment_slot) then
@@ -562,21 +575,18 @@ GearSettings._add_custom_attachments = function(self, gear_id_or_item, attachmen
 	end
 end
 
-GearSettings.add_custom_resources = function(self, gear_id_or_item, out_result)
+GearSettings.add_custom_resources = function(self, gear_id_or_item, out_result, gear_id_or_nil)
 	-- Setup master items backup
 	mod:setup_item_definitions()
-
 	local item = self:item_from_gear_id(gear_id_or_item)
 	-- Check item
-	if item and item.name then
-		-- -- Resolve issues
-		-- self:resolve_issues(gear_id_or_item)
+	if item and item.name and self:is_weapon_item(gear_id_or_item) then
 		-- Get item name
 		local item_name = self:short_name(item.name)
 		-- Iter attachment slots
 		for _, attachment_slot in pairs(mod.attachment_slots) do
 			-- Get attachment
-			local attachment = self:get(item, attachment_slot)
+			local attachment = self:get(gear_id_or_nil or item, attachment_slot)
 			-- Get item data
 			local item_data = attachment and mod.attachment_models[item_name]
 			-- Get attachment data
@@ -605,8 +615,8 @@ end
 GearSettings.possible_attachment_slots = function(self, gear_id_or_item)
 	-- Get item from potential gear id
 	local item = self:item_from_gear_id(gear_id_or_item)
-	-- Check item and attachments
-	if item and item.name and item.attachments then
+	-- Check item
+	if item and item.name and self:is_weapon_item(gear_id_or_item) then
 		-- Get item name
 		local item_name = self:short_name(item.name)
 		-- Check if not in cache
@@ -623,7 +633,7 @@ GearSettings.possible_attachment_slots = function(self, gear_id_or_item)
 						-- Add to list
 						possible_attachment_slots[#possible_attachment_slots+1] = attachment_data.type
 					elseif type(attachment_data.type) ~= "string" then
-						mod:echot("WARNING: Unknown attachment type: "..tostring(type(attachment_data.type)).." for "..tostring(attachment_name))
+						mod:print("WARNING: Unknown attachment type: "..tostring(type(attachment_data.type)).." for "..tostring(attachment_name))
 					end
 				end
 			end
@@ -639,8 +649,8 @@ end
 GearSettings.possible_attachments = function(self, gear_id_or_item, attachment_slot_or_nil)
 	-- Get item from potential gear id
 	local item = self:item_from_gear_id(gear_id_or_item)
-	-- Check item and name
-	if item and item.name then
+	-- Check item
+	if item and item.name and self:is_weapon_item(gear_id_or_item) then
 		-- Get item name
 		local item_name = self:short_name(item.name)
 		-- Check if not in cache
@@ -704,6 +714,90 @@ GearSettings.hide_bullets = function(self, attachment_units)
 			end
 		end
 	end
+end
+
+local possible_attachments = {}
+local no_support_entries = {}
+local trigger_move_entries = {}
+GearSettings.randomize_weapon = function(self, gear_id_or_item)
+    local random_attachments = {}
+    -- local possible_attachments = {}
+	table.clear(possible_attachments)
+    -- local no_support_entries = {}
+	table.clear(no_support_entries)
+    -- local trigger_move_entries = {}
+	table.clear(trigger_move_entries)
+	local item = self:item_from_gear_id(gear_id_or_item)
+    -- local item_name = self:item_name_from_content_string(item.name)
+	local item_name = self:short_name(item.name)
+    -- local attachment_slots = self:get_item_attachment_slots(item)
+	local attachment_slots = self:possible_attachment_slots(gear_id_or_item)
+	-- local gear_id = gear_id_or_nil or mod.gear_settings:item_to_gear_id(item)
+	local base_mod_only = mod:get("mod_option_randomization_only_base_mod")
+	if attachment_slots then
+		for _, attachment_slot in pairs(attachment_slots) do
+			if mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] and not table_contains(mod.automatic_slots, attachment_slot) then
+				local chance_success = true
+				if mod.random_chance[attachment_slot] then
+				    local chance_option = mod.random_chance[attachment_slot]
+				    local chance = mod:get(chance_option)
+				    -- local already_has_attachment = self:get_actual_default_attachment(item, attachment_slot)
+					local already_has_attachment = self:default_attachment(item, attachment_slot)
+				    if already_has_attachment then chance = 100 end
+				    local random_chance = math_random(100)
+				    chance_success = random_chance <= chance
+				end
+				if chance_success then
+				    for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
+				        if not string_find(data.id, "default") and not data.no_randomize and mod.attachment_models[item_name][data.id] and (data.original_mod or not base_mod_only) then
+				            possible_attachments[attachment_slot] = possible_attachments[attachment_slot] or {}
+				            possible_attachments[attachment_slot][#possible_attachments[attachment_slot]+1] = data.id
+				        end
+				    end
+				    if possible_attachments[attachment_slot] then
+				        local random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
+				        -- if attachment_slot == "flashlight" then random_attachment = "laser_pointer" end
+				        random_attachments[attachment_slot] = random_attachment
+				        local attachment_data = mod.attachment_models[item_name][random_attachment]
+				        local no_support = attachment_data and attachment_data.no_support
+				        -- local trigger_move = attachment_data and attachment_data.trigger_move
+				        attachment_data = self:apply_fixes(item, attachment_slot) or attachment_data
+				        no_support = attachment_data.no_support or no_support
+				        -- trigger_move = attachment_data.trigger_move or trigger_move
+				        -- if trigger_move then
+				        --     for _, trigger_move_entry in pairs(trigger_move) do
+				        --         if not table_contains(trigger_move_entries, trigger_move_entry) and not possible_attachments[trigger_move_entry] then
+				        --             trigger_move_entries[#trigger_move_entries+1] = trigger_move_entry
+				        --         end
+				        --     end
+				        -- end
+				        if no_support then
+				            for _, no_support_entry in pairs(no_support) do
+				                no_support_entries[#no_support_entries+1] = no_support_entry
+				            end
+				        end
+				    end
+				end
+			end
+		end
+	end
+    -- No support
+    for _, no_support_entry in pairs(no_support_entries) do
+        for attachment_slot, random_attachment in pairs(random_attachments) do
+            while random_attachment == no_support_entry do
+                random_attachment = math_random_array_entry(possible_attachments[attachment_slot])
+                random_attachments[attachment_slot] = random_attachment
+            end
+            if attachment_slot == no_support_entry then
+                random_attachments[no_support_entry] = "default"
+            end
+        end
+    end
+    -- Trigger move
+    for _, trigger_move_entry in pairs(trigger_move_entries) do
+		random_attachments[trigger_move_entry] = self:get(item, trigger_move_entry)
+    end
+    return random_attachments
 end
 
 -- ##### ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬─┐ ┬┌─┐┌─┐ ###############################################################
@@ -923,40 +1017,43 @@ end
 GearSettings._resolve_auto_equips = function(self, gear_id_or_item, attachment_slot)
 	-- Get item
 	local item = self:item_from_gear_id(gear_id_or_item)
-	-- Get item name
-	local item_name = self:short_name(item.name)
-	-- Get attachment
-	local attachment = self:get(gear_id_or_item, attachment_slot)
-	if mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment] then
-		local attachment_data = mod.attachment_models[item_name][attachment]
-		if attachment_data then
-			local automatic_equip = attachment_data.automatic_equip
-			local fixes = self:apply_fixes(gear_id_or_item, attachment_slot)
-			automatic_equip = fixes and fixes.automatic_equip or automatic_equip
-			if automatic_equip then
-				for auto_type, auto_attachment in pairs(automatic_equip) do
-					local parameters = string_split(auto_attachment, "|")
-					if #parameters == 2 then
-						local negative = string_find(parameters[1], "!")
-						parameters[1] = negative and string_gsub(parameters[1], "!", "") or parameters[1]
-						local attachment_name = self:get(gear_id_or_item, auto_type)
-						if attachment_name then
-							if negative and attachment_name ~= parameters[1] then
-								-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[2]))
-								self:_set(gear_id_or_item, auto_type, parameters[2])
-							elseif attachment_name == parameters[1] then
-								-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[2]))
-								self:_set(gear_id_or_item, auto_type, parameters[2])
-							end
-						else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
-					else
-						-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[1]))
-						self:_set(gear_id_or_item, auto_type, parameters[1])
+	-- Check item
+	if item and item.name and self:is_weapon_item(gear_id_or_item) then
+		-- Get item name
+		local item_name = self:short_name(item.name)
+		-- Get attachment
+		local attachment = self:get(gear_id_or_item, attachment_slot)
+		if mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment] then
+			local attachment_data = mod.attachment_models[item_name][attachment]
+			if attachment_data then
+				local automatic_equip = attachment_data.automatic_equip
+				local fixes = self:apply_fixes(gear_id_or_item, attachment_slot)
+				automatic_equip = fixes and fixes.automatic_equip or automatic_equip
+				if automatic_equip then
+					for auto_type, auto_attachment in pairs(automatic_equip) do
+						local parameters = string_split(auto_attachment, "|")
+						if #parameters == 2 then
+							local negative = string_find(parameters[1], "!")
+							parameters[1] = negative and string_gsub(parameters[1], "!", "") or parameters[1]
+							local attachment_name = self:get(gear_id_or_item, auto_type)
+							if attachment_name then
+								if negative and attachment_name ~= parameters[1] then
+									-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[2]))
+									self:_set(gear_id_or_item, auto_type, parameters[2])
+								elseif attachment_name == parameters[1] then
+									-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[2]))
+									self:_set(gear_id_or_item, auto_type, parameters[2])
+								end
+							else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
+						else
+							-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[1]))
+							self:_set(gear_id_or_item, auto_type, parameters[1])
+						end
 					end
 				end
-			else mod:print("Automatic equip for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil", true) end
-		else mod:print("Attachment data for "..tostring(attachment).." in slot "..tostring(attachment_slot).." is nil") end
-	else mod:print("Models for "..tostring(attachment).." in slot "..tostring(attachment_slot).." not found") end
+			end
+		end
+	end
 end
 
 -- Resolve special changes
@@ -990,28 +1087,31 @@ end
 GearSettings._resolve_special_changes = function(self, gear_id_or_item, attachment)
 	-- Get item from potential gear id
 	local item = self:item_from_gear_id(gear_id_or_item)
-	-- Get item name
-	local item_name = self:short_name(item.name)
-	-- Get gear id from potential item
-	local gear_id = self:item_to_gear_id(item)
-	-- Get attachment data
-	local attachment_data = mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment]
-	-- Check special resolve
-	if attachment_data and attachment_data.special_resolve then
-		-- Execute special resolve function
-		local special_changes = attachment_data.special_resolve(gear_id, item, attachment)
-		-- Check special changes
-		if special_changes then
-			-- Iterate special changes
-			for special_slot, special_attachment in pairs(special_changes) do
-				-- Resolve multiple attachments
-				if string_find(special_attachment, "|") then
-					local possibilities = string_split(special_attachment, "|")
-					local rnd = math.random(#possibilities)
-					special_attachment = possibilities[rnd]
+	-- Check item
+	if item and item.name and self:is_weapon_item(gear_id_or_item) then
+		-- Get item name
+		local item_name = self:short_name(item.name)
+		-- Get gear id from potential item
+		local gear_id = self:item_to_gear_id(item)
+		-- Get attachment data
+		local attachment_data = mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment]
+		-- Check special resolve
+		if attachment_data and attachment_data.special_resolve then
+			-- Execute special resolve function
+			local special_changes = attachment_data.special_resolve(gear_id, item, attachment)
+			-- Check special changes
+			if special_changes then
+				-- Iterate special changes
+				for special_slot, special_attachment in pairs(special_changes) do
+					-- Resolve multiple attachments
+					if string_find(special_attachment, "|") then
+						local possibilities = string_split(special_attachment, "|")
+						local rnd = math.random(#possibilities)
+						special_attachment = possibilities[rnd]
+					end
+					-- Set special attachment
+					self:_set(gear_id_or_item, special_slot, special_attachment)
 				end
-				-- Set special attachment
-				self:_set(gear_id_or_item, special_slot, special_attachment)
 			end
 		end
 	end
@@ -1102,20 +1202,41 @@ GearSettings.load_file = function(self, gear_id_or_item)
 	end
 end
 
-GearSettings.create_temp_settings = function(self, gear_id_or_item)
+GearSettings.copy_temp_settings = function(self, gear_id_or_item, other_gear_id_or_item)
+	if self:has_temp_settings(other_gear_id_or_item) then
+		self:create_temp_settings(gear_id_or_item, self:pull(other_gear_id_or_item))
+	end
+end
+
+GearSettings.create_temp_settings = function(self, gear_id_or_item, attachments_or_nil)
 	-- Get gear id from potential item
 	local gear_id = self:item_to_gear_id(gear_id_or_item)
 	-- Get attachments
-	local attachments = self:pull(gear_id_or_item)
+	local saved_settings = self:pull(gear_id_or_item)
+	local attachments = attachments_or_nil or saved_settings and table_clone(saved_settings) or {}
 	-- Create temp settings
-	if gear_id then mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = attachments or {} end
+	if gear_id then
+		-- Set temp settings
+		mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = attachments
+		-- Resolve issues
+		self:resolve_issues(gear_id_or_item)
+	end
+end
+
+GearSettings.has_temp_settings = function(self, gear_id_or_item)
+	-- Get gear id from potential item
+	local gear_id = self:item_to_gear_id(gear_id_or_item)
+	-- Check if temp settings exist
+	return gear_id and mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] ~= nil
 end
 
 GearSettings.destroy_temp_settings = function(self, gear_id_or_item)
 	-- Get gear id from potential item
 	local gear_id = self:item_to_gear_id(gear_id_or_item)
 	-- Remove temp settings
-	if gear_id then mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = nil end
+	if gear_id then
+		mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = nil
+	end
 end
 
 GearSettings.destroy_all_temp_settings = function(self)
@@ -1212,6 +1333,9 @@ GearSettings._set = function(self, gear_id_or_item, attachment_slot, attachment_
 		local gear_settings = self:load(gear_id_or_item)
 		-- Check settings
 		if gear_settings then
+			if attachment_slot == "gear_node" then
+				mod:echot("set real gear_node to "..tostring(attachment_name))
+			end
 			-- Set attachment in entry
 			gear_settings.attachments[attachment_slot] = attachment_name
 			-- Update cache
@@ -1264,16 +1388,20 @@ GearSettings.load = function(self, gear_id_or_item)
 end
 
 -- Save gear settings
-GearSettings.save = function(self, gear_id_or_item, unit)
+GearSettings.save = function(self, gear_id_or_item, unit_or_nil, attachments_or_nil)
 	-- Get item from potential gear id
 	local item = self:item_from_gear_id(gear_id_or_item)
-	-- Save entry
-	local gear_settings = self.save_lua:save_entry({
-		item = item,
-		unit = unit,
-	})
-	-- Update cache
-	self:update_cache(gear_id_or_item, gear_settings)
+	-- Check item
+	if item then
+		-- Save entry
+		local gear_settings = self.save_lua:save_entry({
+			item = item,
+			unit = unit_or_nil,
+			attachments = attachments_or_nil,
+		})
+		-- Update cache
+		self:update_cache(gear_id_or_item, gear_settings)
+	end
 end
 
 -- Delete gear settings

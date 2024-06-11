@@ -13,6 +13,7 @@ local SoundEventAliases = mod:original_require("scripts/settings/sound/player_ch
 --#region local functions
     local Unit = Unit
     local vector3 = Vector3
+    local vector3_one = vector3.one
     local unit_alive = Unit.alive
     local Quaternion = Quaternion
     local vector3_box = Vector3Box
@@ -36,6 +37,22 @@ local WEAPON_RANGED = "WEAPON_RANGED"
 -- ##### ┌─┐┌─┐┌─┐┌─┐┌─┐┌┬┐┌─┐ ########################################################################################
 -- ##### │ │├┤ ├┤ └─┐├┤  │ └─┐ ########################################################################################
 -- ##### └─┘└  └  └─┘└─┘ ┴ └─┘ ########################################################################################
+
+mod.gear_node_offsets = {
+    default = {
+        hips_front = {position = vector3_box(.06, -.003, -.006), rotation = vector3_box(5.3, -33, 102), scale = vector3_box(vector3_one())},
+        hips_back = {position = vector3_box(.12, -.02, -.045), rotation = vector3_box(12, -33, 96), scale = vector3_box(vector3_one())},
+        hips_left = {position = vector3_box(-.04, .17, -.04), rotation = vector3_box(51, -9, 160), scale = vector3_box(vector3_one())},
+        hips_right = {position = vector3_box(.06, .15, -.05), rotation = vector3_box(51, -9, -160), scale = vector3_box(vector3_one())},
+        leg_left = {position = vector3_box(.12, -.002, -.15), rotation = vector3_box(-87, 13, -85), scale = vector3_box(vector3_one())},
+        leg_right = {position = vector3_box(-.12, -.002, .15), rotation = vector3_box(105, -14, 87), scale = vector3_box(vector3_one())},
+        chest = {position = vector3_box(0, -.05, -.1), rotation = vector3_box(-7, 38, 99), scale = vector3_box(vector3_one())},
+        back_left = {position = vector3_box(.02, .04, .084), rotation = vector3_box(171, 10, 88), scale = vector3_box(vector3_one())},
+        back_right = {position = vector3_box(.02, .04, -.05), rotation = vector3_box(12, 10, 91), scale = vector3_box(vector3_one())},
+        backpack_left = {position = vector3_box(.12, -.03, -.11), rotation = vector3_box(-59, 10, 93), scale = vector3_box(vector3_one())},
+        backpack_right = {position = vector3_box(.12, -.03, .11), rotation = vector3_box(-136, 10, 93), scale = vector3_box(vector3_one())},
+    }
+}
 
 mod.visible_equipment_loading_offsets = {
     melee_big_angle = {

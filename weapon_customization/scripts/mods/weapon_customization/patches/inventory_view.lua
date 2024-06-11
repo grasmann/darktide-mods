@@ -18,6 +18,8 @@ local mod = get_mod("weapon_customization")
 
 --#region Performance
 	local Unit = Unit
+	local pairs = pairs
+	local table = table
 	local CLASS = CLASS
 	local string = string
 	local get_mod = get_mod
@@ -27,6 +29,7 @@ local mod = get_mod("weapon_customization")
 	local callback = callback
 	local unit_alive = Unit.alive
 	local string_gsub = string.gsub
+	local table_contains = table.contains
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -72,7 +75,9 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 	end
 
 	instance.player_profile = function(self)
-		return self._preview_player and self._preview_player:profile()
+		if table_contains(managers.player:players(), self._preview_player) then
+			return self._preview_player and self._preview_player:profile()
+		end
 	end
 
 	instance.character_name = function(self)
@@ -91,7 +96,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		end
 	end
 
-	instance.weapon_unit = function(self)
+	instance.unequipped_weapon_unit = function(self)
 		self:get_inventory_background_view()
 		if self.inventory_background_view and self.inventory_background_view._profile_spawner then
 			local character_spawn_data = self.inventory_background_view._profile_spawner._character_spawn_data
@@ -101,11 +106,30 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		end
 	end
 
-	instance.weapon_item = function(self)
+	local weapon_items = {}
+	instance.weapon_items = function(self)
+		table.clear(weapon_items)
+		-- local weapon_items = {}
 		self:get_inventory_background_view()
 		if self.inventory_background_view then
 			local profile = self:player_profile()
-			return profile.loadout[self:unequipped_slot_id()]
+			if profile then
+				weapon_items[1] = profile.loadout[SLOT_PRIMARY]
+				weapon_items[2] = profile.loadout[SLOT_SECONDARY]
+			else
+				mod:echot("profile not found")
+			end
+		else
+			mod:echot("background view not found")
+		end
+		return weapon_items
+	end
+
+	instance.unequipped_weapon_item = function(self)
+		self:get_inventory_background_view()
+		if self.inventory_background_view then
+			local profile = self:player_profile()
+			return profile and profile.loadout[self:unequipped_slot_id()]
 		end
 	end
 
@@ -256,16 +280,23 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 	end
 
 	instance.reset_offset = function(self)
-		-- Func
+		local weapon_item = self:unequipped_weapon_item()
+		local weapon_unit = self:unequipped_weapon_unit()
+		if weapon_item and weapon_unit and unit_alive(weapon_unit) then
+			-- mod.gear_settings:set(weapon_item, "gear_node", nil)
+			-- mod.gear_settings:save(weapon_item, weapon_unit)
+			mod.gear_settings:destroy_temp_settings(weapon_item)
+			mod.gear_settings:create_temp_settings(weapon_item)
+			managers.event:trigger("weapon_customization_attach_point_changed")
+		end
 	end
 
 	instance.save_offset = function(self)
-		local weapon_item = self:weapon_item()
-		local weapon_unit = self:weapon_unit()
+		local weapon_item = self:unequipped_weapon_item()
+		local weapon_unit = self:unequipped_weapon_unit()
 		if weapon_item and weapon_unit and unit_alive(weapon_unit) then
-			if mod.gear_settings then
-				mod.gear_settings:save(weapon_item, weapon_unit)
-			end
+			mod.gear_settings:save(weapon_item, weapon_unit)
+			managers.event:trigger("weapon_customization_attach_point_changed")
 		end
 	end
 
@@ -431,6 +462,28 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		self._widgets_by_name.visible_equipment_reset_button.visible = is_tab
 	end
 
+	instance.create_temp_settings = function(self)
+		local weapon_items = self:weapon_items()
+		if weapon_items then
+			for _, weapon_item in pairs(weapon_items) do
+				mod.gear_settings:create_temp_settings(weapon_item)
+			end
+			managers.event:trigger("weapon_customization_attach_point_changed")
+		end
+	end
+
+	instance.destroy_temp_settings = function(self)
+		local weapon_items = self:weapon_items()
+		if weapon_items then
+			for _, weapon_item in pairs(weapon_items) do
+				if mod.gear_settings:has_temp_settings(weapon_item) then
+					mod.gear_settings:destroy_temp_settings(weapon_item)
+				end
+			end
+			managers.event:trigger("weapon_customization_attach_point_changed")
+		end
+	end
+
 end)
 
 -- ##### ┬  ┬┬┌─┐┬ ┬  ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ #####################################################################
@@ -532,6 +585,9 @@ mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
 	-- Destroy forward gui
 	self:_destroy_forward_gui()
 
+	-- Destroy temp settings
+	self:destroy_temp_settings()
+
 	-- Destroy background view
 	self.inventory_background_view = nil
 
@@ -548,6 +604,9 @@ mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_
 	-- Check tab
 	if self:is_tab() then -- Custom tab
 
+		-- Create temp settings
+		self:create_temp_settings()
+
 		-- Update name text
 		self:update_options_text()
 
@@ -555,6 +614,9 @@ mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_
 		self:set_rotation()
 
 	else -- Default tab
+
+		-- Destroy temp settings
+		self:destroy_temp_settings()
 		
 		-- Modding Tools
 		self:remove_unit_manipulation_all()

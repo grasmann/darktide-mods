@@ -113,28 +113,6 @@ local mod = get_mod("weapon_customization")
 	-- mod.load_previews = {}
 --#endregion
 
--- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################
--- ##### │ ┬│  │ │├┴┐├─┤│    ├┤ │ │││││   │ ││ ││││└─┐ ################################################################
--- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ################################################################
-
--- mod.get_cosmetics_scenegraphs = function(self)
--- 	if not self.cosmetics_scenegraphs then
--- 		self.cosmetics_scenegraphs = {}
--- 		for _, attachment_slot in pairs(self.attachment_slots) do
--- 			self.cosmetics_scenegraphs[#self.cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
--- 			self.cosmetics_scenegraphs[#self.cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
--- 		end
--- 	end
--- 	return self.cosmetics_scenegraphs
--- end
-
-mod.play_zoom_sound = function(self, t, sound)
-	if not self.sound_end or t >= self.sound_end then
-		self.sound_end = t + SOUND_DURATION
-		self.cosmetics_view:_play_sound(sound)
-	end
-end
-
 -- ##### ┬  ┬┬┌─┐┬ ┬  ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ #####################################################################
 -- ##### └┐┌┘│├┤ │││   ││├┤ ├┤ │││││ │ ││ ││││└─┐ #####################################################################
 -- #####  └┘ ┴└─┘└┴┘  ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ #####################################################################
@@ -983,7 +961,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Get package synchronizer client
 		local package_synchronizer_client = managers.package_synchronization:synchronizer_client()
 		-- Reevaluate all profile packages
-		if package_synchronizer_client then package_synchronizer_client:reevaluate_all_profiles_packages() end
+		-- if package_synchronizer_client then package_synchronizer_client:reevaluate_all_profiles_packages() end
+		if package_synchronizer_client then
+			local player = managers.player:local_player(1)
+			local peer_id = player:peer_id()
+			if package_synchronizer_client:peer_enabled(peer_id) then
+				package_synchronizer_client:player_profile_packages_changed(peer_id, 1)
+			end
+		end
 	end
 
 	-- Save original attachment
@@ -1005,7 +990,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				-- Save original attachment
 				self:save_original_attachment(attachment_slot)
 				-- Set attachment
-				mod.gear_settings:set(self._presentation_item, attachment_slot, attachment)
+				mod.gear_settings:set(self._selected_item, attachment_slot, attachment)
 				-- Resolve no support
 				self:resolve_no_support()
 			end
@@ -1115,12 +1100,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Get changed settings
 	instance.get_changed_weapon_settings = function(self)
 		if self._gear_id then
-			self.changed_weapon_settings = {}
+			-- self.changed_weapon_settings = {}
+			table_clear(self.changed_attachment_settings)
 			-- local attachment_slots = mod:get_item_attachment_slots(self._selected_item)
 			local attachment_slots = mod.gear_settings:possible_attachment_slots(self._selected_item)
 			for _, attachment_slot in pairs(attachment_slots) do
 				if not table_contains(mod.automatic_slots, attachment_slot) then
-					self.changed_weapon_settings[attachment_slot] = mod.gear_settings:get(self._presentation_item, attachment_slot)
+					self.changed_weapon_settings[attachment_slot] = mod.gear_settings:get(self._selected_item, attachment_slot)
 				end
 			end
 		end
@@ -1144,6 +1130,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self:reevaluate_packages()
 		-- Reload current weapon
 		mod:redo_weapon_attachments(self._presentation_item)
+		-- Trigger Events
+		managers.event:trigger("weapon_customization_weapon_changed")
 		-- Update UI icons
 		managers.ui:item_icon_updated(self._selected_item)
 		managers.event:trigger("event_item_icon_updated", self._selected_item)
@@ -1168,7 +1156,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Iterate through attachment settings
 		for attachment_slot, value in pairs(attachment_settings) do
 			-- Get attachment name
-			attachment_names[attachment_slot] = mod.gear_settings:get(self._presentation_item, attachment_slot)
+			attachment_names[attachment_slot] = mod.gear_settings:get(self._selected_item, attachment_slot)
 		end
 		-- Return attachment names
 		return attachment_names
@@ -2412,6 +2400,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self.bar_breakdown_widgets_by_name = {}
 		self.changed_weapon_settings = {}
 		self.original_weapon_settings = {}
+		self.changed_attachment_settings = {}
 	end
 
 	-- Custom enter
@@ -2623,9 +2612,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Randomize button pressed callback
 	instance.cb_on_randomize_pressed = function(self, skip_animation)
 		-- Get random attachments
-		local random_attachments = mod:randomize_weapon(self._selected_item)
+		local random_attachments = mod.gear_settings:randomize_weapon(self._selected_item)
+		-- mod:dtf(random_attachments, "random_attachments", 10)
 		-- Check visibility
-		if self._visibility_toggled_on and self._gear_id and random_attachments and table_size(random_attachments) > 0 then
+		if self._visibility_toggled_on and self._gear_id and random_attachments then
 			-- Skip animation?
 			local skip_animation = skip_animation or not mod:get(MOD_OPTION_BUILD_ANIMATION)
 			-- Attach random attachments

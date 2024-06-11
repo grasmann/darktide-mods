@@ -233,6 +233,7 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_view")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_background_view")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/inventory_weapon_cosmetics_view")
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/main_menu_background_view")
 
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_hooks")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_debug")

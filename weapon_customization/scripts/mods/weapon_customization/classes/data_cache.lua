@@ -13,12 +13,15 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+local type = type
 	local pairs = pairs
 	local class = class
 	local table = table
 	local CLASS = CLASS
 	local managers = Managers
+	local table_clear = table.clear
 	local table_clone = table.clone
+	local table_contains = table.contains
 	local table_clone_instance = table.clone_instance
 --#endregion
 
@@ -52,7 +55,8 @@ end
 mod.reload_cache = function(self)
 	if (DEBUG) then
 		mod:echo("Reloading Weapon Customization Cache")
-		self.data_cache = nil
+		self:persistent_table(REFERENCE).cache.initialized = false
+		self.data_cache:destroy()
 	end
 end
 
@@ -69,7 +73,7 @@ DataCache.init = function(self)
 	self.initialized = true
 end
 
-DataCache.delete = function(self)
+DataCache.destroy = function(self)
 	self.initialized = false
 end
 
@@ -104,7 +108,15 @@ DataCache.cache_attachment_data = function(self)
 		for item_name, _ in pairs(mod.attachment) do
 			local melee = "content/items/weapons/player/melee/"..item_name
 			local ranged = "content/items/weapons/player/ranged/"..item_name
-			local item_string = self.item_definitions[melee] and melee or self.item_definitions[ranged] and ranged
+			local npc = "content/items/weapons/npc/"..item_name
+			local minion_melee = "content/items/weapons/minions/melee/"..item_name
+			local minion_ranged = "content/items/weapons/minions/ranged/"..item_name
+
+			local item_string = self.item_definitions[melee] and melee
+				or self.item_definitions[ranged] and ranged
+				or self.item_definitions[npc] and npc
+				or self.item_definitions[minion_melee] and minion_melee
+				or self.item_definitions[minion_ranged] and minion_ranged
 			local item = self.item_definitions[item_string]
 			if item then
 				-- Cache full item string -> item name
@@ -130,8 +142,12 @@ DataCache.cache_attachment_data = function(self)
 		-- Cache cosmetics scenegraphs
 		-- self.cache.cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
 		for _, attachment_slot in pairs(mod.attachment_slots) do
-			self.cache.cosmetics_scenegraphs[#self.cache.cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
-			self.cache.cosmetics_scenegraphs[#self.cache.cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
+			if not table_contains(self.cache.cosmetics_scenegraphs, attachment_slot.."_text_pivot") then
+				self.cache.cosmetics_scenegraphs[#self.cache.cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
+			end
+			if not table_contains(self.cache.cosmetics_scenegraphs, attachment_slot.."_pivot") then
+				self.cache.cosmetics_scenegraphs[#self.cache.cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
+			end
 		end
 
 		-- Cache initialized
@@ -184,7 +200,6 @@ end
 
 DataCache.debug_dump = function(self)
 	mod:dtf(self.cache, "self.cache", 10)
-	mod:dtf(mod.attachment_slots, "mod.attachment_slots", 10)
 end
 
 return DataCache

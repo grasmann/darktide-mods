@@ -55,6 +55,8 @@ local mod = get_mod("weapon_customization")
 --#region Data
 	local WEAPON_CUSTOMIZATION_TAB = "tab_weapon_customization"
 	local EMPTY_UNIT = "core/units/empty_root"
+	local WEAPON_MELEE = "WEAPON_MELEE"
+    local WEAPON_RANGED = "WEAPON_RANGED"
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
@@ -148,7 +150,7 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 		end
 	end
 
-	local unit_list = {}
+	-- local unit_list = {}
 	local entry_distance = {}
 	local closest_4 = {}
 	instance.add_unit_manipulation = function(self)
@@ -162,8 +164,8 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 			if self.inventory_view and ui_profile_spawner and ui_profile_spawner._character_spawn_data then
 				local character_spawn_data = ui_profile_spawner._character_spawn_data
 				local unit = character_spawn_data and character_spawn_data.unit_3p
-				local weapon_unit = self.inventory_view:weapon_unit()
-				local weapon_item = self.inventory_view:weapon_item()
+				local weapon_unit = self.inventory_view:unequipped_weapon_unit()
+				local weapon_item = self.inventory_view:unequipped_weapon_item()
 
 				if unit and unit_alive(unit) and not self._unit_manipulation_added then
 					
@@ -186,16 +188,16 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 								{node = "j_hips", offset = vector3(0, -.15, .1), text = "Hips Back", name = "hips_back"},
 								{node = "j_hips", offset = vector3(-.15, 0, .1), text = "Hips Left", name = "hips_left"},
 								{node = "j_hips", offset = vector3(.15, 0, .1), text = "Hips Right", name = "hips_right"},
-								{node = "j_leftleg", offset = vector3(-.25, 0, 0), text = "Left Leg", name = "leg_left"},
-								{node = "j_rightleg", offset = vector3(.25, 0, 0), text = "Right Leg", name = "leg_right"},
+								{node = "j_leftupleg", offset = vector3(0, 0, 0), text = "Left Leg", name = "leg_left"},
+								{node = "j_rightupleg", offset = vector3(0, 0, 0), text = "Right Leg", name = "leg_right"},
 								{node = "j_frontchestplate", offset = vector3(0, 0, 0), text = "Chest", name = "chest"},
 							} or {
 								{node = "j_hips", offset = vector3(0, .55, .1), text = "Hips Front", name = "hips_front"},
 								{node = "j_hips", offset = vector3(0, -.4, .1), text = "Hips Back", name = "hips_back"},
 								{node = "j_hips", offset = vector3(-.5, 0, .1), text = "Hips Left", name = "hips_left"},
 								{node = "j_hips", offset = vector3(.5, 0, .1), text = "Hips Right", name = "hips_right"},
-								{node = "j_leftleg", offset = vector3(-.5, -.2, 0), text = "Left Leg", name = "leg_left"},
-								{node = "j_rightleg", offset = vector3(.5, .2, 0), text = "Right Leg", name = "leg_right"},
+								{node = "j_leftupleg", offset = vector3(0, -.2, 0), text = "Left Leg", name = "leg_left"},
+								{node = "j_rightupleg", offset = vector3(0, .2, 0), text = "Right Leg", name = "leg_right"},
 								{node = "j_spine2", offset = vector3(0, -.5, 0), text = "Chest", name = "chest"},
 							}
 							-- Back / backpack
@@ -217,8 +219,8 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 								end
 							end
 
-							-- local unit_list = {}
-							table.clear(unit_list)
+							local unit_list = {}
+							-- table.clear(unit_list)
 							for _, point in pairs(points) do
 								local node = unit_node(unit, point.node)
 								local point_unit = world_spawn_unit_ex(world, "core/units/empty_root", nil, unit_world_pose(unit, node))
@@ -228,12 +230,13 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 									unit = point_unit,
 									data = point,
 									unit_manipulation = self:unit_manipulation_add(point_unit, camera, world, gui, point.text, nil, 20, true, function(extension)
-										-- mod:echot("unit manipulation pressed: "..tostring(point.text))
 										local name = ui_profile_spawner.help_units[point.text]
 										name = name and name.data and name.data.name
-										if name then
-											mod:echot("unit manipulation pressed: "..tostring(name))
-											mod.gear_settings:set(weapon_item, "gear_node", name)
+										if name and weapon_item.item_type == WEAPON_RANGED then
+											if mod.gear_settings:has_temp_settings(weapon_item) then
+												mod.gear_settings:set(weapon_item, "gear_node", name)
+												managers.event:trigger("weapon_customization_attach_point_changed")
+											end
 										end
 									end),
 								}
@@ -241,7 +244,8 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 							
 							ui_profile_spawner.help_units = unit_list
 
-							self:unit_manipulation_select(weapon_unit)
+							self:unit_manipulation_add(weapon_unit, camera, world, gui, "weapon")
+							-- self:unit_manipulation_select(weapon_unit)
 							
 							self._unit_manipulation_added = true
 						end
@@ -317,6 +321,32 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 		end
 	end
 
+	instance.custom_enter = function(self)
+
+		managers.event:register(self, "weapon_customization_weapon_changed", "on_weapon_changed")
+
+		-- Modding tools
+		self:remove_unit_manipulation()
+
+	end
+
+	instance.custom_exit = function(self)
+
+		managers.event:unregister(self, "weapon_customization_weapon_changed")
+
+		-- Modding tools
+		self:remove_unit_manipulation()
+
+	end
+
+	instance.respawn_profile = function(self)
+		self:_spawn_profile(self._spawned_profile)
+	end
+
+	instance.on_weapon_changed = function(self)
+		self:respawn_profile()
+	end
+
 end)
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
@@ -325,8 +355,8 @@ end)
 
 mod:hook(CLASS.InventoryBackgroundView, "on_enter", function(func, self, ...)
 
-	-- Modding tools
-	self:remove_unit_manipulation()
+	-- Custom enter
+	self:custom_enter()
 
 	-- Original function
 	func(self, ...)
@@ -335,8 +365,8 @@ end)
 
 mod:hook(CLASS.InventoryBackgroundView, "on_exit", function(func, self, ...)
 
-	-- Modding tools
-	self:remove_unit_manipulation()
+	-- Custom exit
+	self:custom_exit()
 
 	-- Destroy background view
 	self.inventory_view = nil

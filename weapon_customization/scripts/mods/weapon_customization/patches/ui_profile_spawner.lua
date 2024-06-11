@@ -20,6 +20,7 @@ local mod = get_mod("weapon_customization")
 	local World = World
 	local Camera = Camera
 	local vector3 = Vector3
+	local managers = Managers
 	local NilCursor = NilCursor
 	local actor_unit = Actor.unit
 	local unit_alive = Unit.alive
@@ -52,7 +53,7 @@ local mod = get_mod("weapon_customization")
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
 
 mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
-	
+
 	instance.get_inventory_view = function(self)
 		self.inventory_view = self.inventory_view or mod:get_view("inventory_view")
 	end

@@ -6,6 +6,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Require
 	local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
+	local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -72,6 +73,7 @@ local mod = get_mod("weapon_customization")
 	local mesh_local_position = Mesh.local_position
 	local world_spawn_unit_ex = World.spawn_unit_ex
 	local unit_set_local_scale = Unit.set_local_scale
+	local table_clone_instance = table.clone_instance
 	local quaternion_matrix4x4 = Quaternion.matrix4x4
 	local unit_set_unit_culling = Unit.set_unit_culling
 	local unit_set_local_position = Unit.set_local_position
@@ -98,6 +100,8 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
 	local REFERENCE = "weapon_customization"
+	local WEAPON_MELEE = "WEAPON_MELEE"
+    local WEAPON_RANGED = "WEAPON_RANGED"
 --#endregion
 
 mod.mesh_positions = {}
@@ -127,10 +131,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
         local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
 		local attachment_slot_info = {}
+		local weapon_item = item_data.item_type == "WEAPON_MELEE" or item_data.item_type == "WEAPON_RANGED"
 
 		local player_item = item_data.item_list_faction == "Player"
 		
-		if item_unit and attachments and in_possesion_of_player and not mod:is_premium_store_item() and player_item then
+		if gear_id and item_unit and attachments and weapon_item and player_item and in_possesion_of_player and not mod:is_premium_store_item() then
 			mod:setup_item_definitions()
 
 			-- -- Resolve issues
@@ -144,7 +149,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"stubrevolver_p1_m1"}, nil, true)
+		-- mod:debug_attachments(item_data, attachments, {"lasgun_npc_01", "lasgun_npc_02", "lasgun_npc_03", "lasgun_npc_04", "lasgun_npc_05"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
@@ -177,7 +182,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 		-- ############################################################################################################
 
-		if attachment_units and item_unit and attachments and gear_id and not mod:is_premium_store_item() and player_item and in_possesion_of_player then
+		if gear_id and attachment_units and item_unit and attachments and weapon_item and player_item and not mod:is_premium_store_item() and in_possesion_of_player then
 
 			unit_set_data(item_unit, "attachment_units", attachment_units)
 
@@ -619,22 +624,18 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			end
 		--#endregion Original
 
-		local player_item = item_data.item_list_faction == "Player"
-
-		if player_item then
-			local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
-			attachment_slot_info = attachment_slot_info or {}
-			attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
-			attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
-			attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
-			attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
-			attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
-			attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
-			Unit.set_data(spawned_unit, "attachment_name", attachment_name)
-			Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
-			Unit.set_data(spawned_unit, "parent_unit", parent_unit)
-			Unit.set_data(spawned_unit, "parent_node", attach_node_index)
-		end
+		local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
+		attachment_slot_info = attachment_slot_info or {}
+		attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
+		attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
+		attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
+		attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
+		attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
+		attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
+		Unit.set_data(spawned_unit, "attachment_name", attachment_name)
+		Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
+		Unit.set_data(spawned_unit, "parent_unit", parent_unit)
+		Unit.set_data(spawned_unit, "parent_node", attach_node_index)
 	
 		--#region Original
 			local item_type = item_data.item_type
@@ -736,9 +737,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
 		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
 		local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
-		local player_item = item_data.item_list_faction == "Player"
+		-- local player_item = item_data.item_list_faction == "Player"
 
-		if override_item_data and player_item and in_possesion_of_player then
+		if override_item_data and in_possesion_of_player then
 			local attachments = override_item_data.attachments
 			local gear_id = mod.gear_settings:item_to_gear_id(item_data)
 

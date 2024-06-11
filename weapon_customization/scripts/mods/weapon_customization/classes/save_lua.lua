@@ -276,13 +276,13 @@ SaveLua._save_entry = function(self, data)
 	-- file:write(tt.."},\n")
 	if data.item then
 		-- Attachments
-		local attachments = self.gear_settings:attachments(data.item)
+		local attachments = data.attachments or self.gear_settings:attachments(data.item)
 		if attachments then
 			file:write(tt.."attachments = {\n")
 			for attachment_slot, attachment_name in pairs(attachments) do
 				file:write(ttt..tostring(attachment_slot).." = '"..tostring(attachment_name).."',\n")
 			end
-			local gear_node = self.gear_settings:get(data.item, "gear_node")
+			local gear_node = data.gear_node or self.gear_settings:get(data.item, "gear_node")
 			gear_node = gear_node and "'"..tostring(gear_node).."'"
 			file:write(ttt.."gear_node = "..tostring(gear_node or "nil")..",\n")
 			file:write(tt.."},\n")
@@ -337,21 +337,17 @@ end
 
 SaveLua.save_entry = function(self, data)
 	if data and data.item then
-		local gear_id = self.gear_settings:item_to_gear_id(data.item)
-		local entry = self:_save_entry(data)
-		return entry
+		return self:_save_entry(data)
 	end
 end
 
-local new_cache = {}
 SaveLua.delete_entry = function(self, data)
 	local path, file_name = self:_create_entry_path(data)
 	if self:_file_exists(path) then
 		if _os.remove(path) then
 			-- Remove from cache
 			local cache = self:_get_entries_cache()
-			-- local new_cache = {}
-			table_clear(new_cache)
+			local new_cache = {}
 			for _, c in pairs(cache) do
 				if c ~= file_name then
 					new_cache[#new_cache+1] = c
@@ -368,8 +364,7 @@ SaveLua.load_entry = function(self, gear_id)
 		-- Load file
 		local path = self:_appdata_path()..tostring(gear_id)..".lua"
 		if self:_file_exists(path) then
-			local entry = self:_load_entry(path)
-			return entry
+			return self:_load_entry(path)
 		end
 	end
 end

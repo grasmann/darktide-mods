@@ -51,6 +51,7 @@ local mod = get_mod("weapon_customization")
     local WEAPON_RANGED = "WEAPON_RANGED"
     local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
     local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
+    local gear_id_inc = 1
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################
@@ -122,23 +123,14 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
     mod:hook(instance, "compile_item_instance_dependencies", function(func, item, items_dictionary, out_result, optional_mission_template, ...)
 
-        -- Mod definitions
-        -- mod:setup_item_definitions()
-
-        -- Get gear id
-        local gear_id = mod.gear_settings:item_to_gear_id(item)
-
-        local player_item = item.item_list_faction == "Player"
+        -- local player_item = item.item_list_faction == "Player"
         local weapon_item = item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED
         local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
 		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
 		local in_possesion_of_player = mod.gear_settings:player_item(item) or (visible_equipment_system_option and hub)
 
         -- Check item and attachments
-        if item and item.attachments and not mod:is_premium_store_item() and player_item and weapon_item and in_possesion_of_player then
-            
-            -- -- Resolve issues
-            -- mod.gear_settings:resolve_issues(item)
+        if item and item.attachments and not mod:is_premium_store_item() and weapon_item and in_possesion_of_player then
 
             -- Add custom attachments
             mod.gear_settings:_add_custom_attachments(item, item.attachments)
@@ -150,11 +142,10 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 
         local result = func(item, items_dictionary, out_result, optional_mission_template, ...)
 
-        if item and item.attachments and not mod:is_premium_store_item() and player_item and weapon_item then
+        if item and item.attachments and not mod:is_premium_store_item() and weapon_item then
 
             -- Add custom resources
             result = instance:add_custom_resources(item, result)
-            -- out_result = result
 
         end
 

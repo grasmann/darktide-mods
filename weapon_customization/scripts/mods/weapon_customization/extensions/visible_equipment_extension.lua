@@ -55,6 +55,7 @@ local mod = get_mod("weapon_customization")
     local QuaternionBox = QuaternionBox
     local table_combine = table.combine
     local quaternion_box = QuaternionBox
+    local table_contains = table.contains
     local table_icombine = table.icombine
     local unit_flow_event = Unit.flow_event
     local vector3_unbox = vector3_box.unbox
@@ -64,6 +65,7 @@ local mod = get_mod("weapon_customization")
     local world_unlink_unit = World.unlink_unit
     local quaternion_unbox = QuaternionBox.unbox
     local world_destroy_unit = World.destroy_unit
+    local quaternion_identity = Quaternion.identity
     local unit_world_position = Unit.world_position
     local unit_world_rotation = Unit.world_rotation
     local unit_local_position = Unit.local_position
@@ -122,6 +124,8 @@ local mod = get_mod("weapon_customization")
         medium = .33,
         heavy = .1,
     }
+    local rnd_attach = {"hips_front", "hips_back", "hips_left", "hips_right", "chest", "back_right"} --, "back_left"}
+    local no_rnd_attach = {"forcestaff_p1_m1", "forcestaff_p2_m1", "forcestaff_p3_m1", "forcestaff_p4_m1"}
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -138,6 +142,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     -- Parent
     VisibleEquipmentExtension.super.init(self, extension_init_context, unit, extension_init_data)
     -- Attributes
+    self.profile = extension_init_data.profile
     self.loading_spawn_point = extension_init_data.loading_spawn_point
     self.equipment_component = extension_init_data.equipment_component
     self.equipment = extension_init_data.equipment
@@ -162,7 +167,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     -- self.center_mass_units = {}
     self.dummy_units = {}
     self.slot_units = {}
-    self.helper_units = nil
+    -- self.helper_units = nil
     self.is_linked = {}
     self.equipment_data = {}
     self.slot_infos = {}
@@ -171,11 +176,15 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.sounds = {}
     self.rotate_animation = {}
     self.weapon_template = {}
+    self.gear_nodes = {}
     self.size = {}
     self.weight = {}
     self.visible = {}
+    -- Spawn attach units
+    self:spawn_gear_attach_points()
     -- Events
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
+    managers.event:register(self, "weapon_customization_attach_point_changed", "on_attach_point_changed")
     -- Settings
     self:on_settings_changed()
     -- Initialized
@@ -185,6 +194,7 @@ end
 VisibleEquipmentExtension.delete = function(self)
     -- Events
     managers.event:unregister(self, "weapon_customization_settings_changed")
+    managers.event:unregister(self, "weapon_customization_attach_point_changed")
     -- Uninitialize
     self.initialized = false
     -- Iterate slots
@@ -241,7 +251,6 @@ VisibleEquipmentExtension.has_backpack = function(self)
 	return item and item ~= BACKPACK_EMPTY
 end
 
-local unit_list = {}
 VisibleEquipmentExtension.spawn_gear_attach_points = function(self, unit_or_nil)
     local unit = unit_or_nil and unit_alive(unit_or_nil) and unit_or_nil or self.player_unit
     if not self.helper_units then
@@ -251,46 +260,38 @@ VisibleEquipmentExtension.spawn_gear_attach_points = function(self, unit_or_nil)
             {node = "j_hips", offset = vector3(0, -.15, .1), text = "Hips Back", name = "hips_back"},
             {node = "j_hips", offset = vector3(-.15, 0, .1), text = "Hips Left", name = "hips_left"},
             {node = "j_hips", offset = vector3(.15, 0, .1), text = "Hips Right", name = "hips_right"},
-            {node = "j_leftleg", offset = vector3(-.25, 0, 0), text = "Left Leg", name = "leg_left"},
-            {node = "j_rightleg", offset = vector3(.25, 0, 0), text = "Right Leg", name = "leg_right"},
+            {node = "j_leftupleg", offset = vector3(0, 0, 0), text = "Left Leg", name = "leg_left"},
+            {node = "j_rightupleg", offset = vector3(0, 0, 0), text = "Right Leg", name = "leg_right"},
             {node = "j_frontchestplate", offset = vector3(0, 0, 0), text = "Chest", name = "chest"},
         } or {
             {node = "j_hips", offset = vector3(0, .55, .1), text = "Hips Front", name = "hips_front"},
             {node = "j_hips", offset = vector3(0, -.4, .1), text = "Hips Back", name = "hips_back"},
             {node = "j_hips", offset = vector3(-.5, 0, .1), text = "Hips Left", name = "hips_left"},
             {node = "j_hips", offset = vector3(.5, 0, .1), text = "Hips Right", name = "hips_right"},
-            {node = "j_leftleg", offset = vector3(-.5, -.2, 0), text = "Left Leg", name = "leg_left"},
-            {node = "j_rightleg", offset = vector3(.5, .2, 0), text = "Right Leg", name = "leg_right"},
+            {node = "j_leftupleg", offset = vector3(0, -.2, 0), text = "Left Leg", name = "leg_left"},
+            {node = "j_rightupleg", offset = vector3(0, .2, 0), text = "Right Leg", name = "leg_right"},
             {node = "j_spine2", offset = vector3(0, -.5, 0), text = "Chest", name = "chest"},
         }
         -- Back / backpack
         if Unit.has_node(unit, "j_frontchestplate") and Unit.has_node(unit, "j_backchestplate") then
-            if has_backpack then
-                points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, -.15), text = "Back Left", name = "back_left"}
-                points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, .15), text = "Back Right", name = "back_right"}
-            else
-                points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, -.15), text = "Back Left", name = "back_left"}
-                points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, .15), text = "Back Right", name = "back_right"}
-            end
+            points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, -.15), text = "Back Left", name = "backpack_left"}
+            points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, .15), text = "Back Right", name = "backpack_right"}
+            points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, -.15), text = "Back Left", name = "back_left"}
+            points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, .15), text = "Back Right", name = "back_right"}
         else
-            if has_backpack then
-                points[#points+1] = {node = "j_spine2", offset = vector3(-.25, .5, 0), text = "Back Left", name = "back_left"}
-                points[#points+1] = {node = "j_spine2", offset = vector3(.25, .5, 0), text = "Back Right", name = "back_right"}
-            else
-                points[#points+1] = {node = "j_spine2", offset = vector3(-.25, .5, 0), text = "Back Left", name = "back_left"}
-                points[#points+1] = {node = "j_spine2", offset = vector3(.25, .5, 0), text = "Back Right", name = "back_right"}
-            end
+            points[#points+1] = {node = "j_spine2", offset = vector3(-.25, .5, 0), text = "Back Left", name = "backpack_left"}
+            points[#points+1] = {node = "j_spine2", offset = vector3(.25, .5, 0), text = "Back Right", name = "backpack_right"}
+            points[#points+1] = {node = "j_spine2", offset = vector3(-.25, .5, 0), text = "Back Left", name = "back_left"}
+            points[#points+1] = {node = "j_spine2", offset = vector3(.25, .5, 0), text = "Back Right", name = "back_right"}
         end
-        -- local unit_list = {}
-        table.clear(unit_list)
+        self.helper_units = {}
         for _, point in pairs(points) do
             local node = Unit.node(unit, point.node)
             local point_unit = World.spawn_unit_ex(self.world, "core/units/empty_root", nil, Unit.world_pose(unit, node))
             World.link_unit(self.world, point_unit, 1, unit, node)
             Unit.set_local_position(point_unit, 1, point.offset)
-            unit_list[point.name] = point_unit
+            self.helper_units[point.name] = point_unit
         end
-        return unit_list
     end
 end
 
@@ -318,11 +319,21 @@ VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
     local sounds = item_equipment_data and item_equipment_data.step_sounds or item_data and item_data.step_sounds
     local sounds2 = item_equipment_data and item_equipment_data.step_sounds2 or item_data and item_data.step_sounds2
     local attach_node = item_equipment_data and item_equipment_data.attach_node or item_data and item_data.attach_node
+
+    local default_offsets = mod.gear_node_offsets.default
+    local gear_position, gear_rotation, gear_scale = nil, nil, nil
+    if not self:is_ogryn() then
+        if self.gear_nodes[slot] then
+            gear_position = default_offsets[self.gear_nodes[slot]] and default_offsets[self.gear_nodes[slot]].position
+            gear_rotation = default_offsets[self.gear_nodes[slot]] and default_offsets[self.gear_nodes[slot]].rotation
+            gear_scale = default_offsets[self.gear_nodes[slot]] and default_offsets[self.gear_nodes[slot]].scale
+        end
+    end
     -- Compile equipment data
     local equipment_data = {
-        position = {item_equipment_data.position, item_equipment_data.position2},
-        rotation = {item_equipment_data.rotation, item_equipment_data.rotation2},
-        scale = {item_equipment_data.scale, item_equipment_data.scale2},
+        position = {gear_position or item_equipment_data.position, item_equipment_data.position2},
+        rotation = {gear_rotation or item_equipment_data.rotation, item_equipment_data.rotation2},
+        scale = {gear_scale or item_equipment_data.scale, item_equipment_data.scale2},
         center_mass = {item_equipment_data.center_mass, item_equipment_data.center_mass2},
         step_move = {item_equipment_data.step_move, item_equipment_data.step_move2},
         step_rotation = {item_equipment_data.step_rotation, item_equipment_data.step_rotation2},
@@ -508,52 +519,59 @@ VisibleEquipmentExtension.trigger_step = function(self, optional_time_overwrite)
 end
 
 VisibleEquipmentExtension.link_equipment = function(self)
-    -- Spawn attach units
-    self.helper_units = self.helper_units or self:spawn_gear_attach_points()
-    -- Attach to node
-    local node_index, attach_unit = unit_node(self.player_unit, self.back_node), self.player_unit
-    -- Iterate equipment
-    for slot_name, slot in pairs(self.equipment) do
-        -- Check dummies
-        if self.dummy_units[slot] and not self.is_linked[slot] then
-            
-            -- Data
-            local data = self.equipment_data[slot]
-            local attach_node = data.attach_node
-            local attach_node_index = nil
-            if attach_node and unit_has_node(self.player_unit, attach_node) then
-                attach_node_index = unit_node(self.player_unit, attach_node)
-            end
+    if self.player_unit and unit_alive(self.player_unit) then
+        -- Attach to node
+        local node_index, attach_unit = unit_node(self.player_unit, self.back_node), self.player_unit
+        -- Iterate equipment
+        for slot_name, slot in pairs(self.equipment) do
+            -- Check dummies
+            if self.dummy_units[slot] and not self.is_linked[slot] then
+                
+                -- Data
+                local data = self.equipment_data[slot]
+                -- local attach_node = data.attach_node
+                -- local attach_node_index = nil
+                if data.attach_node and unit_has_node(self.player_unit, data.attach_node) then
+                    node_index, attach_unit = unit_node(self.player_unit, data.attach_node), self.player_unit
+                end
 
-            -- Get attach node
-            -- local gear_node = mod.gear_settings:get(slot.item, "gear_node")
-            -- if gear_node and self.helper_units[gear_node] then
-            --     attach_node_index, attach_unit = 1, self.helper_units[gear_node]
-            -- end
+                if self.gear_nodes and self.gear_nodes[slot] and self.helper_units[self.gear_nodes[slot]] then
+                    node_index, attach_unit = 1, self.helper_units[self.gear_nodes[slot]]
+                end
 
-            local item = slot.item and slot.item.__master_item or slot.item
-            -- Get list of units ( Slab shield )
-            -- local units = {self.dummy_units[slot].base}
-            -- if self.item_names[slot] == SLAB_SHIELD then
-            --     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
-            -- end
-            -- Iterate units
-            for i, unit in pairs(self.slot_units[slot]) do
-                if unit and unit_alive(unit) then
-                    -- Link unit to attachment node
-                    world_unlink_unit(self.world, unit, true)
-                    world_link_unit(self.world, unit, 1, attach_unit, attach_node_index or node_index)
-                    -- Apply center mass
-                    local children = Unit.get_child_units(unit)
-                    if children and #children > 0 and data.center_mass and data.center_mass[i] then
-                        for _, child in pairs(children) do
-                            unit_set_local_position(child, 1, unit_local_position(child, 1) - vector3_unbox(data.center_mass[i]))
-                        end
+                -- -- Get attach node
+                -- local gear_node = mod.gear_settings:get(slot.item, "gear_node")
+                -- if gear_node and self.helper_units[gear_node] then
+                --     mod:echot("link_equipment: "..tostring(gear_node))
+                --     attach_node_index, attach_unit = 1, self.helper_units[gear_node]
+                -- else
+                --     mod:echot("link_equipment: nope")
+                -- end
+
+                -- local item = slot.item and slot.item.__master_item or slot.item
+                -- Get list of units ( Slab shield )
+                -- local units = {self.dummy_units[slot].base}
+                -- if self.item_names[slot] == SLAB_SHIELD then
+                --     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+                -- end
+                -- Iterate units
+                for i, unit in pairs(self.slot_units[slot]) do
+                    if unit and unit_alive(unit) then
+                        -- Link unit to attachment node
+                        world_unlink_unit(self.world, unit, true)
+                        world_link_unit(self.world, unit, 1, attach_unit, node_index)
+                        -- Apply center mass
+                        -- local children = Unit.get_child_units(unit)
+                        -- if children and #children > 0 and data.center_mass and data.center_mass[i] then
+                        --     for _, child in pairs(children) do
+                        --         unit_set_local_position(child, 1, unit_local_position(child, 1) - vector3_unbox(data.center_mass[i]))
+                        --     end
+                        -- end
                     end
                 end
+                -- Set linked
+                self.is_linked[slot] = true
             end
-            -- Set linked
-            self.is_linked[slot] = true
         end
     end
 end
@@ -565,12 +583,25 @@ VisibleEquipmentExtension.position_equipment = function(self)
         if self.dummy_units[slot] and self.is_linked[slot] then
             -- Data
             local data = self.equipment_data[slot]
+            -- local using_gear_node = false
+            -- local attach_node_index, attach_unit = nil, nil
             
-            local item = slot.item and slot.item.__master_item or slot.item
+            -- local item = slot.item and slot.item.__master_item or slot.item
             -- Get list of units ( Slab shield )
             -- local units = {self.dummy_units[slot].base}
             -- if self.item_names[slot] == SLAB_SHIELD then
             --     units = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+            -- end
+
+            -- Get attach node
+            -- local gear_node = mod.gear_settings:get(slot.item, "gear_node")
+            -- if gear_node and self.helper_units[gear_node] then
+            --     -- attach_node_index, attach_unit = 1, self.helper_units[gear_node]
+            --     attach_node_index, attach_unit = 1, self.helper_units[gear_node]
+            --     mod:echot("position_equipment: "..tostring(gear_node))
+            --     using_gear_node = true
+            -- else
+            --     mod:echot("position_equipment: nope")
             -- end
 
             -- Iterate units
@@ -579,6 +610,7 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     local rot = vector3_unbox(data.rotation[i])
                     local rotation = quaternion_from_euler_angles_xyz(rot[1], rot[2], rot[3])
 
+                    local default_offsets = mod.gear_node_offsets.default
                     -- local gear_node = mod.gear_settings:get(slot.item, "gear_node")
 
                     -- Position equipment
@@ -586,6 +618,10 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     if self.position_overwrite[slot] then
                         position = vector3_unbox(self.position_overwrite[slot])
                     end
+                    -- if self.gear_nodes and self.gear_nodes[slot] then
+                    --     local gear_offset = default_offsets[self.gear_nodes[slot]] and default_offsets[self.gear_nodes[slot]].position
+                    --     position = gear_offset and vector3_unbox(gear_offset) or vector3_zero()
+                    -- end
                     if unit_get_data(unit, "unit_manipulation_position_offset") then
                         position = position + vector3_unbox(unit_get_data(unit, "unit_manipulation_position_offset"))
                     end
@@ -601,6 +637,10 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     if self.rotation_overwrite[slot] then
                         rotation = quaternion_unbox(self.rotation_overwrite[slot])
                     end
+                    -- if self.gear_nodes and self.gear_nodes[slot] then
+                    --     local gear_offset = default_offsets[self.gear_nodes[slot]] and default_offsets[self.gear_nodes[slot]].rotation
+                    --     position = gear_offset and quaternion_from_vector(vector3_unbox(gear_offset)) or quaternion_identity()
+                    -- end
                     if unit_get_data(unit, "unit_manipulation_rotation_offset") then
                         rotation = Quaternion.multiply(rotation, quaternion_unbox(unit_get_data(unit, "unit_manipulation_rotation_offset")))
                     end
@@ -617,6 +657,10 @@ VisibleEquipmentExtension.position_equipment = function(self)
                     if self.scale_overwrite[slot] then
                         scale = vector3_unbox(self.scale_overwrite[slot])
                     end
+                    -- if self.gear_nodes and self.gear_nodes[slot] then
+                    --     local gear_offset = default_offsets[self.gear_nodes[slot]] and default_offsets[self.gear_nodes[slot]].scale
+                    --     scale = gear_offset and vector3_unbox(gear_offset) or vector3_one()
+                    -- end
                     if unit_get_data(unit, "unit_manipulation_scale_offset") then
                         scale = scale + vector3_unbox(unit_get_data(unit, "unit_manipulation_scale_offset"))
                     end
@@ -651,7 +695,7 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
                     -- Unlink unit
                     world_unlink_unit(self.world, unit)
                 else
-                    mod:echot("lol: "..tostring(unit))
+                    -- mod:echot("lol: "..tostring(unit))
                 end
             end
             for _, unit in pairs(self.dummy_units[slot].attachments) do
@@ -672,7 +716,7 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
             -- Delete unit
             world_destroy_unit(self.world, self.dummy_units[slot].base)
         else
-            mod:echot("lol: "..tostring(self.dummy_units[slot].base))
+            -- mod:echot("lol: "..tostring(self.dummy_units[slot].base))
         end
     end
     -- Package
@@ -701,6 +745,12 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
 end
 
 VisibleEquipmentExtension.cb_on_unit_3p_streaming_complete = function(self, slot)
+end
+
+VisibleEquipmentExtension.is_ogryn = function(self)
+    local player = self.player
+    local profile = self.profile or player and player:profile()
+    return profile and profile.archetype.name == "ogryn"
 end
 
 VisibleEquipmentExtension.load_slot = function(self, slot)
@@ -736,6 +786,17 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 else
                     self.slot_units[slot] = {self.dummy_units[slot].base}
                 end
+
+                if not self:is_ogryn() then
+                    local rnd_node = not self.is_local_unit and not table_contains(no_rnd_attach, self.item_names[slot])
+                        and item.item_type == WEAPON_RANGED and rnd_attach[math_random(1, #rnd_attach)]
+                    local gear_node = mod.gear_settings:get(slot.item, "gear_node") or rnd_node
+
+                    if self.helper_units[gear_node] then
+                        self.gear_nodes[slot] = gear_node
+                    end
+                end
+
                 -- Performance
                 local callback = callback(self, "cb_on_unit_3p_streaming_complete", slot)
                 unit_force_stream_meshes(self.dummy_units[slot].base, callback, true)
@@ -798,7 +859,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                 -- Set flags
                 self.slot_loaded[slot] = true
                 -- Equipment data
-                self:update_equipment_data()
+                -- self:update_equipment_data()
                 self.slot_is_loading[slot] = nil
             end
         end
@@ -944,6 +1005,26 @@ VisibleEquipmentExtension.on_settings_changed = function(self)
     self.sound_fp = mod:get("mod_option_visible_equipment_own_sounds_fp")
 end
 
+VisibleEquipmentExtension.on_attach_point_changed = function(self)
+    if not self:is_ogryn() then
+        for slot_name, slot in pairs(self.equipment) do
+            if slot and slot.item and slot.item.item_type == WEAPON_RANGED then
+                self.gear_nodes[slot] = mod.gear_settings:get(slot.item, "gear_node")
+                self.equipment_data[slot] = self:equipment_data_by_slot(slot)
+                self.is_linked[slot] = nil
+                for i, _ in pairs(self.slot_units[slot]) do
+                    self:play_equipment_sound(slot, i, true, true)
+                end
+            end
+        end
+        -- Equipment data
+        -- self:update_equipment_data()
+        self:link_equipment()
+        self:position_equipment()
+        self.trigger_wobble = true
+    end
+end
+
 VisibleEquipmentExtension.load_slots = function(self)
     -- Iterate slots
     for slot_name, slot in pairs(self.equipment) do
@@ -1076,9 +1157,9 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                 -- Values
                 local get_values = function(i, speed)
                     local default_position = vector3_unbox(data.position[i])
-                    local position_move = vector3_unbox(data.step_move[i]) * (speed or self.step_speed)
+                    local position_move = vector3_unbox(data.step_move[i]) * (speed or self.step_speed) * (self.gear_nodes[slot] and .5 or 1)
                     local default_rotation = vector3_unbox(data.rotation[i])
-                    local rotation_move = vector3_unbox(data.step_rotation[i]) * (speed or self.step_speed)
+                    local rotation_move = vector3_unbox(data.step_rotation[i]) * (speed or self.step_speed) * (self.gear_nodes[slot] and .5 or 1)
                     return default_position, position_move, default_rotation, rotation_move
                 end
                 -- Start step animation

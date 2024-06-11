@@ -63,6 +63,7 @@ local mod = get_mod("weapon_customization")
     local MOVE_DURATION_OUT = .5
 	local MOVE_DURATION_IN = 1
     local RESET_WAIT_TIME = 5
+	local SOUND_DURATION = .5
 --#endregion
 
 --#region Global Functions 
@@ -180,6 +181,13 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 		end
 	end
 
+	instance.play_zoom_sound = function(self, t, sound)
+		if self.cosmetics_view and not self.sound_end or t >= self.sound_end then
+			self.sound_end = t + SOUND_DURATION
+			self.cosmetics_view:_play_sound(sound)
+		end
+	end
+
 	instance.update_camera_movement = function(self, dt, t)
 		-- Current position
 		local position = self._link_unit_position and vector3_unbox(self._link_unit_position) or vector3_zero()
@@ -194,7 +202,7 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 				self:sync_set("current_move_duration", MOVE_DURATION_IN)
 				self:sync_set("last_move_position", self.move_position)
 				-- Play sound
-				mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
+				self:play_zoom_sound(t, UISoundEvents.apparel_zoom_in)
 
 			elseif not vector3.equal(vector3_unbox(self.move_position), vector3_unbox(self._link_unit_base_position)) then
 				-- Set new position
@@ -207,7 +215,7 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 				self.last_move_position:store(vector3_zero())
 				mod.last_move_position = self.last_move_position
 				-- Play sound
-				mod:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
+				self:play_zoom_sound(t, UISoundEvents.apparel_zoom_out)
 			end
 
 			self:sync_set("do_move", nil)
