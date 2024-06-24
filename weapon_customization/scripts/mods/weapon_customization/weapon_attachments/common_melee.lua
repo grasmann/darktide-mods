@@ -219,6 +219,28 @@ return {
     end,
 
 
+    -- power_sword_2h_blade_01|power_sword_2h_blade_02|power_sword_2h_blade_03
+    scabbard_attachments = function(default)
+        local attachments = {
+            {id = "scabbard_01", name = "Scabbard 1"},
+            {id = "scabbard_02", name = "Scabbard 2"},
+            {id = "scabbard_03", name = "Scabbard 3"},
+        }
+        if default == nil then default = true end
+        if default then return table.icombine({{id = "scabbard_default", name = mod:localize("mod_attachment_default")}}, attachments)
+        else return attachments end
+    end,
+    scabbard_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "scabbard_default", model = ""},
+            {name = "scabbard_01",      model = _item_melee.."/full/chain_sword_full_01"},
+            {name = "scabbard_02",      model = _item_melee.."/full/chain_sword_full_02"},
+            {name = "scabbard_03",      model = _item_melee.."/full/chain_sword_full_03"},
+        }, parent, angle, move, remove, type or "scabbard", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+    end,
+
+
 
     blunt_head_attachments = function(default)
         local attachments = {

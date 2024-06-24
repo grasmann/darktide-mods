@@ -450,13 +450,6 @@ return {
 								["keybind_type"] = "function_call",
 								["function_name"] = "clear_chat",
 							},
-							{["setting_id"] = "dump_perf",
-								["type"] = "keybind",
-								["default_value"] = {},
-								["keybind_trigger"] = "pressed",
-								["keybind_type"] = "function_call",
-								["function_name"] = "dump_perf",
-							},
 						}
 					},
 				}

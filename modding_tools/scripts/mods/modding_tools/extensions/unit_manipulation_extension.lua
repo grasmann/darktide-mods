@@ -15,10 +15,12 @@ local mod = get_mod("modding_tools")
 --#region Performance
 	local Unit = Unit
 	local math = math
+	local type = type
 	local Color = Color
 	local class = class
 	local pairs = pairs
 	local table = table
+	local string = string
 	local Camera = Camera
 	local vector2 = Vector2
 	local vector3 = Vector3
@@ -29,7 +31,9 @@ local mod = get_mod("modding_tools")
 	local Quaternion = Quaternion
 	local unit_alive = Unit.alive
 	local vector3_box = Vector3Box
+	local script_unit = ScriptUnit
 	local Application = Application
+	local string_gsub = string.gsub
 	local unit_set_data = Unit.set_data
 	local unit_get_data = Unit.get_data
 	local quaternion_up = Quaternion.up
@@ -51,12 +55,16 @@ local mod = get_mod("modding_tools")
 	local unit_set_local_scale = Unit.set_local_scale
 	local quaternion_matrix4x4 = Quaternion.matrix4x4
 	local camera_world_rotation = Camera.world_rotation
-    local camera_world_position = Camera.world_position
+	local script_unit_extension = script_unit.extension
 	local camera_world_to_screen = Camera.world_to_screen
+    local camera_world_position = Camera.world_position
 	local unit_set_local_position = Unit.set_local_position
     local unit_set_local_rotation = Unit.set_local_rotation
-	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+	local script_unit_add_extension = script_unit.add_extension
+    local script_unit_has_extension = script_unit.has_extension
+    local script_unit_remove_extension = script_unit.remove_extension
 	local quaternion_to_euler_angles_xyz = Quaternion.to_euler_angles_xyz
+	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -161,6 +169,9 @@ UnitManipulationExtension.update = function(self, dt, t, input_service)
 			self:draw_selector(dt, t, input_service)
 		end
 		self:update_controls(dt, t, input_service)
+		self:position_unit()
+		self:rotate_unit()
+		self:scale_unit()
 	end
 end
 
@@ -220,18 +231,24 @@ UnitManipulationExtension.update_controls = function(self, dt, t, input_service,
 end
 
 UnitManipulationExtension.position_unit = function(self, offset)
-	unit_set_local_position(self.unit, self.mode, vector3_unbox(self.original_position) + offset)
+	local data = not offset and unit_get_data(self.unit, "unit_manipulation_position_offset")
+	local offset = offset or data and vector3_unbox(data) or vector3(0, 0, 0)
+	unit_set_local_position(self.unit, self.node, vector3_unbox(self.original_position) + offset)
 	unit_set_data(self.unit, "unit_manipulation_position_offset", vector3_box(offset))
 end
 
 UnitManipulationExtension.rotate_unit = function(self, offset)
+	local data = not offset and unit_get_data(self.unit, "unit_manipulation_rotation_offset")
+	local offset = offset or data and quaternion_unbox(data) or quaternion_identity()
 	local new_rotation = Quaternion.multiply(quaternion_unbox(self.original_rotation), offset)
-	unit_set_local_rotation(self.unit, self.mode, new_rotation)
+	unit_set_local_rotation(self.unit, self.node, new_rotation)
 	unit_set_data(self.unit, "unit_manipulation_rotation_offset", quaternion_box(offset))
 end
 
 UnitManipulationExtension.scale_unit = function(self, offset)
-	unit_set_local_scale(self.unit, self.mode, vector3_unbox(self.original_scale) + offset)
+	local data = not offset and unit_get_data(self.unit, "unit_manipulation_scale_offset")
+	local offset = offset or data and vector3_unbox(data) or vector3(0, 0, 0)
+	unit_set_local_scale(self.unit, self.node, vector3_unbox(self.original_scale) + offset)
 	unit_set_data(self.unit, "unit_manipulation_scale_offset", vector3_box(offset))
 end
 
@@ -427,6 +444,16 @@ UnitManipulationExtension.draw_selector = function(self, dt, t, input_service, p
 	end
 end
 
+local draw_info_lines = {
+	{text = "Scale val", value = "global_scale"},
+	{text = "Rotation val", value = "global_rotation"},
+	{text = "Position val", value = "global_position"},
+	{text = "World"},
+	{text = "Scale val", value = "local_scale"},
+	{text = "Rotation val", value = "local_rotation"},
+	{text = "Position val", value = "local_position"},
+	{text = "Local"},
+}
 -- Draw info panel with global and local position, rotation, scale
 UnitManipulationExtension.draw_info = function(self, dt, t, input_service)
 	if self.unit and unit_alive(self.unit) then
@@ -442,20 +469,34 @@ UnitManipulationExtension.draw_info = function(self, dt, t, input_service)
 		local offset = position_2d + vector3(200, 180, 0)
 		local scale = unit_world_scale(self.unit, self.node)
 		local local_scale = unit_local_scale(self.unit, self.node)
-		local lines = {
-			{text = "Scale "..tostring(scale)},
-			{text = "Rotation "..tostring(rotation)},
-			{text = "Position "..tostring(position)},
-			{text = "World"},
-			{text = "Scale "..tostring(local_scale)},
-			{text = "Rotation "..tostring(local_rotation)},
-			{text = "Position "..tostring(local_position)},
-			{text = "Local"},
-		}
+		-- local lines = {
+		-- 	{text = "Scale "..tostring(scale)},
+		-- 	{text = "Rotation "..tostring(rotation)},
+		-- 	{text = "Position "..tostring(position)},
+		-- 	{text = "World"},
+		-- 	{text = "Scale "..tostring(local_scale)},
+		-- 	{text = "Rotation "..tostring(local_rotation)},
+		-- 	{text = "Position "..tostring(local_position)},
+		-- 	{text = "Local"},
+		-- }
 		local RES_X, RES_Y = Application.back_buffer_size()
 		ScriptGui.icrect(self.gui, RES_X, RES_Y, offset[1], offset[2] + 10, offset[1] + 350, offset[2] - 140, 99, Color(128, 255, 255, 255))
-		for i, line in pairs(lines) do
-			ScriptGui.text(self.gui, line.text, DevParameters.debug_text_font, 14, vector3(offset[1] + 15, offset[2] - 16 * i, LINE_Z), Color.black(), Color.gray())
+		for i, line in pairs(draw_info_lines) do
+			local text = line.text
+			if line.value == "global_scale" then
+				text = string_gsub(line.text, "val", tostring(scale))
+			elseif line.value == "global_rotation" then
+				text = string_gsub(line.text, "val", tostring(rotation))
+			elseif line.value == "global_position" then
+				text = string_gsub(line.text, "val", tostring(position))
+			elseif line.value == "local_scale" then
+				text = string_gsub(line.text, "val", tostring(local_scale))
+			elseif line.value == "local_rotation" then
+				text = string_gsub(line.text, "val", tostring(local_rotation))
+			elseif line.value == "local_position" then
+				text = string_gsub(line.text, "val", tostring(local_position))
+			end
+			ScriptGui.text(self.gui, text, DevParameters.debug_text_font, 14, vector3(offset[1] + 15, offset[2] - 16 * i, LINE_Z), Color.black(), Color.gray())
 		end
 	end
 end
@@ -501,58 +542,92 @@ UnitManipulationExtension.draw_buttons = function(self, dt, t, input_service)
 	end
 end
 
+local draw_box_points = {
+	bottom_01 = {vec = {true, true, false}, position = ""},
+	bottom_02 = {vec = {true, false, false}, position = ""},
+	bottom_03 = {vec = {false, false, false}, position = ""},
+	bottom_04 = {vec = {false, true, false}, position = ""},
+	top_01 = {vec = {true, true, true}, position = ""},
+	top_02 = {vec = {true, false, true}, position = ""},
+	top_03 = {vec = {false, false, true}, position = ""},
+	top_04 = {vec = {false, true, true}, position = ""},
+}
+local draw_box_results = {
+	bottom_01 = {position = "", distance = ""},
+	bottom_02 = {position = "", distance = ""},
+	bottom_03 = {position = "", distance = ""},
+	bottom_04 = {position = "", distance = ""},
+	top_01 = {position = "", distance = ""},
+	top_02 = {position = "", distance = ""},
+	top_03 = {position = "", distance = ""},
+	top_04 = {position = "", distance = ""},
+}
+local draw_box_draw = {
+	{a = "bottom_01", b = "bottom_02"},
+	{a = "bottom_01", b = "bottom_04"},
+	{a = "bottom_02", b = "bottom_03"},
+	{a = "bottom_03", b = "bottom_04"},
+	{a = "top_01", b = "bottom_01"},
+	{a = "top_02", b = "bottom_02"},
+	{a = "top_03", b = "bottom_03"},
+	{a = "top_04", b = "bottom_04"},
+	{a = "top_01", b = "top_02"},
+	{a = "top_01", b = "top_04"},
+	{a = "top_02", b = "top_03"},
+	{a = "top_03", b = "top_04"},
+}
 -- Draw 3d box around unit
 UnitManipulationExtension.draw_box = function(self, dt, t, input_service)
 	if self.unit and unit_alive(self.unit) then
 		local tm, half_size = Unit.box(self.unit)
 		-- Get boundary points
-		local points = {
-			bottom_01 = {vec = {true, true, false}}, bottom_02 = {vec = {true, false, false}},
-			bottom_03 = {vec = {false, false, false}}, bottom_04 = {vec = {false, true, false}},
-			top_01 = {vec = {true, true, true}}, top_02 = {vec = {true, false, true}},
-			top_03 = {vec = {false, false, true}}, top_04 = {vec = {false, true, true}},
-		}
-		for name, data in pairs(points) do
+		for name, data in pairs(draw_box_points) do
 			local position = vector3(
 				data.vec[1] == true and half_size.x or -half_size.x,
 				data.vec[2] == true and half_size.y or -half_size.y,
 				data.vec[3] == true and half_size.z or -half_size.z
 			)
-			points[name].position = Matrix4x4.transform(tm, position)
+			draw_box_points[name].position = Matrix4x4.transform(tm, position)
 		end
 		-- Get position and distance to camera
-		local results = {
-			bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
-			top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
-		}
-		for name, data in pairs(results) do
-			results[name].position, results[name].distance = camera_world_to_screen(self.camera, points[name].position)
+		for name, data in pairs(draw_box_results) do
+			draw_box_results[name].position, draw_box_results[name].distance = camera_world_to_screen(self.camera, draw_box_points[name].position)
 		end
 		-- Farthest point from camera
 		local farthest = nil
 		local last = 0
-		for name, data in pairs(results) do
+		for name, data in pairs(draw_box_results) do
 			if data.distance > last then
 				last = data.distance
 				farthest = name
 			end
 		end
-		local draw = {
-			{a = "bottom_01", b = "bottom_02"}, {a = "bottom_01", b = "bottom_04"},
-			{a = "bottom_02", b = "bottom_03"}, {a = "bottom_03", b = "bottom_04"},
-			{a = "top_01", b = "bottom_01"}, {a = "top_02", b = "bottom_02"},
-			{a = "top_03", b = "bottom_03"}, {a = "top_04", b = "bottom_04"},
-			{a = "top_01", b = "top_02"}, {a = "top_01", b = "top_04"},
-			{a = "top_02", b = "top_03"}, {a = "top_03", b = "top_04"},
-		}
-		for name, data in pairs(draw) do
+		-- Draw
+		for name, data in pairs(draw_box_draw) do
 			if farthest ~= data.a and farthest ~= data.b then
-				ScriptGui.hud_line(self.gui, results[data.a].position, results[data.b].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
+				ScriptGui.hud_line(self.gui, draw_box_results[data.a].position, draw_box_results[data.b].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
 			end
 		end
 	end
 end
 
+local draw_position_gizmo_points = {
+	center = {position = ""},
+	X = {position = ""},
+	Y = {position = ""},
+	Z = {position = ""},
+}
+local draw_position_gizmo_results = {
+	center = {position = "", distance = ""},
+	X = {position = "", distance = ""},
+	Y = {position = "", distance = ""},
+	Z = {position = "", distance = ""},
+}
+local draw_position_gizmo_position_points = {
+	{text = "X", position = "", value = "position_x", color = "", faded_color = ""},
+	{text = "Y", position = "", value = "position_y", color = "", faded_color = ""},
+	{text = "Z", position = "", value = "position_z", color = "", faded_color = ""},
+}
 -- Draw position / scale gizmo at unit position
 UnitManipulationExtension.draw_position_gizmo = function(self, dt, t, input_service)
 	if self.unit and unit_alive(self.unit) then
@@ -562,28 +637,31 @@ UnitManipulationExtension.draw_position_gizmo = function(self, dt, t, input_serv
 		local cursor = self:cursor(input_service)
 		local hold = self:hold(input_service)
 		-- Get boundary points
-		local points = {center = {}, X = {}, Y = {}, Z = {}}
-		points.center.position = position
-		points.X.position = position + quaternion_right(rotation) * .2
-		points.Y.position = position + quaternion_forward(rotation) * .2
-		points.Z.position = position + quaternion_up(rotation) * .2
+		draw_position_gizmo_points.center.position = position
+		draw_position_gizmo_points.X.position = position + quaternion_right(rotation) * .2
+		draw_position_gizmo_points.Y.position = position + quaternion_forward(rotation) * .2
+		draw_position_gizmo_points.Z.position = position + quaternion_up(rotation) * .2
 		-- Get position and distance to camera
-		local results = {center = {}, X = {}, Y = {}, Z = {}}
-		results.center.position, results.center.distance = camera_world_to_screen(self.camera, points.center.position)
-		results.X.position, results.X.distance = camera_world_to_screen(self.camera, points.X.position)
-		results.Y.position, results.Y.distance = camera_world_to_screen(self.camera, points.Y.position)
-		results.Z.position, results.Z.distance = camera_world_to_screen(self.camera, points.Z.position)
-		local position_points = {
-			{text = "X", position = results.X.position, value = "position_x", color = Color(255, 255, 0, 0), faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)},
-			{text = "Y", position = results.Y.position, value = "position_y", color = Color(255, 0, 255, 0), faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)},
-			{text = "Z", position = results.Z.position, value = "position_z", color = Color(255, 0, 0, 255), faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)},
-		}
+		draw_position_gizmo_results.center.position, draw_position_gizmo_results.center.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.center.position)
+		draw_position_gizmo_results.X.position, draw_position_gizmo_results.X.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.X.position)
+		draw_position_gizmo_results.Y.position, draw_position_gizmo_results.Y.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.Y.position)
+		draw_position_gizmo_results.Z.position, draw_position_gizmo_results.Z.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.Z.position)
+		-- Draw
+		draw_position_gizmo_position_points[1].position = draw_position_gizmo_results.X.position
+		draw_position_gizmo_position_points[1].color = Color(255, 255, 0, 0)
+		draw_position_gizmo_position_points[1].faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)
+		draw_position_gizmo_position_points[2].position = draw_position_gizmo_results.Y.position
+		draw_position_gizmo_position_points[2].color = Color(255, 0, 255, 0)
+		draw_position_gizmo_position_points[2].faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)
+		draw_position_gizmo_position_points[3].position = draw_position_gizmo_results.Z.position
+		draw_position_gizmo_position_points[3].faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)
+		draw_position_gizmo_position_points[3].color = Color(255, 0, 0, 255)
 		-- Iterate angles
-		for _, angle in pairs(position_points) do
+		for _, angle in pairs(draw_position_gizmo_position_points) do
 			-- Check cursor collision
-			local distance_1 = math.distance_2d(results.center.position[1], results.center.position[2], angle.position[1], angle.position[2])
-			local distance_2 = math.distance_2d(results.center.position[1], results.center.position[2], cursor.x, cursor.y)
-			local distance_3 = math.distance_2d(angle.position[1], 			angle.position[2], 			cursor.x, cursor.y)
+			local distance_1 = math.distance_2d(draw_position_gizmo_results.center.position[1], draw_position_gizmo_results.center.position[2], angle.position[1], angle.position[2])
+			local distance_2 = math.distance_2d(draw_position_gizmo_results.center.position[1], draw_position_gizmo_results.center.position[2], cursor.x, cursor.y)
+			local distance_3 = math.distance_2d(angle.position[1], angle.position[2], cursor.x, cursor.y)
 			-- Check controls
 			if not hold then self[angle.value] = nil end
 			if not hold and not self:already_collided(input_service) and not self[angle.value] then
@@ -592,12 +670,17 @@ UnitManipulationExtension.draw_position_gizmo = function(self, dt, t, input_serv
 			if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
 			-- Draw
 			local color = self[angle.value] and angle.color or angle.faded_color
-			ScriptGui.hud_line(self.gui, results.center.position, angle.position, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
+			ScriptGui.hud_line(self.gui, draw_position_gizmo_results.center.position, angle.position, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
 			if self.angle_names then ScriptGui.text(self.gui, angle.text, DevParameters.debug_text_font, 16, angle.position, angle.color, Color.gray()) end
 		end
 	end
 end
 
+local draw_rotation_gizmo_angles = {
+	{direction = {false, false, true}, value = "rotation_x", dir_func = quaternion_right, text = "X", color = "", faded_color = ""},
+	{direction = {true, false, false}, value = "rotation_y", dir_func = quaternion_forward, text = "Y", color = "", faded_color = ""},
+	{direction = {false, true, false}, value = "rotation_z", dir_func = quaternion_up, text = "Z", color = "", faded_color = ""},
+}
 -- Draw rotation gizmo at unit position
 UnitManipulationExtension.draw_rotation_gizmo = function(self, dt, t, input_service)
 	if self.unit and unit_alive(self.unit) then
@@ -607,16 +690,14 @@ UnitManipulationExtension.draw_rotation_gizmo = function(self, dt, t, input_serv
 		local cursor = self:cursor(input_service)
 		local hold = self:hold(input_service)
 		-- Define angles
-		local angles = {
-			{direction = {false, false, true}, value = "rotation_x", dir_func = quaternion_right, text = "X",
-				color = Color(255, 255, 0, 0), faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)},
-			{direction = {true, false, false}, value = "rotation_y", dir_func = quaternion_forward, text = "Y",
-				color = Color(255, 0, 255, 0), faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)},
-			{direction = {false, true, false}, value = "rotation_z", dir_func = quaternion_up, text = "Z",
-				color = Color(255, 0, 0, 255), faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)},
-		}
+		draw_rotation_gizmo_angles[1].color = Color(255, 255, 0, 0)
+		draw_rotation_gizmo_angles[1].faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)
+		draw_rotation_gizmo_angles[2].color = Color(255, 0, 255, 0)
+		draw_rotation_gizmo_angles[2].faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)
+		draw_rotation_gizmo_angles[3].color = Color(255, 0, 0, 255)
+		draw_rotation_gizmo_angles[3].faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)
 		-- Iterate angles
-		for _, angle in pairs(angles) do
+		for _, angle in pairs(draw_rotation_gizmo_angles) do
 			-- Check controls
 			if not hold then self[angle.value] = nil end
 			-- Define points

@@ -13,12 +13,13 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-local type = type
+	local type = type
 	local pairs = pairs
 	local class = class
 	local table = table
 	local CLASS = CLASS
 	local managers = Managers
+	local vector3_box = Vector3Box
 	local table_clear = table.clear
 	local table_clone = table.clone
 	local table_contains = table.contains
@@ -34,15 +35,48 @@ local type = type
 	local DEBUG = false
 --#endregion
 
+-- ##### ┌─┐┌─┐┌─┐┬─┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┬┌┐┌┌┬┐┌─┐ ###########################################################
+-- ##### │ ┬├┤ ├─┤├┬┘  ├─┤ │  │ ├─┤│  ├─┤  ├─┘│ │││││ │ └─┐ ###########################################################
+-- ##### └─┘└─┘┴ ┴┴└─  ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴  ┴  └─┘┴┘└┘ ┴ └─┘ ###########################################################
+
+mod.gear_attach_points = {
+	ogryn = {
+		{node = "j_hips",		offset = vector3_box(0, .55, .1),  text = "Hips Front",	name = "hips_front"},
+		{node = "j_hips",		offset = vector3_box(0, -.4, .1),  text = "Hips Back",	name = "hips_back"},
+		{node = "j_hips",		offset = vector3_box(-.5, 0, .1),  text = "Hips Left",	name = "hips_left"},
+		{node = "j_hips",		offset = vector3_box(.5, 0, .1),   text = "Hips Right",	name = "hips_right"},
+		{node = "j_leftupleg",	offset = vector3_box(0, -.2, 0),   text = "Left Leg",	name = "leg_left"},
+		{node = "j_rightupleg",	offset = vector3_box(0, .2, 0),    text = "Right Leg",	name = "leg_right"},
+		{node = "j_spine2",		offset = vector3_box(0, -.5, 0),   text = "Chest",		name = "chest"},
+		{node = "j_spine2",		offset = vector3_box(-.25, .5, 0), text = "Back Left",	name = "backpack_left"},
+		{node = "j_spine2",		offset = vector3_box(.25, .5, 0),  text = "Back Right",	name = "backpack_right"},
+		{node = "j_spine2",		offset = vector3_box(-.25, .5, 0), text = "Back Left",	name = "back_left"},
+		{node = "j_spine2",		offset = vector3_box(.25, .5, 0),  text = "Back Right",	name = "back_right"},
+	},
+	human = {
+		{node = "j_hips",			 offset = vector3_box(0, .2, .1),	text = "Hips Front", name = "hips_front"},
+		{node = "j_hips",			 offset = vector3_box(0, -.15, .1), text = "Hips Back",	 name = "hips_back"},
+		{node = "j_hips",			 offset = vector3_box(-.15, 0, .1), text = "Hips Left",	 name = "hips_left"},
+		{node = "j_hips",			 offset = vector3_box(.15, 0, .1),	text = "Hips Right", name = "hips_right"},
+		{node = "j_leftupleg",		 offset = vector3_box(0, 0, 0),		text = "Left Leg",	 name = "leg_left"},
+		{node = "j_rightupleg",		 offset = vector3_box(0, 0, 0),		text = "Right Leg",	 name = "leg_right"},
+		{node = "j_frontchestplate", offset = vector3_box(0, 0, 0),		text = "Chest",		 name = "chest"},
+		{node = "j_backchestplate",	 offset = vector3_box(0, 0, -.15),	text = "Back Left",	 name = "backpack_left"},
+		{node = "j_backchestplate",	 offset = vector3_box(0, 0, .15),	text = "Back Right", name = "backpack_right"},
+		{node = "j_backchestplate",	 offset = vector3_box(0, 0, -.15),	text = "Back Left",	 name = "back_left"},
+		{node = "j_backchestplate",	 offset = vector3_box(0, 0, .15),	text = "Back Right", name = "back_right"},
+	},
+}
+
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
 -- ##### │  │  ├─┤└─┐└─┐ ##############################################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘ ##############################################################################################
 
 local DataCache = class("DataCache")
 
--- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
--- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
--- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
+-- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬   ###########################################################################################
+-- ##### │ ┬│  │ │├┴┐├─┤│   ###########################################################################################
+-- ##### └─┘┴─┘└─┘└─┘┴ ┴┴─┘ ###########################################################################################
 
 mod.try_init_cache = function(self)
 	if self.all_mods_loaded and not self.data_cache then
@@ -60,16 +94,30 @@ mod.reload_cache = function(self)
 	end
 end
 
--- Initialize
+mod.get_cosmetics_scenegraphs = function(self)
+	local cache = mod:persistent_table(REFERENCE).cache
+	if not cache or not cache.cosmetics_scenegraphs then
+		local cosmetics_scenegraphs = {}
+		for _, attachment_slot in pairs(self.attachment_slots) do
+			cosmetics_scenegraphs[#cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
+			cosmetics_scenegraphs[#cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
+		end
+		return cosmetics_scenegraphs
+	end
+	return cache.cosmetics_scenegraphs
+end
+
+-- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
+-- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
+-- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
+
 DataCache.init = function(self)
 	self.attachments = mod.attachment
 	self.attachment_models = mod.attachment_models
 	self.attachment_fixes = mod.anchors
 	self.item_definitions = self:setup_item_definitions()
 	self.cache = mod:persistent_table(REFERENCE).cache
-
 	self:cache_attachment_data()
-
 	self.initialized = true
 end
 
@@ -82,7 +130,6 @@ DataCache.setup_item_definitions = function(self)
 		local master_items = MasterItems.get_cached()
 		if master_items then
 			mod:persistent_table(REFERENCE).item_definitions = table_clone_instance(master_items)
-
 			-- Bulwark shield
 			local definitions = mod:persistent_table(REFERENCE).item_definitions
 			local bulwark_shield_string = "content/items/weapons/player/melee/ogryn_bulwark_shield_01"
@@ -104,20 +151,22 @@ end
 
 DataCache.cache_attachment_data = function(self)
 	if not self.cache.initialized then
-
 		for item_name, _ in pairs(mod.attachment) do
+			-- Strings
 			local melee = "content/items/weapons/player/melee/"..item_name
 			local ranged = "content/items/weapons/player/ranged/"..item_name
 			local npc = "content/items/weapons/npc/"..item_name
 			local minion_melee = "content/items/weapons/minions/melee/"..item_name
 			local minion_ranged = "content/items/weapons/minions/ranged/"..item_name
-
+			-- Get master item string
 			local item_string = self.item_definitions[melee] and melee
 				or self.item_definitions[ranged] and ranged
 				or self.item_definitions[npc] and npc
 				or self.item_definitions[minion_melee] and minion_melee
 				or self.item_definitions[minion_ranged] and minion_ranged
+			-- Get master item
 			local item = self.item_definitions[item_string]
+			-- Check item
 			if item then
 				-- Cache full item string -> item name
 				self.cache.item_names[item_string] = item_name
@@ -140,7 +189,6 @@ DataCache.cache_attachment_data = function(self)
 			end
 		end
 		-- Cache cosmetics scenegraphs
-		-- self.cache.cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
 		for _, attachment_slot in pairs(mod.attachment_slots) do
 			if not table_contains(self.cache.cosmetics_scenegraphs, attachment_slot.."_text_pivot") then
 				self.cache.cosmetics_scenegraphs[#self.cache.cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
@@ -149,26 +197,16 @@ DataCache.cache_attachment_data = function(self)
 				self.cache.cosmetics_scenegraphs[#self.cache.cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
 			end
 		end
-
 		-- Cache initialized
 		self.cache.initialized = true
-
+		-- Debug
 		self:debug_dump()
 	end
 end
 
-mod.get_cosmetics_scenegraphs = function(self)
-	local cache = mod:persistent_table(REFERENCE).cache
-	if not cache or not cache.cosmetics_scenegraphs then
-		local cosmetics_scenegraphs = {}
-		for _, attachment_slot in pairs(self.attachment_slots) do
-			cosmetics_scenegraphs[#cosmetics_scenegraphs+1] = attachment_slot.."_text_pivot"
-			cosmetics_scenegraphs[#cosmetics_scenegraphs+1] = attachment_slot.."_pivot"
-		end
-		return cosmetics_scenegraphs
-	end
-	return cache.cosmetics_scenegraphs
-end
+-- ##### ┬┌┐┌┌┬┐┌─┐┬─┐┌─┐┌─┐┌─┐┌─┐ ####################################################################################
+-- ##### ││││ │ ├┤ ├┬┘├┤ ├─┤│  ├┤  ####################################################################################
+-- ##### ┴┘└┘ ┴ └─┘┴└─└  ┴ ┴└─┘└─┘ ####################################################################################
 
 DataCache.cosmetics_scenegraphs = function(self)
 	return self.cache.cosmetics_scenegraphs
@@ -198,8 +236,14 @@ DataCache.item_string_to_item_name = function(self, item_string)
 	return self.cache.item_names[item_string]
 end
 
+-- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐ ##############################################################################################
+-- #####  ││├┤ ├┴┐│ ││ ┬ ##############################################################################################
+-- ##### ─┴┘└─┘└─┘└─┘└─┘ ##############################################################################################
+
 DataCache.debug_dump = function(self)
-	mod:dtf(self.cache, "self.cache", 10)
+	if DEBUG then
+		mod:dtf(self.cache, "self.cache", 10)
+	end
 end
 
 return DataCache

@@ -113,10 +113,6 @@ mod.clear_chat = function()
 	managers.event:trigger("event_clear_notifications")
 end
 
-mod.dump_perf = function()
-	mod:dtf(mod:persistent_table(REFERENCE).performance.result_cache, "perf_results", 10)
-end
-
 --  Debug
 mod._debug = mod:get("mod_option_debug")
 mod._debug_skip_some = true
@@ -182,38 +178,6 @@ mod.console_init = function(self)
 		
 		mod:persistent_table(REFERENCE).console_init = true
 	end
-end
-
-mod.console_output = function(self)
-	local title = self:generate_console_title()
-	self:info("####################################################################################################")
-	self:info(title)
-	self:info("####################################################################################################")
-	self:info("Highest Processing Times")
-	local processing = {}
-	local performance = mod:persistent_table(REFERENCE).performance
-	for name, t in pairs(performance.result_cache) do
-		table_sort(t, function(a, b) return a > b end)
-		processing[name] = t[1]
-		self:info(tostring(name).." ("..tostring(#t)..") "..tostring(t[1]).."ms")
-	end
-	self:info("####################################################################################################")
-	local prevented = mod:persistent_table(REFERENCE).prevent_unload
-	local total = 0
-	for name, count in pairs(prevented) do
-		total = total + count
-	end
-	self:info("Packages prevented from unloading "..tostring(total))
-	if self._debug then
-		for name, count in pairs(prevented) do
-			self:info(tostring(name).." "..tostring(count).." times")
-		end
-	end
-	
-
-	self:info("####################################################################################################")
-	self:info(title)
-	self:info("####################################################################################################")
 end
 
 mod.debug_attachments = function(self, item_data, attachments, weapon_name_or_table, overwrite, full, depth)

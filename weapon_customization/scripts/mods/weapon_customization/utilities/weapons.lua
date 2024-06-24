@@ -62,7 +62,7 @@ local mod = get_mod("weapon_customization")
 
 mod.spawn_premium_effects = function(self, item, item_unit, attachment_units, world)
 	if attachment_units and self:has_premium_skin(item) then
-		self:echot("premium skin - glow")
+		-- self:echo("premium skin - glow")
 		-- local particle_name = "content/fx/particles/interacts/servoskull_visibility_hover"
 		-- local particle_name = "content/fx/particles/enemies/red_glowing_eyes"
 		-- local particle_name = "content/fx/particles/abilities/psyker_warp_charge_shout"
@@ -237,15 +237,15 @@ mod.has_premium_skin = function(self, item)
 		weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
 	end
 	if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
-		-- mod:echot(weapon_skin.name)
+		-- mod:echo(weapon_skin.name)
 		-- mod:dtf(weapon_skin, "weapon_skin", 6)
 		if weapon_skin.feature_flags then
 			-- if table_contains(weapon_skin.feature_flags, "FEATURE_premium_store") then
-			-- 	mod:echot("flag: "..tostring(weapon_skin.feature_flags[1]))
+			-- 	mod:echo("flag: "..tostring(weapon_skin.feature_flags[1]))
 			-- end
 			return table_contains(weapon_skin.feature_flags, "FEATURE_premium_store")
 			-- for _, flag in pairs(weapon_skin.feature_flags) do
-			-- 	mod:echot("flag: "..tostring(flag))
+			-- 	mod:echo("flag: "..tostring(flag))
 			-- end
 		end
 	end

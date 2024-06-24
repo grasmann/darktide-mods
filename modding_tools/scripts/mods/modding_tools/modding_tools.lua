@@ -1,5 +1,21 @@
 local mod = get_mod("modding_tools")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+--#region Require
+    -- local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
+    mod:io_dofile("modding_tools/scripts/mods/modding_tools/interface/unit_manipulation")
+    mod:io_dofile("modding_tools/scripts/mods/modding_tools/interface/watcher")
+    mod:io_dofile("modding_tools/scripts/mods/modding_tools/interface/console")
+    mod:io_dofile("modding_tools/scripts/mods/modding_tools/interface/inspector")
+    mod:io_dofile("modding_tools/scripts/mods/modding_tools/patches/inject_gui")
+    mod:io_dofile("modding_tools/scripts/mods/modding_tools/patches/ui_hud")
+    mod:io_dofile("modding_tools/scripts/mods/modding_tools/patches/dmfmod")
+    mod:io_dofile("modding_tools/scripts/mods/modding_tools/patches/ui_manager")
+--#endregion
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -8,8 +24,12 @@ local mod = get_mod("modding_tools")
     local Unit = Unit
     local CLASS = CLASS
     local pairs = pairs
+    local string = string
+    local managers = Managers
+    local tostring = tostring
     local unit_alive = Unit.alive
     local script_unit = ScriptUnit
+    local string_gsub = string.gsub
     local script_unit_extension = script_unit.extension
     local script_unit_has_extension = script_unit.has_extension
 	local script_unit_add_extension = script_unit.add_extension
@@ -23,129 +43,54 @@ local mod = get_mod("modding_tools")
 --#region Data
     mod:persistent_table("modding_tools", {
         -- Flashlight
-        unit_manipulation_extensions = {},
+        unit_manipulation = {
+            extensions = {},
+        }
     })
 --#endregion
 
--- ##### ┬ ┬┌┐┌┬┌┬┐  ┌┬┐┌─┐┌┐┌┬┌─┐┬ ┬┬  ┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #####################################
--- ##### │ │││││ │   │││├─┤││││├─┘│ ││  ├─┤ │ ││ ││││  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ #####################################
--- ##### └─┘┘└┘┴ ┴   ┴ ┴┴ ┴┘└┘┴┴  └─┘┴─┘┴ ┴ ┴ ┴└─┘┘└┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ #####################################
+-- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
+-- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
+-- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
-mod:io_dofile("modding_tools/scripts/mods/modding_tools/unit_manipulation_extension")
-
-mod.unit_manipulation_add = function(self, data)
-    return self:_add_unit_manipulation_extension(data)
-end
-
-mod.unit_manipulation_remove = function(self, unit)
-    self:_remove_unit_manipulation_extension(unit)
-end
-
-mod.unit_manipulation_remove_extension = function(self, extension)
-    self:_remove_unit_manipulation_extension(extension.unit)
-end
-
-mod.unit_manipulation_remove_all = function(self)
-    self:_remove_all_unit_manipulation_extensions()
-end
-
-mod.unit_manipulation_select = function(self, unit)
-    self:_select_unit_manipulation_extension(unit)
-end
-
-mod.unit_manipulation_extensions = function(self)
-    return self:persistent_table("modding_tools").unit_manipulation_extensions or {}
-end
-
-mod.unit_manipulation_busy = function(self, unit)
-    return self:_unit_manipulation_extension_busy(unit)
-end
-
-mod.unit_manipulation_deselect = function(self)
-    self:_deselect_all_unit_manipulation_extensions()
-end
-
--- ##### ┬┌┐┌┌┬┐┌─┐┬─┐┌┐┌┌─┐┬   #######################################################################################
--- ##### ││││ │ ├┤ ├┬┘│││├─┤│   #######################################################################################
--- ##### ┴┘└┘ ┴ └─┘┴└─┘└┘┴ ┴┴─┘ #######################################################################################
-
-mod._add_unit_manipulation_extension = function(self, data)
-    if data.unit and unit_alive(data.unit) and data.camera and data.world and data.gui then
-        if not script_unit_has_extension(data.unit, "unit_manipulation_system") then
-            local extension = script_unit_add_extension({
-                world = data.world,
-            }, data.unit, "UnitManipulationExtension", "unit_manipulation_system", data)
-            self:unit_manipulation_extensions()[data.unit] = extension
-            return extension
-        end
+local hello_inspector = {
+    ["this is the table inspector"] = {
+        ["you can redirect mod:dtf"] = {
+            ["to automatically open the inspector"] = {
+                ["instead of dumping a file"] = true
+            }
+        }
+    }
+}
+mod.on_all_mods_loaded = function()
+    if not mod:get("inspector_hello") then
+        mod:set("inspector_hello", true)
+        mod:inspect("hello", hello_inspector)
+    end
+    if not mod:get("console_hello") then
+        mod:set("console_hello", true)
+        mod:console_print("hello - this is the console")
+        mod:console_print("you can redirect mod:echo")
+        mod:console_print("to print to the console")
+        mod:console_print("")
+        mod:console_print("you can also print a table")
+        mod:console_print("and click on it")
+        mod:console_print(hello_inspector)
+        mod:console_print("")
+        mod:console_show(true)
     end
 end
 
-mod._remove_all_unit_manipulation_extensions = function(self)
-    for unit, _ in pairs(self:unit_manipulation_extensions()) do
-        self:_remove_unit_manipulation_extension(unit)
-    end
+mod.on_unload = function()
+    mod.inspector:delete()
+    mod.console:delete()
+    mod.watcher:delete()
+    mod:destroy_forward_guis()
 end
 
-mod._remove_unit_manipulation_extension = function(self, unit)
-    if unit and unit_alive(unit) then
-        local unit_manipulation_extension = self:unit_manipulation_extensions()[unit]
-        if unit_manipulation_extension then
-            self:unit_manipulation_extensions()[unit] = nil
-        end
-        if script_unit_has_extension(unit, "unit_manipulation_system") then
-            script_unit_remove_extension(unit, "unit_manipulation_system")
-        end
-    end
+mod.toggle_ui = function()
+    mod.ui_toggle = not mod.ui_toggle
+    mod.inspector:show(mod.ui_toggle)
+    mod.console:show(mod.ui_toggle)
+    mod.watcher:show(mod.ui_toggle)
 end
-
-mod._unit_manipulation_extension_busy = function(self, unit)
-    if unit and unit_alive(unit) then
-        -- Specific
-        local unit_manipulation_extension = self:unit_manipulation_extensions()[unit]
-        if unit_manipulation_extension then
-            return unit_manipulation_extension:is_busy()
-        end
-    else
-        -- Any
-        for _, unit_manipulation_extension in pairs(self:unit_manipulation_extensions()) do
-            if unit_manipulation_extension:is_busy() then return true end
-        end
-    end
-end
-
-mod._deselect_all_unit_manipulation_extensions = function(self)
-	for _, unit_manipulation_extension in pairs(self:unit_manipulation_extensions()) do
-		unit_manipulation_extension:set_selected(false)
-	end
-end
-
-mod._select_unit_manipulation_extension = function(self, unit)
-	self:_deselect_all_unit_manipulation_extensions()
-    local unit_manipulation_extension = self:unit_manipulation_extensions()[unit]
-    if unit_manipulation_extension then
-	    unit_manipulation_extension:set_selected(true)
-    end
-end
-
-mod._update_unit_manipulation_extensions = function(self, dt, t, input_service)
-    for _, unit_manipulation_extension in pairs(self:unit_manipulation_extensions()) do
-        unit_manipulation_extension:update(dt, t, input_service)
-    end
-end
-
--- ##### ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌ ###########################################################################################
--- ##### │  │ ││││││││ ││││ ###########################################################################################
--- ##### └─┘└─┘┴ ┴┴ ┴└─┘┘└┘ ###########################################################################################
-
--- Main update loop
-mod:hook(CLASS.UIManager, "update", function(func, self, dt, t, ...)
-    -- Original function
-    func(self, dt, t, ...)
-    
-    local input_service = self:input_service()
-    -- Update unit manipulation extensions
-    mod:_update_unit_manipulation_extensions(dt, t, input_service)
-    -- Update console
-	-- if mod.console then mod.console:update(dt, t, input_service) end
-end)

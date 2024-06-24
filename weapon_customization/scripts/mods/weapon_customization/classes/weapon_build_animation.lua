@@ -47,7 +47,7 @@ local WeaponBuildAnimation = class("WeaponBuildAnimation")
 
 WeaponBuildAnimation.init = function(self)
     -- Data
-    self.cached_data = {}
+    -- self.cached_data = {}
     self.animations = {}
 	self.animation_time = .75
     -- Events
@@ -154,14 +154,14 @@ WeaponBuildAnimation.update = function(self, dt, t)
             local unit = mod.gear_settings:attachment_unit(weapon_spawn_data.attachment_units_3p, entry.slot)
             local unit_good = unit and unit_alive(unit)
 
-            self.cached_data[self.item_name] = self.cached_data[self.item_name] or {}
+            -- self.cached_data[self.item_name] = self.cached_data[self.item_name] or {}
 
-            local cached = attachment and self.cached_data[self.item_name][attachment]
+            -- local cached = attachment --and self.cached_data[self.item_name][attachment]
 
-            local anchor = cached or mod.anchors[self.item_name] and mod.anchors[self.item_name][attachment]
-            anchor = cached or mod.gear_settings:apply_fixes(self.item, unit) or anchor
+            local anchor = mod.anchors[self.item_name] and mod.anchors[self.item_name][attachment]
+            anchor = mod.gear_settings:apply_fixes(self.item, unit) or anchor
 
-            if attachment then self.cached_data[self.item_name][attachment] = anchor end
+            -- if attachment then self.cached_data[self.item_name][attachment] = anchor end
 
             animation_wait_attach = anchor and anchor.animation_wait_attach or animation_wait_attach
             animation_wait_detach = anchor and anchor.animation_wait_detach or animation_wait_detach
@@ -396,24 +396,26 @@ WeaponBuildAnimation.update = function(self, dt, t)
             local something_ready = false
             for i, entry in pairs(self.animations) do
                 if (entry.detach_done or entry.type == "attach") and not entry.attach_load then
-                    mod.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new, true)
+                    if entry.old ~= entry.new and not entry.detach_only then
+                        mod.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new, true)
+                        something_ready = true
+                    end
                     entry.attach_load = true
-                    something_ready = true
                 end
             end
             if something_ready then
-                self.cached_data[self.item_name] = nil
+                -- self.cached_data[self.item_name] = nil
                 mod.cosmetics_view:load_new_attachment()
             end
         end
 
 
         -- if self:is_detach_finished() and mod.weapon_part_animation_update then
-        --     mod:echot("yes")
+        --     mod:echo("yes")
         --     mod.cosmetics_view:load_new_attachment(weapon_spawn_data.item)
         --     mod.weapon_part_animation_update = nil
         -- else
-        --     mod:echot("nope")
+        --     mod:echo("nope")
         -- end
 
         if self:is_all_finished() then
@@ -440,7 +442,7 @@ local _children_sort_function = function(entry_1, entry_2)
 	return distance_1 < distance_2
 end
 
-local children = {}
+-- local children = {}
 WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment, new_attachment, no_children, speed, hide_ui, attachment_type, callback)
     local existing_animation = self:animation_exists(attachment_slot)
     if not existing_animation then
@@ -457,7 +459,7 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
             slot = attachment_slot,
             type = real_type,
             new = new_attachment,
-            old = mod.gear_settings:get(self.item, attachment_slot),
+            old = attachment or mod.gear_settings:get(self.item, attachment_slot),
             children = slot and slot.children and #slot.children or 0,
             speed = speed,
             detach_only = detach_only,
@@ -470,8 +472,8 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
             managers.event:trigger("weapon_customization_hide_ui", true)
         end
         -- Chilrden
-        -- local children = {}
-        table.clear(children)
+        local children = {}
+        -- table.clear(children)
         -- Trigger move
         local attachment_data = mod.attachment_models[self.item_name][new_attachment]
         local trigger_move = attachment_data and attachment_data.trigger_move
@@ -479,12 +481,12 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
         trigger_move = attachment_data and attachment_data.trigger_move or trigger_move
         if trigger_move then
             for _, trigger_attachment_slot in pairs(trigger_move) do
-                children[#children+1] = {slot = trigger_attachment_slot}
+                children[#children+1] = {trigger_attachment_slot = trigger_attachment_slot}
             end
         end
         -- Find attached children
         if slot and slot.children then
-            mod.gear_settings:_recursive_get_attachments(slot.children, children)
+            mod.gear_settings:_recursive_get_attachments(slot.children, nil, children)
         end
         if table.size(children) > 0 and not no_children then
             -- Iterate children
@@ -492,7 +494,7 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
                 if not self:animation_exists(attachment_slot) then
                     local new_child_attachment = mod.gear_settings:get(self.item, attachment_slot)
                     local old_child_attachment = mod.gear_settings:get(self.item, attachment_slot)
-                    self:animate(item, attachment_slot, nil, new_child_attachment, no_children, speed, hide_ui, attachment_type)
+                    self:animate(item, attachment_slot, old_child_attachment, new_child_attachment, no_children, speed, hide_ui, attachment_type)
                 end
             end
         end

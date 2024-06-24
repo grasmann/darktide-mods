@@ -19,14 +19,17 @@ local mod = get_mod("weapon_customization")
 	local pairs = pairs
 	local class = class
 	local table = table
+	local World = World
 	local string = string
 	local vector3 = Vector3
 	local tostring = tostring
 	local managers = Managers
 	local math_abs = math.abs
 	local callback = callback
+	local unit_node = Unit.node
 	local unit_alive = Unit.alive
 	local table_size = table.size
+	local vector3_box = Vector3Box
 	local table_clear = table.clear
 	local table_clone = table.clone
 	local math_random = math.random
@@ -37,8 +40,13 @@ local mod = get_mod("weapon_customization")
 	local unit_get_data = Unit.get_data
 	local unit_has_node = Unit.has_node
 	local table_contains = table.contains
+	local unit_world_pose = Unit.world_pose
+	local vector3_unbox = vector3_box.unbox
+	local world_link_unit = World.link_unit
+	local world_spawn_unit_ex = World.spawn_unit_ex
 	local unit_data_table_size = Unit.data_table_size
 	local unit_set_local_scale = Unit.set_local_scale
+	local unit_set_local_position = Unit.set_local_position
 	local math_random_array_entry = math.random_array_entry
 	local unit_set_unit_visibility = Unit.set_unit_visibility
 --#endregion
@@ -49,6 +57,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
 	local REFERENCE = "weapon_customization"
+	local EMPTY_UNIT = "core/units/empty_root"
 	local DEBUG = false
 	local WEAPON_MELEE = "WEAPON_MELEE"
 	local WEAPON_RANGED = "WEAPON_RANGED"
@@ -86,7 +95,7 @@ GearSettings.debug = function(self, gear_id_or_item, message)
 	-- Get gear id from potential item
 	local gear_id = self:item_to_gear_id(gear_id_or_item)
 	-- Print message to console
-	if DEBUG then mod:echot(tostring(message)..tostring(gear_id)) end
+	if DEBUG then mod:echo(tostring(message)..tostring(gear_id)) end
 end
 
 -- ##### ┬┌┬┐┌─┐┌┬┐  ┬┌┐┌┌─┐┌─┐ #######################################################################################
@@ -269,7 +278,7 @@ GearSettings._recursive_get_attachment_slots = function(self, attachments, outpu
 		-- Iterate attachments
 		for attachment_slot, attachment_data in pairs(attachments) do
 			output[#output+1] = attachment_slot
-			-- mod:echot("rec found: "..tostring(attachment_slot))
+			-- mod:echo("rec found: "..tostring(attachment_slot))
 			-- Check children
 			if attachment_data.children then
 				-- Get children
@@ -611,6 +620,45 @@ end
 -- ##### ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐ ############################################################################
 -- ##### ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘ ############################################################################
 
+-- Get gear attach points
+GearSettings.gear_attach_points = function(self, archetype)
+	local archetype = archetype == "ogryn" and "ogryn" or "human"
+	return mod.gear_attach_points[archetype]
+end
+
+-- Spawn gear attach points on a player unit
+GearSettings.spawn_gear_attach_points = function(self, archetype, world, unit_or_nil)
+	-- Set unit
+	local unit = unit_or_nil and unit_alive(unit_or_nil) and unit_or_nil or mod.player_unit
+	-- Check unit
+	if unit and unit_alive(unit) and archetype then
+		-- Get attach points
+		local gear_attach_points = self:gear_attach_points(archetype)
+		-- Check attach points
+		if gear_attach_points then
+			local attach_point_units = {}
+			-- Iterate gear nodes
+			for _, point in pairs(gear_attach_points) do
+				-- Get attach node
+				local node = unit_node(unit, point.node)
+				-- Spawn attach point unit
+				local point_unit = world_spawn_unit_ex(world, EMPTY_UNIT, nil, unit_world_pose(unit, node))
+				-- Check attach point unit
+				if point_unit then
+					-- Link attach point unit
+					world_link_unit(world, point_unit, 1, unit, node)
+					-- Set attach point unit position
+					unit_set_local_position(point_unit, 1, vector3_unbox(point.offset))
+					-- Add attach point unit
+					attach_point_units[point.name] = point_unit
+				end
+			end
+			-- Return attach point units
+			return attach_point_units
+		end
+	end
+end
+
 -- Get possible attachment slots from item
 GearSettings.possible_attachment_slots = function(self, gear_id_or_item)
 	-- Get item from potential gear id
@@ -700,6 +748,14 @@ GearSettings.attachment_unit = function(self, attachments, attachment_slot)
 	end
 end
 
+GearSettings.attachment_slot = function(self, attachment_unit)
+	return unit_get_data(attachment_unit, "attachment_slot")
+end
+
+GearSettings.attachment_name = function(self, attachment_unit)
+	return unit_get_data(attachment_unit, "attachment_name")
+end
+
 -- Hide bullet units
 GearSettings.hide_bullets = function(self, attachment_units)
 	-- Check attachment units
@@ -734,6 +790,7 @@ GearSettings.randomize_weapon = function(self, gear_id_or_item)
 	local attachment_slots = self:possible_attachment_slots(gear_id_or_item)
 	-- local gear_id = gear_id_or_nil or mod.gear_settings:item_to_gear_id(item)
 	local base_mod_only = mod:get("mod_option_randomization_only_base_mod")
+	-- local base_mod_only = mod.randomization_only_base_mod
 	if attachment_slots then
 		for _, attachment_slot in pairs(attachment_slots) do
 			if mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] and not table_contains(mod.automatic_slots, attachment_slot) then
@@ -819,7 +876,7 @@ GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
 		-- Check gear id
 		if item_name and mod.attachment_models[item_name] then
 			-- Check if item has fixes
-			if mod.anchors[item_name] and mod.anchors[item_name].fixes and #mod.anchors[item_name].fixes > 0 then
+			if mod.anchors[item_name] and mod.anchors[item_name].fixes then --and #mod.anchors[item_name].fixes > 0 then
 				-- Get attachment slots
 				table_clear(current_attachments_by_slot)
 				table_clear(current_attachments)
@@ -1038,15 +1095,15 @@ GearSettings._resolve_auto_equips = function(self, gear_id_or_item, attachment_s
 							local attachment_name = self:get(gear_id_or_item, auto_type)
 							if attachment_name then
 								if negative and attachment_name ~= parameters[1] then
-									-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[2]))
+									-- mod:echo("set "..tostring(auto_type).." to "..tostring(parameters[2]))
 									self:_set(gear_id_or_item, auto_type, parameters[2])
 								elseif attachment_name == parameters[1] then
-									-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[2]))
+									-- mod:echo("set "..tostring(auto_type).." to "..tostring(parameters[2]))
 									self:_set(gear_id_or_item, auto_type, parameters[2])
 								end
 							else mod:print("Attachment data for slot "..tostring(auto_type).." is nil") end
 						else
-							-- mod:echot("set "..tostring(auto_type).." to "..tostring(parameters[1]))
+							-- mod:echo("set "..tostring(auto_type).." to "..tostring(parameters[1]))
 							self:_set(gear_id_or_item, auto_type, parameters[1])
 						end
 					end
@@ -1057,9 +1114,11 @@ GearSettings._resolve_auto_equips = function(self, gear_id_or_item, attachment_s
 end
 
 -- Resolve special changes
+local resolved_attachments = {}
 GearSettings.resolve_special_changes = function(self, gear_id_or_item, attachment_slot)
+	table_clear(resolved_attachments)
 	if attachment_slot then
-		self:_resolve_special_changes(gear_id_or_item, self:get(gear_id_or_item, attachment_slot))
+		self:_resolve_special_changes(gear_id_or_item, resolved_attachments[attachment_slot] or self:get(gear_id_or_item, attachment_slot))
 	else
 		-- Get attachment slots
 		local possible_attachment_slots = self:possible_attachment_slots(gear_id_or_item, true)
@@ -1069,14 +1128,14 @@ GearSettings.resolve_special_changes = function(self, gear_id_or_item, attachmen
 			for _, attachment_slot in pairs(possible_attachment_slots) do
 				-- Custom attachments
 				if mod.add_custom_attachments[attachment_slot] then
-					self:_resolve_special_changes(gear_id_or_item, self:get(gear_id_or_item, attachment_slot))
+					self:_resolve_special_changes(gear_id_or_item, resolved_attachments[attachment_slot] or self:get(gear_id_or_item, attachment_slot))
 				end
 			end
 			-- Iterate through attachment settings
 			for _, attachment_slot in pairs(possible_attachment_slots) do
 				-- Non-Custom attachments
 				if not mod.add_custom_attachments[attachment_slot] then
-					self:_resolve_special_changes(gear_id_or_item, self:get(gear_id_or_item, attachment_slot))
+					self:_resolve_special_changes(gear_id_or_item, resolved_attachments[attachment_slot] or self:get(gear_id_or_item, attachment_slot))
 				end
 			end
 		end
@@ -1096,21 +1155,25 @@ GearSettings._resolve_special_changes = function(self, gear_id_or_item, attachme
 		-- Get attachment data
 		local attachment_data = mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment]
 		-- Check special resolve
-		if attachment_data and attachment_data.special_resolve then
+		if attachment_data and attachment_data.special_resolve and not resolved_attachments[attachment_data.type] then
 			-- Execute special resolve function
 			local special_changes = attachment_data.special_resolve(gear_id, item, attachment)
 			-- Check special changes
 			if special_changes then
 				-- Iterate special changes
 				for special_slot, special_attachment in pairs(special_changes) do
+					-- mod:echo(special_slot, resolved_attachments)
 					-- Resolve multiple attachments
+					local special_attachment = special_attachment
 					if string_find(special_attachment, "|") then
 						local possibilities = string_split(special_attachment, "|")
 						local rnd = math.random(#possibilities)
 						special_attachment = possibilities[rnd]
 					end
 					-- Set special attachment
+					-- mod:echo("Resolved "..tostring(special_slot).." to "..tostring(special_attachment))
 					self:_set(gear_id_or_item, special_slot, special_attachment)
+					resolved_attachments[special_slot] = special_attachment
 				end
 			end
 		end
@@ -1208,7 +1271,7 @@ GearSettings.copy_temp_settings = function(self, gear_id_or_item, other_gear_id_
 	end
 end
 
-GearSettings.create_temp_settings = function(self, gear_id_or_item, attachments_or_nil)
+GearSettings.create_temp_settings = function(self, gear_id_or_item, attachments_or_nil, skip_resolving_issues)
 	-- Get gear id from potential item
 	local gear_id = self:item_to_gear_id(gear_id_or_item)
 	-- Get attachments
@@ -1218,8 +1281,10 @@ GearSettings.create_temp_settings = function(self, gear_id_or_item, attachments_
 	if gear_id then
 		-- Set temp settings
 		mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] = attachments
-		-- Resolve issues
-		self:resolve_issues(gear_id_or_item)
+		if not skip_resolving_issues then
+			-- Resolve issues
+			self:resolve_issues(gear_id_or_item)
+		end
 	end
 end
 
@@ -1268,7 +1333,7 @@ GearSettings.get = function(self, gear_id_or_item, attachment_slot, no_default)
 	-- Check if temp settings exist
 	if mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
 		-- Set temp attachment
-		attachment_name = mod:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot]
+		attachment_name = mod:persistent_table(REFERENCE).temp_gear_settings[gear_id][attachment_slot] or "default"
 	end
 
 	-- Check saved entry
@@ -1312,11 +1377,13 @@ GearSettings.get = function(self, gear_id_or_item, attachment_slot, no_default)
 end
 
 -- Set single attachment in settings
-GearSettings.set = function(self, gear_id_or_item, attachment_slot, attachment_name)
+GearSettings.set = function(self, gear_id_or_item, attachment_slot, attachment_name, skip_resolving_issues)
 	-- Set attachment
 	self:_set(gear_id_or_item, attachment_slot, attachment_name)
-	-- Resolve issues
-	self:resolve_issues(gear_id_or_item, attachment_slot)
+	if not skip_resolving_issues then
+		-- Resolve issues
+		self:resolve_issues(gear_id_or_item, attachment_slot)
+	end
 end
 
 GearSettings._set = function(self, gear_id_or_item, attachment_slot, attachment_name)
@@ -1333,9 +1400,9 @@ GearSettings._set = function(self, gear_id_or_item, attachment_slot, attachment_
 		local gear_settings = self:load(gear_id_or_item)
 		-- Check settings
 		if gear_settings then
-			if attachment_slot == "gear_node" then
-				mod:echot("set real gear_node to "..tostring(attachment_name))
-			end
+			-- if attachment_slot == "gear_node" then
+			-- 	mod:echo("set real gear_node to "..tostring(attachment_name))
+			-- end
 			-- Set attachment in entry
 			gear_settings.attachments[attachment_slot] = attachment_name
 			-- Update cache
@@ -1345,7 +1412,7 @@ GearSettings._set = function(self, gear_id_or_item, attachment_slot, attachment_
 end
 
 -- Set all attachments in settings
-GearSettings.push = function(self, gear_id_or_item, attachments)
+GearSettings.push = function(self, gear_id_or_item, attachments, skip_resolving_issues)
 	-- Get gear id from potential item
 	local gear_id = self:item_to_gear_id(gear_id_or_item)
 	-- Check if temp settings exist
@@ -1363,8 +1430,10 @@ GearSettings.push = function(self, gear_id_or_item, attachments)
 			self:update_cache(gear_id_or_item, gear_settings)
 		end
 	end
-	-- Resolve issues
-	self:resolve_issues(gear_id_or_item)
+	if not skip_resolving_issues then
+		-- Resolve issues
+		self:resolve_issues(gear_id_or_item)
+	end
 end
 
 GearSettings.pull = function(self, gear_id_or_item)

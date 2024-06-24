@@ -76,7 +76,7 @@ return table.combine(
             _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.4, -3, 0), vector3_box(.2, 0, 0)),
             _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
             _common_ranged.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),
-            _common_ranged.sights_models(nil, .35, vector3_box(-.3, -4, -.2), {
+            _common_ranged.sights_models("receiver", .35, vector3_box(-.3, -4, -.2), {
                 vector3_box(-.2, 0, 0),
                 vector3_box(0, -.2, 0),
                 vector3_box(0, -.2, 0),

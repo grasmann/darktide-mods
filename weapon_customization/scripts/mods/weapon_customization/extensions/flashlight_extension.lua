@@ -21,6 +21,7 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
     local pairs = pairs
     local CLASS = CLASS
     local ipairs = ipairs
+    local string = string
     local vector3 = Vector3
     local math_max = math.max
     local tostring = tostring
@@ -32,6 +33,7 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
     local Quaternion = Quaternion
     local vector3_box = Vector3Box
     local script_unit = ScriptUnit
+    local string_find = string.find
     local table_clone = table.clone
     local math_random = math.random
     local vector3_zero = vector3.zero
@@ -167,6 +169,9 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     self.spectated = false
     self.has_flashlight = self.flashlight_attachment ~= nil
     self.flashlight_template = self.flashlight_attachment and mod.flashlight_templates[self.flashlight_attachment]
+    local flashlight = mod.gear_settings:get(self.item, "flashlight", true)
+    local default = mod.gear_settings:default_attachment(self.item, "flashlight") or "default"
+    self._is_modded = flashlight ~= nil and string_find(default, "default")
     -- Set light values 1p / 3p
     if self.has_flashlight and self.flashlight_template then
         self:set_light_values(self.flashlight_unit_1p, self.flashlight_template.light.first_person)
@@ -267,7 +272,10 @@ FlashlightExtension.is_laser_pointer = function(self)
 end
 
 FlashlightExtension.is_modded = function(self)
-    return mod.gear_settings:get(self.item, "flashlight") ~= nil
+    -- local flashlight = mod.gear_settings:get(self.item, "flashlight", true)
+    -- local default = mod.gear_settings:default_attachment(self.item, "flashlight") or "default"
+    -- return flashlight ~= nil and not string.find(default, "default")
+    return self._is_modded
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
@@ -586,63 +594,6 @@ FlashlightExtension.on_unwield_slot = function(self, slot)
         FlashlightExtension.super.on_unwield_slot(self, slot)
     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬   ###########################################################################################
 -- ##### │ ┬│  │ │├┴┐├─┤│   ###########################################################################################

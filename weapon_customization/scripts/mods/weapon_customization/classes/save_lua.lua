@@ -76,7 +76,7 @@ end
 
 SaveLua.debug = function(self, file_name, message)
     -- Print message to console
-    if DEBUG then mod:echot(tostring(message)..tostring(file_name)) end
+    if DEBUG then mod:echo(tostring(message)..tostring(file_name)) end
 end
 
 -- ##### ┬┌┐┌┌─┐┌─┐ ###################################################################################################
@@ -121,7 +121,7 @@ SaveLua._scan_dir = function(self, directory)
 	end
 	pfile:close()
 	local text = mod:localize("weapon_customization_cached")
-	mod:echot(text)
+	mod:echo(text)
 	return t
 end
 

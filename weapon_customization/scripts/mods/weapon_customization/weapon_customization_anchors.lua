@@ -279,6 +279,7 @@ end
 				mod.anchors.chainsword_npc_01 = mod.anchors.chainsword_p1_m1
 			mod.anchors.chainsword_2h_p1_m2    = mod.anchors.chainsword_2h_p1_m1
 			mod.anchors.powersword_p1_m2       = mod.anchors.powersword_p1_m1
+			mod.anchors.powersword_p1_m3       = mod.anchors.powersword_p1_m1
 				mod.anchors.powersword_npc_01 = mod.anchors.powersword_p1_m1
 				mod.anchors.powersword_2h_npc_01 = mod.anchors.powersword_p1_m1
 			mod.anchors.combatsword_p1_m2      = mod.anchors.combatsword_p1_m1
@@ -415,6 +416,7 @@ end
 			mod.attachment.combataxe_p3_m2        = mod.attachment.combataxe_p3_m1
 			mod.attachment.combataxe_p3_m3        = mod.attachment.combataxe_p3_m1
 			mod.attachment.powersword_p1_m2       = mod.attachment.powersword_p1_m1
+			mod.attachment.powersword_p1_m3       = mod.attachment.powersword_p1_m1
 				mod.attachment.powersword_npc_01 = mod.attachment.powersword_p1_m1
 				mod.attachment.powersword_2h_npc_01 = mod.attachment.powersword_p1_m1
 			mod.attachment.chainaxe_p1_m2         = mod.attachment.chainaxe_p1_m1
@@ -477,6 +479,7 @@ end
 		lens = "lenses",
 		lens_2 = "lenses",
 		pommel = "pommels",
+		scabbard = "scabbards",
 	}
 	mod.shafts = {
 		"small_shaft_01",
@@ -501,6 +504,11 @@ end
 		"small_connector_04",
 		"small_connector_05",
 		"small_connector_06",
+	}
+	mod.scabbards = {
+		"scabbard_01",
+		"scabbard_02",
+		"scabbard_03",
 	}
 	mod.hilts = {
 		"power_sword_hilt_01",
@@ -753,31 +761,33 @@ end
 		"shotgun_rifle_stock_11",
 		"shotgun_rifle_stock_12",
 	}
-	mod.attachment_units = {
-		["#ID[c54f4d16d170cfdb]"] = "flashlight_01",
-		["#ID[28ae77de0a24aba6]"] = "flashlight_02",
-		["#ID[93567d1eb8abad0b]"] = "flashlight_03",
-		["#ID[1db94ec130a99e51]"] = "flashlight_04",
-		["#ID[9ed2469305ba9eb7]"] = "bayonet_blade_01",
-		["#ID[fb7d93784a24faa0]"] = "bayonet_01",
-		["#ID[a1a6d59dcc2d6f56]"] = "bayonet_02",
-		["#ID[c42336380c6bc902]"] = "bayonet_03",
-		["#ID[3a32b0205efe4d98]"] = "autogun_rifle_stock_01",
-		["#ID[93d6f1e2cc3f6623]"] = "autogun_rifle_stock_02",
-		["#ID[dd28bd8305193b80]"] = "autogun_rifle_stock_03",
-		["#ID[7467bc5f53a97942]"] = "autogun_rifle_stock_04",
-		["#ID[6e29c4a9efbd1449]"] = "autogun_bayonet_01",
-		["#ID[81347ad48c2a24e1]"] = "autogun_bayonet_02",
-		["#ID[282093393ef1b500]"] = "autogun_bayonet_03",
-		["#ID[900f45d6ed020f0c]"] = "stock_01",
-		["#ID[67654e3011a5e407]"] = "stock_02",
-		["#ID[55a01ebb60937e94]"] = "stock_03",
-		["#ID[d607b405027432d9]"] = "stock_04",
-		["#ID[891692deb6c77ef1]"] = "stock_05",
-		-- ["#ID[bc25db1df0670d2a]"] = "bulwark_shield_01",
+	-- mod.attachment_units = {
+	-- 	["#ID[c54f4d16d170cfdb]"] = "flashlight_01",
+	-- 	["#ID[28ae77de0a24aba6]"] = "flashlight_02",
+	-- 	["#ID[93567d1eb8abad0b]"] = "flashlight_03",
+	-- 	["#ID[1db94ec130a99e51]"] = "flashlight_04",
+	-- 	["#ID[9ed2469305ba9eb7]"] = "bayonet_blade_01",
+	-- 	["#ID[fb7d93784a24faa0]"] = "bayonet_01",
+	-- 	["#ID[a1a6d59dcc2d6f56]"] = "bayonet_02",
+	-- 	["#ID[c42336380c6bc902]"] = "bayonet_03",
+	-- 	["#ID[3a32b0205efe4d98]"] = "autogun_rifle_stock_01",
+	-- 	["#ID[93d6f1e2cc3f6623]"] = "autogun_rifle_stock_02",
+	-- 	["#ID[dd28bd8305193b80]"] = "autogun_rifle_stock_03",
+	-- 	["#ID[7467bc5f53a97942]"] = "autogun_rifle_stock_04",
+	-- 	["#ID[6e29c4a9efbd1449]"] = "autogun_bayonet_01",
+	-- 	["#ID[81347ad48c2a24e1]"] = "autogun_bayonet_02",
+	-- 	["#ID[282093393ef1b500]"] = "autogun_bayonet_03",
+	-- 	["#ID[900f45d6ed020f0c]"] = "stock_01",
+	-- 	["#ID[67654e3011a5e407]"] = "stock_02",
+	-- 	["#ID[55a01ebb60937e94]"] = "stock_03",
+	-- 	["#ID[d607b405027432d9]"] = "stock_04",
+	-- 	["#ID[891692deb6c77ef1]"] = "stock_05",
+	-- 	-- ["#ID[bc25db1df0670d2a]"] = "bulwark_shield_01",
+	-- }
+	mod.attachment_slots_always_sheathed = {
+		"scabbard",
 	}
-	mod.attachment_slots_show_always = {
-		-- "speedloader",
+	mod.attachment_slots_always_unsheathed = {
 	}
 	mod.attachment_slots = {
 		"flashlight",
@@ -830,6 +840,7 @@ end
 		"casing_03",
 		"casing_04",
 		"casing_05",
+		"scabbard",
 	}
 --#endregion
 
@@ -957,6 +968,7 @@ end
 				mod.attachment_models.chainsword_npc_01 = mod.attachment_models.chainsword_p1_m1
 			mod.attachment_models.chainsword_2h_p1_m2    = mod.attachment_models.chainsword_2h_p1_m1
 			mod.attachment_models.powersword_p1_m2       = mod.attachment_models.powersword_p1_m1
+			mod.attachment_models.powersword_p1_m3       = mod.attachment_models.powersword_p1_m1
 				mod.attachment_models.powersword_npc_01 = mod.attachment_models.powersword_p1_m1
 				mod.attachment_models.powersword_2h_npc_01 = mod.attachment_models.powersword_p1_m1
 			mod.attachment_models.combatsword_p1_m2      = mod.attachment_models.combatsword_p1_m1
@@ -1084,6 +1096,7 @@ end
 			mod.attachment_sounds.combataxe_p3_m2        = mod.attachment_sounds.combataxe_p3_m1
 			mod.attachment_sounds.combataxe_p3_m3        = mod.attachment_sounds.combataxe_p3_m1
 			mod.attachment_sounds.powersword_p1_m2       = mod.attachment_sounds.powersword_p1_m1
+			mod.attachment_sounds.powersword_p1_m3       = mod.attachment_sounds.powersword_p1_m1
 			mod.attachment_sounds.chainaxe_p1_m2         = mod.attachment_sounds.chainaxe_p1_m1
 			mod.attachment_sounds.chainsword_p1_m2       = mod.attachment_sounds.chainsword_p1_m1
 			mod.attachment_sounds.chainsword_2h_p1_m2    = mod.attachment_sounds.chainsword_2h_p1_m1

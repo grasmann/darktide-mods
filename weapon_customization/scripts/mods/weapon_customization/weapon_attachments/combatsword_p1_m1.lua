@@ -32,16 +32,20 @@ return table.combine(
             emblem_left = _common.emblem_left_attachments(),
             grip = _combatsword_p1_m1.grip_attachments(),
             body = _combatsword_p1_m1.body_attachments(),
+            scabbard = _common_melee.scabbard_attachments(),
         },
         models = table.combine(
             _common.emblem_right_models("head", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _common.emblem_left_models("head", -3, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _common.trinket_hook_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _combatsword_p1_m1.body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-            _combatsword_p1_m1.grip_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2))
+            _combatsword_p1_m1.grip_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
+            _common_melee.scabbard_models("body", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2))
         ),
         anchors = {
-
+            fixes = {
+                {scabbard = {parent = "body", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+            }
         },
     }
 )

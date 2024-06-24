@@ -37,11 +37,7 @@ mod.version = "2.00"
 		attachment_slot_infos = {},
 		weapon_templates = {},
 		temp_gear_settings = {},
-		extensions = {
-			visible_equipment = {},
-			dependencies = {},
-		},
-		-- Pakcages
+		-- Packages
 		loaded_packages = {
 			visible_equipment = {},
 			view_weapon_sounds = {},
@@ -56,26 +52,16 @@ mod.version = "2.00"
 			hub = {},
 			customization = {},
 		},
-		prevent_unload = {},
-		keep_all_packages = nil,
-		-- Performance
-		performance = {
-			measurements = {},
-			result_cache = {},
-		},
-		split_cache = {},
-		negative_cache = {},
-		default_cache = {},
-
+		-- Cache
 		cache = {
 			initialized = false,
 			item_names = {},
 			item_strings = {},
-			attachments = {},
 			attachment_slots = {},
 			attachment_list = {},
 			default_attachments = {},
 			cosmetics_scenegraphs = {},
+			gear_attach_points = {},
 		},
 	})
 --#endregion
@@ -151,7 +137,6 @@ end
 
 -- Mod is unloaded
 mod.on_unload = function(exit_game)
-	-- if exit_game then mod:console_output() end
 	if not exit_game then mod:reload_cache() end
 end
 

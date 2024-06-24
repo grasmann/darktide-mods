@@ -231,12 +231,8 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 				name = company_name
 			end
 			if name then
-				local split_cache = mod:persistent_table(REFERENCE).split_cache
 				local attachment_remove_string = mod:localize("mod_attachment_remove")
-				local replace = split_cache[attachment_remove_string] or string_split(attachment_remove_string, "|")
-				if not split_cache[attachment_remove_string] then
-					split_cache[attachment_remove_string] = replace
-				end
+				local replace = string_split(attachment_remove_string, "|")
 				if replace and #replace > 0 then
 					for _, rep in pairs(replace) do
 						name = string.gsub(name, rep, "")

@@ -64,7 +64,7 @@ mod:add_global_localize_strings({
 	loc_use_modding_tool = {
 		en = "Use Modding Tool",
 		de = "Modding Tool Benutzen",
-	}
+	},
 })
 
 -- ##### ┬  ┌─┐┌─┐┌─┐┬    ┬  ┌─┐┌─┐┌─┐┬  ┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌ ############################################################
@@ -452,6 +452,39 @@ return {
 	-- ##### ┬  ┬┬┌─┐┬┌┐ ┬  ┌─┐  ┌─┐┌─┐ ┬ ┬┬┌─┐┌┬┐┌─┐┌┐┌┌┬┐ ###########################################################
 	-- ##### └┐┌┘│└─┐│├┴┐│  ├┤   ├┤ │─┼┐│ ││├─┘│││├┤ │││ │  ###########################################################
 	-- #####  └┘ ┴└─┘┴└─┘┴─┘└─┘  └─┘└─┘└└─┘┴┴  ┴ ┴└─┘┘└┘ ┴  ###########################################################
+	loc_visible_equipment_chest = {
+		en = "Chest",
+	},
+	loc_visible_equipment_leg_left = {
+		en = "Left Leg"
+	},
+	loc_visible_equipment_leg_right = {
+		en = "Right Leg"
+	},
+	loc_visible_equipment_hips_front = {
+		en = "Hips Front"
+	},
+	loc_visible_equipment_hips_right = {
+		en = "Hips Right"
+	},
+	loc_visible_equipment_hips_left = {
+		en = "Hips Left"
+	},
+	loc_visible_equipment_hips_back = {
+		en = "Hips Back"
+	},
+	loc_visible_equipment_back_left = {
+		en = "Back Left",
+	},
+	loc_visible_equipment_back_right = {
+		en = "Back Right",
+	},
+	loc_visible_equipment_backpack_left = {
+		en = "Backpack Left",
+	},
+	loc_visible_equipment_backpack_right = {
+		en = "Backpack Right",
+	},
 	group_visible_equipment = {
 		en = "Visible Equipment",
 		de = "Sichtbare Ausrüstung",
@@ -1148,6 +1181,10 @@ return {
 		de = "Klinge",
 		ru = "Клинок",
 		["zh-cn"] = "刃部",
+	},
+	loc_weapon_cosmetics_customization_scabbard = {
+		en = "Scabbard",
+		de = "Schwertscheide",
 	},
 	loc_weapon_cosmetics_customization_teeth = {
 		en = "Teeth",

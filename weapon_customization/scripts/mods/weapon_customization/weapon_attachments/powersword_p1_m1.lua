@@ -56,6 +56,7 @@ return table.combine(
             blade = _common_melee.sword_blade_attachments(),
             -- hilt = functions.hilt_attachments(),
             hilt = _common_melee.sword_hilt_attachments(),
+            scabbard = _common_melee.scabbard_attachments(),
         },
         models = table.combine(
             _common.emblem_right_models("blade", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
@@ -246,7 +247,8 @@ return table.combine(
             -- functions.pommel_models("grip", 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.1))
             _common_melee.pommel_models({
                 {parent = "grip", angle = 0, move = vector3_box(0, 0, 0), remove = vector3_box(0, 0, -.1)}
-            })
+            }),
+            _common_melee.scabbard_models("blade", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2))
         ),
         anchors = {
             fixes = {
@@ -258,6 +260,30 @@ return table.combine(
                 -- No hilt
                 {dependencies = {_sabre_grips, _falchion_grips, _combat_sword_grips, "knife_grip_05"},
                     hilt = {parent = "grip", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
+
+                {dependencies = {"combat_sword_blade_01", "combat_sword_blade_07"},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {_combat_sword_blades},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, .04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {"falchion_blade_01"},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {_falchion_blades},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, .04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {"sabre_blade_01"},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, .08), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {_sabre_blades},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, .04), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {"force_sword_blade_01"},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {_force_sword_blades},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, -.08), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {_2h_power_sword_blades},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.41, 1.21, 1.14)}},
+                {dependencies = {"power_sword_blade_04"},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {dependencies = {_power_sword_blades},
+                    scabbard = {parent = "blade", position = vector3_box(0, 0, .08), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
+                {scabbard = {parent = "blade", position = vector3_box(0, 0, .082), rotation = vector3_box(0, 0, 0), scale = vector3_box(2.49, 1.082, .694)}},
 
                 --#region Power sword blades
                     -- Power sword grips - 2H power sword blade

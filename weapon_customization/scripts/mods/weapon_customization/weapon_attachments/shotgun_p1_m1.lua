@@ -18,12 +18,20 @@ local mod = get_mod("weapon_customization")
 
 --#region local functions
     local vector3_box = Vector3Box
+    local tostring = tostring
     local table = table
+    local math = math
+    local math_random = math.random
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
+
+local _single_barrel_barrels = {"barrel_01", "barrel_02", "barrel_03", "barrel_04", "barrel_07", "barrel_08", "barrel_09"}
+local _single_barrel_receivers = {"receiver_01"}
+local _double_barrel_barrels = {"barrel_10", "barrel_11", "barrel_12"}
+local _double_barrel_receivers = {"receiver_02", "receiver_03", "receiver_04"}
 
 return table.combine(
     _shotgun_p1_m1,
@@ -60,13 +68,14 @@ return table.combine(
                 {sight = "sight_default|sight_07", rail = "rail_default"},
             }, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
-                local barrel = mod.gear_settings:get(gear_id, "barrel")
-                local receiver = mod.gear_settings:get(gear_id, "receiver")
-                if table.contains({"receiver_02", "receiver_03", "receiver_04"}, receiver) and not table.contains({"barrel_10", "barrel_11", "barrel_12"}, barrel) then
-                    changes["barrel"] = "barrel_10"
-                elseif not table.contains({"receiver_02", "receiver_03", "receiver_04"}, receiver) and table.contains({"barrel_10", "barrel_11", "barrel_12"}, barrel) then
-                    changes["barrel"] = "barrel_01"
+                local barrel = mod.gear_settings:get(item, "barrel")
+                local receiver = mod.gear_settings:get(item, "receiver")
+                if table.contains(_double_barrel_receivers, receiver) and table.contains(_single_barrel_barrels, barrel) then
+                    changes["barrel"] = table.concat(_double_barrel_barrels, "|")
+                elseif table.contains(_single_barrel_receivers, receiver) and table.contains(_double_barrel_barrels, barrel) then
+                    changes["barrel"] = table.concat(_single_barrel_barrels, "|")
                 end
+                changes["muzzle_2"] = mod.gear_settings:get(item, "muzzle")
                 return changes
             end),
             _shotgun_p1_m1.stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
@@ -96,13 +105,14 @@ return table.combine(
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01",     underbarrel = "!no_underbarrel|no_underbarrel"},
             }, nil, nil, function(gear_id, item, attachment)
                 local changes = {}
-                local barrel = mod.gear_settings:get(gear_id, "barrel")
-                local receiver = mod.gear_settings:get(gear_id, "receiver")
-                if table.contains({"barrel_10", "barrel_11", "barrel_12"}, barrel) and not table.contains({"receiver_02", "receiver_03", "receiver_04"}, receiver) then
-                    changes["receiver"] = "receiver_02"
-                elseif not table.contains({"barrel_10", "barrel_11", "barrel_12"}, barrel) and table.contains({"receiver_02", "receiver_03", "receiver_04"}, receiver) then
-                    changes["receiver"] = "receiver_01"
+                local barrel = mod.gear_settings:get(item, "barrel")
+                local receiver = mod.gear_settings:get(item, "receiver")
+                if table.contains(_double_barrel_barrels, barrel) and table.contains(_single_barrel_receivers, receiver) then
+                    changes["receiver"] = table.concat(_double_barrel_receivers, "|")
+                elseif table.contains(_single_barrel_barrels, barrel) and table.contains(_double_barrel_receivers, receiver) then
+                    changes["receiver"] = table.concat(_single_barrel_receivers, "|")
                 end
+                changes["muzzle_2"] = mod.gear_settings:get(item, "muzzle")
                 return changes
             end),
             _shotgun_p1_m1.underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
@@ -162,9 +172,7 @@ return table.combine(
             _common_lasgun.rail_models("barrel", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             -- Autogun
             _autogun_p1_m1.muzzle_models("barrel", -.5, vector3_box(0, 0, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-                local changes = {}
-                changes["muzzle_2"] = mod.gear_settings:get(item, "muzzle")
-                return changes
+                return {muzzle_2 = mod.gear_settings:get(item, "muzzle")}
             end),
             -- Common
             _common.emblem_right_models("receiver", -3, vector3_box(-.4, -5, 0), vector3_box(.2, 0, 0)),
@@ -183,29 +191,29 @@ return table.combine(
                 {rail = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 
                 {dependencies = {"barrel_01"},
-                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}}},
                 {dependencies = {"barrel_02"},
-                    muzzle = {parent = "barrel", position = vector3_box(0, .71, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .71, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}}},
                 {dependencies = {"barrel_03"},
-                    muzzle = {parent = "barrel", position = vector3_box(0, .5, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .5, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}}},
                 {dependencies = {"barrel_04"},
-                    muzzle = {parent = "barrel", position = vector3_box(0, .51, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .51, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}}},
                 {dependencies = {"barrel_07"},
-                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}}},
                 {dependencies = {"barrel_08"},
-                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}}},
                 {dependencies = {"barrel_09"},
-                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                    muzzle = {parent = "barrel", position = vector3_box(0, .475, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}}},
                 {dependencies = {"barrel_10"},
-                    muzzle = {parent = "barrel", position = vector3_box(-.03, .36, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)},
+                    muzzle = {parent = "barrel", position = vector3_box(-.03, .36, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}},
                     muzzle_2 = {parent = "barrel", position = vector3_box(.03, .36, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
                 {dependencies = {"barrel_11"},
-                    muzzle = {parent = "barrel", position = vector3_box(-.03, .47, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)},
+                    muzzle = {parent = "barrel", position = vector3_box(-.03, .47, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}},
                     muzzle_2 = {parent = "barrel", position = vector3_box(.03, .47, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
                 {dependencies = {"barrel_12"},
-                    muzzle = {parent = "barrel", position = vector3_box(-.03, .6, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)},
+                    muzzle = {parent = "barrel", position = vector3_box(-.03, .6, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}},
                     muzzle_2 = {parent = "barrel", position = vector3_box(.03, .6, .0575), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
-                {muzzle = {parent = "barrel", position = vector3_box(0, .5, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25)}},
+                {muzzle = {parent = "barrel", position = vector3_box(0, .5, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.25, 1.25, 1.25), trigger_move = {"muzzle_2"}}},
                 {muzzle_2 = {parent = "barrel", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
 
                 {barrel = {offset = true, animation_wait_detach = {"underbarrel", "rail", "sight", "muzzle_2"}, trigger_move = {"underbarrel", "rail", "sight", "muzzle_2"}}},

@@ -605,9 +605,15 @@ SightExtension.update_position_and_rotation = function(self)
 		local node = Unit.node(self.first_person_unit, "ap_aim")
 		unit_set_local_position(self.first_person_unit, node, matrix4x4_transform(mat, position_offset))
 		-- Rotation
-		local rotation_offset = self.rotation_offset and quaternion_unbox(self.rotation_offset) or vector3_zero()
-		local rotation = quaternion_from_euler_angles_xyz(rotation_offset[1], rotation_offset[2], rotation_offset[3])
-		unit_set_local_rotation(self.ranged_weapon.weapon_unit, 1, rotation)
+		if self.is_local_unit then
+			local rotation_offset = self.rotation_offset and quaternion_unbox(self.rotation_offset) or vector3_zero()
+			local rotation = quaternion_from_euler_angles_xyz(rotation_offset[1], rotation_offset[2], rotation_offset[3])
+			unit_set_local_rotation(self.ranged_weapon.weapon_unit, 1, rotation)
+		end
+
+		-- if not self.is_local_unit then
+		-- 	unit_set_local_rotation(self.first_person_unit, node, Quaternion.multiply(unit_local_rotation(self.first_person_unit, node), -rotation))
+		-- end
 
 		-- world_update_unit_and_children(self.world, self.first_person_unit)
 	end

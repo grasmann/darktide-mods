@@ -143,12 +143,12 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 	end
 
 	instance.unit_manipulation_busy = function(self)
-		if self.modding_tools and self.modding_tools.unit_manipulation_busy then
-			return self.modding_tools:unit_manipulation_busy()
-		end
+		self:get_modding_tools()
+		if self.modding_tools then return self.modding_tools:unit_manipulation_busy() end
 	end
 
 	instance.unit_manipulation_remove = function(self, unit)
+		self:get_modding_tools()
 		if self.modding_tools then self.modding_tools:unit_manipulation_remove(unit) end
 	end
 
@@ -157,6 +157,7 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 	end
 
 	instance.unit_manipulation_remove_all = function(self)
+		self:get_modding_tools()
 		if self._weapon_spawn_data then
 			self:unit_manipulation_remove(self._weapon_spawn_data.item_unit_3p)
 			for _, unit in pairs(self._weapon_spawn_data.attachment_units_3p) do
@@ -289,7 +290,6 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
 	instance.custom_init = function(self)
 		if self._reference_name ~= "WeaponIconUI" then
-			self:get_modding_tools()
 			self.use_carousel = mod:get("mod_option_carousel")
 			-- Setup Movement
 			self:sync_set("do_move", mod.do_move)

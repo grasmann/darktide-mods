@@ -985,6 +985,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Load new attachment
 	instance.load_new_attachment = function(self, item, attachment_slot, attachment, no_update)
 		if self._gear_id then
+			-- local new_attachment = mod.gear_settings:correct(self._selected_item, attachment_slot, attachment)
+			-- mod:echo("attachment: "..tostring(attachment).." new: "..tostring(new_attachment))
 			-- Check if attachment and attachment slot are valid
 			if attachment_slot then
 				-- Save original attachment
@@ -1019,8 +1021,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			for index, slot in pairs(mod.attachment_slots) do
 				-- Check that weapon has attachment slot and more than 2 options
 				-- 1st option is default
-				if mod.attachment[item_name] and (not mod.attachment[item_name][slot] or #mod.attachment[item_name][slot] <= 2)
-						and not table_contains(mod.attachment_slots_show_always, slot) then
+				if mod.attachment[item_name] and (not mod.attachment[item_name][slot] or #mod.attachment[item_name][slot] <= 2) then
 					-- Set not applicable in widgets to hide them
 					if self._widgets_by_name[slot.."_custom"] then self._widgets_by_name[slot.."_custom"].not_applicable = true end
 					if self._widgets_by_name[slot.."_custom_text"] then self._widgets_by_name[slot.."_custom_text"].not_applicable = true end
@@ -1173,7 +1174,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		for attachment_slot, value in pairs(attachment_settings) do
 			if not skip_animation then
 				-- Animate attachment change
-				mod.build_animation:animate(self._selected_item, attachment_slot, attachment_names[attachment_slot], value, nil, nil, true)
+				mod.build_animation:animate(self._selected_item, attachment_slot, attachment_names[attachment_slot], value) --, nil, nil, true)
 			else
 				-- Load new attachment
 				self:load_new_attachment(self._selected_item, attachment_slot, value, index < table_size(attachment_settings))
@@ -1186,9 +1187,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Check if any attachments have been changed since start
 	instance.attachments_changed_since_start = function(self)
 		-- Check if table sizes are different
-		if table_size(mod.start_weapon_settings) ~= table_size(self.changed_weapon_settings) then return true end
+		if table_size(self.start_weapon_settings) ~= table_size(self.changed_weapon_settings) then return true end
 		-- Iterate through changed settings
-		for attachment_slot, value in pairs(mod.start_weapon_settings) do
+		for attachment_slot, value in pairs(self.start_weapon_settings) do
 			-- Get actual changed setting
 			local changed_setting = self.changed_weapon_settings[attachment_slot]
 			-- Check if value is different
@@ -1215,7 +1216,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Update start settings
 	instance.update_start_settings = function(self)
-		mod.start_weapon_settings = table_clone(self.changed_weapon_settings)
+		self.start_weapon_settings = table_clone(self.changed_weapon_settings)
 	end
 
 	instance.check_unsaved_changes = function(self, no_animation)
@@ -1304,7 +1305,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				value_id = "text",
 				style_id = "text",
 				pass_type = "text",
-				value = mod:localize_or_global(text),
+				value = mod:localize(text),
 				style = style,
 			}
 		}, scenegraph, nil)
@@ -1608,7 +1609,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					local widgets_by_name = self.bar_breakdown_widgets_by_name
 					local widget = widgets_by_name["attachment_bar_"..tostring(index)]
 					if widget then
-						widget.content.text = mod:localize_or_global(name)
+						widget.content.text = mod:localize(name)
 						widget.content.value_id_1 = tiers[tier]
 					end
 					index = index + 1
@@ -1671,7 +1672,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		if content.close_setting then
 			content.close_setting = nil
 
-			self:release_attachment_packages()
+			-- self:release_attachment_packages()
+			self:destroy_attachment_previews()
 			
 			local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
 			if content.reset and ui_weapon_spawner._weapon_spawn_data then
@@ -2127,6 +2129,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					if not mod:persistent_table(REFERENCE).loaded_packages.customization[package_key] then
 						mod:persistent_table(REFERENCE).used_packages.customization[package_key] = true
 						mod:persistent_table(REFERENCE).loaded_packages.customization[package_key] = managers.package:load(package_name, REFERENCE, callback)
+					elseif managers.package:has_loaded(package_name) then
+						callback()
 					end
 				end
 			end
@@ -2183,7 +2187,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						if index == mod.attachment_preview_index then
 							local item = self._selected_item
 							-- local attachment_slot = self.preview_attachment_slot
-							mod:play_attachment_sound(item, attachment_slot, attachment_name, "select")
+							if mod.attachment_preview_index ~= mod.last_attachment_preview_index then
+								mod:play_attachment_sound(item, attachment_slot, attachment_name, "select")
+								mod.last_attachment_preview_index = mod.attachment_preview_index
+							end
 							mod:preview_flashlight(true, world, unit, attachment_name)
 							local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
 							local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
@@ -2348,6 +2355,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	end
 	
 	instance.create_attachment_array = function(self, item, attachment_slot)
+		self:destroy_attachment_previews()
 		self.preview_attachment_slot = attachment_slot
 		if self._weapon_preview._ui_weapon_spawner._camera then
 			local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
@@ -2401,6 +2409,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self.changed_weapon_settings = {}
 		self.original_weapon_settings = {}
 		self.changed_attachment_settings = {}
+		self.start_weapon_settings = {}
 	end
 
 	-- Custom enter
@@ -2437,14 +2446,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self:set_scrollbar_progress(0)
 		-- Register events
 		managers.event:register(self, "weapon_customization_hide_ui", "hide_ui")
-		-- Get changed settings
-		self:get_changed_weapon_settings()
-		-- Update start settings
-		self:update_start_settings()
+		-- -- Get changed settings
+		-- self:get_changed_weapon_settings()
+		-- -- Update start settings
+		-- self:update_start_settings()
 	end
 
 	instance.reset_stuff = function(self)
-		mod:persistent_table(REFERENCE).keep_all_packages = false
 		-- mod.move_position = vector3_box(vector3_zero())
 		-- mod.move_position:store(vector3_zero())
 		-- mod.new_position = nil
@@ -2485,6 +2493,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Reset attachments
 		self:reset_attachments(true)
 
+		self:release_attachment_packages()
 
 		self:reset_stuff()
 		

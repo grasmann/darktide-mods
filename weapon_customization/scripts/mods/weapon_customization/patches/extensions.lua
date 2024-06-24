@@ -38,26 +38,3 @@ local mod = get_mod("weapon_customization")
 		return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
 	end
 --#endregion
-
--- ##### ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌┬┐┌┬┐┌─┐ ###############################################################################
--- ##### ├┤ ┌┴┬┘ │ ├┤ │││ ││   │││││├┤  ###############################################################################
--- ##### └─┘┴ └─ ┴ └─┘┘└┘─┴┘  ─┴┘┴ ┴└   ###############################################################################
-
-function DMFMod:localize_or_global(string_id)
-	local localized_string = mod:localize(string_id)
-	if localized_string == "<"..tostring(string_id)..">" then localized_string = Localize(string_id) end
-	return localized_string
-end
-
-function DMFMod:echot(message, optional_t, optional_time)
-    local t = type(optional_t) == "number" and optional_t
-        or managers and managers.time and managers.time:time("main")
-        or 0
-    local time = type(optional_time) == "number" and optional_time or 2
-    self._echot = self._echot or {}
-    local echoTime = self._echot[message]
-    if not echoTime or echoTime < t then
-        self:echo(message)
-        self._echot[message] = t + time
-    end
-end

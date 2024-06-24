@@ -10,6 +10,8 @@ local mod = get_mod("weapon_customization")
 	local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
 	local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 	local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
+	local ScriptGui = mod:original_require("scripts/foundation/utilities/script_gui")
+	local UIScenegraph = mod:original_require("scripts/managers/ui/ui_scenegraph")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -18,18 +20,32 @@ local mod = get_mod("weapon_customization")
 
 --#region Performance
 	local Unit = Unit
+	local math = math
 	local pairs = pairs
 	local table = table
 	local CLASS = CLASS
+	local Color = Color
 	local string = string
+	local Camera = Camera
 	local get_mod = get_mod
+	local vector3 = Vector3
+	local vector2 = Vector2
 	local tostring = tostring
 	local managers = Managers
 	local Localize = Localize
 	local callback = callback
+	local unit_box = Unit.box
+	local math_huge = math.huge
+	local Matrix4x4 = Matrix4x4
 	local unit_alive = Unit.alive
 	local string_gsub = string.gsub
 	local table_contains = table.contains
+	local vector3_distance = vector3.distance
+	local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
+	local unit_world_position = Unit.world_position
+	local matrix4x4_translation = Matrix4x4.translation
+	local camera_world_position = Camera.world_position
+	local camera_world_to_screen = Camera.world_to_screen
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -40,6 +56,7 @@ local mod = get_mod("weapon_customization")
 	local SLOT_PRIMARY = "slot_primary"
 	local SLOT_SECONDARY = "slot_secondary"
 	local WEAPON_CUSTOMIZATION_TAB = "tab_weapon_customization"
+	local BACKPACK_EMPTY = "content/items/characters/player/human/backpacks/empty_backpack"
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
@@ -49,35 +66,48 @@ local mod = get_mod("weapon_customization")
 mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(instance)
 
 	instance._setup_forward_gui = function(self)
-		self:set_unique_id()
-		self._forward_world = managers.ui:create_world(self._unique_id.."_ui_forward_world", 101, "ui", self.view_name)
-		local viewport_name = self._unique_id.."_ui_forward_world_viewport"
-		self._forward_viewport = managers.ui:create_viewport(self._forward_world, viewport_name, "default_with_alpha", 1)
-		self._forward_viewport_name = viewport_name
-		self._ui_forward_renderer = managers.ui:create_renderer(self._unique_id.."_forward_renderer", self._forward_world)
-		self._ui_resource_renderer = managers.ui:create_renderer(self._unique_id, self._forward_world, true, self._ui_forward_renderer.gui,
-			self._ui_forward_renderer.gui_retained, "content/ui/materials/render_target_masks/ui_render_target_straight_blur")
+		if not self._ui_forward_renderer_id then
+			self._unique_id = self._unique_id or self.__class_name.."_"..string_gsub(tostring(self), "table: ", "")
+			-- self._forward_world = managers.ui:create_world(self._unique_id.."_ui_forward_world", 101, "ui", self.view_name)
+			-- local viewport_name = self._unique_id.."_ui_forward_world_viewport"
+			-- self._forward_viewport = managers.ui:create_viewport(self._forward_world, viewport_name, "default_with_alpha", 1)
+			-- self._forward_viewport_name = viewport_name
+			self._ui_forward_renderer_id = self._unique_id.."_forward_renderer"
+			self._ui_forward_renderer = managers.ui:create_renderer(self._ui_forward_renderer_id, self._forward_world)
+			-- self._ui_resource_renderer = managers.ui:create_renderer(self._unique_id, self._forward_world, true, self._ui_forward_renderer.gui,
+				-- self._ui_forward_renderer.gui_retained, "content/ui/materials/render_target_masks/ui_render_target_straight_blur")
+		end
 	end
 
 	instance._destroy_forward_gui = function(self)
-		if self._ui_resource_renderer then
-			self._ui_resource_renderer = nil
-			managers.ui:destroy_renderer(self._unique_id)
-		end
+		-- if self._ui_resource_renderer then
+		-- 	self._ui_resource_renderer = nil
+		-- 	managers.ui:destroy_renderer(self._unique_id)
+		-- end
 		if self._ui_forward_renderer then
 			self._ui_forward_renderer = nil
-			managers.ui:destroy_renderer(self._unique_id.."_forward_renderer")
-			ScriptWorld.destroy_viewport(self._forward_world, self._forward_viewport_name)
-			managers.ui:destroy_world(self._forward_world)
-			self._forward_viewport_name = nil
-			self._forward_world = nil
+			managers.ui:destroy_renderer(self._ui_forward_renderer_id)
+			-- ScriptWorld.destroy_viewport(self._forward_world, self._forward_viewport_name)
+			-- managers.ui:destroy_world(self._forward_world)
+			-- self._forward_viewport_name = nil
+			-- self._forward_world = nil
 		end
 	end
 
+	instance.forward_gui = function(self)
+		return self._ui_forward_renderer and self._ui_forward_renderer.gui
+	end
+
 	instance.player_profile = function(self)
-		if table_contains(managers.player:players(), self._preview_player) then
+		-- Check if player is not destroyed
+		if self._preview_player and table_contains(managers.player:players(), self._preview_player) then
 			return self._preview_player and self._preview_player:profile()
 		end
+	end
+
+	instance.player_archetype = function(self)
+		local profile = self:player_profile()
+		return profile and profile.archetype or "human"
 	end
 
 	instance.character_name = function(self)
@@ -109,18 +139,13 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 	local weapon_items = {}
 	instance.weapon_items = function(self)
 		table.clear(weapon_items)
-		-- local weapon_items = {}
 		self:get_inventory_background_view()
 		if self.inventory_background_view then
 			local profile = self:player_profile()
 			if profile then
 				weapon_items[1] = profile.loadout[SLOT_PRIMARY]
 				weapon_items[2] = profile.loadout[SLOT_SECONDARY]
-			else
-				mod:echot("profile not found")
 			end
-		else
-			mod:echot("background view not found")
 		end
 		return weapon_items
 	end
@@ -137,8 +162,8 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		self:get_inventory_background_view()
 		if self.inventory_background_view and self.inventory_background_view._profile_spawner then
 			local preview_profile_equipped_items = self.inventory_background_view._preview_profile_equipped_items
-			local slot_item = preview_profile_equipped_items[self:unequipped_slot_id()]
-			return Localize(slot_item.display_name)
+			local slot_item = preview_profile_equipped_items and preview_profile_equipped_items[self:unequipped_slot_id()]
+			return slot_item and Localize(slot_item.display_name)
 		end
 	end
 
@@ -151,6 +176,11 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		if self:is_tab() then
 			return self:unequipped_slot_id() == SLOT_PRIMARY and 2 or 4.5
 		end
+	end
+
+	instance.has_backpack = function(self)
+		local item = self._preview_profile_equipped_items["slot_gear_extra_cosmetic"]
+		return item and item.name and not string.find(item.name, "empty_backpack")
 	end
 
 	instance.backpack_name = function(self)
@@ -170,6 +200,11 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 			self:save_offset()
 		elseif button.name == "visible_equipment_reset_button" then
 			self:reset_offset()
+		elseif button.content.gear_node then
+			if mod.gear_settings:has_temp_settings(self:unequipped_weapon_item()) then
+				mod.gear_settings:set(self:unequipped_weapon_item(), "gear_node", button.content.gear_node)
+				managers.event:trigger("weapon_customization_attach_point_changed")
+			end
 		end
 	end
 
@@ -192,6 +227,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		if widget then
 			self._widgets[#self._widgets+1] = widget
 			self._widgets_by_name[widget.name] = widget
+			return widget
 		end
 	end
 
@@ -211,17 +247,114 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		return self._widgets_by_name["visible_equipment_option_1"].content.value
 	end
 
-	instance.update_options_text = function(self)
-		local options_text = {
-			{self:character_name(), Localize("loc_visible_equipment_all")},
-			{Localize("loc_visible_equipment_only_this"), self:weapon_name() or ""},
-			{self:armour_name() or "", Localize("loc_visible_equipment_all")},
-			{self:backpack_name() or "", Localize("loc_visible_equipment_all")},
-		}
-		for i = 1, 4, 1 do
-			self._widgets_by_name["visible_equipment_option_"..i].content.option_1 = options_text[i][1]
-			self._widgets_by_name["visible_equipment_option_"..i].content.option_2 = options_text[i][2]
+	local entry_distance = {}
+	local closest_6 = {}
+	local entry_show = {}
+	instance.draw_gear_node_lines = function(self)
+
+		local gui = self:forward_gui()
+		if gui then
+			local ui_profile_spawner = self:profile_spawner()
+			local camera = ui_profile_spawner and ui_profile_spawner._camera
+			local gear_nodes = mod.gear_settings:gear_attach_points(self:player_archetype())
+			local character_spawn_data = ui_profile_spawner and ui_profile_spawner._character_spawn_data
+			local unit = character_spawn_data and character_spawn_data.unit_3p
+			if unit and self:is_tab() then
+				local gear_node_units = mod:execute_extension(unit, "visible_equipment_system", "gear_node_units")
+
+				if gear_node_units then
+
+					table.clear(entry_distance)
+					
+					for _, gear_node in pairs(gear_nodes) do
+						local unit = gear_node_units[gear_node.name]
+						if unit and unit_alive(unit) then
+							local camera_position = camera_world_position(camera)
+							local distance = vector3_distance(camera_position, unit_world_position(unit, 1))
+							entry_distance[gear_node.name] = distance
+						end
+					end
+
+					table.clear(closest_6)
+					for i = 1, 6, 1 do
+						local last = math.huge
+						local closest = nil
+						for attach_name, distance in pairs(entry_distance) do
+							if distance < last then
+								last = distance
+								closest = attach_name
+							end
+						end
+						closest_6[#closest_6+1] = closest
+						entry_distance[closest] = nil
+					end
+
+					for _, gear_node in pairs(gear_nodes) do
+						entry_show[gear_node.name] = false
+					end
+					for _, gear_node_name in pairs(closest_6) do
+						entry_show[gear_node_name] = true
+					end
+
+					for _, gear_node in pairs(gear_nodes) do
+						
+						local back = (gear_node.name ~= "back_left" and gear_node.name ~= "back_right") or not self:has_backpack()
+						local backpack = (gear_node.name ~= "backpack_left" and gear_node.name ~= "backpack_right") or self:has_backpack()
+						local one_hip = gear_node.name ~= "hips_back" or not self._widgets_by_name["hips_front_button"].visible
+						self._widgets_by_name[tostring(gear_node.name).."_button"].visible = self:is_tab() and back and backpack and one_hip and entry_show[gear_node.name]
+
+						local unit = gear_node_units[gear_node.name]
+						if unit and unit_alive(unit) and self._widgets_by_name[tostring(gear_node.name).."_button"].visible then
+							local box = unit_box(unit, false)
+							local center_position = matrix4x4_translation(box)
+							local world_to_screen, distance = camera_world_to_screen(camera, center_position)
+							
+							local ui_scenegraph = self._ui_scenegraph
+							local scale = RESOLUTION_LOOKUP.scale
+							local screen_width = RESOLUTION_LOOKUP.width
+							local screen_height = RESOLUTION_LOOKUP.height
+							local scenegraph_entry_name = tostring(gear_node.name).."_button_pivot"
+							local world_position = UIScenegraph.world_position(ui_scenegraph, scenegraph_entry_name)
+							
+							local size_width, size_height = UIScenegraph.get_size(ui_scenegraph, scenegraph_entry_name, scale)
+							local scenegraph_entry = ui_scenegraph[scenegraph_entry_name]
+
+							local origin = vector2(
+								world_position[1] * scale + (screen_width * scale) / 4,
+								world_position[2] * scale
+							)
+
+							if gear_node.name == "chest" then
+								origin[1] = origin[1] + (size_width * scale) / 2 - 10 * scale
+								origin[2] = origin[2] + size_height * scale + 15 * scale
+							end
+							if gear_node.name == "hips_front" or gear_node.name == "hips_back" then
+								origin[1] = origin[1] + (size_width * scale) / 2 - 10 * scale
+							end
+							if gear_node.name == "back_left" or gear_node.name == "backpack_left" or gear_node.name == "hips_left" or gear_node.name == "leg_left" then
+								origin[1] = origin[1] + size_width * scale + 20 * scale
+								origin[2] = origin[2] + (size_height * scale) / 2 + 5 * scale
+							end
+							if gear_node.name == "back_right" or gear_node.name == "backpack_right" or gear_node.name == "hips_right" or gear_node.name == "leg_right" then
+								origin[1] = origin[1] - 55 * scale
+								origin[2] = origin[2] + (size_height * scale) / 2 + 5 * scale
+							end
+
+							local color = Color(255, 49, 62, 45)
+							ScriptGui.hud_line(gui, origin, world_to_screen, 100, 2, Color(255, 106, 121, 100))
+
+						else
+							
+							self._widgets_by_name[tostring(gear_node.name).."_button"].visible = false
+
+						end
+
+					end
+				end
+
+			end
 		end
+
 	end
 
 	instance.profile_spawner = function(self)
@@ -305,6 +438,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 			display_name = "loc_"..name,
 			value_width = 275,
 		}
+		local gear_node = string.gsub(name, "_button", "")
 		local widget = nil
 		local template = ContentBlueprints["button"]
 		local size = template.size_function and template.size_function(self, config) or template.size
@@ -322,6 +456,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 				local init = template.init
 				if init then init(self, widget, config) end
 				widget.content.button_text = Localize("loc_"..name.."_prompt")
+				widget.content.gear_node = gear_node
 				-- widget.content.hotspot.disabled = true
 				widget.content.hotspot.pressed_callback = callback(self, "button_pressed", widget)
 				widget.style.hotspot.size = {275, 50}
@@ -436,17 +571,15 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		end
 	end
 
-	instance.set_unique_id = function(self)
-		self._unique_id = self.__class_name.."_"..string_gsub(tostring(self), "table: ", "")
-	end
-
 	instance.create_custom_widgets = function(self)
 		local size = {600, 50}
+		local y = 100
 		-- Create custom checkboxes
-		for i = 1, 4, 1 do
-			self:add_widget(self:checkbox("visible_equipment_option_"..i, size, "option_check_"..i.."_pivot", "visible_equipment_option_"..i))
+		local gear_nodes = mod.gear_settings:gear_attach_points(self:player_archetype())
+		for _, gear_node in pairs(gear_nodes) do
+			local new_widget = self:add_widget(self:button(tostring(gear_node.name).."_button", size, tostring(gear_node.name).."_button_pivot"))
+			new_widget.content.button_text = mod:localize("loc_visible_equipment_"..gear_node.name)
 		end
-
 		-- Create custom buttons
 		self:add_widget(self:button("visible_equipment_save_button", size, "save_button_pivot"))
 		self:add_widget(self:button("visible_equipment_reset_button", size, "reset_button_pivot"))
@@ -454,12 +587,26 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 
 	instance.update_custom_widget_visibility = function(self)
 		local is_tab = self:is_tab()
-		for i = 1, 4, 1 do
-			self._widgets_by_name["visible_equipment_option_"..i].visible = is_tab
+		-- Update gear node widgets
+		local gear_nodes = mod.gear_settings:gear_attach_points(self:player_archetype())
+		for _, gear_node in pairs(gear_nodes) do
+			local gear_node_widget = self._widgets_by_name[tostring(gear_node.name).."_button"]
+			if gear_node_widget then
+				gear_node_widget.visible = is_tab and gear_node_widget.visible or false
+			end
 		end
-		self._widgets_by_name.name_text.visible = is_tab
-		self._widgets_by_name.visible_equipment_save_button.visible = is_tab
-		self._widgets_by_name.visible_equipment_reset_button.visible = is_tab
+		-- Update name widget
+		if self._widgets_by_name.name_text then
+			self._widgets_by_name.name_text.content.text = tostring(self:weapon_name()).."\n"..tostring(mod.gear_settings:gear_id(self:unequipped_weapon_item()))
+			self._widgets_by_name.name_text.visible = is_tab
+		end
+		-- Update save and reset buttons
+		if self._widgets_by_name.visible_equipment_save_button then
+			self._widgets_by_name.visible_equipment_save_button.visible = is_tab
+		end
+		if self._widgets_by_name.visible_equipment_reset_button then
+			self._widgets_by_name.visible_equipment_reset_button.visible = is_tab
+		end
 	end
 
 	instance.create_temp_settings = function(self)
@@ -499,20 +646,60 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", f
 		vertical_alignment = "top",
 		parent = "screen",
 		horizontal_alignment = "center",
-		size = size,
-		position = {x_base, y_base - 175, 0},
+		size = {600, 50},
+		position = {x_base, y_base - 150, 0},
 	}
 
 	-- Creat option checkbox pivots
-	for i = 1, 4, 1 do
-		instance.scenegraph_definition["option_check_"..i.."_pivot"] = {
+	local gear_nodes = mod.gear_settings:gear_attach_points("human")
+	for _, gear_node in pairs(gear_nodes) do
+		instance.scenegraph_definition[tostring(gear_node.name).."_button_pivot"] = {
 			vertical_alignment = "top",
 			parent = "screen",
 			horizontal_alignment = "center",
-			size = size,
-			position = {x_base - 20, y_base - 80 + 55 * (i - 1), 0},
+			size = {200, 50},
+			position = {0, 0, 0},
 		}
 	end
+
+	instance.scenegraph_definition.hips_front_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.hips_front_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.hips_front_button_pivot.position = {100, -100, 0}
+	instance.scenegraph_definition.hips_back_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.hips_back_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.hips_back_button_pivot.position = {100, -100, 0}
+
+	instance.scenegraph_definition.hips_left_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.hips_left_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.hips_left_button_pivot.position = {-300, -400, 0}
+	instance.scenegraph_definition.hips_right_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.hips_right_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.hips_right_button_pivot.position = {500, -400, 0}
+
+	instance.scenegraph_definition.leg_left_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.leg_left_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.leg_left_button_pivot.position = {-250, -200, 0}
+	instance.scenegraph_definition.leg_right_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.leg_right_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.leg_right_button_pivot.position = {450, -200, 0}
+
+	instance.scenegraph_definition.backpack_left_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.backpack_left_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.backpack_left_button_pivot.position = {-300, -700, 0}
+	instance.scenegraph_definition.backpack_right_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.backpack_right_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.backpack_right_button_pivot.position = {500, -700, 0}
+
+	instance.scenegraph_definition.back_left_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.back_left_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.back_left_button_pivot.position = {-300, -700, 0}
+	instance.scenegraph_definition.back_right_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.back_right_button_pivot.vertical_alignment = "bottom"
+	instance.scenegraph_definition.back_right_button_pivot.position = {500, -700, 0}
+
+	instance.scenegraph_definition.chest_button_pivot.horizontal_alignment = "left"
+	instance.scenegraph_definition.chest_button_pivot.vertical_alignment = "top"
+	instance.scenegraph_definition.chest_button_pivot.position = {100, 150, 0}
 
 	-- Create save button pivot
 	instance.scenegraph_definition.save_button_pivot = {
@@ -520,7 +707,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", f
 		parent = "screen",
 		horizontal_alignment = "center",
 		size = size,
-		position = {x_base - 75, y_base + 625, 0},
+		position = {x_base, y_base + 625, 0},
 	}
 	-- Create save button pivot
 	instance.scenegraph_definition.reset_button_pivot = {
@@ -528,7 +715,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", f
 		parent = "screen",
 		horizontal_alignment = "center",
 		size = size,
-		position = {x_base - 400, y_base + 625, 0},
+		position = {x_base, y_base + 525, 0},
 	}
 
 	local title_text_font_settings = UIFontSettings.header_2
@@ -577,6 +764,19 @@ mod:hook(CLASS.InventoryView, "on_enter", function(func, self, ...)
 
 end)
 
+mod:hook(CLASS.InventoryView, "update", function(func, self, dt, t, input_service, ...)
+
+	-- Update custom widgets
+	self:draw_gear_node_lines()
+
+	-- Update custom widget visibility
+	self:update_custom_widget_visibility()
+
+	-- Original function
+	return func(self, dt, t, input_service, ...)
+
+end)
+
 mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
 
 	-- Modding tools
@@ -607,9 +807,6 @@ mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_
 		-- Create temp settings
 		self:create_temp_settings()
 
-		-- Update name text
-		self:update_options_text()
-
 		-- Rotation
 		self:set_rotation()
 
@@ -626,8 +823,8 @@ mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_
 
 	end
 
-	-- Update custom widget visibility
-	self:update_custom_widget_visibility()
+	-- -- Update custom widget visibility
+	-- self:update_custom_widget_visibility()
 
 end)
 

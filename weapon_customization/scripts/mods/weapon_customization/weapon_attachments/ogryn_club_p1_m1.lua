@@ -46,9 +46,9 @@ return table.combine(
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
-                    -- mod:echot(tostring(item_name).." changed "..tostring(attachment))
-                    -- mod:echot("grip = "..tostring(mod.gear_settings:get(gear_id, "grip")))
-                    -- mod:echot("pommel = "..tostring(mod.gear_settings:get(gear_id, "pommel")))
+                    -- mod:echo(tostring(item_name).." changed "..tostring(attachment))
+                    -- mod:echo("grip = "..tostring(mod.gear_settings:get(gear_id, "grip")))
+                    -- mod:echo("pommel = "..tostring(mod.gear_settings:get(gear_id, "pommel")))
                     -- table.contains(mod.gear_settings:possible_attachments())
                     local grip = mod.gear_settings:get(item, "grip")
                     local pommel = mod.gear_settings:get(item, "pommel")
@@ -66,7 +66,7 @@ return table.combine(
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
-                    -- mod:echot(tostring(item_name).." changed "..tostring(attachment))
+                    -- mod:echo(tostring(item_name).." changed "..tostring(attachment))
                     local head = mod.gear_settings:get(item, "head")
                     local pommel = mod.gear_settings:get(item, "pommel")
                     if string_find(attachment, "default") then
@@ -83,7 +83,7 @@ return table.combine(
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
-                    -- mod:echot(tostring(item_name).." changed "..tostring(attachment))
+                    -- mod:echo(tostring(item_name).." changed "..tostring(attachment))
                     local head = mod.gear_settings:get(item, "head")
                     local grip = mod.gear_settings:get(item, "grip")
                     if string_find(attachment, "default") then

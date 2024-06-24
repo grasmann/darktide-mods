@@ -17,7 +17,7 @@ local mod = get_mod("weapon_customization")
 	local Unit = Unit
 	local Mesh = Mesh
 	local type = type
-	local table = table
+	-- local table = table
 	local World = World
 	local pairs = pairs
 	local CLASS = CLASS
@@ -149,7 +149,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 
 		-- mod:echo(item_name)
-		-- mod:debug_attachments(item_data, attachments, {"lasgun_npc_01", "lasgun_npc_02", "lasgun_npc_03", "lasgun_npc_04", "lasgun_npc_05"}, nil, true)
+		-- mod:debug_attachments(item_data, attachments, {"powersword_p1_m1", "powersword_p1_m2"}, nil, true)
 
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
@@ -330,7 +330,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 								unit_set_local_scale(unit, node, scale)
 							end
 
-							unit_set_unit_visibility(unit, true, true)
+							-- local visible = false
+							local visible = table.contains(mod.attachment_slots_always_sheathed, attachment_slot) and false or true
+        					-- Unit.set_unit_visibility(spawned_unit, visible, true)
+							-- if not visible then mod:echo("lol: "..tostring(attachment_slot)) end
+							unit_set_unit_visibility(unit, visible, true)
 
 							if anchor.data then
 								for name, value in pairs(anchor.data) do
@@ -399,11 +403,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 			local weapon_size = mod:weapon_size(attachment_units)
 			Unit.set_data(item_unit, "weapon_size", weapon_size)
-			-- mod:echot("weapon_size: "..tostring(weapon_size))
+			-- mod:echo("weapon_size: "..tostring(weapon_size))
 		end
 
 		-- if attachment_units and mod:has_premium_skin(item_data) and attach_settings then
-		-- 	mod:echot("premium skin - glow")
+		-- 	mod:echo("premium skin - glow")
 		-- 	-- local particle_name = "content/fx/particles/interacts/servoskull_visibility_hover"
 		-- 	-- local particle_name = "content/fx/particles/enemies/red_glowing_eyes"
 		-- 	-- local particle_name = "content/fx/particles/abilities/psyker_warp_charge_shout"
@@ -432,7 +436,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		-- 			-- Unit.set_scalar_for_materials(unit, "increase_color", 2)
 		-- 			-- if attach_settings.character_unit then
 		-- 			-- 	-- "content/fx/particles/interacts/servoskull_visibility_hover"
-		-- 			-- 	mod:echot("character")
+		-- 			-- 	mod:echo("character")
 		-- 			-- end
 		-- 		end
 		-- 	-- end
