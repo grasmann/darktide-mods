@@ -125,7 +125,7 @@ local mod = get_mod("weapon_customization")
         heavy = .1,
     }
     local rnd_attach = {"hips_front", "hips_back", "hips_left", "hips_right", "chest", "back_right", "back_left"}
-    local no_rnd_attach = {"forcestaff_p1_m1", "forcestaff_p2_m1", "forcestaff_p3_m1", "forcestaff_p4_m1"}
+    local no_rnd_attach = {"forcestaff_p1_m1", "forcestaff_p2_m1", "forcestaff_p3_m1", "forcestaff_p4_m1", "ogryn_powermaul_slabshield_p1_m1"}
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -604,16 +604,16 @@ VisibleEquipmentExtension.apply_center_mass = function(self)
                 if children and #children > 0 and data.center_mass and data.center_mass[i] then
                     for _, child in pairs(children) do
                         local attachment_name = mod.gear_settings:attachment_name(child)
-                        if attachment_name then
+                        -- if attachment_name then
                             -- mod:echo("apply_center_mass: "..tostring(attachment_name))
-                            local attachment_data = mod.attachment_models[self.item_names[slot]][attachment_name]
+                            local attachment_data = attachment_name and mod.attachment_models[self.item_names[slot]][attachment_name]
                             attachment_data = mod.gear_settings:apply_fixes(slot.item, child) or attachment_data
-                            local default_position = attachment_data.position and vector3_unbox(attachment_data.position) or vector3(0, 0, 0)
+                            local default_position = attachment_data and attachment_data.position and vector3_unbox(attachment_data.position) or vector3(0, 0, 0)
                             local rotation = unit_local_rotation(child, 1)
                             local mat = quaternion_matrix4x4(rotation)
                             local rotated_pos = matrix4x4_transform(mat, vector3_unbox(data.center_mass[i]))
                             unit_set_local_position(child, 1, default_position + rotated_pos)
-                        end
+                        -- end
                     end
                 end
             end
@@ -850,7 +850,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
                     self.slot_units[slot] = {self.dummy_units[slot].base}
                 end
 
-                if not self:is_ogryn() and not table_contains(no_rnd_attach, self.item_names[slot]) then
+                if not table_contains(no_rnd_attach, self.item_names[slot]) then
                     -- local rnd_node = not self.is_local_unit and rnd_attach[math_random(1, #rnd_attach)]
                     local gear_node = mod.gear_settings:get(slot.item, "gear_node") or not self.is_local_unit and rnd_attach[math_random(1, #rnd_attach)]
                     

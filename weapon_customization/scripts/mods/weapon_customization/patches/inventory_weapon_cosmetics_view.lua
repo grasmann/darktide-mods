@@ -1305,7 +1305,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				value_id = "text",
 				style_id = "text",
 				pass_type = "text",
-				value = mod:localize(text),
+				value = mod:localize_or_global(text),
 				style = style,
 			}
 		}, scenegraph, nil)
@@ -1609,7 +1609,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					local widgets_by_name = self.bar_breakdown_widgets_by_name
 					local widget = widgets_by_name["attachment_bar_"..tostring(index)]
 					if widget then
-						widget.content.text = mod:localize(name)
+						widget.content.text = mod:localize_or_global(name)
 						widget.content.value_id_1 = tiers[tier]
 					end
 					index = index + 1

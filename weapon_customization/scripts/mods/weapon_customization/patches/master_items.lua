@@ -374,14 +374,14 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         end
     end)
 
-    mod:hook(MasterItems, "get_store_item_instance", function(func, description, ...)
-        local item_instance = _store_item_plus_overrides(description)
+    local function randomize_store_item_instance(description, item_instance)
         local master_item = item_instance.__master_item or item_instance
         local weapon_item = item_instance.item_type == WEAPON_MELEE or item_instance.item_type == WEAPON_RANGED
         local gear_id = mod.gear_settings:item_to_gear_id(item_instance)
         local offer_id = description.offer_id
         -- Check gear id and offer id and weapon item and not randomized already
-        if gear_id and offer_id and weapon_item and not mod:persistent_table(REFERENCE).temp_gear_settings[offer_id] then
+        if gear_id and offer_id and weapon_item and not mod.gear_settings:has_temp_settings(offer_id) then
+        -- if gear_id and offer_id and weapon_item and not mod:persistent_table(REFERENCE).temp_gear_settings[offer_id] then
             if not mod:is_premium_store_item() then
                 -- Get attributes
                 local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
@@ -397,8 +397,42 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 end
             end
         end
-        -- Copy temp settings
-        mod.gear_settings:copy_temp_settings(item_instance, offer_id)
+        if mod.gear_settings:has_temp_settings(offer_id) then
+            mod.gear_settings:copy_temp_settings(gear_id, offer_id)
+        end
+        return item_instance
+    end
+
+    mod:hook(MasterItems, "get_store_item_instance", function(func, description, ...)
+        local item_instance = _store_item_plus_overrides(description)
+
+        if description and item_instance then
+            local master_item = item_instance.__master_item or item_instance
+            local weapon_item = item_instance.item_type == WEAPON_MELEE or item_instance.item_type == WEAPON_RANGED
+            local gear_id = mod.gear_settings:item_to_gear_id(item_instance)
+            local offer_id = description.offer_id
+            -- Check gear id and offer id and weapon item and not randomized already
+            if gear_id and offer_id and weapon_item and not mod.gear_settings:has_temp_settings(offer_id) then
+                if not mod:is_premium_store_item() then
+                    -- Get attributes
+                    local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
+                    local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
+                    local in_premium_store = mod:is_premium_store_item(item_instance)
+                    -- Get options
+                    local store = in_store and mod:get("mod_option_randomization_store")
+                    local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
+                    local randomize = store or other_player
+                    -- Randomize
+                    if randomize and offer_id then
+                        mod.gear_settings:create_temp_settings(offer_id, mod.gear_settings:randomize_weapon(master_item))
+                    end
+                end
+            end
+            if mod.gear_settings:has_temp_settings(offer_id) then
+                mod.gear_settings:copy_temp_settings(gear_id, offer_id)
+            end
+        end
+
         -- Return instance
         return item_instance
     end)

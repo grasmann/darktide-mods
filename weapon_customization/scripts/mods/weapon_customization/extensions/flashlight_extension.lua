@@ -86,16 +86,16 @@ local SLOT_SECONDARY = "slot_secondary"
 
 mod.flashlight_templates = {
 	flashlight_01 = table.combine(
-        table_clone(FlashlightTemplates.assault), {battery = {max = 10, interval = .1, drain = .002, charge = .004}}
+        table_clone(FlashlightTemplates.autogun_p1), {battery = {max = 10, interval = .1, drain = .002, charge = .004}}
     ),
 	flashlight_02 = table.combine(
-        table_clone(FlashlightTemplates.default), {battery = {max = 10, interval = .1, drain = .001, charge = .004}}
+        table_clone(FlashlightTemplates.lasgun_p3), {battery = {max = 10, interval = .1, drain = .001, charge = .004}}
     ),
 	flashlight_03 = table.combine(
-        table_clone(FlashlightTemplates.assault), {battery = {max = 10, interval = .1, drain = .004, charge = .004}}
+        table_clone(FlashlightTemplates.autopistol_p1), {battery = {max = 10, interval = .1, drain = .004, charge = .004}}
     ),
 	flashlight_04 = table.combine(
-        table_clone(FlashlightTemplates.default), {battery = {max = 10, interval = .1, drain = .003, charge = .004}}
+        table_clone(FlashlightTemplates.lasgun_p1), {battery = {max = 10, interval = .1, drain = .003, charge = .004}}
     ),
 	laser_pointer = {
 		light = {
@@ -123,7 +123,7 @@ mod.flashlight_templates = {
 			}
 		},
 		battery = {max = 10, interval = .1, drain = .002, charge = .004},
-		flicker = FlashlightTemplates.assault.flicker,
+		flicker = FlashlightTemplates.autogun_p1.flicker,
 	},
 }
 mod.flashlight_templates.flashlight_01.light.first_person.intensity = 10
@@ -677,9 +677,11 @@ mod.get_flashlight_template = function(self, flashlight_name)
 end
 
 mod:hook_require("scripts/settings/equipment/flashlight_templates", function(instance)
-    for name, template in pairs(instance) do
-        template.light.first_person.cast_shadows = mod:get("mod_option_flashlight_shadows")
-        template.light.third_person.cast_shadows = mod:get("mod_option_flashlight_shadows")
+    if instance then
+        for name, template in pairs(instance) do
+            template.light.first_person.cast_shadows = mod:get("mod_option_flashlight_shadows")
+            template.light.third_person.cast_shadows = mod:get("mod_option_flashlight_shadows")
+        end
     end
 end)
 

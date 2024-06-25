@@ -38,3 +38,9 @@ local mod = get_mod("weapon_customization")
 		return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
 	end
 --#endregion
+
+function DMFMod:localize_or_global(string_id)
+	local localized_string = self:localize(string_id)
+	if localized_string == "<"..tostring(string_id)..">" then localized_string = Localize(string_id) end
+	return localized_string
+end

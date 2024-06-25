@@ -37,6 +37,7 @@ local mod = get_mod("weapon_customization")
 	local string_find = string.find
 	local string_split = string.split
 	local table_insert = table.insert
+	local unit_set_data = Unit.set_data
 	local unit_get_data = Unit.get_data
 	local unit_has_node = Unit.has_node
 	local table_contains = table.contains
@@ -645,6 +646,8 @@ GearSettings.spawn_gear_attach_points = function(self, archetype, world, unit_or
 				local point_unit = world_spawn_unit_ex(world, EMPTY_UNIT, nil, unit_world_pose(unit, node))
 				-- Check attach point unit
 				if point_unit then
+					-- Set attach point unit data
+					unit_set_data(point_unit, "gear_attach_name", point.name)
 					-- Link attach point unit
 					world_link_unit(world, point_unit, 1, unit, node)
 					-- Set attach point unit position
@@ -773,6 +776,8 @@ GearSettings.hide_bullets = function(self, attachment_units)
 end
 
 local possible_attachments = {}
+-- local auto_equip_entries = {}
+-- local special_resolve_entries = {}
 local no_support_entries = {}
 local trigger_move_entries = {}
 GearSettings.randomize_weapon = function(self, gear_id_or_item)
@@ -781,6 +786,8 @@ GearSettings.randomize_weapon = function(self, gear_id_or_item)
 	table.clear(possible_attachments)
     -- local no_support_entries = {}
 	table.clear(no_support_entries)
+	-- table.clear(auto_equip_entries)
+	-- table.clear(special_resolve_entries)
     -- local trigger_move_entries = {}
 	table.clear(trigger_move_entries)
 	local item = self:item_from_gear_id(gear_id_or_item)
@@ -817,9 +824,13 @@ GearSettings.randomize_weapon = function(self, gear_id_or_item)
 				        random_attachments[attachment_slot] = random_attachment
 				        local attachment_data = mod.attachment_models[item_name][random_attachment]
 				        local no_support = attachment_data and attachment_data.no_support
+						-- local auto_equip = attachment_data and attachment_data.automatic_equip
+						-- local special_resolve = attachment_data and attachment_data.special_resolve
 				        -- local trigger_move = attachment_data and attachment_data.trigger_move
 				        attachment_data = self:apply_fixes(item, attachment_slot) or attachment_data
 				        no_support = attachment_data.no_support or no_support
+						-- auto_equip = attachment_data.automatic_equip or auto_equip
+						-- special_resolve = attachment_data.special_resolve or special_resolve
 				        -- trigger_move = attachment_data.trigger_move or trigger_move
 				        -- if trigger_move then
 				        --     for _, trigger_move_entry in pairs(trigger_move) do
@@ -850,6 +861,10 @@ GearSettings.randomize_weapon = function(self, gear_id_or_item)
             end
         end
     end
+	-- Auto equip
+	self:resolve_auto_equips(gear_id_or_item)
+	-- Special resolve
+	self:resolve_special_changes(gear_id_or_item)
     -- Trigger move
     for _, trigger_move_entry in pairs(trigger_move_entries) do
 		random_attachments[trigger_move_entry] = self:get(item, trigger_move_entry)

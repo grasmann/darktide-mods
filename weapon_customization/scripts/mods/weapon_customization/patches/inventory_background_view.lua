@@ -36,6 +36,7 @@ local mod = get_mod("weapon_customization")
 	local vector3_box = Vector3Box
 	local string_gsub = string.gsub
 	local vector3_zero = vector3.zero
+	local unit_get_data = Unit.get_data
 	local unit_has_node = Unit.has_node
 	local world_link_unit = World.link_unit
 	local vector3_unbox = vector3_box.unbox
@@ -264,6 +265,13 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 							-- 	end
 							-- end
 							
+							local gear_node_units = mod:execute_extension(character_spawn_data.unit_3p, "visible_equipment_system", "gear_node_units")
+							if gear_node_units then
+								for _, unit in pairs(gear_node_units) do
+									self:unit_manipulation_add(unit, camera, world, gui, unit_get_data(unit, "gear_attach_name"))
+								end
+							end
+
 							-- ui_profile_spawner.help_units = unit_list
 
 							self:unit_manipulation_add(weapon_unit, camera, world, gui, "weapon")
@@ -273,7 +281,7 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 							-- self.modding_tools:show_console(true)
 							-- self.modding_tools:console_print(weapon_item)
 							
-							-- mod:echo(weapon_item)
+							mod:echo(weapon_item)
 							-- mod:echo(character_spawn_data.profile)
 							-- mod:dtf(weapon_item, "weapon_item", 5)
 							
