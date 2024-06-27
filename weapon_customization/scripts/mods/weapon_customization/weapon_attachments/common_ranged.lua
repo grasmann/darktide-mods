@@ -84,6 +84,8 @@ return {
             {id = "grip_32",      name = "Braced Autogun 5"},
             {id = "grip_12",      name = "Headhunter Autogun"},
             {id = "grip_30",      name = "Boltgun Pistol 1"},
+            {id = "grip_35",      name = "Boltgun Pistol 2"},
+            {id = "grip_36",      name = "Boltgun Pistol 3"},
             {id = "grip_13",      name = "Boltgun 1"},
             {id = "grip_14",      name = "Boltgun 2"},
             {id = "grip_15",      name = "Boltgun 3"},
@@ -142,6 +144,8 @@ return {
             {name = "grip_32",      model = _item_ranged.."/grips/autogun_rifle_grip_ak_05"},
             {name = "grip_33",      model = _item_ranged.."/grips/lasgun_pistol_grip_04"},
             {name = "grip_34",      model = _item_ranged.."/grips/boltgun_rifle_grip_04"},
+            {name = "grip_35",      model = _item_ranged.."/grips/boltgun_pistol_grip_02"},
+            {name = "grip_36",      model = _item_ranged.."/grips/boltgun_pistol_grip_03"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 
@@ -384,11 +388,12 @@ return {
             {id = "magazine_01",             name = "Autogun 1"},
             {id = "magazine_02",             name = "Autogun 2"},
             {id = "magazine_03",             name = "Autogun 3"},
-            {id = "magazine_04",             name = "Braced Autogun 4"},
-            {id = "auto_pistol_magazine_01", name = "Magazine 1"},
-            {id = "bolter_magazine_01",      name = "Bolter Magazine A"},
-            {id = "bolter_magazine_02",      name = "Bolter Magazine B"},
-            {id = "bolter_magazine_03",      name = "Boltgun Pistol A"},
+            {id = "magazine_04",             name = "Autogun 4"},
+            {id = "auto_pistol_magazine_01", name = "Autopistol 1"},
+            {id = "bolter_magazine_01",      name = "Bolter 1"},
+            {id = "bolter_magazine_02",      name = "Bolter 2"},
+            {id = "boltpistol_magazine_01",  name = "Boltpistol 1"},
+            {id = "boltpistol_magazine_02",  name = "Boltpistol 2"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -407,7 +412,8 @@ return {
             {name = "auto_pistol_magazine_01", model = _item_ranged.."/magazines/autogun_pistol_magazine_01"},
             {name = "bolter_magazine_01",      model = _item_ranged.."/magazines/boltgun_rifle_magazine_01"},
             {name = "bolter_magazine_02",      model = _item_ranged.."/magazines/boltgun_rifle_magazine_02"},
-            {name = "bolter_magazine_03",      model = _item_ranged.."/magazines/boltgun_pistol_magazine_01"},
+            {name = "boltpistol_magazine_01",  model = _item_ranged.."/magazines/boltgun_pistol_magazine_01"},
+            {name = "boltpistol_magazine_02",  model = _item_ranged.."/magazines/boltgun_pistol_magazine_02"},
         }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 }

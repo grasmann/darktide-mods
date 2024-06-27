@@ -138,6 +138,7 @@ end
 	local _autopistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/autopistol_p1_m1")
 	local _shotgun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/shotgun_p1_m1")
 	local _bolter_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/bolter_p1_m1")
+	local _boltpistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/boltpistol_p1_m1")
 	local _stubrevolver_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/stubrevolver_p1_m1")
 	local _plasmagun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/plasmagun_p1_m1")
 	local _laspistol_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/laspistol_p1_m1")
@@ -178,6 +179,7 @@ end
 			autopistol_p1_m1   = _autopistol_p1_m1.anchors,
 			shotgun_p1_m1      = _shotgun_p1_m1.anchors,
 			bolter_p1_m1       = _bolter_p1_m1.anchors,
+			boltpistol_p1_m1   = _boltpistol_p1_m1.anchors,
 			stubrevolver_p1_m1 = _stubrevolver_p1_m1.anchors,
 			plasmagun_p1_m1    = _plasmagun_p1_m1.anchors,
 			laspistol_p1_m1    = _laspistol_p1_m1.anchors,
@@ -315,6 +317,7 @@ end
 			autopistol_p1_m1   = _autopistol_p1_m1.attachments,
 			shotgun_p1_m1      = _shotgun_p1_m1.attachments,
 			bolter_p1_m1       = _bolter_p1_m1.attachments,
+			boltpistol_p1_m1   = _boltpistol_p1_m1.attachments,
 			stubrevolver_p1_m1 = _stubrevolver_p1_m1.attachments,
 			plasmagun_p1_m1    = _plasmagun_p1_m1.attachments,
 			laspistol_p1_m1    = _laspistol_p1_m1.attachments,
@@ -863,6 +866,7 @@ end
 			autopistol_p1_m1   = _autopistol_p1_m1.models,
 			shotgun_p1_m1      = _shotgun_p1_m1.models,
 			bolter_p1_m1       = _bolter_p1_m1.models,
+			boltpistol_p1_m1   = _boltpistol_p1_m1.models,
 			stubrevolver_p1_m1 = _stubrevolver_p1_m1.models,
 			plasmagun_p1_m1    = _plasmagun_p1_m1.models,
 			laspistol_p1_m1    = _laspistol_p1_m1.models,
@@ -1015,6 +1019,7 @@ end
 			autopistol_p1_m1   = _autopistol_p1_m1.sounds,
 			shotgun_p1_m1      = _shotgun_p1_m1.sounds,
 			bolter_p1_m1       = _bolter_p1_m1.sounds,
+			boltpistol_p1_m1   = _boltpistol_p1_m1.sounds,
 			stubrevolver_p1_m1 = _stubrevolver_p1_m1.sounds,
 			plasmagun_p1_m1    = _plasmagun_p1_m1.sounds,
 			laspistol_p1_m1    = _laspistol_p1_m1.sounds,
