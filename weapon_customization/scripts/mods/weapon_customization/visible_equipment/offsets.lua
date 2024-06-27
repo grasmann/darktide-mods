@@ -104,7 +104,30 @@ local mod = get_mod("weapon_customization")
                 },
             }
         },
+        ogryn_pickaxe_2h_p1_m1 = {
+            supported_gear_nodes = {
+                "backpack_left",
+                "backpack_right",
+                "back_left",
+                "back_right",
+            }
+        },
+        forcestaff_p1_m1 = {
+            supported_gear_nodes = {
+                "backpack_left",
+                "backpack_right",
+                "back_left",
+                "back_right",
+            }
+        },
     }
+    --#region Copies
+        mod.gear_node_offsets.ogryn_pickaxe_2h_p1_m2 = mod.gear_node_offsets.ogryn_pickaxe_2h_p1_m1
+        mod.gear_node_offsets.ogryn_pickaxe_2h_p1_m3 = mod.gear_node_offsets.ogryn_pickaxe_2h_p1_m1
+        mod.gear_node_offsets.forcestaff_p2_m1 = mod.gear_node_offsets.forcestaff_p1_m1
+        mod.gear_node_offsets.forcestaff_p3_m1 = mod.gear_node_offsets.forcestaff_p1_m1
+        mod.gear_node_offsets.forcestaff_p4_m1 = mod.gear_node_offsets.forcestaff_p1_m1
+    --#endregion
 --#endregion
 
 --#region Loading screen
@@ -359,6 +382,14 @@ local mod = get_mod("weapon_customization")
                     visible_equipment_extension:position_equipment()
                 end,
             },
+            ogryn_pickaxe_2h_p1_m1 = {
+                default = {position = vector3_box(.15, .55, -.29), rotation = vector3_box(-33, 90, -150), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.03, .0075, 0), step_rotation = vector3_box(2.5, -2.5, 5)},
+                backpack = {position = vector3_box(.15, .56, -.43), rotation = vector3_box(75, 90, 65), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(0, 0, 0), step_rotation = vector3_box(0, -2.5, 5)},
+                center_mass = vector3_box(0, 0, -1.25),
+                loading = mod.visible_equipment_loading_offsets.melee_medium,
+            },
         --#endregion
         --#region Guns
             -- autogun_p1_m1 = {
@@ -572,6 +603,8 @@ local mod = get_mod("weapon_customization")
             mod.visible_equipment_offsets.ogryn_combatblade_p1_m3 = mod.visible_equipment_offsets.ogryn_combatblade_p1_m1
             mod.visible_equipment_offsets.ogryn_club_p2_m2 = mod.visible_equipment_offsets.ogryn_club_p2_m1
             mod.visible_equipment_offsets.ogryn_club_p2_m3 = mod.visible_equipment_offsets.ogryn_club_p2_m1
+            mod.visible_equipment_offsets.ogryn_pickaxe_2h_p1_m2 = mod.visible_equipment_offsets.ogryn_pickaxe_2h_p1_m1
+            mod.visible_equipment_offsets.ogryn_pickaxe_2h_p1_m3 = mod.visible_equipment_offsets.ogryn_pickaxe_2h_p1_m1
         --#endregion
         --#region Guns
             mod.visible_equipment_offsets.shotgun_p1_m2 = mod.visible_equipment_offsets.shotgun_p1_m1

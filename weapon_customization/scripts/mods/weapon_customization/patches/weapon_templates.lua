@@ -49,7 +49,7 @@ mod:hook(CLASS.ViewElementWeaponActions, "present_item", present_hook)
 mod:hook(CLASS.ViewElementWeaponInfo, "present_item", present_hook)
 mod:hook(CLASS.ViewElementWeaponPatterns, "present_item", present_hook)
 mod:hook(CLASS.ViewElementWeaponActionsExtended, "present_item", present_hook)
-mod:hook(CLASS.WeaponStats, "get_compairing_stats", function(func, self, ...)
+mod:hook(CLASS.WeaponStats, "get_comparing_stats", function(func, self, ...)
     return present_hook(func, self, self._item, ...)
 end)
 

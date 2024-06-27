@@ -47,7 +47,7 @@ return {
 			{name = "bolt_pistol_receiver_01", model = _item_ranged.."/recievers/boltgun_pistol_receiver_01"},
 			{name = "bolt_pistol_receiver_02", model = _item_ranged.."/recievers/boltgun_pistol_receiver_02"},
 			{name = "bolt_pistol_receiver_03", model = _item_ranged.."/recievers/boltgun_pistol_receiver_03"},
-			{name = "bolt_pistol_receiver_04", model = _item_ranged.."/recievers/boltgun_pistol_receiver_04"},
+			-- {name = "bolt_pistol_receiver_04", model = _item_ranged.."/recievers/boltgun_pistol_receiver_04"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┬┐┌─┐┌─┐┌─┐┌─┐┬┌┐┌┌─┐┌─┐

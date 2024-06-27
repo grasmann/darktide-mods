@@ -114,14 +114,14 @@ mod.on_reload = function(self)
 	self:init()
 	self:setup_item_definitions()
 	if self.player_unit and Unit.alive(self.player_unit) then
-		if self._debug then
+		-- if self._debug then
 			self:remove_extension(self.player_unit, "crouch_system")
 			self:remove_extension(self.player_unit, "sway_system")
 			self:remove_extension(self.player_unit, "sight_system")
 			self:remove_extension(self.player_unit, "visible_equipment_system")
 			self:remove_extension(self.player_unit, "flashlight_system")
 			self:remove_extension(self.player_unit, "weapon_dof_system")
-		end
+		-- end
 	end
 end
 

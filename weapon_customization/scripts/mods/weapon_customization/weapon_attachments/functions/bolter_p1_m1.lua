@@ -29,14 +29,13 @@ return {
 	-- ##### ┴└─└─┘└─┘└─┘┴ └┘ └─┘┴└─└─┘
 	receiver_attachments = function(default)
 		local attachments = {
-			{id = "receiver_01", name = "Receiver 1"},
-			{id = "receiver_02", name = "Receiver 2"},
-			{id = "receiver_03", name = "Receiver 3"},
-			{id = "receiver_04", name = "Receiver 4"},
-			{id = "receiver_05", name = "Receiver 5"},
-			{id = "receiver_06", name = "Receiver 6"},
-			{id = "receiver_07", name = "Receiver 7"},
-			{id = "receiver_08", name = "Receiver 8"},
+			{id = "receiver_01", name = "Bolter 1"},
+			{id = "receiver_02", name = "Bolter 2"},
+			{id = "receiver_03", name = "Bolter 3"},
+			{id = "receiver_04", name = "Bolter 4"},
+			{id = "receiver_05", name = "Bolter 5"},
+			{id = "receiver_06", name = "Bolter 6"},
+			{id = "receiver_07", name = "Bolter 7"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -53,9 +52,8 @@ return {
 			{name = "receiver_03",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_03"},
 			{name = "receiver_04",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_04"},
 			{name = "receiver_05",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_05"},
-			{name = "receiver_06",		model = _item_ranged.."/recievers/boltgun_pistol_receiver_01"},
-			{name = "receiver_07",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_06"},
-			{name = "receiver_08",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_07"},
+			{name = "receiver_06",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_06"},
+			{name = "receiver_07",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_07"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┬┐┌─┐┌─┐┌─┐┌─┐┬┌┐┌┌─┐┌─┐
@@ -63,9 +61,8 @@ return {
 	-- ##### ┴ ┴┴ ┴└─┘┴ ┴└─┘┴┘└┘└─┘└─┘
 	magazine_attachments = function(default)
 		local attachments = {
-			{id = "bolter_magazine_01", name = "Bolter Magazine A"},
-			{id = "bolter_magazine_02", name = "Bolter Magazine B"},
-			{id = "bolter_magazine_03", name = "Bolter Magazine C"},
+			{id = "bolter_magazine_01", name = "Bolter 1"},
+			{id = "bolter_magazine_02", name = "Bolter 2"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -79,7 +76,6 @@ return {
 			{name = "magazine_default", 	model = ""},
 			{name = "bolter_magazine_01",	model = _item_ranged.."/magazines/boltgun_rifle_magazine_01"},
 			{name = "bolter_magazine_02",	model = _item_ranged.."/magazines/boltgun_rifle_magazine_02"},
-			{name = "bolter_magazine_03",	model = _item_ranged.."/magazines/boltgun_pistol_magazine_01"},
 		}, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┐ ┌─┐┬─┐┬─┐┌─┐┬  ┌─┐
@@ -87,11 +83,10 @@ return {
 	-- ##### └─┘┴ ┴┴└─┴└─└─┘┴─┘└─┘
 	barrel_attachments = function(default)
 		local attachments = {
-			{id = "bolter_barrel_01", name = "Barrel 1"},
-			{id = "bolter_barrel_02", name = "Barrel 2"},
-			-- {id = "bolter_barrel_03", name = "Barrel 3"},
-			{id = "bolter_barrel_04", name = "Barrel 3"},
-			{id = "bolter_barrel_05", name = "Barrel 4"},
+			{id = "bolter_barrel_01", name = "Bolter 1"},
+			{id = "bolter_barrel_02", name = "Bolter 2"},
+			{id = "bolter_barrel_03", name = "Bolter 3"},
+			{id = "bolter_barrel_04", name = "Bolter 4"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -105,9 +100,8 @@ return {
 			{name = "barrel_default",	model = ""},
 			{name = "bolter_barrel_01",	model = _item_ranged.."/barrels/boltgun_rifle_barrel_01"},
 			{name = "bolter_barrel_02",	model = _item_ranged.."/barrels/boltgun_rifle_barrel_02"},
-			{name = "bolter_barrel_03",	model = _item_ranged.."/barrels/boltgun_pistol_barrel_01"},
-			{name = "bolter_barrel_04",	model = _item_ranged.."/barrels/boltgun_rifle_barrel_03"},
-			{name = "bolter_barrel_05",	model = _item_ranged.."/barrels/boltgun_rifle_barrel_04"},
+			{name = "bolter_barrel_03",	model = _item_ranged.."/barrels/boltgun_rifle_barrel_03"},
+			{name = "bolter_barrel_04",	model = _item_ranged.."/barrels/boltgun_rifle_barrel_04"},
 		}, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┬ ┬┌┐┌┌┬┐┌─┐┬─┐┌┐ ┌─┐┬─┐┬─┐┌─┐┬  
@@ -115,11 +109,11 @@ return {
 	-- ##### └─┘┘└┘─┴┘└─┘┴└─└─┘┴ ┴┴└─┴└─└─┘┴─┘
 	underbarrel_attachments = function(default)
 		local attachments = {
-			{id = "underbarrel_01", name = "Underbarrel 1"},
-			{id = "underbarrel_02", name = "Underbarrel 2"},
-			{id = "underbarrel_03", name = "Underbarrel 3"},
-			{id = "underbarrel_04", name = "Underbarrel 4"},
-			{id = "underbarrel_05", name = "Underbarrel 5"},
+			{id = "underbarrel_01", name = "Bolter 1"},
+			{id = "underbarrel_02", name = "Bolter 2"},
+			{id = "underbarrel_03", name = "Bolter 3"},
+			{id = "underbarrel_04", name = "Bolter 4"},
+			{id = "underbarrel_05", name = "Bolter 5"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -144,9 +138,8 @@ return {
 	-- ##### └─┘┴└─┘┴ ┴ ┴ └─┘
 	sight_attachments = function(default)
 		local attachments = {
-			{id = "bolter_sight_01", name = "Bolter Sight A"},
-			{id = "bolter_sight_02", name = "Bolter Sight B"},
-			-- {id = "bolter_sight_03",       name = "Bolter Sight C"},
+			{id = "bolter_sight_01", name = "Bolter 1"},
+			{id = "bolter_sight_02", name = "Bolter 2"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -160,7 +153,6 @@ return {
 			{name = "sight_default",	model = ""},
 			{name = "bolter_sight_01",	model = _item_ranged.."/sights/boltgun_rifle_sight_01"},
 			{name = "bolter_sight_02",	model = _item_ranged.."/sights/boltgun_rifle_sight_02"},
-			{name = "bolter_sight_03",	model = _item_ranged.."/sights/boltgun_pistol_sight_01"},
 		}, parent, angle, move, remove, type or "sight", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 }

@@ -124,8 +124,25 @@ local mod = get_mod("weapon_customization")
         medium = .33,
         heavy = .1,
     }
-    local rnd_attach = {"hips_front", "hips_back", "hips_left", "hips_right", "chest", "back_right", "back_left"}
-    local no_rnd_attach = {"forcestaff_p1_m1", "forcestaff_p2_m1", "forcestaff_p3_m1", "forcestaff_p4_m1", "ogryn_powermaul_slabshield_p1_m1"}
+    local rnd_attach = {
+        "hips_front",
+        "hips_back",
+        "hips_left",
+        "hips_right",
+        "chest",
+        "back_right",
+        "back_left",
+    }
+    local no_rnd_attach = {
+        "forcestaff_p1_m1",
+        "forcestaff_p2_m1",
+        "forcestaff_p3_m1",
+        "forcestaff_p4_m1",
+        "ogryn_powermaul_slabshield_p1_m1",
+        "ogryn_pickaxe_2h_p1_m1",
+        "ogryn_pickaxe_2h_p1_m2",
+        "ogryn_pickaxe_2h_p1_m3",
+    }
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################

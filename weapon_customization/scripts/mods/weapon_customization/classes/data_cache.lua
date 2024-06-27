@@ -32,7 +32,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
 	local REFERENCE = "weapon_customization"
-	local DEBUG = false
+	local DEBUG = true
 --#endregion
 
 -- ##### ┌─┐┌─┐┌─┐┬─┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┬┌┐┌┌┬┐┌─┐ ###########################################################

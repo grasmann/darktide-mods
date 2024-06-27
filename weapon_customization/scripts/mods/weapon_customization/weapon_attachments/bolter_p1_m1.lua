@@ -50,7 +50,8 @@ return table_combine(
 			barrel = _bolter_p1_m1.barrel_attachments(),
 			underbarrel = _bolter_p1_m1.underbarrel_attachments(),
 			sight = table_icombine(
-				_common_ranged.reflex_sights_attachments(),
+				_bolter_p1_m1.sight_attachments(),
+				_common_ranged.reflex_sights_attachments(false),
 				_common_ranged.scopes_attachments(false)
 			),
 			-- Ranged
@@ -75,22 +76,7 @@ return table_combine(
 		},
 		models = table_combine(
 			-- Native
-			_bolter_p1_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-				changes = {}
-				if attachment == "receiver_06" then
-					if mod.gear_settings:get(item, "barrel") ~= "bolter_barrel_03" then changes["barrel"] = "bolter_barrel_03" end
-					if mod.gear_settings:get(item, "magazine") ~= "bolter_magazine_03" then changes["magazine"] = "bolter_magazine_03" end
-					if mod.gear_settings:get(item, "underbarrel") ~= "no_underbarrel" then changes["underbarrel"] = "no_underbarrel" end
-					if mod.gear_settings:get(item, "sight") ~= "bolter_sight_03" then changes["sight"] = "bolter_sight_03" end
-					
-				else
-					if mod.gear_settings:get(item, "barrel") == "bolter_barrel_03" then changes["barrel"] = _barrels end
-					if mod.gear_settings:get(item, "magazine") == "bolter_magazine_03" then changes["magazine"] = _magazines end
-					if mod.gear_settings:get(item, "underbarrel") == "no_underbarrel" then changes["underbarrel"] = _underbarrels end
-					if mod.gear_settings:get(item, "sight") == "bolter_sight_03" then changes["sight"] = _sights end
-				end
-				return changes
-			end),
+			_bolter_p1_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
 			_bolter_p1_m1.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
 			_bolter_p1_m1.underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
 			_bolter_p1_m1.sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
@@ -225,26 +211,6 @@ return table_combine(
 			-- scope_offset = {position = vector3_box(0, 0, .022)},
 			trinket_slot = "slot_trinket_2",
 			fixes = {
-				{dependencies = {"receiver_06"}, -- Grip
-					receiver = {offset = true,
-						mesh_position = {
-							vector3_box(-.035, -.01, -.01),
-							vector3_box(0, -.065, -.035),
-							vector3_box(0, -.015, .017),
-							vector3_box(0, .07, -.01),
-						},
-						mesh_index = {2, 4, 3, 5},
-						mesh_rotation = {
-							vector3_box(0, 0, 90),
-							vector3_box(0, 0, 90),
-							vector3_box(0, 0, 90),
-							vector3_box(0, 0, 90),
-						}
-					},
-					grip = {offset = true, position = vector3_box(0, .01, -.01)}
-				},
-
-
 
 				{dependencies = {"bolter_magazine_03"}, -- Magazine
 					magazine = {offset = true, position = vector3_box(0, -.01, -.01), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
