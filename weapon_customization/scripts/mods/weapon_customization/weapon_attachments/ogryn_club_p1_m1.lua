@@ -42,7 +42,7 @@ return table.combine(
             -- Native
             _ogryn_club_p1_m1.head_models(nil, 0, vector3_box(.1, -4, -.1), vector3_box(0, 0, .4), "head", {
                 {"trinket_hook_empty"},
-            }, nil, nil, "both", function(gear_id, item, attachment)
+            }, nil, nil, "both", function(gear_id, item, attachment, attachment_list)
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
@@ -50,8 +50,8 @@ return table.combine(
                     -- mod:echo("grip = "..tostring(mod.gear_settings:get(gear_id, "grip")))
                     -- mod:echo("pommel = "..tostring(mod.gear_settings:get(gear_id, "pommel")))
                     -- table.contains(mod.gear_settings:possible_attachments())
-                    local grip = mod.gear_settings:get(item, "grip")
-                    local pommel = mod.gear_settings:get(item, "pommel")
+                    local grip = attachment_list and attachment_list["grip"] or mod.gear_settings:get(item, "grip")
+                    local pommel = attachment_list and attachment_list["pommel"] or mod.gear_settings:get(item, "pommel")
                     if string_find(attachment, "default") or attachment == "ogryn_club_head_06" or attachment == "ogryn_club_head_07" then
                         if grip ~= "grip_default" then changes["grip"] = "grip_default" end
                         if pommel ~= "pommel_default" then changes["pommel"] = "pommel_default" end
@@ -62,13 +62,13 @@ return table.combine(
                 end
                 return changes
             end),
-            _ogryn_club_p1_m1.grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), "grip", nil, nil, nil, true, function(gear_id, item, attachment)
+            _ogryn_club_p1_m1.grip_models(nil, 0, vector3_box(-.1, -4, .2), vector3_box(0, 0, 0), "grip", nil, nil, nil, true, function(gear_id, item, attachment, attachment_list)
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
                     -- mod:echo(tostring(item_name).." changed "..tostring(attachment))
-                    local head = mod.gear_settings:get(item, "head")
-                    local pommel = mod.gear_settings:get(item, "pommel")
+                    local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
+                    local pommel = attachment_list and attachment_list["pommel"] or mod.gear_settings:get(item, "pommel")
                     if string_find(attachment, "default") then
                         if head ~= "head_default" then changes["head"] = "head_default" end
                         if pommel ~= "pommel_default" then changes["pommel"] = "pommel_default" end
@@ -79,13 +79,13 @@ return table.combine(
                 end
                 return changes
             end),
-            _ogryn_club_p1_m1.pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), "pommel", nil, nil, nil, "both", function(gear_id, item, attachment)
+            _ogryn_club_p1_m1.pommel_models(nil, 0, vector3_box(-.15, -5, .3), vector3_box(0, 0, -.3), "pommel", nil, nil, nil, "both", function(gear_id, item, attachment, attachment_list)
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
                     -- mod:echo(tostring(item_name).." changed "..tostring(attachment))
-                    local head = mod.gear_settings:get(item, "head")
-                    local grip = mod.gear_settings:get(item, "grip")
+                    local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
+                    local grip = attachment_list and attachment_list["grip"] or mod.gear_settings:get(item, "grip")
                     if string_find(attachment, "default") then
                         if head ~= "head_default" then changes["head"] = "head_default" end
                         if grip ~= "grip_default" then changes["grip"] = "grip_default" end

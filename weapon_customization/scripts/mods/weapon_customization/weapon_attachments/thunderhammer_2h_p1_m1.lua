@@ -23,6 +23,8 @@ local mod = get_mod("weapon_customization")
 -- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
+local list_a = {"thunder_hammer_connector_03", "thunder_hammer_connector_04", "thunder_hammer_connector_05", "body_01", "body_02", "body_03", "body_04", "body_05", "2h_power_maul_connector_01", "2h_power_maul_connector_02", "2h_power_maul_connector_03", "2h_power_maul_connector_04", "2h_power_maul_connector_05"}
+
 local changes = {}
 return table.combine(
     _thunderhammer_2h_p1_m1,
@@ -85,11 +87,10 @@ return table.combine(
                 {trinket_hook = "trinket_hook_default|trinket_hook_01"},
             }, nil, {
                 false,
-            }, function(gear_id, item, attachment)
+            }, function(gear_id, item, attachment, attachment_list)
                 changes = {}
-                local list_a = {"thunder_hammer_connector_03", "thunder_hammer_connector_04", "thunder_hammer_connector_05", "body_01", "body_02", "body_03", "body_04", "body_05", "2h_power_maul_connector_01", "2h_power_maul_connector_02", "2h_power_maul_connector_03", "2h_power_maul_connector_04", "2h_power_maul_connector_05"}
                 if table.contains(list_a, attachment) then
-                    local trinket_hook = mod.gear_settings:get(item, "trinket_hook")
+                    local trinket_hook = attachment_list and attachment_list["trinket_hook"] or mod.gear_settings:get(item, "trinket_hook")
                     if trinket_hook == "trinket_hook_empty" then
                         changes["trinket_hook"] = "trinket_hook_01"
                     end

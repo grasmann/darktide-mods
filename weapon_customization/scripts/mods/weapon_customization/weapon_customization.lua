@@ -130,6 +130,7 @@ mod.on_all_mods_loaded = function()
 	-- Recreate hud
 	mod:recreate_hud()
 
+	-- mod.gear_settings:destroy_all_temp_settings()
 	-- mod.gear_settings:prepare_fixes()
 
 	mod.all_mods_loaded = true

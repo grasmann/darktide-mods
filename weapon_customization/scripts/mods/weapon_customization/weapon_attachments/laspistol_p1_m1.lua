@@ -183,9 +183,9 @@ return table.combine(
             _common_ranged.scope_lens_2_models("sight_2", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0)),
             -- Lasgun
             _common_lasgun.rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-            _common_lasgun.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
+            _common_lasgun.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2), nil, nil, nil, nil, nil, function(gear_id, item, attachment, attachment_list)
 				changes = {}
-                changes["magazine2"] = mod.gear_settings:get(item, "magazine")
+                changes["magazine2"] = attachment_list and attachment_list["magazine"] or mod.gear_settings:get(item, "magazine")
 				return changes
 			end),
             -- _laspistol_p1_m1.magazine_models("receiver", 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),

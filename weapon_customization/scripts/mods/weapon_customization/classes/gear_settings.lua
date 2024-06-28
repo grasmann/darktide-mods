@@ -4,6 +4,8 @@ local mod = get_mod("weapon_customization")
 	-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #####################################################################################
 	-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #####################################################################################
 	-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #####################################################################################
+	local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
+
 	local SaveLua = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/save_lua")
 --#endregion
 
@@ -631,6 +633,32 @@ local GearSettings = class("GearSettings")
 					end
 				end
 			end
+			-- Sounds
+			-- local data_type = self:has_backpack() and BACKPACK or DEFAULT
+    		-- local offsets = mod.visible_equipment_offsets
+			local item_data = mod.visible_equipment_offsets[item_name]
+    		local item_equipment_data1 = item_data and item_data["default"]
+			local item_equipment_data2 = item_data and item_data["backpack"]
+			local sounds1 = item_equipment_data1 and item_equipment_data1.step_sounds or item_data and item_data.step_sounds or {}
+			local sounds2 = item_equipment_data1 and item_equipment_data1.step_sounds2 or item_data and item_data.step_sounds2 or {}
+			local sounds3 = item_equipment_data2 and item_equipment_data2.step_sounds or item_data and item_data.step_sounds or {}
+			local sounds4 = item_equipment_data2 and item_equipment_data2.step_sounds2 or item_data and item_data.step_sounds2 or {}
+			local sounds5 = SoundEventAliases.sfx_ads_up.events[item_name]
+				or SoundEventAliases.sfx_ads_down.events[item_name]
+				-- or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+				-- or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
+				or SoundEventAliases.sfx_equip.events.default
+			local sounds6 = SoundEventAliases.sfx_weapon_foley_left_hand_01.events[item_name]
+				or SoundEventAliases.sfx_ads_down.events[item_name]
+				-- or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+				-- or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
+				or SoundEventAliases.sfx_ads_down.events.default
+			local sounds = table.icombine(sounds1, sounds2, sounds3, sounds4, {sounds5}, {sounds6})
+			for _, sound in pairs(sounds) do
+				mod:echo("Add "..tostring(sound).." to resources of "..tostring(item_name))
+				-- Add resource
+				out_result[sound] = true
+			end
 		end
 	end
 --#endregion
@@ -797,10 +825,11 @@ local GearSettings = class("GearSettings")
 	end
 
 	-- Randomize weapon attachments
-	local possible_attachments = {val = {val = "val"}}
-	local auto_equip_entries = {val = "val"}
-	local no_support_entries = {{val = "val"}}
-	local trigger_move_entries = {"val"}
+	local possible_attachments = {}
+	local auto_equip_entries = {}
+	local special_resolve_entries = {}
+	local no_support_entries = {}
+	local trigger_move_entries = {}
 	GearSettings.randomize_weapon = function(self, gear_id_or_item)
 		local random_attachments = {}
 		-- Get item from potential gear id
@@ -818,6 +847,7 @@ local GearSettings = class("GearSettings")
 			-- Clear temp tables
 			table.clear(possible_attachments)
 			table.clear(no_support_entries)
+			table.clear(special_resolve_entries)
 			table.clear(auto_equip_entries)
 			table.clear(trigger_move_entries)
 			-- Iterate attachment slots
@@ -859,13 +889,20 @@ local GearSettings = class("GearSettings")
 							local no_support = attachment_data and attachment_data.no_support
 							local auto_equip = attachment_data and attachment_data.automatic_equip
 							local special_resolve = attachment_data and attachment_data.special_resolve
-							-- local trigger_move = attachment_data and attachment_data.trigger_move
+							local trigger_move = attachment_data and attachment_data.trigger_move
 							-- Apply fixes
 							attachment_data = self:apply_fixes(item, attachment_slot) or attachment_data
 							-- Get attachment fix settings
 							no_support = attachment_data.no_support or no_support
 							auto_equip = attachment_data.automatic_equip or auto_equip
 							special_resolve = attachment_data.special_resolve or special_resolve
+							trigger_move = attachment_data and attachment_data.trigger_move
+							-- Trigger move
+							if trigger_move then
+								for _, trigger_slot in pairs(trigger_move) do
+									trigger_move_entries[#trigger_move_entries+1] = trigger_slot
+								end
+							end
 							-- Get no support entries
 							if no_support then
 								for _, no_support_entry in pairs(no_support) do
@@ -879,24 +916,8 @@ local GearSettings = class("GearSettings")
 								end
 							end
 							-- Resolve special resolve entries
-							if special_resolve then
-								-- Execute special resolve function
-								local special_changes = special_resolve(gear_id, item, random_attachment)
-								-- Check special changes
-								if special_changes then
-									-- Iterate special changes
-									for special_slot, special_attachment in pairs(special_changes) do
-										-- Get special resolve attachment possibilities
-										if string_find(special_attachment, "|") then
-											-- Split special resolve attachment possibilities
-											local possibilities = string_split(special_attachment, "|")
-											-- Select random possibility
-											special_attachment = possibilities[math.random(#possibilities)]
-										end
-										-- Set special attachment
-										random_attachments[special_slot] = special_attachment
-									end
-								end
+							if special_resolve and type(special_resolve) == "function" then
+								special_resolve_entries[random_attachment] = special_resolve
 							end
 						end
 					end
@@ -914,8 +935,6 @@ local GearSettings = class("GearSettings")
 					end
 				end
 			end
-			-- Gear node
-			random_attachments["gear_node"] = rnd_attach[math_random(1, #rnd_attach)]
 			-- Auto equip
 			for auto_type, auto_attachment in pairs(auto_equip_entries) do
 				local parameters = string_split(auto_attachment, "|")
@@ -934,10 +953,32 @@ local GearSettings = class("GearSettings")
 					random_attachments[auto_type] = parameters[1]
 				end
 			end
-			-- Trigger move
-			for _, trigger_move_entry in pairs(trigger_move_entries) do
-				random_attachments[trigger_move_entry] = self:get(item, trigger_move_entry)
+			-- Special resolve
+			for special_attachment, special_resolve_function in pairs(special_resolve_entries) do
+				-- Execute special resolve function
+				local special_changes = special_resolve_function(gear_id, item, special_attachment, random_attachments)
+				-- Check special changes
+				if special_changes then
+					-- Iterate special changes
+					for special_slot, special_attachment in pairs(special_changes) do
+						-- Get special resolve attachment possibilities
+						if string_find(special_attachment, "|") then
+							-- Split special resolve attachment possibilities
+							local possibilities = string_split(special_attachment, "|")
+							-- Select random possibility
+							special_attachment = possibilities[math.random(#possibilities)]
+						end
+						-- Set special attachment
+						random_attachments[special_slot] = special_attachment
+					end
+				end
 			end
+			-- Trigger move
+			for _, trigger_slot in pairs(trigger_move_entries) do
+				random_attachments[trigger_slot] = random_attachments[trigger_slot] or self:get(item, trigger_slot)
+			end
+			-- Gear node
+			random_attachments["gear_node"] = rnd_attach[math_random(1, #rnd_attach)]
 			-- Return random attachments
 			return random_attachments
 		end
@@ -950,8 +991,8 @@ local GearSettings = class("GearSettings")
 	-- ##### ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴   └  ┴┴ └─└─┘└─┘ ###########################################################
 
 	-- Apply attachment fixes
-	local current_attachments_by_slot = {val = "val"}
-	local current_attachments = {{val = "val"}}
+	local current_attachments_by_slot = {}
+	local current_attachments = {}
 	GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
 		-- Get item from potential gear id
 		local item = self:item_from_gear_id(gear_id_or_item)
@@ -1053,7 +1094,7 @@ local GearSettings = class("GearSettings")
 	end
 
 	-- Release attachment packages
-	local unloaded_packages = {"val"}
+	local unloaded_packages = {}
 	GearSettings.release_attachment_sounds = function(self)
 		-- local unloaded_packages = {}
 		table_clear(unloaded_packages)
@@ -1206,7 +1247,7 @@ local GearSettings = class("GearSettings")
 	end
 
 	-- Resolve special changes
-	local resolved_attachments = {val = "val"}
+	local resolved_attachments = {}
 	GearSettings.resolve_special_changes = function(self, gear_id_or_item, attachment_slot)
 		table_clear(resolved_attachments)
 		if attachment_slot then
@@ -1410,6 +1451,7 @@ end
 
 	-- Destroy all temp settings
 	GearSettings.destroy_all_temp_settings = function(self)
+		mod:echot("Destroying all temp settings")
 		table_clear(mod:persistent_table(REFERENCE).temp_gear_settings)
 	end
 --#endregion

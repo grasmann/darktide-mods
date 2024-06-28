@@ -786,7 +786,7 @@ VisibleEquipmentExtension.delete_slot = function(self, slot)
         end
     end
     -- Package
-    self:release_slot_packages(slot)
+    -- self:release_slot_packages(slot)
     -- Delete references
     self.dummy_units[slot] = nil
     self.item_names[slot] = nil
@@ -997,7 +997,7 @@ VisibleEquipmentExtension.release_slot_packages = function(self, slot)
         end
     end
     if count > 0 then
-        mod:print("Release "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
+        mod:print("Release "..tostring(count).." packages for "..tostring(self).." "..tostring(slot.name))
     end
 end
 
@@ -1008,14 +1008,14 @@ VisibleEquipmentExtension.load_slot_packages = function(self, slot, packages)
         -- Check if loaded
         if not self.packages[slot][package_name] then
             -- Load package
-            local ref = REFERENCE.."_"..tostring(self.player_unit)
+            local ref = REFERENCE.."_"..tostring(self)
             self.packages[slot][package_name] = managers.package:load(package_name, ref)
             
             count = count + 1
         end
     end
     if count > 0 then
-        mod:print("Load "..tostring(count).." packages for "..tostring(self.player_unit).." "..tostring(slot.name))
+        mod:print("Load "..tostring(count).." packages for "..tostring(self).." "..tostring(slot.name))
     end
 end
 

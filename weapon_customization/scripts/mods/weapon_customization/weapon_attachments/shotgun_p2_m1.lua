@@ -111,8 +111,8 @@ return table.combine(
             _common_ranged.scope_lens_models("sight_2", .2, vector3_box(0, -4, -.2), vector3_box(0, 0, 0)),
             _common_ranged.scope_lens_2_models("sight_2", .2, vector3_box(0, -4, -.2), vector3_box(0, 0, 0)),
             -- Autogun
-            _autogun_p1_m1.muzzle_models("barrel", -.5, vector3_box(0, 0, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-                return {muzzle_2 = mod.gear_settings:get(item, "muzzle")}
+            _autogun_p1_m1.muzzle_models("barrel", -.5, vector3_box(0, 0, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment, attachment_list)
+                return {muzzle_2 = attachment_list and attachment_list["muzzle"] or mod.gear_settings:get(item, "muzzle")}
             end),
             -- Common
             _common.emblem_right_models("receiver", -3, vector3_box(-.4, -5, 0), vector3_box(.2, 0, 0)),

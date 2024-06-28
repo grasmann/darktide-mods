@@ -66,18 +66,7 @@ return table.combine(
                 {sight = "sight_default|sight_07", rail = "rail_default"},
                 {sight = "sight_default|sight_07", rail = "rail_default"},
                 {sight = "sight_default|sight_07", rail = "rail_default"},
-            }, nil, nil, function(gear_id, item, attachment)
-                local changes = {}
-                local barrel = mod.gear_settings:get(item, "barrel")
-                local receiver = mod.gear_settings:get(item, "receiver")
-                if table.contains(_double_barrel_receivers, receiver) and table.contains(_single_barrel_barrels, barrel) then
-                    changes["barrel"] = table.concat(_double_barrel_barrels, "|")
-                elseif table.contains(_single_barrel_receivers, receiver) and table.contains(_double_barrel_barrels, barrel) then
-                    changes["barrel"] = table.concat(_single_barrel_barrels, "|")
-                end
-                changes["muzzle_2"] = mod.gear_settings:get(item, "muzzle")
-                return changes
-            end),
+            }),
             _shotgun_p1_m1.stock_models("receiver", 0, vector3_box(-.4, -4, 0), vector3_box(0, -.2, 0)),
             _shotgun_p1_m1.barrel_models(nil, -.5, vector3_box(.1, -4, 0), vector3_box(0, .2, 0), nil, {
                 {"trinket_hook_empty"},
@@ -103,18 +92,7 @@ return table.combine(
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01",     underbarrel = "!no_underbarrel|no_underbarrel"},
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01",     underbarrel = "!no_underbarrel|no_underbarrel"},
                 {trinket_hook = "trinket_hook_empty|trinket_hook_01",     underbarrel = "!no_underbarrel|no_underbarrel"},
-            }, nil, nil, function(gear_id, item, attachment)
-                local changes = {}
-                local barrel = mod.gear_settings:get(item, "barrel")
-                local receiver = mod.gear_settings:get(item, "receiver")
-                if table.contains(_double_barrel_barrels, barrel) and table.contains(_single_barrel_receivers, receiver) then
-                    changes["receiver"] = table.concat(_double_barrel_receivers, "|")
-                elseif table.contains(_single_barrel_barrels, barrel) and table.contains(_double_barrel_receivers, receiver) then
-                    changes["receiver"] = table.concat(_single_barrel_receivers, "|")
-                end
-                changes["muzzle_2"] = mod.gear_settings:get(item, "muzzle")
-                return changes
-            end),
+            }),
             _shotgun_p1_m1.underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
             _shotgun_p1_m1.sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, 0, .1), "sight", nil, {
                 {rail = "rail_default", sight_2 = "sight_default", lens = "scope_lens_default", lens_2 = "scope_lens_default"}
@@ -171,9 +149,7 @@ return table.combine(
             -- Lasgun
             _common_lasgun.rail_models("barrel", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             -- Autogun
-            _autogun_p1_m1.muzzle_models("barrel", -.5, vector3_box(0, 0, 0), vector3_box(0, .2, 0), nil, nil, nil, nil, nil, function(gear_id, item, attachment)
-                return {muzzle_2 = mod.gear_settings:get(item, "muzzle")}
-            end),
+            _autogun_p1_m1.muzzle_models("barrel", -.5, vector3_box(0, 0, 0), vector3_box(0, .2, 0)),
             -- Common
             _common.emblem_right_models("receiver", -3, vector3_box(-.4, -5, 0), vector3_box(.2, 0, 0)),
             _common.emblem_left_models("receiver", 0, vector3_box(0, -5, 0), vector3_box(-.2, 0, 0)),
