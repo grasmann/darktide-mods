@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 --#region Require
+    local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
     local WeaponTemplate = mod:original_require("scripts/utilities/weapon/weapon_template")
     local UIHud = mod:original_require("scripts/managers/ui/ui_hud")
     local Recoil = mod:original_require("scripts/utilities/recoil")
@@ -19,6 +20,7 @@ local mod = get_mod("weapon_customization")
     local Unit = Unit
     local math = math
     local Unit = Unit
+    local pairs = pairs
     local class = class
     local table = table
     local World = World
@@ -36,6 +38,7 @@ local mod = get_mod("weapon_customization")
     local unit_get_data = Unit.get_data
     local quaternion_box = QuaternionBox
     local table_contains = table.contains
+    local table_icombine = table.icombine
     local vector3_unbox = vector3_box.unbox
     local math_easeOutCubic = math.easeOutCubic
     local math_easeInCubic = math.easeInCubic
@@ -75,6 +78,9 @@ local mod = get_mod("weapon_customization")
     local CROSSHAIR_POSITION_LERP_SPEED = 35
     local CROUCH_ROTATION = vector3_box(0, -60, 0)
     local CROUCH_POSITION = vector3_box(-.05, 0, -.2)
+    local SLOT_UNARMED = "slot_unarmed"
+    local OFF = "off"
+    local ALL = "all"
 --#endregion
 
 -- ##### ┌─┐┬─┐┌─┐┬ ┬┌─┐┬ ┬  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ######################################
@@ -91,6 +97,7 @@ local CrouchAnimationExtension = class("CrouchAnimationExtension", "WeaponCustom
 CrouchAnimationExtension.init = function(self, extension_init_context, unit, extension_init_data)
     CrouchAnimationExtension.super.init(self, extension_init_context, unit, extension_init_data)
     self.position = vector3_box(vector3_zero())
+    -- self.packages = {}
     -- Events
     managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
     -- Settings
@@ -113,7 +120,9 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 CrouchAnimationExtension.on_settings_changed = function(self)
-    self.on = mod:get("mod_option_misc_cover_on_crouch")
+    self.on = mod:get("mod_option_crouch_animation")
+    -- self.sound = mod:get("mod_option_visible_equipment_sounds")
+    -- self.sound_fp = mod:get("mod_option_visible_equipment_own_sounds_fp")
 end
 
 CrouchAnimationExtension.on_wield_slot = function(self, slot)
@@ -122,6 +131,18 @@ CrouchAnimationExtension.on_wield_slot = function(self, slot)
     -- Ranged weapon
     self.ranged_weapon = slot and slot.name == SLOT_SECONDARY
 end
+
+-- CrouchAnimationExtension.on_equip_slot = function(self, slot)
+--     if slot and slot.name == SLOT_SECONDARY then
+--         self:load_slot(slot)
+--     end
+-- end
+
+-- CrouchAnimationExtension.on_unequip_slot = function(self, slot)
+--     if slot and slot.name == SLOT_SECONDARY then
+--         self:delete_slot(slot)
+--     end
+-- end
 
 -- ##### ┌─┐┌─┐┌┬┐  ┬  ┬┌─┐┬  ┬ ┬┌─┐┌─┐ ###############################################################################
 -- ##### │ ┬├┤  │   └┐┌┘├─┤│  │ │├┤ └─┐ ###############################################################################
@@ -153,6 +174,128 @@ CrouchAnimationExtension.set_overwrite = function(self, overwrite)
         self.overwrite = overwrite
     end
 end
+
+-- ##### ┌─┐┌─┐┬ ┬┌┐┌┌┬┐┌─┐ ###########################################################################################
+-- ##### └─┐│ ││ ││││ ││└─┐ ###########################################################################################
+-- ##### └─┘└─┘└─┘┘└┘─┴┘└─┘ ###########################################################################################
+
+-- CrouchAnimationExtension.play_equipment_sound = function(self, slot, index, allow_crouching, allow_wielded, no_husk)
+--     -- Play
+--     local wielded_slot_name = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
+--     local slot = slot or self.equipment[wielded_slot_name]
+--     local index = index or 1
+--     -- Play sound
+--     local sound = nil
+--     local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+--     local play_sound = (not self.is_local_unit and self.sound ~= OFF) or (self.is_local_unit and (not first_person or self.sound_fp) and self.sound == ALL)
+--     local slot_valid = slot and (slot.name ~= wielded_slot_name or allow_wielded)
+--     local allow_crouching = allow_crouching or true
+--     local crouching = not self:is_crouching() or allow_crouching
+--     local husk = (no_husk ~= nil and no_husk) or (not self.is_local_unit and not self.spectated)
+--     if play_sound and slot_valid and crouching and self.sounds[slot] then
+--         local sounds = index == 1 and self.sounds[slot][1] or self.sounds[slot][2]
+--         local rnd = sounds and math_random(1, #sounds)
+--         sound = sounds and sounds[rnd] or self.sounds[slot][3]
+--         if not self:is_sprinting() then sound = self.sounds[slot][4] end
+--         if sound and self.fx_extension then
+--             self.fx_extension:trigger_wwise_event(sound, husk, true, self.player_unit, 1, "foley_speed", self.step_speed)
+--         end
+--     end
+-- end
+
+-- CrouchAnimationExtension.load_slots = function(self)
+--     -- Iterate slots
+--     for slot_name, slot in pairs(self.equipment) do
+--         -- Load
+--         self:load_slot(slot)
+--     end
+-- end
+
+-- CrouchAnimationExtension.delete_slot = function(self, slot)
+--     -- Package
+--     self:release_slot_packages(slot)
+-- end
+
+-- CrouchAnimationExtension.load_slot = function(self, slot)
+
+--     if self.slot_loaded[slot] or self.slot_is_loading[slot] or not self.initialized then
+--         return
+--     end
+
+--     -- Equipment data
+--     local data, sounds_1, sounds_2 = self:equipment_data_by_slot(slot)
+--     local sounds_3 = SoundEventAliases.sfx_ads_up.events[self.item_names[slot]]
+--         or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
+--         -- or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+--         -- or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
+--         or SoundEventAliases.sfx_equip.events.default
+--     local sounds_4 = SoundEventAliases.sfx_weapon_foley_left_hand_01.events[self.item_names[slot]]
+--         or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
+--         -- or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
+--         -- or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
+--         or SoundEventAliases.sfx_ads_down.events.default
+--     self.equipment_data[slot] = data
+--     -- Load sound packages
+--     self.packages[slot] = {}
+--     self:load_slot_packages(slot, table_icombine(
+--         sounds_1 or {},
+--         sounds_2 or {},
+--         {sounds_3},
+--         {sounds_4}
+--         -- self:get_dependencies(slot)
+--     ))
+--     -- Sounds
+--     self.sounds[slot] = {
+--         sounds_1,
+--         sounds_2,
+--         sounds_3,
+--         sounds_4,
+--     }
+
+-- end
+
+-- ##### ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐┌─┐ #####################################################################################
+-- ##### ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #####################################################################################
+-- ##### ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #####################################################################################
+
+-- CrouchAnimationExtension.release_slot_packages = function(self, slot)
+--     -- Release
+--     local count = 0
+--     if self.packages[slot] then
+--         for package_name, package_id in pairs(self.packages[slot]) do
+--             -- Unload package
+--             managers.package:release(package_id)
+--             -- Remove package id
+--             self.packages[slot][package_name] = nil
+--             -- Count
+--             count = count + 1
+--         end
+--         self.packages[slot] = {}
+--     end
+--     if DEBUG and count > 0 then
+--         mod:console_print("Release "..tostring(count).." packages for "..tostring(self).." "..tostring(slot.name))
+--     end
+-- end
+
+-- CrouchAnimationExtension.load_slot_packages = function(self, slot, packages)
+--     -- Load
+--     local count = 0
+--     if type(packages) == "string" then packages = {packages} end
+--     for _, package_name in pairs(packages) do
+--         -- Check if loaded
+--         if not self.packages[slot][package_name] then
+--             -- Load package
+--             local ref = REFERENCE.."_"..tostring(self)
+--             mod:persistent_table(REFERENCE).loaded_packages.visible_equipment[package_name] = true
+--             self.packages[slot][package_name] = managers.package:load(package_name, ref)
+--             -- Count
+--             count = count + 1
+--         end
+--     end
+--     if DEBUG and count > 0 then
+--         mod:console_print("Load "..tostring(count).." packages for "..tostring(self).." "..tostring(slot.name))
+--     end
+-- end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
@@ -264,7 +407,6 @@ CrouchAnimationExtension.crosshair_position = function(self, hud_element_crossha
         
         -- Adjust position
         local offset_position = self.position and vector3_unbox(self.position) or vector3_zero()
-        -- mod:echo("self.position: "..tostring(self.position), 2)
         local mat = quaternion_matrix4x4(shoot_rotation)
         local rotated_pos = matrix4x4_transform(mat, offset_position)
 

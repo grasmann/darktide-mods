@@ -19,17 +19,25 @@ mod.watcher = watcher:new()
 -- ##### ┴┘└┘ ┴ └─┘┴└─└  ┴ ┴└─┘└─┘ ####################################################################################
 
 mod.watch = function(self, ...)
-    self.watcher:watch(...)
+    if self.watcher and not self.watcher.destroyed then
+        self.watcher:watch(...)
+    end
 end
 
 mod.watcher_set_mod = function(self, mod)
-    self.watcher:set_mod(mod)
+    if self.watcher and not self.watcher.destroyed then
+        self.watcher:set_mod(mod)
+    end
 end
 
 mod.watcher_hotkey = function()
-    mod.watcher:toggle()
+    if mod.watcher and not mod.watcher.destroyed then
+        mod.watcher:toggle()
+    end
 end
 
 mod.watcher_show = function(self, show)
-    self.watcher:show(show)
+    if self.watcher and not self.watcher.destroyed then
+        self.watcher:show(show)
+    end
 end

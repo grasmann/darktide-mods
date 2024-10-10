@@ -16,6 +16,7 @@ local mod = get_mod("modding_tools")
     local Gui = Gui
     local math = math
     local type = type
+    local table = table
     local class = class
     local pairs = pairs
     local Color = Color
@@ -24,15 +25,35 @@ local mod = get_mod("modding_tools")
     local vector3 = Vector3
     local managers = Managers
     local tostring = tostring
+    local profiler = Profiler
     local string_sub = string.sub
     local vector3_box = Vector3Box
     local Application = Application
     local table_clear = table.clear
+    local string_format = string.format
+    local lua_stats = profiler.lua_stats
     local DevParameters = DevParameters
     local quaternion_box = QuaternionBox
     local vector3_unbox = vector3_box.unbox
     local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
     local quaternion_unbox = quaternion_box.unbox
+--#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+--#region Data
+    local DEBUG = false
+    local WATCH_LUA_STATS = true
+    local lua_stat_values = {
+        total_memory_allocated_by_lua = 0,
+        estimated_garbage_memory = 0,
+        percentage_of_garbage_memory = 0,
+        estimated_time_in_garbage_collection = 0,
+        actual_time_in_garbage_collection = 0,
+        total_time_in_garbage_collection = 0,
+    }
 --#endregion
 
 -- ##### ┌─┐┌─┐┌┐┌┌─┐┌─┐┬  ┌─┐  ┌─┐┬  ┌─┐┌─┐┌─┐ #######################################################################
@@ -54,8 +75,9 @@ Watcher.init = function(self, init_data)
     self.available_value = 0
     self.lines = {}
     self.scroll = init_data and init_data.scroll or 1
+    self.max_scroll = 1
     self.row_height = init_data and init_data.row_height or 20
-    self.z = init_data and init_data.z or 990
+    self.z = init_data and init_data.z or 997
     self.visible = init_data and init_data.visible or false
     self.context_menu_background = init_data and init_data.context_menu_background or quaternion_box(Color(255, 0, 0, 0))
     self.context_menu = {
@@ -63,6 +85,13 @@ Watcher.init = function(self, init_data)
             "Remove"
         },
         visible = false,
+        position = vector3_box(vector3(0, 0, 0)),
+    }
+    self.scrollbar = {
+        cursor = vector3_box(vector3(0, 0, 0)),
+        hover = false,
+        active = false,
+        scroll = 1,
     }
     -- Lines
     if init_data and init_data.lines then
@@ -100,9 +129,20 @@ Watcher.init = function(self, init_data)
     self.title = init_data and init_data.title or "Watcher"
     -- self.carret = init_data and init_data.carret or {0, 0}
     self.initialized = true
+
+    if WATCH_LUA_STATS then
+        self:update_lua_stats()
+        self:watch("Total memory allocated by lua", lua_stat_values, "total_memory_allocated_by_lua")
+        self:watch("Estimated garbage memory", lua_stat_values, "estimated_garbage_memory")
+        self:watch("Percentage of garbage memory", lua_stat_values, "percentage_of_garbage_memory")
+        self:watch("Estimated time in garbage collection", lua_stat_values, "estimated_time_in_garbage_collection")
+        self:watch("Actual time in garbage collection", lua_stat_values, "actual_time_in_garbage_collection")
+        self:watch("Total time in garbage collection", lua_stat_values, "total_time_in_garbage_collection")
+    end
 end
 
 Watcher.destroy = function(self)
+    self:show(false)
     self.initialized = false
 end
 
@@ -110,8 +150,28 @@ end
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
+Watcher.update_lua_stats = function(self)
+    if WATCH_LUA_STATS then
+        lua_stat_values.total_memory_allocated_by_lua,
+        lua_stat_values.estimated_garbage_memory,
+        lua_stat_values.percentage_of_garbage_memory,
+        lua_stat_values.estimated_time_in_garbage_collection,
+        lua_stat_values.actual_time_in_garbage_collection,
+        lua_stat_values.total_time_in_garbage_collection = lua_stats()
+
+        lua_stat_values.total_memory_allocated_by_lua = string_format("%2d Mb", (lua_stat_values.total_memory_allocated_by_lua or 0) / 1024)
+        lua_stat_values.estimated_garbage_memory = string_format("%2d Mb", (lua_stat_values.estimated_garbage_memory or 0) / 1024)
+        lua_stat_values.percentage_of_garbage_memory = string_format("%.2f %%", (lua_stat_values.percentage_of_garbage_memory or 0) * 100)
+        lua_stat_values.estimated_time_in_garbage_collection = string_format("%.2f ms", lua_stat_values.estimated_time_in_garbage_collection or 0)
+        lua_stat_values.actual_time_in_garbage_collection = string_format("%.2f ms", lua_stat_values.actual_time_in_garbage_collection or 0)
+        lua_stat_values.total_time_in_garbage_collection = string_format("%.2f ms", lua_stat_values.total_time_in_garbage_collection or 0)
+    end
+end
+
 Watcher.update = function(self, dt, t, input_service)
+    self.disable_control = mod.inspector_busy or mod.console_busy
     if self.initialized and self.visible then
+        self:update_lua_stats()
         return self:draw(input_service)
     end
 end
@@ -145,7 +205,7 @@ Watcher.draw_title_bar = function(self, input_service)
         local button_size = vector3(title_size[2] - 20, title_size[2] - 20, 0)
         local close_button_position = vector3(position[1] + title_size[1] - 10 - button_size[1], position[2] + 10, position[3] + 1)
         -- local button_size = vector3(title_size[2] - 20, title_size[2] - 20, 0)
-        local close_button_hover = math.point_is_inside_2d_box(cursor, close_button_position, button_size)
+        local close_button_hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, close_button_position, button_size)
         -- Close button hover
         if close_button_hover then
             ScriptGui.icrect(gui, self.RES_X, self.RES_Y, close_button_position[1], close_button_position[2], close_button_position[1] + button_size[1],
@@ -157,7 +217,7 @@ Watcher.draw_title_bar = function(self, input_service)
         -- Clear button
         local clear_button_position = vector3(position[1] + 30 + t_max.x, position[2] + 10, position[3] + 1)
         -- Clear button hover
-        local clear_button_hover = math.point_is_inside_2d_box(cursor, clear_button_position, button_size)
+        local clear_button_hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, clear_button_position, button_size)
         if clear_button_hover then
             ScriptGui.icrect(gui, self.RES_X, self.RES_Y, clear_button_position[1], clear_button_position[2], clear_button_position[1] + button_size[1],
                 clear_button_position[2] + button_size[2], self.z, quaternion_unbox(self.highlight))
@@ -199,7 +259,7 @@ Watcher.draw_context_menu = function(self, input_service)
         local color = quaternion_unbox(self.color)
         local shadow = quaternion_unbox(self.shadow)
         local background = quaternion_unbox(self.context_menu_background)
-        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], self.z + 2, background)
+        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], 999, background)
 
         local y = 10
 
@@ -208,10 +268,10 @@ Watcher.draw_context_menu = function(self, input_service)
             local row_position = vector3(position[1] + 10, position[2] + y, position[3])
             local row_size = vector3(size[1] - 20, self.row_height, 0)
 
-            self.context_menu.hover = math.point_is_inside_2d_box(cursor, row_position, row_size)
+            self.context_menu.hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, row_position, row_size)
 
             if self.context_menu.hover then
-                ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], self.z + 2, quaternion_unbox(self.highlight))
+                ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], 999, quaternion_unbox(self.highlight))
                 if self:pressed(input_service) then
                     self:remove(self.context_menu.line.key)
                     self.context_menu.visible = false
@@ -220,7 +280,7 @@ Watcher.draw_context_menu = function(self, input_service)
                 end
             end
 
-            ScriptGui.text(gui, option, self.font, self.font_size, vector3(row_position[1], row_position[2], self.z + 3), color, shadow)
+            ScriptGui.text(gui, option, self.font, self.font_size, vector3(row_position[1], row_position[2], 1000), color, shadow)
 
             y = y + self.row_height
         end
@@ -235,6 +295,8 @@ Watcher.draw_scroll = function(self, input_service)
     -- Check if gui is available
     if gui then
         -- Get values
+        local cursor = self:cursor(input_service)
+        local held = false
         local position = vector3_unbox(self.position)
         local size = vector3_unbox(self.size)
         local frame_size = vector3_unbox(self.frame_size)
@@ -246,8 +308,37 @@ Watcher.draw_scroll = function(self, input_service)
         local scroll_offset = total_lines_height > frame_size[2] and self.scroll * frame_size[2] / #self.lines or 0
         local y = position[2] + vector3_unbox(self.title_size)[2] + scroll_offset + 10
         local y2 = y + scroll_bar_height
-        -- Draw
-        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, self.z, scroll_bar_color)
+
+        self.scrollbar.hover = not self.disable_control and math.point_is_inside_2d_box(cursor, vector3(position[1] + size[1] - 10, y, 1), vector3(5, scroll_bar_height, 1))
+
+        if self.scrollbar.hover then
+            held = self:held(input_service)
+            if held ~= self.scrollbar.active then
+                self.context_menu.visible = false
+                self.context_menu.hover = false
+                self.scrollbar.active = held
+            end
+        end
+
+        if self.scrollbar.hover or self.scrollbar.active then
+            ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, 999, quaternion_unbox(self.highlight))
+        else
+            ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, 999, scroll_bar_color)
+        end
+
+        if self.scrollbar.active then
+            local diff = vector3_unbox(self.scrollbar.cursor) - cursor
+            self.scroll = math.ceil(math.clamp(self.scrollbar.scroll - (diff[2] / scroll_bar_height) * self.row_height, 1, self.max_scroll))
+            if not self:held(input_service) then
+                self.scrollbar.active = false
+            end
+        else
+            self.scrollbar.cursor = vector3_box(cursor)
+            self.scrollbar.scroll = self.scroll
+        end
+
+        return self.scrollbar.active == true and true
+
     end
 end
 
@@ -263,19 +354,22 @@ Watcher.draw_frame = function(self, input_service)
         local frame_size = vector3_unbox(self.frame_size)
         local position = vector3_unbox(self.position)
         -- Hover
-        self.hover = math.point_is_inside_2d_box(cursor, position, size)
+        self.hover = not self.disable_control and math.point_is_inside_2d_box(cursor, position, size)
         -- Color
         local color = self.hover and quaternion_unbox(self.hover_background) or quaternion_unbox(self.background)
         -- Draw
         ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], self.z, color)
         -- Functionality
-        if self.hover and self:total_lines_height() > frame_size[2] then
-            -- Scroll
-            local scroll_axis = input_service:get("scroll_axis")
-            local max_scroll = math.ceil(#self.lines - frame_size[2] / 20) + 1
-            if scroll_axis then
-                self.scroll = math.clamp(math.ceil(math.clamp(self.scroll - scroll_axis[2], 1, #self.lines * 20)), 1, max_scroll)
+        if self:total_lines_height() > frame_size[2] then
+            if self.hover then
+                local scroll_axis = input_service:get("scroll_axis")
+                if scroll_axis then
+                    self.scroll = math.clamp(math.ceil(math.clamp(self.scroll - scroll_axis[2], 1, #self.lines * 20)), 1, self.max_scroll)
+                end
             end
+            self.max_scroll = math.ceil(#self.lines - frame_size[2] / 20) + 1
+        else
+            self.max_scroll = 1
         end
         if self.hover and not self.context_menu.hover then
             if self:pressed(input_service) or self:context_pressed(input_service) then
@@ -312,7 +406,7 @@ Watcher.draw_lines = function(self, input_service)
                 
                 local row_position = vector3(frame_position[1], frame_position[2] + y, frame_position[3])
                 local row_size = vector3(frame_size[1], self.row_height, 0)
-                local hover = math.point_is_inside_2d_box(cursor, row_position, row_size)
+                local hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, row_position, row_size)
 
                 if hover and not self.context_menu.hover then
                     ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], self.z, quaternion_unbox(self.highlight))
@@ -324,7 +418,7 @@ Watcher.draw_lines = function(self, input_service)
                     if self:context_pressed(input_service) then
                         self.context_menu.visible = true
                         self.context_menu.line = line
-                        self.context_menu.position = vector3_box(row_position[1], row_position[2] + 20, row_position[3] + 1)
+                        self.context_menu.position:store(row_position[1], row_position[2] + 20, row_position[3] + 1)
                     end
                     is_busy = true
                 end
@@ -345,6 +439,7 @@ Watcher.draw_lines = function(self, input_service)
                     value = "..."..string_sub(value, string.len(value) - 20, string.len(value))
                     min, max, caret = Gui.text_extents(gui, value, self.font, self.font_size)
                 end
+
                 ScriptGui.text(gui, value, self.font, self.font_size, vector3(frame_position[1] + row_size[1] - 10 - max.x, frame_position[2] + y, frame_position[3] + 1), color, shadow)
 
                 y = y + self.row_height
@@ -401,6 +496,10 @@ Watcher.cursor = function(self, input_service)
 	return input_service and input_service:get("cursor") or vector3(0, 0, 0)
 end
 
+Watcher.held = function(self, input_service)
+    return input_service and input_service:get("left_hold") or false
+end
+
 Watcher.pressed = function(self, input_service)
 	return input_service and input_service:get("left_pressed") or false
 end
@@ -423,7 +522,6 @@ Watcher.remove = function(self, key)
 end
 
 Watcher.watch = function(self, key, table, obj_key)
-    -- mod:echo("watch", key, table, obj_key)
     local line_key = self.mod and self.mod.get_name and self.mod:get_name().."> "..tostring(key) or tostring(key)
     if self.last_line and line_key == self.last_line.key then
         local count = self.lines[#self.lines].count or 1
@@ -454,7 +552,7 @@ Watcher.set_mod = function(self, mod)
 end
 
 Watcher.clear = function(self)
-    self.lines = {}
+    table_clear(self.lines)
     self.last_line = nil
 end
 

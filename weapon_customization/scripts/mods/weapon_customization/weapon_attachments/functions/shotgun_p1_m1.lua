@@ -52,6 +52,7 @@ return {
     receiver_attachments = function(default)
         local attachments = {
             {id = "receiver_01",      name = "Receiver 1"},
+            {id = "receiver_02",      name = "Receiver 2"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -64,6 +65,7 @@ return {
         return table_model_table({
             {name = "receiver_default", model = ""},
             {name = "receiver_01",      model = _item_ranged.."/recievers/shotgun_rifle_receiver_01"},
+            {name = "receiver_02",      model = _item_ranged.."/recievers/shotgun_rifle_receiver_ml01"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     stock_attachments = function(default)
@@ -76,8 +78,6 @@ return {
             {id = "shotgun_rifle_stock_08",      name = "Stock 8"},
             {id = "shotgun_rifle_stock_09",      name = "Stock 9"},
             {id = "shotgun_rifle_stock_10",      name = "Stock 10"},
-            {id = "shotgun_rifle_stock_11",      name = "Stock 11"},
-            {id = "shotgun_rifle_stock_12",      name = "Stock 12"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -96,6 +96,7 @@ return {
             {name = "shotgun_rifle_stock_07",      model = _item_ranged.."/stocks/shotgun_rifle_stock_07"},
             {name = "shotgun_rifle_stock_08",      model = _item_ranged.."/stocks/shotgun_rifle_stock_08"},
             {name = "shotgun_rifle_stock_09",      model = _item_ranged.."/stocks/shotgun_rifle_stock_09"},
+            {name = "shotgun_rifle_stock_10",      model = _item_ranged.."/stocks/shotgun_rifle_stock_ml01"},
         }, parent, angle, move, remove, type or "stock", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     barrel_attachments = function(default)
@@ -107,6 +108,7 @@ return {
             {id = "barrel_07",      name = "Barrel 7"},
             {id = "barrel_08",      name = "Barrel 8"},
             {id = "barrel_09",      name = "Barrel 9"},
+            {id = "barrel_10",      name = "Barrel 10"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -125,6 +127,7 @@ return {
             {name = "barrel_07",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_07"},
             {name = "barrel_08",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_08"},
             {name = "barrel_09",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_09"},
+            {name = "barrel_10",      model = _item_ranged.."/barrels/shotgun_rifle_barrel_ml01"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     underbarrel_attachments = function(default)

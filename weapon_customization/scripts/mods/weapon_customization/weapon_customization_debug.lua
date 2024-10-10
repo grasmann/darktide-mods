@@ -10,6 +10,7 @@ local mod = get_mod("weapon_customization")
 	local pairs = pairs
 	local table = table
 	local string = string
+	local get_mod = get_mod
 	local tostring = tostring
 	local managers = Managers
 	local table_sort = table.sort
@@ -42,7 +43,8 @@ end
 
 mod.attachment_entry_is_weapon = function(self, name)
 	for weapon_name, weapon_data in pairs(self.attachment_models) do
-		if string_find(name, weapon_name) then
+		-- if string_find(name, weapon_name) then
+		if mod:cached_find(name, weapon_name) then
 			return true
 		end
 	end
@@ -74,15 +76,18 @@ mod.find_attachment_entries = function(self)
 	for name, data in pairs(item_definitions) do
 		local filter_ok = true
 		for _, phrase in pairs(filter) do
-			if string_find(name, phrase) then
+			-- if string_find(name, phrase) then
+			if mod:cached_find(name, phrase) then
 				filter_ok = false
 				break
 			end
 		end
 		if not self:find_attachment_entry_in_mod(name) and not self:attachment_entry_is_weapon(name) and filter_ok then
-			if string_find(name, _item_ranged) then
+			-- if string_find(name, _item_ranged) then
+			if mod:cached_find(name, _item_ranged) then
 				ranged_definitions[name] = data
-			elseif string_find(name, _item_melee) then
+			-- elseif string_find(name, _item_melee) then
+			elseif mod:cached_find(name, _item_melee) then
 				melee_definitions[name] = data
 			end
 		end
@@ -119,8 +124,23 @@ mod._debug_skip_some = true
 
 -- Debug print
 mod.print = function(self, message, skip)
-	if self._debug then self:info(message) end
+	self:info(message)
 	-- if self._debug and not skip then self:info(message) end
+end
+
+mod.get_modding_tools = function(self)
+	self.modding_tools = self.modding_tools or get_mod("modding_tools")
+end
+
+mod.console_print = function(self, ...)
+	self:get_modding_tools()
+	if self.modding_tools then
+		local args = {...}
+		for _, arg in pairs(args) do
+			self:print(tostring(arg))
+		end
+		self.modding_tools:console_print(...)
+	end
 end
 
 mod.debug_stingray_objects = function(self)
@@ -183,7 +203,7 @@ end
 mod.debug_attachments = function(self, item_data, attachments, weapon_name_or_table, overwrite, full, depth)
     if item_data then
 		local time = overwrite and "" or managers.time:time("main")
-        local item_name = self:item_name_from_content_string(item_data.name)
+        local item_name = self.gear_settings:short_name(item_data.name)
 		local debug = full and item_data or attachments
 		local file_name = full and "item_data" or "attachments"
 		local depth = depth or 10

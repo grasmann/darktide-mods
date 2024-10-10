@@ -32,6 +32,7 @@ return {
             {id = "barrel_04", name = "Ripper Barrel 4"},
             {id = "barrel_05", name = "Ripper Barrel 5"},
             {id = "barrel_06", name = "Ripper Barrel 6"},
+            {id = "barrel_07", name = "Ripper Barrel 7"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -49,6 +50,7 @@ return {
             {name = "barrel_04",      model = _item_ranged.."/barrels/rippergun_rifle_barrel_04"},
             {name = "barrel_05",      model = _item_ranged.."/barrels/rippergun_rifle_barrel_05"},
             {name = "barrel_06",      model = _item_ranged.."/barrels/rippergun_rifle_barrel_06"},
+            {name = "barrel_07",      model = _item_ranged.."/barrels/rippergun_rifle_barrel_ml01"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     receiver_attachments = function(default)
@@ -62,6 +64,7 @@ return {
             {id = "receiver_07", name = "Receiver 7"},
             {id = "receiver_08", name = "Receiver 8"},
             {id = "receiver_09", name = "Receiver 9"},
+            {id = "receiver_10", name = "Receiver 10"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -82,6 +85,7 @@ return {
             {name = "receiver_07",      model = _item_ranged.."/recievers/rippergun_rifle_receiver_07"},
             {name = "receiver_08",      model = _item_ranged.."/recievers/rippergun_rifle_receiver_08"},
             {name = "receiver_09",      model = _item_ranged.."/recievers/rippergun_rifle_receiver_09"},
+            {name = "receiver_10",      model = _item_ranged.."/recievers/rippergun_rifle_receiver_ml01"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     magazine_attachments = function(default)
@@ -93,6 +97,7 @@ return {
             {id = "magazine_05", name = "Magazine 5"},
             {id = "magazine_06", name = "Magazine 6"},
             {id = "magazine_07", name = "Magazine 7"},
+            {id = "magazine_08", name = "Magazine 8"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -111,6 +116,7 @@ return {
             {name = "magazine_05",      model = _item_ranged.."/magazines/rippergun_rifle_magazine_05"},
             {name = "magazine_06",      model = _item_ranged.."/magazines/rippergun_rifle_magazine_06"},
             {name = "magazine_07",      model = _item_ranged.."/magazines/rippergun_rifle_magazine_07"},
+            {name = "magazine_08",      model = _item_ranged.."/magazines/rippergun_rifle_magazine_ml01"},
         }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     handle_attachments = function(default)
@@ -120,6 +126,7 @@ return {
             {id = "handle_03", name = "Handle 3"},
             {id = "handle_04", name = "Handle 4"},
             {id = "handle_05", name = "Handle 5"},
+            {id = "handle_06", name = "Handle 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -136,6 +143,7 @@ return {
             {name = "handle_03",      model = _item_ranged.."/handles/rippergun_rifle_handle_03"},
             {name = "handle_04",      model = _item_ranged.."/handles/rippergun_rifle_handle_04"},
             {name = "handle_05",      model = _item_ranged.."/handles/rippergun_rifle_handle_05"},
+            {name = "handle_06",      model = _item_ranged.."/handles/rippergun_rifle_handle_ml01"},
         }, parent, angle, move, remove, type or "handle", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 }

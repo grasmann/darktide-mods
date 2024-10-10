@@ -34,6 +34,7 @@ return {
             {id = "barrel_06", name = "Light Barrel 1"},
             {id = "barrel_07", name = "Light Barrel 2"},
             {id = "barrel_08", name = "Light Barrel 3"},
+            {id = "barrel_09", name = "Heavy Barrel 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -53,6 +54,7 @@ return {
             {name = "barrel_06",      model = _item_ranged.."/barrels/stubgun_ogryn_barrel_01"},
             {name = "barrel_07",      model = _item_ranged.."/barrels/stubgun_ogryn_barrel_02"},
             {name = "barrel_08",      model = _item_ranged.."/barrels/stubgun_ogryn_barrel_03"},
+            {name = "barrel_09",      model = _item_ranged.."/barrels/stubgun_heavy_ogryn_barrel_ml01"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     receiver_attachments = function(default)
@@ -64,6 +66,7 @@ return {
             {id = "receiver_05", name = "Light Receiver 1"},
             {id = "receiver_06", name = "Light Receiver 2"},
             {id = "receiver_07", name = "Light Receiver 3"},
+            {id = "receiver_08", name = "Heavy Receiver 5"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -82,6 +85,7 @@ return {
             {name = "receiver_05",      model = _item_ranged.."/recievers/stubgun_ogryn_receiver_01"},
             {name = "receiver_06",      model = _item_ranged.."/recievers/stubgun_ogryn_receiver_02"},
             {name = "receiver_07",      model = _item_ranged.."/recievers/stubgun_ogryn_receiver_03"},
+            {name = "receiver_08",      model = _item_ranged.."/recievers/stubgun_heavy_ogryn_receiver_ml01"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     magazine_attachments = function(default)
@@ -94,6 +98,7 @@ return {
             {id = "magazine_06", name = "Light Magazine 1"},
             {id = "magazine_07", name = "Light Magazine 2"},
             {id = "magazine_08", name = "Light Magazine 3"},
+            {id = "magazine_09", name = "Heavy Magazine 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -113,6 +118,7 @@ return {
             {name = "magazine_06",      model = _item_ranged.."/magazines/stubgun_ogryn_magazine_01"},
             {name = "magazine_07",      model = _item_ranged.."/magazines/stubgun_ogryn_magazine_02"},
             {name = "magazine_08",      model = _item_ranged.."/magazines/stubgun_ogryn_magazine_03"},
+            {name = "magazine_09",      model = _item_ranged.."/magazines/stubgun_heavy_ogryn_magazine_ml01"},
         }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     grip_attachments = function(default)
@@ -123,6 +129,7 @@ return {
             {id = "grip_04", name = "Light Grip 1"},
             {id = "grip_05", name = "Light Grip 2"},
             {id = "grip_06", name = "Light Grip 3"},
+            {id = "grip_07", name = "Heavy Grip 4"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -140,6 +147,7 @@ return {
             {name = "grip_04",      model = _item_ranged.."/grips/stubgun_ogryn_grip_01"},
             {name = "grip_05",      model = _item_ranged.."/grips/stubgun_ogryn_grip_02"},
             {name = "grip_06",      model = _item_ranged.."/grips/stubgun_ogryn_grip_03"},
+            {name = "grip_07",      model = _item_ranged.."/grips/stubgun_heavy_ogryn_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

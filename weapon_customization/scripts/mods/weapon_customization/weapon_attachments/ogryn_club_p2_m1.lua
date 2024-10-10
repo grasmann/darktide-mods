@@ -72,7 +72,8 @@ return table.combine(
                 local shaft = attachment_list and attachment_list["shaft"] or mod.gear_settings:get(item, "shaft")
                 local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
                 local body = attachment_list and attachment_list["body"] or mod.gear_settings:get(item, "body")
-                if string_find(attachment, "default") then
+                -- if string_find(attachment, "default") then
+                if mod:cached_find(attachment, "default") then
                     if shaft ~= "shaft_default" then changes["shaft"] = "shaft_default" end
                     if head ~= "head_default" then changes["head"] = "head_default" end
                     if body == "body_none" then changes["body"] = _bodies end
@@ -88,7 +89,8 @@ return table.combine(
                 local shaft = attachment_list and attachment_list["shaft"] or mod.gear_settings:get(item, "shaft")
                 local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
                 local body = attachment_list and attachment_list["body"] or mod.gear_settings:get(item, "body")
-                if string_find(attachment, "default") then
+                -- if string_find(attachment, "default") then
+                if mod:cached_find(attachment, "default") then
                     if shaft ~= "shaft_default" then changes["shaft"] = "shaft_default" end
                     if head ~= "head_default" then changes["head"] = "head_default" end
                     if body == "body_none" then changes["body"] = _bodies end

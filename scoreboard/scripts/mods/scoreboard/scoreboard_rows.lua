@@ -1,5 +1,16 @@
 local mod = get_mod("scoreboard")
 
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+local math = math
+local type = type
+local pairs = pairs
+local get_mod = get_mod
+local math_max = math.max
+local table_insert = table.insert
+
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
 -- ##### ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗ ############################################################################
 -- ##### ██║  ██║███████║   ██║   ███████║ ############################################################################
@@ -802,7 +813,7 @@ mod.collect_scoreboard_rows = function(self, loaded_rows)
 		for _, template in pairs(mod.scoreboard_rows) do
 			local entry = self:register_scoreboard_row(mod, template)
 			local index = #self.registered_scoreboard_rows + 1
-			table.insert(self.registered_scoreboard_rows, index, entry)
+			table_insert(self.registered_scoreboard_rows, index, entry)
 		end
 		-- Add rows from other mods
 		for _, this_mod in pairs(DMF.mods) do
@@ -810,7 +821,7 @@ mod.collect_scoreboard_rows = function(self, loaded_rows)
 				for _, template in pairs(this_mod.scoreboard_rows) do
 					local entry = self:register_scoreboard_row(this_mod, template)
 					local index = #self.registered_scoreboard_rows + 1
-					table.insert(self.registered_scoreboard_rows, index, entry)
+					table_insert(self.registered_scoreboard_rows, index, entry)
 				end
 			end
 		end
@@ -879,7 +890,7 @@ end
 mod.update_row_value = function(self, row_name, account_id, value)
 	if self:is_numeric(value) then
 		-- Normalize value
-		local value = value and math.max(0, value) or 0
+		local value = value and math_max(0, value) or 0
 		-- Get row
 		local row = self:get_scoreboard_row(row_name)
 		if row then

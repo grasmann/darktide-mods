@@ -1,5 +1,15 @@
 local mod = get_mod("scoreboard")
 
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+local CLASS = CLASS
+local pairs = pairs
+local Color = Color
+local Managers = Managers
+
+
 local ScoreboardViewSettings = mod:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard/scoreboard_view_settings")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")

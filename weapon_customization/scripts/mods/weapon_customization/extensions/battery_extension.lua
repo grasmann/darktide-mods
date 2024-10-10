@@ -4,6 +4,8 @@ local mod = get_mod("weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
+local tostring = tostring
+
 --#region Local functions
     local math = math
     local class = class
@@ -72,12 +74,7 @@ end
 
 -- Get battery charge fraction
 BatteryExtension.fraction = function(self)
-    -- Current battery charge or max
-    local current = self.current_charge or self.battery_template.max
-    -- Max battery charge
-    local max = self.battery_template.max
-    -- Fraction
-    return current / max
+    return (self.current_charge or self.battery_template.max) / self.battery_template.max
 end
 
 BatteryExtension.is_wielded = function(self)
@@ -93,13 +90,11 @@ BatteryExtension.update = function(self, dt, t)
     -- Check battery template
     if self.battery_template then
         -- Battery interval
-        self.timer = self.timer or 0
         if t > self.timer then
             -- Check if consumer is switched on
             if self.on and self:is_wielded() then
                 -- Drain battery
-                local drain = self.battery_template.drain
-                self.current_charge = math_clamp(self.current_charge - drain, 0, self.battery_template.max)
+                self.current_charge = math_clamp(self.current_charge - self.battery_template.drain, 0, self.battery_template.max)
             else
                 -- Charge battery
                 self.current_charge = math_clamp(self.current_charge + self.battery_template.charge, 0, self.battery_template.max)

@@ -32,7 +32,6 @@ local mod = get_mod("weapon_customization")
     local string_find = string.find
     local string_gsub = string.gsub
     local math_random = math.random
-    local string_split = string.split
     local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local unit_debug_name = Unit.debug_name

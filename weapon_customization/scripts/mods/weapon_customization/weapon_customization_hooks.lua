@@ -24,6 +24,7 @@ local mod = get_mod("weapon_customization")
     local CLASS = CLASS
     local pairs = pairs
     local table = table
+    local tostring = tostring
     local managers = Managers
     local Viewport = Viewport
     local table_enum = table.enum
@@ -48,6 +49,8 @@ local mod = get_mod("weapon_customization")
     local OPTION_VISIBLE_EQUIPMENT = "mod_option_visible_equipment"
     local OPTION_VISIBLE_EQUIPMENT_NO_HUB = "mod_option_visible_equipment_disable_in_hub"
     local DELETION_STATES = table_enum("default", "in_network_layers", "removing_units")
+
+    mod.entry_key_to_widget = {}
 --#endregion
 
 -- ##### ┌─┐┬ ┌┬┐┌─┐┬─┐┌┐┌┌─┐┌┬┐┌─┐  ┌─┐┬┬─┐┌─┐ #######################################################################
@@ -289,6 +292,7 @@ end)
 -- ##### ┬ ┬┬ ┬┌┬┐  ┌─┐┬  ┌─┐┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬┬─┐ ##################################################
 -- ##### ├─┤│ │ ││  ├┤ │  ├┤ │││├┤ │││ │   │  ├┬┘│ │└─┐└─┐├─┤├─┤│├┬┘ ##################################################
 -- ##### ┴ ┴└─┘─┴┘  └─┘┴─┘└─┘┴ ┴└─┘┘└┘ ┴   └─┘┴└─└─┘└─┘└─┘┴ ┴┴ ┴┴┴└─ ##################################################
+
 --#region Old
     -- mod:hook(CLASS.HudElementCrosshair, "_draw_widgets", function(func, self, dt, t, input_service, ui_renderer, render_settings, ...)
     --     local parent = self._parent
@@ -347,13 +351,18 @@ end)
 -- ##### └─┘┴ ┴└─┘└─┘   └┘ ┴└─┘└┴┘ ####################################################################################
 
 mod:hook(CLASS.BaseView, "_on_view_load_complete", function(func, self, loaded, ...)
+
     -- Original function
     func(self, loaded, ...)
+
     -- Options
     if self.view_name == "dmf_options_view" then
 		mod.update_options()
 	end
+
 end)
+
+mod.setting_id_to_widget = {}
 
 -- ##### ┌─┐┌─┐┌─┐┌┬┐┌─┐┌┬┐┌─┐┌─┐┌─┐ ##################################################################################
 -- ##### ├┤ │ ││ │ │ └─┐ │ ├┤ ├─┘└─┐ ##################################################################################
@@ -456,3 +465,10 @@ mod:hook(CLASS.MainMenuView, "init", function(func, self, settings, context, ...
     -- Mod
     self._pass_input = true
 end)
+
+-- mod:hook(CLASS.LobbyView, "init", function(func, self, settings, context, ...)
+--     -- Original function
+--     func(self, settings, context, ...)
+--     -- Mod
+--     self._pass_input = true
+-- end)

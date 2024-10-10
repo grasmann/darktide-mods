@@ -46,6 +46,7 @@ return {
             {id = "double_barrel_receiver_01", name = "Doublebarrel 1"},
             {id = "double_barrel_receiver_02", name = "Doublebarrel 2"},
             {id = "double_barrel_receiver_03", name = "Doublebarrel 3"},
+            {id = "shotgun_double_barrel_receiver_ml01", name = "Doublebarrel 4"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -60,6 +61,7 @@ return {
             {name = "double_barrel_receiver_01", model = _item_ranged.."/recievers/shotgun_double_barrel_receiver_01"},
             {name = "double_barrel_receiver_02", model = _item_ranged.."/recievers/shotgun_double_barrel_receiver_02"},
             {name = "double_barrel_receiver_03", model = _item_ranged.."/recievers/shotgun_double_barrel_receiver_03"},
+            {name = "shotgun_double_barrel_receiver_ml01", model = _item_ranged.."/recievers/shotgun_double_barrel_receiver_ml01"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     stock_attachments = function(default)
@@ -67,6 +69,7 @@ return {
             {id = "double_barrel_stock_01",      name = "Doublebarrel 1"},
             {id = "double_barrel_stock_02",      name = "Doublebarrel 2"},
             {id = "double_barrel_stock_03",      name = "Doublebarrel 3"},
+            {id = "shotgun_double_barrel_stock_ml01",      name = "Doublebarrel 4"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -81,6 +84,7 @@ return {
             {name = "double_barrel_stock_01",      model = _item_ranged.."/stocks/shotgun_double_barrel_stock_01"},
             {name = "double_barrel_stock_02",      model = _item_ranged.."/stocks/shotgun_double_barrel_stock_02"},
             {name = "double_barrel_stock_03",      model = _item_ranged.."/stocks/shotgun_double_barrel_stock_03"},
+            {name = "shotgun_double_barrel_stock_ml01",      model = _item_ranged.."/stocks/shotgun_double_barrel_stock_ml01"},
         }, parent, angle, move, remove, type or "stock", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     barrel_attachments = function(default)
@@ -88,6 +92,7 @@ return {
             {id = "double_barrel_barrel_01", name = "Doublebarrel 1"},
             {id = "double_barrel_barrel_02", name = "Doublebarrel 2"},
             {id = "double_barrel_barrel_03", name = "Doublebarrel 3"},
+            {id = "shotgun_double_barrel_ml01", name = "Doublebarrel 4"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -102,6 +107,7 @@ return {
             {name = "double_barrel_barrel_01", model = _item_ranged.."/barrels/shotgun_double_barrel_01"},
             {name = "double_barrel_barrel_02", model = _item_ranged.."/barrels/shotgun_double_barrel_02"},
             {name = "double_barrel_barrel_03", model = _item_ranged.."/barrels/shotgun_double_barrel_03"},
+            {name = "shotgun_double_barrel_ml01", model = _item_ranged.."/recievers/shotgun_double_barrel_ml01"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     -- underbarrel_attachments = function(default)

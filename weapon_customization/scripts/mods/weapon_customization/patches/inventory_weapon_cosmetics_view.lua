@@ -5,6 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 --#region Require
+	local ItemUtils = mod:original_require("scripts/utilities/items")
 	local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 	local MasterItems = mod:original_require("scripts/backend/master_items")
 	local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
@@ -95,22 +96,6 @@ local mod = get_mod("weapon_customization")
 
 	mod.weapon_changed = nil
 	mod.cosmetics_view = nil
-	-- mod.move_position = vector3_box(vector3_zero())
-	-- mod.new_position = vector3_box(vector3_zero())
-	-- mod.link_unit_position = vector3_box(vector3_zero())
-	
-	-- mod.mesh_positions = {}
-	-- mod.dropdown_positions = {}
-	-- mod.spawned_attachments = {}
-	-- mod.attachment_preview_count = 0
-	-- mod.spawned_attachments_last_position = {}
-	-- mod.spawned_attachments_target_position = {}
-	-- mod.spawned_attachments_timer = {}
-	-- mod.attachment_index_updated = {}
-	-- mod.attachment_index = {}
-	-- mod.preview_attachment_name = {}
-	-- mod.preview_attachment_slot = nil
-	-- mod.load_previews = {}
 --#endregion
 
 -- ##### ┬  ┬┬┌─┐┬ ┬  ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ #####################################################################
@@ -130,7 +115,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Iterate through attachment slot scenegraphs
 	for _, scenegraph_id in pairs(cosmetics_scenegraphs) do
 		-- Check if scenegraph is a label
-		if string_find(scenegraph_id, "text_pivot") then
+		-- if string_find(scenegraph_id, "text_pivot") then
+		if mod:cached_find(scenegraph_id, "text_pivot") then
 			y = y + label_height
 		else
 			y = y + dropdown_height
@@ -172,10 +158,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Modify display name scenegraph
 	instance.scenegraph_definition.display_name.horizontal_alignment = "left"
 	instance.scenegraph_definition.display_name.size[1] = 1920 - (grid_width + 160)
+	-- instance.scenegraph_definition.display_name.position[2] = 0
 
 	-- Modify sub display name scenegraph
 	instance.scenegraph_definition.sub_display_name.horizontal_alignment = "left"
 	instance.scenegraph_definition.sub_display_name.size[1] = 1920 - (grid_width + 160)
+	-- instance.scenegraph_definition.sub_display_name.position[2] = -50
 
 	-- Modify button pivot background
 	instance.widget_definitions.button_pivot_background.style.background.visible = false
@@ -351,40 +339,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		if ui_weapon_spawner then
 			ui_weapon_spawner:initiate_camera_movement(position)
 		end
-		-- if position then
-		-- 	-- mod.move_position = position
-		-- 	mod.move_position:store(vector3_unbox(position))
-		-- 	mod.do_move = true
-		-- 	mod.no_reset = no_reset
-		-- elseif not vector3.equal(vector3_unbox(mod.link_unit_position), vector3_zero()) then
-		-- 	-- mod.move_position = vector3_box(vector3_zero())
-		-- 	mod.move_position:store(vector3_zero())
-		-- 	mod.do_move = true
-		-- end
 	end
-
-	-- instance.init_custom_weapon_zoom = function(self)
-	-- 	local item = self._selected_item
-	-- 	if item then
-	-- 		-- Get item name
-	-- 		-- local item_name = self:item_name_from_content_string(item.name)
-	-- 		local item_name = self._item_name
-	-- 		-- Check for weapon in data
-	-- 		if mod.attachment_models[item_name] then
-	-- 			-- Check for custom weapon zoom
-	-- 			if mod.attachment_models[item_name].customization_min_zoom then
-	-- 				local min_zoom = mod.attachment_models[item_name].customization_min_zoom
-	-- 				self._min_zoom = min_zoom
-	-- 			else
-	-- 				self._min_zoom = -2
-	-- 			end
-	-- 			-- Set zoom
-	-- 			self._weapon_zoom_target = self._min_zoom
-	-- 			self._weapon_zoom_fraction = self._min_zoom
-	-- 			self:_set_weapon_zoom(self._min_zoom)
-	-- 		end
-	-- 	end
-	-- end
 
 	-- ┌─┐┬  ┬┌─┐┬─┐┬ ┬┬─┐┬┌┬┐┌─┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
 	-- │ │└┐┌┘├┤ ├┬┘│││├┬┘│ │ ├┤   ├┤ │ │││││   │ ││ ││││└─┐
@@ -687,16 +642,21 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
 			-- Make sure attachment slot is applicable
 			if not table_contains(self._not_applicable, scenegraph_name) then
-				local widget_name = ""
-				local is_text = nil
-				if string_find(scenegraph_name, "text_pivot") then
-					widget_name = string_gsub(scenegraph_name, "_text_pivot", "_custom_text")
-					is_text = true
-				else
-					widget_name = string_gsub(scenegraph_name, "_pivot", "_custom")
-				end
-				local widget = self:find_custom_widget(widget_name)
-				if widget then
+				-- local widget_name = ""
+				-- local is_text = nil
+				-- if string_find(scenegraph_name, "text_pivot") then
+				-- if mod:cached_find(scenegraph_name, "text_pivot") then
+				-- if self.scenegraph_to_widgets[scenegraph_name] then
+				-- 	-- widget_name = string_gsub(scenegraph_name, "_text_pivot", "_custom_text")
+				-- 	widget_name = mod:cached_gsub(scenegraph_name, "_text_pivot", "_custom_text")
+				-- 	is_text = true
+				-- else
+				-- 	-- widget_name = string_gsub(scenegraph_name, "_pivot", "_custom")
+				-- 	widget_name = mod:cached_gsub(scenegraph_name, "_pivot", "_custom")
+				-- end
+				-- local widget = self:find_custom_widget(widget_name)
+				if self.scenegraph_to_widgets[scenegraph_name] then
+					local widget = self.scenegraph_to_widgets[scenegraph_name].widget
 					local scenegraph_entry = self._ui_scenegraph[scenegraph_name]
 					widget.original_y = widget.original_y or widget.offset[2]
 					widget.offset[2] = widget.original_y - (self.total_dropdown_height - 950) * progress
@@ -712,6 +672,24 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- ─┴┘┴└─┴ ┴└┴┘  └─┘└─┘┴  └─┘┴ ┴┴ ┴┴  └─┘└─┘	
 
 	-- Draw box
+	local draw_box_points = {
+		bottom_01 = {vec = {true, true, false}}, bottom_02 = {vec = {true, false, false}},
+		bottom_03 = {vec = {false, false, false}}, bottom_04 = {vec = {false, true, false}},
+		top_01 = {vec = {true, true, true}}, top_02 = {vec = {true, false, true}},
+		top_03 = {vec = {false, false, true}}, top_04 = {vec = {false, true, true}},
+	}
+	local draw_box_results = {
+		bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
+		top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
+	}
+	local draw_box_draw = {
+		{a = "bottom_01", b = "bottom_02"}, {a = "bottom_01", b = "bottom_04"},
+		{a = "bottom_02", b = "bottom_03"}, {a = "bottom_03", b = "bottom_04"},
+		{a = "top_01", b = "bottom_01"}, {a = "top_02", b = "bottom_02"},
+		{a = "top_03", b = "bottom_03"}, {a = "top_04", b = "bottom_04"},
+		{a = "top_01", b = "top_02"}, {a = "top_01", b = "top_04"},
+		{a = "top_02", b = "top_03"}, {a = "top_03", b = "top_04"},
+	}
 	instance.draw_box = function(self, unit, saved_origin)
 		if unit and unit_alive(unit) then
 			local tm, half_size = unit_box(unit)
@@ -719,32 +697,22 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			local ui_weapon_spawner = self:ui_weapon_spawner()
 			local camera = ui_weapon_spawner and ui_weapon_spawner._camera
 			-- Get boundary points
-			local points = {
-				bottom_01 = {vec = {true, true, false}}, bottom_02 = {vec = {true, false, false}},
-				bottom_03 = {vec = {false, false, false}}, bottom_04 = {vec = {false, true, false}},
-				top_01 = {vec = {true, true, true}}, top_02 = {vec = {true, false, true}},
-				top_03 = {vec = {false, false, true}}, top_04 = {vec = {false, true, true}},
-			}
-			for name, data in pairs(points) do
+			for name, data in pairs(draw_box_points) do
 				local position = vector3(
 					data.vec[1] == true and half_size.x or -half_size.x,
 					data.vec[2] == true and half_size.y or -half_size.y,
 					data.vec[3] == true and half_size.z or -half_size.z
 				)
-				points[name].position = Matrix4x4.transform(tm, position)
+				draw_box_points[name].position = Matrix4x4.transform(tm, position)
 			end
 			-- Get position and distance to camera
-			local results = {
-				bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
-				top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
-			}
-			for name, data in pairs(results) do
-				results[name].position, results[name].distance = Camera.world_to_screen(camera, points[name].position)
+			for name, data in pairs(draw_box_results) do
+				draw_box_results[name].position, draw_box_results[name].distance = Camera.world_to_screen(camera, draw_box_points[name].position)
 			end
 			-- Farthest point from camera
 			local farthest = nil
 			local last = 0
-			for name, data in pairs(results) do
+			for name, data in pairs(draw_box_results) do
 				if data.distance > last then
 					last = data.distance
 					farthest = name
@@ -755,7 +723,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				local closest = nil
 				local last = math.huge
 				local saved_origin_v3 = vector3(saved_origin[1], saved_origin[2], 0)
-				for name, data in pairs(results) do
+				for name, data in pairs(draw_box_results) do
 					local position = vector3(data.position[1], data.position[2], 0)
 					local distance = vector3.distance(saved_origin_v3, position)
 					if distance < last then
@@ -764,24 +732,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					end
 				end
 				if closest then
-					mod.equipment_line_target = {
-						results[closest].position[1],
-						results[closest].position[2],
-					}
+					self.equipment_line_target[1] = draw_box_results[closest].position[1]
+					self.equipment_line_target[2] = draw_box_results[closest].position[2]
 				end
 			end
 			-- Draw box
-			local draw = {
-				{a = "bottom_01", b = "bottom_02"}, {a = "bottom_01", b = "bottom_04"},
-				{a = "bottom_02", b = "bottom_03"}, {a = "bottom_03", b = "bottom_04"},
-				{a = "top_01", b = "bottom_01"}, {a = "top_02", b = "bottom_02"},
-				{a = "top_03", b = "bottom_03"}, {a = "top_04", b = "bottom_04"},
-				{a = "top_01", b = "top_02"}, {a = "top_01", b = "top_04"},
-				{a = "top_02", b = "top_03"}, {a = "top_03", b = "top_04"},
-			}
-			for name, data in pairs(draw) do
+			for name, data in pairs(draw_box_draw) do
 				if farthest ~= data.a and farthest ~= data.b then
-					ScriptGui.hud_line(gui, results[data.a].position, results[data.b].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
+					ScriptGui.hud_line(gui, draw_box_results[data.a].position, draw_box_results[data.b].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
 				end
 			end
 		end
@@ -832,8 +790,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						local box = unit_box(unit, false)
 						local center_position = Matrix4x4.translation(box)
 						local world_to_screen, distance = Camera.world_to_screen(camera, center_position)
-						if mod.equipment_line_target then
-							world_to_screen = vector2(mod.equipment_line_target[1], mod.equipment_line_target[2])
+						if self.equipment_line_target then
+							world_to_screen = vector2(self.equipment_line_target[1], self.equipment_line_target[2])
 						end
 						local saved_origin = self.dropdown_positions[attachment_slot]
 						if saved_origin and saved_origin[3] and saved_origin[3] == true then
@@ -848,110 +806,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		end
 	end
 
-	instance.simple_unit_box = function(self, unit)
-		if unit and unit_alive(unit) then
-			local tm, half_size = unit_box(unit)
-			local gui = self:forward_gui()
-			local ui_weapon_spawner = self:ui_weapon_spawner()
-			local camera = ui_weapon_spawner and ui_weapon_spawner._camera
-			-- Get boundary points
-			local points = {
-				bottom_01 = {vec = {true, true, false}}, bottom_02 = {vec = {true, false, false}},
-				bottom_03 = {vec = {false, false, false}}, bottom_04 = {vec = {false, true, false}},
-				top_01 = {vec = {true, true, true}}, top_02 = {vec = {true, false, true}},
-				top_03 = {vec = {false, false, true}}, top_04 = {vec = {false, true, true}},
-			}
-			for name, data in pairs(points) do
-				local position = vector3(
-					data.vec[1] == true and half_size.x or -half_size.x,
-					data.vec[2] == true and half_size.y or -half_size.y,
-					data.vec[3] == true and half_size.z or -half_size.z
-				)
-				points[name].position = Matrix4x4.transform(tm, position)
-			end
-			-- Get position and distance to camera
-			local results = {
-				bottom_01 = {}, bottom_02 = {}, bottom_03 = {}, bottom_04 = {},
-				top_01 = {}, top_02 = {}, top_03 = {}, top_04 = {},
-			}
-			for name, data in pairs(results) do
-				results[name].position, results[name].distance = Camera.world_to_screen(camera, points[name].position)
-			end
-
-			-- Farthest point from camera
-			local most_left_top = nil
-			local last = math.huge
-			for name, data in pairs(results) do
-				local val = data.position[1] + data.position[2]
-				if val < last then
-					last = val
-					most_left_top = name
-				end
-			end
-			-- Save as target for lines
-			local most_right_bottom = nil
-			local last = 0
-			for name, data in pairs(results) do
-				local val = data.position[1] + data.position[2]
-				if val > last then
-					last = val
-					most_right_bottom = name
-				end
-			end
-			local top_right = vector3(results[most_right_bottom].position[1], results[most_left_top].position[2], 0)
-			local bottom_left = vector3(results[most_left_top].position[1], results[most_right_bottom].position[2], 0)
-			-- Draw
-			ScriptGui.hud_line(gui, results[most_left_top].position, top_right, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
-			-- ScriptGui.hud_line(gui, top_right, results[most_right_bottom].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
-			ScriptGui.hud_line(gui, results[most_left_top].position, bottom_left, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
-			-- ScriptGui.hud_line(gui, bottom_left, results[most_right_bottom].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
-
-			local size = vector3(results[most_right_bottom].position[1] - results[most_left_top].position[1],
-				results[most_right_bottom].position[2] - results[most_left_top].position[2], 0)
-
-			local center = vector3(results[most_right_bottom].position[1] - size.x / 2,
-				results[most_right_bottom].position[2] - size.y / 2, 0)
-
-			ScriptGui.hud_line(gui, results[most_left_top].position, center, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
-
-			return most_left_top, top_right, most_right_bottom, bottom_left, size, center
-		end
-	end
-
-	instance.update_click_selection = function(self, input_service, dt, t)
-		local cursor = input_service:get("cursor")
-		local attachment_units = self:attachment_units()
-		local hovered_units = {}
-		for _, unit in pairs(attachment_units) do
-			local tl, tr, br, bl, size, center = self:simple_unit_box(unit)
-			local unit_hover = math.point_is_inside_2d_box(cursor, tl, size)
-			if unit_hover then
-				hovered_units[#hovered_units+1] = {
-					unit = unit,
-					tl = tl,
-					tr = tr,
-					br = br,
-					bl = bl,
-					size = size,
-					center = center,
-				}
-				local attachment_slot = Unit.get_data(unit, "attachment_slot")
-			end
-		end
-		local focused_unit = nil
-		local last = math.huge
-		for _, hovered_unit in pairs(hovered_units) do
-			local distance = vector3.distance(hovered_unit.center, cursor)
-			if distance < last then
-				last = distance
-				focused_unit = hovered_unit
-			end
-		end
-		if focused_unit then
-			-- local attachment_slot = Unit.get_data(focused_unit.unit, "attachment_slot")
-		end
-	end
-
 	-- ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐
 	-- ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │ └─┐
 	-- ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ └─┘
@@ -961,7 +815,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Get package synchronizer client
 		local package_synchronizer_client = managers.package_synchronization:synchronizer_client()
 		-- Reevaluate all profile packages
-		-- if package_synchronizer_client then package_synchronizer_client:reevaluate_all_profiles_packages() end
 		if package_synchronizer_client then
 			local player = managers.player:local_player(1)
 			local peer_id = player:peer_id()
@@ -985,8 +838,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Load new attachment
 	instance.load_new_attachment = function(self, item, attachment_slot, attachment, no_update)
 		if self._gear_id then
-			-- local new_attachment = mod.gear_settings:correct(self._selected_item, attachment_slot, attachment)
-			-- mod:echo("attachment: "..tostring(attachment).." new: "..tostring(new_attachment))
 			-- Check if attachment and attachment slot are valid
 			if attachment_slot then
 				-- Save original attachment
@@ -1014,17 +865,21 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		local item = self._selected_item
 		if item then
 			-- Get item name
-			-- local item_name = self:item_name_from_content_string(item.name)
+			-- local item_name = mod.gear_settings:short_name(item.name)
 			local item_name = self._item_name
+			local item_attachments = mod.attachment[item_name]
 			local move = -10
 			-- Iterate attachment slots
 			for index, slot in pairs(mod.attachment_slots) do
+				local slot_attachments = item_attachments[slot]
 				-- Check that weapon has attachment slot and more than 2 options
 				-- 1st option is default
-				if mod.attachment[item_name] and (not mod.attachment[item_name][slot] or #mod.attachment[item_name][slot] <= 2) then
+				if item_attachments and (not slot_attachments or #slot_attachments <= 2) then
+					local slot_dropdown = self._widgets_by_name[slot.."_custom"]
+					local slot_label = self._widgets_by_name[slot.."_custom_text"]
 					-- Set not applicable in widgets to hide them
-					if self._widgets_by_name[slot.."_custom"] then self._widgets_by_name[slot.."_custom"].not_applicable = true end
-					if self._widgets_by_name[slot.."_custom_text"] then self._widgets_by_name[slot.."_custom_text"].not_applicable = true end
+					if slot_dropdown then slot_dropdown.not_applicable = true end
+					if slot_label then slot_label.not_applicable = true end
 					-- Add to list of not applicable widgets
 					self._not_applicable[#self._not_applicable+1] = slot.."_pivot"
 					self._not_applicable[#self._not_applicable+1] = slot.."_text_pivot"
@@ -1036,7 +891,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
 				if table_contains(self._not_applicable, scenegraph_name) then
 					-- Differentiate text and dropdown
-					if string_find(scenegraph_name, "text_pivot") then
+					if mod:cached_find(scenegraph_name, "text_pivot") then
 						move = move + label_height
 					else
 						move = move + dropdown_height
@@ -1054,6 +909,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	end
 
 	instance.resolve_no_support = function(self)
+		local item_attachment_models = mod.attachment_models[self._item_name]
 		-- Enable all dropdowns
 		for _, attachment_slot in pairs(mod.attachment_slots) do
 			local widget = self._widgets_by_name[attachment_slot.."_custom"]
@@ -1070,8 +926,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Disable no supported
 		for _, attachment_slot in pairs(mod.attachment_slots) do
 			local attachment = mod.gear_settings:get(self._presentation_item, attachment_slot)
-			if attachment and mod.attachment_models[self._item_name] and mod.attachment_models[self._item_name][attachment] then
-				local attachment_data = mod.attachment_models[self._item_name][attachment]
+			local attachment_data = item_attachment_models and item_attachment_models[attachment]
+			if attachment and attachment_data then
 				local no_support = attachment_data.no_support
 				attachment_data = mod.gear_settings:apply_fixes(self._presentation_item, attachment_slot) or attachment_data
 				no_support = attachment_data.no_support or no_support
@@ -1116,7 +972,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Equip attachments to weapon
 	instance.equip_attachments = function(self)
 		-- Reset original settings
-		self.original_weapon_settings = {}
+		-- self.original_weapon_settings = {}
+		table_clear(self.original_weapon_settings)
 		-- -- Reset animation
 		-- mod.reset_start = mod:main_time() --managers.time:time("main")
 		-- Update equip button
@@ -1127,6 +984,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self:load_new_attachment()
 		-- Save gear settings
 		mod.gear_settings:save(self._presentation_item)
+		if self._gear_id then
+			mod:persistent_table(REFERENCE).weapon_templates[self._gear_id] = nil
+		end
 		-- Reevaluate packages
 		self:reevaluate_packages()
 		-- Reload current weapon
@@ -1152,8 +1012,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	end
 
 	-- Get attachment names
+	local attachment_names = {}
 	instance.get_attachment_names = function(self, attachment_settings)
-		local attachment_names = {}
+		-- local attachment_names = {}
+		table_clear(attachment_names)
 		-- Iterate through attachment settings
 		for attachment_slot, value in pairs(attachment_settings) do
 			-- Get attachment name
@@ -1211,6 +1073,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Remove player visible equipment
 	instance.remove_player_visible_equipment = function(self)
+		mod:execute_extension(mod.player_unit, "visible_equipment_system", "delete_slots")
 		mod:remove_extension(mod.player_unit, "visible_equipment_system")
 	end
 
@@ -1243,7 +1106,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						mod.build_animation:animate(self._selected_item, attachment_slot, attachment_names[attachment_slot], value)
 					end
 				end
-				self.original_weapon_settings = {}
+				-- self.original_weapon_settings = {}
+				table_clear(self.original_weapon_settings)
 			end
 			-- self:update_equip_button()
 		end
@@ -1266,14 +1130,29 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
 			for _, added_scenegraph in pairs(cosmetics_scenegraphs) do
 				-- Differentiate text and dropdown
-				if string_find(added_scenegraph, "text_pivot") then
+				-- if string_find(added_scenegraph, "text_pivot") then
+				if mod:cached_find(added_scenegraph, "text_pivot") then
 					-- Generate label
-					local attachment_slot = string_gsub(added_scenegraph, "_text_pivot", "")
+					-- local attachment_slot = string_gsub(added_scenegraph, "_text_pivot", "")
+					local attachment_slot = mod:cached_gsub(added_scenegraph, "_text_pivot", "")
 					self:add_custom_widget(self:generate_label(added_scenegraph, attachment_slot, self._selected_item))
+					self.scenegraph_to_widgets[added_scenegraph] = {
+						attachment_slot = mod:cached_gsub(added_scenegraph, "_pivot", ""),
+						widget = self._custom_widgets[#self._custom_widgets],
+						is_text = true,
+						is_dropdown = false,
+					}
 				else
 					-- Generate dropdown
-					local attachment_slot = string_gsub(added_scenegraph, "_pivot", "")
+					-- local attachment_slot = string_gsub(added_scenegraph, "_pivot", "")
+					local attachment_slot = mod:cached_gsub(added_scenegraph, "_pivot", "")
 					self:add_custom_widget(self:generate_dropdown(added_scenegraph, attachment_slot, self._selected_item))
+					self.scenegraph_to_widgets[added_scenegraph] = {
+						attachment_slot = mod:cached_gsub(added_scenegraph, "_pivot", ""),
+						widget = self._custom_widgets[#self._custom_widgets],
+						is_text = false,
+						is_dropdown = true,
+					}
 				end
 			end
 		end
@@ -1345,13 +1224,17 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.generate_dropdown = function(self, scenegraph, attachment_slot, item)
 
 		local item_name = self._item_name
+		local item_attachments = mod.attachment[item_name]
+		local item_attachment_models = mod.attachment_models[item_name]
+		local slot_attachments = item_attachments and item_attachments[attachment_slot]
 		local options = {}
-		if mod.attachment[item_name] and mod.attachment[item_name][attachment_slot] then
+		if slot_attachments and item_attachment_models then
 			mod.found_names = nil
-			for _, data in pairs(mod.attachment[item_name][attachment_slot]) do
-				local model = mod.attachment_models[item_name][data.id] and mod.attachment_models[item_name][data.id].model
+			for _, data in pairs(slot_attachments) do
+				local model = item_attachment_models[data.id] and item_attachment_models[data.id].model
 				if model and self:validate_item_model(model) then
-					local attachment_name = mod:get_attachment_weapon_name(item, attachment_slot, data.id) or data.name
+					local attachment_name = mod:get("mod_option_misc_attachment_names") and mod:get_attachment_weapon_name(item, attachment_slot, data.id) or data.name
+					-- local attachment_name = mod:get("mod_option_misc_attachment_names") and mod.data_cache:attachment_name_to_generated_attachment_name(data.id) or data.name
 					options[#options+1] = self:generate_dropdown_option(data.id, attachment_name, data.sounds)
 				end
 			end
@@ -1364,7 +1247,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		local size = {grid_size[1], dropdown_height}
 		local template = DropdownPassTemplates.settings_dropdown(size[1], size[2], size[1], num_visible_options, true)
 		for _, pass in pairs(template) do
-			if pass.content_id and string_find(pass.content_id, "option_hotspot") then
+			-- if pass.content_id and string_find(pass.content_id, "option_hotspot") then
+			if pass.content_id and mod:cached_find(pass.content_id, "option_hotspot") then
 				-- local s = string_gsub(pass.content_id, "option_hotspot_", "")
 				-- local id = tonumber(s)
 				-- pass.content.on_hover_sound = UISoundEvents.default_mouse_hover
@@ -1399,7 +1283,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			on_activated = function(new_value, entry)
 				if not mod.build_animation:is_busy() then
 					local attachment = mod.gear_settings:get(self._selected_item, attachment_slot)
-					local attachment_data = mod.attachment_models[item_name][attachment]
+					local attachment_data = item_attachment_models[attachment]
 					local no_animation = attachment_data and attachment_data.no_animation
 	
 					if mod:get("mod_option_weapon_build_animation") and not no_animation then
@@ -1413,8 +1297,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	
 					mod.reset_weapon = nil
 	
-					local weapon_attachments = mod.attachment_models[item_name]
-					local attachment_data = weapon_attachments[new_value]
+					-- local weapon_attachments = mod.attachment_models[item_name]
+					local attachment_data = item_attachment_models[new_value]
 					local new_angle = attachment_data.angle or 0
 					local ui_weapon_spawner = self:ui_weapon_spawner()
 					if ui_weapon_spawner then
@@ -1527,10 +1411,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
 		-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
 		for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
-			if not string_find(scenegraph_name, "text_pivot") then
+			-- if not string_find(scenegraph_name, "text_pivot") then
+			local scenegraph_to_widgets = self.scenegraph_to_widgets[scenegraph_name]
+			if scenegraph_to_widgets and not scenegraph_to_widgets.is_text then
 				local ui_scenegraph = self._ui_scenegraph
 				local screen_width = RESOLUTION_LOOKUP.width
-				local attachment_slot = string_gsub(scenegraph_name, "_pivot", "")
+				-- local attachment_slot = string_gsub(scenegraph_name, "_pivot", "")
+				-- local attachment_slot = mod:cached_gsub(scenegraph_name, "_pivot", "")
+				local attachment_slot = scenegraph_to_widgets.attachment_slot
 				local scenegraph_entry = ui_scenegraph[scenegraph_name]
 				local entry = self.dropdown_positions[attachment_slot] or {}
 
@@ -1559,9 +1447,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		if self._custom_widgets then
 			for _, widget in pairs(self._custom_widgets) do
 				if widget.content and widget.content.entry and widget.content.entry.widget_type == "dropdown" then
-					local pivot_name = widget.name.."_pivot"
-					pivot_name = string_gsub(pivot_name, "_custom", "")
-					local scenegraph_entry = self._ui_scenegraph[pivot_name]
+					-- local pivot_name = widget.name.."_pivot"
+					-- pivot_name = string_gsub(pivot_name, "_custom", "")
+					-- pivot_name = mod:cached_gsub(pivot_name, "_custom", "")
+					-- local scenegraph_entry = self._ui_scenegraph[pivot_name]
+					local scenegraph_entry = self._ui_scenegraph[widget.scenegraph_id]
 					local any_active = false
 					for _, data in pairs(self.dropdown_positions) do
 						if data[3] == true then
@@ -1592,15 +1482,15 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		end
 	end
 
+	local attachment_info_tiers = {
+		"content/ui/materials/icons/perks/perk_level_01",
+		"content/ui/materials/icons/perks/perk_level_02",
+		"content/ui/materials/icons/perks/perk_level_03",
+		"content/ui/materials/icons/perks/perk_level_04",
+		"content/ui/materials/icons/perks/perk_level_05",
+	}
 	instance.set_attachment_info = function(self, display_name, attribute_data)
 		if display_name ~= "Default" and attribute_data then
-			local tiers = {
-				"content/ui/materials/icons/perks/perk_level_01",
-				"content/ui/materials/icons/perks/perk_level_02",
-				"content/ui/materials/icons/perks/perk_level_03",
-				"content/ui/materials/icons/perks/perk_level_04",
-				"content/ui/materials/icons/perks/perk_level_05",
-			}
 			self._widgets_by_name.attachment_display_name.content.text = display_name
 			-- for i, data in pairs(attribute_data) do
 			local index = 1
@@ -1610,7 +1500,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					local widget = widgets_by_name["attachment_bar_"..tostring(index)]
 					if widget then
 						widget.content.text = mod:localize_or_global(name)
-						widget.content.value_id_1 = tiers[tier]
+						widget.content.value_id_1 = attachment_info_tiers[tier]
 					end
 					index = index + 1
 				end
@@ -1758,10 +1648,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	
 		local is_disabled = entry.disabled or false
 		content.disabled = is_disabled or mod.build_animation:is_busy()
-		local size = {
-			400,
-			dropdown_height
-		}
+		-- local size = {
+		-- 	400,
+		-- 	dropdown_height
+		-- }
+		local size = vector2(400, dropdown_height)
 		local using_gamepad = not managers.ui:using_cursor_navigation()
 		local offset = widget.offset
 		local style = widget.style
@@ -2158,7 +2049,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						-- self:draw_box(unit)
 					end
 	
-					-- local last_slot = mod.attachment_slot_positions[7] or self.spawned_attachments_last_position[unit]
+					-- local last_slot = self.attachment_slot_positions[7] or self.spawned_attachments_last_position[unit]
 					-- self.dropdown_positions[attachment_slot][3] = index == self.attachment_preview_index
 					if self.attachment_index_updated[unit] ~= mod.attachment_preview_index then
 						-- local max = self.attachment_preview_count / 2
@@ -2181,7 +2072,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						-- local camera_position = Camera.world_position(camera)
 						-- local target_position = camera_position + distance + down + vector3(x, 0, 0)
 						local world = self._weapon_preview._ui_weapon_spawner._world
-						local target_position = mod.attachment_slot_positions[6]
+						local target_position = self.attachment_slot_positions[6]
 						-- local index = self.attachment_index[unit]
 						local attachment_name = self.preview_attachment_name[unit]
 						if index == mod.attachment_preview_index then
@@ -2199,7 +2090,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 							local attachment_unit = unit_3p and mod.gear_settings:attachment_unit(attachment_units_3p, attachment_slot)
 							
 							-- self.attachment_slot_positions[3] = attachment_unit and Unit.world_position(attachment_unit, 1) or self.attachment_slot_positions[3]
-							target_position = mod.attachment_slot_positions[3]
+							target_position = self.attachment_slot_positions[3]
 							self.spawned_attachments_last_position[unit] = attachment_unit and Unit.world_position(attachment_unit, 1)
 							Unit.set_unit_visibility(unit, true, true)
 	
@@ -2215,7 +2106,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 							-- -- local attachment_name = Unit.get_data(flashlight, "attachment_name")
 							-- -- mod:preview_flashlight(true, self._world, flashlight, attachment_name)
 							-- if attachment_unit then
-							-- 	self.spawned_attachments_overwrite_position[unit] = mod.attachment_slot_positions[7]
+							-- 	self.spawned_attachments_overwrite_position[unit] = self.attachment_slot_positions[7]
 							-- end
 							-- mod:play_attachment_sound(mod.cosmetics_view._selected_item, self.preview_attachment_slot, entry.new, "attach")
 							
@@ -2223,10 +2114,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 							-- Unit.set_unit_visibility(unit, true, true)
 						elseif index ~= mod.attachment_preview_index then
 							self.spawned_attachments_last_position[unit] = self.spawned_attachments_last_position[unit] 
-								or mod.attachment_slot_positions[3]
+								or self.attachment_slot_positions[3]
 							local diff = index - mod.attachment_preview_index
 							if math.abs(diff) <= 2 then
-								target_position = mod.attachment_slot_positions[3 + diff]
+								target_position = self.attachment_slot_positions[3 + diff]
 								Unit.set_unit_visibility(unit, true, true)
 							else
 								Unit.set_unit_visibility(unit, false, true)
@@ -2240,7 +2131,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						local scale = .08 / math_max(radius, half_size.z * 2)
 						Unit.set_local_scale(unit, 1, vector3(scale, scale, scale))					
 	
-						self.spawned_attachments_last_position[unit] = self.spawned_attachments_target_position[unit] or mod.attachment_slot_positions[6]
+						self.spawned_attachments_last_position[unit] = self.spawned_attachments_target_position[unit] or self.attachment_slot_positions[6]
 						self.spawned_attachments_target_position[unit] = target_position
 	
 						self.attachment_index_updated[unit] = mod.attachment_preview_index
@@ -2261,7 +2152,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 						-- mod:info("mod.update_attachment_previews: "..tostring(unit))
 						Unit.set_local_position(unit, 1, vector3_unbox(target_position))
 						-- self.spawned_attachments_overwrite_position[unit] = nil
-						-- mod.attachment_slot_positions[7] = nil
+						-- self.attachment_slot_positions[7] = nil
 	
 					end
 				end
@@ -2343,15 +2234,21 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		local camera_position = Camera.world_position(camera)
 		local x = .05
 		local link_unit = self._weapon_preview._ui_weapon_spawner._weapon_spawn_data.link_unit
-		mod.attachment_slot_positions = {
-			vector3_box(camera_position + camera_forward * 5 + vector3(x - .6, 0, 0)),
-			vector3_box(camera_position + camera_forward * 4 + vector3(x - .3, -.1, -.1)),
-			vector3_box(camera_position + camera_forward * 2 + vector3(x, 0, -.05)),
-			vector3_box(camera_position + camera_forward * 3 + vector3(x + .175, -.15, .025)),
-			vector3_box(camera_position + camera_forward * 3.5 + vector3(x + .3, 0, .2)),
-			-- vector3_box(Unit.world_position(link_unit, 1) + vector3(0, 0, 3)),
-			vector3_box(camera_position + camera_forward * 2 + vector3(x, 0, -.05)),
-		}
+		self.attachment_slot_positions[1]:store(camera_position + camera_forward * 5 + vector3(x - .6, 0, 0))
+		self.attachment_slot_positions[2]:store(camera_position + camera_forward * 4 + vector3(x - .3, -.1, -.1))
+		self.attachment_slot_positions[3]:store(camera_position + camera_forward * 2 + vector3(x, 0, -.05))
+		self.attachment_slot_positions[4]:store(camera_position + camera_forward * 3 + vector3(x + .175, -.15, .025))
+		self.attachment_slot_positions[5]:store(camera_position + camera_forward * 3.5 + vector3(x + .3, 0, .2))
+		self.attachment_slot_positions[6]:store(camera_position + camera_forward * 2 + vector3(x, 0, -.05))
+		-- self.attachment_slot_positions = {
+		-- 	vector3_box(camera_position + camera_forward * 5 + vector3(x - .6, 0, 0)),
+		-- 	vector3_box(camera_position + camera_forward * 4 + vector3(x - .3, -.1, -.1)),
+		-- 	vector3_box(camera_position + camera_forward * 2 + vector3(x, 0, -.05)),
+		-- 	vector3_box(camera_position + camera_forward * 3 + vector3(x + .175, -.15, .025)),
+		-- 	vector3_box(camera_position + camera_forward * 3.5 + vector3(x + .3, 0, .2)),
+		-- 	-- vector3_box(Unit.world_position(link_unit, 1) + vector3(0, 0, 3)),
+		-- 	vector3_box(camera_position + camera_forward * 2 + vector3(x, 0, -.05)),
+		-- }
 	end
 	
 	instance.create_attachment_array = function(self, item, attachment_slot)
@@ -2410,6 +2307,16 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self.original_weapon_settings = {}
 		self.changed_attachment_settings = {}
 		self.start_weapon_settings = {}
+		self.equipment_line_target = {0, 0}
+		self.attachment_slot_positions = {
+			vector3_box(vector3_zero()),
+			vector3_box(vector3_zero()),
+			vector3_box(vector3_zero()),
+			vector3_box(vector3_zero()),
+			vector3_box(vector3_zero()),
+			vector3_box(vector3_zero()),
+		}
+		self.scenegraph_to_widgets = {}
 	end
 
 	-- Custom enter
@@ -2510,7 +2417,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		end
 
 		-- mod:check_unsaved_changes(true)
-		mod.gear_settings:release_attachment_sounds()
+		-- mod.gear_settings:release_attachment_sounds()
 
 		managers.event:unregister(self, "weapon_customization_hide_ui")
 		
@@ -2640,7 +2547,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			self:present_grid_layout({})
 			self._item_grid._widgets_by_name.grid_empty.visible = false
 			self:hide_custom_widgets(false)
-			self.original_weapon_settings = {}
+			-- self.original_weapon_settings = {}
+			table_clear(self.original_weapon_settings)
 			self:get_changed_weapon_settings()
 		else
 			-- local t = managers.time:time("main")
@@ -2679,6 +2587,22 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			ui_weapon_spawner:initiate_camera_movement()
 			ui_weapon_spawner:initiate_weapon_rotation()
 		end
+	end
+
+	instance.set_combinations_text = function(self)
+		-- Set text
+		self._widgets_by_name.sub_display_name.content.text = ItemUtils.display_name(self._selected_item).." - "..tostring(self:calculate_combinations()).." combinations"
+	end
+
+	instance.calculate_combinations = function(self)
+		-- Calculate combinations
+		local combinations = 0
+		local attachment_slots = mod.gear_settings:possible_attachment_slots(self._selected_item)
+		for _, attachment_slot in pairs(attachment_slots) do
+			-- local possible_attachments = mod.gear_settings:possible_attachments(self._selected_item, attachment_slot)
+			combinations = combinations + table_size(mod.gear_settings:possible_attachments(self._selected_item, attachment_slot))
+		end
+		return combinations
 	end
 
 end)
@@ -2845,5 +2769,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
 
 	-- Original function
 	func(self, element, ...)
+
+	-- self._widgets_by_name.sub_display_name.content.text = ItemUtils.display_name(self._selected_item).." - "..tostring(self:calculate_combinations().." combinations")
+	self:set_combinations_text()
 
 end)

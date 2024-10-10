@@ -29,6 +29,7 @@ return {
         local attachments = {
             {id = "body_01",        name = "Body 1"},
             {id = "body_02",        name = "Body 2"},
+            {id = "body_03",        name = "Body 3"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -41,7 +42,8 @@ return {
         return table_model_table({
             {name = "body_default", model = ""},
             {name = "body_01",      model = _item_melee.."/full/stubgun_pistol_full_01"},
-            {name = "body_02",      model = _item_ranged.."/recievers/stubgun_pistol_receiver_02"}
+            {name = "body_02",      model = _item_ranged.."/recievers/stubgun_pistol_receiver_02"},
+            {name = "body_03",      model = _item_ranged.."/recievers/stubgun_pistol_receiver_ml01"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     barrel_attachments = function(default)
@@ -51,6 +53,7 @@ return {
             {id = "barrel_03",      name = "Barrel 3"},
             {id = "barrel_04",      name = "Barrel 4"},
             {id = "barrel_05",      name = "Barrel 5"},
+            {id = "barrel_06",      name = "Barrel 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -67,6 +70,7 @@ return {
             {name = "barrel_03",      model = _item_ranged.."/barrels/stubgun_pistol_barrel_03"},
             {name = "barrel_04",      model = _item_ranged.."/barrels/stubgun_pistol_barrel_04"},
             {name = "barrel_05",      model = _item_ranged.."/barrels/stubgun_pistol_barrel_05"},
+            {name = "barrel_06",      model = _item_ranged.."/barrels/stubgun_pistol_barrel_ml01"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     rail_attachments = function(default)

@@ -37,6 +37,7 @@ local functions = {
 			{id = "barrel_04", name = "Infantry Autogun (04)"},
 			{id = "barrel_05", name = "Infantry Autogun (05)"},
 			{id = "barrel_06", name = "Infantry Autogun (06)"},
+			{id = "barrel_21", name = "Infantry Autogun (21)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "barrel_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -52,6 +53,7 @@ local functions = {
 			{name = "barrel_04",		model = _item_ranged.."/barrels/autogun_rifle_barrel_04"},
 			{name = "barrel_05",		model = _item_ranged.."/barrels/autogun_rifle_barrel_05"},
 			{name = "barrel_06",		model = _item_ranged.."/barrels/autogun_rifle_barrel_06"},
+			{name = "barrel_21",		model = _item_ranged.."/barrels/autogun_rifle_barrel_ml01"},
 		}, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┐ ┬─┐┌─┐┌─┐┌─┐┌┬┐  ┌┐ ┌─┐┬─┐┬─┐┌─┐┬  ┌─┐
@@ -67,6 +69,7 @@ local functions = {
 			{id = "barrel_14", name = "Braced Autogun (14)"},
 			{id = "barrel_18", name = "Braced Autogun (18)"},
 			{id = "barrel_19", name = "Braced Autogun (19)"},
+			{id = "barrel_20", name = "Braced Autogun (20)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "barrel_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -84,6 +87,7 @@ local functions = {
 			{name = "barrel_14",		model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_06"},
 			{name = "barrel_18",		model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_07"},
 			{name = "barrel_19",		model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_08"},
+			{name = "barrel_20",		model = _item_ranged.."/barrels/autogun_rifle_barrel_ak_ml01"},
 		}, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┬ ┬┌─┐┌─┐┌┬┐┬ ┬┬ ┬┌┐┌┌┬┐┌─┐┬─┐  ┌┐ ┌─┐┬─┐┬─┐┌─┐┬  ┌─┐
@@ -95,6 +99,7 @@ local functions = {
 			{id = "barrel_12", name = "Headhunter Autogun (12)"},
 			{id = "barrel_15", name = "Headhunter Autogun (15)"},
 			{id = "barrel_16", name = "Headhunter Autogun (16)"},
+			{id = "barrel_22", name = "Headhunter Autogun (22)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "barrel_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -108,6 +113,7 @@ local functions = {
 			{name = "barrel_12",		model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_03"},
 			{name = "barrel_15",		model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_04"},
 			{name = "barrel_16",		model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_05"},
+			{name = "barrel_22",		model = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_ml01"},
 		}, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┬┌┐┌┌─┐┌─┐┌┐┌┌┬┐┬─┐┬ ┬  ┌┬┐┬ ┬┌─┐┌─┐┬  ┌─┐┌─┐
@@ -120,6 +126,7 @@ local functions = {
 			{id = "muzzle_03", name = "Infantry Autogun (03)"},
 			{id = "muzzle_04", name = "Infantry Autogun (04)"},
 			{id = "muzzle_05", name = "Infantry Autogun (05)"},
+			{id = "muzzle_17", name = "Infantry Autogun (17)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "muzzle_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -134,6 +141,7 @@ local functions = {
 			{name = "muzzle_03",		model = _item_ranged.."/muzzles/autogun_rifle_muzzle_03"},
 			{name = "muzzle_04",		model = _item_ranged.."/muzzles/autogun_rifle_muzzle_04"},
 			{name = "muzzle_05",		model = _item_ranged.."/muzzles/autogun_rifle_muzzle_05"},
+			{name = "muzzle_17",		model = _item_ranged.."/muzzles/autogun_rifle_muzzle_ml01"},
 		}, parent, angle, move, remove, type or "muzzle", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┐ ┬─┐┌─┐┌─┐┌─┐┌┬┐  ┌┬┐┬ ┬┌─┐┌─┐┬  ┌─┐┌─┐
@@ -146,6 +154,7 @@ local functions = {
 			{id = "muzzle_08", name = "Braced Autogun (08)"},
 			{id = "muzzle_11", name = "Braced Autogun (11)"},
 			{id = "muzzle_12", name = "Braced Autogun (12)"},
+			{id = "muzzle_15", name = "Braced Autogun (15)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "muzzle_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -160,6 +169,7 @@ local functions = {
 			{name = "muzzle_08",		model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_03"},
 			{name = "muzzle_11",		model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_04"},
 			{name = "muzzle_12",		model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_05"},
+			{name = "muzzle_15",		model = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_ml01"},
 		}, parent, angle, move, remove, type or "muzzle", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┬ ┬┌─┐┌─┐┌┬┐┬ ┬┬ ┬┌┐┌┌┬┐┌─┐┬─┐  ┌┬┐┬ ┬┌─┐┌─┐┬  ┌─┐┌─┐
@@ -171,6 +181,7 @@ local functions = {
 			{id = "muzzle_10", name = "Headhunter Autogun (10)"},
 			{id = "muzzle_13", name = "Headhunter Autogun (13)"},
 			{id = "muzzle_14", name = "Headhunter Autogun (14)"},
+			{id = "muzzle_16", name = "Headhunter Autogun (16)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "muzzle_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -184,6 +195,7 @@ local functions = {
 			{name = "muzzle_10",		model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_03"},
 			{name = "muzzle_13",		model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_04"},
 			{name = "muzzle_14",		model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_05"},
+			{name = "muzzle_16",		model = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_ml01"},
 		}, parent, angle, move, remove, type or "muzzle", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┬┐┌─┐┌─┐┌─┐┌─┐┬┌┐┌┌─┐┌─┐
@@ -216,6 +228,7 @@ local functions = {
 	infantry_receiver_attachments = function(default)
 		local attachments = {
 			{id = "receiver_01", name = "Infantry Autogun (01)"},
+			{id = "receiver_10", name = "Infantry Autogun (10)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "receiver_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -226,6 +239,7 @@ local functions = {
 		return table_model_table({
 			{name = "receiver_default", model = ""},
 			{name = "receiver_01",		model = _item_ranged.."/recievers/autogun_rifle_receiver_01"},
+			{name = "receiver_10",		model = _item_ranged.."/recievers/autogun_rifle_receiver_ml01"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┐ ┬─┐┌─┐┌─┐┌─┐┌┬┐  ┬─┐┌─┐┌─┐┌─┐┬┬  ┬┌─┐┬─┐
@@ -236,6 +250,7 @@ local functions = {
 			{id = "receiver_03", name = "Braced Autogun (03)"},
 			{id = "receiver_06", name = "Braced Autogun (06)"},
 			{id = "receiver_07", name = "Braced Autogun (07)"},
+			{id = "receiver_08", name = "Braced Autogun (08)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "receiver_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -248,6 +263,7 @@ local functions = {
 			{name = "receiver_03",		model = _item_ranged.."/recievers/autogun_rifle_ak_receiver_01"},
 			{name = "receiver_06",		model = _item_ranged.."/recievers/autogun_rifle_ak_receiver_02"},
 			{name = "receiver_07",		model = _item_ranged.."/recievers/autogun_rifle_ak_receiver_03"},
+			{name = "receiver_08",		model = _item_ranged.."/recievers/autogun_rifle_ak_receiver_ml01"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┬ ┬┌─┐┌─┐┌┬┐┬ ┬┬ ┬┌┐┌┌┬┐┌─┐┬─┐  ┬─┐┌─┐┌─┐┌─┐┬┬  ┬┌─┐┬─┐
@@ -258,6 +274,7 @@ local functions = {
 			{id = "receiver_02", name = "Headhunter Autogun (02)"},
 			{id = "receiver_04", name = "Headhunter Autogun (04)"},
 			{id = "receiver_05", name = "Headhunter Autogun (05)"},
+			{id = "receiver_09", name = "Headhunter Autogun (09)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "receiver_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -270,6 +287,7 @@ local functions = {
 			{name = "receiver_02",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_01"},
 			{name = "receiver_04",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_02"},
 			{name = "receiver_05",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_03"},
+			{name = "receiver_09",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_ml01"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 }

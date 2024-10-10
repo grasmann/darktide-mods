@@ -24,29 +24,31 @@ local mod = get_mod("weapon_customization")
 
 local input_hook = function(func, self, action_name, ...)
     -- Oiriginal function
-    local pressed = func(self, action_name, ...)
-    -- Input hook
+    local action_result = func(self, action_name, ...)
     if mod.initialized then
-        if mod:is_flashlight_wielded() then
+        local action_pressed = action_name == WEAPON_EXTRA_PRESSED
+        local action_hold = action_name == WEAPON_EXTRA_HOLD
+        if action_pressed or action_hold then
             if mod:is_flashlight_modded() then
-                if action_name == WEAPON_EXTRA_PRESSED and pressed then
-                    mod:toggle_flashlight()
-                    return self:get_default(action_name)
+                if mod:is_flashlight_wielded() then
+                    if action_pressed and action_result then
+                        mod:toggle_flashlight()
+                        return self:get_default(action_name)
+                    elseif action_hold then
+                        return self:get_default(action_name)
+                    end
                 end
-                if action_name == WEAPON_EXTRA_HOLD then
-                    return self:get_default(action_name)
-                end
-            elseif action_name == WEAPON_EXTRA_PRESSED and pressed then
+            elseif action_pressed and action_result then
                 mod:toggle_flashlight()
             end
         end
     end
     -- Return
-    return pressed
+    return action_result
 end
   
--- Detach player movement from camera
+-- Input hook 
 mod:hook(CLASS.InputService, "_get", input_hook)
 
--- Detach simulated player movement from camera
+-- Input hook for simulate
 mod:hook(CLASS.InputService, "_get_simulate", input_hook)

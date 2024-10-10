@@ -48,6 +48,7 @@ return {
 			{name = "receiver_02",      model = _item_ranged.."/recievers/autogun_pistol_receiver_02"},
 			{name = "receiver_03",      model = _item_ranged.."/recievers/autogun_pistol_receiver_03"},
 			{name = "receiver_04",      model = _item_ranged.."/recievers/autogun_pistol_receiver_04"},
+			{name = "receiver_06",      model = _item_ranged.."/recievers/autogun_pistol_receiver_ml01"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┐ ┌─┐┬─┐┬─┐┌─┐┬  ┌─┐
@@ -99,11 +100,12 @@ return {
 	-- ##### ┴ ┴└─┘└─┘└─┘┴─┘└─┘└─┘
 	muzzle_attachments = function(default)
 		local attachments = {
-			{id = "muzzle_01",      name = "Autopistol Muzzle A"},
-			{id = "muzzle_02",      name = "Autopistol Muzzle B"},
-			{id = "muzzle_03",      name = "Autopistol Muzzle C"},
-			{id = "muzzle_04",      name = "Autopistol Muzzle D"},
-			{id = "muzzle_05",      name = "Autopistol Muzzle E"},
+			{id = "muzzle_01",      name = "Autopistol 1"},
+			{id = "muzzle_02",      name = "Autopistol 2"},
+			{id = "muzzle_03",      name = "Autopistol 3"},
+			{id = "muzzle_04",      name = "Autopistol 4"},
+			{id = "muzzle_05",      name = "Autopistol 5"},
+			{id = "muzzle_06",      name = "Autopistol 6"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "muzzle_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -118,6 +120,7 @@ return {
 			{name = "muzzle_03",      model = _item_ranged.."/muzzles/autogun_pistol_muzzle_03"},
 			{name = "muzzle_04",      model = _item_ranged.."/muzzles/autogun_pistol_muzzle_04"},
 			{name = "muzzle_05",      model = _item_ranged.."/muzzles/autogun_pistol_muzzle_05"},
+			{name = "muzzle_06",      model = _item_ranged.."/muzzles/autogun_pistol_muzzle_ml01"},
 		}, parent, angle, move, remove, type or "muzzle", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐

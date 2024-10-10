@@ -16,6 +16,7 @@ local mod = get_mod("modding_tools")
     local Gui = Gui
     local math = math
     local type = type
+    local table = table
     local class = class
     local pairs = pairs
     local Color = Color
@@ -25,6 +26,7 @@ local mod = get_mod("modding_tools")
     local tostring = tostring
     local vector3_box = Vector3Box
     local Application = Application
+    local table_clear = table.clear
     local DevParameters = DevParameters
     local quaternion_box = QuaternionBox
     local vector3_unbox = vector3_box.unbox
@@ -46,8 +48,9 @@ Console.init = function(self, init_data)
     -- Values
     self.lines = {}
     self.scroll = init_data and init_data.scroll or 1
+    self.max_scroll = 1
     self.row_height = init_data and init_data.row_height or 20
-    self.z = init_data and init_data.z or 990
+    self.z = init_data and init_data.z or 997
     self.visible = init_data and init_data.visible or false
     -- Lines
     if init_data and init_data.lines then
@@ -62,6 +65,13 @@ Console.init = function(self, init_data)
             "Open in inspector"
         },
         visible = false,
+        position = vector3_box(vector3(0, 0, 0)),
+    }
+    self.scrollbar = {
+        cursor = vector3_box(vector3(0, 0, 0)),
+        hover = false,
+        active = false,
+        scroll = 1,
     }
     -- Colors
     self.background = init_data and init_data.background or quaternion_box(Color(128, 0, 0, 0))
@@ -89,9 +99,12 @@ Console.init = function(self, init_data)
     self.title = init_data and init_data.title or "Console"
     -- self.carret = init_data and init_data.carret or {0, 0}
     self.initialized = true
+    -- Print delayed messages
+    self:print_delay_buffer()
 end
 
 Console.destroy = function(self)
+    self:show(false)
     self.initialized = false
 end
 
@@ -100,6 +113,7 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 Console.update = function(self, dt, t, input_service)
+    self.disable_control = mod.inspector_busy or mod.watcher_busy
     if self.initialized and self.visible then
         return self:draw(input_service)
     end
@@ -128,7 +142,7 @@ Console.draw_context_menu = function(self, input_service)
         local color = quaternion_unbox(self.color)
         local shadow = quaternion_unbox(self.shadow)
         local background = quaternion_unbox(self.context_menu_background)
-        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], self.z + 2, background)
+        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], 999, background)
 
         local y = 10
 
@@ -137,10 +151,10 @@ Console.draw_context_menu = function(self, input_service)
             local row_position = vector3(position[1] + 10, position[2] + y, position[3])
             local row_size = vector3(size[1] - 20, self.row_height, 0)
 
-            self.context_menu.hover = math.point_is_inside_2d_box(cursor, row_position, row_size)
+            self.context_menu.hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, row_position, row_size)
 
             if self.context_menu.hover then
-                ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], self.z + 2, quaternion_unbox(self.highlight))
+                ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], 999, quaternion_unbox(self.highlight))
                 if self:pressed(input_service) then
                     mod:inspect(self.context_menu.line.text, self.context_menu.line.obj)
                     self.context_menu.visible = false
@@ -149,7 +163,7 @@ Console.draw_context_menu = function(self, input_service)
                 end
             end
 
-            ScriptGui.text(gui, option, self.font, self.font_size, vector3(row_position[1] + 10, row_position[2], self.z + 3), color, shadow)
+            ScriptGui.text(gui, option, self.font, self.font_size, vector3(row_position[1] + 10, row_position[2], 1000), color, shadow)
 
             y = y + self.row_height
         end
@@ -176,7 +190,7 @@ Console.draw_title_bar = function(self, input_service)
         local button_size = vector3(title_size[2] - 20, title_size[2] - 20, 0)
         local close_button_position = vector3(position[1] + title_size[1] - 10 - button_size[1], position[2] + 10, position[3] + 1)
         -- local button_size = vector3(title_size[2] - 20, title_size[2] - 20, 0)
-        local close_button_hover = math.point_is_inside_2d_box(cursor, close_button_position, button_size)
+        local close_button_hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, close_button_position, button_size)
         -- Close button hover
         if close_button_hover then
             ScriptGui.icrect(gui, self.RES_X, self.RES_Y, close_button_position[1], close_button_position[2], close_button_position[1] + button_size[1],
@@ -188,7 +202,7 @@ Console.draw_title_bar = function(self, input_service)
         -- Clear button
         local clear_button_position = vector3(position[1] + 30 + t_max.x, position[2] + 10, position[3] + 1)
         -- Clear button hover
-        local clear_button_hover = math.point_is_inside_2d_box(cursor, clear_button_position, button_size)
+        local clear_button_hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, clear_button_position, button_size)
         if clear_button_hover then
             ScriptGui.icrect(gui, self.RES_X, self.RES_Y, clear_button_position[1], clear_button_position[2], clear_button_position[1] + button_size[1],
                 clear_button_position[2] + button_size[2], self.z, quaternion_unbox(self.highlight))
@@ -223,6 +237,8 @@ Console.draw_scroll = function(self, input_service)
     -- Check if gui is available
     if gui then
         -- Get values
+        local cursor = self:cursor(input_service)
+        local held = false
         local position = vector3_unbox(self.position)
         local size = vector3_unbox(self.size)
         local frame_size = vector3_unbox(self.frame_size)
@@ -235,7 +251,38 @@ Console.draw_scroll = function(self, input_service)
         local y = position[2] + vector3_unbox(self.title_size)[2] + scroll_offset + 10
         local y2 = y + scroll_bar_height
         -- Draw
-        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, self.z, scroll_bar_color)
+        -- ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, 999, scroll_bar_color)
+
+        self.scrollbar.hover = not self.disable_control and math.point_is_inside_2d_box(cursor, vector3(position[1] + size[1] - 10, y, 1), vector3(5, scroll_bar_height, 1))
+
+        if self.scrollbar.hover then
+            held = self:held(input_service)
+            if held ~= self.scrollbar.active then
+                self.context_menu.visible = false
+                self.context_menu.hover = false
+                self.scrollbar.active = held
+            end
+        end
+
+        if self.scrollbar.hover or self.scrollbar.active then
+            ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, 999, quaternion_unbox(self.highlight))
+        else
+            ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, 999, scroll_bar_color)
+        end
+
+        if self.scrollbar.active then
+            local diff = vector3_unbox(self.scrollbar.cursor) - cursor
+            self.scroll = math.ceil(math.clamp(self.scrollbar.scroll - (diff[2] / scroll_bar_height) * self.row_height, 1, self.max_scroll))
+            if not self:held(input_service) then
+                self.scrollbar.active = false
+            end
+        else
+            self.scrollbar.cursor = vector3_box(cursor)
+            self.scrollbar.scroll = self.scroll
+        end
+
+        return self.scrollbar.active == true and true
+
     end
 end
 
@@ -250,19 +297,31 @@ Console.draw_frame = function(self, input_service)
         local size = vector3_unbox(self.size)
         local frame_size = vector3_unbox(self.frame_size)
         -- Hover
-        self.hover = math.point_is_inside_2d_box(cursor, vector3(0, 0, 0), vector3(screen_size[1], size[2], 0))
+        self.hover = not self.disable_control and math.point_is_inside_2d_box(cursor, vector3(0, 0, 0), vector3(screen_size[1], size[2], 0))
         -- Color
         local color = self.hover and quaternion_unbox(self.hover_background) or quaternion_unbox(self.background)
         -- Draw
         ScriptGui.icrect(gui, self.RES_X, self.RES_Y, 0, 0, screen_size[1], size[2], self.z, color)
         -- Functionality
-        if self.hover and self:total_lines_height() > frame_size[2] then
+        -- if self.hover and self:total_lines_height() > frame_size[2] then
+        --     -- Scroll
+        --     local scroll_axis = input_service:get("scroll_axis")
+        --     local max_scroll = math.ceil(#self.lines - frame_size[2] / 20) + 1
+        --     if scroll_axis then
+        --         self.scroll = math.clamp(math.ceil(math.clamp(self.scroll - scroll_axis[2], 1, #self.lines * 20)), 1, max_scroll)
+        --     end
+        -- end
+        if self:total_lines_height() > frame_size[2] then
             -- Scroll
-            local scroll_axis = input_service:get("scroll_axis")
-            local max_scroll = math.ceil(#self.lines - frame_size[2] / 20) + 1
-            if scroll_axis then
-                self.scroll = math.clamp(math.ceil(math.clamp(self.scroll - scroll_axis[2], 1, #self.lines * 20)), 1, max_scroll)
+            if self.hover then
+                local scroll_axis = input_service:get("scroll_axis")
+                if scroll_axis then
+                    self.scroll = math.ceil(math.clamp(self.scroll - scroll_axis[2], 1, self.max_scroll))
+                end
             end
+            self.max_scroll = math.ceil(#self.lines - frame_size[2] / self.row_height) + 1
+        else
+            self.max_scroll = 1
         end
         if self.hover and not self.context_menu.hover then
             if self:pressed(input_service) or self:context_pressed(input_service) then
@@ -309,7 +368,7 @@ Console.draw_line = function(self, line, line_nr, input_service)
         if position[2] + self.row_height > size[2] then return false end
         local count = line.count and "("..tostring(line.count)..") " or ""
         -- Hover
-        line.hover = math.point_is_inside_2d_box(cursor, position, vector3(screen_size[1] - 20, self.row_height, 0))
+        line.hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, position, vector3(screen_size[1] - 20, self.row_height, 0))
         if line.hover and not self.context_menu.hover then
             -- Highlight
             ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], screen_size[1] - 20, position[2] + self.row_height, self.z, quaternion_unbox(self.highlight))
@@ -326,7 +385,7 @@ Console.draw_line = function(self, line, line_nr, input_service)
             if self:context_pressed(input_service) then
                 self.context_menu.visible = true
                 self.context_menu.line = line
-                self.context_menu.position = vector3_box(position[1], position[2] + 20, position[3] + 1)
+                self.context_menu.position:store(position[1], position[2] + 20, position[3] + 1)
             end
             -- Return busy
             return true
@@ -364,6 +423,10 @@ Console.cursor = function(self, input_service)
 	return input_service and input_service:get("cursor") or vector3(0, 0, 0)
 end
 
+Console.held = function(self, input_service)
+    return input_service and input_service:get("left_hold") or false
+end
+
 Console.pressed = function(self, input_service)
 	return input_service and input_service:get("left_pressed") or false
 end
@@ -391,9 +454,26 @@ Console.set_mod = function(self, mod)
 end
 
 Console.clear = function(self)
-    self.lines = {}
+    table_clear(self.lines)
     self.last_line = nil
     self.scroll = 1
+end
+
+Console.delay_buffer = function(self)
+    return mod:persistent_table("modding_tools").console.delay_buffer
+end
+
+Console.clear_delay_buffer = function(self)
+    table_clear(mod:persistent_table("modding_tools").console.delay_buffer)
+end
+
+Console.print_delay_buffer = function(self)
+    local delay_buffer = self:delay_buffer()
+    if delay_buffer then
+        for _, delayed_print in pairs(delay_buffer) do
+            self:print(delayed_print)
+        end
+    end
 end
 
 Console.print = function(self, ...)
@@ -416,7 +496,9 @@ Console.print_line = function(self, line)
             is_table = type(line) == "table",
             obj = line,
         }
-        self.scroll = math.clamp(#self.lines - self:visible_rows(), 1, #self.lines)
+        if not self.visible then
+            self.scroll = math.clamp(#self.lines - self:visible_rows(), 1, #self.lines)
+        end
         self.last_line = self.lines[#self.lines]
     end
 end

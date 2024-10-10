@@ -148,6 +148,8 @@ local FlashlightExtension = class("FlashlightExtension", "WeaponCustomizationExt
 FlashlightExtension.init = function(self, extension_init_context, unit, extension_init_data)
     FlashlightExtension.super.init(self, extension_init_context, unit, extension_init_data)
 
+    self.extension_init_context = extension_init_context
+    self.extension_init_data = extension_init_data
     -- Get flashlight units 1p / 3p
 	self.flashlight_unit_1p = extension_init_data.flashlight_unit_1p
 	self.flashlight_unit_3p = extension_init_data.flashlight_unit_3p
@@ -171,7 +173,8 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     self.flashlight_template = self.flashlight_attachment and mod.flashlight_templates[self.flashlight_attachment]
     local flashlight = mod.gear_settings:get(self.item, "flashlight", true)
     local default = mod.gear_settings:default_attachment(self.item, "flashlight") or "default"
-    self._is_modded = flashlight ~= nil and string_find(default, "default")
+    -- self._is_modded = flashlight ~= nil and string_find(default, "default")
+    self._is_modded = flashlight ~= nil and mod:cached_find(default, "default")
     -- Set light values 1p / 3p
     if self.has_flashlight and self.flashlight_template then
         self:set_light_values(self.flashlight_unit_1p, self.flashlight_template.light.first_person)
@@ -180,22 +183,21 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     -- Create battery extension
     if self.has_flashlight and self.flashlight_template and self.flashlight_template.battery and self:is_modded() then
         self:add_extension(self.player_unit, "battery_system", extension_init_context, {
-            player_unit = extension_init_data.player_unit,
+            player_unit = self.player_unit,
             battery_template = self.flashlight_template.battery,
             consumer = self,
             wielded_slot = extension_init_data.wielded_slot,
             on = self.on,
         })
     end
-    -- Create laser pointer extension
-    if self:is_laser_pointer() then
-        self:add_extension(self.player_unit, "laser_pointer_system", extension_init_context, extension_init_data)
-    end
+    -- if self:is_laser_pointer() and self.user_laser_pointer_system then
+    --     self:add_extension(self.player_unit, "laser_pointer_system", extension_init_context, extension_init_data)
+    -- end
     -- Register events
     -- self:register_event("weapon_customization_cutscene", "set_cutscene")
     -- self:register_event("weapon_customization_settings_changed", "on_settings_changed")
-    managers.event:register("weapon_customization_cutscene", "set_cutscene")
-    managers.event:register("weapon_customization_settings_changed", "on_settings_changed")
+    managers.event:register(self, "weapon_customization_cutscene", "set_cutscene")
+    managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
     -- Register synchronized calls
     self:register_synchronized_call("set_enabled")
     self:register_synchronized_call("set_spectated")
@@ -203,16 +205,31 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     self:register_synchronized_call("on_settings_changed")
     self:register_synchronized_call("on_wield_slot")
     self:register_synchronized_call("on_unwield_slot")
+    -- Create laser pointer extension
+    self:set_laser_pointer_system()
     -- Get settings
     self:on_settings_changed()
     -- Set initialized
     self.initialized = true
 end
 
+FlashlightExtension.set_laser_pointer_system = function(self)
+    -- Create laser pointer extension
+    if self:is_laser_pointer() and self.user_laser_pointer_system then
+        self:add_extension(self.player_unit, "laser_pointer_system", self.extension_init_context, self.extension_init_data)
+        self:execute_extension(self.player_unit, "laser_pointer_system", "respawn_all")
+    else
+        self:execute_extension(self.player_unit, "laser_pointer_system", "despawn_all")
+        self:remove_extension(self.player_unit, "laser_pointer_system")
+    end
+end
+
 FlashlightExtension.delete = function(self)
     -- Unregister events
     managers.event:unregister(self, "weapon_customization_cutscene")
     managers.event:unregister(self, "weapon_customization_settings_changed")
+
+    self:execute_extension(self.player_unit, "laser_pointer_system", "despawn_all")
     -- Deactivate
     self.initialized = false
     self.on = false
@@ -271,6 +288,10 @@ FlashlightExtension.is_laser_pointer = function(self)
     return self.flashlight_attachment == "laser_pointer"
 end
 
+FlashlightExtension.is_aiming = function(self)
+	return self.alternate_fire_component and self.alternate_fire_component.is_active
+end
+
 FlashlightExtension.is_modded = function(self)
     -- local flashlight = mod.gear_settings:get(self.item, "flashlight", true)
     -- local default = mod.gear_settings:default_attachment(self.item, "flashlight") or "default"
@@ -299,7 +320,7 @@ FlashlightExtension.update = function(self, dt, t)
         self:update_flicker(dt, t)
         -- self:set_enabled(self.on, false)
         -- Update laser pointer
-        mod:execute_extension(self.player_unit, "laser_pointer_system", "update", dt, t)
+        if self.user_laser_pointer_system then mod:execute_extension(self.player_unit, "laser_pointer_system", "update", dt, t) end
         -- Check first person change
         if self.last_first_person ~= first_person then
             -- Set lights for current view 1p / 3p
@@ -500,8 +521,8 @@ FlashlightExtension.set_light = function(self, play_sound, optional_value, optio
 end
 
 FlashlightExtension.play_animation = function(self)
-    local is_aiming = mod:execute_extension(self.player_unit, "sight_system", "is_aiming")
-    local multiplier = is_aiming and .25 or 1
+    -- local is_aiming = mod:execute_extension(self.player_unit, "sight_system", "is_aiming")
+    local multiplier = self:is_aiming() and .25 or 1
 
     self.animation_start = mod:game_time()
     self.animation_state = "move"
@@ -563,6 +584,8 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 FlashlightExtension.on_settings_changed = function(self)
+    self.user_laser_pointer_system = mod:get("mod_option_laser_pointer")
+    self:set_laser_pointer_system()
     self.flashlight_shadows = mod:get("mod_option_flashlight_shadows")
     self:set_light()
     -- Relay to sub extensions
@@ -601,6 +624,10 @@ end
 
 mod.is_flashlight_modded = function(self, item_or_gear_id)
     return self:execute_extension(self.player_unit, "flashlight_system", "is_modded")
+end
+
+mod.is_laser_pointer_modded = function(self, item_or_gear_id)
+    return self:execute_extension(self.player_unit, "flashlight_system", "is_laser_pointer")
 end
 
 mod.is_flashlight_wielded = function(self)

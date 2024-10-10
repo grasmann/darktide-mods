@@ -58,13 +58,12 @@ local mod = get_mod("weapon_customization")
 	local EMPTY_UNIT = "core/units/empty_root"
 	local WEAPON_MELEE = "WEAPON_MELEE"
     local WEAPON_RANGED = "WEAPON_RANGED"
+	local entry_distance = {}
+	local closest_4 = {}
 --#endregion
 
-mod:hook_require("scripts/ui/views/inventory_background_view/inventory_background_view_definitions", function(instance)
-
-
-
-end)
+-- mod:hook_require("scripts/ui/views/inventory_background_view/inventory_background_view_definitions", function(instance)
+-- end)
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -164,9 +163,6 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 		end
 	end
 
-	-- local unit_list = {}
-	local entry_distance = {}
-	local closest_4 = {}
 	instance.add_unit_manipulation = function(self)
 		self:get_inventory_view()
 		-- Check modding tools
@@ -194,138 +190,26 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 							local world = ui_profile_spawner._world
 							local camera = ui_profile_spawner and ui_profile_spawner._camera
 							local gui = self.inventory_view._ui_forward_renderer.gui
-
-							-- local has_backpack = mod:execute_extension(unit, "visible_equipment_system", "has_backpack")
-
-							-- local points = unit_has_node(unit, "j_frontchestplate") and unit_has_node(unit, "j_backchestplate") and {
-							-- 	{node = "j_hips", offset = vector3(0, .2, .1), text = "Hips Front", name = "hips_front"},
-							-- 	{node = "j_hips", offset = vector3(0, -.15, .1), text = "Hips Back", name = "hips_back"},
-							-- 	{node = "j_hips", offset = vector3(-.15, 0, .1), text = "Hips Left", name = "hips_left"},
-							-- 	{node = "j_hips", offset = vector3(.15, 0, .1), text = "Hips Right", name = "hips_right"},
-							-- 	{node = "j_leftupleg", offset = vector3(0, 0, 0), text = "Left Leg", name = "leg_left"},
-							-- 	{node = "j_rightupleg", offset = vector3(0, 0, 0), text = "Right Leg", name = "leg_right"},
-							-- 	{node = "j_frontchestplate", offset = vector3(0, 0, 0), text = "Chest", name = "chest"},
-							-- } or {
-							-- 	{node = "j_hips", offset = vector3(0, .55, .1), text = "Hips Front", name = "hips_front"},
-							-- 	{node = "j_hips", offset = vector3(0, -.4, .1), text = "Hips Back", name = "hips_back"},
-							-- 	{node = "j_hips", offset = vector3(-.5, 0, .1), text = "Hips Left", name = "hips_left"},
-							-- 	{node = "j_hips", offset = vector3(.5, 0, .1), text = "Hips Right", name = "hips_right"},
-							-- 	{node = "j_leftupleg", offset = vector3(0, -.2, 0), text = "Left Leg", name = "leg_left"},
-							-- 	{node = "j_rightupleg", offset = vector3(0, .2, 0), text = "Right Leg", name = "leg_right"},
-							-- 	{node = "j_spine2", offset = vector3(0, -.5, 0), text = "Chest", name = "chest"},
-							-- }
-							-- -- Back / backpack
-							-- if unit_has_node(unit, "j_frontchestplate") and unit_has_node(unit, "j_backchestplate") then
-							-- 	if has_backpack then
-							-- 		points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, -.15), text = "Backpack Left", name = "backpack_left"}
-							-- 		points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, .15), text = "Backpack Right", name = "backpack_right"}
-							-- 	else
-							-- 		points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, -.15), text = "Back Left", name = "back_left"}
-							-- 		points[#points+1] = {node = "j_backchestplate", offset = vector3(0, 0, .15), text = "Back Right", name = "back_right"}
-							-- 	end
-							-- else
-							-- 	if has_backpack then
-							-- 		points[#points+1] = {node = "j_spine2", offset = vector3(-.25, .5, 0), text = "Backpack Left", name = "backpack_left"}
-							-- 		points[#points+1] = {node = "j_spine2", offset = vector3(.25, .5, 0), text = "Backpack Right", name = "backpack_right"}
-							-- 	else
-							-- 		points[#points+1] = {node = "j_spine2", offset = vector3(-.25, .5, 0), text = "Back Left", name = "back_left"}
-							-- 		points[#points+1] = {node = "j_spine2", offset = vector3(.25, .5, 0), text = "Back Right", name = "back_right"}
-							-- 	end
-							-- end
-
-							-- local attach_points = mod.gear_settings:gear_attach_points(self:get_breed())
-
-							-- local unit_list = {}
-							-- -- table.clear(unit_list)
-							-- for _, point in pairs(attach_points) do
-							-- 	local node = unit_node(unit, point.node)
-							-- 	local point_unit = world_spawn_unit_ex(world, "core/units/empty_root", nil, unit_world_pose(unit, node))
-							-- 	world_link_unit(world, point_unit, 1, unit, node)
-							-- 	unit_set_local_position(point_unit, 1, vector3_unbox(point.offset))
-							-- 	unit_list[point.text] = {
-							-- 		unit = point_unit,
-							-- 		data = point,
-							-- 		unit_manipulation = self:unit_manipulation_add(point_unit, camera, world, gui, point.text, nil, 20, true, function(extension)
-							-- 			local name = ui_profile_spawner.help_units[point.text]
-							-- 			name = name and name.data and name.data.name
-							-- 			if name and weapon_item.item_type == WEAPON_RANGED then
-							-- 				if mod.gear_settings:has_temp_settings(weapon_item) then
-							-- 					mod.gear_settings:set(weapon_item, "gear_node", name)
-							-- 					managers.event:trigger("weapon_customization_attach_point_changed")
-							-- 				end
-							-- 			end
-							-- 		end),
-							-- 	}
-							-- end
-
-							-- local unit_list = mod.gear_settings:spawn_gear_attach_points(self:get_breed(), world, weapon_unit)
-							-- if unit_list then
-							-- 	for _, entry in pairs(t) do
-									
-							-- 	end
-							-- end
 							
-							local gear_node_units = mod:execute_extension(character_spawn_data.unit_3p, "visible_equipment_system", "gear_node_units")
-							if gear_node_units then
-								for _, unit in pairs(gear_node_units) do
-									self:unit_manipulation_add(unit, camera, world, gui, unit_get_data(unit, "gear_attach_name"))
+							-- local gear_node_units = mod:execute_extension(character_spawn_data.unit_3p, "visible_equipment_system", "gear_node_units")
+							-- if gear_node_units then
+							-- 	for _, unit in pairs(gear_node_units) do
+							-- 		self:unit_manipulation_add(unit, camera, world, gui, unit_get_data(unit, "gear_attach_name"))
+							-- 	end
+							-- end
+
+							local sling_units = mod:execute_extension(character_spawn_data.unit_3p, "weapon_sling_system", "help_units")
+							if sling_units then
+								for i, unit in pairs(sling_units) do
+									self:unit_manipulation_add(unit, camera, world, gui, "Sling node "..tostring(i))
 								end
 							end
 
-							-- ui_profile_spawner.help_units = unit_list
-
-							self:unit_manipulation_add(weapon_unit, camera, world, gui, "weapon")
-							-- self:unit_manipulation_select(weapon_unit)
-
-							-- self.modding_tools:inspect("weapon_item", weapon_item, gui)
-							-- self.modding_tools:show_console(true)
-							-- self.modding_tools:console_print(weapon_item)
-							
-							mod:echo(weapon_item)
-							-- mod:echo(character_spawn_data.profile)
-							-- mod:dtf(weapon_item, "weapon_item", 5)
+							-- self:unit_manipulation_add(weapon_unit, camera, world, gui, "weapon")
 							
 							self._unit_manipulation_added = true
 						end
 					end
-				elseif self._unit_manipulation_added then
-
-					-- if ui_profile_spawner.help_units then
-
-					-- 	-- local entry_distance = {}
-					-- 	table.clear(entry_distance)
-						
-					-- 	for attach_name, entry in pairs(ui_profile_spawner.help_units) do
-					-- 		local camera_position = camera_world_position(ui_profile_spawner._camera)
-					-- 		local distance = vector3_distance(camera_position, unit_world_position(entry.unit, 1))
-					-- 		entry_distance[attach_name] = distance
-					-- 	end
-					-- 	-- local closest_4 = {}
-					-- 	table.clear(closest_4)
-					-- 	for i = 1, 4, 1 do
-					-- 		local last = math.huge
-					-- 		local closest = nil
-					-- 		for attach_name, distance in pairs(entry_distance) do
-					-- 			if distance < last then
-					-- 				last = distance
-					-- 				closest = attach_name
-					-- 			end
-					-- 		end
-					-- 		closest_4[#closest_4+1] = ui_profile_spawner.help_units[closest]
-					-- 		entry_distance[closest] = nil
-					-- 	end
-					-- 	for attach_name, entry in pairs(ui_profile_spawner.help_units) do
-					-- 		if entry.unit_manipulation then
-					-- 			entry.unit_manipulation.show = false
-					-- 		end
-					-- 	end
-					-- 	for _, entry in pairs(closest_4) do
-					-- 		if entry.unit_manipulation then
-					-- 			entry.unit_manipulation.show = true
-					-- 		end
-					-- 	end
-					-- end
-
 				end
 
 				-- Disable rotation when interacting with modding tools

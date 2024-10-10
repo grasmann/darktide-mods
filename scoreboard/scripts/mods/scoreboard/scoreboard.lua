@@ -6,6 +6,19 @@ local _os = DMF:persistent_table("_os")
 _os.initialized = _os.initialized or false
 if not _os.initialized then _os = DMF.deepcopy(Mods.lua.os) end
 
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+local table = table
+local pairs = pairs
+local CLASS = CLASS
+local string = string
+local tonumber = tonumber
+local managers = Managers
+local table_clear = table.clear
+local string_format = string.format
+
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
 -- ##### ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗ ############################################################################
 -- ##### ██║  ██║███████║   ██║   ███████║ ############################################################################
@@ -148,9 +161,9 @@ mod.initialize = function(self)
 	if not self.initialized then
 		self.definitions = self:io_dofile("scoreboard/scripts/mods/scoreboard/scoreboard_definitions")
 		self.ui_font_settings = self:original_require("scripts/managers/ui/ui_font_settings")
-		self.ui_manager = Managers.ui
-		self.player_manager = Managers.player
-		self.package_manager = Managers.package
+		self.ui_manager = managers.ui
+		self.player_manager = managers.player
+		self.package_manager = managers.package
 	end
 	self.initialized = true
 end
@@ -288,7 +301,8 @@ end
 
 mod.clear = function(self)
 	for row_index, data in pairs(self.registered_scoreboard_rows) do
-		data.data = {}
+		if data.data then table_clear(data.data)
+		else data.data = {} end
 	end
 end
 
@@ -297,15 +311,13 @@ mod.update_stat = function(self, name, account_id, value)
 end
 
 mod.shorten_value = function(self, value, decimals)
-	if value >= 1000 then return string.format("%.1fK", value / 1000) end
-	local decimals = decimals or 0
-	return string.format("%."..decimals.."f", value)
+	if value >= 1000 then return string_format("%.1fK", value / 1000) end
+	return string_format("%."..(decimals or 0).."f", value)
 end
 
 mod.shorten_time = function(self, time, decimals)
-	if time >= 60 then return string.format("%.1f", time / 60).."m" end
-	local decimals = decimals or 0
-	return string.format("%."..decimals.."f", time).."s"
+	if time >= 60 then return string_format("%.1f", time / 60).."m" end
+	return string_format("%."..(decimals or 0).."f", time).."s"
 end
 
 -- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################
@@ -321,9 +333,7 @@ mod.is_me = function(self, account_id)
 end
 
 mod.is_numeric = function(self, x)
-    if tonumber(x) ~= nil then
-        return true
-    end
+    if tonumber(x) ~= nil then return true end
     return false
 end
 

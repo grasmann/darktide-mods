@@ -46,13 +46,9 @@ return table.combine(
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
-                    -- mod:echo(tostring(item_name).." changed "..tostring(attachment))
-                    -- mod:echo("grip = "..tostring(mod.gear_settings:get(gear_id, "grip")))
-                    -- mod:echo("pommel = "..tostring(mod.gear_settings:get(gear_id, "pommel")))
-                    -- table.contains(mod.gear_settings:possible_attachments())
                     local grip = attachment_list and attachment_list["grip"] or mod.gear_settings:get(item, "grip")
                     local pommel = attachment_list and attachment_list["pommel"] or mod.gear_settings:get(item, "pommel")
-                    if string_find(attachment, "default") or attachment == "ogryn_club_head_06" or attachment == "ogryn_club_head_07" then
+                    if mod:cached_find(attachment, "default") or attachment == "ogryn_club_head_06" or attachment == "ogryn_club_head_07" then
                         if grip ~= "grip_default" then changes["grip"] = "grip_default" end
                         if pommel ~= "pommel_default" then changes["pommel"] = "pommel_default" end
                     else
@@ -66,10 +62,9 @@ return table.combine(
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
-                    -- mod:echo(tostring(item_name).." changed "..tostring(attachment))
                     local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
                     local pommel = attachment_list and attachment_list["pommel"] or mod.gear_settings:get(item, "pommel")
-                    if string_find(attachment, "default") then
+                    if mod:cached_find(attachment, "default") then
                         if head ~= "head_default" then changes["head"] = "head_default" end
                         if pommel ~= "pommel_default" then changes["pommel"] = "pommel_default" end
                     else
@@ -83,10 +78,9 @@ return table.combine(
                 changes = {}
                 local item_name = mod.gear_settings:short_name(item.name)
                 if item_name == "ogryn_club_p1_m1" then
-                    -- mod:echo(tostring(item_name).." changed "..tostring(attachment))
                     local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
                     local grip = attachment_list and attachment_list["grip"] or mod.gear_settings:get(item, "grip")
-                    if string_find(attachment, "default") then
+                    if mod:cached_find(attachment, "default") then
                         if head ~= "head_default" then changes["head"] = "head_default" end
                         if grip ~= "grip_default" then changes["grip"] = "grip_default" end
                     else

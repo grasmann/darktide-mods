@@ -7,6 +7,9 @@ local mod = get_mod("weapon_customization")
 --#region Local functions
 	local table = table
 	local CLASS = CLASS
+	local ipairs = ipairs
+	local managers = Managers
+	local table_sort = table.sort
 	local table_insert = table.insert
 	local table_find_by_key = table.find_by_key
 --#endregion
@@ -36,9 +39,9 @@ mod:hook(CLASS.UIHud, "init", function(func, self, elements, visibility_groups, 
 			visibility_groups = {
 				"alive",
 				"tactical_overlay",
-                "in_view",
+				"in_view",
 			},
 		})
 	end
-	return func(self, elements, visibility_groups, params, ...)
+	func(self, elements, visibility_groups, params, ...)
 end)

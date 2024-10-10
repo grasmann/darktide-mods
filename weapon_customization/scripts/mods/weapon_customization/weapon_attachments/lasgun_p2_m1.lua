@@ -44,6 +44,7 @@ return table.combine(
                 _common_ranged.reflex_sights_attachments(),
                 _common_ranged.sights_attachments(false)
             ),
+            weapon_sling = _common_ranged.weapon_sling_attachments(),
             -- Bolter
             -- help_sight = _bolter_p1_m1.sight_attachments(),
             -- Common
@@ -60,6 +61,7 @@ return table.combine(
             _common_lasgun.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
             -- _lasgun_rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
             -- Ranged
+            _common_ranged.weapon_sling_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.5, -3, -.05), vector3_box(.2, 0, 0)),
             _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.1, -3, 0), vector3_box(0, .4, -.034)),
             _common_ranged.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, -.1, -.1)),

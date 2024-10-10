@@ -49,7 +49,8 @@ return table.combine(
                     local grip = attachment_list and attachment_list["grip"] or mod.gear_settings:get(item, "grip")
                     local pommel = attachment_list and attachment_list["pommel"] or mod.gear_settings:get(item, "pommel")
                     local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
-                    if string_find(attachment, "default") then
+                    -- if string_find(attachment, "default") then
+                    if mod:cached_find(attachment, "default") then
                         if grip ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
                         if pommel ~= "pommel_default" then changes["pommel"] = "pommel_default" end
                     else
@@ -65,7 +66,8 @@ return table.combine(
                     local grip = attachment_list and attachment_list["grip"] or mod.gear_settings:get(item, "grip")
                     local pommel = attachment_list and attachment_list["pommel"] or mod.gear_settings:get(item, "pommel")
                     local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
-                    if string_find(attachment, "default") then
+                    -- if string_find(attachment, "default") then
+                    if mod:cached_find(attachment, "default") then
                         if head ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
                         if pommel ~= "pommel_default" then changes["pommel"] = "pommel_default" end
                     else
@@ -80,7 +82,8 @@ return table.combine(
                 local grip = attachment_list and attachment_list["grip"] or mod.gear_settings:get(item, "grip")
                 local pommel = attachment_list and attachment_list["pommel"] or mod.gear_settings:get(item, "pommel")
                 local head = attachment_list and attachment_list["head"] or mod.gear_settings:get(item, "head")
-                if string_find(attachment, "default") or string_find(attachment, "shovel_pommel_06") then
+                -- if string_find(attachment, "default") or string_find(attachment, "shovel_pommel_06") then
+                if mod:cached_find(attachment, "default") or mod:cached_find(attachment, "shovel_pommel_06") then
                     if head ~= "shovel_head_default" then changes["head"] = "shovel_head_default" end
                     if grip ~= "shovel_grip_default" then changes["grip"] = "shovel_grip_default" end
                 else

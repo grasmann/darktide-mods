@@ -71,15 +71,15 @@ local mod = get_mod("weapon_customization")
             models = table_combine(
                 {customization_default_position = vector3_box(0, -.5, 0)},
                 -- Native
-                _autogun_p1_m1.braced_barrel_models(nil, -.3, vector3_box(.3, -1, 0), vector3_box(0, .1, 0)),
-                _autogun_p1_m1.headhunter_barrel_models(nil, -.3, vector3_box(.3, -1, 0), vector3_box(0, .1, 0), nil, {
+                _autogun_p1_m1.braced_barrel_models(nil, -.3, vector3_box(.2, -1, 0), vector3_box(0, .1, 0)),
+                _autogun_p1_m1.headhunter_barrel_models(nil, -.3, vector3_box(.2, -1, 0), vector3_box(0, .1, 0), nil, {
                     -- No support
                     {"trinket_hook"},
                 }, {
                     -- Auto-equip
                     {trinket_hook = "!trinket_hook_empty|trinket_hook_empty"},
                 }),
-                _autogun_p1_m1.infantry_barrel_models(nil, -.3, vector3_box(.3, -1, 0), vector3_box(0, .1, 0), nil, {
+                _autogun_p1_m1.infantry_barrel_models(nil, -.3, vector3_box(.2, -1, 0), vector3_box(0, .1, 0), nil, {
                     -- No support
                     {"trinket_hook_empty"},
                 }, {
@@ -89,8 +89,8 @@ local mod = get_mod("weapon_customization")
                 _autogun_p1_m1.muzzle_models(nil, -.5, vector3_box(.4, -1, 0), vector3_box(0, .1, 0)),
                 _autogun_p1_m1.receiver_models(nil, 0, vector3_box(-.2, -1, 0), vector3_box(0, 0, -.00001)),
                 -- Ranged
-                _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.6, -1, 0), vector3_box(.1, 0, 0)),
-                _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.5, -1, 0), vector3_box(0, .4, -.034)),
+                _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.3, -1, 0), vector3_box(.1, 0, 0)),
+                _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.4, -1, 0), vector3_box(0, .4, -.034)),
                 _common_ranged.grip_models(nil, .4, vector3_box(-.4, -1, .1), vector3_box(0, -.1, -.1)),
                 _common_ranged.reflex_sights_models(nil, .2, vector3_box(-.3, -1, -.2), vector3_box(0, -.2, 0), "sight", {}, {
                     -- Auto-equip
@@ -134,7 +134,7 @@ local mod = get_mod("weapon_customization")
                     {}, {}, {}, {}, {{"sight", 1}}, {}, {}, {}, {},
                 }),
                 _common_ranged.stock_models(nil, .5, vector3_box(-.6, -1, 0), vector3_box(0, -.2, 0)),
-                _common_ranged.magazine_models(nil, .2, vector3_box(-.2, -1, .1), vector3_box(0, 0, -.2)),
+                _common_ranged.magazine_models(nil, 0, vector3_box(-.2, -1, .1), vector3_box(0, 0, -.2)),
                 -- Lasgun
                 _common_lasgun.rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .1)),
                 -- Common
@@ -653,6 +653,8 @@ local mod = get_mod("weapon_customization")
                             magazine = {offset = true, position = vector3_box(0, 0, -.035), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, 1, 1)}},
                         {dependencies = {"bolter_magazine_03"}, -- Magazine
                             magazine = {offset = true, position = vector3_box(0, 0, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.2, 1.2)}},
+                        {dependencies = {"boltpistol_magazine_01|boltpistol_magazine_02"}, -- Magazine
+                            magazine = {offset = true, position = vector3_box(0, 0, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.15, 1.218)}},
                     --#endregion
                 },
             },

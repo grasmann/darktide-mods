@@ -1,13 +1,5 @@
 local mod = get_mod("weapon_customization")
 
--- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
--- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
--- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
-
---#region Require
-    local MasterItems = mod:original_require("scripts/backend/master_items")
---#endregion
-
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -51,7 +43,7 @@ mod.player_items = {}
 -- ##### │││├─┤└─┐ │ ├┤ ├┬┘  │ │ ├┤ │││  ││││ │ │││├┤ ││  ├─┤ │ ││ ││││  │  ├┬┘├─┤└─┐├─┤ ##############################
 -- ##### ┴ ┴┴ ┴└─┘ ┴ └─┘┴└─  ┴ ┴ └─┘┴ ┴  ┴ ┴└─┘─┴┘┴└  ┴└─┘┴ ┴ ┴ ┴└─┘┘└┘  └─┘┴└─┴ ┴└─┘┴ ┴ ##############################
 
-mod:hook_require("scripts/backend/master_items", function(MasterItems)
+mod:hook_require("scripts/backend/master_items", function(instance)
 
     --#region Original Code
         local FALLBACK_ITEMS_BY_SLOT = {
@@ -114,7 +106,7 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         
             log_warning("MasterItemCache", string_format("Using fallback with name %s", fallback_name))
         
-            local fallback = rawget(MasterItems.get_cached(), fallback_name)
+            local fallback = rawget(instance.get_cached(), fallback_name)
         
             return fallback
         end
@@ -142,7 +134,7 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 for i = #traits, 1, -1 do
                     local data = traits[i]
                     local trait_id = data.id
-                    local trait_exists = rawget(MasterItems.get_cached(), trait_id)
+                    local trait_exists = rawget(instance.get_cached(), trait_id)
         
                     if not trait_exists then
                         table_remove(traits, i)
@@ -156,7 +148,7 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 for i = #perks, 1, -1 do
                     local data = perks[i]
                     local perk_id = data.id
-                    local perk_exists = rawget(MasterItems.get_cached(), perk_id)
+                    local perk_exists = rawget(instance.get_cached(), perk_id)
         
                     if not perk_exists then
                         table_remove(perks, i)
@@ -166,10 +158,10 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         end
 
         local function _update_master_data(item_instance)
-            rawset(item_instance, "__master_ver", MasterItems.get_cached_version())
+            rawset(item_instance, "__master_ver", instance.get_cached_version())
         
             local gear = rawget(item_instance, "__gear")
-            local item = rawget(MasterItems.get_cached(), gear.masterDataInstance.id)
+            local item = rawget(instance.get_cached(), gear.masterDataInstance.id)
             item = item or _fallback_item(gear)
         
             if item then
@@ -217,7 +209,7 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 __index = function (t, field_name)
                     local master_ver = rawget(item_instance, "__master_ver")
         
-                    if master_ver ~= MasterItems.get_cached_version() then
+                    if master_ver ~= instance.get_cached_version() then
                         local success = _update_master_data(item_instance)
         
                         if not success then
@@ -278,7 +270,7 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
                 __index = function (t, field_name)
                     local master_ver = rawget(item_instance, "__master_ver")
         
-                    if master_ver ~= MasterItems.get_cached_version() then
+                    if master_ver ~= instance.get_cached_version() then
                         local success = _update_master_data(item_instance)
         
                         if not success then
@@ -330,13 +322,7 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         end
     --#endregion Original Code
 
-    -- local function cached_gear_list()
-    --     local data_service = managers and managers.data_service
-    --     local gear_data = data_service and data_service.gear
-    --     return gear_data and gear_data._cached_gear_list
-    -- end
-
-    mod:hook(MasterItems, "get_item_instance", function(func, gear, gear_id, ...)
+    mod:hook(instance, "get_item_instance", function(func, gear, gear_id, ...)
         -- Check instance
         if not gear then
             log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
@@ -344,29 +330,30 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         else
             -- Process
             local item_instance = _item_plus_overrides(gear, gear_id)
-            local master_item = item_instance.__master_item or item_instance
-            -- local player_item = master_item.item_list_faction == "Player"
-            local weapon_item = master_item.item_type == WEAPON_MELEE or master_item.item_type == WEAPON_RANGED
-            local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
-            local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
-            local in_possesion_of_player = mod.gear_settings:player_item(master_item) or (visible_equipment_system_option and hub)
-            -- local cached_gear_list = cached_gear_list()
-            local cached_gear_list = mod.gear_settings:player_gear_list()
-            if gear_id and cached_gear_list and cached_gear_list[gear_id] ~= nil and weapon_item and in_possesion_of_player then
-                mod.player_items[gear_id] = master_item
-            elseif gear_id and weapon_item and in_possesion_of_player then
-                mod.player_items[gear_id] = nil
-                -- Get attributes
-                local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
-                local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
-                local in_premium_store = mod:is_premium_store_item(item_instance)
-                -- Get options
-                local store = in_store and mod:get("mod_option_randomization_store")
-                local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
-                local randomize = store or other_player
-                -- Randomize
-                if randomize and gear_id and not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
-                    mod.gear_settings:create_temp_settings(gear_id, mod.gear_settings:randomize_weapon(master_item))
+            if item_instance then
+                local master_item = item_instance.__master_item or item_instance
+                if gear_id and master_item.item_list_faction == "Player" then
+                    if master_item.item_type == WEAPON_MELEE or master_item.item_type == WEAPON_RANGED then
+                        local gear_settings = mod.gear_settings
+                        local cached_gear_list = gear_settings:player_gear_list()
+                        if cached_gear_list and cached_gear_list[gear_id] ~= nil then
+                            mod.player_items[gear_id] = master_item
+                        elseif master_item.attachments and cached_gear_list and not cached_gear_list[gear_id] then
+                            mod.player_items[gear_id] = nil
+                            -- Get attributes
+                            local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
+                            -- local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
+                            -- local in_premium_store = mod:is_premium_store_item(item_instance)
+                            -- Get options
+                            -- local store = in_store and mod:get("mod_option_randomization_store")
+                            local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
+                            -- local randomize = store or other_player
+                            -- Randomize
+                            if other_player and not mod:persistent_table(REFERENCE).temp_gear_settings[gear_id] then
+                                gear_settings:create_temp_settings(gear_id, gear_settings:randomize_weapon(master_item))
+                            end
+                        end
+                    end
                 end
             end
             -- Return instance
@@ -374,75 +361,49 @@ mod:hook_require("scripts/backend/master_items", function(MasterItems)
         end
     end)
 
-    local function randomize_store_item_instance(description, item_instance)
-        local master_item = item_instance.__master_item or item_instance
-        local weapon_item = item_instance.item_type == WEAPON_MELEE or item_instance.item_type == WEAPON_RANGED
-        local gear_id = mod.gear_settings:item_to_gear_id(item_instance)
-        local offer_id = description.offer_id
-        -- Check gear id and offer id and weapon item and not randomized already
-        if gear_id and offer_id and weapon_item and not mod.gear_settings:has_temp_settings(offer_id) then
-        -- if gear_id and offer_id and weapon_item and not mod:persistent_table(REFERENCE).temp_gear_settings[offer_id] then
-            if not mod:is_premium_store_item() then
-                -- Get attributes
-                local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
-                local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
-                local in_premium_store = mod:is_premium_store_item(item_instance)
-                -- Get options
-                local store = in_store and mod:get("mod_option_randomization_store")
-                local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
-                local randomize = store or other_player
-                -- Randomize
-                if randomize and offer_id then
-                    mod.gear_settings:create_temp_settings(offer_id, mod.gear_settings:randomize_weapon(master_item))
-                end
-            end
-        end
-        if mod.gear_settings:has_temp_settings(offer_id) then
-            mod.gear_settings:copy_temp_settings(gear_id, offer_id)
-        end
-        return item_instance
-    end
-
-    mod:hook(MasterItems, "get_store_item_instance", function(func, description, ...)
+    mod:hook(instance, "get_store_item_instance", function(func, description, ...)
         local item_instance = _store_item_plus_overrides(description)
-
         if description and item_instance then
+            local gear_settings = mod.gear_settings
+            local gear_id = gear_settings:item_to_gear_id(item_instance)
             local master_item = item_instance.__master_item or item_instance
-            local weapon_item = item_instance.item_type == WEAPON_MELEE or item_instance.item_type == WEAPON_RANGED
-            local gear_id = mod.gear_settings:item_to_gear_id(item_instance)
-            local offer_id = description.offer_id
-            -- Check gear id and offer id and weapon item and not randomized already
-            if gear_id and offer_id and weapon_item and not mod.gear_settings:has_temp_settings(offer_id) then
-                if not mod:is_premium_store_item() then
-                    -- Get attributes
-                    local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
-                    local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
-                    local in_premium_store = mod:is_premium_store_item(item_instance)
-                    -- Get options
-                    local store = in_store and mod:get("mod_option_randomization_store")
-                    local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
-                    local randomize = store or other_player
-                    -- Randomize
-                    if randomize and offer_id then
-                        mod.gear_settings:create_temp_settings(offer_id, mod.gear_settings:randomize_weapon(master_item))
+            if gear_id and master_item.item_list_faction == "Player" then
+                if item_instance.item_type == WEAPON_MELEE or item_instance.item_type == WEAPON_RANGED then
+                    local offer_id = description.offer_id
+                    -- Check gear id and offer id and weapon item and not randomized already
+                    if offer_id and not gear_settings:has_temp_settings(offer_id) then
+                        if not mod:is_premium_store_item() then
+                            -- Get attributes
+                            local in_possesion_of_other_player = mod:is_owned_by_other_player(item_instance)
+                            -- local in_store = mod:is_store_item(item_instance) and not mod:is_premium_store_item(item_instance)
+                            local in_premium_store = mod:is_premium_store_item(item_instance)
+                            -- Get options
+                            local store = not in_premium_store and mod:get("mod_option_randomization_store")
+                            local other_player = in_possesion_of_other_player and mod:get("mod_option_randomization_players")
+                            local randomize = store or other_player
+                            -- Randomize
+                            if randomize and offer_id then
+                                gear_settings:create_temp_settings(offer_id, gear_settings:randomize_weapon(master_item))
+                            end
+                        end
+                    end
+                    if gear_settings:has_temp_settings(offer_id) then
+                        gear_settings:copy_temp_settings(gear_id, offer_id)
                     end
                 end
             end
-            if mod.gear_settings:has_temp_settings(offer_id) then
-                mod.gear_settings:copy_temp_settings(gear_id, offer_id)
-            end
         end
-
         -- Return instance
         return item_instance
     end)
 
-    mod:hook(MasterItems, "get_cached", function(func, original, ...)
+    mod:hook(instance, "get_cached", function(func, original, ...)
         local master_items = func(original, ...)
+        local persistent_table = mod:persistent_table(REFERENCE)
         -- Setup definitions
-        if not mod:persistent_table(REFERENCE).item_definitions and master_items then mod:setup_item_definitions(master_items) end
+        if not persistent_table.item_definitions and master_items then mod:setup_item_definitions(master_items) end
         -- Return custom definitions
-        if not original and mod:persistent_table(REFERENCE).item_definitions then return mod:persistent_table(REFERENCE).item_definitions end
+        if not original and persistent_table.item_definitions then return persistent_table.item_definitions end
         -- Return original definitions
         return master_items
     end)

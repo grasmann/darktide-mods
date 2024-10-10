@@ -46,7 +46,6 @@ local mod = get_mod("weapon_customization")
 	local level_units = Level.units
 	local table_remove = table.remove
 	local table_append = table.append
-	local string_split = string.split
 	local vector3_zero = vector3.zero
 	local matrix4x4_box = Matrix4x4Box
 	local unit_set_data = Unit.set_data
@@ -127,15 +126,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local attachments = item_data.attachments
 		local gear_id = mod.gear_settings:item_to_gear_id(item_data)
 		local slot_info_id = mod.gear_settings:slot_info_id(item_data)
-		local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
-		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
-        local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
+		-- local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
+		-- local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+        -- local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
+		local in_possesion_of_player = not mod:is_owned_by_other_player(item_data)
 		local attachment_slot_info = {}
-		local weapon_item = item_data.item_type == "WEAPON_MELEE" or item_data.item_type == "WEAPON_RANGED"
+		local weapon_item = item_data.item_type == "WEAPON_MELEE" or item_data.item_type == "WEAPON_RANGED" --or not item_data.item_type
+		local player_item = item_data.item_list_faction == "Player" --or item_data.item_list_faction == "Minion"
 
-		local player_item = item_data.item_list_faction == "Player"
-		
-		if gear_id and item_unit and attachments and weapon_item and player_item and in_possesion_of_player and not mod:is_premium_store_item() then
+		if item_unit and attachments and weapon_item and player_item and not mod:is_premium_store_item() then
 			mod:setup_item_definitions()
 
 			-- -- Resolve issues
@@ -148,7 +147,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			mod.gear_settings:_overwrite_attachments(item_data, attachments)
 		end
 
-		-- mod:echo(item_name)
+		-- mod:console_print("optional_mission_template", optional_mission_template)
+
 		-- mod:debug_attachments(item_data, attachments, {"powersword_p1_m1", "powersword_p1_m2"}, nil, true)
 
 		--#region Original
@@ -182,7 +182,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 		-- ############################################################################################################
 
-		if gear_id and attachment_units and item_unit and attachments and weapon_item and player_item and not mod:is_premium_store_item() and in_possesion_of_player then
+		if attachment_units and item_unit and attachments and weapon_item and player_item and not mod:is_premium_store_item() then
 
 			unit_set_data(item_unit, "attachment_units", attachment_units)
 
@@ -332,8 +332,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 							-- local visible = false
 							local visible = table.contains(mod.attachment_slots_always_sheathed, attachment_slot) and false or true
-        					-- Unit.set_unit_visibility(spawned_unit, visible, true)
-							-- if not visible then mod:echo("lol: "..tostring(attachment_slot)) end
 							unit_set_unit_visibility(unit, visible, true)
 
 							if anchor.data then
@@ -400,14 +398,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 					end
 				end
 			end
-
-			local weapon_size = mod:weapon_size(attachment_units)
-			Unit.set_data(item_unit, "weapon_size", weapon_size)
-			-- mod:echo("weapon_size: "..tostring(weapon_size))
 		end
 
 		-- if attachment_units and mod:has_premium_skin(item_data) and attach_settings then
-		-- 	mod:echo("premium skin - glow")
 		-- 	-- local particle_name = "content/fx/particles/interacts/servoskull_visibility_hover"
 		-- 	-- local particle_name = "content/fx/particles/enemies/red_glowing_eyes"
 		-- 	-- local particle_name = "content/fx/particles/abilities/psyker_warp_charge_shout"
@@ -436,7 +429,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		-- 			-- Unit.set_scalar_for_materials(unit, "increase_color", 2)
 		-- 			-- if attach_settings.character_unit then
 		-- 			-- 	-- "content/fx/particles/interacts/servoskull_visibility_hover"
-		-- 			-- 	mod:echo("character")
 		-- 			-- end
 		-- 		end
 		-- 	-- end
@@ -565,11 +557,16 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	instance._node_name_to_attachment_slot = function(item_name, node_name)
 		if type(node_name) == "string" then
 			local name = node_name
-			name = string_gsub(name, "ap_", "")
-			name = string_gsub(name, "_01", "")
-			name = string_gsub(name, "rp_", "")
-			name = string_gsub(name, "magazine_02", "magazine2")
-			if string_find(name, "chained_rig") then name = "receiver" end
+			-- name = string_gsub(name, "ap_", "")
+			name = mod:cached_gsub(name, "ap_", "")
+			-- name = string_gsub(name, "_01", "")
+			name = mod:cached_gsub(name, "_01", "")
+			-- name = string_gsub(name, "rp_", "")
+			name = mod:cached_gsub(name, "rp_", "")
+			-- name = string_gsub(name, "magazine_02", "magazine2")
+			name = mod:cached_gsub(name, "magazine_02", "magazine2")
+			-- if string_find(name, "chained_rig") then name = "receiver" end
+			if mod:cached_find(name, "chained_rig") then name = "receiver" end
 			if name == "trinket" then name = mod.anchors[item_name] and mod.anchors[item_name].trinket_slot or "slot_trinket_1" end
 			return name
 		end
@@ -738,16 +735,17 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 	instance.generate_attachment_overrides_lookup = function (item_data, override_item_data, in_possesion_of_player)
 
-		local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
-		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
-		local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
-		-- local player_item = item_data.item_list_faction == "Player"
+		-- local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
+		-- local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
+		-- local in_possesion_of_player = mod.gear_settings:player_item(item_data) or (visible_equipment_system_option and hub)
+		local weapon_item = item_data.item_type == "WEAPON_MELEE" or item_data.item_type == "WEAPON_RANGED" --or not item_data.item_type
+		local player_item = item_data.item_list_faction == "Player" --or item_data.item_list_faction == "Minion"
 
-		if override_item_data and in_possesion_of_player then
+		if override_item_data then
 			local attachments = override_item_data.attachments
 			local gear_id = mod.gear_settings:item_to_gear_id(item_data)
 
-			if gear_id and not mod:is_premium_store_item() then
+			if weapon_item and player_item and not mod:is_premium_store_item() then
 				mod:setup_item_definitions()
 
 				-- -- Resolve issues

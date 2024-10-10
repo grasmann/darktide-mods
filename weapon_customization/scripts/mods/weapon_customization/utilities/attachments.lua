@@ -37,7 +37,6 @@ local mod = get_mod("weapon_customization")
 	local string_trim = string.trim
 	local Application = Application
 	local unit_get_data = Unit.get_data
-	local string_split = string.split
 	local table_contains = table.contains
 	local unit_has_node = Unit.has_node
 	local unit_debug_name = Unit.debug_name
@@ -59,6 +58,29 @@ local mod = get_mod("weapon_customization")
 	local LANGUAGE_ID = Application.user_setting("language_id")
 	local MK = mod:localize("mod_attachment_mk")
 	local KASR = mod:localize("mod_attachment_kasr")
+	local additions = {
+		MK.."I",
+		MK.."II",
+		MK.."III",
+		MK.."IV",
+		MK.."V",
+		MK.."VI",
+		MK.."VII",
+		MK.."VIII"
+	}
+	local skip_weapon_name_generation = {
+		"trinket_hook",
+		"flashlight",
+		"emblem_left",
+		"emblem_right",
+		"no_stock",
+		"no_sight",
+		"scope_01",
+		"scope_02",
+		"scope_03",
+	}
+	local company_name = mod:localize("mod_attachment_names_company")
+	local attachment_remove_string = mod:localize("mod_attachment_remove")
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -169,31 +191,36 @@ mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachmen
 end
 
 mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachment_name)
-	if mod:get("mod_option_misc_attachment_names") and WeaponCustomizationLocalization.mod_attachment_remove[LANGUAGE_ID] then
+	if WeaponCustomizationLocalization.mod_attachment_remove[LANGUAGE_ID] then
 		self.found_names = self.found_names or {}
 		local name = nil
-		if attachment_slot ~= "trinket_hook" and attachment_slot ~= "emblem_left" and attachment_slot ~= "emblem_right" and attachment_slot ~= "flashlight" and attachment_name ~= "no_stock"
-				and attachment_name ~= "no_sight" and attachment_name ~= "scope_01" and attachment_name ~= "scope_02" and attachment_name ~= "scope_03" then
+		if attachment_slot ~= "trinket_hook" and attachment_slot ~= "emblem_left" and attachment_slot ~= "emblem_right" and attachment_slot ~= "flashlight" and attachment_name ~= "no_stock" and attachment_name ~= "no_sight" and attachment_name ~= "scope_01" and attachment_name ~= "scope_02" and attachment_name ~= "scope_03" then
+		-- if not table_contains(skip_weapon_name_generation, attachment_slot) and not not table_contains(skip_weapon_name_generation, attachment_name) then
 			self:setup_item_definitions()
-			local item_name = self:item_name_from_content_string(item.name)
+			local item_name = self.gear_settings:short_name(item.name)
 			local attachment_data = self.attachment_models[item_name][attachment_name]
-			if attachment_data and attachment_data.model ~= "" then
+			if attachment_data and attachment_data.model ~= "" and attachment_data.original_mod then
 				local item_definitions = self:persistent_table(REFERENCE).item_definitions
+
+				
+
 				-- Search only weapons
 				for _, entry in pairs(item_definitions) do
+					
 					if entry.attachments and entry.item_type ~= WEAPON_SKIN and entry.display_name ~= "" and entry.display_name ~= "n/a" then
-						local data = self.gear_settings:_recursive_find_attachment_item_string(entry.attachments, attachment_data.model)
-						if data then
+						local attachment_models = mod.gear_settings:_recursive_get_attachment_models(entry.attachments)
+						-- local data = self.gear_settings:_recursive_find_attachment_item_string(entry.attachments, attachment_data.model)
+						-- if data then
+						if table_contains(attachment_models, attachment_data.model) then
 							name = Localize(entry.display_name)
-							-- mod:warning(name)
-							if string_find(name, "unlocalized") then
+							if mod:cached_find(name, "unlocalized") then
 								name = nil
 							else
-								if string_find(entry.display_name, "_desc") and entry.description then
+								if mod:cached_find(entry.display_name, "_desc") and entry.description then
 									name = Localize(entry.description)
 								end
 							end
-							if name and string_find(name, SKIP) then
+							if name and mod:cached_find(name, SKIP) then
 								name = nil
 							elseif name then
 								break
@@ -205,18 +232,19 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 					-- Search only skins
 					for _, entry in pairs(item_definitions) do
 						if entry.attachments and entry.item_type == WEAPON_SKIN and entry.display_name ~= "" and entry.display_name ~= "n/a" then
-							local data = self.gear_settings:_recursive_find_attachment_item_string(entry.attachments, attachment_data.model)
-							if data then
+							local attachment_models = mod.gear_settings:_recursive_get_attachment_models(entry.attachments)
+							-- local data = self.gear_settings:_recursive_find_attachment_item_string(entry.attachments, attachment_data.model)
+							-- if data then
+							if table_contains(attachment_models, attachment_data.model) then
 								name = Localize(entry.display_name)
-								-- mod:warning(name)
-								if string_find(name, "unlocalized") then
+								if mod:cached_find(name, "unlocalized") then
 									name = nil
 								else
-									if string_find(entry.display_name, "_desc") and entry.description then
+									if mod:cached_find(entry.display_name, "_desc") and entry.description then
 										name = Localize(entry.description)
 									end
 								end
-								if name and string_find(name, SKIP) then
+								if name and mod:cached_find(name, SKIP) then
 									name = nil
 								elseif name then
 									break
@@ -226,21 +254,20 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 					end
 				end
 			end
-			local company_name = mod:localize("mod_attachment_names_company")
-			if not name and not string_find(attachment_name, "default") then
+			-- local company_name = mod:localize("mod_attachment_names_company")
+			if not name and not mod:cached_find(attachment_name, "default") and attachment_data.original_mod then
 				name = company_name
 			end
 			if name then
-				local attachment_remove_string = mod:localize("mod_attachment_remove")
-				local replace = string_split(attachment_remove_string, "|")
+				-- local attachment_remove_string = mod:localize("mod_attachment_remove")
+				local replace = self:cached_split(attachment_remove_string, "|")
 				if replace and #replace > 0 then
 					for _, rep in pairs(replace) do
-						name = string.gsub(name, rep, "")
+						name = mod:cached_gsub(name, rep, "")
 					end
 				end
-				name = string_trim(name)
-				name = string_cap(name)
-				local additions = {MK.."I", MK.."II", MK.."III", MK.."IV", MK.."V", MK.."VI", MK.."VII", MK.."VIII"}
+				name = mod:cached_trim(name)
+				name = mod:cached_cap(name)
 				local add_name = name
 				if add_name == company_name or add_name == KASR then
 					add_name = add_name.." "..additions[1]

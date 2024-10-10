@@ -47,6 +47,7 @@ return table.combine(
             stock = table.icombine(
                 _common_ranged.stock_attachments()
             ),
+            weapon_sling = _common_ranged.weapon_sling_attachments(),
             -- Bolter
             -- help_sight = _bolter_p1_m1.sight_attachments(),
             -- Common
@@ -72,6 +73,7 @@ return table.combine(
             }),
             _common_lasgun.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
             -- Ranged
+            _common_ranged.weapon_sling_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _common_ranged.stock_models(nil, .5, vector3_box(-.6, -4, 0), vector3_box(0, -.4, -.11)),
             _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.4, -3, 0), vector3_box(.2, 0, 0)),
             _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),

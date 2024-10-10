@@ -43,6 +43,7 @@ return table.combine(
             bayonet = _common_ranged.bayonet_attachments(),
             -- rail = _common_lasgun.rail_attachments(),
             grip = _common_ranged.grip_attachments(),
+            weapon_sling = _common_ranged.weapon_sling_attachments(),
             -- Lasgun
             barrel = _common_lasgun.barrel_attachments(),
             muzzle = _common_lasgun.muzzle_attachments(),
@@ -59,6 +60,7 @@ return table.combine(
             _lasgun_p3_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
             _lasgun_p3_m1.magazine_models(nil, .2, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
             -- Ranged
+            _common_ranged.weapon_sling_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
             _common_ranged.flashlight_models(nil, -2.5, vector3_box(-.3, -3, -.05), vector3_box(.2, 0, 0)),
             _common_ranged.bayonet_models({"barrel", "barrel", "barrel", "muzzle"}, -.5, vector3_box(.3, -3, 0), vector3_box(0, .4, -.034)),
             _common_ranged.grip_models(nil, .4, vector3_box(-.4, -4, .1), vector3_box(0, 0, -.1)),

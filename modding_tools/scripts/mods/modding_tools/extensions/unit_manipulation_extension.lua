@@ -95,6 +95,7 @@ local mod = get_mod("modding_tools")
 		{value = "rotation_y", add = {true, false, false}, type = "rotation"},
 		{value = "rotation_z", add = {false, true, false}, type = "rotation"},
 	}
+	local point_list = {}
 --#endregion
 
 -- ##### ┬ ┬┌┐┌┬┌┬┐  ┌┬┐┌─┐┌┐┌┬┌─┐┬ ┬┬  ┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #####################################
@@ -111,7 +112,6 @@ UnitManipulationExtension.init = function(self, extension_init_context, unit, ex
 	self.unit = unit
 	self.node = extension_init_data.node or 1
 	self.font_size = extension_init_data.font_size or 14
-	self.gui = extension_init_data.gui
 	self.camera = extension_init_data.camera
 	self.faded_alpha = extension_init_data.faded_alpha or 128
 	self.faded_color = extension_init_data.faded_color or 255
@@ -362,83 +362,95 @@ end
 
 -- Draw rotation symbol
 UnitManipulationExtension.draw_rotation_symbol = function(self, dt, t, input_service, position)
-	local size = vector3(BUTTON_SIZE[1] - 25, BUTTON_SIZE[2] - 25, 0)
-	for i = 0, 360 do
-        local angle = math.rad(i)
-        local cx = position[1] + BUTTON_SIZE[1] / 2 + math.cos(angle) * (size[1] / 2)
-        local cy = position[2] + BUTTON_SIZE[2] / 2 + math.sin(angle) * (size[2] / 2)
-		ScriptGui.hud_line(self.gui, vector3(cx, cy, LINE_Z), vector3(cx+1, cy+1, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-    end
-	local cx = position[1] + BUTTON_SIZE[1] / 2 + math.cos(270) * (size[1] / 2)
-	local cy = position[2] + BUTTON_SIZE[2] / 2 + math.sin(270) * (size[2] / 2)
-	ScriptGui.hud_line(self.gui, vector3(cx-1, cy+8, LINE_Z), vector3(cx+8, cy, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	ScriptGui.hud_line(self.gui, vector3(cx-1, cy+8, LINE_Z), vector3(cx-8, cy, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	local cx = position[1] + BUTTON_SIZE[1] / 2 + math.cos(90) * (size[1] / 2)
-	local cy = position[2] + BUTTON_SIZE[2] / 2 + math.sin(90) * (size[2] / 2)
-	ScriptGui.hud_line(self.gui, vector3(cx-6, cy-14, LINE_Z), vector3(cx+2, cy-4, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	ScriptGui.hud_line(self.gui, vector3(cx-6, cy-14, LINE_Z), vector3(cx-14, cy-4, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+	local gui = mod:forward_gui()
+	if gui then
+		local size = vector3(BUTTON_SIZE[1] - 25, BUTTON_SIZE[2] - 25, 0)
+		for i = 0, 360 do
+			local angle = math.rad(i)
+			local cx = position[1] + BUTTON_SIZE[1] / 2 + math.cos(angle) * (size[1] / 2)
+			local cy = position[2] + BUTTON_SIZE[2] / 2 + math.sin(angle) * (size[2] / 2)
+			ScriptGui.hud_line(gui, vector3(cx, cy, LINE_Z), vector3(cx+1, cy+1, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		end
+		local cx = position[1] + BUTTON_SIZE[1] / 2 + math.cos(270) * (size[1] / 2)
+		local cy = position[2] + BUTTON_SIZE[2] / 2 + math.sin(270) * (size[2] / 2)
+		ScriptGui.hud_line(gui, vector3(cx-1, cy+8, LINE_Z), vector3(cx+8, cy, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		ScriptGui.hud_line(gui, vector3(cx-1, cy+8, LINE_Z), vector3(cx-8, cy, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		local cx = position[1] + BUTTON_SIZE[1] / 2 + math.cos(90) * (size[1] / 2)
+		local cy = position[2] + BUTTON_SIZE[2] / 2 + math.sin(90) * (size[2] / 2)
+		ScriptGui.hud_line(gui, vector3(cx-6, cy-14, LINE_Z), vector3(cx+2, cy-4, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		ScriptGui.hud_line(gui, vector3(cx-6, cy-14, LINE_Z), vector3(cx-14, cy-4, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+	end
 end
 
 -- Draw position symbol
 UnitManipulationExtension.draw_position_symbol = function(self, dt, t, input_service, position)
-	local size = vector3(BUTTON_SIZE[1] - 20, BUTTON_SIZE[2] - 20, 0)
-	local cx = position[1] + BUTTON_SIZE[1] / 2 - 5
-	local cy = position[2] + BUTTON_SIZE[2] / 2
-	-- Center line
-	ScriptGui.hud_line(self.gui, vector3(cx, cy, LINE_Z), vector3(cx, cy-size[2]/2, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Arrow up
-	ScriptGui.hud_line(self.gui, vector3(cx+2, cy-size[2]/2, LINE_Z), vector3(cx+2-8, cy-size[2]/2+8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	ScriptGui.hud_line(self.gui, vector3(cx+2, cy-size[2]/2, LINE_Z), vector3(cx+2+8, cy-size[2]/2+8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Right line
-	ScriptGui.hud_line(self.gui, vector3(cx+1, cy, LINE_Z), vector3(cx+22, cy+15, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Arrow right
-	ScriptGui.hud_line(self.gui, vector3(cx+20, cy+16, LINE_Z), vector3(cx+20-12, cy+16, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	ScriptGui.hud_line(self.gui, vector3(cx+20, cy+16, LINE_Z), vector3(cx+20-4, cy+16-12, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Left line
-	ScriptGui.hud_line(self.gui, vector3(cx+1, cy, LINE_Z), vector3(cx-10, cy+16, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Arrow left
-	ScriptGui.hud_line(self.gui, vector3(cx-12, cy+14, LINE_Z), vector3(cx-12, cy+14-12, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	ScriptGui.hud_line(self.gui, vector3(cx-12, cy+14, LINE_Z), vector3(cx-12+12, cy+14, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+	local gui = mod:forward_gui()
+	if gui then
+		local size = vector3(BUTTON_SIZE[1] - 20, BUTTON_SIZE[2] - 20, 0)
+		local cx = position[1] + BUTTON_SIZE[1] / 2 - 5
+		local cy = position[2] + BUTTON_SIZE[2] / 2
+		-- Center line
+		ScriptGui.hud_line(gui, vector3(cx, cy, LINE_Z), vector3(cx, cy-size[2]/2, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Arrow up
+		ScriptGui.hud_line(gui, vector3(cx+2, cy-size[2]/2, LINE_Z), vector3(cx+2-8, cy-size[2]/2+8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		ScriptGui.hud_line(gui, vector3(cx+2, cy-size[2]/2, LINE_Z), vector3(cx+2+8, cy-size[2]/2+8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Right line
+		ScriptGui.hud_line(gui, vector3(cx+1, cy, LINE_Z), vector3(cx+22, cy+15, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Arrow right
+		ScriptGui.hud_line(gui, vector3(cx+20, cy+16, LINE_Z), vector3(cx+20-12, cy+16, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		ScriptGui.hud_line(gui, vector3(cx+20, cy+16, LINE_Z), vector3(cx+20-4, cy+16-12, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Left line
+		ScriptGui.hud_line(gui, vector3(cx+1, cy, LINE_Z), vector3(cx-10, cy+16, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Arrow left
+		ScriptGui.hud_line(gui, vector3(cx-12, cy+14, LINE_Z), vector3(cx-12, cy+14-12, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		ScriptGui.hud_line(gui, vector3(cx-12, cy+14, LINE_Z), vector3(cx-12+12, cy+14, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+	end
 end
 
 -- Draw scale symbol
 UnitManipulationExtension.draw_scale_symbol = function(self, dt, t, input_service, position)
-	local size = vector3(BUTTON_SIZE[1] - 20, BUTTON_SIZE[2] - 20, 0)
-	local cx = position[1] + BUTTON_SIZE[1] / 2 - size[1] / 2
-	local cy = position[2] + BUTTON_SIZE[2] / 2 - size[2] / 2
-	-- Center line
-	ScriptGui.hud_line(self.gui, vector3(cx+size[1]/2, cy+4, LINE_Z), vector3(cx+size[1]/2, cy+size[2]-3, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Top line
-	ScriptGui.hud_line(self.gui, vector3(cx+5, cy, LINE_Z), vector3(cx+size[1]-5, cy, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Bottom line
-	ScriptGui.hud_line(self.gui, vector3(cx+5, cy+size[2], LINE_Z), vector3(cx+size[1]-5, cy+size[2], LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Arrow up
-	ScriptGui.hud_line(self.gui, vector3(cx+size[1]/2, cy+4, LINE_Z), vector3(cx+size[1]/2-8, cy+4+8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	ScriptGui.hud_line(self.gui, vector3(cx+size[1]/2, cy+4, LINE_Z), vector3(cx+size[1]/2+8, cy+4+8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	-- Arrow down
-	ScriptGui.hud_line(self.gui, vector3(cx+size[1]/2-2, cy+size[2]-3, LINE_Z), vector3(cx+size[1]/2-8-2, cy+size[2]-3-8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
-	ScriptGui.hud_line(self.gui, vector3(cx+size[1]/2-2, cy+size[2]-3, LINE_Z), vector3(cx+size[1]/2+8-2, cy+size[2]-3-8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+	local gui = mod:forward_gui()
+	if gui then
+		local size = vector3(BUTTON_SIZE[1] - 20, BUTTON_SIZE[2] - 20, 0)
+		local cx = position[1] + BUTTON_SIZE[1] / 2 - size[1] / 2
+		local cy = position[2] + BUTTON_SIZE[2] / 2 - size[2] / 2
+		-- Center line
+		ScriptGui.hud_line(gui, vector3(cx+size[1]/2, cy+4, LINE_Z), vector3(cx+size[1]/2, cy+size[2]-3, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Top line
+		ScriptGui.hud_line(gui, vector3(cx+5, cy, LINE_Z), vector3(cx+size[1]-5, cy, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Bottom line
+		ScriptGui.hud_line(gui, vector3(cx+5, cy+size[2], LINE_Z), vector3(cx+size[1]-5, cy+size[2], LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Arrow up
+		ScriptGui.hud_line(gui, vector3(cx+size[1]/2, cy+4, LINE_Z), vector3(cx+size[1]/2-8, cy+4+8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		ScriptGui.hud_line(gui, vector3(cx+size[1]/2, cy+4, LINE_Z), vector3(cx+size[1]/2+8, cy+4+8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		-- Arrow down
+		ScriptGui.hud_line(gui, vector3(cx+size[1]/2-2, cy+size[2]-3, LINE_Z), vector3(cx+size[1]/2-8-2, cy+size[2]-3-8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+		ScriptGui.hud_line(gui, vector3(cx+size[1]/2-2, cy+size[2]-3, LINE_Z), vector3(cx+size[1]/2+8-2, cy+size[2]-3-8, LINE_Z), LINE_Z+1, LINE_THICKNESS, Color.black())
+	end
 end
 
 -- Draw selector for extension unit
 UnitManipulationExtension.draw_selector = function(self, dt, t, input_service, position)
-	if self.name and self.unit and unit_alive(self.unit) then
-		local position = unit_world_position(self.unit, self.node)
-		local direction = self.root_unit and vector3.normalize(position - unit_world_position(self.root_unit, 1)) or vector3(0, 0, 0)
-		local position_2d = camera_world_to_screen(self.camera, position + direction * .05)
-		-- local attachment_slot = unit_get_data(self.unit, "attachment_slot")
-		local RES_X, RES_Y = Application.back_buffer_size()
-		local min, max, caret = Gui.text_extents(self.gui, self.name, DevParameters.debug_text_font, self.font_size)
-		local size = vector3(max[1], max[2]+2, 1)
-		ScriptGui.icrect(self.gui, RES_X, RES_Y, position_2d[1], position_2d[2] + max[2]+2, position_2d[1] + max[1], position_2d[2], 99, Color(128, 255, 255, 255))
-		ScriptGui.text(self.gui, self.name, DevParameters.debug_text_font, self.font_size, position_2d, Color.black(), Color.gray())
-		local cursor = self:cursor(input_service)
-		local hover = math.point_is_inside_2d_box(cursor, position_2d, size)
-		if self:pressed(input_service) and hover then
-			if not self.button then
-				mod:unit_manipulation_select(self.unit)
-			elseif self.pressed_callback and type(self.pressed_callback) == "function" then
-				self.pressed_callback(self)
+	local gui = mod:forward_gui()
+	if gui then
+		if self.name and self.unit and unit_alive(self.unit) then
+			local position = unit_world_position(self.unit, self.node)
+			local direction = self.root_unit and vector3.normalize(position - unit_world_position(self.root_unit, 1)) or vector3(0, 0, 0)
+			local position_2d = camera_world_to_screen(self.camera, position + direction * .05)
+			-- local attachment_slot = unit_get_data(self.unit, "attachment_slot")
+			local RES_X, RES_Y = Application.back_buffer_size()
+			local min, max, caret = Gui.text_extents(gui, self.name, DevParameters.debug_text_font, self.font_size)
+			local size = vector3(max[1], max[2]+2, 1)
+			ScriptGui.icrect(gui, RES_X, RES_Y, position_2d[1], position_2d[2] + max[2]+2, position_2d[1] + max[1], position_2d[2], 99, Color(128, 255, 255, 255))
+			ScriptGui.text(gui, self.name, DevParameters.debug_text_font, self.font_size, position_2d, Color.black(), Color.gray())
+			local cursor = self:cursor(input_service)
+			local hover = math.point_is_inside_2d_box(cursor, position_2d, size)
+			if self:pressed(input_service) and hover then
+				if not self.button then
+					mod:unit_manipulation_select(self.unit)
+				elseif self.pressed_callback and type(self.pressed_callback) == "function" then
+					self.pressed_callback(self)
+				end
 			end
 		end
 	end
@@ -456,87 +468,93 @@ local draw_info_lines = {
 }
 -- Draw info panel with global and local position, rotation, scale
 UnitManipulationExtension.draw_info = function(self, dt, t, input_service)
-	if self.unit and unit_alive(self.unit) then
-		local position = unit_world_position(self.unit, self.node)
-		local rotation = unit_world_rotation(self.unit, self.node)
-		local x, y, z = quaternion_to_euler_angles_xyz(rotation)
-		rotation = vector3(x, y, z)
-		local local_position = unit_local_position(self.unit, self.node)
-		local local_rotation = unit_local_rotation(self.unit, self.node)
-		local x, y, z = quaternion_to_euler_angles_xyz(local_rotation)
-		local_rotation = vector3(x, y, z)
-		local position_2d = camera_world_to_screen(self.camera, position)
-		local offset = position_2d + vector3(200, 180, 0)
-		local scale = unit_world_scale(self.unit, self.node)
-		local local_scale = unit_local_scale(self.unit, self.node)
-		-- local lines = {
-		-- 	{text = "Scale "..tostring(scale)},
-		-- 	{text = "Rotation "..tostring(rotation)},
-		-- 	{text = "Position "..tostring(position)},
-		-- 	{text = "World"},
-		-- 	{text = "Scale "..tostring(local_scale)},
-		-- 	{text = "Rotation "..tostring(local_rotation)},
-		-- 	{text = "Position "..tostring(local_position)},
-		-- 	{text = "Local"},
-		-- }
-		local RES_X, RES_Y = Application.back_buffer_size()
-		ScriptGui.icrect(self.gui, RES_X, RES_Y, offset[1], offset[2] + 10, offset[1] + 350, offset[2] - 140, 99, Color(128, 255, 255, 255))
-		for i, line in pairs(draw_info_lines) do
-			local text = line.text
-			if line.value == "global_scale" then
-				text = string_gsub(line.text, "val", tostring(scale))
-			elseif line.value == "global_rotation" then
-				text = string_gsub(line.text, "val", tostring(rotation))
-			elseif line.value == "global_position" then
-				text = string_gsub(line.text, "val", tostring(position))
-			elseif line.value == "local_scale" then
-				text = string_gsub(line.text, "val", tostring(local_scale))
-			elseif line.value == "local_rotation" then
-				text = string_gsub(line.text, "val", tostring(local_rotation))
-			elseif line.value == "local_position" then
-				text = string_gsub(line.text, "val", tostring(local_position))
+	local gui = mod:forward_gui()
+	if gui then
+		if self.unit and unit_alive(self.unit) then
+			local position = unit_world_position(self.unit, self.node)
+			local rotation = unit_world_rotation(self.unit, self.node)
+			local x, y, z = quaternion_to_euler_angles_xyz(rotation)
+			rotation = vector3(x, y, z)
+			local local_position = unit_local_position(self.unit, self.node)
+			local local_rotation = unit_local_rotation(self.unit, self.node)
+			local x, y, z = quaternion_to_euler_angles_xyz(local_rotation)
+			local_rotation = vector3(x, y, z)
+			local position_2d = camera_world_to_screen(self.camera, position)
+			local offset = position_2d + vector3(200, 180, 0)
+			local scale = unit_world_scale(self.unit, self.node)
+			local local_scale = unit_local_scale(self.unit, self.node)
+			-- local lines = {
+			-- 	{text = "Scale "..tostring(scale)},
+			-- 	{text = "Rotation "..tostring(rotation)},
+			-- 	{text = "Position "..tostring(position)},
+			-- 	{text = "World"},
+			-- 	{text = "Scale "..tostring(local_scale)},
+			-- 	{text = "Rotation "..tostring(local_rotation)},
+			-- 	{text = "Position "..tostring(local_position)},
+			-- 	{text = "Local"},
+			-- }
+			local RES_X, RES_Y = Application.back_buffer_size()
+			ScriptGui.icrect(gui, RES_X, RES_Y, offset[1], offset[2] + 10, offset[1] + 350, offset[2] - 140, 99, Color(128, 255, 255, 255))
+			for i, line in pairs(draw_info_lines) do
+				local text = line.text
+				if line.value == "global_scale" then
+					text = string_gsub(line.text, "val", tostring(scale))
+				elseif line.value == "global_rotation" then
+					text = string_gsub(line.text, "val", tostring(rotation))
+				elseif line.value == "global_position" then
+					text = string_gsub(line.text, "val", tostring(position))
+				elseif line.value == "local_scale" then
+					text = string_gsub(line.text, "val", tostring(local_scale))
+				elseif line.value == "local_rotation" then
+					text = string_gsub(line.text, "val", tostring(local_rotation))
+				elseif line.value == "local_position" then
+					text = string_gsub(line.text, "val", tostring(local_position))
+				end
+				ScriptGui.text(gui, text, DevParameters.debug_text_font, 14, vector3(offset[1] + 15, offset[2] - 16 * i, LINE_Z), Color.black(), Color.gray())
 			end
-			ScriptGui.text(self.gui, text, DevParameters.debug_text_font, 14, vector3(offset[1] + 15, offset[2] - 16 * i, LINE_Z), Color.black(), Color.gray())
 		end
 	end
 end
 
 -- Draw button panel with history and mode buttons
 UnitManipulationExtension.draw_buttons = function(self, dt, t, input_service)
-	if self.unit and unit_alive(self.unit) then
-		local position = unit_world_position(self.unit, self.node)
-		local position_2d = camera_world_to_screen(self.camera, position)
-		local offset = position_2d + vector3(200, 200, 0)
-		local cursor = self:cursor(input_service)
-		local RES_X, RES_Y = Application.back_buffer_size()
-		for i, button in pairs(buttons) do
-			button.x = offset[1] + ((BUTTON_SIZE[1] + BUTTON_MARGIN[1]) * (i - 1))
-			button.x2 = offset[1] + ((BUTTON_SIZE[2] + BUTTON_MARGIN[2]) * (i - 1)) + BUTTON_SIZE[2]
-		end
-		for i, button in pairs(buttons) do
-			if not self:already_collided(input_service) then
-				self[button.value] = math.point_is_inside_2d_box(cursor, vector2(button.x, offset[2]), vector2(BUTTON_SIZE[1], BUTTON_SIZE[2]))
+	local gui = mod:forward_gui()
+	if gui then
+		if self.unit and unit_alive(self.unit) then
+			local position = unit_world_position(self.unit, self.node)
+			local position_2d = camera_world_to_screen(self.camera, position)
+			local offset = position_2d + vector3(200, 200, 0)
+			local cursor = self:cursor(input_service)
+			local RES_X, RES_Y = Application.back_buffer_size()
+			for i, button in pairs(buttons) do
+				button.x = offset[1] + ((BUTTON_SIZE[1] + BUTTON_MARGIN[1]) * (i - 1))
+				button.x2 = offset[1] + ((BUTTON_SIZE[2] + BUTTON_MARGIN[2]) * (i - 1)) + BUTTON_SIZE[2]
 			end
-			if self:pressed(input_service) and self[button.value] then
-				if button.mode then
-					self:change_mode(button.mode)
-					self:deactivate_buttons()
-					self:activate_button_by_index(i)
-				elseif button.value == "button_revert" then
-					self:back_history()
-				elseif button.value == "button_redo" then
-					self:forward_history()
-				elseif button.value == "button_deselect" then
-					self:set_selected(false)
+			for i, button in pairs(buttons) do
+				if not self:already_collided(input_service) then
+					self[button.value] = math.point_is_inside_2d_box(cursor, vector2(button.x, offset[2]), vector2(BUTTON_SIZE[1], BUTTON_SIZE[2]))
 				end
-			end
-			local color = self[button.value] and Color.white() or Color(255, 200, 200, 200)
-			color = button.active and Color(255, 128, 255, 128) or color
-			ScriptGui.icrect(self.gui, RES_X, RES_Y, button.x, offset[2], button.x2, offset[2] + BUTTON_SIZE[2], LINE_Z, color)
-			if button.symbol_func and self[button.symbol_func] then
-				self[button.symbol_func](self, dt, t, input_service, vector3(button.x, offset[2], LINE_Z))
-			else
-				ScriptGui.text(self.gui, button.text, DevParameters.debug_text_font, 30, vector3(button.x + 15, offset[2] + 10, LINE_Z), Color.black(), Color.gray())
+				if self:pressed(input_service) and self[button.value] then
+					if button.mode then
+						self:change_mode(button.mode)
+						self:deactivate_buttons()
+						self:activate_button_by_index(i)
+					elseif button.value == "button_revert" then
+						self:back_history()
+					elseif button.value == "button_redo" then
+						self:forward_history()
+					elseif button.value == "button_deselect" then
+						self:set_selected(false)
+					end
+				end
+				local color = self[button.value] and Color.white() or Color(255, 200, 200, 200)
+				color = button.active and Color(255, 128, 255, 128) or color
+				ScriptGui.icrect(gui, RES_X, RES_Y, button.x, offset[2], button.x2, offset[2] + BUTTON_SIZE[2], LINE_Z, color)
+				if button.symbol_func and self[button.symbol_func] then
+					self[button.symbol_func](self, dt, t, input_service, vector3(button.x, offset[2], LINE_Z))
+				else
+					ScriptGui.text(gui, button.text, DevParameters.debug_text_font, 30, vector3(button.x + 15, offset[2] + 10, LINE_Z), Color.black(), Color.gray())
+				end
 			end
 		end
 	end
@@ -578,34 +596,37 @@ local draw_box_draw = {
 }
 -- Draw 3d box around unit
 UnitManipulationExtension.draw_box = function(self, dt, t, input_service)
-	if self.unit and unit_alive(self.unit) then
-		local tm, half_size = Unit.box(self.unit)
-		-- Get boundary points
-		for name, data in pairs(draw_box_points) do
-			local position = vector3(
-				data.vec[1] == true and half_size.x or -half_size.x,
-				data.vec[2] == true and half_size.y or -half_size.y,
-				data.vec[3] == true and half_size.z or -half_size.z
-			)
-			draw_box_points[name].position = Matrix4x4.transform(tm, position)
-		end
-		-- Get position and distance to camera
-		for name, data in pairs(draw_box_results) do
-			draw_box_results[name].position, draw_box_results[name].distance = camera_world_to_screen(self.camera, draw_box_points[name].position)
-		end
-		-- Farthest point from camera
-		local farthest = nil
-		local last = 0
-		for name, data in pairs(draw_box_results) do
-			if data.distance > last then
-				last = data.distance
-				farthest = name
+	local gui = mod:forward_gui()
+	if gui then
+		if self.unit and unit_alive(self.unit) then
+			local tm, half_size = Unit.box(self.unit)
+			-- Get boundary points
+			for name, data in pairs(draw_box_points) do
+				local position = vector3(
+					data.vec[1] == true and half_size.x or -half_size.x,
+					data.vec[2] == true and half_size.y or -half_size.y,
+					data.vec[3] == true and half_size.z or -half_size.z
+				)
+				draw_box_points[name].position = Matrix4x4.transform(tm, position)
 			end
-		end
-		-- Draw
-		for name, data in pairs(draw_box_draw) do
-			if farthest ~= data.a and farthest ~= data.b then
-				ScriptGui.hud_line(self.gui, draw_box_results[data.a].position, draw_box_results[data.b].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
+			-- Get position and distance to camera
+			for name, data in pairs(draw_box_results) do
+				draw_box_results[name].position, draw_box_results[name].distance = camera_world_to_screen(self.camera, draw_box_points[name].position)
+			end
+			-- Farthest point from camera
+			local farthest = nil
+			local last = 0
+			for name, data in pairs(draw_box_results) do
+				if data.distance > last then
+					last = data.distance
+					farthest = name
+				end
+			end
+			-- Draw
+			for name, data in pairs(draw_box_draw) do
+				if farthest ~= data.a and farthest ~= data.b then
+					ScriptGui.hud_line(gui, draw_box_results[data.a].position, draw_box_results[data.b].position, LINE_Z, LINE_THICKNESS, Color(255, 106, 121, 100))
+				end
 			end
 		end
 	end
@@ -630,48 +651,51 @@ local draw_position_gizmo_position_points = {
 }
 -- Draw position / scale gizmo at unit position
 UnitManipulationExtension.draw_position_gizmo = function(self, dt, t, input_service)
-	if self.unit and unit_alive(self.unit) then
-		-- Unit data
-		local position = unit_world_position(self.unit, self.node)
-		local rotation = unit_world_rotation(self.unit, self.node)
-		local cursor = self:cursor(input_service)
-		local hold = self:hold(input_service)
-		-- Get boundary points
-		draw_position_gizmo_points.center.position = position
-		draw_position_gizmo_points.X.position = position + quaternion_right(rotation) * .2
-		draw_position_gizmo_points.Y.position = position + quaternion_forward(rotation) * .2
-		draw_position_gizmo_points.Z.position = position + quaternion_up(rotation) * .2
-		-- Get position and distance to camera
-		draw_position_gizmo_results.center.position, draw_position_gizmo_results.center.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.center.position)
-		draw_position_gizmo_results.X.position, draw_position_gizmo_results.X.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.X.position)
-		draw_position_gizmo_results.Y.position, draw_position_gizmo_results.Y.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.Y.position)
-		draw_position_gizmo_results.Z.position, draw_position_gizmo_results.Z.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.Z.position)
-		-- Draw
-		draw_position_gizmo_position_points[1].position = draw_position_gizmo_results.X.position
-		draw_position_gizmo_position_points[1].color = Color(255, 255, 0, 0)
-		draw_position_gizmo_position_points[1].faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)
-		draw_position_gizmo_position_points[2].position = draw_position_gizmo_results.Y.position
-		draw_position_gizmo_position_points[2].color = Color(255, 0, 255, 0)
-		draw_position_gizmo_position_points[2].faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)
-		draw_position_gizmo_position_points[3].position = draw_position_gizmo_results.Z.position
-		draw_position_gizmo_position_points[3].faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)
-		draw_position_gizmo_position_points[3].color = Color(255, 0, 0, 255)
-		-- Iterate angles
-		for _, angle in pairs(draw_position_gizmo_position_points) do
-			-- Check cursor collision
-			local distance_1 = math.distance_2d(draw_position_gizmo_results.center.position[1], draw_position_gizmo_results.center.position[2], angle.position[1], angle.position[2])
-			local distance_2 = math.distance_2d(draw_position_gizmo_results.center.position[1], draw_position_gizmo_results.center.position[2], cursor.x, cursor.y)
-			local distance_3 = math.distance_2d(angle.position[1], angle.position[2], cursor.x, cursor.y)
-			-- Check controls
-			if not hold then self[angle.value] = nil end
-			if not hold and not self:already_collided(input_service) and not self[angle.value] then
-				self[angle.value] = distance_2 + distance_3 <= distance_1 + distance_1 * self.position_tolerance or nil
-			end
-			if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
+	local gui = mod:forward_gui()
+	if gui then
+		if self.unit and unit_alive(self.unit) then
+			-- Unit data
+			local position = unit_world_position(self.unit, self.node)
+			local rotation = unit_world_rotation(self.unit, self.node)
+			local cursor = self:cursor(input_service)
+			local hold = self:hold(input_service)
+			-- Get boundary points
+			draw_position_gizmo_points.center.position = position
+			draw_position_gizmo_points.X.position = position + quaternion_right(rotation) * .2
+			draw_position_gizmo_points.Y.position = position + quaternion_forward(rotation) * .2
+			draw_position_gizmo_points.Z.position = position + quaternion_up(rotation) * .2
+			-- Get position and distance to camera
+			draw_position_gizmo_results.center.position, draw_position_gizmo_results.center.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.center.position)
+			draw_position_gizmo_results.X.position, draw_position_gizmo_results.X.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.X.position)
+			draw_position_gizmo_results.Y.position, draw_position_gizmo_results.Y.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.Y.position)
+			draw_position_gizmo_results.Z.position, draw_position_gizmo_results.Z.distance = camera_world_to_screen(self.camera, draw_position_gizmo_points.Z.position)
 			-- Draw
-			local color = self[angle.value] and angle.color or angle.faded_color
-			ScriptGui.hud_line(self.gui, draw_position_gizmo_results.center.position, angle.position, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
-			if self.angle_names then ScriptGui.text(self.gui, angle.text, DevParameters.debug_text_font, 16, angle.position, angle.color, Color.gray()) end
+			draw_position_gizmo_position_points[1].position = draw_position_gizmo_results.X.position
+			draw_position_gizmo_position_points[1].color = Color(255, 255, 0, 0)
+			draw_position_gizmo_position_points[1].faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)
+			draw_position_gizmo_position_points[2].position = draw_position_gizmo_results.Y.position
+			draw_position_gizmo_position_points[2].color = Color(255, 0, 255, 0)
+			draw_position_gizmo_position_points[2].faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)
+			draw_position_gizmo_position_points[3].position = draw_position_gizmo_results.Z.position
+			draw_position_gizmo_position_points[3].faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)
+			draw_position_gizmo_position_points[3].color = Color(255, 0, 0, 255)
+			-- Iterate angles
+			for _, angle in pairs(draw_position_gizmo_position_points) do
+				-- Check cursor collision
+				local distance_1 = math.distance_2d(draw_position_gizmo_results.center.position[1], draw_position_gizmo_results.center.position[2], angle.position[1], angle.position[2])
+				local distance_2 = math.distance_2d(draw_position_gizmo_results.center.position[1], draw_position_gizmo_results.center.position[2], cursor.x, cursor.y)
+				local distance_3 = math.distance_2d(angle.position[1], angle.position[2], cursor.x, cursor.y)
+				-- Check controls
+				if not hold then self[angle.value] = nil end
+				if not hold and not self:already_collided(input_service) and not self[angle.value] then
+					self[angle.value] = distance_2 + distance_3 <= distance_1 + distance_1 * self.position_tolerance or nil
+				end
+				if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
+				-- Draw
+				local color = self[angle.value] and angle.color or angle.faded_color
+				ScriptGui.hud_line(gui, draw_position_gizmo_results.center.position, angle.position, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
+				if self.angle_names then ScriptGui.text(gui, angle.text, DevParameters.debug_text_font, 16, angle.position, angle.color, Color.gray()) end
+			end
 		end
 	end
 end
@@ -683,53 +707,55 @@ local draw_rotation_gizmo_angles = {
 }
 -- Draw rotation gizmo at unit position
 UnitManipulationExtension.draw_rotation_gizmo = function(self, dt, t, input_service)
-	if self.unit and unit_alive(self.unit) then
-		-- Unit data
-		local position = unit_world_position(self.unit, self.node)
-		local rotation = unit_world_rotation(self.unit, self.node)
-		local cursor = self:cursor(input_service)
-		local hold = self:hold(input_service)
-		-- Define angles
-		draw_rotation_gizmo_angles[1].color = Color(255, 255, 0, 0)
-		draw_rotation_gizmo_angles[1].faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)
-		draw_rotation_gizmo_angles[2].color = Color(255, 0, 255, 0)
-		draw_rotation_gizmo_angles[2].faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)
-		draw_rotation_gizmo_angles[3].color = Color(255, 0, 0, 255)
-		draw_rotation_gizmo_angles[3].faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)
-		-- Iterate angles
-		for _, angle in pairs(draw_rotation_gizmo_angles) do
-			-- Check controls
-			if not hold then self[angle.value] = nil end
-			-- Define points
-			local point_list = {}
-			for i = 1, 360, 1 do
-				-- Define point
-				local offset = quaternion_from_euler_angles_xyz(
-					angle.direction[1] == true and i or 0,
-					angle.direction[2] == true and i or 0,
-					angle.direction[3] == true and i or 0
-				)
-				local new_rotation = quaternion_multiply(rotation, offset)
-				local new_position = camera_world_to_screen(self.camera, position + angle.dir_func(new_rotation) * .2)
-				point_list[#point_list + 1] = new_position
-				-- Check cursor collision
-				if not hold and not self:already_collided(input_service) and not self[angle.value] then
-					local distance = math.distance_2d(new_position[1], new_position[2], cursor.x, cursor.y)
-					self[angle.value] = distance <= self.rotation_tolerance or nil
+	local gui = mod:forward_gui()
+	if gui then
+		if self.unit and unit_alive(self.unit) then
+			-- Unit data
+			local position = unit_world_position(self.unit, self.node)
+			local rotation = unit_world_rotation(self.unit, self.node)
+			local cursor = self:cursor(input_service)
+			local hold = self:hold(input_service)
+			-- Define angles
+			draw_rotation_gizmo_angles[1].color = Color(255, 255, 0, 0)
+			draw_rotation_gizmo_angles[1].faded_color = Color(self.faded_alpha, self.faded_color, 0, 0)
+			draw_rotation_gizmo_angles[2].color = Color(255, 0, 255, 0)
+			draw_rotation_gizmo_angles[2].faded_color = Color(self.faded_alpha, 0, self.faded_color, 0)
+			draw_rotation_gizmo_angles[3].color = Color(255, 0, 0, 255)
+			draw_rotation_gizmo_angles[3].faded_color = Color(self.faded_alpha, 0, 0, self.faded_color)
+			-- Iterate angles
+			for _, angle in pairs(draw_rotation_gizmo_angles) do
+				-- Check controls
+				if not hold then self[angle.value] = nil end
+				-- Define points
+				for i = 1, 360, 1 do
+					-- Define point
+					local offset = quaternion_from_euler_angles_xyz(
+						angle.direction[1] == true and i or 0,
+						angle.direction[2] == true and i or 0,
+						angle.direction[3] == true and i or 0
+					)
+					local new_rotation = quaternion_multiply(rotation, offset)
+					local new_position = camera_world_to_screen(self.camera, position + angle.dir_func(new_rotation) * .2)
+					point_list[i] = new_position
+					-- Check cursor collision
+					if not hold and not self:already_collided(input_service) and not self[angle.value] then
+						local distance = math.distance_2d(new_position[1], new_position[2], cursor.x, cursor.y)
+						self[angle.value] = distance <= self.rotation_tolerance or nil
+					end
+					if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
 				end
-				if self[angle.value] and hold then self:set_cursor(vector3_box(cursor)) end
-			end
-			-- First previous is last point
-			local previous = point_list[#point_list]
-			-- Draw points
-			for _, pos in pairs(point_list) do
-				local color = self[angle.value] and angle.color or angle.faded_color
-				ScriptGui.hud_line(self.gui, previous, pos, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
-				previous = pos
-			end
-			if self.angle_names then
-				local position = camera_world_to_screen(self.camera, position + angle.dir_func(rotation) * .2)
-				ScriptGui.text(self.gui, angle.text, DevParameters.debug_text_font, 16, position, angle.color, Color.gray())
+				-- First previous is last point
+				local previous = point_list[#point_list]
+				-- Draw points
+				for _, pos in pairs(point_list) do
+					local color = self[angle.value] and angle.color or angle.faded_color
+					ScriptGui.hud_line(gui, previous, pos, LINE_Z, self[angle.value] and LINE_THICKNESS * 2 or LINE_THICKNESS, color)
+					previous = pos
+				end
+				if self.angle_names then
+					local position = camera_world_to_screen(self.camera, position + angle.dir_func(rotation) * .2)
+					ScriptGui.text(gui, angle.text, DevParameters.debug_text_font, 16, position, angle.color, Color.gray())
+				end
 			end
 		end
 	end

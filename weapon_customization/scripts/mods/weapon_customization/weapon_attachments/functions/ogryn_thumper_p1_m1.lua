@@ -32,6 +32,7 @@ return {
             {id = "grip_03", name = "Grip 3"},
             {id = "grip_04", name = "Grip 4"},
             {id = "grip_05", name = "Grip 5"},
+            {id = "grip_06", name = "Grip 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -48,6 +49,7 @@ return {
             {name = "grip_03",      model = _item_ranged.."/grips/shotgun_grenade_grip_03"},
             {name = "grip_04",      model = _item_ranged.."/grips/shotgun_grenade_grip_04"},
             {name = "grip_05",      model = _item_ranged.."/grips/shotgun_grenade_grip_05"},
+            {name = "grip_06",      model = _item_ranged.."/grips/shotgun_grenade_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     sight_attachments = function(default)
@@ -56,6 +58,7 @@ return {
             {id = "sight_02", name = "No Sight"},
             {id = "sight_03", name = "Sight 3"},
             {id = "sight_04", name = "Sight 4"},
+            {id = "sight_05", name = "Sight 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -71,6 +74,7 @@ return {
             {name = "sight_02",      model = _item_ranged.."/sights/shotgun_grenade_sight_02"},
             {name = "sight_03",      model = _item_ranged.."/sights/shotgun_grenade_sight_03"},
             {name = "sight_04",      model = _item_ranged.."/sights/shotgun_grenade_sight_04"},
+            {name = "sight_05",      model = _item_ranged.."/sights/shotgun_grenade_sight_ml01"},
         }, parent, angle, move, remove, type or "sight", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     body_attachments = function(default)

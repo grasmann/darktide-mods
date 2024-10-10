@@ -65,7 +65,7 @@ end
 -- ##### ┴┘└┘ ┴ └─┘┴└─└  ┴ ┴└─┘└─┘ ####################################################################################
 
 mod._add_unit_manipulation_extension = function(self, data)
-    if data.unit and unit_alive(data.unit) and data.camera and data.world and data.gui then
+    if data.unit and unit_alive(data.unit) and data.camera and data.world then
         if not script_unit_has_extension(data.unit, "unit_manipulation_system") then
             local extension = script_unit_add_extension({
                 world = data.world,

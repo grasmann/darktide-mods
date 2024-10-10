@@ -15,6 +15,7 @@ local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings"
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local Color = Color
 	local math_max = math.max
 	local math_abs = math.abs
 	local math_min = math.min
@@ -52,7 +53,7 @@ HudElementBattery.destroy = function (self)
 end
 
 HudElementBattery._add_charge = function (self)
-	self._charges[#self._charges + 1] = {}
+	self._charges[#self._charges + 1] = true
 end
 
 HudElementBattery._remove_charge = function (self)
@@ -68,8 +69,8 @@ end
 HudElementBattery._update_charge_amount = function (self)
 	local current = mod:get_battery_charge()
 	local max = mod:get_battery_max()
-	local charge_amount = max or 0
-	local charge_amount_ceiled = max and math_ceil(max) or 0
+	local charge_amount = current or 0
+	local charge_amount_ceiled = current and math_ceil(current) or 0
 
 	if charge_amount_ceiled ~= self._charge_amount then
 		local amount_difference = (self._charge_amount or 0) - charge_amount_ceiled

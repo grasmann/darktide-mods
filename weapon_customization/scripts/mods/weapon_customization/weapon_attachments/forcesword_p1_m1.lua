@@ -46,7 +46,8 @@ local _knife_grips = "knife_grip_01|knife_grip_02|knife_grip_03|knife_grip_04|kn
 
 local _2h_power_sword_pommels = "power_sword_2h_pommel_01|power_sword_2h_pommel_02|power_sword_2h_pommel_03"
 local _power_sword_pommels = "power_sword_pommel_01|power_sword_pommel_02|power_sword_pommel_03|power_sword_pommel_04|power_sword_pommel_05"
-local _power_sword_pommels_2_5 = string_gsub(_power_sword_pommels, "power_sword_pommel_01|", "")
+-- local _power_sword_pommels_2_5 = string_gsub(_power_sword_pommels, "power_sword_pommel_01|", "")
+local _power_sword_pommels_2_5 = mod:cached_gsub(_power_sword_pommels, "power_sword_pommel_01|", "")
 local _force_sword_pommels = "force_sword_pommel_01|force_sword_pommel_02|force_sword_pommel_03|force_sword_pommel_04|force_sword_pommel_05"
 
 return table.combine(

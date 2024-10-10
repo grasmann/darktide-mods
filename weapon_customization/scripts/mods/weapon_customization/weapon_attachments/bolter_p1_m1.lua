@@ -76,18 +76,18 @@ return table_combine(
 		},
 		models = table_combine(
 			-- Native
-			_bolter_p1_m1.receiver_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.00001)),
-			_bolter_p1_m1.barrel_models(nil, -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
-			_bolter_p1_m1.underbarrel_models(nil, -.5, vector3_box(0, -4, 0), vector3_box(0, 0, -.2)),
-			_bolter_p1_m1.sight_models(nil, -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+			_bolter_p1_m1.receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
+			_bolter_p1_m1.barrel_models(nil, -.35, vector3_box(.2, -1, 0), vector3_box(0, .2, 0)),
+			_bolter_p1_m1.underbarrel_models(nil, -.15, vector3_box(0, -1, 0), vector3_box(0, 0, -.2)),
+			_bolter_p1_m1.sight_models(nil, 0, vector3_box(-.3, -1, -.2), vector3_box(0, -.2, 0), "sight", {}, {
 				{rail = "rail_default", sight_2 = "sight_default"},
 				{rail = "rail_default", sight_2 = "sight_default"},
 				{rail = "rail_default", sight_2 = "sight_default"},
 				{rail = "rail_default", sight_2 = "sight_default"},
 			}),
 			-- Ranged
-			_common_ranged.flashlight_models("receiver", -2.5, vector3_box(-.3, -3, 0), vector3_box(.2, 0, 0)),
-			_common_ranged.grip_models(nil, -.1, vector3_box(-.4, -4, .2), vector3_box(0, -.1, -.1), "grip", {
+			_common_ranged.flashlight_models("receiver", -2.5, vector3_box(-.3, -1, 0), vector3_box(.2, 0, 0)),
+			_common_ranged.grip_models(nil, .1, vector3_box(-.4, -1, .2), vector3_box(0, -.1, -.1), "grip", {
 				{"trinket_hook_empty"},
 				{"trinket_hook"},
 				{"trinket_hook"},
@@ -138,13 +138,13 @@ return table_combine(
 				{trinket_hook = "trinket_hook_empty"},
 				{trinket_hook = "trinket_hook_empty"},
 			}),
-			_common_ranged.reflex_sights_models("receiver", -.5, vector3_box(-.3, -4, -.2), vector3_box(0, -.2, 0), "sight", {}, {
+			_common_ranged.reflex_sights_models("receiver", 0, vector3_box(-.3, -1, -.2), vector3_box(0, -.2, 0), "sight", {}, {
 				{rail = "rail_default", sight_2 = "sight_default"},
 				{rail = "rail_01", sight_2 = "sight_default"},
 				{rail = "rail_01", sight_2 = "sight_default"},
 				{rail = "rail_01", sight_2 = "sight_default"},
 			}),
-			_common_ranged.sights_models(nil, .35, vector3_box(-.3, -4, -.2), {
+			_common_ranged.sights_models(nil, 0, vector3_box(-.3, -1, -.2), {
 				vector3_box(-.2, 0, 0),
 				vector3_box(0, -.2, 0),
 				vector3_box(0, -.2, 0),
@@ -185,27 +185,27 @@ return table_combine(
 				false,
 				false,
 			}),
-			_common_ranged.scope_sights_models("sight", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0), "sight_2", {}, {
+			_common_ranged.scope_sights_models("sight", .2, vector3_box(-.3, -1, -.2), vector3_box(0, 0, 0), "sight_2", {}, {
 				{rail = "rail_default"},
 				{rail = "rail_01"},
 				{rail = "rail_01"},
 				{rail = "rail_01"},
 				{rail = "rail_default"},
 			}),
-			_common_ranged.scope_lens_models("sight_2", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0)),
-			_common_ranged.scope_lens_2_models("sight_2", .2, vector3_box(-.3, -4, -.2), vector3_box(0, 0, 0)),
-			_common_ranged.stock_models("receiver", 0, vector3_box(-.6, -4, 0), vector3_box(0, -.2, 0)),
-			_common_ranged.magazine_models(nil, 0, vector3_box(-.2, -3, .1), vector3_box(0, 0, -.2)),
-			_common_ranged.bayonet_models("barrel", -.5, vector3_box(.3, -4, 0), vector3_box(0, .4, 0)),
+			_common_ranged.scope_lens_models("sight_2", .2, vector3_box(-.3, -1, -.2), vector3_box(0, 0, 0)),
+			_common_ranged.scope_lens_2_models("sight_2", .2, vector3_box(-.3, -1, -.2), vector3_box(0, 0, 0)),
+			_common_ranged.stock_models("receiver", .2, vector3_box(-.6, -1, 0), vector3_box(0, -.2, 0)),
+			_common_ranged.magazine_models(nil, 0, vector3_box(-.2, -1, .1), vector3_box(0, 0, -.2)),
+			_common_ranged.bayonet_models("barrel", -.5, vector3_box(.3, -1, 0), vector3_box(0, .4, 0)),
 			-- Lasgun
 			_common_lasgun.rail_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
 			-- Other
-			_autopistol_p1_m1.muzzle_models("barrel", -.5, vector3_box(.2, -2, 0), vector3_box(0, .2, 0)),
-			_ogryn_rippergun_p1_m1.barrel_models("receiver", -.5, vector3_box(.2, -2, 0), vector3_box(0, .3, 0), "muzzle"),
+			_autopistol_p1_m1.muzzle_models("barrel", -.5, vector3_box(.2, -1, 0), vector3_box(0, .2, 0)),
+			_ogryn_rippergun_p1_m1.barrel_models("receiver", -.5, vector3_box(.2, -1, 0), vector3_box(0, .3, 0), "muzzle"),
 			-- Common
-			_common.trinket_hook_models("grip", -.2, vector3_box(-.1, -4, .2), vector3_box(0, 0, -.2)),
-			_common.emblem_right_models("receiver", -3, vector3_box(0, -4, 0), vector3_box(.2, 0, 0)),
-			_common.emblem_left_models("receiver", 0, vector3_box(0, -4, 0), vector3_box(.2, 0, 0))
+			_common.trinket_hook_models("grip", -.2, vector3_box(0, 0, .1), vector3_box(0, 0, -.2)),
+			_common.emblem_right_models("receiver", -3, vector3_box(0, 0, 0), vector3_box(.2, 0, 0)),
+			_common.emblem_left_models("receiver", 0, vector3_box(0, 0, 0), vector3_box(.2, 0, 0))
 		),
 		anchors = {
 			-- scope_offset = {position = vector3_box(0, 0, .022)},
@@ -284,6 +284,8 @@ return table_combine(
 					magazine = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1, 1)}},
 				{dependencies = {"magazine_04"}, -- Magazine
 					magazine = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1, 1)}},
+				{dependencies = {"boltpistol_magazine_01|boltpistol_magazine_02"}, -- Magazine
+					magazine = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.26, 1.26)}},
 
 
 

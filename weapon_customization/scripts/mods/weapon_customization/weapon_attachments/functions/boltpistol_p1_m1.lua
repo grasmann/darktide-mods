@@ -33,6 +33,8 @@ return {
 			{id = "bolt_pistol_receiver_02", name = "Boltpistol 2"},
 			{id = "bolt_pistol_receiver_03", name = "Boltpistol 3"},
 			{id = "bolt_pistol_receiver_04", name = "Boltpistol 4"},
+			{id = "bolt_pistol_receiver_05", name = "Boltpistol 5"},
+			{id = "bolt_pistol_receiver_06", name = "Boltpistol 6"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -47,7 +49,9 @@ return {
 			{name = "bolt_pistol_receiver_01", model = _item_ranged.."/recievers/boltgun_pistol_receiver_01"},
 			{name = "bolt_pistol_receiver_02", model = _item_ranged.."/recievers/boltgun_pistol_receiver_02"},
 			{name = "bolt_pistol_receiver_03", model = _item_ranged.."/recievers/boltgun_pistol_receiver_03"},
-			-- {name = "bolt_pistol_receiver_04", model = _item_ranged.."/recievers/boltgun_pistol_receiver_04"},
+			{name = "bolt_pistol_receiver_04", model = _item_ranged.."/recievers/boltgun_pistol_receiver_04"}, -- buggy
+			{name = "bolt_pistol_receiver_05", model = _item_ranged.."/recievers/boltgun_pistol_receiver_05"},
+			{name = "bolt_pistol_receiver_06", model = _item_ranged.."/recievers/boltgun_pistol_receiver_ml01"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┬┐┌─┐┌─┐┌─┐┌─┐┬┌┐┌┌─┐┌─┐

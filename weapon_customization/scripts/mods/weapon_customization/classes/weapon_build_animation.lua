@@ -70,7 +70,7 @@ WeaponBuildAnimation.set = function(self, data, active)
         self.item = data.item
         self.gear_id = mod.gear_settings:item_to_gear_id(data.item)
         self.slot_info_id = mod.gear_settings:slot_info_id(data.item)
-        self.item_name = mod:item_name_from_content_string(data.item.name)
+        self.item_name = mod.gear_settings:short_name(data.item.name)
     end
     -- Init
     self.initialized = active or data
@@ -138,34 +138,40 @@ WeaponBuildAnimation.update = function(self, dt, t)
     local ui_weapon_spawner = self.ui_weapon_spawner
     local weapon_spawn_data = ui_weapon_spawner and ui_weapon_spawner._weapon_spawn_data
     local world = ui_weapon_spawner and ui_weapon_spawner._world
+    local cosmetics_view = mod.cosmetics_view
     -- Check data
     if weapon_spawn_data and world and #self.animations > 0 then
 
         local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
         local gear_info = slot_infos[self.slot_info_id]
+        local gear_settings = mod.gear_settings
+        local item_anchors = mod.anchors[self.item_name]
+        local item_models = mod.attachment_models[self.item_name]
 
         for _, entry in pairs(self.animations) do
 
-            local attachment = mod.gear_settings:get(self.item, entry.slot)
-            local attachment_data = attachment and mod.attachment_models[self.item_name][attachment]
+            local attachment = gear_settings:get(self.item, entry.slot)
+            local attachment_data = attachment and item_models[attachment]
             local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
             local animation_wait_attach = attachment_data and attachment_data.animation_wait_attach
             local animation_wait_detach = attachment_data and attachment_data.animation_wait_detach
-            local unit = mod.gear_settings:attachment_unit(weapon_spawn_data.attachment_units_3p, entry.slot)
+            local unit = gear_settings:attachment_unit(weapon_spawn_data.attachment_units_3p, entry.slot)
             local unit_good = unit and unit_alive(unit)
 
             -- self.cached_data[self.item_name] = self.cached_data[self.item_name] or {}
 
             -- local cached = attachment --and self.cached_data[self.item_name][attachment]
 
-            local anchor = mod.anchors[self.item_name] and mod.anchors[self.item_name][attachment]
-            anchor = mod.gear_settings:apply_fixes(self.item, unit) or anchor
+            
+            local anchor = item_anchors and item_anchors[attachment]
+            anchor = gear_settings:apply_fixes(self.item, unit) or anchor
 
             -- if attachment then self.cached_data[self.item_name][attachment] = anchor end
 
             animation_wait_attach = anchor and anchor.animation_wait_attach or animation_wait_attach
             animation_wait_detach = anchor and anchor.animation_wait_detach or animation_wait_detach
-            local default_position0 = (unit_good and gear_info and gear_info.unit_default_position[unit] and vector3_unbox(gear_info.unit_default_position[unit])) or vector3_zero()
+            local unit_default_position = unit_good and gear_info and gear_info.unit_default_position[unit]
+            local default_position0 = (unit_default_position and vector3_unbox(unit_default_position)) or vector3_zero()
             local default_position1 = unit_good and unit_local_position(unit, 1)
             local default_position = anchor and anchor.position and vector3_unbox(anchor.position) or default_position0 or default_position1 or vector3_zero()
 
@@ -212,8 +218,8 @@ WeaponBuildAnimation.update = function(self, dt, t)
                     if not entry.end_time then
                         if attachment then
                             -- local attachment = entry.old == "default" and mod:get_actual_default_attachment(self.item, entry.slot) or entry.old
-                            local attachment = entry.old == "default" and mod.gear_settings:default_attachment(self.item, entry.slot) or entry.old
-                            local attachment_data = mod.attachment_models[self.item_name][attachment]
+                            local attachment = entry.old == "default" and gear_settings:default_attachment(self.item, entry.slot) or entry.old
+                            local attachment_data = item_models[attachment]
                             local no_animation = attachment_data and attachment_data.no_animation
                             entry.no_detach_animation = no_animation
                             entry.end_time = t + (self.animation_time / this_animation_speed)
@@ -312,8 +318,8 @@ WeaponBuildAnimation.update = function(self, dt, t)
                             -- end
 
                             -- local attachment = entry.new == "default" and mod:get_actual_default_attachment(self.item, entry.slot) or entry.new
-                            local attachment = entry.new == "default" and mod.gear_settings:default_attachment(self.item, entry.slot) or entry.new
-                            local attachment_data = mod.attachment_models[self.item_name][attachment]
+                            local attachment = entry.new == "default" and gear_settings:default_attachment(self.item, entry.slot) or entry.new
+                            local attachment_data = item_models[attachment]
                             local no_animation = attachment_data and attachment_data.no_animation
 
                             if entry.detach_only then
@@ -397,7 +403,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
             for i, entry in pairs(self.animations) do
                 if (entry.detach_done or entry.type == "attach") and not entry.attach_load then
                     if entry.old ~= entry.new and not entry.detach_only then
-                        mod.cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new, true)
+                        cosmetics_view:load_new_attachment(self.item, entry.slot, entry.new, true)
                         something_ready = true
                     end
                     entry.attach_load = true
@@ -405,27 +411,13 @@ WeaponBuildAnimation.update = function(self, dt, t)
             end
             if something_ready then
                 -- self.cached_data[self.item_name] = nil
-                mod.cosmetics_view:load_new_attachment()
+                cosmetics_view:load_new_attachment()
             end
         end
-
-
-        -- if self:is_detach_finished() and mod.weapon_part_animation_update then
-        --     mod:echo("yes")
-        --     mod.cosmetics_view:load_new_attachment(weapon_spawn_data.item)
-        --     mod.weapon_part_animation_update = nil
-        -- else
-        --     mod:echo("nope")
-        -- end
 
         if self:is_all_finished() then
             self:clear()
             managers.event:trigger("weapon_customization_hide_ui", false)
-            -- mod.cosmetics_view._visibility_toggled_on = false
-            -- mod.cosmetics_view:_cb_on_ui_visibility_toggled("entry_"..tostring(3))
-            -- if self.hide_ui then
-            -- 	managers.event:trigger("weapon_customization_hide_ui", false)
-            -- end
         end
 
     end

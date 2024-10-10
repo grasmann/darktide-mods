@@ -57,6 +57,10 @@ local mod = get_mod("weapon_customization")
 	local SLOT_SECONDARY = "slot_secondary"
 	local WEAPON_CUSTOMIZATION_TAB = "tab_weapon_customization"
 	local BACKPACK_EMPTY = "content/items/characters/player/human/backpacks/empty_backpack"
+	local weapon_items = {}
+	local entry_distance = {}
+	local closest_6 = {}
+	local entry_show = {}
 --#endregion
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
@@ -67,7 +71,8 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 
 	instance._setup_forward_gui = function(self)
 		if not self._ui_forward_renderer_id then
-			self._unique_id = self._unique_id or self.__class_name.."_"..string_gsub(tostring(self), "table: ", "")
+			-- self._unique_id = self._unique_id or self.__class_name.."_"..string_gsub(tostring(self), "table: ", "")
+			self._unique_id = self._unique_id or self.__class_name.."_"..mod:cached_gsub(tostring(self), "table: ", "")
 			-- self._forward_world = managers.ui:create_world(self._unique_id.."_ui_forward_world", 101, "ui", self.view_name)
 			-- local viewport_name = self._unique_id.."_ui_forward_world_viewport"
 			-- self._forward_viewport = managers.ui:create_viewport(self._forward_world, viewport_name, "default_with_alpha", 1)
@@ -136,7 +141,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		end
 	end
 
-	local weapon_items = {}
 	instance.weapon_items = function(self)
 		table.clear(weapon_items)
 		self:get_inventory_background_view()
@@ -180,7 +184,8 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 
 	instance.has_backpack = function(self)
 		local item = self._preview_profile_equipped_items["slot_gear_extra_cosmetic"]
-		return item and item.name and not string.find(item.name, "empty_backpack")
+		-- return item and item.name and not string.find(item.name, "empty_backpack")
+		return item and item.name and not mod:cached_find(item.name, "empty_backpack")
 	end
 
 	instance.backpack_name = function(self)
@@ -247,9 +252,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 		return self._widgets_by_name["visible_equipment_option_1"].content.value
 	end
 
-	local entry_distance = {}
-	local closest_6 = {}
-	local entry_show = {}
 	instance.draw_gear_node_lines = function(self)
 
 		local gui = self:forward_gui()
@@ -305,43 +307,43 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 
 						local unit = gear_node_units[gear_node.name]
 						if unit and unit_alive(unit) and self._widgets_by_name[tostring(gear_node.name).."_button"].visible then
-							local box = unit_box(unit, false)
-							local center_position = matrix4x4_translation(box)
-							local world_to_screen, distance = camera_world_to_screen(camera, center_position)
+							-- local box = unit_box(unit, false)
+							-- local center_position = matrix4x4_translation(box)
+							-- local world_to_screen, distance = camera_world_to_screen(camera, center_position)
 							
-							local ui_scenegraph = self._ui_scenegraph
-							local scale = RESOLUTION_LOOKUP.scale
-							local screen_width = RESOLUTION_LOOKUP.width
-							local screen_height = RESOLUTION_LOOKUP.height
-							local scenegraph_entry_name = tostring(gear_node.name).."_button_pivot"
-							local world_position = UIScenegraph.world_position(ui_scenegraph, scenegraph_entry_name)
+							-- local ui_scenegraph = self._ui_scenegraph
+							-- local scale = RESOLUTION_LOOKUP.scale
+							-- local screen_width = RESOLUTION_LOOKUP.width
+							-- local screen_height = RESOLUTION_LOOKUP.height
+							-- local scenegraph_entry_name = tostring(gear_node.name).."_button_pivot"
+							-- local world_position = UIScenegraph.world_position(ui_scenegraph, scenegraph_entry_name)
 							
-							local size_width, size_height = UIScenegraph.get_size(ui_scenegraph, scenegraph_entry_name, scale)
-							local scenegraph_entry = ui_scenegraph[scenegraph_entry_name]
+							-- local size_width, size_height = UIScenegraph.get_size(ui_scenegraph, scenegraph_entry_name, scale)
+							-- local scenegraph_entry = ui_scenegraph[scenegraph_entry_name]
 
-							local origin = vector2(
-								world_position[1] * scale + (screen_width * scale) / 4,
-								world_position[2] * scale
-							)
+							-- local origin = vector2(
+							-- 	world_position[1] * scale + (screen_width * scale) / 4,
+							-- 	world_position[2] * scale
+							-- )
 
-							if gear_node.name == "chest" then
-								origin[1] = origin[1] + (size_width * scale) / 2 - 10 * scale
-								origin[2] = origin[2] + size_height * scale + 15 * scale
-							end
-							if gear_node.name == "hips_front" or gear_node.name == "hips_back" then
-								origin[1] = origin[1] + (size_width * scale) / 2 - 10 * scale
-							end
-							if gear_node.name == "back_left" or gear_node.name == "backpack_left" or gear_node.name == "hips_left" or gear_node.name == "leg_left" then
-								origin[1] = origin[1] + size_width * scale + 20 * scale
-								origin[2] = origin[2] + (size_height * scale) / 2 + 5 * scale
-							end
-							if gear_node.name == "back_right" or gear_node.name == "backpack_right" or gear_node.name == "hips_right" or gear_node.name == "leg_right" then
-								origin[1] = origin[1] - 55 * scale
-								origin[2] = origin[2] + (size_height * scale) / 2 + 5 * scale
-							end
+							-- if gear_node.name == "chest" then
+							-- 	origin[1] = origin[1] + (size_width * scale) / 2 - 10 * scale
+							-- 	origin[2] = origin[2] + size_height * scale + 15 * scale
+							-- end
+							-- if gear_node.name == "hips_front" or gear_node.name == "hips_back" then
+							-- 	origin[1] = origin[1] + (size_width * scale) / 2 - 10 * scale
+							-- end
+							-- if gear_node.name == "back_left" or gear_node.name == "backpack_left" or gear_node.name == "hips_left" or gear_node.name == "leg_left" then
+							-- 	origin[1] = origin[1] + size_width * scale + 20 * scale
+							-- 	origin[2] = origin[2] + (size_height * scale) / 2 + 5 * scale
+							-- end
+							-- if gear_node.name == "back_right" or gear_node.name == "backpack_right" or gear_node.name == "hips_right" or gear_node.name == "leg_right" then
+							-- 	origin[1] = origin[1] - 55 * scale
+							-- 	origin[2] = origin[2] + (size_height * scale) / 2 + 5 * scale
+							-- end
 
-							local color = Color(255, 49, 62, 45)
-							ScriptGui.hud_line(gui, origin, world_to_screen, 100, 2, Color(255, 106, 121, 100))
+							-- local color = Color(255, 49, 62, 45)
+							-- ScriptGui.hud_line(gui, origin, world_to_screen, 100, 2, Color(255, 106, 121, 100))
 
 						else
 							

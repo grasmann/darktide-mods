@@ -28,6 +28,7 @@ return {
         local attachments = {
             {id = "receiver_01", name = "Receiver 1"},
             {id = "receiver_02", name = "Receiver 2"},
+            {id = "receiver_03", name = "Receiver 3"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -41,6 +42,7 @@ return {
             {name = "receiver_default", model = ""},
             {name = "receiver_01",      model = _item_ranged.."/recievers/lasgun_rifle_receiver_01"},
             {name = "receiver_02",      model = _item_ranged.."/recievers/lasgun_rifle_receiver_02"},
+            {name = "receiver_03",      model = _item_ranged.."/recievers/lasgun_rifle_receiver_ml01"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end
 }

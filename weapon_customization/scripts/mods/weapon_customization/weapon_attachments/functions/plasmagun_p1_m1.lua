@@ -27,6 +27,7 @@ return {
     receiver_attachments = function(default)
         local attachments = {
             {id = "receiver_01", name = "Receiver 1"},
+            {id = "receiver_02", name = "Receiver 2"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -39,6 +40,7 @@ return {
         return table_model_table({
             {name = "receiver_default", model = ""},
             {name = "receiver_01",      model = _item_ranged.."/recievers/plasma_rifle_receiver_01"},
+            {name = "receiver_02",      model = _item_ranged.."/recievers/plasma_rifle_receiver_ml01"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     magazine_attachments = function(default)
@@ -47,6 +49,8 @@ return {
             {id = "magazine_02", name = "Magazine 2"},
             {id = "magazine_03", name = "Magazine 3"},
             {id = "magazine_04", name = "Magazine 4"},
+            {id = "magazine_05", name = "Magazine 5"},
+            {id = "magazine_06", name = "Magazine 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -62,6 +66,8 @@ return {
             {name = "magazine_02",      model = _item_ranged.."/magazines/plasma_rifle_magazine_02"},
             {name = "magazine_03",      model = _item_ranged.."/magazines/melta_gun_magazine_01"},
             {name = "magazine_04",      model = _item_ranged.."/magazines/plasma_rifle_magazine_03"},
+            {name = "magazine_05",      model = _item_ranged.."/magazines/plasma_rifle_magazine_04"},
+            {name = "magazine_06",      model = _item_ranged.."/magazines/plasma_rifle_magazine_ml01"},
         }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     barrel_attachments = function(default)
@@ -70,6 +76,8 @@ return {
             {id = "barrel_02", name = "Barrel 2"},
             {id = "barrel_03", name = "Barrel 3"},
             {id = "barrel_04", name = "Barrel 4"},
+            {id = "barrel_05", name = "Barrel 5"},
+            {id = "barrel_06", name = "Barrel 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -85,6 +93,8 @@ return {
             {name = "barrel_02",      model = _item_ranged.."/barrels/plasma_rifle_barrel_02"},
             {name = "barrel_03",      model = _item_ranged.."/barrels/plasma_rifle_barrel_03"},
             {name = "barrel_04",      model = _item_ranged.."/barrels/plasma_rifle_barrel_04"},
+            {name = "barrel_05",      model = _item_ranged.."/barrels/plasma_rifle_barrel_05"},
+            {name = "barrel_06",      model = _item_ranged.."/barrels/plasma_rifle_barrel_ml01"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     stock_attachments = function(default)
@@ -93,6 +103,8 @@ return {
             {id = "plasma_rifle_stock_02", name = "Ventilation 2"},
             {id = "plasma_rifle_stock_03", name = "Ventilation 3"},
             {id = "plasma_rifle_stock_04", name = "Ventilation 4"},
+            {id = "plasma_rifle_stock_05", name = "Ventilation 5"},
+            {id = "plasma_rifle_stock_ml01", name = "Ventilation 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -108,6 +120,8 @@ return {
             {name = "plasma_rifle_stock_02",      model = _item_ranged.."/stocks/plasma_rifle_stock_02"},
             {name = "plasma_rifle_stock_03",      model = _item_ranged.."/stocks/plasma_rifle_stock_03"},
             {name = "plasma_rifle_stock_04",      model = _item_ranged.."/stocks/plasma_rifle_stock_04"},
+            {name = "plasma_rifle_stock_05",      model = _item_ranged.."/stocks/plasma_rifle_stock_05"},
+            {name = "plasma_rifle_stock_ml01",      model = _item_ranged.."/stocks/plasma_rifle_stock_ml01"},
         }, parent, angle, move, remove, type or "stock", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     grip_attachments = function(default)

@@ -31,24 +31,10 @@ local DMF = get_mod("DMF")
 	local class = class
 	local string = string
 	local assert = assert
-	local vector3 = Vector3
 	local tostring = tostring
-	local Quaternion = Quaternion
 	local unit_alive = Unit.alive
-	local vector3_box = Vector3Box
-	local string_gsub = string.gsub
-	local string_find = string.find
 	local table_clear = table.clear
-	local vector3_zero = vector3.zero
-	local unit_get_data = Unit.get_data
-	local quaternion_box = QuaternionBox
 	local table_contains = table.contains
-	local vector3_unbox = vector3_box.unbox
-	local unit_local_scale = Unit.local_scale
-	local quaternion_unbox = quaternion_box.unbox
-	local unit_local_position = Unit.local_position
-	local unit_local_rotation = Unit.local_rotation
-	local quaternion_identity = Quaternion.identity
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -234,55 +220,22 @@ SaveLua._save_entry = function(self, data)
 	-- Open file
 	local file = assert(_io.open(path, "w+"))
 
-	-- -- Position offset
-	-- local position_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_position_offset")
-	-- position_offset = position_offset and vector3_unbox(position_offset)
-	-- position_offset = position_offset or previous and previous.position_offset and vector3_unbox(previous.position_offset)
-	-- position_offset = position_offset or unit_good and unit_local_position(data.unit, node)
-	-- position_offset = position_offset or vector3_zero()
-
-	-- -- Rotation offset
-	-- local rotation_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_rotation_offset")
-	-- rotation_offset = rotation_offset and quaternion_unbox(rotation_offset)
-	-- rotation_offset = rotation_offset or previous and previous.rotation_offset and quaternion_unbox(previous.rotation_offset)
-	-- rotation_offset = rotation_offset or unit_good and unit_local_rotation(data.unit, node)
-	-- rotation_offset = rotation_offset or quaternion_box(quaternion_identity())
-
-	-- -- Scale offset
-	-- local scale_offset = unit_good and unit_get_data(data.unit, "unit_manipulation_scale_offset")
-	-- scale_offset = scale_offset and vector3_unbox(scale_offset)
-	-- scale_offset = scale_offset or previous and previous.scale_offset and vector3_unbox(previous.scale_offset)
-	-- scale_offset = scale_offset or unit_good and unit_local_scale(data.unit, node)
-	-- scale_offset = scale_offset or vector3_box(1, 1, 1)
-
-	-- -- Center of mass
-	-- local center_mass = unit_good and unit_get_data(data.unit, "unit_manipulation_center_mass")
-	-- center_mass = center_mass and vector3_unbox(center_mass)
-	-- center_mass = center_mass or previous and previous.center_mass and vector3_unbox(previous.center_mass)
-	-- center_mass = center_mass or vector3_zero()
-
 	-- Stuff
 	local tt = "	"
 	local ttt = tt..tt
 
 	-- Write lines
 	file:write("return {\n")
-	-- file:write(tt.."visible_equipment = {\n")
-	-- file:write(ttt.."center_mass = "..self:_cast_vector3_to_string(center_mass)..",\n")
-	-- file:write(ttt.."position_offset = "..self:_cast_vector3_to_string(position_offset)..",\n")
-	-- file:write(ttt.."rotation_offset = "..self:_cast_quaternion_to_string(rotation_offset)..",\n")
-	-- file:write(ttt.."scale_offset = "..self:_cast_vector3_to_string(scale_offset)..",\n")
-	-- file:write(ttt.."node = "..tostring(node)..",\n")
-	-- file:write(tt.."},\n")
 	if data.item then
 		-- Attachments
-		local attachments = data.attachments or self.gear_settings:attachments(data.item)
+		local gear_settings = self.gear_settings
+		local attachments = data.attachments or gear_settings:attachments(data.item)
 		if attachments then
 			file:write(tt.."attachments = {\n")
 			for attachment_slot, attachment_name in pairs(attachments) do
 				file:write(ttt..tostring(attachment_slot).." = '"..tostring(attachment_name).."',\n")
 			end
-			local gear_node = data.gear_node or self.gear_settings:get(data.item, "gear_node")
+			local gear_node = data.gear_node or gear_settings:get(data.item, "gear_node")
 			gear_node = gear_node and "'"..tostring(gear_node).."'"
 			file:write(ttt.."gear_node = "..tostring(gear_node or "nil")..",\n")
 			file:write(tt.."},\n")
@@ -321,14 +274,14 @@ end
 
 SaveLua._cast_vector3_to_string = function(self, vector)
 	local str = tostring(vector)
-	if not string_find(str, "Vector3Box") then
-		str = string_gsub(str, "Vector3", "Vector3Box")
+	if not mod:cached_find(str, "Vector3Box") then
+		str = mod:cached_gsub(str, "Vector3", "Vector3Box")
 	end
 	return str
 end
 
 SaveLua._cast_quaternion_to_string = function(self, quaternion)
-	return string_gsub(tostring(quaternion), "Vector4", "QuaternionBox")
+	return mod:cached_gsub(tostring(quaternion), "Vector4", "QuaternionBox")
 end
 
 -- ##### ┬┌┐┌┌┬┐┌─┐┬─┐┌─┐┌─┐┌─┐┌─┐ ####################################################################################

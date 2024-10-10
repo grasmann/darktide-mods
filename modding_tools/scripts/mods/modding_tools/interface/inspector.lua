@@ -19,7 +19,9 @@ mod.inspector = inspector:new()
 -- ##### ┴┘└┘ ┴ └─┘┴└─└  ┴ ┴└─┘└─┘ ####################################################################################
 
 mod.inspect = function(self, key, obj)
-    self.inspector:clear()
-    self.inspector:navigate(key, obj)
-    self.inspector:show(true)
+    if self.inspector and not self.inspector.destroyed then
+        self.inspector:clear()
+        self.inspector:navigate(key, obj)
+        self.inspector:show(true)
+    end
 end

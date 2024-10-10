@@ -85,6 +85,13 @@ end
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
 
+mod:hook_require("scripts/settings/player_character/player_character_constants", function(instance)
+
+    instance.slot_configuration.slot_primary.mispredict_packages = false
+    instance.slot_configuration.slot_secondary.mispredict_packages = false
+
+end)
+
 mod:hook_require("scripts/foundation/managers/package/utilities/item_package", function(instance)
 
     instance.add_custom_resources = function(self, item, out_result)
@@ -95,14 +102,17 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
         if item and item.name then
             -- Get item name
             local item_name = mod.gear_settings:short_name(item.name)
-            -- Iter attachment slots
+
+            -- Iterate attachment slots
             for _, attachment_slot in pairs(mod.attachment_slots) do
                 -- Get attachment
-                local attachment = mod.gear_settings:get(item, attachment_slot)
+                -- local attachment = mod.gear_settings:get(item, attachment_slot)
+                local attachment = mod.gear_settings:_recursive_find_attachment(item.attachments, attachment_slot)
+                local attachment_name = attachment and attachment.attachment_name
                 -- Get item data
-                local item_data = attachment and mod.attachment_models[item_name]
+                local item_data = attachment_name and mod.attachment_models[item_name]
                 -- Get attachment data
-                local attachment_data = item_data and item_data[attachment]
+                local attachment_data = item_data and item_data[attachment_name]
                 -- Get model
                 local model = attachment_data and attachment_data.model
                 -- Get original item
@@ -116,42 +126,41 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
                     end
                 end
             end
+
+            -- Sounds
+			local sounds = mod.gear_settings:sound_packages(item)
+			for sound, _ in pairs(sounds) do
+                result[sound] = true
+            end
+
         end
 
         return result
     end
 
     mod:hook(instance, "compile_item_instance_dependencies", function(func, item, items_dictionary, out_result, optional_mission_template, ...)
-
-        -- local player_item = item.item_list_faction == "Player"
+        local player_item = item.item_list_faction == "Player"
         local weapon_item = item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED
-        local visible_equipment_system_option = mod:get("mod_option_visible_equipment")
-		local hub = not mod:is_in_hub() or not mod:get("mod_option_visible_equipment_disable_in_hub")
-		local in_possesion_of_player = mod.gear_settings:player_item(item) or (visible_equipment_system_option and hub)
 
         -- Check item and attachments
-        if item and item.attachments and not mod:is_premium_store_item() and weapon_item and in_possesion_of_player then
-
+        if item and item.attachments and weapon_item and player_item and not mod:is_premium_store_item() then
             -- Add custom attachments
             mod.gear_settings:_add_custom_attachments(item, item.attachments)
-            
             -- Overwrite attachments
             mod.gear_settings:_overwrite_attachments(item, item.attachments)
-
         end
 
         local result = func(item, items_dictionary, out_result, optional_mission_template, ...)
 
-        if item and item.attachments and not mod:is_premium_store_item() and weapon_item then
-
+        if item and item.attachments and weapon_item and player_item and not mod:is_premium_store_item() then
             -- Add custom resources
             result = instance:add_custom_resources(item, result)
-
         end
+
+        out_result = result
 
         -- Return dependencies
         return result
-
     end)
 
 end)
@@ -160,10 +169,63 @@ end)
 -- ##### ││││└─┐├─┘├┬┘├┤  ││││   │   ├─┘├─┤│  ├┴┐├─┤│ ┬├┤   ├─┤├─┤│││ │││  ├┤ ├┬┘ #####################################
 -- ##### ┴ ┴┴└─┘┴  ┴└─└─┘─┴┘┴└─┘ ┴   ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘  ┴ ┴┴ ┴┘└┘─┴┘┴─┘└─┘┴└─ #####################################
 
+mod.can_package_release = function(self, package_name)
+    local persitent_table = self:persistent_table(REFERENCE)
+    local loaded_package = persitent_table.loaded_packages.visible_equipment[package_name]
+    if not persitent_table.package_info[package_name] then
+        persitent_table.package_info[package_name] = {
+            player_content = self:cached_find(package_name, "content/weapons/player"),
+            weapon_sound = self:cached_find(package_name, "wwise/events/weapon"),
+            player_sound = self:cached_find(package_name, "wwise/events/player"),
+        }
+    end
+    -- local weapon_package = self:cached_find(package_name, "content/weapons/player") or self:cached_find(package_name, "wwise/events/weapon") or self:cached_find(package_name, "wwise/events/player")
+    local package_info = persitent_table.package_info[package_name]
+    local weapon_package = package_info and (package_info.player_content or package_info.weapon_sound or package_info.player_sound)
+    local option = self:get("mod_option_keep_packages")
+    if persitent_table.loaded_packages.needed[package_name] then return false end
+    if (loaded_package or weapon_package) and option == "always" then return false end
+    if (loaded_package or weapon_package) and (option == "hub" and self:is_in_hub()) then return false end
+    return true
+end
+
+mod:hook(CLASS.PackageManager, "_release_internal", function(func, self, package_name, ...)
+    if mod:can_package_release(package_name) then
+        return func(self, package_name, ...)
+    end
+
+end)
+
+mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
+    local load_call_item = self._load_call_data[id]
+	local package_name = load_call_item.package_name
+    if mod:can_package_release(package_name) then
+        return func(self, id, ...)
+    end
+end)
+
+mod:hook(CLASS.MispredictPackageHandler, "_load_item_packages", function(func, self, item, ...)
+    local mission = self._mission
+	local dependencies = ItemPackage.compile_item_instance_dependencies(item, self._item_definitions, nil, mission)
+	local package_manager = managers.package
+
+	for package_name, _ in pairs(dependencies) do
+		if package_manager:package_is_known(package_name) then
+			local load_id = package_manager:load(package_name, "MispredictPackageHandler", nil, true)
+
+			self._loaded_packages[package_name] = self._loaded_packages[package_name] or {}
+
+			table.insert(self._loaded_packages[package_name], load_id)
+		-- else
+		-- 	ferror("MispredictPackageHandler attempted to load a package when it should only increase reference counts,\tsomething has gone wrong with package loading if this has occured")
+		end
+	end
+end)
+
 mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
 	local dependencies = ItemPackage.compile_item_instance_dependencies(item, self._item_definitions, nil, self._mission)
 	for package_name, _ in pairs(dependencies) do
-        if self._loaded_packages and self._loaded_packages[package_name] then
+        if self._loaded_packages and self._loaded_packages[package_name] and mod:can_package_release(package_name) then
             local loaded_packages = self._loaded_packages[package_name]
             local load_id = table_remove(loaded_packages, #loaded_packages)
             managers.package:release(load_id)
@@ -186,9 +248,11 @@ mod:hook(CLASS.MispredictPackageHandler, "destroy", function(func, self, ...)
     -- Unload rest
     if self._loaded_packages then
         for package_name, load_ids in pairs(self._loaded_packages) do
-            for _, load_id in pairs(load_ids) do
-                managers.package:release(load_id)
-                mod:print("MispredictPackageHandler - unloaded left over "..tostring(package_name))
+            if mod:can_package_release(package_name) then
+                for _, load_id in pairs(load_ids) do
+                    managers.package:release(load_id)
+                    mod:print("MispredictPackageHandler - unloaded left over "..tostring(package_name))
+                end
             end
         end
     end

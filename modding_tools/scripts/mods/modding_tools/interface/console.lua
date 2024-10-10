@@ -8,6 +8,15 @@ local mod = get_mod("modding_tools")
     local console = mod:io_dofile("modding_tools/scripts/mods/modding_tools/classes/console")
 --#endregion
 
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+
+--#region Performance
+    local table = table
+    local table_insert = table.insert
+--#endregion
+
 -- ##### ┌─┐┌─┐┌┐┌┌─┐┌─┐┬  ┌─┐ ########################################################################################
 -- ##### │  │ ││││└─┐│ ││  ├┤  ########################################################################################
 -- ##### └─┘└─┘┘└┘└─┘└─┘┴─┘└─┘ ########################################################################################
@@ -19,17 +28,31 @@ mod.console = console:new()
 -- ##### ┴┘└┘ ┴ └─┘┴└─└  ┴ ┴└─┘└─┘ ####################################################################################
 
 mod.console_print = function(self, ...)
-    self.console:print(...)
+    if self.console then
+        self.console:print(...)
+    else
+        table_insert(self:console_delay_buffer(), {...})
+    end
 end
 
 mod.console_set_mod = function(self, mod)
-    self.console:set_mod(mod)
+    if self.console then
+        self.console:set_mod(mod)
+    end
 end
 
 mod.console_hotkey = function()
-    mod.console:toggle()
+    if mod.console then
+        mod.console:toggle()
+    end
 end
 
 mod.console_show = function(self, show)
-    self.console:show(show)
+    if self.console then
+        self.console:show(show)
+    end
+end
+
+mod.console_delay_buffer = function(self)
+    return self:persistent_table("modding_tools").console.delay_buffer
 end

@@ -8,47 +8,28 @@ local mod = get_mod("weapon_customization")
 	local Mesh = Mesh
 	local Unit = Unit
 	local type = type
+	local table = table
+	local World = World
+	local Wwise = Wwise
 	local pairs = pairs
-	local vector3 = Vector3
 	local string = string
-	local vector2 = Vector2
-	local unit_mesh = Unit.mesh
+	local vector3 = Vector3
 	local managers = Managers
+	local unit_mesh = Unit.mesh
 	local unit_alive = Unit.alive
 	local Quaternion = Quaternion
 	local vector3_box = Vector3Box
+	local table_clear = table.clear
 	local vector3_zero = vector3.zero
-	local vector3_lerp = vector3.lerp
-	local string_gsub = string.gsub
-	local unit_get_data = Unit.get_data
-	local quaternion_box = QuaternionBox
 	local unit_num_meshes = Unit.num_meshes
-	local unit_debug_name = Unit.debug_name
-	local unit_world_pose = Unit.world_pose
-	local unit_local_pose = Unit.local_pose
 	local vector3_unbox = vector3_box.unbox
-	local quaternion_forward = Quaternion.forward
-	local quaternion_unbox = quaternion_box.unbox
 	local wwise_wwise_world = Wwise.wwise_world
-	local unit_local_position = Unit.local_position
-	local unit_local_rotation = Unit.local_rotation
-	local mesh_local_rotation = Mesh.local_rotation
-	local unit_set_local_pose = Unit.set_local_pose
-	local unit_world_position = Unit.world_position
-	local unit_world_rotation = Unit.world_rotation
-	local quaternion_multiply = Quaternion.multiply
-	local unit_set_local_scale = Unit.set_local_scale
-	local unit_get_child_units = Unit.get_child_units
-	local quaternion_matrix_4x4 = Quaternion.matrix4x4
 	local world_physics_world = World.physics_world
-	local quaternion_axis_angle = Quaternion.axis_angle
 	local unit_set_local_position = Unit.set_local_position
-	local unit_set_local_rotation = Unit.set_local_rotation
 	local mesh_set_local_position = Mesh.set_local_position
 	local mesh_set_local_rotation = Mesh.set_local_rotation
-	local unit_set_mesh_visibility = Unit.set_mesh_visibility
-	local unit_set_unit_visibility = Unit.set_unit_visibility
-	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+	-- local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
+	local quaternion_from_vector = Quaternion.from_vector
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -58,6 +39,29 @@ local mod = get_mod("weapon_customization")
 --#region Data
 	local REFERENCE = "weapon_customization"
 	local COSMETIC_VIEW = "inventory_cosmetics_view"
+	local FLASHLIGHT_AGGRO_MUTATORS = {
+		"mutator_darkness_los",
+		"mutator_ventilation_purge_los"
+	}
+	local _needed_packages = {
+        "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
+		-- "content/weapons/player/attachments/trinket_hooks/trinket_hook_03_v",
+		"content/fx/particles/enemies/sniper_laser_sight",
+		"content/fx/particles/enemies/red_glowing_eyes",
+		"packages/ui/views/splash_view/splash_view",
+		"content/fx/particles/abilities/chainlightning/protectorate_chainlightning_hands_charge",
+		"content/fx/particles/screenspace/screen_ogryn_dash",
+		"wwise/events/weapon/play_lasgun_p3_mag_button",
+		"content/weapons/player/ranged/lasgun_rifle/attachments/rail_01/rail_01",
+		-- "content/weapons/player/ranged/lasgun_rifle/attachments/sight_01/sight_01",
+		-- "content/weapons/player/melee/combat_blade/attachments/handle_01/handle_01",
+		"content/characters/tiling_materials/leather_coarse/leather_coarse_bc",
+		"content/characters/tiling_materials/leather_coarse/leather_coarse_nm",
+		"content/characters/tiling_materials/leather_coarse/leather_coarse_orm",
+		"content/weapons/player/ranged/autogun_rifle/attachments/magazine_01/magazine_01",
+    }
+	local mesh_positions = {}
+	local mesh_rotations = {}
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -74,12 +78,12 @@ end
 
 mod.physics_world = function(self, world)
 	local world = world or self:world()
-    return world_physics_world(world)
+    return world and world_physics_world(world)
 end
 
 mod.wwise_world = function(self, world)
 	local world = world or self:world()
-	return wwise_wwise_world(world)
+	return world and wwise_wwise_world(world)
 end
 
 mod.get_view = function(self, view_name)
@@ -88,14 +92,9 @@ end
 
 mod.get_cosmetic_view = function(self)
 	return self:get_view(COSMETIC_VIEW)
-    -- return managers.ui:view_active(COSMETIC_VIEW) and managers.ui:view_instance(COSMETIC_VIEW) or nil
 end
 
 mod.is_light_mutator = function(self)
-	local FLASHLIGHT_AGGRO_MUTATORS = {
-		"mutator_darkness_los",
-		"mutator_ventilation_purge_los"
-	}
 	local mutator_manager = managers.state.mutator
 	for i = 1, #FLASHLIGHT_AGGRO_MUTATORS do
 		if mutator_manager:mutator(FLASHLIGHT_AGGRO_MUTATORS[i]) then
@@ -126,21 +125,21 @@ mod.game_time = function()
 	return managers.time:time("gameplay")
 end
 
-mod.recreate_hud = function(self)
-	local ui_manager = managers.ui
-	if ui_manager then
-		local hud = ui_manager._hud
-		if hud then
-			local player = managers.player:local_player(1)
-			local peer_id = player:peer_id()
-			local local_player_id = player:local_player_id()
-			local elements = hud._element_definitions
-			local visibility_groups = hud._visibility_groups
-			hud:destroy()
-			ui_manager:create_player_hud(peer_id, local_player_id, elements, visibility_groups)
-		end
-	end
-end
+-- mod.recreate_hud = function(self)
+-- 	local ui_manager = managers.ui
+-- 	if ui_manager then
+-- 		local hud = ui_manager._hud
+-- 		if hud then
+-- 			local player = managers.player:local_player(1)
+-- 			local peer_id = player:peer_id()
+-- 			local local_player_id = player:local_player_id()
+-- 			local elements = hud._element_definitions
+-- 			local visibility_groups = hud._visibility_groups
+-- 			hud:destroy()
+-- 			ui_manager:create_player_hud(peer_id, local_player_id, elements, visibility_groups)
+-- 		end
+-- 	end
+-- end
 
 mod.player_from_viewport = function(self, viewport_name)
     local players = managers.player:players()
@@ -165,51 +164,32 @@ mod.player_from_unit = function(self, unit)
 end
 
 -- Extract item name from model string
-mod.item_name_from_content_string = function(self, content_string)
-	return string_gsub(content_string, '.*[%/%\\]', '')
-end
+-- mod.item_name_from_content_string = function(self, content_string)
+-- 	return mod:cached_gsub(content_string, '.*[%/%\\]', '')
+-- end
 
-mod.release_non_essential_packages = function(self)
-	-- Release all non-essential packages
-	local unloaded_packages = {}
-	local lists = {"visible_equipment", "view_weapon_sounds"}
-	for _, list in pairs(lists) do
-		for package_name, package_id in pairs(self:persistent_table(REFERENCE).loaded_packages[list]) do
-			unloaded_packages[package_name] = package_id
-			self:persistent_table(REFERENCE).used_packages[list][package_name] = nil
-		end
-		self:persistent_table(REFERENCE).loaded_packages[list] = {}
-	end
-	for package_name, package_id in pairs(unloaded_packages) do
-		managers.package:release(package_id)
-	end
-end
+-- mod.release_non_essential_packages = function(self)
+-- 	-- Release all non-essential packages
+-- 	local unloaded_packages = {}
+-- 	local lists = {"visible_equipment", "view_weapon_sounds"}
+-- 	for _, list in pairs(lists) do
+-- 		for package_name, package_id in pairs(self:persistent_table(REFERENCE).loaded_packages[list]) do
+-- 			unloaded_packages[package_name] = package_id
+-- 			self:persistent_table(REFERENCE).used_packages[list][package_name] = nil
+-- 		end
+-- 		self:persistent_table(REFERENCE).loaded_packages[list] = {}
+-- 	end
+-- 	for package_name, package_id in pairs(unloaded_packages) do
+-- 		managers.package:release(package_id)
+-- 	end
+-- end
 
 mod.load_needed_packages = function(self)
-    local _needed_packages = {
-        "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
-		"content/fx/particles/enemies/sniper_laser_sight",
-		"content/fx/particles/enemies/red_glowing_eyes",
-		"packages/ui/views/splash_view/splash_view",
-		-- "content/fx/particles/interacts/servoskull_visibility_hover",
-		-- "content/fx/particles/abilities/psyker_warp_charge_shout",
-		-- "content/fx/particles/enemies/buff_stummed",
-		-- "content/fx/particles/enemies/corruptor/corruptor_arm_tip",
-		-- "content/fx/particles/weapons/force_staff/force_staff_channel_charge",
-		"content/fx/particles/abilities/chainlightning/protectorate_chainlightning_hands_charge",
-		-- "content/characters/player/human/third_person/animations/lasgun_pistol",
-		-- "content/characters/player/human/first_person/animations/lasgun_pistol",
-		-- "content/characters/player/human/third_person/animations/stubgun_pistol",
-		-- "content/characters/player/human/first_person/animations/stubgun_pistol",
-		-- "content/characters/player/human/third_person/animations/autogun_pistol",
-		-- "content/characters/player/human/first_person/animations/autogun_pistol",
-		"content/fx/particles/screenspace/screen_ogryn_dash",
-		"wwise/events/weapon/play_lasgun_p3_mag_button",
-    }
+	local persitent_table = self:persistent_table(REFERENCE)
     for _, package_name in pairs(_needed_packages) do
-		if not self:persistent_table(REFERENCE).loaded_packages.needed[package_name] then
-			self:persistent_table(REFERENCE).used_packages.needed[package_name] = true
-            self:persistent_table(REFERENCE).loaded_packages.needed[package_name] = managers.package:load(package_name, REFERENCE)
+		if not persitent_table.loaded_packages.needed[package_name] then
+			persitent_table.used_packages.needed[package_name] = true
+            persitent_table.loaded_packages.needed[package_name] = managers.package:load(package_name, REFERENCE)
         end
     end
 end
@@ -228,8 +208,10 @@ mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 
 		local num_meshes = unit_num_meshes(unit)
 		if (mesh_move or unit_and_meshes or mesh_position) and num_meshes > 0 then
-			local mesh_positions = {}
-			local mesh_rotations = {}
+			-- local mesh_positions = {}
+			-- local mesh_rotations = {}
+			table_clear(mesh_positions)
+			table_clear(mesh_rotations)
 			if mesh_position and mesh_index then
 				if type(mesh_position) == "table" and type(mesh_index) == "table" then
 					for i = 1, #mesh_position do
@@ -257,7 +239,8 @@ mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
 					position = position + movement
 				end
 				if mesh_rotations[i] then
-					local rotation = quaternion_from_euler_angles_xyz(mesh_rotations[i][1], mesh_rotations[i][2], mesh_rotations[i][3])
+					-- local rotation = quaternion_from_euler_angles_xyz(mesh_rotations[i][1], mesh_rotations[i][2], mesh_rotations[i][3])
+					local rotation = quaternion_from_vector(mesh_rotations[i])
 					mesh_set_local_rotation(mesh, unit, rotation)
 				end
 				mesh_set_local_position(mesh, unit, position)

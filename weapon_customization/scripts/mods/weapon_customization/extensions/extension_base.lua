@@ -40,6 +40,7 @@ mod.systems = {
     SightExtension            = "sight_system",
     VisibleEquipmentExtension = "visible_equipment_system",
     WeaponAnimationExtension  = "weapon_animation_system",
+    WeaponSlingExtension      = "weapon_sling_system",
 }
 mod.extensions = {
     flashlight_system        = "FlashlightExtension",
@@ -50,6 +51,7 @@ mod.extensions = {
     sight_system             = "SightExtension",
     visible_equipment_system = "VisibleEquipmentExtension",
     weapon_animation_system  = "WeaponAnimationExtension",
+    weapon_sling_system      = "WeaponSlingExtension",
 }
 
 -- ##### ┌┐ ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #####################################################################
@@ -185,9 +187,10 @@ end
 
 WeaponCustomizationExtension.get_first_person = function(self)
     local first_person_extension = self.first_person_extension
+    local not_deleted = first_person_extension and not first_person_extension.__deleted
     local common = self.initialized and (self.is_local_unit or self.spectated)
     local no_cutscene = not self.cut_scene
-    local first_person = first_person_extension and first_person_extension:is_in_first_person_mode()
+    local first_person = not_deleted and first_person_extension:is_in_first_person_mode()
     return common and no_cutscene and first_person
 end
 

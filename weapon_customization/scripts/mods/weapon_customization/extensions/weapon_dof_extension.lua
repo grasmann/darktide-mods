@@ -78,12 +78,13 @@ end
 -- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
 
 WeaponDOFExtension.set_weapon_values = function(self)
+    local gear_settings = mod.gear_settings
     self.sights = {
-        mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
-        mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
+        gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
+        gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
     }
     self.sight = self.sights[2] or self.sights[1]
-    self.sight_name = self.sights[1] and mod:item_name_from_content_string(self.sights[1].item)
+    self.sight_name = self.sights[1] and mod.gear_settings:short_name(self.sights[1].item)
     local actions = self.ranged_weapon.weapon_template.actions
     self.start_time = actions.action_zoom and actions.action_zoom.total_time or actions.action_wield.total_time
     self.reset_time = actions.action_unzoom and actions.action_unzoom.total_time or actions.action_wield.total_time
@@ -217,16 +218,19 @@ WeaponDOFExtension.update = function(self, dt, t)
         self.dirty = nil
     end
 
+    local start_time = self.start_time
+    local timer = self.lerp_timer
+
     if self.do_lerp then
-        local time = is_aiming and self.start_time or self.reset_time
+        local time = is_aiming and start_time or self.reset_time
         self.lerp_timer = t + time
         self.do_lerp = nil
-    elseif self.lerp_timer and t < self.lerp_timer then
-        local time_in_action = math_clamp01(self.start_time - (self.lerp_timer - t))
-        local progress = time_in_action / self.start_time
+    elseif timer and t < timer then
+        local time_in_action = math_clamp01(start_time - (timer - t))
+        local progress = time_in_action / start_time
         local anim_progress = math_ease_sine(progress)
         self.dof_near_scale = math_lerp(self.last_target, self.target, anim_progress)
-    elseif self.lerp_timer and t >= self.lerp_timer then
+    elseif timer and t >= timer then
         self.dof_near_scale = self.target
         self.lerp_timer = nil
     end

@@ -32,38 +32,47 @@ mod:add_global_localize_strings({
 	loc_visible_equipment_option_1 = {
 		en = "Character",
 		de = "Charakter",
+		ru = "Персонаж",
 	},
 	loc_visible_equipment_option_2 = {
 		en = "Weapon",
 		de = "Waffe",
+		ru = "Оружие",
 	},
 	loc_visible_equipment_option_3 = {
 		en = "Armour",
 		de = "Rüstung",
+		ru = "Броня",
 	},
 	loc_visible_equipment_option_4 = {
 		en = "Backpack",
 		de = "Rucksack",
+		ru = "Рюкзак",
 	},
 	loc_visible_equipment_only_this = {
 		en = "Only this weapon",
 		de = "Nur diese Waffe",
+		ru = "Только это оружие",
 	},
 	loc_visible_equipment_all = {
 		en = "All",
 		de = "Alle",
+		ru = "Всё",
 	},
 	loc_visible_equipment_save_button_prompt = {
 		en = "Save",
 		de = "Speichern",
+		ru = "Сохранить",
 	},
 	loc_visible_equipment_reset_button_prompt = {
 		en = "Reset",
 		de = "Zurücksetzen",
+		ru = "Сбросить",
 	},
 	loc_use_modding_tool = {
 		en = "Use Modding Tool",
 		de = "Modding Tool Benutzen",
+		ru = "Использовать ",
 	},
 })
 
@@ -84,7 +93,7 @@ return {
 	mod_description = {
 		en = "Extends weapon customizations",
 		de = "Erweitert Waffenanpassungen",
-		ru = "Extended Weapon Customization – значительно расширяет возможности настройки внешнего вида оружия и добавляет дополнительный обвес: лазерную указку, фонарики и прицелы.",
+		ru = "Extended Weapon Customization – значительно расширяет возможности настройки внешнего вида оружия и добавляет дополнительные обвесы: лазерную указку, фонарики, прицелы и другое.",
 		["zh-cn"] = "武器自定义扩展",
 	},
 	-- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐ ##########################################################################################
@@ -102,11 +111,12 @@ return {
 		ru = "Включить отладку",
 		["zh-cn"] = "调试",
 	},
-	demo_mode = {
-		en = "Demo Mode",
-		de = "Demo Modus",
-		["zh-cn"] = "演示模式",
-	},
+	-- demo_mode = {
+	-- 	en = "Demo Mode",
+	-- 	de = "Demo Modus",
+	-- 	ru = "Демо-режим",
+	-- 	["zh-cn"] = "演示模式",
+	-- },
 	-- ##### ┌┬┐┬┌─┐┌─┐ ###############################################################################################
 	-- ##### ││││└─┐│   ###############################################################################################
 	-- ##### ┴ ┴┴└─┘└─┘ ###############################################################################################
@@ -116,17 +126,43 @@ return {
 		ru = "Разное",
 		["zh-cn"] = "杂项",
 	},
-	mod_option_misc_cover_on_crouch = {
-		en = "Cover on Crouch",
-		de = "Deckung beim Ducken",
+	group_crouch_animation = {
+		en = "Crouch Animation",
+		de = "Ducken Animation",
 		ru = "Анимация при приседании",
-		["zh-cn"] = "蹲伏时掩蔽",
+		["zh-cn"] = "蹲伏时动画",
 	},
-	mod_option_misc_cover_on_crouch_tooltip = {
-		en = "Plays the cover animation when crouching",
-		de = "Spielt beim Ducken die Cover-Animation ab",
-		ru = "При приседании воспроизводится анимация использования прикрытия и оружие поднимается дулом вверх.",
-		["zh-cn"] = "蹲伏时播放被掩体遮蔽的动画",
+	mod_option_crouch_animation = {
+		en = "Crouch Animation System",
+		de = "Duck-Animations System",
+	},
+	mod_option_crouch_animation_tooltip = {
+		en = "Toggle crouch animation system",
+		de = "Duck-Animations System umschalten",
+	},
+	group_sling = {
+		en = "Weapon Sling System",
+		de = "Waffengurt System",
+	},
+	mod_option_sling = {
+		en = "Weapon Sling System",
+		de = "Waffengurt System",
+	},
+	mod_option_sling_tooltip = {
+		en = "Toggle weapon sling system",
+		de = "Waffengurt System umschalten",
+	},
+	group_weapon_sway = {
+		en = "Sway Animation",
+		de = "Schwank Animation",
+	},
+	mod_option_sway = {
+		en = "Sway System",
+		de = "Schwank-System",
+	},
+	mod_option_sway_tooltip = {
+		en = "Toggle sway system",
+		de = "Schwank-System umschalten",
 	},
 	mod_option_misc_sway = {
 		en = "Sway Animation",
@@ -143,10 +179,34 @@ return {
 	mod_option_misc_sway_aim = {
 		en = "When Aiming",
 		de = "Beim Zielen",
+		ru = "При прицеливании",
 	},
 	mod_option_misc_sway_aim_tooltip = {
 		en = "Plays a weapon sway animation when aiming",
 		de = "Spielt eine Waffenschwank-Bewegungsanimation beim Zielen",
+		ru = "Проигрывается анимация",
+	},
+	mod_option_keep_packages = {
+		en = "Lock weapon packages",
+		de = "Waffenpakete sperren",
+	},
+	mod_option_keep_packages_tooltip = {
+		en = "Keep all weapon packages loaded",
+		de = "Alle Waffenpakete geladen halten",
+	},
+	mod_option_keep_packages_off = {
+		en = "Off",
+		de = "Aus",
+		ru = "Никому",
+		["zh-cn"] = "关闭",
+	},
+	mod_option_keep_packages_hub = {
+		en = "Hub Only",
+		de = "Nur im Hub",
+	},
+	mod_option_keep_packages_always = {
+		en = "Always",
+		de = "Immer",
 	},
 	mod_option_misc_attachment_names = {
 		en = "Attachment Names",
@@ -242,9 +302,9 @@ return {
 		["zh-cn"] = "壁垒",
 	},
 	mod_attachment_remove = {
-		en = "Twin.Linked Heavy Stubber|Ripper Gun|Rumbler|Kickback|Ogryn Thumper|Grenadier Gauntlet|Cleaver|Power Maul|Battle Maul & Mk III Slab Shield|Battle Maul & Mk 3 Slab Shield|Bully Club|Shredder Autopistol|Helbore Lasgun|Laspistol|Infantry Autogun|Headhunter Autogun|Braced Autogun|Spearhead Boltgun|Boltgun|Infantry Lasgun| pattern lasgun|Heavy|Autogun|Recon Lasgun| Purgation Flamer|Flamer| pattern flamer|Combat Shotgun|Stub Revolver|Stubrevolver|Plasma Gun|Force Staff|Duelling Sword|Blaze Force Sword|Force Sword|Power Sword|Sword|Combat Axe|Tactical Axe|Assault Chainsword|Chainsword|Combat Blade|Model Powersword|Assault Chainaxe|Chainaxe|pattern|unknown manufacture|Sapper Shovel|Thunder Hammer|Crusher|Model Powermaul|Eviscerator|Camo|[()]|Latrine Shovel|Battle Maul & Slabshield|Pattern|Lasgun",
+		en = "Sabre|Stubber|Twin.linked|Twin.Linked|Twin.Linked Heavy Stubber|Ripper Gun|Rumbler|Kickback|Ogryn Thumper|Grenadier Gauntlet|Cleaver|Power Maul|Battle Maul & Mk III Slab Shield|Battle Maul & Mk 3 Slab Shield|Bully Club|Shredder Autopistol|Helbore Lasgun|Laspistol|Infantry Autogun|Headhunter Autogun|Braced Autogun|Spearhead Boltgun|Boltgun|Infantry Lasgun| pattern lasgun|Heavy|Autogun|Recon Lasgun| Purgation Flamer|Flamer| pattern flamer|Combat Shotgun|Stub Revolver|Stubrevolver|Plasma Gun|Force Staff|Duelling Sword|Blaze Force Sword|Force Sword|Power Sword|Sword|Combat Axe|Tactical Axe|Assault Chainsword|Chainsword|Combat Blade|Model Powersword|Assault Chainaxe|Chainaxe|pattern|unknown manufacture|Sapper Shovel|Thunder Hammer|Crusher|Model Powermaul|Eviscerator|Camo|[()]|Latrine Shovel|Battle Maul & Slabshield|Pattern|Lasgun|Ogryn Powermaul & Slabshield|04",
 		de = "-Rippergun|-Schwert|Doppelläufiges|-Maschinengewehr|-Tarnung|[():]|Rippergun|-Camo|-Rückschlag|-Prügel|Rückschlag|-Grenadierhandschuh|Grenadierhandschuh|-Hackmesser|Hackmesser|-Energiestreitkolben|.Kampf.Streitkolben|& Orox.Klotzschild Mk III|& Orox.Klotzschild Mk 3|-Schlägerkeule|-Kampfaxt|Kampfaxt| Taktische Axt|.Sturm.Kettenschwert|Sturm.Kettenschwert|.Kampfklinge|Kampfklinge|.Energieschwert|Energieschwert|Pionierspaten|.Sturm.Kettenaxt|.Helbore.Lasergewehr|Infanterie.Lasergewehr|.Kundschafter.Lasergewehr| Schwere Laserpistole|.Muster.Lasergewehr|.Infanterie.Sturmgewehr|.Stabilisation.Sturmgewehr|.Kopfjäger.Sturmgewehr|.Sturmgewehr|.Schredder.Maschinenpistole|Speerspitze.Boltpistole|Schwere Laserpistole|.Läuterungs.Flammenwerfer|Läuterungs.Flammenwerfer|.Einsatzschrotflinte|Einsatzschrotflinte|Infanterie|Sturmgewehr|Schredder.Maschinenpistole|.Speerspitze.Boltpistole|.Plasmagewehr|.Stub.Revolver|Stub.Revolver|.Purgatus.Psistab|Purgatus.Psistab|Leerenschlag.Psistab|.Trauma.Psistab|.Welle.Psistab|Leerenschlag.|.Psistab|.Glut.Psischwert|Glut.Psischwert|Psischwert|isches Duellschwert|.Donnerhammer|Donnerhammer|.Brecher|Brecher|Schwerer Ausweider|Schwerer|.Ausweider|.Schweres Schwert|.Läuterungsflammenwerfer",
-		ru = "Спаренный тяжёлый стаббер|Дробовик-потрошитель|Гранатомёт|Дробовик|Отбойник огрина|Гренадерская перчатка|Тесак|Силовая булава|Боевая булава и Мод III|Боевая булава и Мод 3|Дубина задиры|Щит-плита|щит-плита|Автопистолет-крошитель|Автопистолет|-крошитель|Хельборовое лазружьё|Тяжёлый лазпистолет|Тяжелый лазпистолет|Пехотный автомат|Автомат-головострел|Усиленный автомат|Пронзающий болтер|Болтер|Лазвинтовка пехоты| образец лазгана|Тяжёлый|Автомат|-головострел|Лазвинтовка разведки|Лазган|Пехотный лазган| Огнемёт очищения|Огнемет чистки|Огнемёт| образец огнемёта|Боевой дробовик|Стаб-револьвер|Плазменная винтовка|Психосиловой|посох|чистки|пустотный|Силовой посох|Силовой|Травма|Молния|Пургатус|Пустотный|Дуэльный меч|Пламенный силовой меч|Силовой меч|Силовой меч|Меч|Боевой топор|Тактический топор|Штурмовой пиломеч|Пиломеч|Боевой клинок|Мод Силовой меч|Штурмовой пилотопор|Пилотопор|образец|неизвестный производитель|Сапёрная лопата|Громовой|Крушитель|Мод Силовая булава|Потрошитель|Камуфляж|камуфляж|Стаб|-револьвер|быстрый|«Коготь дьявола»|пылающий|Пламенный психосиловой|оперативник|Штурмовой цепной|Тяжелый эвисцератор|меч|Дробитель|подлатанный подручными средствами|-потрошитель|Рубило|Отбойник|Боевая булава|и щит Верзилы мод. III|Палица задиры|Катачанский|Рамблер|Спаренный тяжелый пулемет|топор|цепной|Хелборский лазган|охотника за головами|Разведывательный лазган|Серийный автомат|Скорострельный|стаб|Тяжелый|дуэльный |Огненный психосиловой|очищения|тический психосиловой|Волновой психосиловой|Щит|\"|-плита|Пылающий|психосиловой|Травмы|Импульса|Пустоты|Хельборское|Адскобуровое|лазружьё|лазган|лазвинтовка|Плазмаган|плазмаган|Плазмомёт|Грозовой|молот|боевое снаряжение|Шоковая|булава|Малая саперная лопатка||[()]|",
+		ru = "Спаренный тяжёлый стаббер|Дробовик-потрошитель|Гранатомёт|Дробовик|Отбойник огрина|Гренадерская перчатка|Тесак|Силовая булава|Боевая булава и Мод III|Боевая булава и Мод 3|Дубина задиры|Щит-плита|щит-плита|Автопистолет-крошитель|Автопистолет|-крошитель|Хельборовое лазружьё|Тяжёлый лазпистолет|Тяжелый лазпистолет|Пехотный автомат|Автомат-головострел|Усиленный автомат|Пронзающий болтер|Болтер|Лазвинтовка пехоты| образец лазгана|Тяжёлый|Автомат|-головострел|Лазвинтовка разведки|Лазган|Пехотный лазган| Огнемёт очищения|Огнемет чистки|Огнемёт| образец огнемёта|дробовик|Стаб-револьвер|Плазменная винтовка|Психосиловой|посох|чистки|пустотный|Силовой посох|Силовой|Травма|Молния|Пургатус|Пустотный|Дуэльный меч|Пламенный силовой меч|Силовой меч|Силовой меч|Меч|Тактический|Штурмовой пиломеч|Пиломеч|клинок|Мод Силовой меч|Штурмовой пилотопор|Пилотопор|образец|неизвестный производитель|Сапёрная лопата|Громовой|Крушитель|Мод Силовая булава|Потрошитель|Камуфляж|камуфляж|Стаб|-револьвер|быстрый|«Коготь дьявола»|пылающий|Пламенный психосиловой|оперативник|Штурмовой цепной|Тяжелый эвисцератор|меч|Дробитель|подлатанный подручными средствами|-потрошитель|Рубило|Отбойник|Боевая булава|и щит Верзилы мод. III|Палица задиры|Катачанский|Рамблер|Спаренный тяжелый пулемет|топор|цепной|Хелборский лазган|охотника за головами|Разведывательный лазган|Серийный автомат|Скорострельный|стаб|Тяжелый|дуэльный |Огненный психосиловой|очищения|тический психосиловой|Волновой психосиловой|Щит|\"|-плита|Пылающий|психосиловой|Травмы|Импульса|Пустоты|Хельборское|Адскобуровое|лазружьё|лазган|лазвинтовка|Плазмаган|плазмаган|Плазмомёт|Грозовой|молот|боевое снаряжение|Шоковая|булава|Саперная лопата|Малая саперная лопата|Малая саперная лопатка|Кавалерийская| святилища|Боевой|Ogryn| Хладнокровных|М35|Болт|-пистолет|благословенный| Красного|||||[()]|",
 		["zh-cn"] = "等离子枪|步兵激光枪|样式激光枪|地狱钻激光枪|侦察激光枪|侦查激光枪|重型激光手枪|粉碎者自动手枪|步兵自动枪|支架式自动枪|稳固自动枪|猎头者自动枪|猎颅者自动枪|自动枪|神射手机关步枪|速发左轮枪|左轮机枪|左轮枪|先锋爆矢枪|矛头爆矢枪|涤罪火焰喷射器|创伤力场杖|虚空打击力场杖|激涌力场杖|电涌力场杖|净化力场杖|力场杖|开膛枪|开膛手霰弹枪|战斗霰弹枪|霰弹枪|低吼者|击退者|双联重型机枪|双联重机枪|掷弹兵臂铠|砍刀|恶霸棍棒|动力锤|作战大锤&板砖盾牌|作战大锤与板砖盾牌|作战大锤|与板砖大盾 Mk.III|与板砖大盾 Mk.3|板砖盾牌|粉碎者|能量锤|震慑锤|雷霆锤|战斧|战术斧|战斗利刃|公测铲|公厕铲|工兵铲|突击链锯剑|的链锯剑|链锯剑|重型链锯斧|突击链锯斧|动力巨剑|动力剑|能量巨剑|能量剑|战斗剑|决斗剑|炙焰力场巨剑|炙焰力场剑|的力场剑|力场剑|重型剑|重剑|重型开膛剑|剑|迷彩|[()]|（|）",
 	},
 	-- ##### ┌─┐┌─┐┌─┐┌─┐┌─┐┌─┐ #######################################################################################
@@ -255,6 +315,12 @@ return {
 		de = "Zielfernrohre",
 		ru = "Прицелы",
 		["zh-cn"] = "瞄准镜",
+	},
+	mod_option_scopes = {
+		en = "Sight System",
+	},
+	mod_option_scopes_tooltip = {
+		en = "Toggle sight system",
 	},
 	mod_option_scopes_sound = {
 		en = "Sounds",
@@ -319,10 +385,12 @@ return {
 	mod_option_scopes_lens_transparency = {
 		en = "Lens Transparency",
 		de = "Linsentransparenz",
+		ru = "Прозрачность линзы",
 	},
 	mod_option_scopes_lens_transparency_tooltip = {
 		en = "Set lens transparency for scopes.",
 		de = "Setze Linsentransparenz für Zielfernrohre.",
+		ru = "Устанавливает прозрачность линзы прицелов.",
 	},
 	mod_option_deactivate_crosshair_aiming = {
 		en = "Deactivate Crosshair",
@@ -360,10 +428,12 @@ return {
 	mod_option_randomization_only_base_mod = {
 		en = "Base mod only",
 		de = "Nur Basismod",
+		ru = "Только основной мод",
 	},
 	mod_option_randomization_only_base_mod_tooltip = {
 		en = "Randomization is limited to base mod weapon attachments",
 		de = "Randomisierung ist beschränkt auf Basismod Waffenteile",
+		ru = "Случайные варианты оружия ограничиваются базовыми обвесами.",
 	},
 	mod_option_randomization_store = {
 		en = "Store",
@@ -374,7 +444,7 @@ return {
 	mod_option_randomization_store_tooltip = {
 		en = "Randomize weapons in the store",
 		de = "Randomisierung der Waffen im Geschäft",
-		ru = "Создавать случайные варианты оружия в магазине",
+		ru = "Создавать случайные варианты оружия в магазине.",
 		["zh-cn"] = "随机化商店中的武器",
 	},
 	mod_option_randomization_players = {
@@ -386,7 +456,7 @@ return {
 	mod_option_randomization_players_tooltip = {
 		en = "Randomize weapons of other players",
 		de = "Randomisierung der Waffen der anderen Spieler",
-		ru = "Создавать случайные варианты оружия у других игроков",
+		ru = "Создавать случайные варианты оружия у других игроков.",
 		["zh-cn"] = "随机化其他玩家的武器",
 	},
 	mod_option_randomization_reward = {
@@ -398,7 +468,7 @@ return {
 	mod_option_randomization_reward_tooltip = {
 		en = "Randomize mission reward weapons",
 		de = "Randomisierung der Missions-Belohnungs Waffen",
-		ru = "Создавать случайные варианты оружия, полученного в награду за миссии",
+		ru = "Создавать случайные варианты оружия, полученного в награду за миссии.",
 		["zh-cn"] = "随机化任务奖励武器",
 	},
 	mod_option_randomization_bayonet = {
@@ -410,7 +480,7 @@ return {
 	mod_option_randomization_bayonet_tooltip = {
 		en = "Chance for weapons to have a bayonet",
 		de = "Chance dass Waffen ein Bajonett haben",
-		ru = "Шанс, что на оружии будет штык",
+		ru = "Шанс, что на оружии будет штык.",
 		["zh-cn"] = "武器安装刺刀的概率",
 	},
 	mod_option_randomization_flashlight = {
@@ -422,7 +492,7 @@ return {
 	mod_option_randomization_flashlight_tooltip = {
 		en = "Chance for weapons to have a flashlight",
 		de = "Chance dass Waffen eine Taschenlampe haben",
-		ru = "Шанс, что на оружии будет фогнарик",
+		ru = "Шанс, что на оружии будет фогнарик.",
 		["zh-cn"] = "武器安装手电筒的概率",
 	},
 	mod_option_randomization_laser_pointer = {
@@ -454,36 +524,58 @@ return {
 	-- #####  └┘ ┴└─┘┴└─┘┴─┘└─┘  └─┘└─┘└└─┘┴┴  ┴ ┴└─┘┘└┘ ┴  ###########################################################
 	loc_visible_equipment_chest = {
 		en = "Chest",
+		de = "Brust",
+		ru = "Грудь",
 	},
 	loc_visible_equipment_leg_left = {
-		en = "Left Leg"
+		en = "Left Leg",
+		de = "Linkes Bein",
+		ru = "Левая нога",
 	},
 	loc_visible_equipment_leg_right = {
-		en = "Right Leg"
+		en = "Right Leg",
+		de = "Rechtes Bein",
+		ru = "Правая нога",
 	},
 	loc_visible_equipment_hips_front = {
-		en = "Hips Front"
+		en = "Hips Front",
+		de = "Hüfte Vorne",
+		ru = "Бедро спереди",
 	},
 	loc_visible_equipment_hips_right = {
-		en = "Hips Right"
+		en = "Hips Right",
+		de = "Hüfte Rechts",
+		ru = "Бедро справа",
 	},
 	loc_visible_equipment_hips_left = {
-		en = "Hips Left"
+		en = "Hips Left",
+		de = "Hüfte Links",
+		ru = "Бедро слева",
 	},
 	loc_visible_equipment_hips_back = {
-		en = "Hips Back"
+		en = "Hips Back",
+		de = "Hüfte Hinten",
+		ru = "Бедро сзади",
 	},
 	loc_visible_equipment_back_left = {
 		en = "Back Left",
+		de = "Rücken Links",
+		ru = "Спина слева",
 	},
 	loc_visible_equipment_back_right = {
 		en = "Back Right",
+		de = "Rücken Rechts",
+		ru = "Спина справа",
 	},
 	loc_visible_equipment_backpack_left = {
 		en = "Backpack Left",
+		de = "Rucksack Links",
+		ru = "Рюкзак слева",
 	},
 	loc_visible_equipment_backpack_right = {
 		en = "Backpack Right",
+		de = "Rucksack Rechts",
+		ru = "Рюкзак справа",
 	},
 	group_visible_equipment = {
 		en = "Visible Equipment",
@@ -542,16 +634,18 @@ return {
 	mod_option_visible_equipment_own_sounds_fp_tooltip = {
 		en = "Hear the sounds of your own equipment in first person",
 		de = "Höre die Geräusche deiner eigenen Ausrüstung in first person",
-		ru = "Вы будете слышать звуки собственного снаряжения от первого лица",
+		ru = "Вы будете слышать звуки собственного снаряжения от первого лица.",
 		["zh-cn"] = "在第一人称下能听到自己装备的声音",
 	},
 	mod_option_visible_equipment_disable_in_hub = {
 		en = "Disable in hub",
 		de = "Im Hub deaktivieren",
+		ru = "Отключить в Хабе",
 	},
 	mod_option_visible_equipment_disable_in_hub_tooltip = {
 		en = "Disable visible equipment in hub only",
 		de = "Sichtbare Ausrüstung nur im Hub deaktivieren",
+		ru = "Отключает Видимое снаряжение в Хабе.",
 	},
 	
 	-- ##### ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌┐ ┬ ┬┬┬  ┌┬┐  ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ############################################
@@ -668,6 +762,12 @@ return {
 		ru = "Время работы батареи",
 		["zh-cn"] = "电池电量",
 	},
+	mod_option_flashlight = {
+		en = "Flashlight System",
+	},
+	mod_option_flashlight_tooltip = {
+		en = "Toggle flashlight system",
+	},
 	mod_option_flashlight_shadows = {
 		en = "Flashlight Shadows",
 		de = "Taschenlampenschatten",
@@ -695,7 +795,7 @@ return {
 	mod_option_flashlight_flicker_start_tooltip = {
 		en = "Flashlights immediately flicker once when activated",
 		de = "Taschenlampe flimmert direkt beim Einschalten ein Mal",
-		ru = "Фонарики мигают один раз при активации",
+		ru = "Фонарики мигают один раз при активации.",
 		["zh-cn"] = "开启手电筒时，立刻闪烁一次",
 	},
 	-- ##### ┬  ┌─┐┌─┐┌─┐┬─┐  ┌─┐┌─┐┬┌┐┌┌┬┐┌─┐┬─┐ #####################################################################
@@ -706,6 +806,14 @@ return {
 		de = "Laserpointer",
 		ru = "Лазерный указатель",
 		["zh-cn"] = "激光指示器",
+	},
+	mod_option_laser_pointer = {
+		en = "Laser Pointer System",
+		de = "Laserpointer System",
+	},
+	mod_option_laser_pointer_tooltip = {
+		en = "Toggle laser pointer system",
+		de = "Laserpointer System umschalten",
 	},
 	mod_option_laser_pointer_count = {
 		en = "Strength",
@@ -728,14 +836,14 @@ return {
 	mod_option_laser_pointer_count_others_tooltip = {
 		en = "Strength of your teammate's laser pointer",
 		de = "Stärke der Laserpointer von Mitspielern",
-		ru = "Сила свечения лазерного указателя ваших союзников",
+		ru = "Сила свечения лазерного указателя ваших союзников.",
 		["zh-cn"] = "队友激光指示器的强度",
 	},
 	mod_option_deactivate_crosshair_laser = {
-		en = "Deactivate Crosshair",
-		de = "Zielkreuz Deaktivieren",
-		ru = "Деактивировать перекрестие",
-		["zh-cn"] = "禁用准星",
+		en = "Deactivate Crosshair ",
+		de = "Zielkreuz Deaktivieren ",
+		ru = "Деактивировать перекрестие ",
+		["zh-cn"] = "禁用准星 ",
 	},
 	mod_option_deactivate_crosshair_laser_tooltip = {
 		en = "Crosshair is automatically hidden when laser pointer is activated",
@@ -887,32 +995,32 @@ return {
 	group_battery = {
 		en = "Battery",
 		de = "Batterie",
-		["zh-cn"] = "电池",
 		ru = "Батарея",
+		["zh-cn"] = "电池",
 	},
 	mod_option_battery_show = {
 		en = "Show Bar",
 		de = "Leiste anzeigen",
-		["zh-cn"] = "显示状态条",
 		ru = "Показывать полоску",
+		["zh-cn"] = "显示状态条",
 	},
 	mod_option_battery_show_tooltip = {
 		en = "Shows a bar with your current battery charge",
 		de = "Zeigt einen Balken mit deinter aktuellen Batterieladung",
-		["zh-cn"] = "显示当前电池充能的状态指示条",
 		ru = "Показывает полоску с текущим зарядом аккумулятора.",
+		["zh-cn"] = "显示当前电池充能的状态指示条",
 	},
 	mod_option_battery_show_threshold = {
 		en = "When under",
 		de = "Wenn weniger als",
-		["zh-cn"] = "仅当低于",
 		ru = "Когда заряд ниже",
+		["zh-cn"] = "仅当低于",
 	},
 	mod_option_battery_show_threshold_tooltip = {
 		en = "Shows battery bar only when charge is under selected percentage",
 		de = "Zeigt den Batteriebalken nur an, wenn die Ladung unter dem ausgewählten Prozentsatz liegt",
-		["zh-cn"] = "仅在充能低于所选百分比时显示电池状态条",
 		ru = "Показывает полоску заряда батареи только тогда, когда уровень заряда ниже выбранного процента.",
+		["zh-cn"] = "仅在充能低于所选百分比时显示电池状态条",
 	},
 	mod_option_battery_show_threshold_10 = {
 		en = "10%%",
@@ -944,6 +1052,14 @@ return {
 		ru = "Глубина резкости оружия",
 		["zh-cn"] = "武器景深",
 	},
+	mod_option_misc_weapon_dof = {
+		en = "Depth of Field System",
+		de = "Tiefenunschärfe-System",
+	},
+	mod_option_misc_weapon_dof_tooltip = {
+		en = "Toggle depth of field system",
+		de = "Tiefenunschärfe-System umschalten",
+	},
 	mod_option_misc_weapon_dof_no_aim = {
 		en = "Not Aiming",
 		de = "Nicht Zielen",
@@ -953,19 +1069,19 @@ return {
 	mod_option_misc_weapon_dof_no_aim_tooltip = {
 		en = "Applies depth of field to weapon when not aiming",
 		de = "Tiefenunschärfe für Waffe, wenn nicht gezielt wird",
-		ru = "Применяет глубину резкости к оружию, когда вы не целитесь",
+		ru = "Применяет глубину резкости к оружию, когда вы не целитесь.",
 		["zh-cn"] = "未瞄准时应用武器景深效果",
 	},
 	mod_option_misc_weapon_dof_strength_no_aim = {
-		en = "Strength",
-		de = "Stärke",
-		ru = "Сила эффекта",
-		["zh-cn"] = "强度",
+		en = "Strength ",
+		de = "Stärke ",
+		ru = "Сила эффекта ",
+		["zh-cn"] = "强度 ",
 	},
 	mod_option_misc_weapon_dof_strength_no_aim_tooltip = {
 		en = "Depth of field strength when not aiming",
 		de = "Stärke der Tiefenunschärfe, wenn nicht gezielt wird",
-		ru = "Сила глубины резкости, когда вы не прицеливаетесь",
+		ru = "Сила глубины резкости, когда вы не прицеливаетесь.",
 		["zh-cn"] = "未瞄准时的景深强度",
 	},
 	mod_option_misc_weapon_dof_scope = {
@@ -977,19 +1093,19 @@ return {
 	mod_option_misc_weapon_dof_scope_tooltip = {
 		en = "Applies depth of field to weapon when aiming with a scope / reflex sight",
 		de = "Tiefenunschärfe für Waffe, wenn mit Zielfernrohr / Reflexvisier gezielt wird",
-		ru = "Применяет глубину резкости к оружию при прицеливании в оптические прицелы или коллиматоры",
+		ru = "Применяет глубину резкости к оружию при прицеливании в оптические прицелы или коллиматоры.",
 		["zh-cn"] = "使用光学 / 反射瞄具瞄准时应用武器景深效果",
 	},
 	mod_option_misc_weapon_dof_strength_scope = {
-		en = "Strength",
-		de = "Stärke",
-		ru = "Сила эффекта",
-		["zh-cn"] = "强度",
+		en = "Strength  ",
+		de = "Stärke  ",
+		ru = "Сила эффекта  ",
+		["zh-cn"] = "强度  ",
 	},
 	mod_option_misc_weapon_dof_strength_scope_tooltip = {
 		en = "Depth of field strength when aiming with a scope / reflex sight",
 		de = "Stärke der Tiefenunschärfe, wenn mit Zielfernrohr / Reflexvisier gezielt wird",
-		ru = "Сила глубины резкости при прицеливании через прицел/коллиматорный прицел",
+		ru = "Сила глубины резкости при прицеливании через прицел/коллиматорный прицел.",
 		["zh-cn"] = "使用光学 / 反射瞄具瞄准时的景深强度",
 	},
 	mod_option_misc_weapon_dof_sight = {
@@ -1001,19 +1117,19 @@ return {
 	mod_option_misc_weapon_dof_sight_tooltip = {
 		en = "Applies depth of field to weapon when aiming with iron sights",
 		de = "Tiefenunschärfe für Waffe, wenn mit Kimme und Korn gezielt wird",
-		ru = "Применяет глубину резкости к оружию при прицеливании через мушку",
+		ru = "Применяет глубину резкости к оружию при прицеливании через мушку.",
 		["zh-cn"] = "使用机械瞄具瞄准时应用武器景深效果",
 	},
 	mod_option_misc_weapon_dof_strength_sight = {
-		en = "Strength",
-		de = "Stärke",
-		ru = "Сила эффекта",
-		["zh-cn"] = "强度",
+		en = "Strength   ",
+		de = "Stärke   ",
+		ru = "Сила эффекта   ",
+		["zh-cn"] = "强度   ",
 	},
 	mod_option_misc_weapon_dof_strength_sight_tooltip = {
 		en = "Depth of field strength when aiming with iron sights",
 		de = "Stärke der Tiefenunschärfe, wenn mit Kimme und Korn gezielt wird",
-		ru = "Сила глубины резкости при прицеливании через мушку",
+		ru = "Сила глубины резкости при прицеливании через мушку.",
 		["zh-cn"] = "使用机械瞄具瞄准时的景深强度",
 	},
 	-- ##### ┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┬  ┬┬┌─┐┬ ┬ #########################################################
@@ -1037,12 +1153,12 @@ return {
 		ru = "Случайно",
 		["zh-cn"] = "随机",
 	},
-	loc_weapon_inventory_demo_button = {
-		en = "Demo",
-		de = "Demo",
-		ru = "Демонстрация",
-		["zh-cn"] = "演示",
-	},
+	-- loc_weapon_inventory_demo_button = {
+	-- 	en = "Demo",
+	-- 	de = "Demo",
+	-- 	ru = "Демонстрация",
+	-- 	["zh-cn"] = "演示",
+	-- },
 	loc_inventory_menu_weapon_preset_intro_text_1 = {
 		en = "Weapon Presets",
 		ru = "Предустановки оружия",

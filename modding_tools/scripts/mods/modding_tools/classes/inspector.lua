@@ -54,15 +54,23 @@ Inspector.init = function(self, init_data)
             "Watch"
         },
         visible = false,
+        position = vector3_box(vector3(0, 0, 0)),
+    }
+    self.scrollbar = {
+        cursor = vector3_box(vector3(0, 0, 0)),
+        hover = false,
+        active = false,
+        scroll = 1,
     }
     self.hover_background = init_data and init_data.hover_background or quaternion_box(Color(200, 0, 0, 0))
+    self.hover_scrollbar = init_data and init_data.hover_scrollbar or quaternion_box(Color(128, 128, 128, 255))
     self.highlight = init_data and init_data.highlight or quaternion_box(Color(128, 128, 128, 255))
     self.color = init_data and init_data.color or quaternion_box(Color.white())
     self.lowlight = init_data and init_data.lowlight or quaternion_box(Color(128, 255, 255, 255))
     self.disabled_color = init_data and init_data.disabled_color or quaternion_box(Color(64, 255, 255, 255))
     self.shadow = init_data and init_data.shadow or quaternion_box(Color.gray())
     -- Values
-    self.z = init_data and init_data.z or 990
+    self.z = init_data and init_data.z or 997
     self.font_size = init_data and init_data.font_size or 16
     self.font = init_data and init_data.font or DevParameters.debug_text_font
     self.RES_X, self.RES_Y = Application.back_buffer_size()
@@ -84,8 +92,10 @@ Inspector.init = function(self, init_data)
     -- Positions
     self.position = init_data and init_data.position and vector3_box(init_data.position) or vector3_box(vector3(screen_size[1] - size[1], screen_size[2] / 2, self.z))
     -- Other
+    self.dirty = true
     self.current = nil
     self.scroll = 1
+    self.max_scroll = 1
     self.history = {}
     self.line_sizes = {}
     self.longest_key = 0
@@ -98,6 +108,7 @@ Inspector.init = function(self, init_data)
 end
 
 Inspector.delete = function(self)
+    self:show(false)
 	self.initialized = false
 end
 
@@ -106,6 +117,7 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
 Inspector.update = function(self, dt, t, input_service)
+    self.disable_control = mod.console_busy or mod.watcher_busy
 	if self.initialized and self.visible then
 		return self:draw(dt, t, input_service)
 	end
@@ -126,11 +138,11 @@ Inspector.draw_title_bar = function(self, input_service)
         -- Title text
         local t_min, t_max, t_caret = Gui.text_extents(gui, "Inspector", self.font, self.font_size * 1.5)
         ScriptGui.text(gui, "Inspector", self.font, self.font_size * 1.5, vector3(position[1] + 60, position[2] + 7, position[3] + 1), color, shadow)
-        local title_hover = math.point_is_inside_2d_box(cursor, position, title_size)
+        local title_hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, position, title_size)
         -- Back button
         local button_position = vector3(position[1] + 10, position[2] + 10, position[3] + 1)
         local button_size = vector3(title_size[2] - 20, title_size[2] - 20, 0)
-        local button_hover = #self.history > 0 and math.point_is_inside_2d_box(cursor, button_position, button_size)
+        local button_hover = #self.history > 0 and not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, button_position, button_size)
         -- Back Button hover
         if button_hover then
             -- Highlight
@@ -141,7 +153,7 @@ Inspector.draw_title_bar = function(self, input_service)
         ScriptGui.text(gui, "<", self.font, self.font_size * 2, button_position + vector3(5 - max.x / 2, -max.y / 2, 0), button_color, shadow)
         -- Close button
         local close_button_position = vector3(position[1] + size[1] - 10 - button_size[1], position[2] + 10, position[3] + 1)
-        local close_button_hover = math.point_is_inside_2d_box(cursor, close_button_position, button_size)
+        local close_button_hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, close_button_position, button_size)
         -- Close button hover
         if close_button_hover then
             ScriptGui.icrect(gui, self.RES_X, self.RES_Y, close_button_position[1], close_button_position[2], close_button_position[1] + button_size[1], close_button_position[2] + button_size[2], self.z, quaternion_unbox(self.highlight))
@@ -151,7 +163,7 @@ Inspector.draw_title_bar = function(self, input_service)
         -- Clear button
         local clear_button_position = vector3(position[1] + 70 + t_max.x, position[2] + 10, position[3] + 1)
         -- Clear button hover
-        local clear_button_hover = math.point_is_inside_2d_box(cursor, clear_button_position, button_size)
+        local clear_button_hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, clear_button_position, button_size)
         if clear_button_hover then
             ScriptGui.icrect(gui, self.RES_X, self.RES_Y, clear_button_position[1], clear_button_position[2], clear_button_position[1] + button_size[1],
                 clear_button_position[2] + button_size[2], self.z, quaternion_unbox(self.highlight))
@@ -200,19 +212,23 @@ Inspector.draw_frame = function(self, input_service)
         local frame_size = vector3_unbox(self.frame_size_inner)
         local total_height = #self.lines *  self.row_height
         -- Frame hover
-        self.hover = math.point_is_inside_2d_box(cursor, position, size)
+        self.hover = not self.disable_control and math.point_is_inside_2d_box(cursor, position, size)
         -- Background
         local background = self.hover and quaternion_unbox(self.hover_background) or quaternion_unbox(self.background)
         -- Draw frame
-        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], self.z - 1, background)
+        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], self.z, background)
         -- Functionality
-        if self.hover and total_height > frame_size[2] then
+        if total_height > frame_size[2] then
             -- Scroll
-            local scroll_axis = input_service:get("scroll_axis")
-            local max_scroll = math.ceil(#self.lines - frame_size[2] / self.row_height) + 1
-            if scroll_axis then
-                self.scroll = math.ceil(math.clamp(self.scroll - scroll_axis[2], 1, max_scroll))
+            if self.hover then
+                local scroll_axis = input_service:get("scroll_axis")
+                if scroll_axis then
+                    self.scroll = math.ceil(math.clamp(self.scroll - scroll_axis[2], 1, self.max_scroll))
+                end
             end
+            self.max_scroll = math.ceil(#self.lines - frame_size[2] / self.row_height) + 1
+        else
+            self.max_scroll = 1
         end
         if self.hover and not self.context_menu.hover then
             if self:pressed(input_service) or self:context_pressed(input_service) then
@@ -247,7 +263,7 @@ Inspector.draw_bread_crumbs = function(self, input_service)
         -- Iterate history entries
         for _, history in pairs(self.history) do
             -- Get dimensions
-            local value = history.key
+            local value = tostring(history.key)
             local min, max, caret = Gui.text_extents(gui, value, self.font, self.font_size)
             if max.x > size[1] / 2 then
                 value = "..."..string_sub(value, string.len(value) - 20, string.len(value))
@@ -256,7 +272,7 @@ Inspector.draw_bread_crumbs = function(self, input_service)
             -- Position
             local crumb_position = adress_position + vector3(x, 0, 1) + offset
             -- Hover
-            history.hover = math.point_is_inside_2d_box(cursor, crumb_position, vector3(max.x, 20, 0))
+            history.hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, crumb_position, vector3(max.x, 20, 0))
             -- Check hover
             if history.hover and not self.context_menu.hover then
                 -- Check highlight background
@@ -286,7 +302,7 @@ Inspector.draw_bread_crumbs = function(self, input_service)
         end
         -- Get current dimensions
         if self.current then
-            local value = self.current.key
+            local value = tostring(self.current.key)
             local crumb_position = adress_position + vector3(x, 0, 1) + offset
             local min, max, caret = Gui.text_extents(gui, value, self.font, self.font_size)
             if max.x > size[1] / 2 then
@@ -307,6 +323,8 @@ Inspector.draw_scroll = function(self, input_service)
     -- Check if gui is available
     if gui then
         -- Values
+        local cursor = self:cursor(input_service)
+        local held = false
         local position = vector3_unbox(self.position)
         local size = vector3_unbox(self.size)
         local frame_position = position + vector3_unbox(self.frame_position_inner)
@@ -317,8 +335,37 @@ Inspector.draw_scroll = function(self, input_service)
         local scroll_offset = total_lines_height > frame_size[2] and self.scroll * frame_size[2] / #self.lines or 0
         local y = position[2] + vector3_unbox(self.title_size)[2] + vector3_unbox(self.adress_size)[2] + scroll_offset
         local y2 = y + scroll_bar_height
-        -- Draw
-        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, self.z, scroll_bar_color)
+
+        self.scrollbar.hover = not self.disable_control and math.point_is_inside_2d_box(cursor, vector3(position[1] + size[1] - 10, y, 1), vector3(5, scroll_bar_height, 1))
+
+        if self.scrollbar.hover then
+            held = self:held(input_service)
+            if held ~= self.scrollbar.active then
+                self.context_menu.visible = false
+                self.context_menu.hover = false
+                self.scrollbar.active = held
+            end
+        end
+
+        if self.scrollbar.hover or self.scrollbar.active then
+            ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, 999, quaternion_unbox(self.highlight))
+        else
+            ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1] + size[1] - 10, y, position[1] + size[1] - 5, y2, 999, scroll_bar_color)
+        end
+
+        if self.scrollbar.active then
+            local diff = vector3_unbox(self.scrollbar.cursor) - cursor
+            self.scroll = math.ceil(math.clamp(self.scrollbar.scroll - (diff[2] / scroll_bar_height) * self.row_height, 1, self.max_scroll))
+            if not self:held(input_service) then
+                self.scrollbar.active = false
+            end
+        else
+            self.scrollbar.cursor = vector3_box(cursor)
+            self.scrollbar.scroll = self.scroll
+        end
+
+        return self.scrollbar.active == true and true
+
     end
 end
 
@@ -335,7 +382,7 @@ Inspector.draw_context_menu = function(self, input_service)
         local color = quaternion_unbox(self.color)
         local shadow = quaternion_unbox(self.shadow)
         local background = quaternion_unbox(self.context_menu_background)
-        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], self.z + 2, background)
+        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, position[1], position[2], position[1] + size[1], position[2] + size[2], 999, background)
 
         local y = 10
 
@@ -344,10 +391,10 @@ Inspector.draw_context_menu = function(self, input_service)
             local row_position = vector3(position[1] + 10, position[2] + y, position[3])
             local row_size = vector3(size[1] - 20, self.row_height, 0)
 
-            self.context_menu.hover = math.point_is_inside_2d_box(cursor, row_position, row_size)
+            self.context_menu.hover = not self.disable_control and math.point_is_inside_2d_box(cursor, row_position, row_size)
 
             if self.context_menu.hover then
-                ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], self.z + 2, quaternion_unbox(self.highlight))
+                ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], 999, quaternion_unbox(self.highlight))
                 if self:pressed(input_service) then
                     mod:watcher_set_mod(mod)
                     mod:watch(self.context_menu.line.key, self.current.table, self.context_menu.line.key)
@@ -357,7 +404,7 @@ Inspector.draw_context_menu = function(self, input_service)
                 end
             end
 
-            ScriptGui.text(gui, option, self.font, self.font_size, vector3(row_position[1] + 10, row_position[2], self.z + 3), color, shadow)
+            ScriptGui.text(gui, option, self.font, self.font_size, vector3(row_position[1] + 10, row_position[2], 1000), color, shadow)
 
             y = y + self.row_height
         end
@@ -383,47 +430,47 @@ Inspector.draw_lines = function(self, input_service)
             local line = self.lines[index]
             if line then
 
-                if y + self.row_height > frame_size[2] then break end
+                if y + self.row_height < frame_size[2] then
                 
-                local row_position = vector3(frame_position[1], frame_position[2] + y, frame_position[3])
-                local row_size = vector3(frame_size[1] - 10, self.row_height, 0)
-                local hover = math.point_is_inside_2d_box(cursor, row_position, row_size)
+                    local row_position = vector3(frame_position[1], frame_position[2] + y, frame_position[3])
+                    local row_size = vector3(frame_size[1] - 10, self.row_height, 0)
+                    local hover = not self.scrollbar.active and not self.disable_control and math.point_is_inside_2d_box(cursor, row_position, row_size)
 
-                if hover and not self.context_menu.hover then
-                    ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], self.z, quaternion_unbox(self.highlight))
-                    if self:pressed(input_service) then
-                        if line.is_table and self.current.table[line.key] and type(self.current.table[line.key]) == "table" then
-                            self:navigate(line.key, self.current.table[line.key])
-                            -- mod:echot("navigate to: "..tostring(line.key))
+                    if hover and not self.context_menu.hover then
+                        ScriptGui.icrect(gui, self.RES_X, self.RES_Y, row_position[1], row_position[2], row_position[1] + row_size[1], row_position[2] + row_size[2], self.z, quaternion_unbox(self.highlight))
+                        if self:pressed(input_service) then
+                            if line.is_table and self.current.table[line.key] and type(self.current.table[line.key]) == "table" then
+                                self:navigate(line.key, self.current.table[line.key])
+                            end
                         end
+                        if self:context_pressed(input_service) then
+                            self.context_menu.visible = true
+                            self.context_menu.line = line
+                            self.context_menu.position:store(row_position[1], row_position[2] + 20, row_position[3] + 1)
+                        end
+                        is_busy = true
                     end
-                    if self:context_pressed(input_service) then
-                        self.context_menu.visible = true
-                        self.context_menu.line = line
-                        self.context_menu.position = vector3_box(row_position[1], row_position[2] + 20, row_position[3] + 1)
+
+                    local color = line.is_table and quaternion_unbox(self.color) or quaternion_unbox(self.lowlight)
+                    local shadow = quaternion_unbox(self.shadow)
+
+                    -- Row 1 - Key
+                    ScriptGui.text(gui, tostring(line.key), self.font, self.font_size, vector3(frame_position[1] + 10, frame_position[2] + y, frame_position[3] + 1), color, shadow)
+
+                    -- Row 2 - Type
+                    ScriptGui.text(gui, type(line.value), self.font, self.font_size, vector3(frame_position[1] + 10 + self.longest_key + 10, frame_position[2] + y, frame_position[3] + 1), color, shadow)
+
+                    -- Row 3 - Value
+                    local value = tostring(line.value)
+                    local min, max, caret = Gui.text_extents(gui, value, self.font, self.font_size)
+                    if max.x > self.available_value then
+                        value = "..."..string_sub(value, string.len(value) - 20, string.len(value))
+                        min, max, caret = Gui.text_extents(gui, value, self.font, self.font_size)
                     end
-                    is_busy = true
+                    ScriptGui.text(gui, value, self.font, self.font_size, vector3(frame_position[1] + row_size[1] - 10 - max.x, frame_position[2] + y, frame_position[3] + 1), color, shadow)
+
+                    y = y + self.row_height
                 end
-
-                local color = line.is_table and quaternion_unbox(self.color) or quaternion_unbox(self.lowlight)
-                local shadow = quaternion_unbox(self.shadow)
-
-                -- Row 1 - Key
-                ScriptGui.text(gui, line.key, self.font, self.font_size, vector3(frame_position[1] + 10, frame_position[2] + y, frame_position[3] + 1), color, shadow)
-
-                -- Row 2 - Type
-                ScriptGui.text(gui, type(line.value), self.font, self.font_size, vector3(frame_position[1] + 10 + self.longest_key + 10, frame_position[2] + y, frame_position[3] + 1), color, shadow)
-
-                -- Row 3 - Value
-                local value = tostring(line.value)
-                local min, max, caret = Gui.text_extents(gui, value, self.font, self.font_size)
-                if max.x > self.available_value then
-                    value = "..."..string_sub(value, string.len(value) - 20, string.len(value))
-                    min, max, caret = Gui.text_extents(gui, value, self.font, self.font_size)
-                end
-                ScriptGui.text(gui, value, self.font, self.font_size, vector3(frame_position[1] + row_size[1] - 10 - max.x, frame_position[2] + y, frame_position[3] + 1), color, shadow)
-
-                y = y + self.row_height
             end
         end
         -- Return busy
@@ -480,6 +527,10 @@ end
 
 Inspector.cursor = function(self, input_service)
 	return input_service and input_service:get("cursor") or vector3(0, 0, 0)
+end
+
+Inspector.held = function(self, input_service)
+    return input_service and input_service:get("left_hold") or false
 end
 
 Inspector.pressed = function(self, input_service)

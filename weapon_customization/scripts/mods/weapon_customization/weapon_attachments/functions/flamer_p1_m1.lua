@@ -32,6 +32,8 @@ return {
             {id = "receiver_04",      name = "Flamer 4"},
             {id = "receiver_05",      name = "Flamer 5"},
             {id = "receiver_06",      name = "Flamer 6"},
+            {id = "receiver_07",      name = "Flamer 7"},
+            {id = "receiver_08",      name = "Flamer 8"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -49,6 +51,8 @@ return {
             {name = "receiver_04",      model = _item_ranged.."/recievers/flamer_rifle_receiver_04"},
             {name = "receiver_05",      model = _item_ranged.."/recievers/flamer_rifle_receiver_05"},
             {name = "receiver_06",      model = _item_ranged.."/recievers/flamer_rifle_receiver_06"},
+            {name = "receiver_07",      model = _item_ranged.."/recievers/flamer_rifle_receiver_07"},
+            {name = "receiver_08",      model = _item_ranged.."/recievers/flamer_rifle_receiver_ml01"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 
@@ -59,6 +63,8 @@ return {
             {id = "magazine_01",      name = "Flamer 1"},
             {id = "magazine_02",      name = "Flamer 2"},
             {id = "magazine_03",      name = "Flamer 3"},
+            {id = "magazine_04",      name = "Flamer 4"},
+            {id = "magazine_05",      name = "Flamer 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -73,6 +79,8 @@ return {
             {name = "magazine_01",      model = _item_ranged.."/magazines/flamer_rifle_magazine_01"},
             {name = "magazine_02",      model = _item_ranged.."/magazines/flamer_rifle_magazine_02"},
             {name = "magazine_03",      model = _item_ranged.."/magazines/flamer_rifle_magazine_03"},
+            {name = "magazine_04",      model = _item_ranged.."/magazines/flamer_rifle_magazine_04"},
+            {name = "magazine_05",      model = _item_ranged.."/magazines/flamer_rifle_magazine_ml01"},
         }, parent, angle, move, remove, type or "magazine", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 
@@ -86,6 +94,8 @@ return {
             {id = "barrel_04",      name = "Flamer 4"},
             {id = "barrel_05",      name = "Flamer 5"},
             {id = "barrel_06",      name = "Flamer 6"},
+            {id = "barrel_07",      name = "Flamer 7"},
+            {id = "barrel_08",      name = "Flamer 8"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -103,6 +113,8 @@ return {
             {name = "barrel_04",      model = _item_ranged.."/barrels/flamer_rifle_barrel_04"},
             {name = "barrel_05",      model = _item_ranged.."/barrels/flamer_rifle_barrel_05"},
             {name = "barrel_06",      model = _item_ranged.."/barrels/flamer_rifle_barrel_06"},
+            {name = "barrel_07",      model = _item_ranged.."/barrels/flamer_rifle_barrel_07"},
+            {name = "barrel_08",      model = _item_ranged.."/barrels/flamer_rifle_barrel_ml01"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

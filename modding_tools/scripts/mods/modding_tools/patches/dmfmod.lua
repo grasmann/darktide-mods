@@ -37,7 +37,7 @@ function DMFMod:push_or_pop_cursor(instance, reference)
     if instance.visible and not instance.cursor_pushed then
         managers.input:push_cursor(reference)
         instance.cursor_pushed = true
-    elseif not instance.visible then
+    elseif not instance.visible and instance.cursor_pushed then
         managers.input:pop_cursor(reference)
         instance.cursor_pushed = false
     end

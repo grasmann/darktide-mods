@@ -34,6 +34,26 @@ local _item_melee = _item.."/melee"
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 return {
+    weapon_sling_attachments = function(default)
+        local attachments = {
+            {id = "weapon_sling_01", name = "Weapon Sling 1"},
+            {id = "weapon_sling_02", name = "Weapon Sling 2"},
+        }
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    weapon_sling_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move)
+        if mesh_move == nil then mesh_move = false end
+        return table.model_table({
+            {name = "default",         model = ""},
+            {name = "weapon_sling_01", model = "core/units/empty_root"},
+            {name = "weapon_sling_02", model = "core/units/empty_root"},
+        }, parent, angle, move, remove, type or "weapon_sling", no_support, automatic_equip, hide_mesh, mesh_move)
+    end,
+
     flashlights_attachments = function(default)
         local attachments = {
             {id = "flashlight_01", name = mod:localize("mod_attachment_flashlight_01")},
@@ -77,31 +97,40 @@ return {
             {id = "grip_06",      name = "Autogun 1"},
             {id = "grip_07",      name = "Autogun 2"},
             {id = "grip_08",      name = "Autogun 3"},
+            {id = "grip_43",      name = "Autogun 4"},
             {id = "grip_09",      name = "Braced Autogun 1"},
             {id = "grip_10",      name = "Braced Autogun 2"},
             {id = "grip_11",      name = "Braced Autogun 3"},
             {id = "grip_31",      name = "Braced Autogun 4"},
             {id = "grip_32",      name = "Braced Autogun 5"},
-            {id = "grip_12",      name = "Headhunter Autogun"},
+            {id = "grip_44",      name = "Braced Autogun 6"},
+            {id = "grip_12",      name = "Headhunter Autogun 1"},
+            {id = "grip_45",      name = "Headhunter Autogun 2"},
             {id = "grip_30",      name = "Boltgun Pistol 1"},
             {id = "grip_35",      name = "Boltgun Pistol 2"},
             {id = "grip_36",      name = "Boltgun Pistol 3"},
+            {id = "grip_37",      name = "Boltgun Pistol 4"},
             {id = "grip_13",      name = "Boltgun 1"},
             {id = "grip_14",      name = "Boltgun 2"},
             {id = "grip_15",      name = "Boltgun 3"},
             {id = "grip_34",      name = "Boltgun 4"},
+            {id = "grip_38",      name = "Boltgun 5"},
             {id = "grip_19",      name = "Laspistol 1"},
             {id = "grip_20",      name = "Laspistol 2"},
             {id = "grip_21",      name = "Laspistol 3"},
             {id = "grip_33",      name = "Laspistol 4"},
+            {id = "grip_39",      name = "Laspistol 5"},
+            {id = "grip_40",      name = "Laspistol 6"},
             {id = "grip_22",      name = "Lasgun 1"},
             {id = "grip_23",      name = "Lasgun 2"},
             {id = "grip_24",      name = "Lasgun 3"},
             {id = "grip_25",      name = "Lasgun 4"},
             {id = "grip_26",      name = "Lasgun 5"},
+            {id = "grip_46",      name = "Lasgun 6"},
             {id = "grip_27",      name = "Flamer 1"},
             {id = "grip_28",      name = "Flamer 2"},
             {id = "grip_29",      name = "Flamer 3"},
+            {id = "grip_41",      name = "Flamer 4"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -146,6 +175,16 @@ return {
             {name = "grip_34",      model = _item_ranged.."/grips/boltgun_rifle_grip_04"},
             {name = "grip_35",      model = _item_ranged.."/grips/boltgun_pistol_grip_02"},
             {name = "grip_36",      model = _item_ranged.."/grips/boltgun_pistol_grip_03"},
+            {name = "grip_37",      model = _item_ranged.."/grips/boltgun_pistol_grip_ml01"},
+            {name = "grip_38",      model = _item_ranged.."/grips/boltgun_rifle_grip_ml01"},
+            {name = "grip_39",      model = _item_ranged.."/grips/lasgun_pistol_grip_05"},
+            {name = "grip_40",      model = _item_ranged.."/grips/lasgun_pistol_grip_ml01"},
+            {name = "grip_41",      model = _item_ranged.."/grips/flamer_rifle_grip_04"},
+            {name = "grip_42",      model = _item_ranged.."/grips/flamer_rifle_grip_ml01"},
+            {name = "grip_43",      model = _item_ranged.."/grips/autogun_rifle_grip_ml01"},
+            {name = "grip_44",      model = _item_ranged.."/grips/autogun_rifle_grip_ak_ml01"},
+            {name = "grip_45",      model = _item_ranged.."/grips/autogun_rifle_grip_killshot_ml01"},
+            {name = "grip_46",      model = _item_ranged.."/grips/lasgun_rifle_elysian_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 
@@ -307,11 +346,13 @@ return {
             {id = "autogun_rifle_stock_02", name = "Infantry Autogun 2"},
             {id = "autogun_rifle_stock_03", name = "Infantry Autogun 3"},
             {id = "autogun_rifle_stock_04", name = "Infantry Autogun 4"},
+            {id = "autogun_rifle_stock_ml01", name = "Infantry Autogun 5"},
             {id = "autogun_rifle_stock_05", name = "Braced Autogun 1"},
             {id = "autogun_rifle_stock_06", name = "Braced Autogun 2"},
             {id = "autogun_rifle_stock_07", name = "Braced Autogun 3"},
             {id = "autogun_rifle_stock_08", name = "Headhunter Autogun 1"},
             {id = "autogun_rifle_stock_09", name = "Headhunter Autogun 2"},
+            {id = "autogun_rifle_killshot_stock_ml01", name = "Headhunter Autogun 3"},
             {id = "lasgun_stock_01",        name = "Infantry Lasgun 1"},
             {id = "lasgun_stock_02",        name = "Infantry Lasgun 2"},
             {id = "lasgun_stock_03",        name = "Infantry Lasgun 3"},
@@ -320,6 +361,7 @@ return {
             {id = "lasgun_stock_04",        name = "Infantry Lasgun 4"},
             {id = "autogun_rifle_stock_12", name = "Braced Autogun 6"},
             {id = "autogun_rifle_stock_13", name = "Braced Autogun 7"},
+            {id = "autogun_rifle_stock_14", name = "Braced Autogun 8"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -341,6 +383,7 @@ return {
             {name = "autogun_rifle_stock_02", model = _item_ranged.."/stocks/autogun_rifle_stock_02"},
             {name = "autogun_rifle_stock_03", model = _item_ranged.."/stocks/autogun_rifle_stock_03"},
             {name = "autogun_rifle_stock_04", model = _item_ranged.."/stocks/autogun_rifle_stock_04"},
+            {name = "autogun_rifle_stock_ml01", model = _item_ranged.."/stocks/autogun_rifle_stock_ml01"},
             {name = "autogun_rifle_stock_05", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_01"},
             {name = "autogun_rifle_stock_06", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_02"},
             {name = "autogun_rifle_stock_07", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_03"},
@@ -348,8 +391,10 @@ return {
             {name = "autogun_rifle_stock_11", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_05"},
             {name = "autogun_rifle_stock_12", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_06"},
             {name = "autogun_rifle_stock_13", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_07"},
+            {name = "autogun_rifle_stock_14", model = _item_ranged.."/stocks/autogun_rifle_ak_stock_ml01"},
             {name = "autogun_rifle_stock_08", model = _item_ranged.."/stocks/autogun_rifle_killshot_stock_01"},
             {name = "autogun_rifle_stock_09", model = _item_ranged.."/stocks/autogun_rifle_killshot_stock_02"},
+            {name = "autogun_rifle_killshot_stock_ml01", model = _item_ranged.."/stocks/autogun_rifle_killshot_stock_ml01"},
             {name = "lasgun_stock_01",        model = _item_ranged.."/stocks/lasgun_rifle_stock_01"},
             {name = "lasgun_stock_02",        model = _item_ranged.."/stocks/lasgun_rifle_stock_02"},
             {name = "lasgun_stock_03",        model = _item_ranged.."/stocks/lasgun_rifle_stock_03"},
@@ -363,6 +408,7 @@ return {
             {id = "bayonet_02",       name = "Bayonet 2"},
             {id = "bayonet_03",       name = "Bayonet 3"},
             {id = "bayonet_04",       name = "Bayonet 4"},
+            {id = "bayonet_05",       name = "Bayonet 5"},
             {id = "bayonet_blade_01", name = "Blade"},
         }
         if default == nil then default = true end
@@ -379,6 +425,7 @@ return {
             {name = "bayonet_02",       model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_02"},
             {name = "bayonet_03",       model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_03"},
             {name = "bayonet_04",       model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_04"},
+            {name = "bayonet_05",       model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_ml01"},
             {name = "bayonet_blade_01", model = _item_melee.."/blades/combat_sword_blade_01"},
         }, parent, angle, move, remove, type or "bayonet", no_support, automatic_equip, hide_mesh, mesh_move)
     end,

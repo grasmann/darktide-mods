@@ -42,6 +42,21 @@ local mod = get_mod("weapon_customization")
 
 --#region Data
 	local REFERENCE = "weapon_customization"
+	local special_nodes = {
+		muzzle = {
+			targets = {"muzzle", "barrel"},
+			nodes = {"fx_01", "fx_02", "fx_muzzle", "fx_muzzle_01"}
+		}
+	}
+	local move_units = {
+		"#ID[7fb88579bf209537]", -- background
+		"#ID[7c763e4de74815e3]", -- lights
+	}
+	local light_units = {
+		"#ID[be13f33921de73ac]", -- lights
+	}
+
+	mod.preview_lights = {}
 --#endregion
 
 -- ##### ┬─┐┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┌─┐┬ ┬┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐┬─┐ ##############################################################
@@ -120,13 +135,6 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, se
 	elseif mod.gear_settings:find_node_in_unit(parent_unit, node_name) then
 		return func(self, spawners, spawner_name, parent_unit, nil, node_name, should_add_3p_node, ...)
 	end
-
-	local special_nodes = {
-		muzzle = {
-			targets = {"muzzle", "barrel"},
-			nodes = {"fx_01", "fx_02", "fx_muzzle", "fx_muzzle_01"}
-		}
-	}
 	for name, special_node in pairs(special_nodes) do
 		if table_contains(special_node.nodes, node_name) then
 			for _, target in pairs(special_node.targets) do
@@ -149,21 +157,15 @@ end)
 
 mod:hook(CLASS.UIWorldSpawner, "spawn_level", function(func, self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
 	func(self, level_name, included_object_sets, position, rotation, ignore_level_background, ...)
-	if string_find(self._world_name, "ViewElementInventoryWeaponPreview") then
+	-- if string_find(self._world_name, "ViewElementInventoryWeaponPreview") then
+	if mod:cached_find(self._world_name, "ViewElementInventoryWeaponPreview") then
 		local level_units = level_units(self._level, true)
-		local unknown_units = {}
+		-- local unknown_units = {}
 		if level_units then
-			local move_units = {
-				"#ID[7fb88579bf209537]", -- background
-				"#ID[7c763e4de74815e3]", -- lights
-			}
-			local light_units = {
-				"#ID[be13f33921de73ac]", -- lights
-			}
-			mod.preview_lights = {}
+			-- mod.preview_lights = {}
+			table.clear(mod.preview_lights)
 			for _, unit in pairs(level_units) do
 				if table_contains(move_units, unit_debug_name(unit)) then
-					-- mod:info("CLASS.UIWorldSpawner: "..tostring(unit))
 					unit_set_local_position(unit, 1, unit_local_position(unit, 1) + vector3(0, 6, 0))
 				end
 				if table_contains(light_units, unit_debug_name(unit)) then

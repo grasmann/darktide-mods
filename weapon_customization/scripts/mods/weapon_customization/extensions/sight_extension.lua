@@ -267,7 +267,7 @@ SightExtension.set_weapon_values = function(self)
 	self.vertical_fov = nil
 	self.default_custom_vertical_fov = nil
 	self.custom_vertical_fov = nil
-	self.item_name = mod:item_name_from_content_string(self.ranged_weapon.item.name)
+	self.item_name = mod.gear_settings:short_name(self.ranged_weapon.item.name)
 	self.sights = {
 		mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight"),
 		mod.gear_settings:_recursive_find_attachment(self.ranged_weapon.item.attachments, "sight_2"),
@@ -281,7 +281,7 @@ SightExtension.set_weapon_values = function(self)
 	    or mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, "sight")
 
 	self.sight = self.sights[2] or self.sights[1] --self:get_sight()
-	self.sight_name = self.sights[1] and mod:item_name_from_content_string(self.sights[1].item)
+	self.sight_name = self.sights[1] and mod.gear_settings:short_name(self.sights[1].item)
 	self.offset = nil
 	if self:is_scope() or self:is_sniper() then
 		self:set_sight_offset()
@@ -323,16 +323,16 @@ SightExtension.set_sniper_scope_unit = function(self)
 	end
 end
 
-local reflex = {}
-local lenses = {}
+-- local reflex = {}
+-- local lenses = {}
 SightExtension.set_lens_units = function(self)
-	-- local reflex = {}
-	table.clear(reflex)
+	local reflex = {}
+	-- table.clear(reflex)
 	-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, SIGHT, reflex)
 	reflex[1] = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, SIGHT)
 	if #reflex >= 1 then
-		-- local lenses = {}
-		table.clear(lenses)
+		local lenses = {}
+		-- table.clear(lenses)
 		-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_A, lenses)
 		-- mod:_recursive_find_unit_by_slot(self.ranged_weapon.weapon_unit, LENS_B, lenses)
 		lenses[1] = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, LENS_A)

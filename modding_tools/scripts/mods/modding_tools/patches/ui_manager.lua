@@ -14,8 +14,6 @@ local mod = get_mod("modding_tools")
 
 -- Main update loop
 mod:hook(CLASS.UIManager, "post_update", function(func, self, dt, t, ...)
--- mod:hook(CLASS.UIManager, "update", function(func, self, dt, t, ...)
--- mod:hook(CLASS.UIManager, "render", function(func, self, dt, t, ...)
     -- Original function
     func(self, dt, t, ...)
     -- Get input service
@@ -25,12 +23,12 @@ mod:hook(CLASS.UIManager, "post_update", function(func, self, dt, t, ...)
         -- Update unit manipulation extensions
         mod:_update_unit_manipulation_extensions(dt, t, input_service)
         -- Update the inspector
-        local inspector_busy = mod.inspector:update(dt, t, input_service)
+        mod.inspector_busy = mod.inspector and mod.inspector:update(dt, t, input_service)
         -- Update the console
-        local console_busy = mod.console:update(dt, t, input_service)
+        mod.console_busy = mod.console and mod.console:update(dt, t, input_service)
         -- Update watcher
-        local watcher_busy = mod.watcher:update(dt, t, input_service)
+        mod.watcher_busy = mod.watcher and mod.watcher:update(dt, t, input_service)
         -- Disable input
-        self._disable_input = mod:unit_manipulation_busy() or inspector_busy or console_busy or watcher_busy
+        self._disable_input = mod:unit_manipulation_busy() or mod.inspector_busy or mod.console_busy or mod.watcher_busy
     end
 end)
