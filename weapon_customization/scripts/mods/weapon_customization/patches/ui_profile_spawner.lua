@@ -167,7 +167,7 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 		-- Visible equipment
 		self:update_visible_equipment(dt, t)
 		-- Weapon sling
-		self:update_sling(dt, t)
+		-- self:update_sling(dt, t)
 	end
 
 	instance.preview_flashlight = function(self, slot_id)
@@ -233,8 +233,12 @@ mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_ser
 	-- Original function
 	func(self, dt, t, input_service, ...)
 
-	-- Visible equipment
-	self:update_custom_extensions(dt, t)
+	if self:spawned() then
+
+		-- Visible equipment
+		self:update_custom_extensions(dt, t)
+
+	end
 
 end)
 

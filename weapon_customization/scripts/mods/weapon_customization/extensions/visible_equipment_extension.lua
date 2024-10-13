@@ -841,7 +841,8 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
     end
 
     -- Hide bullets
-    mod.gear_settings:hide_bullets(slot)
+    -- mod.gear_settings:hide_bullets(slot)
+    self:hide_bullets(slot)
     -- Equipment data
     local data, sounds_1, sounds_2 = self:equipment_data_by_slot(slot)
     local sounds_3 = SoundEventAliases.sfx_ads_up.events[self.item_names[slot]]
@@ -1282,7 +1283,9 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                             -- unit_set_local_rotation(unit, 1, lerp_rotation)
                             unit_set_local_rotation(unit, 1, quaternion_from_vector(default_rotation + rotation_move))
                             -- Play sound
-                            self:play_equipment_sound(slot, i)
+                            if slot.name == SLOT_SECONDARY then
+                                self:play_equipment_sound(slot, i)
+                            end
                         end
                     end
 
@@ -1329,6 +1332,10 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
                             -- local lerp_rotation = quaternion_from_vector(default_rotation)
                             -- unit_set_local_rotation(unit, 1, lerp_rotation)
                             unit_set_local_rotation(unit, 1, quaternion_from_vector(default_rotation))
+                            -- Play sound
+                            if slot.name == SLOT_PRIMARY then
+                                self:play_equipment_sound(slot, i)
+                            end
                         end
                     end
 

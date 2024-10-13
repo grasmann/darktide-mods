@@ -49,6 +49,7 @@ local mod = get_mod("weapon_customization")
 	local ogryn_slabshield_item = "content/items/weapons/player/melee/ogryn_slabshield_p1_m1"
 	local bulwark_shield_string = "content/items/weapons/player/melee/ogryn_bulwark_shield_01"
 	local bulwark_shield_unit = "content/weapons/enemy/shields/bulwark_shield_01/bulwark_shield_01"
+	local replace_pattern = {'_p1', '_p2', '_p3', '_m1', '_m2', '_m3', '_ml01'}
 --#endregion
    
 -- ##### ┌─┐┌─┐┌─┐┬─┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┬┌┐┌┌┬┐┌─┐ ###########################################################
@@ -223,6 +224,34 @@ DataCache.cache_attachment_data = function(self)
 						self.cache.default_attachments[item_name][attachment_slot] = gear_settings:default_attachment(item, attachment_slot)
 					end
 				end
+
+				-- for attachment_slot, attachment_list in pairs(self.cache.attachment_list[item_name]) do
+					
+				-- 	-- Cache attachment name -> original item
+				-- 	-- local weapon_name = string.gsub(item_name, '%S+', {_p1='', _p2='', _p3='', _m1='', _m2='', _m3='', _ml01=''})
+				-- 	local weapon_name = item_name
+				-- 	for j, rep_pattern in pairs(replace_pattern) do
+				-- 		weapon_name = string.gsub(weapon_name, rep_pattern, '')
+				-- 	end
+
+				-- 	-- self.cache.pattern_to_item = self.cache.pattern_to_item or {}
+				-- 	self.cache.pattern_to_item[item_name] = weapon_name
+
+				-- 	for j, attachment_name in pairs(attachment_list) do
+				-- 		self.cache.original_items[#self.cache.original_items+1] = {
+				-- 			attachment_name,
+				-- 			weapon_name,
+				-- 		}
+				-- 	end
+				-- 	-- Cache attachment name -> original pattern
+				-- 	for j, attachment_name in pairs(attachment_list) do
+				-- 		self.cache.original_patterns[#self.cache.original_patterns+1] = {
+				-- 			attachment_name,
+				-- 			item_name,
+				-- 		}
+				-- 	end
+
+				-- end
 			end
 		end
 		-- Cache cosmetics scenegraphs
@@ -283,6 +312,18 @@ end
 DataCache.item_string_to_item_name = function(self, item_string)
 	return self.cache.item_names[item_string]
 end
+
+-- DataCache.attachment_name_to_original_item = function(self, attachment_name)
+-- 	return self.cache.original_items[attachment_name]
+-- end
+
+-- DataCache.attachment_name_to_original_pattern = function(self, attachment_name)
+-- 	return self.cache.original_patterns[attachment_name]
+-- end
+
+-- DataCache.item_name_to_weapon_name = function(self, item_name)
+-- 	return self.cache.pattern_to_item[item_name]
+-- end
 
 -- DataCache.attachment_name_to_generated_attachment_name = function(self, attachment_name)
 -- 	return self.cache.attachment_names[attachment_name]

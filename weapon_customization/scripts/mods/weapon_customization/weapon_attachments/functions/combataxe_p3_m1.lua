@@ -31,6 +31,7 @@ return {
             {id = "shovel_head_03", name = "Shovel 3"},
             {id = "shovel_head_04", name = "Shovel 4"},
             {id = "shovel_head_05", name = "Shovel 5"},
+            {id = "shovel_head_ml01", name = "Shovel 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -47,6 +48,7 @@ return {
             {name = "shovel_head_03", model = _item_melee.."/heads/shovel_head_03"},
             {name = "shovel_head_04", model = _item_melee.."/heads/shovel_head_04"},
             {name = "shovel_head_05", model = _item_melee.."/heads/shovel_head_05"},
+            {name = "shovel_head_ml01", model = _item_melee.."/heads/shovel_head_ml01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     grip_attachments = function(default)
@@ -56,6 +58,7 @@ return {
             {id = "shovel_grip_03", name = "Shovel 3"},
             {id = "shovel_grip_04", name = "Shovel 4"},
             {id = "shovel_grip_05", name = "Shovel 5"},
+            {id = "shovel_grip_ml01", name = "Shovel 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -72,6 +75,7 @@ return {
             {name = "shovel_grip_03", model = _item_melee.."/grips/shovel_grip_03"},
             {name = "shovel_grip_04", model = _item_melee.."/grips/shovel_grip_04"},
             {name = "shovel_grip_05", model = _item_melee.."/grips/shovel_grip_05"},
+            {name = "shovel_grip_ml01", model = _item_melee.."/grips/shovel_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     pommel_attachments = function(default, krieg, prologue)
@@ -83,6 +87,7 @@ return {
             {id = "shovel_pommel_05",      name = "Shovel 5"},
             -- {id = "shovel_pommel_06",      name = "Krieg", no_randomize = true},
             -- {id = "shovel_pommel_07",      name = "Prologue", no_randomize = true},
+            {id = "shovel_pommel_08",      name = "Shovel 8"},
         }
         if default == nil then default = true end
         if krieg == nil then krieg = true end
@@ -103,6 +108,7 @@ return {
             {name = "shovel_pommel_05",      model = _item_melee.."/pommels/shovel_pommel_05"},
             {name = "shovel_pommel_06",      model = _item_melee.."/full/krieg_shovel_full_01"},
             {name = "shovel_pommel_07",      model = _item_melee.."/full/prologue_shovel_full_01"},
+            {name = "shovel_pommel_08",      model = _item_melee.."/pommels/shovel_pommel_ml01"},
         }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end
 }

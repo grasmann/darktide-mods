@@ -1137,6 +1137,22 @@ local GearSettings = class("GearSettings")
 -- ##### ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │   ├┤ │┌┴┬┘├┤ └─┐ ###############################################################
 -- ##### ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴   └  ┴┴ └─└─┘└─┘ ###############################################################
 
+-- GearSettings.pattern_to_weapon = function(self, pattern)
+-- 	return mod:persistent_table(REFERENCE).cache.pattern_to_item[pattern]
+-- end
+
+GearSettings.is_standard_attachment = function(self, item_name, attachment_slot, attachment_name)
+	if attachment_name and mod:persistent_table(REFERENCE).cache.attachment_list[item_name] and mod:persistent_table(REFERENCE).cache.attachment_list[item_name][attachment_slot] then
+		if table_contains(mod:persistent_table(REFERENCE).cache.attachment_list[item_name][attachment_slot], attachment_name) then
+			for i, data in pairs(mod.attachment[item_name][attachment_slot]) do
+				if data.id == attachment_name then
+					return data.original_mod
+				end
+			end
+		end
+	end
+end
+
 --#region Attachment Fixes
 	-- Apply attachment fixes
 	GearSettings.apply_fixes = function(self, gear_id_or_item, unit_or_name)
@@ -1145,8 +1161,9 @@ local GearSettings = class("GearSettings")
 		local item_name = item and item.name
 		-- Check item and attachments
 		if item_name and self:is_weapon_item(gear_id_or_item) then--(item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED) then
-			-- local gear_id = self:item_to_gear_id(item)
+			-- local gear_id = self:item_to_gear_      id(item)
 			item_name = self:short_name(item_name)
+			-- local weapon_name = self:pattern_to_weapon(item_name)
 			-- Check gear id
 			local item_attachments = mod.attachment_models[item_name]
 			if item_name and item_attachments then
@@ -1195,12 +1212,18 @@ local GearSettings = class("GearSettings")
 								local has_dependency_possibility = false
 								-- Iterate dependency possibilities
 								for i, dependency_possibility in pairs(dependency_possibilities) do
+
 									-- local negative = string_find(dependency_possibility, "!")
 									if not self.dependency_possibility_info[dependency_possibility] then
 										self.dependency_possibility_info[dependency_possibility] = {
 											negative = self:cached_find(dependency_possibility, "!"),
 											possibility = self:cached_gsub(dependency_possibility, "!", ""),
 										}
+										local possibility = self.dependency_possibility_info[dependency_possibility]
+										if self:cached_find(possibility.possibility, "&") then
+											possibility.original_item = true
+											possibility.possibility = self:cached_gsub(possibility.possibility, "&", "")
+										end
 									end
 									local possibility = self.dependency_possibility_info[dependency_possibility]
 									-- local negative = self:cached_find(dependency_possibility, "!")
@@ -1209,7 +1232,18 @@ local GearSettings = class("GearSettings")
 									-- dependency_possibility = negative and self:cached_gsub(dependency_possibility, "!", "") or dependency_possibility
 									dependency_possibility = negative and possibility.possibility or dependency_possibility
 
-									if item_attachments and item_attachments[dependency_possibility] then
+
+									local is_slot = table_contains(mod.attachment_slots, dependency_possibility)
+
+									if possibility.original_item and is_slot then
+										if negative then
+											-- has_dependency_possibility = weapon_name ~= self:attachment_to_item(current_attachments_by_slot[dependency_possibility])
+											has_dependency_possibility = not self:is_standard_attachment(item_name, dependency_possibility, current_attachments_by_slot[dependency_possibility])
+										else
+											-- has_dependency_possibility = weapon_name == self:attachment_to_item(current_attachments_by_slot[dependency_possibility])
+											has_dependency_possibility = self:is_standard_attachment(item_name, dependency_possibility, current_attachments_by_slot[dependency_possibility])
+										end
+									elseif item_attachments and item_attachments[dependency_possibility] then
 										if negative then
 											has_dependency_possibility = not table_contains(current_attachments, dependency_possibility)
 											-- has_dependency_possibility = not find_attachment(dependency_possibility)
@@ -1219,7 +1253,7 @@ local GearSettings = class("GearSettings")
 											-- has_dependency_possibility = find_attachment(dependency_possibility)
 											-- has_dependency_possibility = self:_recursive_find_attachment_name(item.attachments, dependency_possibility) ~= nil
 										end
-									elseif table_contains(mod.attachment_slots, dependency_possibility) then
+									elseif is_slot then
 										-- local slot_attachment = self:get(gear_id_or_item, dependency_possibility)
 										if negative then
 											has_dependency_possibility = current_attachments_by_slot[dependency_possibility] == nil

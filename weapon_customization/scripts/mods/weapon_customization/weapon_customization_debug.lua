@@ -7,6 +7,7 @@ local mod = get_mod("weapon_customization")
 --#region local functions
 	local Unit = Unit
 	local type = type
+	local CLASS = CLASS
 	local pairs = pairs
 	local table = table
 	local string = string
@@ -117,6 +118,21 @@ end
 mod.clear_chat = function()
 	managers.event:trigger("event_clear_notifications")
 end
+
+-- mod.loading_open = false
+-- mod.load_mission = function()
+-- 	if not mod.loading_open then
+-- 		managers.ui:open_view("mission_intro_view")
+-- 	elseif mod.loading_open then
+-- 		managers.ui:close_view("mission_intro_view")
+-- 	end
+-- 	mod.loading_open = not mod.loading_open
+-- end
+
+-- mod:hook(CLASS.MissionIntroView, "_register_mission_intro_spawn_point", function(func, self, spawn_point_unit, index, ...)
+-- 	-- self._spawn_point_units[index] = spawn_point_unit
+-- 	func(self, spawn_point_unit, 1, ...)
+-- end)
 
 --  Debug
 mod._debug = mod:get("mod_option_debug")

@@ -33,6 +33,7 @@ return {
             {id = "knife_grip_05",      name = "Combat Knife 5"},
             {id = "knife_grip_06",      name = "Combat Knife 6"},
             {id = "knife_grip_07",      name = "Combat Knife 7"},
+            {id = "combat_knife_grip_ml01",      name = "Combat Knife 8"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -51,6 +52,7 @@ return {
             {name = "knife_grip_05",      model = _item_melee.."/grips/combat_knife_grip_05"},
             {name = "knife_grip_06",      model = _item_melee.."/grips/combat_knife_grip_06"},
             {name = "knife_grip_07",      model = _item_melee.."/grips/combat_knife_grip_07"},
+            {name = "combat_knife_grip_ml01",      model = _item_melee.."/grips/combat_knife_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 
@@ -65,6 +67,7 @@ return {
             {id = "knife_body_05",      name = "Combat Knife 5"},
             {id = "knife_body_06",      name = "Combat Knife 6"},
             {id = "knife_body_07",      name = "Combat Knife 7"},
+            {id = "combat_knife_blade_ml01",      name = "Combat Knife 8"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -83,6 +86,7 @@ return {
             {name = "knife_body_05",      model = _item_melee.."/blades/combat_knife_blade_05"},
             {name = "knife_body_06",      model = _item_melee.."/blades/combat_knife_blade_06"},
             {name = "knife_body_07",      model = _item_melee.."/blades/combat_knife_blade_07"},
+            {name = "combat_knife_blade_ml01",      model = _item_melee.."/blades/combat_knife_blade_ml01"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

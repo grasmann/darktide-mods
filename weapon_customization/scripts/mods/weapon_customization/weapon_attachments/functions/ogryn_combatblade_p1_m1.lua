@@ -35,6 +35,7 @@ return {
             {id = "blade_06", name = "Blade 6"},
             {id = "blade_07", name = "Blade 7"},
             {id = "blade_08", name = "Blade 8"},
+            {id = "combat_blade_blade_ml01", name = "Blade 9"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -54,6 +55,7 @@ return {
             {name = "blade_06",      model = _item_melee.."/blades/combat_blade_blade_06"},
             {name = "blade_07",      model = _item_melee.."/blades/combat_blade_blade_07"},
             {name = "blade_08",      model = _item_melee.."/blades/combat_blade_blade_08"},
+            {name = "combat_blade_blade_ml01",      model = _item_melee.."/blades/combat_blade_blade_ml01"},
         }, parent, angle, move, remove, type or "blade", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     grip_attachments = function(default)
@@ -66,6 +68,7 @@ return {
             {id = "grip_06", name = "Grip 6"},
             {id = "grip_07", name = "Grip 7"},
             {id = "grip_08", name = "Grip 8"},
+            {id = "combat_blade_grip_ml01", name = "Grip 9"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -85,6 +88,7 @@ return {
             {name = "grip_06",      model = _item_melee.."/grips/combat_blade_grip_06"},
             {name = "grip_07",      model = _item_melee.."/grips/combat_blade_grip_07"},
             {name = "grip_08",      model = _item_melee.."/grips/combat_blade_grip_08"},
+            {name = "combat_blade_grip_ml01",      model = _item_melee.."/grips/combat_blade_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     handle_attachments = function(default)

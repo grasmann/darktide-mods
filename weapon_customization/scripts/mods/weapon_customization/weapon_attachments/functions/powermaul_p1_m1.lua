@@ -33,6 +33,7 @@ return {
             {id = "small_shaft_04", name = "Small Shaft 4"},
             {id = "small_shaft_05", name = "Small Shaft 5"},
             {id = "small_shaft_06", name = "Small Shaft 6"},
+            {id = "small_shaft_07", name = "Small Shaft 7"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -50,6 +51,7 @@ return {
             {name = "small_shaft_04", model = _item_ranged.."/shafts/human_power_maul_shaft_04"},
             {name = "small_shaft_05", model = _item_ranged.."/shafts/human_power_maul_shaft_05"},
             {name = "small_shaft_06", model = _item_ranged.."/shafts/human_power_maul_shaft_06"},
+            {name = "small_shaft_07", model = _item_ranged.."/shafts/human_power_maul_shaft_ml01"},
         }, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     head_attachments = function(default)
@@ -60,6 +62,7 @@ return {
             {id = "small_head_04", name = "Small Head 4"},
             {id = "small_head_05", name = "Small Head 5"},
             {id = "small_head_06", name = "Small Head 6"},
+            {id = "small_head_07", name = "Small Head 7"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -77,6 +80,7 @@ return {
             {name = "small_head_04", model = _item_melee.."/heads/human_power_maul_head_04"},
             {name = "small_head_05", model = _item_melee.."/heads/human_power_maul_head_05"},
             {name = "small_head_06", model = _item_melee.."/heads/human_power_maul_head_06"},
+            {name = "small_head_07", model = _item_melee.."/heads/human_power_maul_head_ml01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     connector_attachments = function(default)
@@ -87,6 +91,7 @@ return {
             {id = "small_connector_04", name = "Small Connector 4"},
             {id = "small_connector_05", name = "Small Connector 5"},
             {id = "small_connector_06", name = "Small Connector 6"},
+            {id = "small_connector_07", name = "Small Connector 7"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -104,6 +109,7 @@ return {
             {name = "small_connector_04", model = _item_melee.."/connectors/human_power_maul_connector_04"},
             {name = "small_connector_05", model = _item_melee.."/connectors/human_power_maul_connector_05"},
             {name = "small_connector_06", model = _item_melee.."/connectors/human_power_maul_connector_06"},
+            {name = "small_connector_07", model = _item_melee.."/connectors/human_power_maul_connector_ml01"},
         }, parent, angle, move, remove, type or "connector", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

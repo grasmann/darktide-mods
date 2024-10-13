@@ -32,6 +32,7 @@ return {
             {id = "power_sword_grip_04",      name = "Grip 4"},
             {id = "power_sword_grip_05",      name = "Grip 5"},
             {id = "power_sword_grip_06",      name = "Grip 6"},
+            {id = "power_sword_grip_ml01",      name = "Grip 7"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -49,6 +50,7 @@ return {
             {name = "power_sword_grip_04",      model = _item_melee.."/grips/power_sword_grip_04"},
             {name = "power_sword_grip_05",      model = _item_melee.."/grips/power_sword_grip_05"},
             {name = "power_sword_grip_06",      model = _item_melee.."/grips/power_sword_grip_06"},
+            {name = "power_sword_grip_ml01",      model = _item_melee.."/grips/power_sword_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     blade_attachments = function(default)
@@ -58,6 +60,7 @@ return {
             {id = "power_sword_blade_03",      name = "Blade 3"},
             {id = "power_sword_blade_04",      name = "Blade 4"},
             {id = "power_sword_blade_05",      name = "Blade 5"},
+            {id = "power_sword_blade_ml01",      name = "Blade 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -74,6 +77,7 @@ return {
             {name = "power_sword_blade_03",      model = _item_melee.."/blades/power_sword_blade_03"},
             {name = "power_sword_blade_04",      model = _item_melee.."/blades/power_sword_blade_05"},
             {name = "power_sword_blade_05",      model = _item_melee.."/blades/power_sword_blade_06"},
+            {name = "power_sword_blade_ml01",      model = _item_melee.."/blades/power_sword_blade_ml01"},
         }, parent, angle, move, remove, type or "blade", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     pommel_attachments = function(default)
@@ -86,6 +90,7 @@ return {
             {id = "power_sword_pommel_06",      name = "2H Power Sword 1"},
             {id = "power_sword_pommel_07",      name = "2H Power Sword 2"},
             {id = "power_sword_pommel_08",      name = "2H Power Sword 3"},
+            {id = "power_sword_pommel_ml01",      name = "Power Sword 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -105,6 +110,7 @@ return {
             {name = "power_sword_pommel_06", model = _item_melee.."/pommels/2h_power_sword_pommel_01"},
             {name = "power_sword_pommel_07", model = _item_melee.."/pommels/2h_power_sword_pommel_02"},
             {name = "power_sword_pommel_08", model = _item_melee.."/pommels/2h_power_sword_pommel_03"},
+            {name = "power_sword_pommel_ml01", model = _item_melee.."/pommels/power_sword_pommel_ml01"},
         }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     hilt_attachments = function(default)

@@ -328,26 +328,30 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
     -- Original function
     func(self, unit, dt, t, ...)
 
-    -- Visible equipment
-    self:update_visible_equipment(dt, t)
+    if self:unit_3p_from_slot(SLOT_SECONDARY) then
 
-    -- Sling
-    self:update_sling(dt, t)
+        -- Visible equipment
+        self:update_visible_equipment(dt, t)
 
-    -- Sights
-    self:update_sight(dt, t)
+        -- Sling
+        -- self:update_sling(dt, t)
 
-    -- Weapon DOF
-    self:update_weapon_dof(dt, t)
+        -- Sights
+        self:update_sight(dt, t)
 
-    -- CrouchAnimationExtension
-    self:update_crouch(dt, t)
+        -- Weapon DOF
+        self:update_weapon_dof(dt, t)
 
-    -- SwayAnimationExtension
-    self:update_sway(dt, t)
+        -- CrouchAnimationExtension
+        self:update_crouch(dt, t)
 
-    -- Flashlights
-    self:update_flashlight(dt, t)
+        -- SwayAnimationExtension
+        self:update_sway(dt, t)
+
+        -- Flashlights
+        self:update_flashlight(dt, t)
+
+    end
 
 end)
 

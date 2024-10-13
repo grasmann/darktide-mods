@@ -30,6 +30,7 @@ return {
             {id = "pickaxe_pommel_02", name = "Pickaxe 2"},
             {id = "pickaxe_pommel_03", name = "Pickaxe 3"},
             {id = "pickaxe_pommel_04", name = "Pickaxe 4"},
+            {id = "ogryn_pickaxe_2h_pommel_ml01", name = "Pickaxe 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -45,6 +46,7 @@ return {
             {name = "pickaxe_pommel_02", model = _item_melee.."/pommels/ogryn_pickaxe_2h_pommel_02"},
             {name = "pickaxe_pommel_03", model = _item_melee.."/pommels/ogryn_pickaxe_2h_pommel_03"},
             {name = "pickaxe_pommel_04", model = _item_melee.."/pommels/ogryn_pickaxe_2h_pommel_04"},
+            {name = "ogryn_pickaxe_2h_pommel_ml01", model = _item_melee.."/pommels/ogryn_pickaxe_2h_pommel_ml01"},
         }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     shaft_attachments = function(default)
@@ -53,6 +55,7 @@ return {
             {id = "pickaxe_shaft_02",      name = "Pickaxe 2"},
             {id = "pickaxe_shaft_03",      name = "Pickaxe 3"},
             {id = "pickaxe_shaft_04",      name = "Pickaxe 4"},
+            {id = "ogryn_pickaxe_shaft_ml01",      name = "Pickaxe 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -68,6 +71,7 @@ return {
             {name = "pickaxe_shaft_02",      model = _item_melee.."/shafts/ogryn_pickaxe_shaft_02"},
             {name = "pickaxe_shaft_03",      model = _item_melee.."/shafts/ogryn_pickaxe_shaft_03"},
             {name = "pickaxe_shaft_04",      model = _item_melee.."/shafts/ogryn_pickaxe_shaft_04"},
+            {name = "ogryn_pickaxe_shaft_ml01",      model = _item_melee.."/shafts/ogryn_pickaxe_shaft_ml01"},
         }, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     head_attachments = function(default)
@@ -76,6 +80,7 @@ return {
             {id = "pickaxe_head_02",      name = "Pickaxe 2"},
             {id = "pickaxe_head_03",      name = "Pickaxe 3"},
             {id = "pickaxe_head_04",      name = "Pickaxe 4"},
+            {id = "ogryn_pickaxe_2h_head_ml01",      name = "Pickaxe 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -91,6 +96,7 @@ return {
             {name = "pickaxe_head_02",      model = _item_melee.."/heads/ogryn_pickaxe_2h_head_02"},
             {name = "pickaxe_head_03",      model = _item_melee.."/heads/ogryn_pickaxe_2h_head_03"},
             {name = "pickaxe_head_04",      model = _item_melee.."/heads/ogryn_pickaxe_2h_head_04"},
+            {name = "ogryn_pickaxe_2h_head_ml01",      model = _item_melee.."/heads/ogryn_pickaxe_2h_head_ml01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

@@ -58,6 +58,7 @@ return {
             {id = "hatchet_head_03", name = "Tactical Axe 3"},
             {id = "hatchet_head_04", name = "Tactical Axe 4"},
             {id = "hatchet_head_05", name = "Tactical Axe 5"},
+            {id = "hatchet_head_ml01", name = "Tactical Axe 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -74,6 +75,7 @@ return {
             {name = "hatchet_head_03",      model = _item_melee.."/heads/hatchet_head_03"},
             {name = "hatchet_head_04",      model = _item_melee.."/heads/hatchet_head_04"},
             {name = "hatchet_head_05",      model = _item_melee.."/heads/hatchet_head_05"},
+            {name = "hatchet_head_ml01",      model = _item_melee.."/heads/hatchet_head_ml01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     pommel_attachments = function(default)
@@ -82,6 +84,7 @@ return {
             {id = "hatchet_pommel_02", name = "Tactical Axe 2"},
             {id = "hatchet_pommel_03", name = "Tactical Axe 3"},
             {id = "hatchet_pommel_04", name = "Tactical Axe 4"},
+            {id = "hatchet_pommel_ml01", name = "Tactical Axe 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -97,6 +100,7 @@ return {
             {name = "hatchet_pommel_02", model = _item_melee.."/pommels/hatchet_pommel_02"},
             {name = "hatchet_pommel_03", model = _item_melee.."/pommels/hatchet_pommel_03"},
             {name = "hatchet_pommel_04", model = _item_melee.."/pommels/hatchet_pommel_04"},
+            {name = "hatchet_pommel_ml01", model = _item_melee.."/pommels/hatchet_pommel_ml01"},
         }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

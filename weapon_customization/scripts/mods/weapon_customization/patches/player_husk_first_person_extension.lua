@@ -80,12 +80,16 @@ mod:hook(CLASS.PlayerHuskFirstPersonExtension, "update_unit_position_and_rotatio
     -- Original function
     func(self, position_3p_unit, force_update_unit_and_children, ...)
 
-    -- Update custom extensions
-    self:update_custom_extensions()
+    if self._first_person_unit then
 
-    -- Update first person unit
-    if force_update_unit_and_children then
-        world_update_unit_and_children(self._world, self._first_person_unit)
+        -- Update custom extensions
+        self:update_custom_extensions()
+
+        -- Update first person unit
+        if force_update_unit_and_children then
+            world_update_unit_and_children(self._world, self._first_person_unit)
+        end
+
     end
 
 end)

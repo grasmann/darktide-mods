@@ -31,6 +31,7 @@ return {
             {id = "body_03",   name = "Body 3"},
             {id = "body_04",   name = "Body 4"},
             {id = "body_05",   name = "Body 5"},
+            {id = "body_06",   name = "Body 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -47,6 +48,7 @@ return {
             {name = "body_03",      model = _item_melee.."/full/ogryn_club_pipe_full_03"},
             {name = "body_04",      model = _item_melee.."/full/ogryn_club_pipe_full_04"},
             {name = "body_05",      model = _item_melee.."/full/ogryn_club_pipe_full_05"},
+            {name = "body_06",      model = _item_melee.."/full/ogryn_club_pipe_full_ml01"},
             {name = "body_none",    model = _item_melee.."/ogryn_powermaul_p1_empty"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,

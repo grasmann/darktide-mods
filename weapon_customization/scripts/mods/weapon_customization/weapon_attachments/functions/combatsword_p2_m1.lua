@@ -34,6 +34,7 @@ return {
             {id = "power_falchion_grip_01", name = "Power Falchion 1"},
             {id = "power_falchion_grip_02", name = "Power Falchion 2"},
             {id = "power_falchion_grip_03", name = "Power Falchion 3"},
+            {id = "falchion_grip_ml01",       name = "Grip 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -53,6 +54,7 @@ return {
             {name = "power_falchion_grip_01", model = _item_melee.."/grips/power_falchion_grip_01"},
             {name = "power_falchion_grip_02", model = _item_melee.."/grips/power_falchion_grip_02"},
             {name = "power_falchion_grip_03", model = _item_melee.."/grips/power_falchion_grip_03"},
+            {name = "falchion_grip_ml01",       model = _item_melee.."/grips/falchion_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     body_attachments = function(default)
@@ -62,6 +64,7 @@ return {
             {id = "falchion_blade_03",      name = "Blade 3"},
             {id = "falchion_blade_04",      name = "Blade 4"},
             {id = "falchion_blade_05",      name = "Blade 5"},
+            {id = "falchion_blade_ml01",      name = "Blade 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -78,6 +81,7 @@ return {
             {name = "falchion_blade_03",      model = _item_melee.."/blades/falchion_blade_03"},
             {name = "falchion_blade_04",      model = _item_melee.."/blades/falchion_blade_04"},
             {name = "falchion_blade_05",      model = _item_melee.."/blades/falchion_blade_05"},
+            {name = "falchion_blade_ml01",      model = _item_melee.."/blades/falchion_blade_ml01"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

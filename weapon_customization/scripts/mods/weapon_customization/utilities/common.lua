@@ -49,6 +49,7 @@ local mod = get_mod("weapon_customization")
 		"content/fx/particles/enemies/sniper_laser_sight",
 		"content/fx/particles/enemies/red_glowing_eyes",
 		"packages/ui/views/splash_view/splash_view",
+		"packages/ui/views/mission_intro_view/mission_intro_view",
 		"content/fx/particles/abilities/chainlightning/protectorate_chainlightning_hands_charge",
 		"content/fx/particles/screenspace/screen_ogryn_dash",
 		"wwise/events/weapon/play_lasgun_p3_mag_button",

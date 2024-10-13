@@ -145,12 +145,12 @@ return {
 		de = "Waffengurt System",
 	},
 	mod_option_sling = {
-		en = "Weapon Sling System",
-		de = "Waffengurt System",
+		en = "Weapon Sling System WIP",
+		de = "Waffengurt System WIP",
 	},
 	mod_option_sling_tooltip = {
-		en = "Toggle weapon sling system",
-		de = "Waffengurt System umschalten",
+		en = "Toggle weapon sling system WIP",
+		de = "Waffengurt System umschalten WIP",
 	},
 	group_weapon_sway = {
 		en = "Sway Animation",

@@ -56,6 +56,7 @@ return {
             {id = "force_sword_blade_03",      name = "Blade 3"},
             {id = "force_sword_blade_04",      name = "Blade 4"},
             {id = "force_sword_blade_05",      name = "Blade 5"},
+            {id = "force_sword_blade_ml01",      name = "Blade 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -72,6 +73,7 @@ return {
             {name = "force_sword_blade_03",      model = _item_melee.."/blades/force_sword_blade_03"},
             {name = "force_sword_blade_04",      model = _item_melee.."/blades/force_sword_blade_04"},
             {name = "force_sword_blade_05",      model = _item_melee.."/blades/force_sword_blade_05"},
+            {name = "force_sword_blade_ml01",      model = _item_melee.."/blades/force_sword_blade_ml01"},
         }, parent, angle, move, remove, type or "blade", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     pommel_attachments = function(default)
@@ -81,6 +83,7 @@ return {
             {id = "force_sword_pommel_03", name = "Force Sword 3"},
             {id = "force_sword_pommel_04", name = "Force Sword 4"},
             {id = "force_sword_pommel_05", name = "Force Sword 5"},
+            {id = "force_sword_pommel_ml01", name = "Force Sword 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -97,6 +100,7 @@ return {
             {name = "force_sword_pommel_03", model = _item_melee.."/pommels/force_sword_pommel_03"},
             {name = "force_sword_pommel_04", model = _item_melee.."/pommels/force_sword_pommel_04"},
             {name = "force_sword_pommel_05", model = _item_melee.."/pommels/force_sword_pommel_05"},
+            {name = "force_sword_pommel_ml01", model = _item_melee.."/pommels/force_sword_pommel_ml01"},
         }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     hilt_attachments = function(default)
@@ -108,6 +112,7 @@ return {
             {id = "force_sword_hilt_05",      name = "Hilt 5"},
             {id = "force_sword_hilt_06",      name = "Hilt 6"},
             {id = "force_sword_hilt_07",      name = "Hilt 7"},
+            {id = "force_sword_hilt_ml01",      name = "Hilt 8"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -126,6 +131,7 @@ return {
             {name = "force_sword_hilt_05",      model = _item_melee.."/hilts/force_sword_hilt_05"},
             {name = "force_sword_hilt_06",      model = _item_melee.."/hilts/force_sword_hilt_06"},
             {name = "force_sword_hilt_07",      model = _item_melee.."/hilts/force_sword_hilt_07"},
+            {name = "force_sword_hilt_ml01",      model = _item_melee.."/hilts/force_sword_hilt_ml01"},
         }, parent, angle, move, remove, type or "hilt", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

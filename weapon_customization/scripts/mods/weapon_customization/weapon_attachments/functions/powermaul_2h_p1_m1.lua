@@ -32,6 +32,7 @@ return {
             {id = "2h_power_maul_shaft_04", name = "Powermaul 4"},
             {id = "2h_power_maul_shaft_05", name = "Powermaul 5"},
             {id = "2h_power_maul_shaft_06", name = "Powermaul 6"},
+            {id = "2h_power_maul_shaft_ml01", name = "Powermaul 7"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -49,6 +50,7 @@ return {
             {name = "2h_power_maul_shaft_04", model = _item_melee.."/shafts/2h_power_maul_shaft_04"},
             {name = "2h_power_maul_shaft_05", model = _item_melee.."/shafts/2h_power_maul_shaft_05"},
             {name = "2h_power_maul_shaft_06", model = _item_melee.."/shafts/2h_power_maul_shaft_06"},
+            {name = "2h_power_maul_shaft_ml01", model = _item_melee.."/shafts/2h_power_maul_shaft_ml01"},
         }, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     head_attachments = function(default)
@@ -59,6 +61,7 @@ return {
             {id = "2h_power_maul_head_04",      name = "Head 4"},
             {id = "2h_power_maul_head_05",      name = "Head 5"},
             {id = "2h_power_maul_head_06",      name = "Head 6"},
+            {id = "2h_power_maul_head_ml01",      name = "Head 7"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -76,6 +79,7 @@ return {
             {name = "2h_power_maul_head_04",      model = _item_melee.."/heads/2h_power_maul_head_04"},
             {name = "2h_power_maul_head_05",      model = _item_melee.."/heads/2h_power_maul_head_05"},
             {name = "2h_power_maul_head_06",      model = _item_melee.."/heads/2h_power_maul_head_06"},
+            {name = "2h_power_maul_head_ml01",      model = _item_melee.."/heads/2h_power_maul_head_ml01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     pommel_attachments = function(default)
@@ -86,6 +90,7 @@ return {
             {id = "2h_power_maul_pommel_04", name = "Powermaul 4"},
             {id = "2h_power_maul_pommel_05", name = "Powermaul 5"},
             {id = "2h_power_maul_pommel_06", name = "Powermaul 6"},
+            {id = "2h_power_maul_pommel_ml01", name = "Powermaul 7"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -103,6 +108,7 @@ return {
             {name = "2h_power_maul_pommel_04", model = _item_melee.."/pommels/2h_power_maul_pommel_04"},
             {name = "2h_power_maul_pommel_05", model = _item_melee.."/pommels/2h_power_maul_pommel_05"},
             {name = "2h_power_maul_pommel_06", model = _item_melee.."/pommels/2h_power_maul_pommel_06"},
+            {name = "2h_power_maul_pommel_ml01", model = _item_melee.."/pommels/2h_power_maul_pommel_ml01"},
         }, parent, angle, move, remove, type or "pommel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     connector_attachments = function(default)
@@ -112,6 +118,7 @@ return {
             {id = "2h_power_maul_connector_03",      name = "Connector 3"},
             {id = "2h_power_maul_connector_04",      name = "Connector 4"},
             {id = "2h_power_maul_connector_05",      name = "Connector 5"},
+            {id = "2h_power_maul_connector_ml01",      name = "Connector 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -128,6 +135,7 @@ return {
             {name = "2h_power_maul_connector_03",      model = _item_melee.."/connectors/2h_power_maul_connector_03"},
             {name = "2h_power_maul_connector_04",      model = _item_melee.."/connectors/2h_power_maul_connector_04"},
             {name = "2h_power_maul_connector_05",      model = _item_melee.."/connectors/2h_power_maul_connector_05"},
+            {name = "2h_power_maul_connector_ml01",      model = _item_melee.."/connectors/2h_power_maul_connector_ml01"},
         }, parent, angle, move, remove, type or "connector", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

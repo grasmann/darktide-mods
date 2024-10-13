@@ -392,30 +392,34 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
     -- Original function
     func(self, unit, dt, t, ...)
 
-    -- Visible equipment
-    self:update_visible_equipment(dt, t)
+    if self:unit_3p_from_slot(SLOT_SECONDARY) then
 
-    -- Sling
-    self:update_sling(dt, t)
+        -- Visible equipment
+        self:update_visible_equipment(dt, t)
 
-    -- Sights
-    self:update_sight(dt, t)
+        -- Sling
+        -- self:update_sling(dt, t)
 
-    -- Add SwayAnimationExtension
-    self:update_sway(dt, t)
+        -- Sights
+        self:update_sight(dt, t)
 
-    -- Add CrouchAnimationExtension
-    self:update_crouch(dt, t)
+        -- Add SwayAnimationExtension
+        self:update_sway(dt, t)
 
-    -- Weapon DOF
-    self:update_weapon_dof(dt, t)
+        -- Add CrouchAnimationExtension
+        self:update_crouch(dt, t)
 
-    -- Flashlights
-    self:update_flashlight(dt, t)
+        -- Weapon DOF
+        self:update_weapon_dof(dt, t)
 
-    -- Aiming
-    self:update_aiming(dt, t)
+        -- Flashlights
+        self:update_flashlight(dt, t)
 
+        -- Aiming
+        self:update_aiming(dt, t)
+
+    end
+    
 end)
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_unequip_item_from_slot", function(func, self, channel_id, go_id, slot_id, ...)

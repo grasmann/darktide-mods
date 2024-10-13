@@ -72,10 +72,14 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
     -- Original function
     func(self, unit, dt, t, ...)
 
-    -- Update custom extensions
-    self:update_custom_extensions(dt, t)
+    if self._first_person_unit then
 
-    -- Update first person unit
-    world_update_unit_and_children(self._world, self._first_person_unit)
+        -- Update custom extensions
+        self:update_custom_extensions(dt, t)
+
+        -- Update first person unit
+        world_update_unit_and_children(self._world, self._first_person_unit)
+
+    end
 
 end)

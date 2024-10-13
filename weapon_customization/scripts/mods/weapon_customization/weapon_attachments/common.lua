@@ -134,6 +134,7 @@ return {
             {id = "emblem_right_20", name = "Emblem 20"},
             {id = "emblem_right_21", name = "Emblem 21"},
             {id = "emblem_right_22", name = "Emblem 22"},
+            {id = "emblem_right_23", name = "Emblem 23"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -167,6 +168,7 @@ return {
             {name = "emblem_right_20",      model = _item_ranged.."/emblems/emblemright_09e"},
             {name = "emblem_right_21",      model = _item_ranged.."/emblems/emblemright_10"},
             {name = "emblem_right_22",      model = _item_ranged.."/emblems/emblemright_11"},
+            {name = "emblem_right_23",      model = _item_ranged.."/emblems/emblemright_12"},
         }, parent, angle, move, remove, type or "emblem_right", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     emblem_left_attachments = function(default)
@@ -184,6 +186,7 @@ return {
             {id = "emblem_left_11", name = "Emblem 11"},
             {id = "emblem_left_12", name = "Emblem 12"},
             {id = "emblem_left_13", name = "Emblem 13"},
+            {id = "emblem_left_14", name = "Emblem 14"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -208,6 +211,7 @@ return {
             {name = "emblem_left_11",      model = _item_ranged.."/emblems/emblemleft_06"},
             {name = "emblem_left_12",      model = _item_ranged.."/emblems/emblemleft_10"},
             {name = "emblem_left_13",      model = _item_ranged.."/emblems/emblemleft_11"},
+            {name = "emblem_left_14",      model = _item_ranged.."/emblems/emblemleft_12"},
         }, parent, angle, move, remove, type or "emblem_left", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     decal_right_attachments = function(default)

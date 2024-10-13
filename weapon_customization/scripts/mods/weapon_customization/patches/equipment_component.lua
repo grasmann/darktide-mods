@@ -58,7 +58,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
 		-- Weapon DOF
 		if self.use_dof_system then mod:execute_extension(slot.parent_unit_3p, "weapon_dof_system", "on_wield_slot", slot) end
 		-- Sling
-		if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_wield_slot", slot) end
+		-- if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_wield_slot", slot) end
 	end
 
 	instance.unwield_custom = function(self, slot)
@@ -67,7 +67,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
 		-- Flashlights
 		if self.use_flashlight_system then mod:execute_extension(slot.parent_unit_3p, "flashlight_system", "on_unwield_slot", slot) end
 		-- Sling
-		if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_unwield_slot", slot) end
+		-- if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_unwield_slot", slot) end
 	end
 
 	instance.equip_custom = function(self, slot)
@@ -82,14 +82,14 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
 			if self.use_visible_equipment_system then mod:execute_extension(slot.parent_unit_3p, "visible_equipment_system", "position_equipment") end
 		end
 		-- Sling
-		if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_equip_slot", slot) end
+		-- if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_equip_slot", slot) end
 	end
 
 	instance.unequip_custom = function(self, slot)
 		-- Visible equipment
 		if self.use_visible_equipment_system then mod:execute_extension(slot.parent_unit_3p, "visible_equipment_system", "on_unequip_slot", slot) end
 		-- Sling
-		if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_unequip_slot", slot) end
+		-- if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_unequip_slot", slot) end
 	end
 
 	instance.update_visibility_custom = function(self, wielded_slot, unit_3p)
@@ -105,7 +105,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         self.use_sight_system = mod:get("mod_option_scopes")
         self.use_visible_equipment_system = mod:get("mod_option_visible_equipment")
         self.disable_visible_equipment_system_in_hub = mod:get("mod_option_visible_equipment_disable_in_hub")
-		self.use_sling_system = mod:get("mod_option_sling")
+		-- self.use_sling_system = mod:get("mod_option_sling")
     end
 
 	instance.destroy = function(self)
