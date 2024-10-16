@@ -222,7 +222,7 @@ end
 mod.execute_extension = function(self, unit, system, function_name, ...)
     if script_unit_has_extension(unit, system) then
         local extension = script_unit_extension(unit, system)
-        if extension[function_name] then
+        if extension[function_name] and not extension.__deleted then
             return extension[function_name](extension, ...)
         end
     end

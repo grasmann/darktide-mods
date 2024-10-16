@@ -166,6 +166,7 @@ mod.redo_weapon_attachments = function(self, item)
 	if weapon then
 		-- Remove visible equipment extension
 		mod:execute_extension(mod.player_unit, "visible_equipment_system", "delete_slots")
+		mod:execute_extension(mod.player_unit, "visible_equipment_system", "delete")
 		mod:remove_extension(mod.player_unit, "visible_equipment_system")
 		-- Unequip
 		self.visual_loadout_extension:unequip_item_from_slot(slot_name, FixedFrame.get_latest_fixed_time())

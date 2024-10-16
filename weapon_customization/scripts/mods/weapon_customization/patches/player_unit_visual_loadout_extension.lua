@@ -55,6 +55,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         mod:remove_extension(self._unit, "laser_pointer_system")
         -- Visible equipment
         mod:execute_extension(self._unit, "visible_equipment_system", "delete_slots")
+        mod:execute_extension(self._unit, "visible_equipment_system", "delete")
         mod:remove_extension(self._unit, "visible_equipment_system")
 
         mod:execute_extension(self._unit, "weapon_sling_system", "delete_slots")

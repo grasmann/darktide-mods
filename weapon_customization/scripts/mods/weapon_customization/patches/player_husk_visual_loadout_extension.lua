@@ -56,6 +56,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_husk_visual_lo
         mod:remove_extension(self._unit, "laser_pointer_system")
         -- Visible equipment
         mod:execute_extension(self._unit, "visible_equipment_system", "delete_slots")
+        mod:execute_extension(self._unit, "visible_equipment_system", "delete")
         mod:remove_extension(self._unit, "visible_equipment_system")
 
         mod:execute_extension(self._unit, "weapon_sling_system", "delete_slots")
@@ -419,7 +420,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
         self:update_aiming(dt, t)
 
     end
-    
+
 end)
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_unequip_item_from_slot", function(func, self, channel_id, go_id, slot_id, ...)

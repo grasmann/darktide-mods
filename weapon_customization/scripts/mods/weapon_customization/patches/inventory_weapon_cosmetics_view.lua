@@ -1074,6 +1074,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Remove player visible equipment
 	instance.remove_player_visible_equipment = function(self)
 		mod:execute_extension(mod.player_unit, "visible_equipment_system", "delete_slots")
+		mod:execute_extension(mod.player_unit, "visible_equipment_system", "delete")
 		mod:remove_extension(mod.player_unit, "visible_equipment_system")
 	end
 

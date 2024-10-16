@@ -157,6 +157,7 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 
 		if self._character_spawn_data then
 			mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "delete_slots")
+			mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "delete")
 			mod:remove_extension(self._character_spawn_data.unit_3p, "visible_equipment_system")
 			mod:execute_extension(self._character_spawn_data.unit_3p, "weapon_sling_system", "delete_slots")
 			mod:remove_extension(self._character_spawn_data.unit_3p, "weapon_sling_system")
