@@ -56,13 +56,13 @@ return {
 
     flashlights_attachments = function(default)
         local attachments = {
-            {id = "flashlight_01", name = mod:localize("mod_attachment_flashlight_01")},
-            {id = "flashlight_02", name = mod:localize("mod_attachment_flashlight_02")},
-            {id = "flashlight_03", name = mod:localize("mod_attachment_flashlight_03")},
-            {id = "flashlight_04", name = mod:localize("mod_attachment_flashlight_04")},
-            -- {id = "flashlight_05", name = mod:localize("mod_attachment_flashlight_05")},
-            -- {id = "flashlight_06", name = mod:localize("mod_attachment_flashlight_06")},
-            {id = "laser_pointer", name = mod:localize("mod_attachment_laser_pointer")},
+            {id = "flashlight_01",            name = mod:localize("mod_attachment_flashlight_01")},
+            {id = "flashlight_02",            name = mod:localize("mod_attachment_flashlight_02")},
+            {id = "flashlight_03",            name = mod:localize("mod_attachment_flashlight_03")},
+            {id = "flashlight_04",            name = mod:localize("mod_attachment_flashlight_04")},
+            {id = "flashlight_ogryn_01",      name = mod:localize("mod_attachment_flashlight_05")},
+            {id = "flashlight_ogryn_long_01", name = mod:localize("mod_attachment_flashlight_06")},
+            {id = "laser_pointer",            name = mod:localize("mod_attachment_laser_pointer")},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -80,14 +80,14 @@ return {
             {{loc_flashlight_light_cone = 2}, {loc_flashlight_intensity = 2}, {loc_flashlight_battery = 2}},
         }
         return table.model_table({
-            {name = "default",       model = ""},
-            {name = "flashlight_01", model = _item_ranged.."/flashlights/flashlight_01", data = flashlight_data[1]},
-            {name = "flashlight_02", model = _item_ranged.."/flashlights/flashlight_02", data = flashlight_data[2]},
-            {name = "flashlight_03", model = _item_ranged.."/flashlights/flashlight_03", data = flashlight_data[3]},
-            {name = "flashlight_04", model = _item_ranged.."/flashlights/flashlight_05", data = flashlight_data[4]},
-            -- {name = "flashlight_05", model = _item_ranged.."/flashlights/flashlight_ogryn_01", data = flashlight_data[4]},
-            -- {name = "flashlight_06", model = _item_ranged.."/flashlights/flashlight_ogryn_long_01", data = flashlight_data[4]},
-            {name = "laser_pointer", model = _item_ranged.."/flashlights/flashlight_05", data = flashlight_data[5]},
+            {name = "default",                  model = ""},
+            {name = "flashlight_01",            model = _item_ranged.."/flashlights/flashlight_01", data = flashlight_data[1]},
+            {name = "flashlight_02",            model = _item_ranged.."/flashlights/flashlight_02", data = flashlight_data[2]},
+            {name = "flashlight_03",            model = _item_ranged.."/flashlights/flashlight_03", data = flashlight_data[3]},
+            {name = "flashlight_04",            model = _item_ranged.."/flashlights/flashlight_05", data = flashlight_data[4]},
+            {name = "flashlight_ogryn_01",      model = _item_ranged.."/flashlights/flashlight_ogryn_01", data = flashlight_data[3]},
+            {name = "flashlight_ogryn_long_01", model = _item_ranged.."/flashlights/flashlight_ogryn_long_01", data = flashlight_data[4]},
+            {name = "laser_pointer",            model = _item_ranged.."/flashlights/flashlight_05", data = flashlight_data[5]},
         }, parent, angle, move, remove, type or "flashlight", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 

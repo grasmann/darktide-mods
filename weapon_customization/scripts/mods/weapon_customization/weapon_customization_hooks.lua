@@ -332,19 +332,19 @@ mod:hook(CLASS.HudElementCrosshair, "_get_current_crosshair_type", function(func
     return crosshair_type
 end)
 
-mod:hook(CLASS.HudElementCrosshair, "_crosshair_position", function(func, self, dt, t, ui_renderer, ...)
-    local parent = self._parent
-    local player_extensions = parent and parent:player_extensions()
-    local unit = player_extensions and player_extensions.unit
-    local x, y = func(self, dt, t, ui_renderer, ...)
-    if script_unit_has_extension(unit, "crouch_system") then
-        -- return mod:execute_extension(unit, "crouch_system", "crosshair_position", self, dt, t, ui_renderer)
-        return mod:execute_extension(unit, "crouch_system", "adjust_crosshair", self, x, y)
-    else
-        return x, y
-    end
-    -- return mod:execute_extension(unit, "crouch_system", "adjust_crosshair", self)
-end)
+-- mod:hook(CLASS.HudElementCrosshair, "_crosshair_position", function(func, self, dt, t, ui_renderer, ...)
+--     local parent = self._parent
+--     local player_extensions = parent and parent:player_extensions()
+--     local unit = player_extensions and player_extensions.unit
+--     local x, y = func(self, dt, t, ui_renderer, ...)
+--     if script_unit_has_extension(unit, "crouch_system") then
+--         -- return mod:execute_extension(unit, "crouch_system", "crosshair_position", self, dt, t, ui_renderer)
+--         return mod:execute_extension(unit, "crouch_system", "adjust_crosshair", self, x, y)
+--     else
+--         return x, y
+--     end
+--     -- return mod:execute_extension(unit, "crouch_system", "adjust_crosshair", self)
+-- end)
 
 -- ##### ┌┐ ┌─┐┌─┐┌─┐  ┬  ┬┬┌─┐┬ ┬ ####################################################################################
 -- ##### ├┴┐├─┤└─┐├┤   └┐┌┘│├┤ │││ ####################################################################################

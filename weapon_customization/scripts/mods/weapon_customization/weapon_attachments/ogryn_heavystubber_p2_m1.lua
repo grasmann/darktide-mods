@@ -74,12 +74,13 @@ return table.combine(
                 {dependencies = {"bayonet_blade_01"},
                     bayonet = {position = vector3_box(0, 1.04, -0.39), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)}},
                     
-                {dependencies = {"receiver_05|receiver_06|receiver_07"},
-                    bayonet = {position = vector3_box(0, .9, -0.12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {bayonet = {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                {bayonet = {position = vector3_box(0, .9, -0.12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                -- {bayonet = {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 -- Laser Pointer / Flashlight
                 {dependencies = {"flashlight_04|laser_pointer"},
                     flashlight = {position = vector3_box(.15, .86, .21), rotation = vector3_box(0, 128, 0), scale = vector3_box(2, 2, 2)}},
+                {dependencies = {"flashlight_ogryn_01|flashlight_ogryn_long_01"},
+                    flashlight = {position = vector3_box(.05, .8, .13), rotation = vector3_box(0, 311, 0), scale = vector3_box(1, 1, 1)}},
                 {flashlight = {position = vector3_box(.09, .9, .13), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)}},
                 -- Magazines
                 {dependencies = {"magazine_06|magazine_07|magazine_08"},

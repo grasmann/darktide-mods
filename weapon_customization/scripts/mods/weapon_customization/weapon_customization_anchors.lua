@@ -746,6 +746,8 @@ end
 		"flashlight_02",
 		"flashlight_03",
 		"flashlight_04",
+		"flashlight_ogryn_01",
+		"flashlight_ogryn_long_01",
 		"laser_pointer",
 	}
 	mod.laser_pointers = {
