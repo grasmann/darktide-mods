@@ -87,8 +87,8 @@ end
 
 mod:hook_require("scripts/settings/player_character/player_character_constants", function(instance)
 
-    instance.slot_configuration.slot_primary.mispredict_packages = false
-    instance.slot_configuration.slot_secondary.mispredict_packages = false
+    instance.slot_configuration.slot_primary.mispredict_packages = true
+    instance.slot_configuration.slot_secondary.mispredict_packages = true
 
 end)
 
@@ -108,21 +108,26 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
                 -- Get attachment
                 -- local attachment = mod.gear_settings:get(item, attachment_slot)
                 local attachment = mod.gear_settings:_recursive_find_attachment(item.attachments, attachment_slot)
-                local attachment_name = attachment and attachment.attachment_name
-                -- Get item data
-                local item_data = attachment_name and mod.attachment_models[item_name]
-                -- Get attachment data
-                local attachment_data = item_data and item_data[attachment_name]
-                -- Get model
-                local model = attachment_data and attachment_data.model
-                -- Get original item
-                local original_item = model and mod:persistent_table(REFERENCE).item_definitions[model]
-                -- Check original item and dependencies
-                if original_item and original_item.resource_dependencies then
-                    -- Iterate dependencies
-                    for resource, _ in pairs(original_item.resource_dependencies) do
-                        -- Add resource
-                        result[resource] = true
+                if attachment then
+                    local attachment_name = attachment and attachment.attachment_name or mod.gear_settings:default_attachment(item, attachment_slot)
+                    if attachment_name then
+                        -- Get item data
+                        local item_data = attachment_name and mod.attachment_models[item_name]
+                        -- Get attachment data
+                        local attachment_data = item_data and item_data[attachment_name]
+                        -- Get model
+                        local model = attachment_data and attachment_data.model
+                        -- Get original item
+                        local original_item = model and mod:persistent_table(REFERENCE).item_definitions[model]
+                        -- Check original item and dependencies
+                        if original_item and original_item.resource_dependencies then
+                            -- Iterate dependencies
+                            for resource, _ in pairs(original_item.resource_dependencies) do
+                                -- Add resource
+                                result[resource] = true
+                                -- item.resource_dependencies[resource] = true
+                            end
+                        end
                     end
                 end
             end
@@ -131,6 +136,7 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
 			local sounds = mod.gear_settings:sound_packages(item)
 			for sound, _ in pairs(sounds) do
                 result[sound] = true
+                -- item.resource_dependencies[sound] = true
             end
 
         end
@@ -138,24 +144,121 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
         return result
     end
 
-    mod:hook(instance, "compile_item_instance_dependencies", function(func, item, items_dictionary, out_result, optional_mission_template, ...)
-        local player_item = item.item_list_faction == "Player"
-        local weapon_item = item.item_type == WEAPON_MELEE or item.item_type == WEAPON_RANGED
+    instance._validate_item_name = function(item)
+		if item == "" then
+			return nil
+		end
+	
+		return item
+	end
+
+    mod:hook(CLASS.ItemPackage, "compile_item_dependencies", function(func, item, items_dictionary, out_result, optional_mission_template, ...)
+        -- Setup master items backup
+        mod:setup_item_definitions()
+
+        local item_entry = item
+
+        if type(item_entry) == "string" then
+            item_entry = rawget(mod:persistent_table(REFERENCE).item_definitions, item_entry)
+        end
+
+        if not item_entry then
+            Log.error("ItemPackage", "Unable to find item %s", item)
+
+            return
+        end
+
+        local player_item = item_entry.item_list_faction == "Player"
+        local weapon_item = item_entry.item_type == WEAPON_MELEE or item_entry.item_type == WEAPON_RANGED
+        local attachments = item_entry and item_entry.attachments
+
+        -- local weapon_skin = instance._validate_item_name(item_entry.slot_weapon_skin) or {}
+		-- if type(weapon_skin) == "string" then
+        --     weapon_skin = mod:persistent_table(REFERENCE).item_definitions[weapon_skin]
+        -- end
+        -- weapon_skin.attachments = weapon_skin.attachments or {}
+        -- attachments = weapon_skin.attachments
+            -- resource_dependencies = weapon_skin.resource_dependencies
+		-- end
 
         -- Check item and attachments
-        if item and item.attachments and weapon_item and player_item and not mod:is_premium_store_item() then
+        if item_entry and attachments and weapon_item and player_item and not mod:is_premium_store_item() then
             -- Add custom attachments
-            mod.gear_settings:_add_custom_attachments(item, item.attachments)
+            mod.gear_settings:_add_custom_attachments(item_entry, attachments)
             -- Overwrite attachments
-            mod.gear_settings:_overwrite_attachments(item, item.attachments)
+            mod.gear_settings:_overwrite_attachments(item_entry, attachments)
         end
 
-        local result = func(item, items_dictionary, out_result, optional_mission_template, ...)
+        local result = func(item_entry, mod:persistent_table(REFERENCE).item_definitions, out_result, optional_mission_template, ...)
 
-        if item and item.attachments and weapon_item and player_item and not mod:is_premium_store_item() then
+        if item_entry and attachments and weapon_item and player_item and not mod:is_premium_store_item() then
             -- Add custom resources
-            result = instance:add_custom_resources(item, result)
+            result = instance:add_custom_resources(item_entry, result)
         end
+
+        out_result = result
+
+        -- Return dependencies
+        return result
+
+        -- local result = out_result or {}
+        -- local item_entry = item
+    
+        -- if type(item_entry) == "string" then
+        --     item_entry = rawget(items_dictionary, item_entry)
+        -- end
+    
+        -- if not item_entry then
+        --     Log.error("ItemPackage", "Unable to find item %s", item)
+    
+        --     return
+        -- end
+    
+        -- return ItemPackage.compile_item_instance_dependencies(item_entry, items_dictionary, result, optional_mission_template)
+    end)
+
+    local test_count = 1
+
+    mod:hook(instance, "compile_item_instance_dependencies", function(func, item, items_dictionary, out_result, optional_mission_template, ...)
+        -- Setup master items backup
+        mod:setup_item_definitions()
+
+        local real_item = mod.gear_settings:_real_item(item)
+        local player_item = real_item.item_list_faction == "Player"
+        local weapon_item = real_item.item_type == WEAPON_MELEE or real_item.item_type == WEAPON_RANGED
+        local attachments = real_item and real_item.attachments
+        -- local resource_dependencies = item and item.resource_dependencies
+
+        -- local weapon_skin = instance._validate_item_name(item.slot_weapon_skin) or {}
+		-- if type(weapon_skin) == "string" then
+        --     weapon_skin = mod:persistent_table(REFERENCE).item_definitions[weapon_skin]
+        -- end
+        -- weapon_skin.attachments = weapon_skin.attachments or {}
+        -- attachments = weapon_skin.attachments
+            -- resource_dependencies = weapon_skin.resource_dependencies
+		-- end
+
+        -- Check item and attachments
+        if real_item and attachments and weapon_item and player_item and not mod:is_premium_store_item() then
+            -- Add custom attachments
+            mod.gear_settings:_add_custom_attachments(real_item, attachments)
+            -- Overwrite attachments
+            mod.gear_settings:_overwrite_attachments(real_item, attachments)
+        end
+
+        -- local result = func(item, items_dictionary, out_result, optional_mission_template, ...)
+        local result = func(item, mod:persistent_table(REFERENCE).item_definitions, out_result, optional_mission_template, ...)
+
+        if real_item and attachments and weapon_item and player_item and not mod:is_premium_store_item() then
+            -- Add custom resources
+            result = instance:add_custom_resources(real_item, result)
+        else
+            -- mod:dtf(real_item, "item_data_"..tostring(test_count), 5)
+            -- test_count = test_count + 1
+            -- mod:echo("real_item: "..tostring(real_item.name))
+        end
+
+        -- mod:dtf(real_item, "item_data_"..tostring(test_count), 10)
 
         out_result = result
 
@@ -205,8 +308,11 @@ mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
 end)
 
 mod:hook(CLASS.MispredictPackageHandler, "_load_item_packages", function(func, self, item, ...)
+    mod:setup_item_definitions()
+
     local mission = self._mission
-	local dependencies = ItemPackage.compile_item_instance_dependencies(item, self._item_definitions, nil, mission)
+	-- local dependencies = ItemPackage.compile_item_instance_dependencies(item, self._item_definitions, nil, mission)
+    local dependencies = ItemPackage.compile_item_instance_dependencies(item, mod:persistent_table(REFERENCE).item_definitions, nil, mission)
 	local package_manager = managers.package
 
 	for package_name, _ in pairs(dependencies) do
@@ -223,7 +329,10 @@ mod:hook(CLASS.MispredictPackageHandler, "_load_item_packages", function(func, s
 end)
 
 mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
-	local dependencies = ItemPackage.compile_item_instance_dependencies(item, self._item_definitions, nil, self._mission)
+    mod:setup_item_definitions()
+
+	-- local dependencies = ItemPackage.compile_item_instance_dependencies(item, self._item_definitions, nil, self._mission)
+    local dependencies = ItemPackage.compile_item_instance_dependencies(item, mod:persistent_table(REFERENCE).item_definitions, nil, self._mission)
 	for package_name, _ in pairs(dependencies) do
         if self._loaded_packages and self._loaded_packages[package_name] and mod:can_package_release(package_name) then
             local loaded_packages = self._loaded_packages[package_name]

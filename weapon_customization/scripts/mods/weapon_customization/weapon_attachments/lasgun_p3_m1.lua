@@ -189,7 +189,7 @@ return table.combine(
                     emblem_left = {offset = true, position = vector3_box(-.03, -.045, .04), rotation = vector3_box(0, 0, 180), scale = vector3_box(1, 1, 1)}},
 
                 {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"}, -- Muzzle
-                    sight = {offset = true, position = vector3_box(0, .01, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
+                    sight = {offset = true, position = vector3_box(.0003, .008, .0009), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)},
                     scope_offset = {position = vector3_box(0, 0, -.027)}},
 
                 {dependencies = {"autogun_rifle_sight_01"}, -- Lasgun sight

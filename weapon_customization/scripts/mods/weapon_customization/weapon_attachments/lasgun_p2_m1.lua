@@ -165,6 +165,14 @@ return table.combine(
                 {lens = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                 {lens_2 = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
 
+                -- Reflex sights
+				{dependencies = {"reflex_sight_01"},
+                sight = {offset = true, position = vector3_box(.0002, 0, .0003), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+            {dependencies = {"reflex_sight_02"},
+                sight = {offset = true, position = vector3_box(.0002, 0, .0003), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+            {dependencies = {"reflex_sight_03"},
+                sight = {offset = true, position = vector3_box(.00025, 0, .0003), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+
                 {dependencies = {"grip_27|grip_28|grip_29"}, -- Grip
                     grip = {offset = true, position = vector3_box(0, .01, -.02), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"emblem_left_02", "receiver_02"}, -- Emblem

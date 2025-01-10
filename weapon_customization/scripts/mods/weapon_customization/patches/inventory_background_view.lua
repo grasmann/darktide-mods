@@ -38,6 +38,7 @@ local mod = get_mod("weapon_customization")
 	local vector3_zero = vector3.zero
 	local unit_get_data = Unit.get_data
 	local unit_has_node = Unit.has_node
+	local math_easeCubic = math.easeCubic
 	local world_link_unit = World.link_unit
 	local vector3_unbox = vector3_box.unbox
 	local unit_world_pose = Unit.world_pose
@@ -82,10 +83,8 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 	instance.remove_unit_manipulation = function(self)
 		self:get_modding_tools()
 		if self.modding_tools and self.modding_tools.unit_manipulation_remove_all then
-
 			self.modding_tools:unit_manipulation_remove_all()
-
-			self._unit_manipulation_added =         nil
+			self._unit_manipulation_added = nil
 		end
 	end
 
@@ -115,13 +114,10 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 	end
 
 	instance.is_ogryn = function(self)
-		-- local player = self.player
-		-- local profile = self.profile or player and player:profile()
 		return self._spawned_profile and self._spawned_profile.archetype.name == "ogryn"
 	end
 	
 	instance.get_breed = function(self)
-		-- return self.back_node == BACKPACK_OFFSET and "ogryn" or "human"
 		return self:is_ogryn() and "ogryn" or "human"
 	end
 
@@ -146,12 +142,12 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 							icon = "content/ui/materials/icons/system/settings/category_gameplay",
 							is_grid_layout = false,
 							camera_settings = {
-								{"event_inventory_set_camera_position_axis_offset", "x", is_ogryn and 1.8 or 1.45, 0.5, math.easeCubic},
-								{"event_inventory_set_camera_position_axis_offset", "y", 0, 0.5, math.easeCubic},
-								{"event_inventory_set_camera_position_axis_offset", "z", 0, 0.5, math.easeCubic},
-								{"event_inventory_set_camera_rotation_axis_offset", "x", 0, 0.5, math.easeCubic},
-								{"event_inventory_set_camera_rotation_axis_offset", "y", 0, 0.5, math.easeCubic},
-								{"event_inventory_set_camera_rotation_axis_offset", "z", 0, 0.5, math.easeCubic},
+								{"event_inventory_set_camera_position_axis_offset", "x", is_ogryn and 1.8 or 1.45, 0.5, math_easeCubic},
+								{"event_inventory_set_camera_position_axis_offset", "y", 0, 0.5, math_easeCubic},
+								{"event_inventory_set_camera_position_axis_offset", "z", 0, 0.5, math_easeCubic},
+								{"event_inventory_set_camera_rotation_axis_offset", "x", 0, 0.5, math_easeCubic},
+								{"event_inventory_set_camera_rotation_axis_offset", "y", 0, 0.5, math_easeCubic},
+								{"event_inventory_set_camera_rotation_axis_offset", "z", 0, 0.5, math_easeCubic},
 							},
 							item_hover_information_offset = {0},
 							layout = {}
@@ -165,7 +161,6 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 
 	instance.add_unit_manipulation = function(self)
 		self:get_inventory_view()
-		-- Check modding tools
 		self:get_modding_tools()
 		-- Check if unit manipulation is already added
 		if self.modding_tools then
@@ -176,42 +171,25 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 				local unit = character_spawn_data and character_spawn_data.unit_3p
 				local weapon_unit = self.inventory_view:unequipped_weapon_unit()
 				local weapon_item = self.inventory_view:unequipped_weapon_item()
-
 				if unit and unit_alive(unit) and not self._unit_manipulation_added then
-					
 					if self.inventory_view._ui_forward_renderer then
-						
 						local tab_context = self.inventory_view._active_category_tab_context
 						local is_tab = tab_context and tab_context.display_name == WEAPON_CUSTOMIZATION_TAB
-
 						-- Check custom tab
 						if is_tab then
-
 							local world = ui_profile_spawner._world
 							local camera = ui_profile_spawner and ui_profile_spawner._camera
 							local gui = self.inventory_view._ui_forward_renderer.gui
-							
-							-- local gear_node_units = mod:execute_extension(character_spawn_data.unit_3p, "visible_equipment_system", "gear_node_units")
-							-- if gear_node_units then
-							-- 	for _, unit in pairs(gear_node_units) do
-							-- 		self:unit_manipulation_add(unit, camera, world, gui, unit_get_data(unit, "gear_attach_name"))
-							-- 	end
-							-- end
-
 							local sling_units = mod:execute_extension(character_spawn_data.unit_3p, "weapon_sling_system", "help_units")
 							if sling_units then
 								for i, unit in pairs(sling_units) do
 									self:unit_manipulation_add(unit, camera, world, gui, "Sling node "..tostring(i))
 								end
 							end
-
-							-- self:unit_manipulation_add(weapon_unit, camera, world, gui, "weapon")
-							
 							self._unit_manipulation_added = true
 						end
 					end
 				end
-
 				-- Disable rotation when interacting with modding tools
 				ui_profile_spawner._rotation_input_disabled = self:unit_manipulation_busy()
 			end
@@ -244,21 +222,15 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 	end
 
 	instance.custom_enter = function(self)
-
 		managers.event:register(self, "weapon_customization_weapon_changed", "on_weapon_changed")
-
 		-- Modding tools
 		self:remove_unit_manipulation()
-
 	end
 
 	instance.custom_exit = function(self)
-
 		managers.event:unregister(self, "weapon_customization_weapon_changed")
-
 		-- Modding tools
 		self:remove_unit_manipulation()
-
 	end
 
 	instance.respawn_profile = function(self)
@@ -276,82 +248,49 @@ end)
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
 
 mod:hook(CLASS.InventoryBackgroundView, "on_enter", function(func, self, ...)
-
 	-- Custom enter
 	self:custom_enter()
-
 	-- Original function
 	func(self, ...)
-
 end)
 
 mod:hook(CLASS.InventoryBackgroundView, "on_exit", function(func, self, ...)
-
 	-- Custom exit
 	self:custom_exit()
-
 	-- Destroy background view
 	self.inventory_view = nil
-
 	-- Original function
 	func(self, ...)
-
 end)
 
 mod:hook(CLASS.InventoryBackgroundView, "_update_has_empty_talent_nodes", function(func, self, optional_selected_nodes, ...)
-
 	-- Custom panel
 	self:add_custom_panel()
-
 	-- Original function
 	func(self, optional_selected_nodes, ...)
-
 end)
 
 mod:hook(CLASS.InventoryBackgroundView, "update", function(func, self, dt, t, input_service, ...)
-
 	-- Original function
 	local ret = func(self, dt, t, input_service, ...)
-
-	-- if mod.test_table and mod.test_table.t < t then
-	-- 	mod.test_table.t = t + 1
-	-- 	mod.test_table.text = "test_value_"..tostring(mod.test_table.index)
-	-- 	mod.test_table.index = mod.test_table.index + 1
-	-- elseif not mod.test_table then
-	-- 	mod.test_table = {
-	-- 		text = "test_value_1",
-	-- 		index = 1,
-	-- 		t = t + 1,
-	-- 	}
-	-- 	self.modding_tools:inspect("test_table", mod.test_table)
-	-- end
-
 	-- -- Add unit manipulation
 	self:add_unit_manipulation()
-
 	-- Return
 	return ret
 end)
 
 mod:hook(CLASS.InventoryBackgroundView, "cb_on_weapon_swap_pressed", function(func, self, ...)
-
 	-- Rotation
 	self:reset_rotation()
-
 	-- Original function
 	func(self, ...)
-
 end)
 
 mod:hook(CLASS.InventoryBackgroundView, "_update_presentation_wield_item", function(func, self, ...)
-
 	-- Modding tools
 	self:remove_unit_manipulation()
-
 	-- Original function
 	func(self, ...)
-
 	-- Update weapon name
 	self:update_item_name()
-
 end)

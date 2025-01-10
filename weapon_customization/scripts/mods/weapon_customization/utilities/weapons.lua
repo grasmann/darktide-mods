@@ -55,43 +55,43 @@ local mod = get_mod("weapon_customization")
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod.spawn_premium_effects = function(self, item, item_unit, attachment_units, world)
-	if attachment_units and self:has_premium_skin(item) then
-		local particle_name = "content/fx/particles/abilities/chainlightning/protectorate_chainlightning_hands_charge"
-		local color = color(255, 255, 0, 0)
-		-- local intensity = 10
-		local world_scale = vector3(.1, .1, .1)
-		local unit = attachment_units[1] --item_unit
-		-- for _, unit in pairs(attachment_units) do
-			if unit and unit_alive(unit) and not unit_get_data(unit, "premium_particle") then
-				local world_position = unit_world_position(unit, 1)
-				local world_rotation = unit_world_rotation(unit, 1)
-				local particle_id = world_create_particles(world, particle_name, world_position, world_rotation, world_scale)
-				local unit_world_pose = unit_world_pose(unit, 1)
-				-- Matrix4x4.set_translation(unit_world_pose, vector3(0, distance, 0))
-				matrix4x4_set_scale(unit_world_pose, vector3(.1, .1, .1))
-				world_link_particles(world, particle_id, unit, 1, matrix4x4_identity(), "destroy")
-				world_set_particles_use_custom_fov(world, particle_id, true)
-				unit_set_data(unit, "premium_particle", particle_id)
-			end
-		-- end
-	end
-end
+-- mod.spawn_premium_effects = function(self, item, item_unit, attachment_units, world)
+-- 	if attachment_units and self:has_premium_skin(item) then
+-- 		local particle_name = "content/fx/particles/abilities/chainlightning/protectorate_chainlightning_hands_charge"
+-- 		local color = color(255, 255, 0, 0)
+-- 		-- local intensity = 10
+-- 		local world_scale = vector3(.1, .1, .1)
+-- 		local unit = attachment_units[1] --item_unit
+-- 		-- for _, unit in pairs(attachment_units) do
+-- 			if unit and unit_alive(unit) and not unit_get_data(unit, "premium_particle") then
+-- 				local world_position = unit_world_position(unit, 1)
+-- 				local world_rotation = unit_world_rotation(unit, 1)
+-- 				local particle_id = world_create_particles(world, particle_name, world_position, world_rotation, world_scale)
+-- 				local unit_world_pose = unit_world_pose(unit, 1)
+-- 				-- Matrix4x4.set_translation(unit_world_pose, vector3(0, distance, 0))
+-- 				matrix4x4_set_scale(unit_world_pose, vector3(.1, .1, .1))
+-- 				world_link_particles(world, particle_id, unit, 1, matrix4x4_identity(), "destroy")
+-- 				world_set_particles_use_custom_fov(world, particle_id, true)
+-- 				unit_set_data(unit, "premium_particle", particle_id)
+-- 			end
+-- 		-- end
+-- 	end
+-- end
 
-mod.despawn_premium_effects = function(self, item, item_unit, attachment_units, world)
-	if attachment_units then
-		for _, unit in pairs(attachment_units) do
-			if unit and unit_alive(unit) then
-				local particle_id = unit_get_data(unit, "premium_particle")
-				if particle_id then
-					world_stop_spawning_particles(world, particle_id)
-					world_destroy_particles(world, particle_id)
-				end
-				unit_set_data(unit, "premium_particle", nil)
-			end
-		end
-	end
-end
+-- mod.despawn_premium_effects = function(self, item, item_unit, attachment_units, world)
+-- 	if attachment_units then
+-- 		for _, unit in pairs(attachment_units) do
+-- 			if unit and unit_alive(unit) then
+-- 				local particle_id = unit_get_data(unit, "premium_particle")
+-- 				if particle_id then
+-- 					world_stop_spawning_particles(world, particle_id)
+-- 					world_destroy_particles(world, particle_id)
+-- 				end
+-- 				unit_set_data(unit, "premium_particle", nil)
+-- 			end
+-- 		end
+-- 	end
+-- end
 
 mod.random_chance = {
     bayonet = "mod_option_randomization_bayonet",
@@ -115,10 +115,10 @@ mod.random_chance = {
 -- 	end
 -- end
 
-mod.has_flashlight = function(self, item)
-	local flashlight = self.gear_settings:get(item, "flashlight")
-	return flashlight and flashlight ~= "laser_pointer"
-end
+-- mod.has_flashlight = function(self, item)
+-- 	local flashlight = self.gear_settings:get(item, "flashlight")
+-- 	return flashlight and flashlight ~= "laser_pointer"
+-- end
 
 mod.is_owned_by_other_player = function(self, item)
 	return not self.gear_settings:player_item(item) and not self:is_store_item(item) and not self:is_premium_store_item(item)
@@ -132,37 +132,37 @@ mod.is_premium_store_item = function(self, item)
 	return self:get_view("store_view") or self:get_view("store_item_detail_view")
 end
 
-mod.not_trinket = function(self, attachment_slot)
-	return attachment_slot ~= "slot_trinket_1" and attachment_slot ~= "slot_trinket_2" and true
-end
+-- mod.not_trinket = function(self, attachment_slot)
+-- 	return attachment_slot ~= "slot_trinket_1" and attachment_slot ~= "slot_trinket_2" and true
+-- end
 
-mod.has_premium_skin = function(self, item)
-	local item = item.__master_item or item
-	local item_name = self.gear_settings:short_name(item.name)
-	local weapon_skin = item.slot_weapon_skin
-	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
-		self:setup_item_definitions()
-		weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
-	end
-	if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
-		-- mod:dtf(weapon_skin, "weapon_skin", 6)
-		if weapon_skin.feature_flags then
-			-- if table_contains(weapon_skin.feature_flags, "FEATURE_premium_store") then
-			-- end
-			return table_contains(weapon_skin.feature_flags, "FEATURE_premium_store")
-			-- for _, flag in pairs(weapon_skin.feature_flags) do
-			-- end
-		end
-	end
-end
+-- mod.has_premium_skin = function(self, item)
+-- 	local item = item.__master_item or item
+-- 	local item_name = self.gear_settings:short_name(item.name)
+-- 	local weapon_skin = item.slot_weapon_skin
+-- 	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
+-- 		self:setup_item_definitions()
+-- 		weapon_skin = self:persistent_table(REFERENCE).item_definitions[weapon_skin]
+-- 	end
+-- 	if weapon_skin and type(weapon_skin) == "table" and weapon_skin.attachments then
+-- 		-- mod:dtf(weapon_skin, "weapon_skin", 6)
+-- 		if weapon_skin.feature_flags then
+-- 			-- if table_contains(weapon_skin.feature_flags, "FEATURE_premium_store") then
+-- 			-- end
+-- 			return table_contains(weapon_skin.feature_flags, "FEATURE_premium_store")
+-- 			-- for _, flag in pairs(weapon_skin.feature_flags) do
+-- 			-- end
+-- 		end
+-- 	end
+-- end
 
-mod.get_gear_size = function(self) end
+-- mod.get_gear_size = function(self) end
 
 -- Redo weapon attachments by unequipping and reequipping weapon
 mod.redo_weapon_attachments = function(self, item)
-	-- local gear_settings = mod.gear_settings
-	local gear_id = self.gear_settings:item_to_gear_id(item)
-	local slot_name, weapon = self.gear_settings:get_weapon_from_gear_id(gear_id)
+	local gear_settings = self.gear_settings
+	local gear_id = gear_settings:item_to_gear_id(item)
+	local slot_name, weapon = gear_settings:get_weapon_from_gear_id(gear_id)
 	if weapon then
 		-- Remove visible equipment extension
 		mod:execute_extension(mod.player_unit, "visible_equipment_system", "delete_slots")

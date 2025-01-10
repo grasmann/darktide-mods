@@ -648,7 +648,8 @@ end
 
 mod.has_flashlight = function(self, item)
     local flashlight = self.gear_settings:get(item, "flashlight")
-    return flashlight and flashlight ~= "laser_pointer"
+    flashlight = self.gear_settings:correct(item, "flashlight", flashlight)
+    return flashlight and flashlight ~= "laser_pointer" and flashlight ~= "" and flashlight ~= "default"
 end
 
 mod.preview_flashlight = function(self, state, world, unit, attachment_name, no_sound)

@@ -328,6 +328,23 @@ end)
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
 
+-- mod:hook(CLASS.ViewElementInventoryWeaponPreview, "draw", function(func, self, dt, t, ui_renderer, render_settings, input_service, ...)
+-- 	-- Overwrite draw function
+-- 	render_settings.alpha_multiplier = 1
+-- 	self._alpha_multiplier = 1
+-- 	-- Original
+-- 	func(self, dt, t, ui_renderer, render_settings, input_service, ...)
+-- end)
+
+-- mod:hook(CLASS.ViewElementInventoryWeaponPreview, "init", function(func, self, parent, draw_layer, start_scale, context, ...)
+-- 	func(self, parent, draw_layer, start_scale, context, ...)
+-- 	self._draw_background = true
+-- end)
+
+-- mod:hook(CLASS.ViewElementInventoryWeaponPreview, "draw", function(func, self, dt, t, ui_renderer, render_settings, input_service, ...)
+
+-- end)
+
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view", function(instance)
 
 	-- ##### ┌─┐┌─┐┌┬┐┌─┐┬─┐┌─┐  ┌┬┐┌─┐┬  ┬┌─┐┌┬┐┌─┐┌┐┌┌┬┐ ############################################################
@@ -352,15 +369,18 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		local render_settings = self._render_settings
 		local ui_renderer = self._ui_renderer
 		local ui_default_renderer = self._ui_default_renderer
-		local ui_forward_renderer = self._ui_forward_renderer
+		local ui_forward_renderer = self._ui_forward_renderer or ui_default_renderer
 		render_settings.start_layer = layer
 		render_settings.scale = render_scale
 		render_settings.inverse_scale = render_scale and 1 / render_scale
+		local alpha_multiplier = render_settings.alpha_multiplier
+		render_settings.alpha_multiplier = 1
 		local ui_scenegraph = self._ui_scenegraph
 	
 		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, render_settings)
 		UIWidget.draw(self._background_widget, ui_renderer)
 		UIRenderer.end_pass(ui_renderer)
+		render_settings.alpha_multiplier = alpha_multiplier
 		UIRenderer.begin_pass(ui_forward_renderer, ui_scenegraph, input_service, dt, render_settings)
 		self:_draw_widgets(dt, t, input_service, ui_forward_renderer, render_settings)
 		UIRenderer.end_pass(ui_forward_renderer)
@@ -371,9 +391,17 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Overwrite draw elements function
 	-- Make view legend inputs visible when UI gets hidden
 	instance._draw_elements = function(self, dt, t, ui_renderer, render_settings, input_service)
+		-- Overwrite draw function
+		-- render_settings.alpha_multiplier = 1
+		-- self._alpha_multiplier = 1
+
 		local old_alpha_multiplier = render_settings.alpha_multiplier
 		local alpha_multiplier = self._alpha_multiplier or 1
 		local elements_array = self._elements_array
+		-- if not mod.test83294234 then
+		-- 	mod:dtf(elements_array, "elements_array", 10)
+		-- 	mod.test83294234 = true
+		-- end
 		for i = 1, #elements_array do
 			local element = elements_array[i]
 			if element then
@@ -381,7 +409,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				if element_name ~= "ViewElementInventoryWeaponPreview" or element_name ~= "ViewElementInputLegend" then
 					ui_renderer = self._ui_default_renderer or ui_renderer
 				end
-				render_settings.alpha_multiplier = element_name ~= "ViewElementInputLegend" and alpha_multiplier or 1
+				render_settings.alpha_multiplier = (element_name ~= "ViewElementInventoryWeaponPreview" and element_name ~= "ViewElementInputLegend") and alpha_multiplier or 1
 				element:draw(dt, t, ui_renderer, render_settings, input_service)
 			end
 		end
@@ -2545,6 +2573,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Custom switch tab
 	instance.custom_switch_tab = function(self, index)
 		if self:is_tab(index) then
+			mod.weapon_skin_override = nil
 			self:present_grid_layout({})
 			self._item_grid._widgets_by_name.grid_empty.visible = false
 			self:hide_custom_widgets(false)
@@ -2552,6 +2581,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			table_clear(self.original_weapon_settings)
 			self:get_changed_weapon_settings()
 		else
+			mod.weapon_skin_override = true
 			-- local t = managers.time:time("main")
 			-- mod.reset_start = t
 			self:check_unsaved_changes(true)

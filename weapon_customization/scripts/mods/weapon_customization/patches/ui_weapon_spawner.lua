@@ -75,12 +75,14 @@ local mod = get_mod("weapon_customization")
 	mod.set_light_positions = function(self)
 		-- Get cosmetic view
 		self:get_cosmetic_view()
-		if self.preview_lights and self.cosmetics_view then
-			for _, unit_data in pairs(self.preview_lights) do
+		local preview_lights = self.preview_lights
+		local cosmetics_view = self.cosmetics_view
+		local weapon_spawner = cosmetics_view and cosmetics_view._weapon_preview._ui_weapon_spawner
+		if preview_lights and cosmetics_view then
+			for _, unit_data in pairs(preview_lights) do
 				-- Get default position
 				local default_position = vector3_unbox(unit_data.position)
 				-- Get difference to link unit position
-				local weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
 				if weapon_spawner then
 					local link_difference = vector3_unbox(weapon_spawner._link_unit_base_position) - vector3_unbox(weapon_spawner._link_unit_position)
 					-- Position with offset
@@ -158,9 +160,10 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
 	instance.unit_manipulation_remove_all = function(self)
 		self:get_modding_tools()
-		if self._weapon_spawn_data then
-			self:unit_manipulation_remove(self._weapon_spawn_data.item_unit_3p)
-			for _, unit in pairs(self._weapon_spawn_data.attachment_units_3p) do
+		local weapon_spawn_data = self._weapon_spawn_data
+		if weapon_spawn_data then
+			self:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
+			for _, unit in pairs(weapon_spawn_data.attachment_units_3p) do
 				self:unit_manipulation_remove(unit)
 			end
 		end
@@ -379,14 +382,16 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 	-- └─┘┴─┘└─┘┴ ┴┘└┘└─┘┴  
 
 	instance.unlink_units = function(self)
-		if self._weapon_spawn_data then
-			for i = #self._weapon_spawn_data.attachment_units_3p, 1, -1 do
-				if self._weapon_spawn_data.attachment_units_3p[i] and unit_alive(self._weapon_spawn_data.attachment_units_3p[i]) then
-					world_unlink_unit(self._unit_spawner._world, self._weapon_spawn_data.attachment_units_3p[i])
+		local weapon_spawn_data = self._weapon_spawn_data
+		local world = self._unit_spawner._world
+		if weapon_spawn_data then
+			for i = #weapon_spawn_data.attachment_units_3p, 1, -1 do
+				if weapon_spawn_data.attachment_units_3p[i] and unit_alive(weapon_spawn_data.attachment_units_3p[i]) then
+					world_unlink_unit(world, weapon_spawn_data.attachment_units_3p[i])
 				end
 			end
-			if self._weapon_spawn_data.item_unit_3p and unit_alive(self._weapon_spawn_data.item_unit_3p) then
-				world_unlink_unit(self._unit_spawner._world, self._weapon_spawn_data.item_unit_3p)
+			if weapon_spawn_data.item_unit_3p and unit_alive(weapon_spawn_data.item_unit_3p) then
+				world_unlink_unit(world, weapon_spawn_data.item_unit_3p)
 			end
 		end
 	end
@@ -399,9 +404,10 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 		if self.use_carousel then
 			-- Get cosmetic view
 			self:get_cosmetic_view()
-			if self.cosmetics_view then
-				self.cosmetics_view:try_spawning_previews()
-				self.cosmetics_view:update_attachment_previews(dt, t)
+			local cosmetics_view = self.cosmetics_view
+			if cosmetics_view then
+				cosmetics_view:try_spawning_previews()
+				cosmetics_view:update_attachment_previews(dt, t)
 			end
 		end
 	end

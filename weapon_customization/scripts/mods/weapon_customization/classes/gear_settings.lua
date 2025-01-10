@@ -6,7 +6,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Require
 	local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
-
+	
 	local SaveLua = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/classes/save_lua")
 --#endregion
 
@@ -544,6 +544,28 @@ local GearSettings = class("GearSettings")
 			return data_cache_value
 		end
 	end
+
+	-- GearSettings.skin_attachment = function(self, gear_id_or_item, attachment_slot)
+	-- 	mod:setup_item_definitions()
+	-- 	mod:echo("loooooooooool")
+	-- 	-- Get item from potential gear id
+	-- 	local item = self:item_from_gear_id(gear_id_or_item)
+	-- 	-- Get skin
+	-- 	local weapon_skin = item and item.slot_weapon_skin
+	-- 	if weapon_skin and type(weapon_skin) == "string" and weapon_skin ~= "" then
+	-- 		weapon_skin = mod:persistent_table(REFERENCE).item_definitions[weapon_skin]
+	-- 	end
+	-- 	if weapon_skin then
+	-- 		local attachment_data = self:_recursive_find_attachment(weapon_skin.attachments, attachment_slot)
+	-- 		-- mod:dtf(weapon_skin, "weapon_skin", 10)
+	-- 		-- mod:dtf(attachment_data, "attachment_data", 10)
+	-- 		-- mod:echo(weapon_skin)
+	-- 		-- mod:echo(attachment_data)
+	-- 	else
+	-- 		-- mod:dtf(item, "item", 10)
+	-- 		-- mod:echo(item)
+	-- 	end
+	-- end
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┬┌─┐┬ ┬  ┬┌┬┐┌─┐┌┬┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐ ##############################################
@@ -629,6 +651,8 @@ local GearSettings = class("GearSettings")
 					end
 				end
 			end
+		-- else
+		-- 	mod:error("Invalid item or attachments - "..tostring(gear_id_or_item))
 		end
 
 	end
@@ -688,6 +712,8 @@ local GearSettings = class("GearSettings")
 					}
 				end
 			end
+		-- else
+		-- 	mod:error("Invalid item or attachments - "..tostring(gear_id_or_item))
 		end
 	end
 
@@ -1791,6 +1817,11 @@ end
 		local gear_id = self:item_to_gear_id(gear_id_or_item)
 		-- Correct setting
 		attachment_name = self:correct(gear_id_or_item, attachment_slot, attachment_name)
+
+		-- if mod.weapon_skin_override then
+		-- 	self:skin_attachment(gear_id_or_item, attachment_slot)
+		-- end
+
 		-- Check if temp settings exist
 		local temp_gear_settings = mod:persistent_table(REFERENCE).temp_gear_settings
 		if temp_gear_settings[gear_id] then

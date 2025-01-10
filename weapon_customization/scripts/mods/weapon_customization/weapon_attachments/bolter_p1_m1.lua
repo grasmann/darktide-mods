@@ -266,11 +266,11 @@ return table_combine(
 
 
 				{dependencies = {"reflex_sight_01"}, -- Sight
-					sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+					sight = {offset = true, position = vector3_box(.0001, .03, -.0005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
 				{dependencies = {"reflex_sight_02"}, -- Sight
-					sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+					sight = {offset = true, position = vector3_box(.0001, .03, -.0005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
 				{dependencies = {"reflex_sight_03"}, -- Sight
-					sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+					sight = {offset = true, position = vector3_box(.0001, .03, -.0005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
 
 
 
@@ -329,6 +329,8 @@ return table_combine(
 				{dependencies = {"barrel_05"}, -- Ripper muzzle
 					muzzle = {parent = "barrel", position = vector3_box(0, -.08, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.56, .56, .56)}},
 				{dependencies = {"barrel_06"}, -- Ripper muzzle
+					muzzle = {parent = "barrel", position = vector3_box(0, -.1, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.56, .56, .56)}},
+				{dependencies = {"barrel_07"}, -- Ripper muzzle
 					muzzle = {parent = "barrel", position = vector3_box(0, -.1, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(.56, .56, .56)}},
 				{muzzle = {position = vector3_box(0, .21, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.4, 1.4, 1.4)}},
 

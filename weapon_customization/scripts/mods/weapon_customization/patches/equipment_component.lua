@@ -78,9 +78,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
 		-- Weapon DOF
 		if self.use_dof_system then mod:execute_extension(slot.parent_unit_3p, "weapon_dof_system", "on_equip_slot", slot) end
 		-- Visible equipment
-		if slot.name == "slot_gear_extra_cosmetic" then
-			if self.use_visible_equipment_system then mod:execute_extension(slot.parent_unit_3p, "visible_equipment_system", "position_equipment") end
-		end
+		-- if slot.name == "slot_gear_extra_cosmetic" then
+		if self.use_visible_equipment_system then mod:execute_extension(slot.parent_unit_3p, "visible_equipment_system", "position_equipment") end
+		-- end
 		-- Sling
 		-- if self.use_sling_system then mod:execute_extension(slot.parent_unit_3p, "weapon_sling_system", "on_equip_slot", slot) end
 	end
@@ -141,9 +141,9 @@ mod:hook(CLASS.EquipmentComponent, "unwield_slot", function(func, slot, first_pe
 	func(slot, first_person_mode, ...)
 end)
 
-mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
+mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, optional_equipment, ...)
 	-- Original function
-	func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, ...)
+	func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, optional_equipment, ...)
 	-- Extensions
 	self:equip_custom(slot)
 end)

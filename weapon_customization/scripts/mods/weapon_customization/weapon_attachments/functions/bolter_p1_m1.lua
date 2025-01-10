@@ -37,6 +37,7 @@ return {
 			{id = "receiver_06", name = "Bolter 6"},
 			{id = "receiver_07", name = "Bolter 7"},
 			{id = "receiver_08", name = "Bolter 8"},
+			{id = "receiver_09", name = "Bolter 9"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -55,7 +56,8 @@ return {
 			{name = "receiver_05",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_05"},
 			{name = "receiver_06",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_06"},
 			{name = "receiver_07",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_07"},
-			{name = "receiver_08",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_ml01"},
+			{name = "receiver_08",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_08"},
+			{name = "receiver_09",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_ml01"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┬┐┌─┐┌─┐┌─┐┌─┐┬┌┐┌┌─┐┌─┐

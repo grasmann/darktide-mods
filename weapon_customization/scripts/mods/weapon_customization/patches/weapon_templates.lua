@@ -94,6 +94,9 @@ mod:hook_require("scripts/utilities/weapon/weapon_template", function(instance)
                     display_name = "loc_weapon_special_flashlight",
                     type = "flashlight",
                 }
+            else
+                weapon_template.displayed_attacks.special = orig_weapon_template.displayed_attacks.special
+                weapon_template.displayed_weapon_stats_table.damage[3] = orig_weapon_template.displayed_weapon_stats_table.damage[3]
             end
     
             return weapon_template

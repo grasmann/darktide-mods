@@ -39,6 +39,7 @@ local mod = get_mod("weapon_customization")
 	local Matrix4x4 = Matrix4x4
 	local unit_alive = Unit.alive
 	local string_gsub = string.gsub
+	local table_clear = table.clear
 	local table_contains = table.contains
 	local vector3_distance = vector3.distance
 	local RESOLUTION_LOOKUP = RESOLUTION_LOOKUP
@@ -69,44 +70,33 @@ local mod = get_mod("weapon_customization")
 
 mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(instance)
 
-	instance._setup_forward_gui = function(self)
-		if not self._ui_forward_renderer_id then
-			-- self._unique_id = self._unique_id or self.__class_name.."_"..string_gsub(tostring(self), "table: ", "")
-			self._unique_id = self._unique_id or self.__class_name.."_"..mod:cached_gsub(tostring(self), "table: ", "")
-			-- self._forward_world = managers.ui:create_world(self._unique_id.."_ui_forward_world", 101, "ui", self.view_name)
-			-- local viewport_name = self._unique_id.."_ui_forward_world_viewport"
-			-- self._forward_viewport = managers.ui:create_viewport(self._forward_world, viewport_name, "default_with_alpha", 1)
-			-- self._forward_viewport_name = viewport_name
-			self._ui_forward_renderer_id = self._unique_id.."_forward_renderer"
-			self._ui_forward_renderer = managers.ui:create_renderer(self._ui_forward_renderer_id, self._forward_world)
-			-- self._ui_resource_renderer = managers.ui:create_renderer(self._unique_id, self._forward_world, true, self._ui_forward_renderer.gui,
-				-- self._ui_forward_renderer.gui_retained, "content/ui/materials/render_target_masks/ui_render_target_straight_blur")
-		end
-	end
+	-- instance._setup_forward_gui = function(self)
+	-- 	if not self._ui_forward_renderer_id then
+	-- 		self._unique_id = self._unique_id or self.__class_name.."_"..mod:cached_gsub(tostring(self), "table: ", "")
+	-- 		self._ui_forward_renderer_id = self._unique_id.."_forward_renderer"
+	-- 		self._ui_forward_renderer = managers.ui:create_renderer(self._ui_forward_renderer_id, self._world)
+	-- 	end
+	-- end
 
-	instance._destroy_forward_gui = function(self)
-		-- if self._ui_resource_renderer then
-		-- 	self._ui_resource_renderer = nil
-		-- 	managers.ui:destroy_renderer(self._unique_id)
-		-- end
-		if self._ui_forward_renderer then
-			self._ui_forward_renderer = nil
-			managers.ui:destroy_renderer(self._ui_forward_renderer_id)
-			-- ScriptWorld.destroy_viewport(self._forward_world, self._forward_viewport_name)
-			-- managers.ui:destroy_world(self._forward_world)
-			-- self._forward_viewport_name = nil
-			-- self._forward_world = nil
-		end
-	end
+	-- instance._destroy_forward_gui = function(self)
+	-- 	if self._ui_forward_renderer then
+	-- 		self._ui_forward_renderer = nil
+	-- 		managers.ui:destroy_renderer(self._ui_forward_renderer_id)
+	-- 	end
+	-- end
 
 	instance.forward_gui = function(self)
-		return self._ui_forward_renderer and self._ui_forward_renderer.gui
+		return (self._ui_forward_renderer and self._ui_forward_renderer.gui)
+			or (self._ui_default_renderer and self._ui_default_renderer.gui)
+			or (self._ui_renderer and self._ui_renderer.gui)
+			or (self._ui_offscreen_renderer and self._ui_offscreen_renderer.gui)
 	end
 
 	instance.player_profile = function(self)
+		local player = self._preview_player
 		-- Check if player is not destroyed
-		if self._preview_player and table_contains(managers.player:players(), self._preview_player) then
-			return self._preview_player and self._preview_player:profile()
+		if player and table_contains(managers.player:players(), player) then
+			return player and player:profile()
 		end
 	end
 
@@ -142,7 +132,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 	end
 
 	instance.weapon_items = function(self)
-		table.clear(weapon_items)
+		table_clear(weapon_items)
 		self:get_inventory_background_view()
 		if self.inventory_background_view then
 			local profile = self:player_profile()
@@ -184,7 +174,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 
 	instance.has_backpack = function(self)
 		local item = self._preview_profile_equipped_items["slot_gear_extra_cosmetic"]
-		-- return item and item.name and not string.find(item.name, "empty_backpack")
 		return item and item.name and not mod:cached_find(item.name, "empty_backpack")
 	end
 
@@ -266,7 +255,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 
 				if gear_node_units then
 
-					table.clear(entry_distance)
+					table_clear(entry_distance)
 					
 					for _, gear_node in pairs(gear_nodes) do
 						local unit = gear_node_units[gear_node.name]
@@ -277,7 +266,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(inst
 						end
 					end
 
-					table.clear(closest_6)
+					table_clear(closest_6)
 					for i = 1, 6, 1 do
 						local last = math.huge
 						local closest = nil
@@ -736,7 +725,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", f
 			}
 		}
 	}, "name_text_pivot", nil, size)
-
 end)
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
@@ -744,99 +732,67 @@ end)
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
 
 mod:hook(CLASS.InventoryView, "init", function(func, self, settings, context, ...)
-
 	-- Original function
 	func(self, settings, context, ...)
-
 end)
 
 mod:hook(CLASS.InventoryView, "on_enter", function(func, self, ...)
-
 	-- Original function
 	func(self, ...)
-
 	-- Setup forward gui for rendering
-	self:_setup_forward_gui()
-
+	-- self:_setup_forward_gui()
 	-- Create custom widgets
 	self:create_custom_widgets()
-
 	-- Modding tools
 	self:add_unit_manipulation()
-
 end)
 
 mod:hook(CLASS.InventoryView, "update", function(func, self, dt, t, input_service, ...)
-
 	-- Update custom widgets
 	self:draw_gear_node_lines()
-
 	-- Update custom widget visibility
 	self:update_custom_widget_visibility()
-
 	-- Original function
 	return func(self, dt, t, input_service, ...)
-
 end)
 
 mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
-
 	-- Modding tools
 	self:remove_unit_manipulation_all()
-
 	-- Destroy forward gui
-	self:_destroy_forward_gui()
-
+	-- self:_destroy_forward_gui()
 	-- Destroy temp settings
 	self:destroy_temp_settings()
-
 	-- Destroy background view
 	self.inventory_background_view = nil
-
 	-- Original function
 	func(self, ...)
-
 end)
 
 mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_context, ...)
-
 	-- Original function
 	func(self, tab_context, ...)
-
 	-- Check tab
 	if self:is_tab() then -- Custom tab
-
 		-- Create temp settings
 		self:create_temp_settings()
-
 		-- Rotation
 		self:set_rotation()
-
 	else -- Default tab
-
 		-- Destroy temp settings
 		self:destroy_temp_settings()
-		
 		-- Modding Tools
 		self:remove_unit_manipulation_all()
-		
 		-- Rotation
 		self:reset_rotation()
-
 	end
-
 	-- -- Update custom widget visibility
 	-- self:update_custom_widget_visibility()
-
 end)
 
 mod:hook(CLASS.InventoryView, "cb_on_grid_entry_pressed", function(func, self, widget, element, ...)
-
 	-- Original function
 	func(self, widget, element, ...)
-
-	if not self._is_own_player or self._is_readonly then
-
-	end
-
+	-- if not self._is_own_player or self._is_readonly then
+	-- end
 end)

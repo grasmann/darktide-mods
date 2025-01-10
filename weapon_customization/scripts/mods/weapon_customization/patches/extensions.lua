@@ -16,12 +16,8 @@ local mod = get_mod("weapon_customization")
 	local quaternion_from_euler_angles_xyz = Quaternion.from_euler_angles_xyz
 --#endregion
 
--- ##### ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬  ┌─┐┌─┐┌─┐┌─┐┌─┐ ###################################################################
--- ##### ├┤ ┌┴┬┘ │ ├┤ │││ ││  │  │  ├─┤└─┐└─┐├┤ └─┐ ###################################################################
--- ##### └─┘┴ └─ ┴ └─┘┘└┘─┴┘  └─┘┴─┘┴ ┴└─┘└─┘└─┘└─┘ ###################################################################
-
 --#region String
-	string.trim = function(s)
+	string._trim = function(s)
 		return (s:gsub("^%s*(.-)%s*$", "%1"))
 	end
 	string.cap = function(str)

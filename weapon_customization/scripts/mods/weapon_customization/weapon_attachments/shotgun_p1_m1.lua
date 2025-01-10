@@ -244,7 +244,7 @@ return table.combine(
                     scope_offset = {position = vector3_box(0, -.05, -.014)}},
                 {dependencies = {"reflex_sight_01|reflex_sight_02|reflex_sight_03"}, -- Grip
                     -- sight = {parent = "barrel", position = vector3_box(0, 0, .1), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)},
-                    sight = {parent = "barrel", position = vector3_box(0, -.065, .035), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"barrel"}},
+                    sight = {parent = "barrel", position = vector3_box(.0004, -.065, .0357), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), animation_wait_attach = {"barrel"}},
                     scope_offset = {position = vector3_box(0, -.05, -.0035)}},
                 {dependencies = {"barrel_10|barrel_11|barrel_12"}, -- Grip
                     ammo = {offset = true, position = vector3_box(0, 0, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)},

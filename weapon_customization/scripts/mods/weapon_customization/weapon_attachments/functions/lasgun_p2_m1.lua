@@ -31,6 +31,7 @@ return {
             {id = "receiver_03",        name = "Receiver 3"},
             {id = "receiver_04",        name = "Receiver 4"},
             {id = "receiver_05",        name = "Receiver 5"},
+            {id = "receiver_06",        name = "Receiver 6"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -46,7 +47,8 @@ return {
             {name = "receiver_02",      model = _item_ranged.."/recievers/lasgun_rifle_krieg_receiver_02"},
             {name = "receiver_03",      model = _item_ranged.."/recievers/lasgun_rifle_krieg_receiver_04"},
             {name = "receiver_04",      model = _item_ranged.."/recievers/lasgun_rifle_krieg_receiver_05"},
-            {name = "receiver_05",      model = _item_ranged.."/recievers/lasgun_rifle_krieg_receiver_ml01"},
+            {name = "receiver_05",      model = _item_ranged.."/recievers/lasgun_rifle_krieg_receiver_06"},
+            {name = "receiver_06",      model = _item_ranged.."/recievers/lasgun_rifle_krieg_receiver_ml01"},
         }, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     stock_attachments = function(default)

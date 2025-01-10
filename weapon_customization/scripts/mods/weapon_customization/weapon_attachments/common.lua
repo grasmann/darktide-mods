@@ -63,23 +63,26 @@ return {
             {name = "shaft_lower_05",          model = _item_ranged.."/shafts/force_staff_shaft_lower_05"},
         }, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
-    connector_attachments = function(default)
+    connector_attachments = function(default) -- Last update 1.5.4
         local attachments = {
-            {id = "thunder_hammer_connector_01", name = "Thunderhammer 1"},
-            {id = "thunder_hammer_connector_02", name = "Thunderhammer 2"},
-            {id = "thunder_hammer_connector_03", name = "Thunderhammer 3"},
-            {id = "thunder_hammer_connector_04", name = "Thunderhammer 4"},
-            {id = "thunder_hammer_connector_05", name = "Thunderhammer 5"},
-            {id = "body_01",                     name = "Force Staff 1"},
-            {id = "body_02",                     name = "Force Staff 2"},
-            {id = "body_03",                     name = "Force Staff 3"},
-            {id = "body_04",                     name = "Force Staff 4"},
-            {id = "body_05",                     name = "Force Staff 5"},
-            {id = "2h_power_maul_connector_01",  name = "Power Maul 1"},
-            {id = "2h_power_maul_connector_02",  name = "Power Maul 2"},
-            {id = "2h_power_maul_connector_03",  name = "Power Maul 3"},
-            {id = "2h_power_maul_connector_04",  name = "Power Maul 4"},
-            {id = "2h_power_maul_connector_05",  name = "Power Maul 5"},
+            {id = "thunder_hammer_connector_01",   name = "Thunderhammer 1"},
+            {id = "thunder_hammer_connector_02",   name = "Thunderhammer 2"},
+            {id = "thunder_hammer_connector_03",   name = "Thunderhammer 3"},
+            {id = "thunder_hammer_connector_04",   name = "Thunderhammer 4"},
+            {id = "thunder_hammer_connector_05",   name = "Thunderhammer 5"},
+            {id = "thunder_hammer_connector_ml01", name = "Thunderhammer ML01"},
+            {id = "force_staff_full_01",           name = "Force Staff 1"},
+            {id = "force_staff_full_02",           name = "Force Staff 2"},
+            {id = "force_staff_full_03",           name = "Force Staff 3"},
+            {id = "force_staff_full_04",           name = "Force Staff 4"},
+            {id = "force_staff_full_05",           name = "Force Staff 5"},
+            {id = "force_staff_full_ml01",         name = "Force Staff ML01"},
+            {id = "2h_power_maul_connector_01",    name = "Power Maul 1"},
+            {id = "2h_power_maul_connector_02",    name = "Power Maul 2"},
+            {id = "2h_power_maul_connector_03",    name = "Power Maul 3"},
+            {id = "2h_power_maul_connector_04",    name = "Power Maul 4"},
+            {id = "2h_power_maul_connector_05",    name = "Power Maul 5"},
+            {id = "2h_power_maul_connector_ml01",  name = "Power Maul ML01"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -87,25 +90,28 @@ return {
             attachments)
         else return attachments end
     end,
-    connector_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+    connector_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve) -- Last update 1.5.4
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "connector_default", model = ""},
-            {name = "thunder_hammer_connector_01",      model = _item_melee.."/connectors/thunder_hammer_connector_01"},
-            {name = "thunder_hammer_connector_02",      model = _item_melee.."/connectors/thunder_hammer_connector_02"},
-            {name = "thunder_hammer_connector_03",      model = _item_melee.."/connectors/thunder_hammer_connector_03"},
-            {name = "thunder_hammer_connector_04",      model = _item_melee.."/connectors/thunder_hammer_connector_04"},
-            {name = "thunder_hammer_connector_05",      model = _item_melee.."/connectors/thunder_hammer_connector_05"},
-            {name = "body_01",      model = _item_melee.."/full/force_staff_full_01"},
-            {name = "body_02",      model = _item_melee.."/full/force_staff_full_02"},
-            {name = "body_03",      model = _item_melee.."/full/force_staff_full_03"},
-            {name = "body_04",      model = _item_melee.."/full/force_staff_full_04"},
-            {name = "body_05",      model = _item_melee.."/full/force_staff_full_05"},
-            {name = "2h_power_maul_connector_01",      model = _item_melee.."/connectors/2h_power_maul_connector_01"},
-            {name = "2h_power_maul_connector_02",      model = _item_melee.."/connectors/2h_power_maul_connector_02"},
-            {name = "2h_power_maul_connector_03",      model = _item_melee.."/connectors/2h_power_maul_connector_03"},
-            {name = "2h_power_maul_connector_04",      model = _item_melee.."/connectors/2h_power_maul_connector_04"},
-            {name = "2h_power_maul_connector_05",      model = _item_melee.."/connectors/2h_power_maul_connector_05"},
+            {name = "thunder_hammer_connector_01",   model = _item_melee.."/connectors/thunder_hammer_connector_01"},
+            {name = "thunder_hammer_connector_02",   model = _item_melee.."/connectors/thunder_hammer_connector_02"},
+            {name = "thunder_hammer_connector_03",   model = _item_melee.."/connectors/thunder_hammer_connector_03"},
+            {name = "thunder_hammer_connector_04",   model = _item_melee.."/connectors/thunder_hammer_connector_04"},
+            {name = "thunder_hammer_connector_05",   model = _item_melee.."/connectors/thunder_hammer_connector_05"},
+            {name = "thunder_hammer_connector_ml01", model = _item_melee.."/connectors/thunder_hammer_connector_ml01"},
+            {name = "force_staff_full_01",           model = _item_melee.."/full/force_staff_full_01"},
+            {name = "force_staff_full_02",           model = _item_melee.."/full/force_staff_full_02"},
+            {name = "force_staff_full_03",           model = _item_melee.."/full/force_staff_full_03"},
+            {name = "force_staff_full_04",           model = _item_melee.."/full/force_staff_full_04"},
+            {name = "force_staff_full_05",           model = _item_melee.."/full/force_staff_full_05"},
+            {name = "force_staff_full_ml01",         model = _item_melee.."/full/force_staff_full_ml01"},
+            {name = "2h_power_maul_connector_01",    model = _item_melee.."/connectors/2h_power_maul_connector_01"},
+            {name = "2h_power_maul_connector_02",    model = _item_melee.."/connectors/2h_power_maul_connector_02"},
+            {name = "2h_power_maul_connector_03",    model = _item_melee.."/connectors/2h_power_maul_connector_03"},
+            {name = "2h_power_maul_connector_04",    model = _item_melee.."/connectors/2h_power_maul_connector_04"},
+            {name = "2h_power_maul_connector_05",    model = _item_melee.."/connectors/2h_power_maul_connector_05"},
+            {name = "2h_power_maul_connector_ml01",  model = _item_melee.."/connectors/2h_power_maul_connector_ml01"},
         }, parent, angle, move, remove, type or "connector", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 

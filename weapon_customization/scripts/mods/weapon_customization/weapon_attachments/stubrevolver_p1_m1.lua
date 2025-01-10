@@ -274,7 +274,7 @@ return table.combine(
                 --#endregion
                 --#regin Reflex sights
                     {dependencies = {"barrel_04"},
-                        sight = {parent = "barrel", parent_node = 9, position = vector3_box(0, -.05, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1), hide_mesh = {{"barrel", 9}},
+                        sight = {parent = "barrel", parent_node = 9, position = vector3_box(0, -.0505, -.0005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1), hide_mesh = {{"barrel", 9}},
                             animation_wait_attach = {"rail"},
                         },
                     },
@@ -283,7 +283,7 @@ return table.combine(
                             animation_wait_attach = {"rail"},
                         },
                     },
-                    {sight = {parent = "barrel", parent_node = 9, position = vector3_box(0, .022, .015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1),
+                    {sight = {parent = "barrel", parent_node = 9, position = vector3_box(0, .0215, 0.0155), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1),
                         animation_wait_attach = {"rail"}},
                     },
                 --#endregion

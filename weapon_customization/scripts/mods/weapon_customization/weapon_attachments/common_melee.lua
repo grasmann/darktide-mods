@@ -15,6 +15,8 @@ local mod = get_mod("weapon_customization")
     local _powermaul_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/powermaul_2h_p1_m1")
     local _powersword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/powersword_p1_m1")
     local _thunderhammer_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/thunderhammer_2h_p1_m1")
+    local _forcestaff_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/forcestaff_p1_m1")
+    local _ogryn_pickaxe_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/ogryn_pickaxe_2h_p1_m1")
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -101,10 +103,30 @@ local mod = get_mod("weapon_customization")
 
 local data = {}
 return {
-    small_shaft_attachments = function(default)
+    long_shaft_attachments = function(default) -- Last update 1.5.4
         local attachments = table_icombine(
-            _chainaxe_p1_m1.shaft_attachments(false),
-            _ogryn_powermaul_p1_m1.shaft_attachments(false),
+            _forcestaff_p1_m1.staff_shaft_lower_attachments(false),
+            _ogryn_pickaxe_2h_p1_m1.shaft_attachments(false)
+        )
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "shaft_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    long_shaft_models = function(content) -- Last update 1.5.4
+        data = {}
+        for i = 1, 100, 1 do
+            data[i] = tv(content, i)
+            if data[i].mesh_move == nil then data[i].mesh_move = false end
+        end
+        return table.combine(
+            _forcestaff_p1_m1.staff_shaft_lower_models(data[1].parent, data[1].angle, data[1].move, data[1].remove, data[1].type, data[1].no_support, data[1].automatic_equip, data[1].hide_mesh, data[1].mesh_move, data[1].special_resolve),
+            _ogryn_pickaxe_2h_p1_m1.shaft_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve)
+        )
+    end,
+    medium_shaft_attachments = function(default) -- Last update 1.5.4
+        local attachments = table_icombine(
             _powermaul_2h_p1_m1.shaft_attachments(false),
             _thunderhammer_2h_p1_m1.shaft_attachments(false)
         )
@@ -114,7 +136,29 @@ return {
             attachments)
         else return attachments end
     end,
-    small_shaft_models = function(content)
+    medium_shaft_models = function(content) -- Last update 1.5.4
+        data = {}
+        for i = 1, 100, 1 do
+            data[i] = tv(content, i)
+            if data[i].mesh_move == nil then data[i].mesh_move = false end
+        end
+        return table.combine(
+            _powermaul_2h_p1_m1.shaft_models(data[1].parent, data[1].angle, data[1].move, data[1].remove, data[1].type, data[1].no_support, data[1].automatic_equip, data[1].hide_mesh, data[1].mesh_move, data[1].special_resolve),
+            _thunderhammer_2h_p1_m1.shaft_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve)
+        )
+    end,
+    small_shaft_attachments = function(default) -- Last update 1.5.4
+        local attachments = table_icombine(
+            _chainaxe_p1_m1.shaft_attachments(false),
+            _ogryn_powermaul_p1_m1.shaft_attachments(false)
+        )
+        if default == nil then default = true end
+        if default then return table.icombine(
+            {{id = "shaft_default", name = mod:localize("mod_attachment_default")}},
+            attachments)
+        else return attachments end
+    end,
+    small_shaft_models = function(content) -- Last update 1.5.4
         data = {}
         for i = 1, 100, 1 do
             data[i] = tv(content, i)
@@ -122,11 +166,11 @@ return {
         end
         return table.combine(
             _chainaxe_p1_m1.shaft_models(data[1].parent, data[1].angle, data[1].move, data[1].remove, data[1].type, data[1].no_support, data[1].automatic_equip, data[1].hide_mesh, data[1].mesh_move, data[1].special_resolve),
-            _ogryn_powermaul_p1_m1.shaft_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve),
-            _powermaul_2h_p1_m1.shaft_models(data[3].parent, data[3].angle, data[3].move, data[3].remove, data[3].type, data[3].no_support, data[3].automatic_equip, data[3].hide_mesh, data[3].mesh_move, data[3].special_resolve),
-            _thunderhammer_2h_p1_m1.shaft_models(data[4].parent, data[4].angle, data[4].move, data[4].remove, data[4].type, data[4].no_support, data[4].automatic_equip, data[4].hide_mesh, data[4].mesh_move, data[4].special_resolve)
+            _ogryn_powermaul_p1_m1.shaft_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve)
         )
     end,
+
+
     medium_grip_attachments = function(default)
         local attachments = table_icombine(
             _chainaxe_p1_m1.grip_attachments(false),
@@ -168,7 +212,7 @@ return {
             _thunderhammer_2h_p1_m1.pommel_attachments(false)
         )
         if default == nil then default = true end
-        if none then attachments[#attachments+1] = {id = "pommel_none",      name = ""} end
+        if none then attachments[#attachments+1] = {id = "pommel_none", name = ""} end
         -- mod:dtf(attachments, "pommel_attachments", 5)
         if default then return table.icombine(
             {{id = "pommel_default", name = mod:localize("mod_attachment_default")}},
@@ -190,7 +234,10 @@ return {
             _ogryn_powermaul_p1_m1.pommel_models(data[6].parent, data[6].angle, data[6].move, data[6].remove, data[6].type, data[6].no_support, data[6].automatic_equip, data[6].hide_mesh, data[6].mesh_move, data[6].special_resolve),
             _powermaul_2h_p1_m1.pommel_models(data[7].parent, data[7].angle, data[7].move, data[7].remove, data[7].type, data[7].no_support, data[7].automatic_equip, data[7].hide_mesh, data[7].mesh_move, data[7].special_resolve),
             _powersword_p1_m1.pommel_models(data[8].parent, data[8].angle, data[8].move, data[8].remove, data[8].type, data[8].no_support, data[8].automatic_equip, data[8].hide_mesh, data[8].mesh_move, data[8].special_resolve),
-            _thunderhammer_2h_p1_m1.pommel_models(data[9].parent, data[9].angle, data[9].move, data[9].remove, data[9].type, data[9].no_support, data[9].automatic_equip, data[9].hide_mesh, data[9].mesh_move, data[9].special_resolve)
+            _thunderhammer_2h_p1_m1.pommel_models(data[9].parent, data[9].angle, data[9].move, data[9].remove, data[9].type, data[9].no_support, data[9].automatic_equip, data[9].hide_mesh, data[9].mesh_move, data[9].special_resolve),
+            table.model_table({
+                {name = "pommel_none", model = ""},
+            }, data[10].parent, data[10].angle, data[10].move, data[10].remove, data[10].type or "pommel", data[10].no_support, data[10].automatic_equip, data[10].hide_mesh, data[10].mesh_move, data[10].special_resolve)
         )
     end,
     axe_head_attachments = function(default)
@@ -241,31 +288,33 @@ return {
     end,
 
 
-
     blunt_head_attachments = function(default)
         local attachments = {
-            {id = "thunder_hammer_head_01",      name = "Thunderhammer 1"},
-            {id = "thunder_hammer_head_02",      name = "Thunderhammer 2"},
-            {id = "thunder_hammer_head_03",      name = "Thunderhammer 3"},
-            {id = "thunder_hammer_head_04",      name = "Thunderhammer 4"},
-            {id = "thunder_hammer_head_05",      name = "Thunderhammer 5"},
-            {id = "thunder_hammer_head_06",      name = "Thunderhammer 6"},
-            {id = "head_01",      name = "Power Maul 1"},
-            {id = "head_02",      name = "Power Maul 2"},
-            {id = "head_03",      name = "Power Maul 3"},
-            {id = "head_04",      name = "Power Maul 4"},
-            {id = "head_05",      name = "Power Maul 5"},
+            {id = "thunder_hammer_head_01",     name = "Thunderhammer 1"},
+            {id = "thunder_hammer_head_02",     name = "Thunderhammer 2"},
+            {id = "thunder_hammer_head_03",     name = "Thunderhammer 3"},
+            {id = "thunder_hammer_head_04",     name = "Thunderhammer 4"},
+            {id = "thunder_hammer_head_05",     name = "Thunderhammer 5"},
+            {id = "thunder_hammer_head_ml01",   name = "Thunderhammer ML01"},
+            {id = "power_maul_head_01",         name = "Power Maul 1"},
+            {id = "power_maul_head_02",         name = "Power Maul 2"},
+            {id = "power_maul_head_03",         name = "Power Maul 3"},
+            {id = "power_maul_head_04",         name = "Power Maul 4"},
+            {id = "power_maul_head_05",         name = "Power Maul 5"},
+            {id = "power_maul_head_ml01",       name = "Power Maul ML01"},
             {id = "2h_power_maul_head_01",      name = "2H Power Maul 1"},
             {id = "2h_power_maul_head_02",      name = "2H Power Maul 2"},
             {id = "2h_power_maul_head_03",      name = "2H Power Maul 3"},
             {id = "2h_power_maul_head_04",      name = "2H Power Maul 4"},
             {id = "2h_power_maul_head_05",      name = "2H Power Maul 5"},
-            {id = "small_head_01", name = "Small Head 1"},
-            {id = "small_head_02", name = "Small Head 2"},
-            {id = "small_head_03", name = "Small Head 3"},
-            {id = "small_head_04", name = "Small Head 4"},
-            {id = "small_head_05", name = "Small Head 5"},
-            {id = "small_head_06", name = "Small Head 6"},
+            {id = "2h_power_maul_head_ml01",      name = "2H Power Maul ML01"},
+            {id = "human_power_maul_head_01",   name = "Small Power Maul 1"},
+            {id = "human_power_maul_head_02",   name = "Small Power Maul 2"},
+            {id = "human_power_maul_head_03",   name = "Small Power Maul 3"},
+            {id = "human_power_maul_head_04",   name = "Small Power Maul 4"},
+            {id = "human_power_maul_head_05",   name = "Small Power Maul 5"},
+            {id = "human_power_maul_head_06",   name = "Small Power Maul 6"},
+            {id = "human_power_maul_head_ml01", name = "Small Power Maul ML01"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -277,28 +326,31 @@ return {
         if mesh_move == nil then mesh_move = false end
         return table.model_table({
             {name = "head_default",  model = ""},
-            {name = "thunder_hammer_head_01",      model = _item_melee.."/heads/thunder_hammer_head_01"},
-            {name = "thunder_hammer_head_02",      model = _item_melee.."/heads/thunder_hammer_head_02"},
-            {name = "thunder_hammer_head_03",      model = _item_melee.."/heads/thunder_hammer_head_03"},
-            {name = "thunder_hammer_head_04",      model = _item_melee.."/heads/thunder_hammer_head_04"},
-            {name = "thunder_hammer_head_05",      model = _item_melee.."/heads/thunder_hammer_head_05"},
-            {name = "thunder_hammer_head_06",      model = _item_melee.."/heads/thunder_hammer_head_ml01"},
-            {name = "head_01",      model = _item_melee.."/heads/power_maul_head_01"},
-            {name = "head_02",      model = _item_melee.."/heads/power_maul_head_02"},
-            {name = "head_03",      model = _item_melee.."/heads/power_maul_head_03"},
-            {name = "head_04",      model = _item_melee.."/heads/power_maul_head_04"},
-            {name = "head_05",      model = _item_melee.."/heads/power_maul_head_05"},
+            {name = "thunder_hammer_head_01",     model = _item_melee.."/heads/thunder_hammer_head_01"},
+            {name = "thunder_hammer_head_02",     model = _item_melee.."/heads/thunder_hammer_head_02"},
+            {name = "thunder_hammer_head_03",     model = _item_melee.."/heads/thunder_hammer_head_03"},
+            {name = "thunder_hammer_head_04",     model = _item_melee.."/heads/thunder_hammer_head_04"},
+            {name = "thunder_hammer_head_05",     model = _item_melee.."/heads/thunder_hammer_head_05"},
+            {name = "thunder_hammer_head_ml01",   model = _item_melee.."/heads/thunder_hammer_head_ml01"},
+            {name = "power_maul_head_01",         model = _item_melee.."/heads/power_maul_head_01"},
+            {name = "power_maul_head_02",         model = _item_melee.."/heads/power_maul_head_02"},
+            {name = "power_maul_head_03",         model = _item_melee.."/heads/power_maul_head_03"},
+            {name = "power_maul_head_04",         model = _item_melee.."/heads/power_maul_head_04"},
+            {name = "power_maul_head_05",         model = _item_melee.."/heads/power_maul_head_05"},
+            {name = "power_maul_head_ml01",       model = _item_melee.."/heads/power_maul_head_ml01"},
             {name = "2h_power_maul_head_01",      model = _item_melee.."/heads/2h_power_maul_head_01"},
             {name = "2h_power_maul_head_02",      model = _item_melee.."/heads/2h_power_maul_head_02"},
             {name = "2h_power_maul_head_03",      model = _item_melee.."/heads/2h_power_maul_head_03"},
             {name = "2h_power_maul_head_04",      model = _item_melee.."/heads/2h_power_maul_head_04"},
             {name = "2h_power_maul_head_05",      model = _item_melee.."/heads/2h_power_maul_head_05"},
-            {name = "small_head_01", model = _item_melee.."/heads/human_power_maul_head_01"},
-            {name = "small_head_02", model = _item_melee.."/heads/human_power_maul_head_02"},
-            {name = "small_head_03", model = _item_melee.."/heads/human_power_maul_head_03"},
-            {name = "small_head_04", model = _item_melee.."/heads/human_power_maul_head_04"},
-            {name = "small_head_05", model = _item_melee.."/heads/human_power_maul_head_05"},
-            {name = "small_head_06", model = _item_melee.."/heads/human_power_maul_head_06"},
+            {name = "2h_power_maul_head_ml01",    model = _item_melee.."/heads/2h_power_maul_head_ml01"},
+            {name = "human_power_maul_head_01",   model = _item_melee.."/heads/human_power_maul_head_01"},
+            {name = "human_power_maul_head_02",   model = _item_melee.."/heads/human_power_maul_head_02"},
+            {name = "human_power_maul_head_03",   model = _item_melee.."/heads/human_power_maul_head_03"},
+            {name = "human_power_maul_head_04",   model = _item_melee.."/heads/human_power_maul_head_04"},
+            {name = "human_power_maul_head_05",   model = _item_melee.."/heads/human_power_maul_head_05"},
+            {name = "human_power_maul_head_06",   model = _item_melee.."/heads/human_power_maul_head_06"},
+            {name = "human_power_maul_head_ml01", model = _item_melee.."/heads/human_power_maul_head_ml01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 
@@ -510,7 +562,7 @@ return {
             {name = "small_connector_04", model = _item_melee.."/connectors/human_power_maul_connector_04"},
             {name = "small_connector_05", model = _item_melee.."/connectors/human_power_maul_connector_05"},
             {name = "small_connector_06", model = _item_melee.."/connectors/human_power_maul_connector_06"},
-            {name = "small_connector_07", model = _item_melee.."/connectors/thunder_hammer_connector_ml01"},
+            {name = "small_connector_07", model = _item_melee.."/connectors/human_power_maul_connector_ml01"},
         }, parent, angle, move, remove, type or "connector", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     sword_grip_attachments = function(default)

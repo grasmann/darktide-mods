@@ -45,7 +45,7 @@ return {
         return table.model_table({
             {name = "grip_default", model = ""},
             {name = "grip_01",      model = _item_ranged.."/grips/shotgun_grenade_grip_01"},
-            -- {name = "grip_02",      model = _item_ranged.."/grips/shotgun_grenade_grip_02"},
+            {name = "grip_02",      model = _item_ranged.."/grips/shotgun_grenade_grip_02"},
             {name = "grip_03",      model = _item_ranged.."/grips/shotgun_grenade_grip_03"},
             {name = "grip_04",      model = _item_ranged.."/grips/shotgun_grenade_grip_04"},
             {name = "grip_05",      model = _item_ranged.."/grips/shotgun_grenade_grip_05"},

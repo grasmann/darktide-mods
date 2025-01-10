@@ -44,6 +44,7 @@ return {
             {id = "barrel_13", name = "Helbore Lasgun 5"},
             {id = "barrel_19", name = "Helbore Lasgun 6"},
             {id = "barrel_20", name = "Helbore Lasgun 7"},
+            {id = "barrel_22", name = "Helbore Lasgun 8"},
             {id = "barrel_14", name = "Recon Lasgun 1"},
             {id = "barrel_15", name = "Recon Lasgun 2"},
             {id = "barrel_16", name = "Recon Lasgun 3"},
@@ -81,6 +82,7 @@ return {
             {name = "barrel_19",      model = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_07"},
             {name = "barrel_20",      model = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_ml01"},
             {name = "barrel_21",      model = _item_ranged.."/barrels/lasgun_rifle_barrel_ml01"},
+            {name = "barrel_22",      model = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_08"},
         }, parent, angle, move, remove, type or "barrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     muzzle_attachments = function(default)

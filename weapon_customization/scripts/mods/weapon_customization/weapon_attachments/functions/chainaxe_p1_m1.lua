@@ -58,14 +58,14 @@ return {
 	-- ##### ┌─┐┬ ┬┌─┐┌─┐┌┬┐┌─┐
 	-- ##### └─┐├─┤├─┤├┤  │ └─┐
 	-- ##### └─┘┴ ┴┴ ┴└   ┴ └─┘
-	shaft_attachments = function(default)
+	shaft_attachments = function(default) -- Last update 1.5.4
 		local attachments = {
-			{id = "chain_axe_shaft_01", name = "Chain Axe 1"},
-			{id = "chain_axe_shaft_02", name = "Chain Axe 2"},
-			{id = "chain_axe_shaft_03", name = "Chain Axe 3"},
-			{id = "chain_axe_shaft_04", name = "Chain Axe 4"},
-			{id = "chain_axe_shaft_05", name = "Chain Axe 5"},
-			{id = "chain_axe_shaft_ml01", name = "Chain Axe 6"},
+			{id = "chain_axe_shaft_01",   name = "Chain Axe 1"},
+			{id = "chain_axe_shaft_02",   name = "Chain Axe 2"},
+			{id = "chain_axe_shaft_03",   name = "Chain Axe 3"},
+			{id = "chain_axe_shaft_04",   name = "Chain Axe 4"},
+			{id = "chain_axe_shaft_05",   name = "Chain Axe 5"},
+			{id = "chain_axe_shaft_ml01", name = "Chain Axe ML01"},
 		}
 		if default == nil then default = true end
 		if default then return table.icombine(
@@ -73,15 +73,15 @@ return {
 			attachments)
 		else return attachments end
 	end,
-	shaft_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+	shaft_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve) -- Last update 1.5.4
 		if mesh_move == nil then mesh_move = false end
 		return table.model_table({
-			{name = "shaft_default",	  model = ""},
-			{name = "chain_axe_shaft_01", model = _item_ranged.."/shafts/chain_axe_shaft_01"},
-			{name = "chain_axe_shaft_02", model = _item_ranged.."/shafts/chain_axe_shaft_02"},
-			{name = "chain_axe_shaft_03", model = _item_ranged.."/shafts/chain_axe_shaft_03"},
-			{name = "chain_axe_shaft_04", model = _item_ranged.."/shafts/chain_axe_shaft_04"},
-			{name = "chain_axe_shaft_05", model = _item_ranged.."/shafts/chain_axe_shaft_05"},
+			{name = "shaft_default",	  	model = ""},
+			{name = "chain_axe_shaft_01", 	model = _item_ranged.."/shafts/chain_axe_shaft_01"},
+			{name = "chain_axe_shaft_02", 	model = _item_ranged.."/shafts/chain_axe_shaft_02"},
+			{name = "chain_axe_shaft_03", 	model = _item_ranged.."/shafts/chain_axe_shaft_03"},
+			{name = "chain_axe_shaft_04", 	model = _item_ranged.."/shafts/chain_axe_shaft_04"},
+			{name = "chain_axe_shaft_05",   model = _item_ranged.."/shafts/chain_axe_shaft_05"},
 			{name = "chain_axe_shaft_ml01", model = _item_ranged.."/shafts/chain_axe_shaft_ml01"},
 		}, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,

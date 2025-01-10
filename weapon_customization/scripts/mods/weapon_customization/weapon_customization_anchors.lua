@@ -122,6 +122,7 @@ end
 --#region Load files
 	local _common_functions = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
 	local _ogryn_heavystubber_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_heavystubber_p1_m1")
+	local _ogryn_heavystubber_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_heavystubber_p2_m1")
 	local _ogryn_rippergun_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_rippergun_p1_m1")
 	local _ogryn_thumper_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_thumper_p1_m1")
 	local _ogryn_gauntlet_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/ogryn_gauntlet_p1_m1")
@@ -167,6 +168,7 @@ end
 	mod.anchors = {
 		--#region Ogryn Guns
 			ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.anchors,
+			ogryn_heavystubber_p2_m1 = _ogryn_heavystubber_p2_m1.anchors,
 			ogryn_rippergun_p1_m1    = _ogryn_rippergun_p1_m1.anchors,
 			ogryn_thumper_p1_m1      = _ogryn_thumper_p1_m1.anchors,
 			ogryn_gauntlet_p1_m1     = _ogryn_gauntlet_p1_m1.anchors,
@@ -217,6 +219,8 @@ end
 		--#region Ogryn Guns
 			mod.anchors.ogryn_heavystubber_p1_m2 = mod.anchors.ogryn_heavystubber_p1_m1
 			mod.anchors.ogryn_heavystubber_p1_m3 = mod.anchors.ogryn_heavystubber_p1_m1
+			mod.anchors.ogryn_heavystubber_p2_m2 = mod.anchors.ogryn_heavystubber_p2_m1
+			mod.anchors.ogryn_heavystubber_p2_m3 = mod.anchors.ogryn_heavystubber_p2_m1
 			mod.anchors.ogryn_rippergun_p1_m2    = mod.anchors.ogryn_rippergun_p1_m1
 			mod.anchors.ogryn_rippergun_p1_m3    = mod.anchors.ogryn_rippergun_p1_m1
 				-- mod.anchors.ogryn_rippergun_npc_01 = mod.anchors.ogryn_rippergun_p1_m1
@@ -312,6 +316,7 @@ end
 	mod.attachment = {
 		--#region Ogryn Guns
 			ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.attachments,
+			ogryn_heavystubber_p2_m1 = _ogryn_heavystubber_p2_m1.attachments,
 			ogryn_rippergun_p1_m1    = _ogryn_rippergun_p1_m1.attachments,
 			ogryn_thumper_p1_m1      = _ogryn_thumper_p1_m1.attachments,
 			ogryn_gauntlet_p1_m1     = _ogryn_gauntlet_p1_m1.attachments,
@@ -362,6 +367,8 @@ end
 		--#region Ogryn Guns
 			mod.attachment.ogryn_heavystubber_p1_m2 = mod.attachment.ogryn_heavystubber_p1_m1
 			mod.attachment.ogryn_heavystubber_p1_m3 = mod.attachment.ogryn_heavystubber_p1_m1
+			mod.attachment.ogryn_heavystubber_p2_m2 = mod.attachment.ogryn_heavystubber_p2_m1
+			mod.attachment.ogryn_heavystubber_p2_m3 = mod.attachment.ogryn_heavystubber_p2_m1
 			mod.attachment.ogryn_rippergun_p1_m2 = mod.attachment.ogryn_rippergun_p1_m1
 			mod.attachment.ogryn_rippergun_p1_m3 = mod.attachment.ogryn_rippergun_p1_m1
 				-- mod.attachment.ogryn_rippergun_npc_01 = mod.attachment.ogryn_rippergun_p1_m1
@@ -873,6 +880,7 @@ end
 	mod.attachment_models = {
 		--#region Ogryn Guns
 			ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.models,
+			ogryn_heavystubber_p2_m1 = _ogryn_heavystubber_p2_m1.models,
 			ogryn_rippergun_p1_m1    = _ogryn_rippergun_p1_m1.models,
 			ogryn_thumper_p1_m1      = _ogryn_thumper_p1_m1.models,
 			ogryn_gauntlet_p1_m1     = _ogryn_gauntlet_p1_m1.models,
@@ -923,6 +931,8 @@ end
 		--#region Ogryn Guns
 			mod.attachment_models.ogryn_heavystubber_p1_m2 = mod.attachment_models.ogryn_heavystubber_p1_m1
 			mod.attachment_models.ogryn_heavystubber_p1_m3 = mod.attachment_models.ogryn_heavystubber_p1_m1
+			mod.attachment_models.ogryn_heavystubber_p2_m2 = mod.attachment_models.ogryn_heavystubber_p2_m1
+			mod.attachment_models.ogryn_heavystubber_p2_m3 = mod.attachment_models.ogryn_heavystubber_p2_m1
 			mod.attachment_models.ogryn_rippergun_p1_m2    = mod.attachment_models.ogryn_rippergun_p1_m1
 			mod.attachment_models.ogryn_rippergun_p1_m3    = mod.attachment_models.ogryn_rippergun_p1_m1
 				-- mod.attachment_models.ogryn_rippergun_npc_01 = mod.attachment_models.ogryn_rippergun_p1_m1
@@ -1033,6 +1043,7 @@ end
 	mod.attachment_sounds = {
 		--#region Ogryn Guns
 			ogryn_heavystubber_p1_m1 = _ogryn_heavystubber_p1_m1.sounds,
+			ogryn_heavystubber_p2_m1 = _ogryn_heavystubber_p2_m1.sounds,
 			ogryn_rippergun_p1_m1 	 = _ogryn_rippergun_p1_m1.sounds,
 			ogryn_thumper_p1_m1      = _ogryn_thumper_p1_m1.sounds,
 			ogryn_gauntlet_p1_m1     = _ogryn_gauntlet_p1_m1.sounds,
@@ -1083,6 +1094,8 @@ end
 		--#region Ogryn Guns
 			mod.attachment_sounds.ogryn_heavystubber_p1_m2 = mod.attachment_sounds.ogryn_heavystubber_p1_m1
 			mod.attachment_sounds.ogryn_heavystubber_p1_m3 = mod.attachment_sounds.ogryn_heavystubber_p1_m1
+			mod.attachment_sounds.ogryn_heavystubber_p2_m2 = mod.attachment_sounds.ogryn_heavystubber_p2_m1
+			mod.attachment_sounds.ogryn_heavystubber_p2_m3 = mod.attachment_sounds.ogryn_heavystubber_p2_m1
 			mod.attachment_sounds.ogryn_rippergun_p1_m2 = mod.attachment_sounds.ogryn_rippergun_p1_m1
 			mod.attachment_sounds.ogryn_rippergun_p1_m3 = mod.attachment_sounds.ogryn_rippergun_p1_m1
 				-- mod.attachment_models.ogryn_rippergun_npc_01 = mod.attachment_models.ogryn_rippergun_p1_m1

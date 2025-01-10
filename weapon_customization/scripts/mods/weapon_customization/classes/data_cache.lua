@@ -8,17 +8,34 @@ local mod = get_mod("weapon_customization")
 	local MasterItems = mod:original_require("scripts/backend/master_items")
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+--#region Data
+	-- string.find_hooked = true
+	-- string.gsub_hooked = true
+	-- string.split_hooked = true
+	-- string.trim_hooked = true
+	-- string.cap_hooked = true
+--#endregion
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
+	local type = type
 	local pairs = pairs
 	local class = class
 	local table = table
 	local string = string
+	local unpack = unpack
 	local get_mod = get_mod
+	local tostring = tostring
+	local string_cap = string.cap
 	local vector3_box = Vector3Box
+	local string_trim = string._trim
 	local table_clone = table.clone
 	local string_find = string.find
 	local string_gsub = string.gsub
@@ -350,58 +367,109 @@ mod.watch_string_cache = function(self)
 	end
 end
 
-mod.cached_split = function(self, str, sep)
-	local key = str..sep
+mod.cached_split = function(self, str, sep, ...)
+	local key = str..(sep or "")
 	if not string_split_cache[key] then
-		string_split_cache[key] = string_split(str, sep)
+		-- string.split_hooked = false
+		string_split_cache[key] = {string_split(str, sep, ...)}
+		-- string.split_hooked = true
 		debug_split_cache.split = debug_split_cache.split + 1
 	else
 		debug_split_cache.cache = debug_split_cache.cache + 1
 	end
-	return string_split_cache[key]
+	return unpack(string_split_cache[key])
 end
 
-mod.cached_gsub = function(self, str, pattern, repl)
-	local key = str..pattern..repl
+mod.cached_gsub = function(self, str, pattern, repl, ...)
+	local key = str..(tostring(pattern) or "")..(tostring(repl) or "")
 	if not string_gsub_cache[key] then
-		string_gsub_cache[key] = string_gsub(str, pattern, repl)
+		-- string.gsub_hooked = false
+		string_gsub_cache[key] = {string_gsub(str, pattern, repl, ...)}
+		-- string.gsub_hooked = true
 		debug_gsub_cache.gsub = debug_gsub_cache.gsub + 1
 	else
 		debug_gsub_cache.cache = debug_gsub_cache.cache + 1
 	end
-	return string_gsub_cache[key]
+	return unpack(string_gsub_cache[key])
 end
 
-mod.cached_find = function(self, str, pattern)
-	local key = str..pattern
+mod.cached_find = function(self, str, pattern, start, ...)
+	local key = str..(pattern or "")..(start or "")
 	if not string_find_cache[key] then
-		string_find_cache[key] = string_find(str, pattern) ~= nil
+		-- string.find_hooked = false
+		string_find_cache[key] = {string_find(str, pattern, start, ...)} --~= nil
+		-- string.find_hooked = true
 		debug_find_cache.find = debug_find_cache.find + 1
 	else
 		debug_find_cache.cache = debug_find_cache.cache + 1
 	end
-	return string_find_cache[key]
+	return unpack(string_find_cache[key])
 end
 
-mod.cached_trim = function(self, str)
+mod.cached_trim = function(self, str, ...)
 	if not string_trim_cache[str] then
-		string_trim_cache[str] = string_gsub(str, "^%s*(.-)%s*$", "%1")
+		-- string.trim_hooked = false
+		-- string_trim_cache[str] = string_gsub(str, "^%s*(.-)%s*$", "%1")
+		string_trim_cache[str] = {string_trim(str, ...)}
+		-- string.trim_hooked = true
 		debug_trim_cache.trim = debug_trim_cache.trim + 1
 	else
 		debug_trim_cache.cache = debug_trim_cache.cache + 1
 	end
-	return string_trim_cache[str]
+	return unpack(string_trim_cache[str])
 end
 
-mod.cached_cap = function(self, str)
+mod.cached_cap = function(self, str, ...)
 	if not string_cap_cache[str] then
-		string_cap_cache[str] = string_gsub(str, "^%l", string_upper)
+		-- string.cap_hooked = false
+		-- string_cap_cache[str] = string_gsub(str, "^%l", string_upper)
+		string_cap_cache[str] = {string_cap(str, ...)}
+		-- string.cap_hooked = true
 		debug_cap_cache.cap = debug_cap_cache.cap + 1
 	else
 		debug_cap_cache.cache = debug_cap_cache.cache + 1
 	end
-	return string_cap_cache[str]
+	return unpack(string_cap_cache[str])
 end
+
+-- ##### ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬  ┌─┐┌─┐┌─┐┌─┐┌─┐ ###################################################################
+-- ##### ├┤ ┌┴┬┘ │ ├┤ │││ ││  │  │  ├─┤└─┐└─┐├┤ └─┐ ###################################################################
+-- ##### └─┘┴ └─ ┴ └─┘┘└┘─┴┘  └─┘┴─┘┴ ┴└─┘└─┘└─┘└─┘ ###################################################################
+
+-- mod:hook(string, "find", function(func, str, pattern, start, ...)
+-- 	if string.find_hooked then
+-- 		return mod:cached_find(str, pattern, start, ...)
+-- 	end
+-- 	return func(str, pattern, start, ...)
+-- end)
+
+-- mod:hook(string, "gsub", function(func, str, pattern, repl, ...)
+-- 	if string.gsub_hooked then --and type(pattern) == "string" and type(repl) == "string" then
+-- 		return mod:cached_gsub(str, pattern, repl, ...)
+-- 	end
+-- 	return func(str, pattern, repl, ...)
+-- end)
+
+-- mod:hook(string, "split", function(func, str, sep, ...)
+-- 	if string.split_hooked then
+-- 		return mod:cached_split(str, sep, ...)
+-- 	end
+-- 	return func(str, sep, ...)
+-- end)
+
+-- mod:hook(string, "trim", function(func, str, ...)
+-- 	if string.trim_hooked then
+-- 		return mod:cached_trim(str, ...)
+-- 	end
+-- 	return func(str, ...)
+-- end)
+
+-- mod:hook(string, "cap", function(func, str, ...)
+-- 	if string.cap_hooked then
+-- 		return mod:cached_cap(str, ...)
+-- 	end
+-- 	return func(str, ...)
+-- end)
 
 -- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐ ##############################################################################################
 -- #####  ││├┤ ├┴┐│ ││ ┬ ##############################################################################################

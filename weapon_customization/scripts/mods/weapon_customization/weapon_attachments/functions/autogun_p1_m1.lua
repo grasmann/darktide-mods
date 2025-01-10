@@ -275,6 +275,7 @@ local functions = {
 			{id = "receiver_04", name = "Headhunter Autogun (04)"},
 			{id = "receiver_05", name = "Headhunter Autogun (05)"},
 			{id = "receiver_09", name = "Headhunter Autogun (09)"},
+			{id = "receiver_11", name = "Headhunter Autogun (11)"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine({{id = "receiver_default", name = mod:localize("mod_attachment_default")}}, attachments)
@@ -287,6 +288,7 @@ local functions = {
 			{name = "receiver_02",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_01"},
 			{name = "receiver_04",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_02"},
 			{name = "receiver_05",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_03"},
+			{name = "receiver_11",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_04"},
 			{name = "receiver_09",		model = _item_ranged.."/recievers/autogun_rifle_killshot_receiver_ml01"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,

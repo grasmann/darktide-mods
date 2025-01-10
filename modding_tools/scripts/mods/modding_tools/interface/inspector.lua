@@ -22,6 +22,6 @@ mod.inspect = function(self, key, obj)
     if self.inspector and not self.inspector.destroyed then
         self.inspector:clear()
         self.inspector:navigate(key, obj)
-        self.inspector:show(true)
+        -- self.inspector:show(true)
     end
 end

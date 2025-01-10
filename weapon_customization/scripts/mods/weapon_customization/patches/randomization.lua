@@ -121,10 +121,11 @@ mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gea
         mod.gear_settings:destroy_temp_settings(create_id)
     end
 
+    -- Destroy temp settings for gear id
+    mod.gear_settings:destroy_temp_settings(gear_id)
+
     -- Check attachments
     if attachments then
-        -- Destroy temp settings for gear id
-        mod.gear_settings:destroy_temp_settings(gear_id)
         -- Push attachments
         mod.gear_settings:push(gear_id, attachments)
         -- Save gear settings
@@ -149,10 +150,11 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
         -- Get random attachments
         local attachments = mod.gear_settings:randomize_weapon(item)
 
+        -- Destroy temp settings for gear id
+        mod.gear_settings:destroy_temp_settings(card_reward.gear_id)
+
         -- Check attachments
         if attachments then
-            -- Destroy temp settings for gear id
-            mod.gear_settings:destroy_temp_settings(card_reward.gear_id)
             -- Push attachments
             mod.gear_settings:push(card_reward.gear_id, attachments)
             -- Save gear settings

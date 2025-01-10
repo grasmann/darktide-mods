@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\master_item_community_patch\scripts\mods\master_item_community_patch" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\master_item_community_patch\scripts\mods\master_item_community_patch"

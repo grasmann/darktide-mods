@@ -24,15 +24,15 @@ local mod = get_mod("weapon_customization")
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 return {
-    shaft_attachments = function(default)
+    shaft_attachments = function(default) -- Last update 1.5.4
         local attachments = {
-            {id = "2h_power_maul_shaft_01", name = "Powermaul 1"},
-            {id = "2h_power_maul_shaft_02", name = "Powermaul 2"},
-            {id = "2h_power_maul_shaft_03", name = "Powermaul 3"},
-            {id = "2h_power_maul_shaft_04", name = "Powermaul 4"},
-            {id = "2h_power_maul_shaft_05", name = "Powermaul 5"},
-            {id = "2h_power_maul_shaft_06", name = "Powermaul 6"},
-            {id = "2h_power_maul_shaft_ml01", name = "Powermaul 7"},
+            {id = "2h_power_maul_shaft_01",   name = "Powermaul 1"},
+            {id = "2h_power_maul_shaft_02",   name = "Powermaul 2"},
+            {id = "2h_power_maul_shaft_03",   name = "Powermaul 3"},
+            {id = "2h_power_maul_shaft_04",   name = "Powermaul 4"},
+            {id = "2h_power_maul_shaft_05",   name = "Powermaul 5"},
+            {id = "2h_power_maul_shaft_06",   name = "Powermaul 6"},
+            {id = "2h_power_maul_shaft_ml01", name = "Powermaul ML01"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -40,16 +40,16 @@ return {
             attachments)
         else return attachments end
     end,
-    shaft_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
+    shaft_models = function(parent, angle, move, remove, type, no_support, automatic_equip, hide_mesh, mesh_move, special_resolve) -- Last update 1.5.4
         if mesh_move == nil then mesh_move = false end
         return table_model_table({
-            {name = "shaft_default",          model = ""},
-            {name = "2h_power_maul_shaft_01", model = _item_melee.."/shafts/2h_power_maul_shaft_01"},
-            {name = "2h_power_maul_shaft_02", model = _item_melee.."/shafts/2h_power_maul_shaft_02"},
-            {name = "2h_power_maul_shaft_03", model = _item_melee.."/shafts/2h_power_maul_shaft_03"},
-            {name = "2h_power_maul_shaft_04", model = _item_melee.."/shafts/2h_power_maul_shaft_04"},
-            {name = "2h_power_maul_shaft_05", model = _item_melee.."/shafts/2h_power_maul_shaft_05"},
-            {name = "2h_power_maul_shaft_06", model = _item_melee.."/shafts/2h_power_maul_shaft_06"},
+            {name = "shaft_default",            model = ""},
+            {name = "2h_power_maul_shaft_01",   model = _item_melee.."/shafts/2h_power_maul_shaft_01"},
+            {name = "2h_power_maul_shaft_02",   model = _item_melee.."/shafts/2h_power_maul_shaft_02"},
+            {name = "2h_power_maul_shaft_03",   model = _item_melee.."/shafts/2h_power_maul_shaft_03"},
+            {name = "2h_power_maul_shaft_04",   model = _item_melee.."/shafts/2h_power_maul_shaft_04"},
+            {name = "2h_power_maul_shaft_05",   model = _item_melee.."/shafts/2h_power_maul_shaft_05"},
+            {name = "2h_power_maul_shaft_06",   model = _item_melee.."/shafts/2h_power_maul_shaft_06"},
             {name = "2h_power_maul_shaft_ml01", model = _item_melee.."/shafts/2h_power_maul_shaft_ml01"},
         }, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,

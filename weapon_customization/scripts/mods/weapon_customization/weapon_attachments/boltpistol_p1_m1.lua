@@ -258,11 +258,11 @@ return table_combine(
 
 
 				{dependencies = {"reflex_sight_01"}, -- Sight
-					sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+					sight = {offset = true, position = vector3_box(.0015, .03, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
 				{dependencies = {"reflex_sight_02"}, -- Sight
-					sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+					sight = {offset = true, position = vector3_box(.0015, .03, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
 				{dependencies = {"reflex_sight_03"}, -- Sight
-					sight = {offset = true, position = vector3_box(0, .03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+					sight = {offset = true, position = vector3_box(.0015, .03, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
 
 
 

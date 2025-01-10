@@ -59,6 +59,33 @@ local mod = get_mod("weapon_customization")
 	mod.preview_lights = {}
 --#endregion
 
+mod:hook(CLASS.InventoryWeaponMarksView, "cb_on_equip_pressed", function(func, self, ...)
+	if self._equipped_item then
+		local gear_id = mod.gear_settings:gear_id(self._equipped_item)
+		mod:persistent_table(REFERENCE).weapon_templates[gear_id] = nil
+	end
+	-- Original function
+	func(self, ...)
+end)
+
+mod:hook(CLASS.InventoryWeaponMarksView, "cb_on_grid_entry_left_pressed", function(func, self, widget, element, ...)
+	if self._equipped_item then
+		local gear_id = mod.gear_settings:gear_id(self._equipped_item)
+		mod:persistent_table(REFERENCE).weapon_templates[gear_id] = nil
+	end
+	-- Original function
+	func(self, widget, element, ...)
+end)
+
+-- mod:hook(CLASS.InventoryWeaponMarksView, "_preview_item", function(func, self, item, ...)
+-- 	if self._equipped_item then
+-- 		local gear_id = mod.gear_settings:gear_id(self._equipped_item)
+-- 		mod:persistent_table(REFERENCE).weapon_templates[gear_id] = nil
+-- 	end
+-- 	-- Original function
+-- 	func(self, item, ...)
+-- end)
+
 -- ##### ┬─┐┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┌─┐┬ ┬┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐┬─┐ ##############################################################
 -- ##### ├┬┘│ │ │ ├─┤ │ ├┤   │  ├─┤├─┤├┬┘├─┤│   │ ├┤ ├┬┘ ##############################################################
 -- ##### ┴└─└─┘ ┴ ┴ ┴ ┴ └─┘  └─┘┴ ┴┴ ┴┴└─┴ ┴└─┘ ┴ └─┘┴└─ ##############################################################

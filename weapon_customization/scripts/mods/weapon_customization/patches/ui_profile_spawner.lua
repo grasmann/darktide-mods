@@ -234,7 +234,7 @@ mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_ser
 	-- Original function
 	func(self, dt, t, input_service, ...)
 
-	if self:spawned() then
+	if self:spawned() and not self:loading() and self:spawned_character_unit() then
 
 		-- Visible equipment
 		self:update_custom_extensions(dt, t)

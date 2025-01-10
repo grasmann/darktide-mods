@@ -60,6 +60,8 @@ return {
             {id = "flashlight_02", name = mod:localize("mod_attachment_flashlight_02")},
             {id = "flashlight_03", name = mod:localize("mod_attachment_flashlight_03")},
             {id = "flashlight_04", name = mod:localize("mod_attachment_flashlight_04")},
+            -- {id = "flashlight_05", name = mod:localize("mod_attachment_flashlight_05")},
+            -- {id = "flashlight_06", name = mod:localize("mod_attachment_flashlight_06")},
             {id = "laser_pointer", name = mod:localize("mod_attachment_laser_pointer")},
         }
         if default == nil then default = true end
@@ -83,6 +85,8 @@ return {
             {name = "flashlight_02", model = _item_ranged.."/flashlights/flashlight_02", data = flashlight_data[2]},
             {name = "flashlight_03", model = _item_ranged.."/flashlights/flashlight_03", data = flashlight_data[3]},
             {name = "flashlight_04", model = _item_ranged.."/flashlights/flashlight_05", data = flashlight_data[4]},
+            -- {name = "flashlight_05", model = _item_ranged.."/flashlights/flashlight_ogryn_01", data = flashlight_data[4]},
+            -- {name = "flashlight_06", model = _item_ranged.."/flashlights/flashlight_ogryn_long_01", data = flashlight_data[4]},
             {name = "laser_pointer", model = _item_ranged.."/flashlights/flashlight_05", data = flashlight_data[5]},
         }, parent, angle, move, remove, type or "flashlight", no_support, automatic_equip, hide_mesh, mesh_move)
     end,

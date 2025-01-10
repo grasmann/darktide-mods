@@ -48,13 +48,13 @@ local mod = get_mod("weapon_customization")
             attachments = {
                 -- Native
                 receiver = _autogun_p1_m1.receiver_attachments(),
-                barrel = _autogun_p1_m1.barrel_attachments(),
-                muzzle = _autogun_p1_m1.muzzle_attachments(),
+                barrel   = _autogun_p1_m1.barrel_attachments(),
+                muzzle   = _autogun_p1_m1.muzzle_attachments(),
                 -- Ranged
                 flashlight = _common_ranged.flashlights_attachments(),
-                grip = _common_ranged.grip_attachments(),
-                stock = _common_ranged.stock_attachments(),
-                magazine = _common_ranged.magazine_attachments(),
+                grip       = _common_ranged.grip_attachments(),
+                stock      = _common_ranged.stock_attachments(),
+                magazine   = _common_ranged.magazine_attachments(),
                 sight = table_icombine(
                     _common_ranged.reflex_sights_attachments(),
                     _common_ranged.sights_attachments(false)
@@ -62,7 +62,7 @@ local mod = get_mod("weapon_customization")
                 bayonet = _common_ranged.bayonet_attachments(),
                 -- Common
                 emblem_right = _common.emblem_right_attachments(),
-                emblem_left = _common.emblem_left_attachments(),
+                emblem_left  = _common.emblem_left_attachments(),
                 trinket_hook = _common.trinket_hook_attachments(),
             },
             -- ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐
@@ -262,10 +262,18 @@ local mod = get_mod("weapon_customization")
                     --#endregion
                     --#region Sights
                         --#region Infantry receiver
-                            {dependencies = {"lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
-                                sight = {offset = true, position = vector3_box(0, -.028, .0265), rotation = vector3_box(0, 0, 0),
-                                animation_wait_attach = {"rail"}
-                            }},
+                        {dependencies = {"lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
+                            sight = {offset = true, position = vector3_box(0, -.028, .0265), rotation = vector3_box(0, 0, 0),
+                            animation_wait_attach = {"rail"}
+                        }},
+                        {dependencies = {"reflex_sight_01", "receiver_01"}, -- Infantry lasgun reflex sight
+                            sight = {offset = true, position = vector3_box(.00010, -0.037, .0005), rotation = vector3_box(0, 0, 0),
+                            animation_wait_attach = {"rail"}
+                        }},
+                        {dependencies = {"reflex_sight_02|reflex_sight_03", "receiver_01"}, -- Other two reflex sights
+                            sight = {offset = true, position = vector3_box(.00010, -0.037, -.00035), rotation = vector3_box(0, 0, 0), 
+                            animation_wait_attach = {"rail"}
+                        }},
                         --#endregion
                         --#region Headhunter receiver
                             {dependencies = {"autogun_rifle_sight_01", _headhunter_receivers}, -- Infantry sight
@@ -284,6 +292,14 @@ local mod = get_mod("weapon_customization")
                                 sight = {offset = true, position = vector3_box(0, -.028, .026), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
                                 animation_wait_attach = {"rail"}
                             }},
+							{dependencies = {"reflex_sight_01", _headhunter_receivers}, -- Infantry lasgun reflex sight
+								sight = {offset = true, position = vector3_box(.00010, -.045, .0005), rotation = vector3_box(0, 0, 0),
+								animation_wait_attach = {"rail"}
+							}},
+							{dependencies = {"reflex_sight_02|reflex_sight_03", _headhunter_receivers}, -- Other two reflex sights
+								sight = {offset = true, position = vector3_box(.00010, -.045, -.00035), rotation = vector3_box(0, 0, 0), 
+								animation_wait_attach = {"rail"}
+							}},
                         --#endregion
                         --#region Braced receiver
                             {dependencies = {"autogun_rifle_sight_01", _braced_receivers}, -- Infantry sight
@@ -302,6 +318,16 @@ local mod = get_mod("weapon_customization")
                                 sight = {offset = true, position = vector3_box(0, -.01, .026), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .65, 1),
                                 animation_wait_attach = {"rail"}
                             }},
+                            {dependencies = {"reflex_sight_01", _braced_receivers}, -- Infantry lasgun reflex sight
+								sight = {offset = true, position = vector3_box(.00010, -.035, .0009), rotation = vector3_box(0, 0, 0),
+								animation_wait_attach = {"rail"}
+							}},
+							{dependencies = {"reflex_sight_02|reflex_sight_03", _braced_receivers}, -- Other two reflex sights
+								sight = {offset = true, position = vector3_box(.00010, -.035, 0), rotation = vector3_box(0, 0, 0), 
+								animation_wait_attach = {"rail"}
+							}},
+
+                            
                             {dependencies = {_headhunter_receivers}, -- Sight
                                 sight = {offset = true, position = vector3_box(0, -.045, 0), rotation = vector3_box(0, 0, 0),
                                 animation_wait_attach = {"rail"}

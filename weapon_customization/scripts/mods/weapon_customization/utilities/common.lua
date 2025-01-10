@@ -44,7 +44,7 @@ local mod = get_mod("weapon_customization")
 		"mutator_ventilation_purge_los"
 	}
 	local _needed_packages = {
-        "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
+        -- "content/weapons/player/ranged/bolt_gun/attachments/sight_01/sight_01",
 		-- "content/weapons/player/attachments/trinket_hooks/trinket_hook_03_v",
 		"content/fx/particles/enemies/sniper_laser_sight",
 		"content/fx/particles/enemies/red_glowing_eyes",
@@ -53,13 +53,13 @@ local mod = get_mod("weapon_customization")
 		"content/fx/particles/abilities/chainlightning/protectorate_chainlightning_hands_charge",
 		"content/fx/particles/screenspace/screen_ogryn_dash",
 		"wwise/events/weapon/play_lasgun_p3_mag_button",
-		"content/weapons/player/ranged/lasgun_rifle/attachments/rail_01/rail_01",
+		-- "content/weapons/player/ranged/lasgun_rifle/attachments/rail_01/rail_01",
 		-- "content/weapons/player/ranged/lasgun_rifle/attachments/sight_01/sight_01",
 		-- "content/weapons/player/melee/combat_blade/attachments/handle_01/handle_01",
-		"content/characters/tiling_materials/leather_coarse/leather_coarse_bc",
-		"content/characters/tiling_materials/leather_coarse/leather_coarse_nm",
-		"content/characters/tiling_materials/leather_coarse/leather_coarse_orm",
-		"content/weapons/player/ranged/autogun_rifle/attachments/magazine_01/magazine_01",
+		-- "content/characters/tiling_materials/leather_coarse/leather_coarse_bc",
+		-- "content/characters/tiling_materials/leather_coarse/leather_coarse_nm",
+		-- "content/characters/tiling_materials/leather_coarse/leather_coarse_orm",
+		-- "content/weapons/player/ranged/autogun_rifle/attachments/magazine_01/magazine_01",
     }
 	local mesh_positions = {}
 	local mesh_rotations = {}
@@ -142,27 +142,27 @@ end
 -- 	end
 -- end
 
-mod.player_from_viewport = function(self, viewport_name)
-    local players = managers.player:players()
-    for _, player in pairs(players) do
-        if player.viewport_name == viewport_name then
-            return player
-        end
-    end
-end
+-- mod.player_from_viewport = function(self, viewport_name)
+--     local players = managers.player:players()
+--     for _, player in pairs(players) do
+--         if player.viewport_name == viewport_name then
+--             return player
+--         end
+--     end
+-- end
 
 -- Get player from player_unit
-mod.player_from_unit = function(self, unit)
-    if unit then
-        local player_manager = managers.player
-        for _, player in pairs(player_manager:players()) do
-            if player.player_unit == unit then
-                return player
-            end
-        end
-    end
-    return managers.player:local_player_safe(1)
-end
+-- mod.player_from_unit = function(self, unit)
+--     if unit then
+--         local player_manager = managers.player
+--         for _, player in pairs(player_manager:players()) do
+--             if player.player_unit == unit then
+--                 return player
+--             end
+--         end
+--     end
+--     return managers.player:local_player_safe(1)
+-- end
 
 -- Extract item name from model string
 -- mod.item_name_from_content_string = function(self, content_string)

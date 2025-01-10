@@ -176,7 +176,7 @@ SaveLua._set_cache = function(self, entries)
 end
 
 SaveLua._read_file = function(self, path)
-	local file = assert(_io.open(path, "rb"))
+	local file = assert(_io.open(path, "r"))
 	if not file then return nil end
 	local content = file:read("*all")
 	file:close()

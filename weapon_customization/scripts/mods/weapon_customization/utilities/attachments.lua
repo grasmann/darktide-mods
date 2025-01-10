@@ -34,7 +34,7 @@ local mod = get_mod("weapon_customization")
 	local table_insert = table.insert
 	local string_gsub = string.gsub
 	local string_find = string.find
-	local string_trim = string.trim
+	local string_trim = string._trim
 	local Application = Application
 	local unit_get_data = Unit.get_data
 	local table_contains = table.contains
@@ -88,22 +88,24 @@ local mod = get_mod("weapon_customization")
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.play_attachment_sound = function(self, item, attachment_slot, attachment_name, type)
-	if self.cosmetics_view then --and self.cosmetics_view.weapon_unit and unit_alive(self.cosmetics_view.weapon_unit) then
-		local item_name = self.cosmetics_view._item_name
+	local cosmetics_view = self.cosmetics_view
+	if cosmetics_view then --and cosmetics_view.weapon_unit and unit_alive(cosmetics_view.weapon_unit) then
+		local item_name = cosmetics_view._item_name
 		-- if attachment_name == "default" then attachment_name = self:get_actual_default_attachment(item, attachment_slot) end
 		if attachment_name == "default" then attachment_name = mod.gear_settings:default_attachment(item, attachment_slot) end
 		local sounds = self:get_equipment_sound_effect(item, attachment_slot, attachment_name, type)
 		if sounds then
 			-- local unit = self:get_attachment_slot_unit(attachment_slot)
-			local slot_info_id = self.cosmetics_view._slot_info_id
+			local slot_info_id = cosmetics_view._slot_info_id
 			local slot_infos = slot_info_id and mod:persistent_table(REFERENCE).attachment_slot_infos
 			local gear_info = slot_infos and slot_infos[slot_info_id]
 			local player_unit = self.player_unit and unit_alive(self.player_unit) and self.player_unit
 			local unit = player_unit or gear_info and gear_info.attachment_slot_to_unit[attachment_slot]
-			-- local unit = player_unit and self:get_attachment_unit(self.cosmetics_view.weapon_unit, attachment_slot)
+			-- local unit = player_unit and self:get_attachment_unit(cosmetics_view.weapon_unit, attachment_slot)
 			if unit and unit_alive(unit) then
+				local ui_manager = managers.ui
 				for _, sound in pairs(sounds) do
-					managers.ui:play_unit_sound(sound, unit, 1)
+					ui_manager:play_unit_sound(sound, unit, 1)
 				end
 			end
 		else
@@ -111,7 +113,7 @@ mod.play_attachment_sound = function(self, item, attachment_slot, attachment_nam
 				for _, data in pairs(self.attachment[item_name][attachment_slot]) do
 					if data.id == attachment_name and data.sounds then
 						for _, sound in pairs(data.sounds) do
-							self.cosmetics_view:_play_sound(sound)
+							cosmetics_view:_play_sound(sound)
 						end
 					end
 				end
@@ -191,6 +193,8 @@ mod.get_equipment_sound_effect = function(self, item, attachment_slot, attachmen
 end
 
 mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachment_name)
+	local gear_settings = mod.gear_settings
+
 	if WeaponCustomizationLocalization.mod_attachment_remove[LANGUAGE_ID] then
 		self.found_names = self.found_names or {}
 		local name = nil
@@ -208,7 +212,7 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 				for _, entry in pairs(item_definitions) do
 					
 					if entry.attachments and entry.item_type ~= WEAPON_SKIN and entry.display_name ~= "" and entry.display_name ~= "n/a" then
-						local attachment_models = mod.gear_settings:_recursive_get_attachment_models(entry.attachments)
+						local attachment_models = gear_settings:_recursive_get_attachment_models(entry.attachments)
 						-- local data = self.gear_settings:_recursive_find_attachment_item_string(entry.attachments, attachment_data.model)
 						-- if data then
 						if table_contains(attachment_models, attachment_data.model) then
@@ -232,7 +236,7 @@ mod.get_attachment_weapon_name = function(self, item, attachment_slot, attachmen
 					-- Search only skins
 					for _, entry in pairs(item_definitions) do
 						if entry.attachments and entry.item_type == WEAPON_SKIN and entry.display_name ~= "" and entry.display_name ~= "n/a" then
-							local attachment_models = mod.gear_settings:_recursive_get_attachment_models(entry.attachments)
+							local attachment_models = gear_settings:_recursive_get_attachment_models(entry.attachments)
 							-- local data = self.gear_settings:_recursive_find_attachment_item_string(entry.attachments, attachment_data.model)
 							-- if data then
 							if table_contains(attachment_models, attachment_data.model) then
