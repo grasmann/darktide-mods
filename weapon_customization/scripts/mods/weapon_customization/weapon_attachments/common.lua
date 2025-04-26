@@ -71,6 +71,7 @@ return {
             {id = "thunder_hammer_connector_04",   name = "Thunderhammer 4"},
             {id = "thunder_hammer_connector_05",   name = "Thunderhammer 5"},
             {id = "thunder_hammer_connector_ml01", name = "Thunderhammer ML01"},
+            {id = "thunder_hammer_connector_06",   name = "Thunderhammer 6"},
             {id = "force_staff_full_01",           name = "Force Staff 1"},
             {id = "force_staff_full_02",           name = "Force Staff 2"},
             {id = "force_staff_full_03",           name = "Force Staff 3"},
@@ -100,6 +101,7 @@ return {
             {name = "thunder_hammer_connector_04",   model = _item_melee.."/connectors/thunder_hammer_connector_04"},
             {name = "thunder_hammer_connector_05",   model = _item_melee.."/connectors/thunder_hammer_connector_05"},
             {name = "thunder_hammer_connector_ml01", model = _item_melee.."/connectors/thunder_hammer_connector_ml01"},
+            {name = "thunder_hammer_connector_06",   model = _item_melee.."/connectors/thunder_hammer_connector_06"},
             {name = "force_staff_full_01",           model = _item_melee.."/full/force_staff_full_01"},
             {name = "force_staff_full_02",           model = _item_melee.."/full/force_staff_full_02"},
             {name = "force_staff_full_03",           model = _item_melee.."/full/force_staff_full_03"},
@@ -141,6 +143,9 @@ return {
             {id = "emblem_right_21", name = "Emblem 21"},
             {id = "emblem_right_22", name = "Emblem 22"},
             {id = "emblem_right_23", name = "Emblem 23"},
+            {id = "emblem_right_24", name = "Emblem 24"},
+            {id = "emblem_right_25", name = "Emblem 25"},
+            {id = "emblem_right_26", name = "Emblem 26"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -175,6 +180,9 @@ return {
             {name = "emblem_right_21",      model = _item_ranged.."/emblems/emblemright_10"},
             {name = "emblem_right_22",      model = _item_ranged.."/emblems/emblemright_11"},
             {name = "emblem_right_23",      model = _item_ranged.."/emblems/emblemright_12"},
+            {name = "emblem_right_24",      model = _item_ranged.."/emblems/emblemright_13"},
+            {name = "emblem_right_25",      model = _item_ranged.."/emblems/emblemright_14"},
+            {name = "emblem_right_26",      model = _item_ranged.."/emblems/emblemright_15"},
         }, parent, angle, move, remove, type or "emblem_right", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     emblem_left_attachments = function(default)
@@ -193,6 +201,9 @@ return {
             {id = "emblem_left_12", name = "Emblem 12"},
             {id = "emblem_left_13", name = "Emblem 13"},
             {id = "emblem_left_14", name = "Emblem 14"},
+            {id = "emblem_left_15", name = "Emblem 15"},
+            {id = "emblem_left_16", name = "Emblem 16"},
+            {id = "emblem_left_17", name = "Emblem 17"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -218,6 +229,9 @@ return {
             {name = "emblem_left_12",      model = _item_ranged.."/emblems/emblemleft_10"},
             {name = "emblem_left_13",      model = _item_ranged.."/emblems/emblemleft_11"},
             {name = "emblem_left_14",      model = _item_ranged.."/emblems/emblemleft_12"},
+            {name = "emblem_left_15",      model = _item_ranged.."/emblems/emblemleft_13"},
+            {name = "emblem_left_16",      model = _item_ranged.."/emblems/emblemleft_14"},
+            {name = "emblem_left_17",      model = _item_ranged.."/emblems/emblemleft_15"},
         }, parent, angle, move, remove, type or "emblem_left", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     decal_right_attachments = function(default)

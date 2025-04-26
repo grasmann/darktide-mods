@@ -95,6 +95,7 @@ return {
 			{id = "chain_axe_blade_03", name = "Blade 3"},
 			{id = "chain_axe_blade_04", name = "Blade 4"},
 			{id = "chain_axe_blade_05", name = "Blade 5"},
+			{id = "chain_axe_blade_06", name = "Blade 6"},
 			{id = "chain_axe_blade_ml01", name = "Blade 6"},
 		}
 		if default == nil then default = true end
@@ -112,6 +113,7 @@ return {
 			{name = "chain_axe_blade_03",		model = _item_melee.."/blades/chain_axe_blade_03"},
 			{name = "chain_axe_blade_04",		model = _item_melee.."/blades/chain_axe_blade_04"},
 			{name = "chain_axe_blade_05",		model = _item_melee.."/blades/chain_axe_blade_05"},
+			{name = "chain_axe_blade_06",		model = _item_melee.."/blades/chain_axe_blade_06"},
 			{name = "chain_axe_blade_ml01",		model = _item_melee.."/blades/chain_axe_blade_ml01"},
 		}, parent, angle, move, remove, type or "blade", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,

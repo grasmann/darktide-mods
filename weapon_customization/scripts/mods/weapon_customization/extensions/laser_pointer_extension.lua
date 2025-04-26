@@ -35,6 +35,7 @@ local AttackSettings = mod:original_require("scripts/settings/damage/attack_sett
     local Quaternion = Quaternion
     local vector3_box = Vector3Box
     local script_unit = ScriptUnit
+    local table_clear = table.clear
     local DebugDrawer = DebugDrawer
     local vector3_zero = vector3.zero
     local vector3_lerp = vector3.lerp
@@ -92,8 +93,8 @@ local LINE_EFFECT = {
         interval = {distance = MAX_DISTANCE, increase = 0},
     },
 }
-local SPAWNER_NAME = "slot_primary_laser_pointer_1p"
-local SPAWNER_NAME_3P = "slot_primary_laser_pointer_3p"
+local SPAWNER_NAME = "slot_secondary_laser_pointer_1p"
+local SPAWNER_NAME_3P = "slot_secondary_laser_pointer_3p"
 local LOCK_STATES = {"walking", "sliding", "jumping", "falling", "dodging", "ledge_vaulting"}
 local SWAY_MULTIPLIER = 2.5
 local SWAY_MULTIPLIER_AIMING = 10
@@ -112,8 +113,14 @@ local LaserPointerExtension = class("LaserPointerExtension", "WeaponCustomizatio
 LaserPointerExtension.init = function(self, extension_init_context, unit, extension_init_data)
     LaserPointerExtension.super.init(self, extension_init_context, unit, extension_init_data)
 
+    self.weapon_fov_mod = get_mod("weapon_fov")
+    self.weapon_fov_mod_hooked = false
+    -- self:hook_weapon_fov_mod()
 	self.laser_pointer_unit = extension_init_data.flashlight_unit_1p
 	self.laser_pointer_unit_3p = extension_init_data.flashlight_unit_3p
+    -- if self:is_weapon_fov_installed() then
+    --     Unit.set_shader_pass_flag_for_meshes_in_unit_and_childs(self.laser_pointer_unit, "custom_fov", false)
+    -- end
     self.on = extension_init_data.on or self.is_local_unit and mod:flashlight_active() or false
     local wielded_slot = extension_init_data.wielded_slot
     self.wielded = wielded_slot and wielded_slot.name == SLOT_SECONDARY
@@ -143,14 +150,23 @@ LaserPointerExtension.init = function(self, extension_init_context, unit, extens
     self.dot_weapon_effect_id = nil
     self.dot_eccect_id = nil
     self.hit_marker_dots = {}
-    
+
+    managers.event:register(self, "weapon_customization_cutscene", "set_cutscene")
+    managers.event:register(self, "weapon_customization_respawn_laser_pointers", "respawn_all")
+
     self:on_settings_changed()
 
     self.initialized = true
 end
 
+mod:hook(Unit, "set_shader_pass_flag_for_meshes_in_unit_and_childs", function(func, unit, name, value, ...)
+	func(unit, name, value, ...)
+    if managers.event and name == "custom_fov" then managers.event:trigger("weapon_customization_respawn_laser_pointers") end
+end)
+
 LaserPointerExtension.delete = function(self)
     managers.event:unregister(self, "weapon_customization_cutscene")
+    managers.event:unregister(self, "weapon_customization_respawn_laser_pointers")
     self.initialized = false
     self.on = false
     self:despawn_laser()
@@ -357,6 +373,12 @@ LaserPointerExtension.update_laser_end_point = function(self, dt, t)
     end
 end
 
+LaserPointerExtension.update_effect_fov = function(self, effect_id)
+    if self:is_weapon_fov_installed() and self:get_first_person() then
+        world_set_particles_use_custom_fov(self.world, effect_id, false)
+    end
+end
+
 LaserPointerExtension.update_laser = function(self, dt, t)
     local first_person = self:get_first_person()
     local braced = mod:execute_extension(self.player_unit, "sight_system", "is_braced")
@@ -379,9 +401,14 @@ LaserPointerExtension.update_laser_particle = function(self, dt, t)
     if self.initialized and self.fx_extension then
         local aligned_vfx = self.fx_extension._aligned_vfx
         local distance = self.hit_distance or MAX_DISTANCE
+        local laser_pointer_unit = self:get_laser_pointer_unit()
+        local laser_position = unit_world_position(laser_pointer_unit, 2)
         local end_position = vector3_unbox(self.end_position)
         local hit_direction = vector3_unbox(self.hit_direction)
+        -- local first_person = self:get_first_person()
         local variable_index = world_find_particles_variable(self.world, LASER_PARTICLE_EFFECT, "hit_distance")
+        -- self.fx_extension:_update_aligned_vfx()
+        -- self.fx_extension:_update_aligned_vfx()
         for laser_index, laser_effect_id in pairs(self.laser_effect_ids) do
             -- local scale = .1
             -- if laser_index / self.laser_count > .66 then
@@ -391,11 +418,18 @@ LaserPointerExtension.update_laser_particle = function(self, dt, t)
             -- elseif laser_index > 2 then
             --     scale = .075
             -- end
-            world_set_particles_variable(self.world, laser_effect_id, variable_index, vector3(.025, distance, distance))
+            -- local rotation = Quaternion.look(vector3.normalize(end_position - laser_position))
+		    -- World.move_particles(self.world, laser_effect_id, laser_position, rotation)
+            world_set_particles_variable(self.world, laser_effect_id, variable_index, vector3(.02, distance, .5))
+            self:update_effect_fov(laser_effect_id)
+            -- -- Weapon FOV compatibility
+            -- if self:is_weapon_fov_installed() and first_person then
+            --     world_set_particles_use_custom_fov(self.world, laser_effect_id, false)
+            -- end
             -- Weapon FOV compatibility
             -- local first_person = not self:get_first_person()
             -- if self:is_weapon_fov_installed() and first_person then
-            -- world_set_particles_use_custom_fov(self.world, laser_effect_id, false)
+            
             -- end
             -- Update end position
             for index, data in pairs(aligned_vfx.buffer) do
@@ -404,7 +438,15 @@ LaserPointerExtension.update_laser_particle = function(self, dt, t)
                 end
             end
         end
-        self.fx_extension:_update_aligned_vfx()
+        
+        -- for laser_index, laser_effect_id in pairs(self.laser_effect_ids) do
+        --     -- world_set_particles_use_custom_fov(self.world, laser_effect_id, false)
+        --     -- -- Weapon FOV compatibility
+        --     -- if self:is_weapon_fov_installed() and first_person then
+        --     --     world_set_particles_use_custom_fov(self.world, laser_effect_id, false)
+        --     -- end
+        --     self:update_effect_fov(laser_effect_id)
+        -- end
     end
 end
 
@@ -463,6 +505,11 @@ LaserPointerExtension.update_laser_dot = function(self, dt, t)
             end
         end
 
+        -- if self:is_weapon_fov_installed() and first_person then
+        --     world_set_particles_use_custom_fov(self.world, self.laser_dot_effect_id, false)
+        -- end
+        -- self:update_effect_fov(self.laser_dot_effect_id)
+
         world_move_particles(self.world, self.laser_dot_effect_id, end_position)
     end
 end
@@ -519,7 +566,7 @@ LaserPointerExtension.spawn_laser = function(self)
     local husk = self.is_local_unit or (self.team_lasers or self.spectated)
     local particle = #self.laser_effect_ids == 0
     local slot = self:is_wielded()
-    if self.on and common and particle and husk and self:is_wielded() then
+    if self.on and common and particle and husk and slot then
         self:set_fx_spawner()
         local spawner_name = self:get_spawner_name()
         local unit = self.fx_extension._vfx_spawners[spawner_name].unit
@@ -532,6 +579,31 @@ LaserPointerExtension.spawn_laser = function(self)
     end
 end
 
+LaserPointerExtension.spawn_laser_setup = function(self, effect_id)
+    self.laser_effect_ids[#self.laser_effect_ids+1] = effect_id
+    self:update_effect_fov(effect_id)
+end
+
+-- LaserPointerExtension.set_shader_pass_flag_for_meshes_in_unit_and_childs = function(self)
+
+-- end
+
+-- mod:hook(Unit, "set_shader_pass_flag_for_meshes_in_unit_and_childs", function(func, unit, name, value, ...)
+-- 	func(unit, name, value, ...)
+
+-- end)
+
+mod:hook(CLASS.PlayerUnitFxExtension, "_spawn_unit_particles", function(func, self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, ...)
+    -- Original function
+    local effect_id = func(self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, ...)
+    -- Check if laser particle and initialize
+    if particle_name == LASER_PARTICLE_EFFECT and (spawner_name == SPAWNER_NAME or spawner_name == SPAWNER_NAME_3P) then
+        mod:execute_extension(self._unit, "laser_pointer_system", "spawn_laser_setup", effect_id)
+    end
+    -- Return
+    return effect_id
+end)
+
 LaserPointerExtension.despawn_laser = function(self)
     local count = #self.laser_effect_ids
     for _, laser_effect_id in pairs(self.laser_effect_ids) do
@@ -540,7 +612,7 @@ LaserPointerExtension.despawn_laser = function(self)
             world_destroy_particles(self.world, laser_effect_id)
         end
     end
-    table.clear(self.laser_effect_ids)
+    table_clear(self.laser_effect_ids)
 end
 
 LaserPointerExtension.spawn_weapon_dot = function(self)
@@ -553,7 +625,7 @@ LaserPointerExtension.spawn_weapon_dot = function(self)
         local laser_pointer_unit = self:get_laser_pointer_unit()
         if laser_pointer_unit and unit_alive(laser_pointer_unit) then
             local laser_position = unit_world_position(laser_pointer_unit, 1)
-            local first_person = not self:get_first_person()
+            local first_person = self:get_first_person()
 
             self.dot_weapon_effect_id = world_create_particles(self.world, LASER_DOT, vector3_zero(), quaternion_identity())
             matrix4x4_set_translation(unit_world_pose, vector3(0, .065, 0))
@@ -562,9 +634,8 @@ LaserPointerExtension.spawn_weapon_dot = function(self)
             world_set_particles_material_vector3(self.world, self.dot_weapon_effect_id, "eye_socket", "material_variable_21872256", vector3(1, 0, 0))
             world_set_particles_material_vector3(self.world, self.dot_weapon_effect_id, "eye_glow", "trail_color", vector3(0, 0, 0))
             world_set_particles_material_vector3(self.world, self.dot_weapon_effect_id, "eye_flash_init", "material_variable_21872256", vector3(.01, 0, 0))
-            if self:is_weapon_fov_installed() and first_person then
-                world_set_particles_use_custom_fov(self.world, self.dot_weapon_effect_id, false)
-            end
+
+            self:update_effect_fov(self.dot_weapon_effect_id)
         end
     end
 end
@@ -591,11 +662,11 @@ LaserPointerExtension.spawn_laser_dot = function(self)
         matrix4x4_set_translation(unit_world_pose, vector3(0, distance, 0))
         matrix4x4_set_scale(unit_world_pose, vector3(.1, .1, .1) * self.hit_indicator_size)
         world_link_particles(self.world, self.laser_dot_effect_id, self.first_person_unit, 1, unit_world_pose, "destroy")
-
-        world_set_particles_use_custom_fov(self.world, self.laser_dot_effect_id, false)
         world_set_particles_material_vector3(self.world, self.laser_dot_effect_id, "eye_socket", "material_variable_21872256", vector3(1, 0, 0))
         world_set_particles_material_vector3(self.world, self.laser_dot_effect_id, "eye_glow", "trail_color", vector3(0, 0, 0))
         world_set_particles_material_vector3(self.world, self.laser_dot_effect_id, "eye_flash_init", "material_variable_21872256", vector3(.1, 0, 0))
+
+        self:update_effect_fov(self.laser_dot_effect_id)
     end
 end
 
@@ -627,25 +698,29 @@ end
 
 LaserPointerExtension.set_fx_spawner = function(self)
     if self.fx_extension then
-        local vfx_spawner_1p = self.fx_extension._vfx_spawners["slot_primary_laser_pointer_1p"]
+        local vfx_spawner_1p = self.fx_extension._vfx_spawners[SPAWNER_NAME]
         if not vfx_spawner_1p then
-            self.fx_extension._vfx_spawners["slot_primary_laser_pointer_1p"] = {
+            self.fx_extension._vfx_spawners[SPAWNER_NAME] = {
                 node = 2,
+                node_3p = 2,
                 unit = self.laser_pointer_unit,
             }
         else
             vfx_spawner_1p.unit = self.laser_pointer_unit
             vfx_spawner_1p.node = 2
+            vfx_spawner_1p.node_3p = 2
         end
-        local vfx_spawner_3p = self.fx_extension._vfx_spawners["slot_primary_laser_pointer_3p"]
+        local vfx_spawner_3p = self.fx_extension._vfx_spawners[SPAWNER_NAME_3P]
         if not vfx_spawner_3p then
-            self.fx_extension._vfx_spawners["slot_primary_laser_pointer_3p"] = {
+            self.fx_extension._vfx_spawners[SPAWNER_NAME_3P] = {
                 node = 2,
+                node_3p = 2,
                 unit = self.laser_pointer_unit_3p,
             }
         else
-            vfx_spawner_3p.unit = self.laser_pointer_unit
+            vfx_spawner_3p.unit = self.laser_pointer_unit_3p
             vfx_spawner_3p.node = 2
+            vfx_spawner_3p.node_3p = 2
         end
     end
 end
@@ -669,23 +744,9 @@ LaserPointerExtension.on_settings_changed = function(self)
     self:respawn_all()
 end
 
--- LaserPointerExtension.on_toggle = function(self, optional_play_sound, optional_value)
---     if self:is_wielded() then
---         self:set_enabled(optional_value, optional_play_sound)
---     end
--- end
-
-LaserPointerExtension.particles_wrapper_created = function(self, particle_name, effect_id)
-    if particle_name == LASER_PARTICLE_EFFECT then
-        self.laser_effect_ids[#self.laser_effect_ids+1] = effect_id
-        -- World.set_particles_material_vector3(self.world, effect_id, "beam", "beam_color", vector3(0, 255, 0))
-        -- World.set_particles_material_color(self.world, effect_id, "beam", vector3(0, 255, 0))
-    end
-end
-
 LaserPointerExtension.on_wield_slot = function(self, slot)
     self.wielded = slot.name == SLOT_SECONDARY
-    self:spawn_all()
+    self:respawn_all()
 end
 
 LaserPointerExtension.on_unwield_slot = function(self, slot)
@@ -700,13 +761,15 @@ end
 -- ##### └┴┘└─┘┴ ┴┴  └─┘┘└┘  └  └─┘ └┘   └─┘└─┘┴ ┴┴  ┴ ┴ ┴ ┴└─┘┴┴─┘┴ ┴  ┴  ############################################
 
 LaserPointerExtension.is_weapon_fov_installed = function(self)
-    return get_mod("weapon_fov")
+    if self.weapon_fov_installed == nil then
+        self.weapon_fov_installed = not not self.weapon_fov_mod
+    end
+    return self.weapon_fov_installed
 end
 
 LaserPointerExtension.update_weapon_fov = function(self)
-    local weapon_fov = self:is_weapon_fov_installed()
-    if weapon_fov then
-        local current_fov_mode = weapon_fov:get("fov_mode")
+    if self:is_weapon_fov_installed() then
+        local current_fov_mode = self.weapon_fov_mod:get("fov_mode")
         if current_fov_mode ~= self.weapon_fov_last_mode then
             self:respawn_all()
             self.weapon_fov_last_mode = current_fov_mode

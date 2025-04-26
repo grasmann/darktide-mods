@@ -50,6 +50,7 @@ local mod = get_mod("weapon_customization")
 		"content/fx/particles/enemies/red_glowing_eyes",
 		"packages/ui/views/splash_view/splash_view",
 		"packages/ui/views/mission_intro_view/mission_intro_view",
+		"content/levels/ui/mission_intro/mission_intro",
 		"content/fx/particles/abilities/chainlightning/protectorate_chainlightning_hands_charge",
 		"content/fx/particles/screenspace/screen_ogryn_dash",
 		"wwise/events/weapon/play_lasgun_p3_mag_button",
@@ -73,9 +74,9 @@ mod.world = function(self)
     return managers.world:world("level_world")
 end
 
-mod.vector3_equal = function(self, v1, v2)
-	return v1[1] == v2[1] and v1[2] == v2[2] and v1[3] == v2[3]
-end
+-- mod.vector3_equal = function(self, v1, v2)
+-- 	return v1[1] == v2[1] and v1[2] == v2[2] and v1[3] == v2[3]
+-- end
 
 mod.physics_world = function(self, world)
 	local world = world or self:world()

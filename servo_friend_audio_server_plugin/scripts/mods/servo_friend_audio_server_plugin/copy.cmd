@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\servo_friend_audio_server_plugin\scripts\mods\servo_friend_audio_server_plugin" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\servo_friend_audio_server_plugin\scripts\mods\servo_friend_audio_server_plugin"

@@ -8,6 +8,7 @@ local DMF = get_mod("DMF")
 -- ##### ██████╔╝██║  ██║   ██║   ██║  ██║ ############################################################################
 -- ##### ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ############################################################################
 
+local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
 local TextUtilities = mod:original_require("scripts/utilities/ui/text")
 local UIFonts = mod:original_require("scripts/managers/ui/ui_fonts")
 local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
@@ -426,7 +427,11 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
                     if mod:is_me(account_id) then
                         name = TextUtilities.apply_color_to_text(name, Color.ui_orange_light(255, true))
                     end
-                    local symbol = player.string_symbol or player._profile and player._profile.archetype.string_symbol
+                    local symbol = player.string_symbol --or player._profile and player._profile.archetype.string_symbol
+                    local profile = player.profile and player:profile()
+			        local archetype_name = profile and profile.archetype and profile.archetype.name
+                    -- local archetype_name = player._profile.archetype and player._profile.archetype.name
+			        symbol = symbol or (archetype_name and UISettings.archetype_font_icon[archetype_name])
                     if symbol then
                         name = symbol.." "..name
                     end
@@ -755,7 +760,11 @@ mod.create_row_widget = function(self, index, current_offset, visible_rows, this
                 num_players = num_players + 1
                 if num_players <= 4 and ui_renderer then
                     local player_name = player:name()
-                    local symbol = player.string_symbol or player._profile and player._profile.archetype.string_symbol
+                    local symbol = player.string_symbol --or player._profile and player._profile.archetype.string_symbol
+                    local profile = player.profile and player:profile()
+			        local archetype_name = profile and profile.archetype and profile.archetype.name
+                    -- local archetype_name = player._profile.archetype and player._profile.archetype.name
+			        symbol = symbol or (archetype_name and UISettings.archetype_font_icon[archetype_name])
                     if symbol then
                         player_name = symbol.." "..player_name
                     end

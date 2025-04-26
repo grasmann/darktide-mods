@@ -40,3 +40,21 @@ mod:hook(CLASS.WeaponIconUI, "weapon_icon_updated", function(func, self, item, p
     local request_id = item.gear_id or item.name
     update_requests(self, request_id, item, prioritized)
 end)
+
+-- mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, render_context, dummy_profile, prioritize, unload_cb, ...)
+--     local item_name = real_item.name
+-- 	local gear_id = real_item.gear_id or item_name
+--     mod.persistent_table(REFERENCE).icon_cache = mod.persistent_table(REFERENCE).icon_cache or {}
+--     if mod.persistent_table(REFERENCE).icon_cache[gear_id] then
+
+--     else
+--         mod.persistent_table(REFERENCE).icon_cache[gear_id] = {
+--             item = real_item,
+--             callback = cb,
+--             widget = nil,
+
+--         }
+--         func(self, real_item, cb, render_context, dummy_profile, prioritize, unload_cb, ...)
+
+--     end
+-- end)

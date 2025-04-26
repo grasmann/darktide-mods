@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\cancel_loading\scripts\mods\cancel_loading" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\cancel_loading\scripts\mods\cancel_loading"

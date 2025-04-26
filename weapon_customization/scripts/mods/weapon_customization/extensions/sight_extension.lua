@@ -64,6 +64,7 @@ local mod = get_mod("weapon_customization")
 	local unit_world_rotation = Unit.world_rotation
 	local unit_local_position = Unit.local_position
 	local unit_local_rotation = Unit.local_rotation
+	local unit_animation_event = Unit.animation_event
 	local quaternion_matrix4x4 = Quaternion.matrix4x4
 	local unit_set_local_scale = Unit.set_local_scale
 	local unit_get_child_units = Unit.get_child_units
@@ -76,6 +77,7 @@ local mod = get_mod("weapon_customization")
 	local unit_set_local_rotation = Unit.set_local_rotation
 	local world_destroy_particles = World.destroy_particles
 	local unit_set_unit_visibility = Unit.set_unit_visibility
+	local unit_has_animation_event = Unit.has_animation_event
 	local script_unit_has_extension = script_unit.has_extension
 	local camera_custom_vertical_fov = Camera.custom_vertical_fov
 	local unit_set_scalar_for_materials = Unit.set_scalar_for_materials
@@ -128,6 +130,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 	self.is_starting_aim = nil
 	self._is_aiming = nil
 	self._is_unaiming = nil
+	self.scope_detached = false
 	self.aim_timer = nil
 	self.position_offset = vector3_box(vector3_zero())
 	self.rotation_offset = vector3_box(vector3_zero())
@@ -279,7 +282,9 @@ SightExtension.set_weapon_values = function(self)
 	self.sight_unit = mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, "sight_3")
 	    or mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, "sight_2")
 	    or mod.gear_settings:attachment_unit(self.ranged_weapon.attachment_units, "sight")
-
+	if self.sight_unit and unit_alive(self.sight_unit) then
+		unit_set_shader_pass_flag_for_meshes(self.sight_unit, "one_bit_alpha", true, true)
+	end
 	self.sight = self.sights[2] or self.sights[1] --self:get_sight()
 	self.sight_name = self.sights[1] and mod.gear_settings:short_name(self.sights[1].item)
 	self.offset = nil
@@ -323,8 +328,6 @@ SightExtension.set_sniper_scope_unit = function(self)
 	end
 end
 
--- local reflex = {}
--- local lenses = {}
 SightExtension.set_lens_units = function(self)
 	local reflex = {}
 	-- table.clear(reflex)
@@ -397,7 +400,7 @@ SightExtension.on_wield_slot = function(self, slot)
 end
 
 SightExtension.on_aim_stop = function(self, t)
-	if self:is_wielded() then
+	if self:is_wielded() and (self._is_aiming or self.is_starting_aim) then
 		self._is_hiding_crosshair = nil
 		self.is_starting_aim = nil
 		self._is_aiming = nil
@@ -407,7 +410,7 @@ SightExtension.on_aim_stop = function(self, t)
 end
 
 SightExtension.on_unaim_start = function(self, t)
-	if self:is_wielded() then
+	if self:is_wielded() and (self._is_aiming or self.is_starting_aim) then
 		self._is_hiding_crosshair = nil
 		self.is_starting_aim = nil
 		self._is_aiming = nil
@@ -424,6 +427,7 @@ SightExtension.on_settings_changed = function(self)
 	self.deactivate_crosshair_aiming = mod:get("mod_option_deactivate_crosshair_aiming")
 	self.weapon_dof = mod:get("mod_option_misc_weapon_dof")
 	self.lense_transparency_target = mod:get("mod_option_scopes_lens_transparency")
+	self.hide_reticle = mod:get("mod_option_scopes_hide_when_not_aiming")
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
@@ -652,6 +656,13 @@ SightExtension.update_scope_lenses = function(self)
 				unit_set_local_scale(self.lens_units[2], 1, scales2)
 			end
 		end
+		-- if self:is_scope() and self.sight_unit and unit_alive(self.sight_unit) then
+		-- 	if self.offset.lense_transparency and self.hide_reticle then
+		-- 		unit_set_scalar_for_materials(self.sight_unit, "inv_jitter_alpha", self.lens_transparency, true)
+		-- 	else
+		-- 		unit_set_scalar_for_materials(self.sight_unit, "inv_jitter_alpha", 0, true)
+		-- 	end
+		-- end
 	-- elseif self.sniper_zoom and not self.lens_units then
 	-- 	self:set_lens_units()
 	end
@@ -674,6 +685,44 @@ SightExtension.update_zoom = function(self, viewport_name)
 			if self.vertical_fov then camera_set_vertical_fov(camera, self.vertical_fov) end
 		end
 	end
+end
+
+local reload_animations = {"reload_end_long", "reload_end"}
+local reload_actions = {"action_reload", "action_reload_loop", "action_reload_shotgun", "action_reload_state", "action_brace_reload", "action_start_reload"}
+
+SightExtension.on_detach_scope = function(self)
+	-- if self.weapon_action_component and self.weapon_action_component.current_action_name then
+	-- 	if not table_contains(reload_actions, self.weapon_action_component.current_action_name) then
+		if self:can_detach_scope() then
+			mod:echo(self.weapon_action_component.current_action_name)
+
+			self.scope_detached = not self.scope_detached
+			for _, anim_name in pairs(reload_animations) do
+				if unit_has_animation_event(self.first_person_unit, anim_name) then
+					mod:echo("Detaching "..anim_name)
+					unit_animation_event(self.first_person_unit, anim_name)
+				end
+			end
+		end
+	-- 	end
+	-- end
+end
+
+SightExtension.can_detach_scope = function(self)
+	if self.weapon_action_component and self.weapon_action_component.current_action_name then
+		if not table_contains(reload_actions, self.weapon_action_component.current_action_name) then
+			return true
+		end
+	end
+	return false
+end
+
+mod.can_detach_scope = function(self)
+	return self:execute_extension(self.player_unit, "sight_system", "can_detach_scope")
+end
+
+mod.is_scope_used = function(self)
+    return self:execute_extension(self.player_unit, "sight_system", "is_sniper")
 end
 
 return SightExtension

@@ -16,11 +16,13 @@ local mod = get_mod("weapon_customization")
     -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #############################################################################################
     local _sight_default = "sight_default"
     local _lense_default = "scope_lens_default"
-    local _braced_receivers = "receiver_03|receiver_06|receiver_07"
-    local _headhunter_receivers = "receiver_02|receiver_04|receiver_05"
-    local _headhunter_barrels = "barrel_11|barrel_12|barrel_15|barrel_16"
-    local _infantry_barrels = "barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06"
-    local _braced_barrels = "barrel_07|barrel_08|barrel_09|barrel_10|barrel_13|barrel_14|barrel_18|barrel_19"
+    local _infantry_receivers = "receiver_01|receiver_10"
+    local _braced_receivers = "receiver_03|receiver_06|receiver_07|receiver_08"
+    local _headhunter_receivers = "receiver_02|receiver_04|receiver_05|receiver_09|receiver_11"
+    local _infantry_and_headhunter_receivers = _infantry_receivers.."|".._headhunter_receivers
+    local _headhunter_barrels = "barrel_11|barrel_12|barrel_15|barrel_16|barrel_22"
+    local _infantry_barrels = "barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06|barrel_21"
+    local _braced_barrels = "barrel_07|barrel_08|barrel_09|barrel_10|barrel_13|barrel_14|barrel_18|barrel_19|barrel_20"
     local _infantry_and_braced_barrels = _infantry_barrels.."|".._braced_barrels
     local _infantry_and_headhunter_barrels = _infantry_barrels.."|".._headhunter_barrels
 --#endregion
@@ -131,7 +133,15 @@ local mod = get_mod("weapon_customization")
                     {rail = "rail_default", sight_2 = _sight_default,   lens = _lense_default,  lens_2 = _lense_default},
                 }, {
                     -- Hide mesh
-                    {}, {}, {}, {}, {{"sight", 1}}, {}, {}, {}, {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {{"sight", 1}},
+                    {},
+                    {},
+                    {},
+                    {},
                 }),
                 _common_ranged.stock_models(nil, .5, vector3_box(-.6, -1, 0), vector3_box(0, -.2, 0)),
                 _common_ranged.magazine_models(nil, 0, vector3_box(-.2, -1, .1), vector3_box(0, 0, -.2)),
@@ -172,6 +182,12 @@ local mod = get_mod("weapon_customization")
                                 bayonet = {offset = true, position = vector3_box(0, .09, .041), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                             {dependencies = {"barrel_15", "autogun_bayonet_01"}, -- Bayonet 1
                                 bayonet = {offset = true, position = vector3_box(0, .17, .088), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                            {dependencies = {"barrel_16", "autogun_bayonet_01"}, -- Bayonet 1
+                                bayonet = {offset = true, position = vector3_box(0, .19, .076), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                            {dependencies = {"barrel_21", "autogun_bayonet_01"}, -- Bayonet 1
+                                bayonet = {offset = true, position = vector3_box(0, .115, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                            {dependencies = {"barrel_22", "autogun_bayonet_01"}, -- Bayonet 1
+                                bayonet = {offset = true, position = vector3_box(0, .13, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                         --#endregion
                         --#region Bayonet 2
                             {dependencies = {"barrel_16", "autogun_bayonet_01"}, -- Bayonet 1
@@ -194,6 +210,10 @@ local mod = get_mod("weapon_customization")
                                 bayonet = {offset = true, position = vector3_box(0, .17, .088), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                             {dependencies = {"barrel_16", "autogun_bayonet_02"}, -- Bayonet 2
                                 bayonet = {offset = true, position = vector3_box(0, .19, .076), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                            {dependencies = {"barrel_21", "autogun_bayonet_02"}, -- Bayonet 2
+                                bayonet = {offset = true, position = vector3_box(0, .115, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                            {dependencies = {"barrel_22", "autogun_bayonet_02"}, -- Bayonet 2
+                                bayonet = {offset = true, position = vector3_box(0, .13, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                         --#endregion
                         --#region Bayonet 3
                             {dependencies = {"muzzle_01", "autogun_bayonet_03"}, -- Bayonet 3
@@ -206,13 +226,13 @@ local mod = get_mod("weapon_customization")
                                 bayonet = {offset = true, position = vector3_box(0, .045, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                             {dependencies = {"muzzle_05", "autogun_bayonet_03"}, -- Bayonet 3
                                 bayonet = {offset = true, position = vector3_box(0, .055, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                            {dependencies = {"muzzle_06", "autogun_bayonet_03"}, -- Bayonet 3
+                            {dependencies = {"muzzle_06|muzzle_12", "autogun_bayonet_03"}, -- Bayonet 3
                                 bayonet = {offset = true, position = vector3_box(0, .075, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                             {dependencies = {"muzzle_07", "autogun_bayonet_03"}, -- Bayonet 3
                                 bayonet = {offset = true, position = vector3_box(0, .05, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                            {dependencies = {"muzzle_08", "autogun_bayonet_03"}, -- Bayonet 3
+                            {dependencies = {"muzzle_08|muzzle_11|muzzle_15", "autogun_bayonet_03"}, -- Bayonet 3
                                 bayonet = {offset = true, position = vector3_box(0, .07, -.025), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                            {dependencies = {"muzzle_09", "autogun_bayonet_03"}, -- Bayonet 3
+                            {dependencies = {"muzzle_09|muzzle_13|muzzle_14|muzzle_16", "autogun_bayonet_03"}, -- Bayonet 3
                                 bayonet = {offset = true, position = vector3_box(0, .09, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                             {dependencies = {"muzzle_10", "autogun_bayonet_03"}, -- Bayonet 3
                                 bayonet = {offset = true, position = vector3_box(0, .1, -.03), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
@@ -262,15 +282,15 @@ local mod = get_mod("weapon_customization")
                     --#endregion
                     --#region Sights
                         --#region Infantry receiver
-                        {dependencies = {"lasgun_rifle_sight_01", "receiver_01"}, -- Lasgun sight
+                        {dependencies = {"lasgun_rifle_sight_01", _infantry_receivers}, -- Lasgun sight
                             sight = {offset = true, position = vector3_box(0, -.028, .0265), rotation = vector3_box(0, 0, 0),
                             animation_wait_attach = {"rail"}
                         }},
-                        {dependencies = {"reflex_sight_01", "receiver_01"}, -- Infantry lasgun reflex sight
+                        {dependencies = {"reflex_sight_01", _infantry_receivers}, -- Infantry lasgun reflex sight
                             sight = {offset = true, position = vector3_box(.00010, -0.037, .0005), rotation = vector3_box(0, 0, 0),
                             animation_wait_attach = {"rail"}
                         }},
-                        {dependencies = {"reflex_sight_02|reflex_sight_03", "receiver_01"}, -- Other two reflex sights
+                        {dependencies = {"reflex_sight_02|reflex_sight_03", _infantry_receivers}, -- Other two reflex sights
                             sight = {offset = true, position = vector3_box(.00010, -0.037, -.00035), rotation = vector3_box(0, 0, 0), 
                             animation_wait_attach = {"rail"}
                         }},
@@ -340,46 +360,44 @@ local mod = get_mod("weapon_customization")
                         {sight = {offset = true, animation_wait_attach = {"rail"}}},
                     --#endregion
                     --#region Barrels
-                        {dependencies = {"barrel_13|barrel_14", "receiver_01"}, -- Barrel 7
-                            barrel = {offset = true, position = vector3_box(0, 0, -.034), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
-                                animation_wait_detach = {"rail"}, trigger_move = {"rail"},
-                        }},
-                        {dependencies = {_braced_barrels, "receiver_01|receiver_02|receiver_04|receiver_05"}, -- Barrel 7
-                            barrel = {offset = true, position = vector3_box(0, 0, -.034), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
-                        }},
-                        {dependencies = {"barrel_01|barrel_02|barrel_03|barrel_04|barrel_05|barrel_06|barrel_11|barrel_12|barrel_15|barrel_16", _braced_receivers}, -- Barrel 7
+                        -- Fix vertical positions of braced barrels with non-braced receivers
+                        {dependencies = {_braced_barrels, _infantry_and_headhunter_receivers},
+                            barrel = {offset = true, position = vector3_box(0, 0, -.034), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                        -- Fix vertical positions of non braced barrels with braced receivers
+                        {dependencies = {_infantry_barrels, _braced_receivers}, -- Barrel 7
                             barrel = {offset = true, position = vector3_box(0, 0, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
-                        }},
-                        {dependencies = {"barrel_01|barrel_03|barrel_05|barrel_06", "receiver_01"}, -- Barrel 7
-                            barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
                                 animation_wait_detach = {"rail"}, trigger_move = {"rail"},
                         }},
+                        {dependencies = {_headhunter_barrels, _braced_receivers}, -- Barrel 7
+                            barrel = {offset = true, position = vector3_box(0, 0, .034), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
+                        -- Default
+                        {barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                     --#endregion
                     --#region Rails
                         -- Infantry receiver
-                        {dependencies = {"rail_01", "receiver_01", "barrel_01|barrel_03"}, -- Bigger than receiver
+                        {dependencies = {"rail_01", _infantry_receivers, "barrel_01|barrel_03|barrel_21"}, -- Bigger than receiver
                             rail = {offset = true, position = vector3_box(0, -.02, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 2.2, 1),
                                 animation_wait_detach = {"sight", "sight_2"}, trigger_move = {"sight", "sight_2"},
                                 animation_wait_attach = {"barrel"}
                         }},
-                        {dependencies = {"rail_01", "receiver_01", "barrel_02|barrel_04|barrel_11|barrel_12|barrel_15|barrel_16"},
+                        {dependencies = {"rail_01", _infantry_receivers, "barrel_02|barrel_04|barrel_11|barrel_12|barrel_15|barrel_16|barrel_22"},
                             rail = {offset = true, position = vector3_box(0, -.05, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.3, 1),
                                 animation_wait_detach = {"sight", "sight_2"}, trigger_move = {"sight", "sight_2"},
                         }},
-                        {dependencies = {"rail_01", "receiver_01", "barrel_05|barrel_06"}, -- Bigger than receiver
+                        {dependencies = {"rail_01", _infantry_receivers, "barrel_05|barrel_06"}, -- Bigger than receiver
                             rail = {offset = true, position = vector3_box(0, -.03, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 2, 1),
                                 animation_wait_detach = {"sight", "sight_2"}, trigger_move = {"sight", "sight_2"},
                                 animation_wait_attach = {"barrel"}
                         }},
-                        {dependencies = {"rail_01", "receiver_01", "barrel_07|barrel_08|barrel_09|barrel_10|barrel_18|barrel_19"},
+                        {dependencies = {"rail_01", _infantry_receivers, "barrel_07|barrel_08|barrel_09|barrel_10|barrel_18|barrel_19|barrel_20"},
                             rail = {offset = true, position = vector3_box(0, -.05, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.1, 1),
                         }},
-                        {dependencies = {"rail_01", "receiver_01", "barrel_13"}, -- Bigger than receiver
+                        {dependencies = {"rail_01", _infantry_receivers, "barrel_13"}, -- Bigger than receiver
                             rail = {offset = true, position = vector3_box(0, -.04, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.7, 1),
                                 animation_wait_detach = {"sight", "sight_2"}, trigger_move = {"sight", "sight_2"},
                                 animation_wait_attach = {"barrel"}
                         }},
-                        {dependencies = {"rail_01", "receiver_01", "barrel_14"}, -- Bigger than receiver
+                        {dependencies = {"rail_01", _infantry_receivers, "barrel_14"}, -- Bigger than receiver
                             rail = {offset = true, position = vector3_box(0, -.04, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1),
                                 animation_wait_detach = {"sight", "sight_2"}, trigger_move = {"sight", "sight_2"},
                                 animation_wait_attach = {"barrel"}
@@ -392,47 +410,47 @@ local mod = get_mod("weapon_customization")
                     --#region Sight offsets
                         --#region Infantry receiver / Infantry barrels
                             -- Braced sight
-                            {dependencies = {_infantry_barrels, "autogun_rifle_ak_sight_01", "receiver_01"},
+                            {dependencies = {_infantry_barrels, "autogun_rifle_ak_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .002), rotation = vector3_box(-.3, 0, 0)}},
                             -- Headhunter sight
-                            {dependencies = {_infantry_barrels, "autogun_rifle_killshot_sight_01", "receiver_01"},
+                            {dependencies = {_infantry_barrels, "autogun_rifle_killshot_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.2, 0, 0)}},
                             -- Lasgun sight
-                            {dependencies = {_infantry_barrels, "lasgun_rifle_sight_01", "receiver_01"},
+                            {dependencies = {_infantry_barrels, "lasgun_rifle_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .0075), rotation = vector3_box(-.55, 0, 0)}},
                         --#endregion
                         --#region Infantry receiver / Braced barrels
                             -- Infantry sight
-                            {dependencies = {_braced_barrels, "autogun_rifle_sight_01", "receiver_01"},
+                            {dependencies = {_braced_barrels, "autogun_rifle_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .00075), rotation = vector3_box(.75, 0, 0)}},
                             -- Braced sight
-                            {dependencies = {_braced_barrels, "autogun_rifle_ak_sight_01", "receiver_01"},
+                            {dependencies = {_braced_barrels, "autogun_rifle_ak_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .003), rotation = vector3_box(.4, 0, 0)}},
                             -- Headhunter sight
-                            {dependencies = {_braced_barrels, "autogun_rifle_killshot_sight_01", "receiver_01"},
+                            {dependencies = {_braced_barrels, "autogun_rifle_killshot_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .002), rotation = vector3_box(.75, 0, 0)}},
                             -- Lasgun sight
-                            {dependencies = {_braced_barrels, "lasgun_rifle_sight_01", "receiver_01"},
+                            {dependencies = {_braced_barrels, "lasgun_rifle_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .008), rotation = vector3_box(-.1, 0, 0)}},
                         --#endregion
                         --#region Infantry receiver / Headhunter barrels
                             -- Infantry sight
-                            {dependencies = {"barrel_16", "autogun_rifle_sight_01", "receiver_01"},
+                            {dependencies = {"barrel_16", "autogun_rifle_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(.7, 0, 0)}},
                             -- Braced sight
-                            {dependencies = {"barrel_16", "autogun_rifle_ak_sight_01", "receiver_01"},
+                            {dependencies = {"barrel_16", "autogun_rifle_ak_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .003), rotation = vector3_box(.5, 0, 0)}},
-                            {dependencies = {_headhunter_barrels, "autogun_rifle_ak_sight_01", "receiver_01"},
+                            {dependencies = {_headhunter_barrels, "autogun_rifle_ak_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .0025), rotation = vector3_box(-.3, 0, 0)}},
                             -- Headhunter sight
-                            {dependencies = {"barrel_16", "autogun_rifle_killshot_sight_01", "receiver_01"},
+                            {dependencies = {"barrel_16", "autogun_rifle_killshot_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .002), rotation = vector3_box(.7, 0, 0)}},
-                            {dependencies = {_headhunter_barrels, "autogun_rifle_killshot_sight_01", "receiver_01"},
+                            {dependencies = {_headhunter_barrels, "autogun_rifle_killshot_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .001), rotation = vector3_box(-.1, 0, 0)}},
                             -- Lasgun sight
-                            {dependencies = {"barrel_16", "lasgun_rifle_sight_01", "receiver_01"},
+                            {dependencies = {"barrel_16", "lasgun_rifle_sight_01", _infantry_receivers},
                                 no_scope_offset = {position = vector3_box(0, 0, .008), rotation = vector3_box(-.1, 0, 0)}},
-                            {dependencies = {_headhunter_barrels, "lasgun_rifle_sight_01", "receiver_01"}, 
+                            {dependencies = {_headhunter_barrels, "lasgun_rifle_sight_01", _infantry_receivers}, 
                                 no_scope_offset = {position = vector3_box(0, 0, .0075), rotation = vector3_box(-.5, 0, 0)}},
                         --#endregion
                         --#region Headhunter receiver / Infantry barrels
@@ -540,7 +558,7 @@ local mod = get_mod("weapon_customization")
                             no_scope_offset = {position = vector3_box(0, 0, .008), rotation = vector3_box(-.1, 0, 0)}},
                     --#endregion
                     --#region Default values
-                        {dependencies = {"receiver_01"}, -- Scope Offset
+                        {dependencies = {_infantry_receivers}, -- Scope Offset
                             scope_offset = {position = vector3_box(0, 0, -.0085)}},
                         {dependencies = {_headhunter_receivers}, -- Scope Offset
                             scope_offset = {position = vector3_box(0, 0, -.01025)}},
@@ -549,9 +567,9 @@ local mod = get_mod("weapon_customization")
                     --#endregion
                     --#region Emblems
                         --#region Infantry receiver
-                            {dependencies = {"receiver_01", "emblem_left_02"}, -- Emblems
+                            {dependencies = {_infantry_receivers, "emblem_left_02"}, -- Emblems
                                 emblem_left = {parent = "receiver", position = vector3_box(-.027, .21, .07), rotation = vector3_box(0, 0, 180), scale = vector3_box(1, -1, 1)}},
-                            {dependencies = {"receiver_01"}, -- Emblems
+                            {dependencies = {_infantry_receivers}, -- Emblems
                                 emblem_left = {parent = "receiver", position = vector3_box(-.027, .21, .07), rotation = vector3_box(0, 0, 180), scale = vector3_box(1, 1, 1)},
                                 emblem_right = {parent = "receiver", position = vector3_box(.027, .21, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                         --#endregion
@@ -563,9 +581,9 @@ local mod = get_mod("weapon_customization")
                                 emblem_right = {parent = "receiver", position = vector3_box(.029, -.02, .06), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.5, 1.5, 1.5)}},
                         --#endregion
                         --#region Headhunter receiver
-                            {dependencies = {"receiver_02", "emblem_left_02"}, -- Emblems
+                            {dependencies = {"receiver_02|receiver_09", "emblem_left_02"}, -- Emblems
                                 emblem_left = {parent = "receiver", position = vector3_box(-.029, -.02, .07), rotation = vector3_box(0, 0, 180), scale = vector3_box(1.8, -1.8, 1.8)}},
-                            {dependencies = {"receiver_02"}, -- Emblems
+                            {dependencies = {"receiver_02|receiver_09"}, -- Emblems
                                 emblem_left = {parent = "receiver", position = vector3_box(-.029, -.02, .07), rotation = vector3_box(0, 0, 180), scale = vector3_box(1.8, 1.8, 1.8)},
                                 emblem_right = {parent = "receiver", position = vector3_box(.029, -.02, .07), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.8, 1.8, 1.8)}},
                             {dependencies = {"receiver_04", "emblem_left_02"}, -- Emblems
@@ -573,9 +591,9 @@ local mod = get_mod("weapon_customization")
                             {dependencies = {"receiver_04"}, -- Emblems
                                 emblem_left = {parent = "receiver", position = vector3_box(-.03, .1575, .057), rotation = vector3_box(0, 0, 180), scale = vector3_box(1, 1, 1)},
                                 emblem_right = {parent = "receiver", position = vector3_box(.03, .19, .04), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, .7, .7)}},
-                            {dependencies = {"receiver_05", "emblem_left_02"}, -- Emblems
+                            {dependencies = {"receiver_05|receiver_11", "emblem_left_02"}, -- Emblems
                                 emblem_left = {parent = "receiver", position = vector3_box(-.03, .135, .06), rotation = vector3_box(0, 0, 180), scale = vector3_box(.7, -.7, .7)}},
-                            {dependencies = {"receiver_05"}, -- Emblems
+                            {dependencies = {"receiver_05|receiver_11"}, -- Emblems
                                 emblem_left = {parent = "receiver", position = vector3_box(-.03, .135, .06), rotation = vector3_box(0, 0, 180), scale = vector3_box(.7, .7, .7)},
                                 emblem_right = {parent = "receiver", position = vector3_box(.03, .19, .04), rotation = vector3_box(0, 0, 0), scale = vector3_box(.7, .7, .7)}},
                         --#endregion
@@ -683,6 +701,15 @@ local mod = get_mod("weapon_customization")
                             magazine = {offset = true, position = vector3_box(0, 0, -.05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.15, 1.218)}},
                     --#endregion
                 },
+            },
+            -- ┌─┐┌─┐┌─┐┌─┐┌─┐┌┬┐
+            -- │ │├┤ ├┤ └─┐├┤  │
+            -- └─┘└  └  └─┘└─┘ ┴
+            offset = {
+                default = mod.visible_equipment_offsets.human.WEAPON_RANGED.default,
+                backpack = mod.visible_equipment_offsets.human.WEAPON_RANGED.backpack,
+                -- center_mass = vector3_box(0, -.3, 0),
+                loading = mod.visible_equipment_loading_offsets.default,
             },
         }
     )

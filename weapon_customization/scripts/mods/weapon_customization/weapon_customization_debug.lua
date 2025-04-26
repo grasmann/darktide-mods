@@ -120,14 +120,107 @@ mod.clear_chat = function()
 end
 
 -- mod.loading_open = false
--- mod.load_mission = function()
--- 	if not mod.loading_open then
--- 		managers.ui:open_view("mission_intro_view")
--- 	elseif mod.loading_open then
--- 		managers.ui:close_view("mission_intro_view")
+mod.load_mission = function()
+	if not mod.loading_open then
+		mod.loading_intro_view = true
+		managers.ui:open_view("mission_intro_view", nil, nil, nil, nil, {})
+	elseif mod.loading_open then
+		mod.loading_intro_view = false
+		managers.ui:close_view("mission_intro_view")
+	end
+	mod.loading_open = not mod.loading_open
+end
+
+mod.end_view = function()
+	if not mod.end_view_open then
+		managers.ui:open_view("end_view", nil, nil, nil, nil, {})
+	elseif mod.end_view_open then
+		managers.ui:close_view("end_view")
+	end
+	mod.end_view_open = not mod.end_view_open
+end
+
+mod.lobby_view = function()
+	if not mod.lobby_view_open then
+		mod.loading_lobby_view = true
+		if not managers.mechanism._mechanism then
+			managers.mechanism._mechanism = {
+				_mechanism_data = {
+					mission_name = "psykhanium",
+					circumstance_name = "default",
+					backend_mission_id = 1,
+				}
+			}
+		end
+		managers.ui:open_view("lobby_view", nil, nil, nil, nil, {
+			mission_data = ""
+		})
+		managers.mechanism._mechanism = nil
+	elseif mod.lobby_view_open then
+		mod.loading_lobby_view = false
+		managers.ui:close_view("lobby_view")
+	end
+	mod.lobby_view_open = not mod.lobby_view_open
+end
+
+-- mod.mission_board_view = function()
+-- 	if not mod.mission_board_view_open then
+-- 		mod.loading_mission_board_view = true
+-- 		if not managers.mechanism._mechanism then
+-- 			managers.mechanism._mechanism = {
+-- 				_mechanism_data = {
+-- 					mission_name = "psykhanium",
+-- 					circumstance_name = "default",
+-- 					backend_mission_id = 1,
+-- 				}
+-- 			}
+-- 		end
+-- 		managers.ui:open_view("mission_board_view", nil, nil, nil, nil, {
+-- 			mission_data = ""
+-- 		})
+-- 		managers.mechanism._mechanism = nil
+-- 	elseif mod.mission_board_view_open then
+-- 		mod.loading_mission_board_view = false
+-- 		managers.ui:close_view("mission_board_view")
 -- 	end
--- 	mod.loading_open = not mod.loading_open
+-- 	mod.mission_board_view_open = not mod.mission_board_view_open
 -- end
+
+-- mod:hook(CLASS.UIViewHandler, "_open", function(func, self, view_name, opening_duration, context, settings_override, ...)
+-- 	mod:echo("Opening "..view_name)
+-- 	return func(self, view_name, opening_duration, context, settings_override, ...)
+-- end)
+
+mod:hook(CLASS.LobbyView, "_sync_votes", function(func, self, ...)
+	if mod.loading_lobby_view then
+		return
+	end
+	return func(self, ...)
+end)
+
+mod:hook(CLASS.EndView, "_set_mission_key", function(func, self, mission_key, session_report, render_scale, ...)
+	if mission_key then
+		-- Original function
+		func(self, mission_key, session_report, render_scale, ...)
+	end
+end)
+
+local Missions = mod:original_require("scripts/settings/mission/mission_templates")
+local MissionIntroViewSettings = mod:original_require("scripts/ui/views/mission_intro_view/mission_intro_view_settings")
+
+mod:hook(CLASS.MissionIntroView, "select_target_intro_level", function(func, mission_name, ...)
+	if mod.loading_intro_view then
+		local mission_zone_id = mission_name and Missions[mission_name].zone_id or "default"
+		local intro_level = MissionIntroViewSettings.intro_levels_by_zone_id[mission_zone_id] or MissionIntroViewSettings.intro_levels_by_zone_id.default
+		local intro_level_packages = {
+			is_level_package = true,
+			name = intro_level.level_name,
+		}
+		return intro_level, intro_level_packages
+	else
+		return func(mission_name, ...)
+	end
+end)
 
 -- mod:hook(CLASS.MissionIntroView, "_register_mission_intro_spawn_point", function(func, self, spawn_point_unit, index, ...)
 -- 	-- self._spawn_point_units[index] = spawn_point_unit

@@ -43,7 +43,7 @@ return table.combine(
             bayonet = _common_ranged.bayonet_attachments(),
             -- rail = _common_lasgun.rail_attachments(),
             grip = _common_ranged.grip_attachments(),
-            weapon_sling = _common_ranged.weapon_sling_attachments(),
+            -- weapon_sling = _common_ranged.weapon_sling_attachments(),
             -- Lasgun
             barrel = _common_lasgun.barrel_attachments(),
             muzzle = _common_lasgun.muzzle_attachments(),

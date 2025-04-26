@@ -31,7 +31,8 @@ return {
             {id = "shovel_head_03", name = "Shovel 3"},
             {id = "shovel_head_04", name = "Shovel 4"},
             {id = "shovel_head_05", name = "Shovel 5"},
-            {id = "shovel_head_ml01", name = "Shovel 6"},
+            {id = "shovel_head_06", name = "Shovel 6"},
+            {id = "shovel_head_ml01", name = "Shovel 7"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -48,6 +49,7 @@ return {
             {name = "shovel_head_03", model = _item_melee.."/heads/shovel_head_03"},
             {name = "shovel_head_04", model = _item_melee.."/heads/shovel_head_04"},
             {name = "shovel_head_05", model = _item_melee.."/heads/shovel_head_05"},
+            {name = "shovel_head_06", model = _item_melee.."/heads/shovel_head_06"},
             {name = "shovel_head_ml01", model = _item_melee.."/heads/shovel_head_ml01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,

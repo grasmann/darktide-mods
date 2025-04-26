@@ -54,6 +54,8 @@ end)
 
 mod:hook(CLASS.PlayerHuskFirstPersonExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, ...)
 
+    self.wc_initialized = true
+
     -- Original function
     func(self, extension_init_context, unit, extension_init_data, ...)
 
@@ -66,6 +68,8 @@ mod:hook(CLASS.PlayerHuskFirstPersonExtension, "init", function(func, self, exte
 end)
 
 mod:hook(CLASS.PlayerHuskFirstPersonExtension, "destroy", function(func, self, ...)
+
+    self.wc_initialized = false
 
     -- Unregister event
     managers.event:unregister(self, "weapon_customization_settings_changed")
@@ -80,7 +84,7 @@ mod:hook(CLASS.PlayerHuskFirstPersonExtension, "update_unit_position_and_rotatio
     -- Original function
     func(self, position_3p_unit, force_update_unit_and_children, ...)
 
-    if self._first_person_unit then
+    if self.wc_initialized and self._first_person_unit then
 
         -- Update custom extensions
         self:update_custom_extensions()

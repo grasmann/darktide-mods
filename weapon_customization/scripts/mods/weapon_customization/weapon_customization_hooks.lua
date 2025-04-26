@@ -112,6 +112,66 @@ mod:hook(CLASS.ActionUnaim, "start", function(func, self, action_settings, t, ..
     func(self, action_settings, t, ...)
 end)
 
+-- ##### ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌  ┌─┐┌─┐┌─┐┌─┐┬┌─┐┬   ####################################################
+-- ##### ├─┤│   │ ││ ││││  │││├┤ ├─┤├─┘│ ││││  └─┐├─┘├┤ │  │├─┤│   ####################################################
+-- ##### ┴ ┴└─┘ ┴ ┴└─┘┘└┘  └┴┘└─┘┴ ┴┴  └─┘┘└┘  └─┘┴  └─┘└─┘┴┴ ┴┴─┘ ####################################################
+
+-- ActionWindup.start = function (self, action_settings, t, time_scale, params)
+mod:hook(CLASS.ActionWindup, "start", function(func, self, action_settings, t, time_scale, params, ...)
+    -- Sights
+    mod:execute_extension(self._player_unit, "sight_system", "on_unaim_start", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_start", t)
+    -- Original function
+    func(self, action_settings, t, time_scale, params, ...)
+end)
+
+mod:hook(CLASS.ActionSweep, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
+    -- Sights
+    mod:execute_extension(self._player_unit, "sight_system", "on_aim_stop", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_aim_stop", t)
+    -- Original function
+    func(self, action_settings, t, time_scale, action_start_params, ...)
+end)
+
+-- ##### ┌─┐┬ ┬┌─┐┬ ┬ #################################################################################################
+-- ##### ├─┘│ │└─┐├─┤ #################################################################################################
+-- ##### ┴  └─┘└─┘┴ ┴ #################################################################################################
+
+mod:hook(CLASS.ActionWeaponBase, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
+    if action_settings.kind == "push" then
+        -- Sights
+        mod:execute_extension(self._player_unit, "sight_system", "on_unaim_start", t)
+        -- Weapon DOF
+        mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_start", t)
+    end
+    -- Original function
+    func(self, action_settings, t, time_scale, action_start_params, ...)
+end)
+
+-- ##### ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌┐┌┬ ┬┬┌─┐┬  ┌┬┐ ########################################################################
+-- ##### ├─┤│   │ ││ ││││  │ ││││││││├┤ │   ││ ########################################################################
+-- ##### ┴ ┴└─┘ ┴ ┴└─┘┘└┘  └─┘┘└┘└┴┘┴└─┘┴─┘─┴┘ ########################################################################
+
+mod:hook(CLASS.ActionUnwield, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
+    -- Sights
+    mod:execute_extension(self._player_unit, "sight_system", "on_unaim_start", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_start", t)
+    -- Original function
+    func(self, action_settings, t, time_scale, action_start_params, ...)
+end)
+
+mod:hook(CLASS.ActionUnwield, "finish", function(func, self, reason, data, t, time_in_action, ...)
+    -- Original function
+    func(self, reason, data, t, time_in_action, ...)
+    -- Sights
+    mod:execute_extension(self._player_unit, "sight_system", "on_aim_stop", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_aim_stop", t)
+end)
+
 -- ##### ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┌─┐┬ ┬┌─┐┬─┐┌─┐┌─┐  ┌─┐┬  ┬┌─┐┬─┐┬  ┌─┐┌─┐┌┬┐ ##############################################
 -- ##### ├─┤│   │ ││ ││││  │  ├─┤├─┤├┬┘│ ┬├┤   │ │└┐┌┘├┤ ├┬┘│  │ │├─┤ ││ ##############################################
 -- ##### ┴ ┴└─┘ ┴ ┴└─┘┘└┘  └─┘┴ ┴┴ ┴┴└─└─┘└─┘  └─┘ └┘ └─┘┴└─┴─┘└─┘┴ ┴─┴┘ ##############################################
@@ -165,6 +225,10 @@ mod:hook(CLASS.ActionReloadShotgun, "start", function(func, self, action_setting
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", false, action_settings.total_time)
     -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", true)
+    -- Sights
+    mod:execute_extension(self._player_unit, "sight_system", "on_unaim_start", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_start", t)
     -- Original function
     func(self, action_settings, t, time_scale, ...)
 end)
@@ -178,6 +242,19 @@ mod:hook(CLASS.ActionReloadShotgun, "finish", function(func, self, reason, data,
     func(self, reason, data, t, time_in_action, ...)
 end)
 
+-- ##### ┌─┐┌─┐┌─┐┌─┐┬┌─┐┬    ┬─┐┌─┐┬  ┌─┐┌─┐┌┬┐ ######################################################################
+-- ##### └─┐├─┘├┤ │  │├─┤│    ├┬┘├┤ │  │ │├─┤ ││ ######################################################################
+-- ##### └─┘┴  └─┘└─┘┴┴ ┴┴─┘  ┴└─└─┘┴─┘└─┘┴ ┴─┴┘ ######################################################################
+
+mod:hook(CLASS.ActionRangedLoadSpecial, "start", function(func, self, action_settings, t, time_scale, ...)
+    -- Sights
+    mod:execute_extension(self._player_unit, "sight_system", "on_unaim_start", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_start", t)
+    -- Original function
+    func(self, action_settings, t, time_scale, ...)
+end)
+
 -- ##### ┬─┐┌─┐┬  ┌─┐┌─┐┌┬┐  ┌─┐┌┬┐┌─┐┌┬┐┌─┐ ##########################################################################
 -- ##### ├┬┘├┤ │  │ │├─┤ ││  └─┐ │ ├─┤ │ ├┤  ##########################################################################
 -- ##### ┴└─└─┘┴─┘└─┘┴ ┴─┴┘  └─┘ ┴ ┴ ┴ ┴ └─┘ ##########################################################################
@@ -187,6 +264,10 @@ mod:hook(CLASS.ActionReloadState, "start", function(func, self, action_settings,
     mod:execute_extension(self._player_unit, "laser_pointer_system", "set_lock", false, action_settings.total_time)
     -- Crouch
     mod:execute_extension(self._player_unit, "crouch_system", "set_overwrite", true)
+    -- Sights
+    mod:execute_extension(self._player_unit, "sight_system", "on_unaim_start", t)
+    -- Weapon DOF
+    mod:execute_extension(self._player_unit, "weapon_dof_system", "on_unaim_start", t)
     -- Original function
     func(self, action_settings, t, time_scale, ...)
 end)
@@ -280,14 +361,14 @@ end)
 -- ##### ├─┘│  ├─┤└┬┘├┤ ├┬┘  │ │││││ │   ├┤ ┌┴┬┘  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##########################################
 -- ##### ┴  ┴─┘┴ ┴ ┴ └─┘┴└─  └─┘┘└┘┴ ┴   └  ┴ └─  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##########################################
 
-mod:hook(CLASS.PlayerUnitFxExtension, "_create_particles_wrapper", function(func, self, world, particle_name, position, rotation, scale, ...)
-    -- Original function
-    local effect_id = func(self, world, particle_name, position, rotation, scale, ...)
-    -- Laser pointer
-    mod:execute_extension(self._unit, "laser_pointer_system", "particles_wrapper_created", particle_name, effect_id)
-    -- Return value
-    return effect_id
-end)
+-- mod:hook(CLASS.PlayerUnitFxExtension, "_create_particles_wrapper", function(func, self, world, particle_name, position, rotation, scale, ...)
+--     -- Original function
+--     local effect_id = func(self, world, particle_name, position, rotation, scale, ...)
+--     -- Laser pointer
+--     mod:execute_extension(self._unit, "laser_pointer_system", "particles_wrapper_created", particle_name, effect_id)
+--     -- Return value
+--     return effect_id
+-- end)
 
 -- ##### ┬ ┬┬ ┬┌┬┐  ┌─┐┬  ┌─┐┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬┬─┐ ##################################################
 -- ##### ├─┤│ │ ││  ├┤ │  ├┤ │││├┤ │││ │   │  ├┬┘│ │└─┐└─┐├─┤├─┤│├┬┘ ##################################################
@@ -369,12 +450,57 @@ mod.setting_id_to_widget = {}
 -- ##### └  └─┘└─┘ ┴ └─┘ ┴ └─┘┴  └─┘ ##################################################################################
 
 -- Capture footsteps for equipment animation
-mod:hook_require("scripts/utilities/footstep", function(instance)
-    mod:hook(instance, "trigger_material_footstep", function(func, sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, ...)
+-- mod:hook_require("scripts/utilities/footstep", function(instance)
+--     mod:hook(instance, "trigger_material_footstep", function(func, sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, ...)
+--         mod:execute_extension(unit, "visible_equipment_system", "on_footstep")
+--         return func(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, ...)
+--     end)
+-- end)
+
+mod:hook_require("scripts/utilities/material_fx", function(instance)
+    mod:hook(instance, "trigger_material_fx", function(func, unit, world, wwise_world, physics_world, sound_alias, source_id, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, use_cached_material_hit, ...)
         mod:execute_extension(unit, "visible_equipment_system", "on_footstep")
-        return func(sound_alias, wwise_world, physics_world, source_id, unit, node, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, ...)
+        return func(unit, world, wwise_world, physics_world, sound_alias, source_id, query_from, query_to, optional_set_speed_parameter, optional_set_first_person_parameter, use_cached_material_hit, ...)
     end)
 end)
+
+-- mod:hook(CLASS.PlayerVisibilityExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, ...)
+--     func(self, extension_init_context, unit, extension_init_data, ...)
+--     Unit.set_unit_visibility(self._unit, true, true)
+--     -- Unit.set_scalar_for_materials(self._unit, "inv_jitter_alpha", .01, true)
+--     mod:echo("init")
+-- end)
+
+-- mod:hook(CLASS.PlayerVisibilityExtension, "hide", function(func, self, ...)
+--     func(self, ...)
+--     Unit.set_unit_visibility(self._unit, true, true)
+--     -- Unit.set_scalar_for_materials(self._unit, "inv_jitter_alpha", .01, true)
+-- 	-- if self._is_visible then
+-- 	-- 	self:_take_snapshot()
+-- 	-- 	-- Unit.set_unit_visibility(self._unit, false, true)
+--     --     Unit.set_scalar_for_materials(self._unit, "inv_jitter_alpha", .01, true)
+
+-- 	-- 	if self._first_person_unit then
+-- 	-- 		Unit.set_unit_visibility(self._first_person_unit, false, true)
+-- 	-- 	end
+
+-- 	-- 	self._is_visible = false
+-- 	-- end
+--     mod:echo("hide")
+-- end)
+
+-- mod:hook(CLASS.PlayerVisibilityExtension, "show", function(func, self, ...)
+-- 	-- if not self._is_visible then
+-- 	-- 	self:_restore_snapshot()
+
+-- 	-- 	self._is_visible = true
+-- 	-- end
+
+--     func(self, ...)
+--     -- Unit.set_unit_visibility(self._unit, true, true)
+--     -- Unit.set_scalar_for_materials(self._unit, "inv_jitter_alpha", 1, true)
+--     mod:echo("show")
+-- end)
 
 -- ##### ┌┬┐┬┌─┐┌─┐┬┌─┐┌┐┌  ┬┌┐┌┌┬┐┬─┐┌─┐  ┬  ┬┬┌─┐┬ ┬ ################################################################
 -- ##### ││││└─┐└─┐││ ││││  ││││ │ ├┬┘│ │  └┐┌┘│├┤ │││ ################################################################
@@ -384,48 +510,66 @@ end)
     -- mod:hook(CLASS.MissionIntroView, "update", function(func, self, dt, t, input_service, ...)
     --     -- Original function
     --     func(self, dt, t, input_service, ...)
-    --     -- Iterate slots
-    --     for i, slot in pairs(self._spawn_slots) do
-    --         if slot.occupied and not slot.was_processed then
-    --             local profile_spawner = slot.profile_spawner
-    --             local spawn_data = profile_spawner and profile_spawner._character_spawn_data
-    --             local player_unit = spawn_data and spawn_data.unit_3p
-    --             if player_unit then
-    --                 mod:echo("process load slot "..tostring(slot.index))
-    --                 -- Extensions
-    --                 profile_spawner.no_spawn = true
-    --                 mod:remove_extension(player_unit, "visible_equipment_system")
-    --                 self.visible_equipment_extension = script_unit_add_extension({
-    --                     world = self._world_spawner:world(),
-    --                 }, slot.spawn_point_unit, "VisibleEquipmentExtension", "visible_equipment_system", {
-    --                     -- player = mod:player_from_unit(unit_3p),
-    --                     profile = spawn_data.profile,
-    --                     player_unit = slot.spawn_point_unit,
-    --                     equipment_component = spawn_data.equipment_component,
-    --                     equipment = spawn_data.slots,
-    --                     loading_spawn_point = slot.index,
-    --                 })
-    --                 slot.was_processed = true
-    --             end
-    --         elseif not slot.occupied then
-    --             mod:remove_extension(slot.spawn_point_unit, "visible_equipment_system")
-    --             slot.was_processed = nil
-    --         elseif slot.occupied and slot.was_processed then
-    --             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "load_slots")
-    --             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "update", dt, t)
-    --         end
-    --     end
+    -- --     -- Iterate slots
+    -- --     for i, slot in pairs(self._spawn_slots) do
+    -- --         if slot.occupied and not slot.was_processed then
+    -- --             local profile_spawner = slot.profile_spawner
+    -- --             local spawn_data = profile_spawner and profile_spawner._character_spawn_data
+    -- --             local player_unit = spawn_data and spawn_data.unit_3p
+    -- --             if player_unit then
+    -- --                 mod:echo("process load slot "..tostring(slot.index))
+    -- --                 -- Extensions
+    -- --                 profile_spawner.no_spawn = true
+    -- --                 mod:remove_extension(player_unit, "visible_equipment_system")
+    -- --                 self.visible_equipment_extension = script_unit_add_extension({
+    -- --                     world = self._world_spawner:world(),
+    -- --                 }, slot.spawn_point_unit, "VisibleEquipmentExtension", "visible_equipment_system", {
+    -- --                     -- player = mod:player_from_unit(unit_3p),
+    -- --                     profile = spawn_data.profile,
+    -- --                     player_unit = slot.spawn_point_unit,
+    -- --                     equipment_component = spawn_data.equipment_component,
+    -- --                     equipment = spawn_data.slots,
+    -- --                     loading_spawn_point = slot.index,
+    -- --                 })
+    -- --                 slot.was_processed = true
+    -- --             end
+    -- --         elseif not slot.occupied then
+    -- --             mod:remove_extension(slot.spawn_point_unit, "visible_equipment_system")
+    -- --             slot.was_processed = nil
+    -- --         elseif slot.occupied and slot.was_processed then
+    -- --             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "load_slots")
+    -- --             mod:execute_extension(slot.spawn_point_unit, "visible_equipment_system", "update", dt, t)
+    -- --         end
+    -- --     end
+    --     -- Cutscene
+    --     managers.event:trigger("weapon_customization_mission_intro", true)
     -- end)
 
-    -- mod:hook(CLASS.MissionIntroView, "on_exit", function(func, self, ...)
-    --     -- Extensions
-    --     for i, slot in pairs(self._spawn_slots) do
-    --         if slot.occupied and slot.was_processed then
-    --             mod:remove_extension(slot.spawn_point_unit, "visible_equipment_system")
-    --         end
-    --     end
+    -- mod:hook(CLASS.LobbyView, "on_enter", function(func, self, ...)
     --     -- Original function
     --     func(self, ...)
+    --     -- Cutscene
+    --     managers.event:trigger("weapon_customization_cutscene", true)
+    -- end)
+
+    -- mod:hook(CLASS.LobbyView, "on_exit", function(func, self, ...)
+    --     -- -- Extensions
+    --     -- for i, slot in pairs(self._spawn_slots) do
+    --     --     if slot.occupied and slot.was_processed then
+    --     --         mod:remove_extension(slot.spawn_point_unit, "visible_equipment_system")
+    --     --     end
+    --     -- end
+    --     -- Cutscene
+    --     managers.event:trigger("weapon_customization_cutscene", false)
+    --     -- Original function
+    --     func(self, ...)
+    -- end)
+
+    -- mod:hook(CLASS.LobbyView, "update", function(func, self, ...)
+    --     -- Original function
+    --     func(self, ...)
+    --     -- Cutscene
+    --     managers.event:trigger("weapon_customization_cutscene", true)
     -- end)
 
     -- mod:hook(CLASS.MissionIntroView, "event_mission_intro_trigger_players_event", function(func, self, animation_event, ...)
@@ -444,6 +588,8 @@ end)
 -- ##### │  │ │ │ └─┐│  ├┤ │││├┤   └┐┌┘│├┤ │││ ########################################################################
 -- ##### └─┘└─┘ ┴ └─┘└─┘└─┘┘└┘└─┘   └┘ ┴└─┘└┴┘ ########################################################################
 
+-- CinematicSceneSystem
+
 mod:hook(CLASS.CutsceneView, "on_enter", function(func, self, ...)
     -- Original function
     func(self, ...)
@@ -453,6 +599,35 @@ mod:hook(CLASS.CutsceneView, "on_enter", function(func, self, ...)
     self.on_exit = function(self)
         managers.event:trigger("weapon_customization_cutscene", false)
     end
+end)
+
+-- mod:hook(CLASS.CutsceneView, "on_exit", function(func, self, ...)
+--     -- Cutscene
+--     managers.event:trigger("weapon_customization_cutscene", false)
+--     -- Original function
+--     func(self, ...)
+-- end)
+
+mod:hook(CLASS.CutsceneView, "update", function(func, self, dt, t, input_service, ...)
+    -- Original function
+    func(self, dt, t, input_service, ...)
+    -- Cutscene
+    managers.event:trigger("weapon_customization_cutscene", true)
+end)
+
+mod:hook_require("scripts/game_states/game/state_victory_defeat", function(instance)
+	mod:hook(instance, "on_enter", function(func, self, parent, params, creation_context, ...)
+        mod:echo("custcene enter")
+		managers.event:trigger("weapon_customization_cutscene", true)
+	end)
+	mod:hook(instance, "update", function(func, self, main_dt, main_t, ...)
+        mod:echo("custcene update")
+		managers.event:trigger("weapon_customization_cutscene", true)
+	end)
+	mod:hook(instance, "on_exit", function(func, self, ...)
+        mod:echo("custcene exit")
+		managers.event:trigger("weapon_customization_cutscene", false)
+	end)
 end)
 
 -- ##### ┌┬┐┌─┐┬┌┐┌  ┌┬┐┌─┐┌┐┌┬ ┬  ┬  ┬┬┌─┐┬ ┬ ########################################################################
@@ -466,9 +641,16 @@ mod:hook(CLASS.MainMenuView, "init", function(func, self, settings, context, ...
     self._pass_input = true
 end)
 
--- mod:hook(CLASS.LobbyView, "init", function(func, self, settings, context, ...)
---     -- Original function
---     func(self, settings, context, ...)
---     -- Mod
---     self._pass_input = true
--- end)
+mod:hook(CLASS.LobbyView, "init", function(func, self, settings, context, ...)
+    -- Original function
+    func(self, settings, context, ...)
+    -- Mod
+    self._pass_input = true
+end)
+
+mod:hook(CLASS.ResultView, "init", function(func, self, settings, context, ...)
+    -- Original function
+    func(self, settings, context, ...)
+    -- Mod
+    self._pass_input = true
+end)

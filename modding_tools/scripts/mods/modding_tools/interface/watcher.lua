@@ -41,3 +41,14 @@ mod.watcher_show = function(self, show)
         self.watcher:show(show)
     end
 end
+
+mod.watcher_unload = function(self)
+    if self.watcher then
+		self.watcher:delete()
+		self.watcher = nil
+	end
+end
+
+mod.watcher_toggle = function(self, visible)
+    if self.watcher then self.watcher:show(visible) end
+end

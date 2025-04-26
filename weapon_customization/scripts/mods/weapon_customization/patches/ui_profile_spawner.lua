@@ -28,10 +28,12 @@ local mod = get_mod("weapon_customization")
 	local PhysicsWorld = PhysicsWorld
 	local unit_get_data = Unit.get_data
 	local vector3_normalize = vector3.normalize
+	local world_unlink_unit = World.unlink_unit
+	local world_destroy_unit = World.destroy_unit
 	local world_physics_world = World.physics_world
 	local physics_world_raycast = PhysicsWorld.raycast
-	local camera_screen_to_world = Camera.screen_to_world
 	local script_unit_extension = script_unit.extension
+	local camera_screen_to_world = Camera.screen_to_world
 	local script_unit_has_extension = script_unit.has_extension
 	local script_unit_add_extension = script_unit.add_extension
 	local script_unit_remove_extension = script_unit.remove_extension
@@ -79,7 +81,6 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 						-- Update VisibleEquipmentExtension
 						visible_equipment_extension:load_slots()
 						visible_equipment_extension:update(dt, t)
-
 					else
 						-- Add VisibleEquipmentExtension
 						script_unit_add_extension({
@@ -99,84 +100,35 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 					-- Remove VisibleEquipmentExtension
 					visible_equipment_extension:delete_slots()
 					mod:remove_extension(unit, "visible_equipment_system")
-
-				end
-
-			end
-		end
-	end
-
-	instance.update_sling = function(self, dt, t)
-		local spawn_data = self._character_spawn_data
-		if spawn_data then
-			local unit = spawn_data.unit_3p
-			if unit and unit_alive(unit) then
-				local sling_extension = script_unit_extension(unit, "weapon_sling_system")
-				if self.use_sling_system and self.use_visible_equipment_system then
-					if sling_extension then
-						-- Update WeaponSlingExtension
-						sling_extension:load_slots()
-						sling_extension:update(dt, t)
-
-					else
-						-- Add WeaponSlingExtension
-						script_unit_add_extension({
-							world = self._world,
-						}, unit, "WeaponSlingExtension", "weapon_sling_system", {
-							profile = spawn_data.profile,
-							is_local_unit = true,
-							player_unit = unit,
-							camera = self._camera,
-							equipment_component = spawn_data.equipment_component,
-							equipment = spawn_data.slots,
-							wielded_slot = spawn_data.wielded_slot,
-							ui_profile_spawner = true,
-						})
-
-					end
-				elseif sling_extension then
-					-- Remove WeaponSlingExtension
-					-- mod:execute_extension(self._unit, "weapon_sling_system", "delete_slots")
-					sling_extension:delete_slots()
-					mod:remove_extension(unit, "weapon_sling_system")
-
 				end
 			end
 		end
 	end
 
 	instance.remove_custom_extensions = function(self)
-
-		if self.help_units then
-			for _, data in pairs(self.help_units) do
-				World.unlink_unit(self._world, data.unit)
-				World.destroy_unit(self._world, data.unit)
-			end
-			self.help_units = nil
-		end
-
 		if self._character_spawn_data then
 			mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "delete_slots")
 			mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "delete")
 			mod:remove_extension(self._character_spawn_data.unit_3p, "visible_equipment_system")
-			mod:execute_extension(self._character_spawn_data.unit_3p, "weapon_sling_system", "delete_slots")
-			mod:remove_extension(self._character_spawn_data.unit_3p, "weapon_sling_system")
+		end
+		if self.help_units then
+			for _, data in pairs(self.help_units) do
+				world_unlink_unit(self._world, data.unit)
+				world_destroy_unit(self._world, data.unit)
+			end
+			self.help_units = nil
 		end
 	end
 
 	instance.update_custom_extensions = function(self, dt, t)
 		-- Visible equipment
 		self:update_visible_equipment(dt, t)
-		-- Weapon sling
-		-- self:update_sling(dt, t)
 	end
 
 	instance.preview_flashlight = function(self, slot_id)
 		if self._character_spawn_data then
 			local slot = self._character_spawn_data.slots[SLOT_SECONDARY]
-			-- local flashlight = mod:get_attachment_slot_in_attachments(slot.attachments_3p, "flashlight")
 			local flashlight = mod.gear_settings:attachment_unit(slot.attachments_3p, "flashlight")
-			
 			local attachment_name = flashlight and unit_get_data(flashlight, "attachment_name")
 			if flashlight and attachment_name and slot_id == SLOT_SECONDARY then
 				mod:preview_flashlight(true, self._world, flashlight, attachment_name, true)
@@ -190,15 +142,35 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 		if self._character_spawn_data then
 			local slot = self._character_spawn_data.slots[slot_id]
 			mod:execute_extension(self._character_spawn_data.unit_3p, "visible_equipment_system", "on_wield_slot", slot)
-			mod:execute_extension(self._character_spawn_data.unit_3p, "weapon_sling_system", "on_wield_slot", slot)
 		end
 	end
 
 	instance.on_settings_changed = function(self)
-		self.use_sling_system = mod:get("mod_option_sling")
         self.use_visible_equipment_system = mod:get("mod_option_visible_equipment")
         self.disable_visible_equipment_system_in_hub = mod:get("mod_option_visible_equipment_disable_in_hub")
     end
+
+	instance.custom_raycast = function(self, from, to, physics_world, collision_filter)
+		local character_spawn_data = self._character_spawn_data or self._loading_profile_data
+		local unit_3p = character_spawn_data and character_spawn_data.unit_3p
+
+		if not unit_3p then return end
+
+		local result, other = physics_world_raycast(physics_world, from, to, 100, "all", "collision_filter", collision_filter)
+
+		if not result then return end
+
+		local INDEX_ACTOR = 4
+		local num_hits = #result
+		for i = 1, num_hits do
+			local hit = result[i]
+			local hit_actor = hit[INDEX_ACTOR]
+			local hit_unit = actor_unit(hit_actor)
+			if hit_unit == unit_3p then
+				return hit_unit, hit_actor
+			end
+		end
+	end
 
 end)
 
@@ -212,6 +184,8 @@ mod:hook(CLASS.UIProfileSpawner, "init", function(func, self, reference_name, wo
 	func(self, reference_name, world, camera, unit_spawner, force_highest_lod_step, optional_mission_template, ...)
 
 	managers.event:register(self, "weapon_customization_settings_changed", "on_settings_changed")
+
+	self._rotation_input_disabled = false
 
 	self:on_settings_changed()
 
@@ -230,6 +204,8 @@ mod:hook(CLASS.UIProfileSpawner, "destroy", function(func, self, ...)
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_service, ...)
+
+	self._rotation_input_disabled = false
 
 	-- Original function
 	func(self, dt, t, input_service, ...)
@@ -280,8 +256,8 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
 	-- Original function
 	func(self, unit_3p, ...)
 
-	-- -- Visible equipment
-	-- self:update_visible_equipment()
+	-- Visible equipment
+	self:update_visible_equipment()
 
 	local data = self._loading_profile_data or self._character_spawn_data
 	if data then
@@ -330,27 +306,6 @@ mod:hook(CLASS.UIProfileSpawner, "_despawn_players_characters", function(func, s
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "_get_raycast_hit", function(func, self, from, to, physics_world, collision_filter, ...)
-	local character_spawn_data = self._character_spawn_data or self._loading_profile_data
-	local unit_3p = character_spawn_data and character_spawn_data.unit_3p
-
-	if not unit_3p then
-		return
-	end
-
-	local result, other = physics_world_raycast(physics_world, from, to, 100, "all", "collision_filter", collision_filter)
-
-	if not result then
-		return
-	end
-
-	local INDEX_ACTOR = 4
-	local num_hits = #result
-	for i = 1, num_hits do
-		local hit = result[i]
-		local hit_actor = hit[INDEX_ACTOR]
-		local hit_unit = actor_unit(hit_actor)
-		if hit_unit == unit_3p then
-			return hit_unit, hit_actor
-		end
-	end
+	-- Return custom raycast
+	return self:custom_raycast(from, to, physics_world, collision_filter)
 end)

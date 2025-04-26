@@ -10,10 +10,12 @@ local mod = get_mod("weapon_customization")
     local _combataxe_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/combataxe_p2_m1")
     local _combataxe_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/combataxe_p3_m1")
     local _forcesword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/forcesword_p1_m1")
+    local _forcesword_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/forcesword_2h_p1_m1")
     local _ogryn_club_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/ogryn_club_p1_m1")
     local _ogryn_powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/ogryn_powermaul_p1_m1")
     local _powermaul_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/powermaul_2h_p1_m1")
     local _powersword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/powersword_p1_m1")
+    local _powersword_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/powersword_2h_p1_m1")
     local _thunderhammer_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/thunderhammer_2h_p1_m1")
     local _forcestaff_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/forcestaff_p1_m1")
     local _ogryn_pickaxe_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/ogryn_pickaxe_2h_p1_m1")
@@ -170,7 +172,6 @@ return {
         )
     end,
 
-
     medium_grip_attachments = function(default)
         local attachments = table_icombine(
             _chainaxe_p1_m1.grip_attachments(false),
@@ -205,10 +206,12 @@ return {
             _combataxe_p2_m1.pommel_attachments(false),
             _combataxe_p3_m1.pommel_attachments(false, krieg, prologue),
             _forcesword_p1_m1.pommel_attachments(false),
+            _forcesword_2h_p1_m1.pommel_attachments(false),
             _ogryn_club_p1_m1.pommel_attachments(false),
             _ogryn_powermaul_p1_m1.pommel_attachments(false),
             _powermaul_2h_p1_m1.pommel_attachments(false),
             _powersword_p1_m1.pommel_attachments(false),
+            _powersword_2h_p1_m1.pommel_attachments(false),
             _thunderhammer_2h_p1_m1.pommel_attachments(false)
         )
         if default == nil then default = true end
@@ -230,10 +233,12 @@ return {
             _combataxe_p2_m1.pommel_models(data[2].parent, data[2].angle, data[2].move, data[2].remove, data[2].type, data[2].no_support, data[2].automatic_equip, data[2].hide_mesh, data[2].mesh_move, data[2].special_resolve),
             _combataxe_p3_m1.pommel_models(data[3].parent, data[3].angle, data[3].move, data[3].remove, data[3].type, data[3].no_support, data[3].automatic_equip, data[3].hide_mesh, data[3].mesh_move, data[3].special_resolve),
             _forcesword_p1_m1.pommel_models(data[4].parent, data[4].angle, data[4].move, data[4].remove, data[4].type, data[4].no_support, data[4].automatic_equip, data[4].hide_mesh, data[4].mesh_move, data[4].special_resolve),
+            _forcesword_2h_p1_m1.pommel_models(data[4].parent, data[4].angle, data[4].move, data[4].remove, data[4].type, data[4].no_support, data[4].automatic_equip, data[4].hide_mesh, data[4].mesh_move, data[4].special_resolve),
             _ogryn_club_p1_m1.pommel_models(data[5].parent, data[5].angle, data[5].move, data[5].remove, data[5].type, data[5].no_support, data[5].automatic_equip, data[5].hide_mesh, data[5].mesh_move, data[5].special_resolve),
             _ogryn_powermaul_p1_m1.pommel_models(data[6].parent, data[6].angle, data[6].move, data[6].remove, data[6].type, data[6].no_support, data[6].automatic_equip, data[6].hide_mesh, data[6].mesh_move, data[6].special_resolve),
             _powermaul_2h_p1_m1.pommel_models(data[7].parent, data[7].angle, data[7].move, data[7].remove, data[7].type, data[7].no_support, data[7].automatic_equip, data[7].hide_mesh, data[7].mesh_move, data[7].special_resolve),
             _powersword_p1_m1.pommel_models(data[8].parent, data[8].angle, data[8].move, data[8].remove, data[8].type, data[8].no_support, data[8].automatic_equip, data[8].hide_mesh, data[8].mesh_move, data[8].special_resolve),
+            _powersword_2h_p1_m1.pommel_models(data[8].parent, data[8].angle, data[8].move, data[8].remove, data[8].type, data[8].no_support, data[8].automatic_equip, data[8].hide_mesh, data[8].mesh_move, data[8].special_resolve),
             _thunderhammer_2h_p1_m1.pommel_models(data[9].parent, data[9].angle, data[9].move, data[9].remove, data[9].type, data[9].no_support, data[9].automatic_equip, data[9].hide_mesh, data[9].mesh_move, data[9].special_resolve),
             table.model_table({
                 {name = "pommel_none", model = ""},
@@ -296,6 +301,7 @@ return {
             {id = "thunder_hammer_head_04",     name = "Thunderhammer 4"},
             {id = "thunder_hammer_head_05",     name = "Thunderhammer 5"},
             {id = "thunder_hammer_head_ml01",   name = "Thunderhammer ML01"},
+            {id = "thunder_hammer_head_06",     name = "Thunderhammer 6"},
             {id = "power_maul_head_01",         name = "Power Maul 1"},
             {id = "power_maul_head_02",         name = "Power Maul 2"},
             {id = "power_maul_head_03",         name = "Power Maul 3"},
@@ -332,6 +338,7 @@ return {
             {name = "thunder_hammer_head_04",     model = _item_melee.."/heads/thunder_hammer_head_04"},
             {name = "thunder_hammer_head_05",     model = _item_melee.."/heads/thunder_hammer_head_05"},
             {name = "thunder_hammer_head_ml01",   model = _item_melee.."/heads/thunder_hammer_head_ml01"},
+            {name = "thunder_hammer_head_06",     model = _item_melee.."/heads/thunder_hammer_head_06"},
             {name = "power_maul_head_01",         model = _item_melee.."/heads/power_maul_head_01"},
             {name = "power_maul_head_02",         model = _item_melee.."/heads/power_maul_head_02"},
             {name = "power_maul_head_03",         model = _item_melee.."/heads/power_maul_head_03"},
@@ -577,12 +584,18 @@ return {
             {id = "power_sword_2h_grip_01",      name = "2H Power Sword 1"},
             {id = "power_sword_2h_grip_02",      name = "2H Power Sword 2"},
             {id = "power_sword_2h_grip_03",      name = "2H Power Sword 3"},
+            -- {id = "power_sword_2h_grip_ml01",    name = "2H Power Sword 4"},
             {id = "force_sword_grip_01",      name = "Force Sword 1"},
             {id = "force_sword_grip_02",      name = "Force Sword 2"},
             {id = "force_sword_grip_03",      name = "Force Sword 3"},
             {id = "force_sword_grip_04",      name = "Force Sword 4"},
             {id = "force_sword_grip_05",      name = "Force Sword 5"},
             {id = "force_sword_grip_06",      name = "Force Sword 6"},
+            {id = "2h_force_sword_grip_01",   name = "2H Force Sword 1"},
+            {id = "2h_force_sword_grip_02",   name = "2H Force Sword 2"},
+            {id = "2h_force_sword_grip_03",   name = "2H Force Sword 3"},
+            {id = "2h_force_sword_grip_ml01", name = "2H Force Sword 4"},
+            {id = "2h_force_sword_grip_04",   name = "2H Force Sword 5"},
             {id = "sabre_grip_01",      name = "Sabre 1"},
             {id = "sabre_grip_02",      name = "Sabre 2"},
             {id = "sabre_grip_03",      name = "Sabre 3"},
@@ -627,12 +640,18 @@ return {
             {name = "power_sword_2h_grip_01",      model = _item_melee.."/grips/2h_power_sword_grip_01"},
             {name = "power_sword_2h_grip_02",      model = _item_melee.."/grips/2h_power_sword_grip_02"},
             {name = "power_sword_2h_grip_03",      model = _item_melee.."/grips/2h_power_sword_grip_03"},
+            -- {name = "power_sword_2h_grip_ml01",    model = _item_melee.."/grips/2h_power_sword_grip_ml01"},
             {name = "force_sword_grip_01",      model = _item_melee.."/grips/force_sword_grip_01"},
             {name = "force_sword_grip_02",      model = _item_melee.."/grips/force_sword_grip_02"},
             {name = "force_sword_grip_03",      model = _item_melee.."/grips/force_sword_grip_03"},
             {name = "force_sword_grip_04",      model = _item_melee.."/grips/force_sword_grip_04"},
             {name = "force_sword_grip_05",      model = _item_melee.."/grips/force_sword_grip_05"},
             {name = "force_sword_grip_06",      model = _item_melee.."/grips/force_sword_grip_06"},
+            {name = "2h_force_sword_grip_01",   model = _item_melee.."/grips/2h_force_sword_grip_01"},
+            {name = "2h_force_sword_grip_02",   model = _item_melee.."/grips/2h_force_sword_grip_02"},
+            {name = "2h_force_sword_grip_03",   model = _item_melee.."/grips/2h_force_sword_grip_03"},
+            {name = "2h_force_sword_grip_ml01", model = _item_melee.."/grips/2h_force_sword_grip_ml01"},
+            {name = "2h_force_sword_grip_04",   model = _item_melee.."/grips/2h_force_sword_grip_04"},
             {name = "sabre_grip_01",      model = _item_melee.."/grips/sabre_grip_01"},
             {name = "sabre_grip_02",      model = _item_melee.."/grips/sabre_grip_02"},
             {name = "sabre_grip_03",      model = _item_melee.."/grips/sabre_grip_03"},
@@ -667,9 +686,11 @@ return {
             {id = "power_sword_blade_04",      name = "Power Sword 4"},
             {id = "power_sword_blade_05",      name = "Power Sword 5"},
             {id = "power_sword_blade_06",      name = "Power Sword 6"},
+            {id = "power_sword_blade_07",      name = "Power Sword 7"},
             {id = "power_sword_2h_blade_01",      name = "2H Power Sword 1"},
             {id = "power_sword_2h_blade_02",      name = "2H Power Sword 2"},
             {id = "power_sword_2h_blade_03",      name = "2H Power Sword 3"},
+            {id = "power_sword_2h_blade_ml01",    name = "2H Power Sword 4"},
             {id = "force_sword_blade_01",      name = "Force Sword 1"},
             {id = "force_sword_blade_02",      name = "Force Sword 2"},
             {id = "force_sword_blade_03",      name = "Force Sword 3"},
@@ -677,6 +698,11 @@ return {
             {id = "force_sword_blade_05",      name = "Force Sword 5"},
             {id = "force_sword_blade_06",      name = "Force Sword 6"},
             {id = "force_sword_blade_ml01",      name = "Force Sword 7"},
+            {id = "2h_force_sword_blade_01",   name = "2H Force Sword 1"},
+            {id = "2h_force_sword_blade_02",   name = "2H Force Sword 2"},
+            {id = "2h_force_sword_blade_03",   name = "2H Force Sword 3"},
+            {id = "2h_force_sword_blade_ml01", name = "2H Force Sword 4"},
+            {id = "2h_force_sword_blade_04",   name = "2H Force Sword 5"},
             {id = "sabre_blade_01",      name = "Sabre 1"},
             {id = "sabre_blade_02",      name = "Sabre 2"},
             {id = "sabre_blade_03",      name = "Sabre 3"},
@@ -711,16 +737,23 @@ return {
             {name = "power_sword_blade_04",      model = _item_melee.."/blades/power_sword_blade_05"},
             {name = "power_sword_blade_05",      model = _item_melee.."/blades/power_sword_blade_06"},
             {name = "power_sword_blade_06",      model = _item_melee.."/blades/power_sword_blade_ml01"},
+            {name = "power_sword_blade_07",      model = _item_melee.."/blades/power_sword_blade_07"},
             {name = "power_sword_2h_blade_01",      model = _item_melee.."/blades/2h_power_sword_blade_01"},
             {name = "power_sword_2h_blade_02",      model = _item_melee.."/blades/2h_power_sword_blade_02"},
             {name = "power_sword_2h_blade_03",      model = _item_melee.."/blades/2h_power_sword_blade_03"},
+            {name = "power_sword_2h_blade_ml01",    model = _item_melee.."/blades/2h_power_sword_blade_ml01"},
             {name = "force_sword_blade_01",      model = _item_melee.."/blades/force_sword_blade_01"},
             {name = "force_sword_blade_02",      model = _item_melee.."/blades/force_sword_blade_02"},
             {name = "force_sword_blade_03",      model = _item_melee.."/blades/force_sword_blade_03"},
             {name = "force_sword_blade_04",      model = _item_melee.."/blades/force_sword_blade_04"},
             {name = "force_sword_blade_05",      model = _item_melee.."/blades/force_sword_blade_05"},
             {name = "force_sword_blade_06",      model = _item_melee.."/blades/force_sword_blade_06"},
-            {name = "force_sword_blade_ml01",      model = _item_melee.."/blades/force_sword_blade_ml01"},
+            {name = "force_sword_blade_ml01",    model = _item_melee.."/blades/force_sword_blade_ml01"},
+            {name = "2h_force_sword_blade_01",   model = _item_melee.."/blades/2h_force_sword_blade_01"},
+            {name = "2h_force_sword_blade_02",   model = _item_melee.."/blades/2h_force_sword_blade_02"},
+            {name = "2h_force_sword_blade_03",   model = _item_melee.."/blades/2h_force_sword_blade_03"},
+            {name = "2h_force_sword_blade_ml01", model = _item_melee.."/blades/2h_force_sword_blade_ml01"},
+            {name = "2h_force_sword_blade_04",   model = _item_melee.."/blades/2h_force_sword_blade_04"},
             {name = "sabre_blade_01",      model = _item_melee.."/blades/sabre_blade_01"},
             {name = "sabre_blade_02",      model = _item_melee.."/blades/sabre_blade_02"},
             {name = "sabre_blade_03",      model = _item_melee.."/blades/sabre_blade_03"},
@@ -744,9 +777,10 @@ return {
     sword_hilt_attachments = function(default)
         local attachments = {
             {id = "power_sword_hilt_01",      name = "Power Sword 1"},
-            {id = "power_sword_2h_hilt_01",      name = "2H Power Sword 1"},
-            {id = "power_sword_2h_hilt_02",      name = "2H Power Sword 2"},
-            {id = "power_sword_2h_hilt_03",      name = "2H Power Sword 3"},
+            {id = "power_sword_2h_hilt_01",   name = "2H Power Sword 1"},
+            {id = "power_sword_2h_hilt_02",   name = "2H Power Sword 2"},
+            {id = "power_sword_2h_hilt_03",   name = "2H Power Sword 3"},
+            {id = "power_sword_2h_hilt_ml01", name = "2H Power Sword 4"},
             {id = "force_sword_hilt_01",      name = "Force Sword 1"},
             {id = "force_sword_hilt_02",      name = "Force Sword 2"},
             {id = "force_sword_hilt_03",      name = "Force Sword 3"},
@@ -754,7 +788,12 @@ return {
             {id = "force_sword_hilt_05",      name = "Force Sword 5"},
             {id = "force_sword_hilt_06",      name = "Force Sword 6"},
             {id = "force_sword_hilt_07",      name = "Force Sword 7"},
-            {id = "force_sword_hilt_ml01",      name = "Force Sword 8"},
+            {id = "force_sword_hilt_ml01",    name = "Force Sword 8"},
+            {id = "2h_force_sword_hilt_01",   name = "2H Force Sword 1"},
+            {id = "2h_force_sword_hilt_02",   name = "2H Force Sword 2"},
+            {id = "2h_force_sword_hilt_03",   name = "2H Force Sword 3"},
+            {id = "2h_force_sword_hilt_ml01", name = "2H Force Sword 4"},
+            {id = "2h_force_sword_hilt_04",   name = "2H Force Sword 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -767,9 +806,10 @@ return {
         return table.model_table({
             {name = "hilt_default", model = ""},
             {name = "power_sword_hilt_01",      model = _item_melee.."/hilts/power_sword_hilt_01"},
-            {name = "power_sword_2h_hilt_01",      model = _item_melee.."/hilts/2h_power_sword_hilt_01"},
-            {name = "power_sword_2h_hilt_02",      model = _item_melee.."/hilts/2h_power_sword_hilt_02"},
-            {name = "power_sword_2h_hilt_03",      model = _item_melee.."/hilts/2h_power_sword_hilt_03"},
+            {name = "power_sword_2h_hilt_01",   model = _item_melee.."/hilts/2h_power_sword_hilt_01"},
+            {name = "power_sword_2h_hilt_02",   model = _item_melee.."/hilts/2h_power_sword_hilt_02"},
+            {name = "power_sword_2h_hilt_03",   model = _item_melee.."/hilts/2h_power_sword_hilt_03"},
+            {name = "power_sword_2h_hilt_ml01", model = _item_melee.."/hilts/2h_power_sword_hilt_ml01"},
             {name = "force_sword_hilt_01",      model = _item_melee.."/hilts/force_sword_hilt_01"},
             {name = "force_sword_hilt_02",      model = _item_melee.."/hilts/force_sword_hilt_02"},
             {name = "force_sword_hilt_03",      model = _item_melee.."/hilts/force_sword_hilt_03"},
@@ -777,7 +817,12 @@ return {
             {name = "force_sword_hilt_05",      model = _item_melee.."/hilts/force_sword_hilt_05"},
             {name = "force_sword_hilt_06",      model = _item_melee.."/hilts/force_sword_hilt_06"},
             {name = "force_sword_hilt_07",      model = _item_melee.."/hilts/force_sword_hilt_07"},
-            {name = "force_sword_hilt_ml01",      model = _item_melee.."/hilts/force_sword_hilt_ml01"},
+            {name = "force_sword_hilt_ml01",    model = _item_melee.."/hilts/force_sword_hilt_ml01"},
+            {name = "2h_force_sword_hilt_01",   model = _item_melee.."/hilts/2h_force_sword_hilt_01"},
+            {name = "2h_force_sword_hilt_02",   model = _item_melee.."/hilts/2h_force_sword_hilt_02"},
+            {name = "2h_force_sword_hilt_03",   model = _item_melee.."/hilts/2h_force_sword_hilt_03"},
+            {name = "2h_force_sword_hilt_ml01", model = _item_melee.."/hilts/2h_force_sword_hilt_ml01"},
+            {name = "2h_force_sword_hilt_04",   model = _item_melee.."/hilts/2h_force_sword_hilt_04"},
         }, parent, angle, move, remove, type or "hilt", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

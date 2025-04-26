@@ -74,6 +74,9 @@ mod:add_global_localize_strings({
 		de = "Modding Tool Benutzen",
 		ru = "Использовать ",
 	},
+	loc_empty = {
+		en = "",
+	}
 })
 
 -- ##### ┬  ┌─┐┌─┐┌─┐┬    ┬  ┌─┐┌─┐┌─┐┬  ┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌ ############################################################
@@ -353,6 +356,14 @@ return {
 		de = "Fügt einen Bildschirmeffekt zum Zielfernrohr-Zielen hinzu.",
 		ru = "Добавляет экранный эффект при прицеливании.",
 		["zh-cn"] = "添加瞄准镜屏幕效果。",
+	},
+	mod_option_scopes_hide_when_not_aiming = {
+		en = "Hide reticle",
+		de = "Zielpunkt verstecken",
+	},
+	mod_option_scopes_hide_when_not_aiming_tooltip = {
+		en = "Hides the sight reticle when not aiming",
+		de = "Versteckt den Zielfernrohr-Zielpunkt wenn nicht gezielt wird",
 	},
 	mod_option_scopes_recoil = {
 		en = "Recoil",
@@ -1143,6 +1154,16 @@ return {
 	-- ##### ┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌  ┬  ┬┬┌─┐┬ ┬ #########################################################
 	-- ##### │  │ │└─┐ │ │ │││││┌─┘├─┤ │ ││ ││││  └┐┌┘│├┤ │││ #########################################################
 	-- ##### └─┘└─┘└─┘ ┴ └─┘┴ ┴┴└─┘┴ ┴ ┴ ┴└─┘┘└┘   └┘ ┴└─┘└┴┘ #########################################################
+	loc_weapon_inventory_next_button = {
+		en = ">",
+	},
+	loc_weapon_inventory_prev_button = {
+		en = "<",
+	},
+	loc_weapon_inventory_reload_definitions_button = {
+		en = "Reload Definitions",
+		de = "Definitionen neu laden",
+	},
 	loc_weapon_inventory_reset_button = {
 		en = "Reset All",
 		de = "Alles Zurücksetzen",

@@ -44,7 +44,6 @@ local mod = get_mod("weapon_customization")
 mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_loadout_extension", function(instance)
 
     instance.remove_custom_extensions = function(self, slot_name)
-        mod:execute_extension(self._unit, "laser_pointer_system", "despawn_all")
         -- Sights
         mod:remove_extension(self._unit, "sight_system")
         -- Weapon DOF
@@ -52,6 +51,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         -- Flashlights
         mod:remove_extension(self._unit, "flashlight_system")
         -- Laserpointer
+        mod:execute_extension(self._unit, "laser_pointer_system", "despawn_all")
         mod:remove_extension(self._unit, "laser_pointer_system")
         -- Visible equipment
         mod:execute_extension(self._unit, "visible_equipment_system", "delete_slots")
@@ -290,6 +290,8 @@ end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, game_object_data_or_game_session, unit_spawn_parameter_or_game_object_id, ...)
 
+    self.wc_initialized = true
+
     -- Original function
     func(self, extension_init_context, unit, extension_init_data, game_object_data_or_game_session, unit_spawn_parameter_or_game_object_id, ...)
 
@@ -304,17 +306,17 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(fu
     -- Original function
     func(self, world, unit, ...)
 
-    -- Mod
     mod:on_player_unit_loaded(self._unit)
 
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
 
+    self.wc_initialized = false
+
     -- Remove custom extensions
     self:remove_custom_extensions()
 
-    -- Mod
     mod:on_player_unit_destroyed(self._unit)
 
     managers.event:unregister(self, "weapon_customization_settings_changed")
@@ -329,7 +331,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
     -- Original function
     func(self, unit, dt, t, ...)
 
-    if self:unit_3p_from_slot(SLOT_SECONDARY) then
+    if self.wc_initialized and self:unit_3p_from_slot(SLOT_SECONDARY) then
 
         -- Visible equipment
         self:update_visible_equipment(dt, t)
@@ -362,7 +364,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_equip_item_to_slot", function
     func(self, item, slot_name, t, optional_existing_unit_3p, from_server_correction_occurred, ...)
 
     -- Extensions
-    if slot_name == SLOT_SECONDARY then
+    if self.wc_initialized and slot_name == SLOT_SECONDARY then
         self:remove_custom_extensions()
     end
 
@@ -374,7 +376,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "_unequip_item_from_slot", func
     func(self, slot_name, from_server_correction_occurred, fixed_frame, from_destroy, ...)
 
     -- Remove custom extensions
-    if slot_name == SLOT_SECONDARY then
+    if self.wc_initialized and slot_name == SLOT_SECONDARY then
         self:remove_custom_extensions()
     end
 

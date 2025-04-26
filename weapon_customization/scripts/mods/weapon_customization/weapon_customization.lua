@@ -8,6 +8,7 @@ mod.version = "2.10"
 
 --#region local functions
 	local Unit = Unit
+	local type = type
 	local table = table
 	local CLASS = CLASS
 	local string = string
@@ -56,6 +57,8 @@ mod.version = "2.10"
 			hub = {},
 			customization = {},
 		},
+		reload_definitions = {},
+		icon_cache = {},
 		-- Cache
 		cache = {
 			initialized = false,
@@ -77,6 +80,8 @@ mod.version = "2.10"
 			string_find = {},
 			string_trim = {},
 			string_cap = {},
+			cached_data = {},
+			combinations = {},
 		},
 		debug_split = {split = 0, cache = 0},
 		debug_gsub = {gsub = 0, cache = 0},
@@ -106,6 +111,8 @@ mod.deinit = function(self)
 	self.initialized = false
 end
 
+mod.current_player_models = {}
+
 -- ##### ┌┬┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ###############################################################################
 -- ##### ││││ │ ││  ├┤ └┐┌┘├┤ │││ │ └─┐ ###############################################################################
 -- ##### ┴ ┴└─┘─┴┘  └─┘ └┘ └─┘┘└┘ ┴ └─┘ ###############################################################################
@@ -114,6 +121,15 @@ end
 mod.on_game_state_changed = function(status, state_name)
 	local loaded_packages = mod:persistent_table(REFERENCE).loaded_packages
 	table_clear(loaded_packages.visible_equipment)
+	-- if state_name == "StateVictoryDefeat" then
+	-- 	if status == "enter" then
+	-- 		-- Cutscene
+	-- 		managers.event:trigger("weapon_customization_cutscene", true)
+	-- 	elseif status == "exit" then
+	-- 		-- Cutscene
+	-- 		managers.event:trigger("weapon_customization_cutscene", false)
+	-- 	end
+	-- end
 end
 
 -- Mod settings changed
@@ -156,20 +172,31 @@ end
 
 -- Player visual extension initialized
 mod.on_player_unit_loaded = function(self, player_unit)
+	self.current_player_models[player_unit] = player_unit
 	self:init()
 end
 
 -- Teammate visual extension initialized
 mod.on_husk_unit_loaded = function(self, husk_unit)
+	self.current_player_models[husk_unit] = husk_unit
 end
 
 -- Player visual extension destroyed
 mod.on_player_unit_destroyed = function(self, player_unit)
+	self.current_player_models[player_unit] = nil
 	if player_unit == mod.player_unit then self:deinit() end
 end
 
 -- Teammate visual extension destroyed
 mod.on_husk_unit_destroyed = function(self, husk_unit)
+	self.current_player_models[husk_unit] = nil
+end
+
+mod.register_definition_callback = function(reload_function)
+	local reload_definitions = mod:persistent_table(REFERENCE).reload_definitions
+	if reload_function and type(reload_function) == "function" then
+		reload_definitions[#reload_definitions + 1] = reload_function
+	end
 end
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
@@ -215,6 +242,7 @@ end
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/patches/equipment_component")
 
 	-- Definitions
+	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/visible_equipment/offsets")
 	mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
 
 	-- Extensions
@@ -252,6 +280,11 @@ mod:load_needed_packages()
 -- Find unused attachments
 -- mod:find_attachment_entries()
 -- mod:debug_stingray_objects()
+
+-- local weapon_customization = get_mod("weapon_customization")
+-- weapon_customization.register_definition_callback(function()
+-- 	mod:echo("weapon attachment reload")
+-- end)
 
 -- Reinitialize on mod reload
 if managers and managers.player._game_state ~= nil then

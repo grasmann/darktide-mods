@@ -59,7 +59,8 @@ return {
             {id = "thunder_hammer_head_03",   name = "Head 3"},
             {id = "thunder_hammer_head_04",   name = "Head 4"},
             {id = "thunder_hammer_head_05",   name = "Head 5"},
-            {id = "thunder_hammer_head_ml01", name = "Head Ml01"},
+            {id = "thunder_hammer_head_06",   name = "Head 6"},
+            {id = "thunder_hammer_head_ml01", name = "Head 7"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -76,6 +77,7 @@ return {
             {name = "thunder_hammer_head_03",      model = _item_melee.."/heads/thunder_hammer_head_03"},
             {name = "thunder_hammer_head_04",      model = _item_melee.."/heads/thunder_hammer_head_04"},
             {name = "thunder_hammer_head_05",      model = _item_melee.."/heads/thunder_hammer_head_05"},
+            {name = "thunder_hammer_head_06",      model = _item_melee.."/heads/thunder_hammer_head_06"},
             {name = "thunder_hammer_head_ml01",    model = _item_melee.."/heads/thunder_hammer_head_ml01"},
         }, parent, angle, move, remove, type or "head", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
@@ -113,7 +115,8 @@ return {
             {id = "thunder_hammer_connector_03",   name = "Connector 3"},
             {id = "thunder_hammer_connector_04",   name = "Connector 4"},
             {id = "thunder_hammer_connector_05",   name = "Connector 5"},
-            {id = "thunder_hammer_connector_ml01", name = "Connector 6"},
+            {id = "thunder_hammer_connector_06",   name = "Connector 6"},
+            {id = "thunder_hammer_connector_ml01", name = "Connector 7"},
         }
         if default == nil then default = true end
         if default then return table_icombine(
@@ -130,6 +133,7 @@ return {
             {name = "thunder_hammer_connector_03",      model = _item_melee.."/connectors/thunder_hammer_connector_03"},
             {name = "thunder_hammer_connector_04",      model = _item_melee.."/connectors/thunder_hammer_connector_04"},
             {name = "thunder_hammer_connector_05",      model = _item_melee.."/connectors/thunder_hammer_connector_05"},
+            {name = "thunder_hammer_connector_06",      model = _item_melee.."/connectors/thunder_hammer_connector_06"},
             {name = "thunder_hammer_connector_ml01",    model = _item_melee.."/connectors/thunder_hammer_connector_ml01"},
         }, parent, angle, move, remove, type or "connector", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,

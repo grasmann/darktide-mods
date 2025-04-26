@@ -317,11 +317,11 @@ local mod = get_mod("weapon_customization")
                 end,
             },
             ogryn_heavystubber_p2_m1 = {
-                default = {position = vector3_box(.4, .55, .4), rotation = vector3_box(200, -10, 90), scale = vector3_box(1, 1, 1),
+                default = {position = vector3_box(.8, .45, .15), rotation = vector3_box(200, -10, 100), scale = vector3_box(1, 1, 1),
                     step_move = vector3_box(-.01, .003, .005), step_rotation = vector3_box(-1, 1.5, -1.5)},
-                backpack = {position = vector3_box(-.2, .5, .7), rotation = vector3_box(200, 60, 70), scale = vector3_box(1, 1, 1),
+                backpack = {position = vector3_box(.1, .6, .8), rotation = vector3_box(200, 60, 70), scale = vector3_box(1, 1, 1),
                     step_move = vector3_box(.02, -.03, -.04), step_rotation = vector3_box(2.5, -2.5, .5)},
-                center_mass = vector3_box(0, -.3, 0),
+                center_mass = vector3_box(0, -.6, .2),
                 loading = mod.visible_equipment_loading_offsets.ranged_bulky,
                 init = function(visible_equipment_extension, slot)
                     local slot_info_id = mod.gear_settings:slot_info_id(slot.item)

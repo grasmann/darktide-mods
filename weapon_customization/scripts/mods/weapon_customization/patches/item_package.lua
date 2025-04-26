@@ -292,12 +292,12 @@ mod.can_package_release = function(self, package_name)
     return true
 end
 
-mod:hook(CLASS.PackageManager, "_release_internal", function(func, self, package_name, ...)
-    if mod:can_package_release(package_name) then
-        return func(self, package_name, ...)
-    end
+-- mod:hook(CLASS.PackageManager, "_release_internal", function(func, self, package_name, ...)
+--     if mod:can_package_release(package_name) then
+--         return func(self, package_name, ...)
+--     end
 
-end)
+-- end)
 
 mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
     local load_call_item = self._load_call_data[id]

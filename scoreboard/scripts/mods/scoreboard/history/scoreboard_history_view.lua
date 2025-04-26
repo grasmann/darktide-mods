@@ -1,6 +1,7 @@
 local mod = get_mod("scoreboard")
 local DMF = get_mod("DMF")
 
+local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
 local Missions = mod:original_require("scripts/settings/mission/mission_templates")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 local InputUtils = mod:original_require("scripts/managers/input/input_utils")
@@ -195,7 +196,7 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
                 mission_subname = "\n"..category_config.timer
             end
             if category_config.mission_challenge ~= "" then
-                local mission_challenge = Danger.by_index[tonumber(category_config.mission_challenge)]
+                local mission_challenge = Danger[tonumber(category_config.mission_challenge)]
                 if mission_challenge then
                     if mission_subname == "" then
                         mission_subname = "\n"..Localize(mission_challenge.display_name)
@@ -227,7 +228,11 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
         if category_config.players then
             for _, player in pairs(category_config.players) do
                 local player_name = player.name
-                local symbol = player.string_symbol or player._profile and player._profile.archetype.string_symbol
+                local symbol = player.string_symbol --or player._profile and player._profile.archetype.string_symbol
+                -- local profile = player:profile()
+			    -- local archetype_name = profile and profile.archetype and profile.archetype.name
+                -- local archetype_name = player._profile.archetype and player._profile.archetype.name
+			    -- local symbol = archetype_name and UISettings.archetype_font_icon[archetype_name]
                 if symbol then
                     player_name = symbol.." "..player_name
                 end

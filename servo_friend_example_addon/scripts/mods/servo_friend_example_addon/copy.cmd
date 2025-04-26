@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\servo_friend_example_addon\scripts\mods\servo_friend_example_addon" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\servo_friend_example_addon\scripts\mods\servo_friend_example_addon"

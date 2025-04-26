@@ -1,6 +1,14 @@
 local mod = get_mod("scoreboard")
 local DMF = get_mod("DMF")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+--#region Require
+	local UISettings = mod:original_require("scripts/settings/ui/ui_settings")
+--#endregion
+
 -- ##### ██████╗  █████╗ ████████╗ █████╗  ############################################################################
 -- ##### ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗ ############################################################################
 -- ##### ██║  ██║███████║   ██║   ███████║ ############################################################################
@@ -17,6 +25,8 @@ if not _io.initialized then _io = DMF.deepcopy(Mods.lua.io) end
 local _os = DMF:persistent_table("_os")
 _os.initialized = _os.initialized or false
 if not _os.initialized then _os = DMF.deepcopy(Mods.lua.os) end
+
+mod.checked_history_files = nil
 
 -- ##### ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗ ###################################
 -- ##### ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝ ###################################
@@ -92,7 +102,7 @@ mod.get_scoreboard_history_entries = function(self, scan_dir)
 		return t
 	end
 
-	local entries = {}
+	-- local entries = {}
 	local appdata = self:appdata_path()
     local cache = self:get_scoreboard_history_entries_cache()
 	local files = cache
@@ -100,26 +110,31 @@ mod.get_scoreboard_history_entries = function(self, scan_dir)
 		files = scandir(appdata)
 		self:set_scoreboard_history_entries_cache(files)
 	end
-	local missing_file = false
-	for _, file in pairs(files) do
-		local file_path = appdata..file
-		if file_exists(file_path) then
-			local date_str = string.sub(file, 1, string.len(file) - 4)
-			local entry = self:load_scoreboard_history_entry(file_path, date_str, true)
-			entry.file = file
-			entry.file_path = file_path
-			entry.date = _os.date("%Y-%m-%d %H:%M:%S", tonumber(date_str))
-			entries[#entries+1] = entry
-		else
-			missing_file = true
+	if not mod.checked_history_files or #cache ~= #files then
+		local entries = {}
+		local missing_file = false
+		for _, file in pairs(files) do
+			local file_path = appdata..file
+			if file_exists(file_path) then
+				local date_str = string.sub(file, 1, string.len(file) - 4)
+				local entry = self:load_scoreboard_history_entry(file_path, date_str, true)
+				entry.file = file
+				entry.file_path = file_path
+				entry.date = _os.date("%Y-%m-%d %H:%M:%S", tonumber(date_str))
+				entries[#entries+1] = entry
+			else
+				missing_file = true
+			end
 		end
+
+		if missing_file then
+			entries = self:get_scoreboard_history_entries(true)
+		end
+
+		mod.checked_history_files = entries
 	end
 
-	if missing_file then
-		entries = self:get_scoreboard_history_entries(true)
-	end
-
-	return entries
+	return mod.checked_history_files
 end
 
 mod.get_scoreboard_history_entries_cache = function(self)
@@ -204,7 +219,7 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 	end
 
 	-- Mission
-	local timer = _os.time() - self.timer
+	local timer = (_os.time() or 0) - (self.timer or 0)
 	file:write("#mission;"..tostring(self.mission_name)..";"..tostring(self.mission_challenge)..";"..tostring(self.mission_circumstance)..";"..tostring(self.victory_defeat)..";"..tostring(timer).."\n")
 
 	-- Players
@@ -219,7 +234,10 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 		num_players = num_players + 1
 		if num_players < 5 then
 			local account_id = player:account_id() or player:name()
-			local symbol = player._profile.archetype.string_symbol
+			-- local symbol = player._profile.archetype.string_symbol or player._profile.archetype.symbol or ""
+			local profile = player:profile()
+			local archetype_name = profile and profile.archetype and profile.archetype.name
+			local symbol = archetype_name and UISettings.archetype_font_icon[archetype_name]
 			file:write(num_players..";"..account_id..";"..player:name()..";"..symbol.."\n")
 		end
 	end

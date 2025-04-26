@@ -202,6 +202,7 @@ return {
             {id = "autogun_bayonet_01",      name = "Bayonet 1"},
             {id = "autogun_bayonet_02",      name = "Bayonet 2"},
             {id = "autogun_bayonet_03",      name = "Bayonet 3"},
+            {id = "autogun_bayonet_05",      name = "Bayonet 5"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -216,6 +217,7 @@ return {
             {name = "autogun_bayonet_01",      model = _item_ranged.."/bayonets/bayonet_01"},
             {name = "autogun_bayonet_02",      model = _item_ranged.."/bayonets/bayonet_02"},
             {name = "autogun_bayonet_03",      model = _item_ranged.."/bayonets/bayonet_03"},
+            {name = "autogun_bayonet_05",      model = _item_ranged.."/bayonets/bayonet_05"},
             {name = "autogun_bayonet_none",    model = ""},
         }, parent, angle, move, remove, type or "bayonet", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
@@ -413,6 +415,7 @@ return {
             {id = "bayonet_03",       name = "Bayonet 3"},
             {id = "bayonet_04",       name = "Bayonet 4"},
             {id = "bayonet_05",       name = "Bayonet 5"},
+            {id = "bayonet_06",       name = "Bayonet 6"},
             {id = "bayonet_blade_01", name = "Blade"},
         }
         if default == nil then default = true end
@@ -431,6 +434,7 @@ return {
             {name = "bayonet_04",       model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_04"},
             {name = "bayonet_05",       model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_ml01"},
             {name = "bayonet_blade_01", model = _item_melee.."/blades/combat_sword_blade_01"},
+            {name = "bayonet_06",       model = _item_ranged.."/bayonets/rippergun_rifle_bayonet_05"},
         }, parent, angle, move, remove, type or "bayonet", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
     

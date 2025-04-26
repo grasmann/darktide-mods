@@ -46,6 +46,8 @@ end)
 
 mod:hook(CLASS.PlayerUnitFirstPersonExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, ...)
 
+    self.wc_initialized = true
+
     -- Original function
     func(self, extension_init_context, unit, extension_init_data, ...)
 
@@ -58,6 +60,8 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "init", function(func, self, exte
 end)
 
 mod:hook(CLASS.PlayerUnitFirstPersonExtension, "destroy", function(func, self, ...)
+
+    self.wc_initialized = false
 
     -- Unregister event
     managers.event:unregister(self, "weapon_customization_settings_changed")
@@ -72,7 +76,7 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
     -- Original function
     func(self, unit, dt, t, ...)
 
-    if self._first_person_unit then
+    if self.wc_initialized and self._first_person_unit then
 
         -- Update custom extensions
         self:update_custom_extensions(dt, t)

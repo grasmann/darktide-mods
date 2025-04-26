@@ -5,7 +5,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 --#region Require
-	local MasterItems = mod:original_require("scripts/backend/master_items")
+	-- local MasterItems = mod:original_require("scripts/backend/master_items")
 	local WeaponCustomizationLocalization = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_localization")
 	local SoundEventAliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
 --#endregion
@@ -109,8 +109,9 @@ mod.play_attachment_sound = function(self, item, attachment_slot, attachment_nam
 				end
 			end
 		else
-			if self.attachment[item_name] and self.attachment[item_name][attachment_slot] then
-				for _, data in pairs(self.attachment[item_name][attachment_slot]) do
+			local mod_attachment = self.attachment
+			if mod_attachment[item_name] and mod_attachment[item_name][attachment_slot] then
+				for _, data in pairs(mod_attachment[item_name][attachment_slot]) do
 					if data.id == attachment_name and data.sounds then
 						for _, sound in pairs(data.sounds) do
 							cosmetics_view:_play_sound(sound)

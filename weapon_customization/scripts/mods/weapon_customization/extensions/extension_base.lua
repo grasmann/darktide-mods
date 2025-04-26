@@ -82,8 +82,9 @@ WeaponCustomizationExtension.init = function(self, extension_init_context, unit,
     self.locomotion_ext = script_unit_extension(self.player_unit, "locomotion_system")
 
     self.first_person_unit = self.first_person_extension and self.first_person_extension:first_person_unit()
-    
+
     self.movement_state_component = self.unit_data and self.unit_data:read_component("movement_state")
+    self.weapon_action_component = self.unit_data and self.unit_data:read_component("weapon_action")
     self.alternate_fire_component = self.unit_data and self.unit_data:read_component("alternate_fire")
     self.sprint_character_state_component = self.unit_data and self.unit_data:read_component("sprint_character_state")
     self.hub_jog_character_state = self.unit_data and self.unit_data:read_component("hub_jog_character_state")
@@ -191,7 +192,7 @@ WeaponCustomizationExtension.get_first_person = function(self)
     local common = self.initialized and (self.is_local_unit or self.spectated)
     local no_cutscene = not self.cut_scene
     local first_person = not_deleted and first_person_extension:is_in_first_person_mode()
-    return common and no_cutscene and first_person
+    return common and no_cutscene and first_person or true
 end
 
 WeaponCustomizationExtension.get_vectors_almost_same = function(self, v1, v2, tolerance)
@@ -225,5 +226,11 @@ mod.execute_extension = function(self, unit, system, function_name, ...)
         if extension[function_name] and not extension.__deleted then
             return extension[function_name](extension, ...)
         end
+    end
+end
+
+mod.remove_all_extensions = function(self, unit)
+    for system, extension in pairs(self.extensions) do
+        self:remove_extension(unit, system)
     end
 end

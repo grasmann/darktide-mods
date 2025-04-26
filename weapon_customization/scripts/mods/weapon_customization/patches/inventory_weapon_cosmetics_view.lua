@@ -7,6 +7,7 @@ local mod = get_mod("weapon_customization")
 --#region Require
 	local ItemUtils = mod:original_require("scripts/utilities/items")
 	local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
+	local TextUtilities = mod:original_require("scripts/utilities/ui/text")
 	local MasterItems = mod:original_require("scripts/backend/master_items")
 	local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
 	local UIAnimation = mod:original_require("scripts/managers/ui/ui_animation")
@@ -18,10 +19,12 @@ local mod = get_mod("weapon_customization")
 	local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 	local ItemPackage = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 	local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
+	local CheckboxPassTemplates = mod:original_require("scripts/ui/pass_templates/checkbox_pass_templates")
 	local ScrollbarPassTemplates = mod:original_require("scripts/ui/pass_templates/scrollbar_pass_templates")
 	local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
 	local ViewElementWeaponInfoDefinitions = mod:original_require("scripts/ui/view_elements/view_element_weapon_info/view_element_weapon_info_definitions")
 	local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
+	
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -30,6 +33,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Performance
 	local Utf8 = Utf8
+	local type = type
 	local Unit = Unit
 	local math = math
 	local table = table
@@ -37,6 +41,7 @@ local mod = get_mod("weapon_customization")
 	local CLASS = CLASS
 	local Color = Color
 	local World = World
+	local unpack = unpack
 	local ipairs = ipairs
 	local string = string
 	local Camera = Camera
@@ -107,6 +112,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	local top, z, y = 115, 100, -20
 	local info_box_size = {1250, 200}
 	local equip_button_size = {374, 76}
+
+	-- Create attachment info box widgets
+	local sub_display_name_style = table_clone(UIFontSettings.header_3)
+	sub_display_name_style.text_horizontal_alignment = "left"
+	sub_display_name_style.text_vertical_alignment = "top"
 
 	-- Get attachment slot scenegraph names
 	local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
@@ -214,6 +224,24 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	})
 	instance.widget_definitions.randomize_button.content.original_text = utf8_upper(mod:localize("loc_weapon_inventory_randomize_button"))
 
+	-- Create randomize button scenegraph
+	instance.scenegraph_definition.reload_definitions_button = {
+		vertical_alignment = "bottom",
+		parent = "equip_button",
+		horizontal_alignment = "right",
+		size = equip_button_size,
+		position = {0, -equip_button_size[2] - 10, 1}
+	}
+	-- Create randomize button widget
+	instance.widget_definitions.reload_definitions_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.default_button), "reload_definitions_button", {
+		gamepad_action = "confirm_pressed",
+		text = utf8_upper(mod:localize("loc_weapon_inventory_reload_definitions_button")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.weapons_skin_confirm
+		}
+	}, equip_button_size)
+	instance.widget_definitions.reload_definitions_button.content.original_text = utf8_upper(mod:localize("loc_weapon_inventory_reload_definitions_button"))
+
 	-- Create attachment info box scenegraphs
 	instance.scenegraph_definition.attachment_info_box = {
 		vertical_alignment = "bottom",
@@ -250,11 +278,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		size = {150, 50},
 		position = {310, 0, 3}
 	}
-
-	-- Create attachment info box widgets
-	local sub_display_name_style = table_clone(UIFontSettings.header_3)
-	sub_display_name_style.text_horizontal_alignment = "left"
-	sub_display_name_style.text_vertical_alignment = "top"
 
 	instance.widget_definitions.attachment_info_box = UIWidget.create_definition({
 		{
@@ -306,14 +329,25 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	-- Create scrollbar widget
 	instance.widget_definitions.weapon_customization_scrollbar = UIWidget.create_definition(ScrollbarPassTemplates.default_scrollbar, "weapon_customization_scrollbar")
 
+	local legends_contain = function(display_name)
+		for _, legend_input in pairs(instance.legend_inputs) do
+			if legend_input.display_name == display_name then
+				return true
+			end
+		end
+	end
+
 	-- Modify legend inputs
-	if #instance.legend_inputs == 1 then
+	-- if #instance.legend_inputs == 1 then
+	if not legends_contain("loc_menu_toggle_ui_visibility_off") then
 		instance.legend_inputs[#instance.legend_inputs+1] = {
 			on_pressed_callback = "_cb_on_ui_visibility_toggled",
 			input_action = "hotkey_menu_special_2",
 			display_name = "loc_menu_toggle_ui_visibility_off",
 			alignment = "right_alignment"
 		}
+	end
+	if not legends_contain("loc_use_modding_tool") then
 		instance.legend_inputs[#instance.legend_inputs+1] = {
 			on_pressed_callback = "_cb_on_modding_tool_toggled",
 			input_action = "hotkey_item_sort",
@@ -327,23 +361,6 @@ end)
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
-
--- mod:hook(CLASS.ViewElementInventoryWeaponPreview, "draw", function(func, self, dt, t, ui_renderer, render_settings, input_service, ...)
--- 	-- Overwrite draw function
--- 	render_settings.alpha_multiplier = 1
--- 	self._alpha_multiplier = 1
--- 	-- Original
--- 	func(self, dt, t, ui_renderer, render_settings, input_service, ...)
--- end)
-
--- mod:hook(CLASS.ViewElementInventoryWeaponPreview, "init", function(func, self, parent, draw_layer, start_scale, context, ...)
--- 	func(self, parent, draw_layer, start_scale, context, ...)
--- 	self._draw_background = true
--- end)
-
--- mod:hook(CLASS.ViewElementInventoryWeaponPreview, "draw", function(func, self, dt, t, ui_renderer, render_settings, input_service, ...)
-
--- end)
 
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view", function(instance)
 
@@ -473,7 +490,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Check if custom tab is selected
 	instance.is_tab = function(self, index)
-		return index == 3 or self._selected_tab_index == 3
+		return index == 3 or self.__selected_tab_index == 3
 	end
 
 	-- Get forward gui
@@ -689,7 +706,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					widget.original_y = widget.original_y or widget.offset[2]
 					widget.offset[2] = widget.original_y - (self.total_dropdown_height - 950) * progress
 					local offset = widget.offset[2] + scenegraph_entry.local_position[2]
-					widget.visible = offset > 10 and offset < 950 and self._selected_tab_index == 3
+					widget.visible = offset > 10 and offset < 950 and self.__selected_tab_index == 3
 				end
 			end
 		end
@@ -896,41 +913,43 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			-- local item_name = mod.gear_settings:short_name(item.name)
 			local item_name = self._item_name
 			local item_attachments = mod.attachment[item_name]
-			local move = -10
-			-- Iterate attachment slots
-			for index, slot in pairs(mod.attachment_slots) do
-				local slot_attachments = item_attachments[slot]
-				-- Check that weapon has attachment slot and more than 2 options
-				-- 1st option is default
-				if item_attachments and (not slot_attachments or #slot_attachments <= 2) then
-					local slot_dropdown = self._widgets_by_name[slot.."_custom"]
-					local slot_label = self._widgets_by_name[slot.."_custom_text"]
-					-- Set not applicable in widgets to hide them
-					if slot_dropdown then slot_dropdown.not_applicable = true end
-					if slot_label then slot_label.not_applicable = true end
-					-- Add to list of not applicable widgets
-					self._not_applicable[#self._not_applicable+1] = slot.."_pivot"
-					self._not_applicable[#self._not_applicable+1] = slot.."_text_pivot"
-				end
-			end
-			-- Move widgets according to their applicable status
-			local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
-			-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
-			for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
-				if table_contains(self._not_applicable, scenegraph_name) then
-					-- Differentiate text and dropdown
-					if mod:cached_find(scenegraph_name, "text_pivot") then
-						move = move + label_height
-					else
-						move = move + dropdown_height
+			if item_attachments then
+				local move = -10
+				-- Iterate attachment slots
+				for index, slot in pairs(mod.attachment_slots) do
+					local slot_attachments = item_attachments[slot]
+					-- Check that weapon has attachment slot and more than 2 options
+					-- 1st option is default
+					if item_attachments and (not slot_attachments or #slot_attachments <= 2) then
+						local slot_dropdown = self._widgets_by_name[slot.."_custom"]
+						local slot_label = self._widgets_by_name[slot.."_custom_text"]
+						-- Set not applicable in widgets to hide them
+						if slot_dropdown then slot_dropdown.not_applicable = true end
+						if slot_label then slot_label.not_applicable = true end
+						-- Add to list of not applicable widgets
+						self._not_applicable[#self._not_applicable+1] = slot.."_pivot"
+						self._not_applicable[#self._not_applicable+1] = slot.."_text_pivot"
 					end
 				end
-				-- Change scenegraph position
-				local scenegraph_entry = self._ui_scenegraph[scenegraph_name]
-				if scenegraph_entry then
-					scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - move
-					scenegraph_entry.original_y = scenegraph_entry.local_position[2]
-					self.total_dropdown_height = scenegraph_entry.local_position[2] + dropdown_height
+				-- Move widgets according to their applicable status
+				local cosmetics_scenegraphs = mod:get_cosmetics_scenegraphs()
+				-- local cosmetics_scenegraphs = mod.data_cache:cosmetics_scenegraphs()
+				for _, scenegraph_name in pairs(cosmetics_scenegraphs) do
+					if table_contains(self._not_applicable, scenegraph_name) then
+						-- Differentiate text and dropdown
+						if mod:cached_find(scenegraph_name, "text_pivot") then
+							move = move + label_height
+						else
+							move = move + dropdown_height
+						end
+					end
+					-- Change scenegraph position
+					local scenegraph_entry = self._ui_scenegraph[scenegraph_name]
+					if scenegraph_entry then
+						scenegraph_entry.local_position[2] = scenegraph_entry.local_position[2] - move
+						scenegraph_entry.original_y = scenegraph_entry.local_position[2]
+						self.total_dropdown_height = scenegraph_entry.local_position[2] + dropdown_height
+					end
 				end
 			end
 		end
@@ -1184,6 +1203,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					}
 				end
 			end
+
+			-- self:add_custom_widget(self:generate_combination_dropdown("combination_dropdown", self._selected_item))
+			-- self.scenegraph_to_widgets["combination_dropdown"] = {
+			-- 	widget = self._custom_widgets[#self._custom_widgets],
+			-- 	is_text = false,
+			-- 	is_dropdown = true,
+			-- }
 		end
 	end
 
@@ -1273,6 +1299,66 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		local num_options = #options
 		local num_visible_options = math_min(num_options, max_visible_options)
 	
+
+
+		local size = {100, dropdown_height}
+		local template = CheckboxPassTemplates.settings_checkbox(size[1], dropdown_height, size[1], 1, true, true)
+		local definition = UIWidget.create_definition(template, scenegraph, nil, size)
+
+		local widget_name = attachment_slot.."_prev"
+		local prev_widget = self:_create_widget(widget_name, definition)
+		prev_widget.alpha_multiplier = 1
+		prev_widget.offset[2] = prev_widget.offset[2] - dropdown_height
+		prev_widget.content.option_1 = "<"
+		prev_widget.content.checked = false
+		prev_widget.content.checkbox = true
+		-- prev_widget.content.option_hotspot_1.pressed_callback = function()
+		-- 	-- if not widget.content.checked then
+		-- 	-- 	widget.content.option_1 = TextUtilities.apply_color_to_text("Locked", Color.red(255, true))
+		-- 	-- 	widget.content.checked = true
+		-- 	-- 	if widget.content.filter.content.checked then
+		-- 	-- 		widget.content.filter.content.option_hotspot_1.pressed_callback()
+		-- 	-- 	end
+		-- 	-- 	self:update_filtered_combinations()
+		-- 	-- else
+		-- 	-- 	widget.content.option_1 = "Lock"
+		-- 	-- 	widget.content.checked = false
+		-- 	-- 	self:update_filtered_combinations()
+		-- 	-- end
+		-- end
+		self._widgets_by_name[widget_name] = prev_widget
+		self._widgets[#self._widgets+1] = prev_widget
+		self:add_custom_widget(prev_widget)
+
+		local widget_name = attachment_slot.."_next"
+		local next_widget = self:_create_widget(widget_name, definition)
+		next_widget.alpha_multiplier = 1
+		next_widget.offset[1] = next_widget.offset[1] + grid_size[1] - size[1]
+		next_widget.offset[2] = next_widget.offset[2] - dropdown_height
+		next_widget.content.option_1 = ">"
+		next_widget.content.checked = false
+		next_widget.content.checkbox = true
+		-- widget.content.prev = self._widgets_by_name[attachment_slot.."_prev"]
+		-- next_widget.content.option_hotspot_1.pressed_callback = function()
+		-- 	-- if not widget.content.checked then
+		-- 	-- 	widget.content.option_1 = TextUtilities.apply_color_to_text("Filtered", Color.light_blue(255, true))
+		-- 	-- 	widget.content.checked = true
+		-- 	-- 	if widget.content.prev.content.checked then
+		-- 	-- 		widget.content.prev.content.option_hotspot_1.pressed_callback()
+		-- 	-- 	end
+		-- 	-- 	self:update_filtered_combinations()
+		-- 	-- else
+		-- 	-- 	widget.content.option_1 = "Filter"
+		-- 	-- 	widget.content.checked = false
+		-- 	-- 	self:update_filtered_combinations()
+		-- 	-- end
+		-- end
+		self._widgets_by_name[widget_name] = next_widget
+		self._widgets[#self._widgets+1] = next_widget
+		self:add_custom_widget(next_widget)
+
+		-- self._widgets_by_name[attachment_slot.."_prev"].content.next = widget
+
 		local size = {grid_size[1], dropdown_height}
 		local template = DropdownPassTemplates.settings_dropdown(size[1], size[2], size[1], num_visible_options, true)
 		for _, pass in pairs(template) do
@@ -1302,6 +1388,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		widget.alpha_multiplier = 1
 		self._widgets_by_name[widget_name] = widget
 		self._widgets[#self._widgets+1] = widget
+
+		-- widget.content.lock = self._widgets_by_name[attachment_slot.."_lock"]
+		-- self._widgets_by_name[attachment_slot.."_lock"].content.dropdown = widget
+		-- widget.content.filter = self._widgets_by_name[attachment_slot.."_filter"]
+		-- self._widgets_by_name[attachment_slot.."_filter"].content.dropdown = widget
 	
 		local content = widget.content
 		content.entry = {
@@ -1363,6 +1454,26 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		content.options_by_id = options_by_id
 		content.options = options
 		content.num_visible_options = num_visible_options
+		content.next_widget = next_widget
+		content.prev_widget = prev_widget
+
+		next_widget.content.option_hotspot_1.pressed_callback = function()
+			local item_name = self._item_name
+			local item_attachments = mod.attachment[item_name]
+			if not content.disabled and item_attachments[attachment_slot] then
+				content.selected_index = math_min(content.selected_index + 1, #content.entry.options)
+				self:load_new_attachment(self._selected_item, attachment_slot, content.entry.options[content.selected_index].value)
+			end
+		end
+
+		prev_widget.content.option_hotspot_1.pressed_callback = function()
+			local item_name = self._item_name
+			local item_attachments = mod.attachment[item_name]
+			if not content.disabled and item_attachments[attachment_slot] then
+				content.selected_index = math_max(content.selected_index - 1, 1)
+				self:load_new_attachment(self._selected_item, attachment_slot, content.entry.options[content.selected_index].value)
+			end
+		end
 	
 		content.hotspot.pressed_callback = function ()
 			if not mod.dropdown_open and not content.disabled then
@@ -1432,6 +1543,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			self._widgets_by_name.reset_button.visible = not hide
 			self._widgets_by_name.randomize_button.visible = not hide
 			self._widgets_by_name.weapon_customization_scrollbar.visible = not hide and self.total_dropdown_height > 950
+			self._widgets_by_name.reload_definitions_button.visible = not hide
 		end
 	end
 
@@ -1488,24 +1600,34 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 							break
 						end
 					end
-					local entry = self.dropdown_positions[widget.content.entry.attachment_slot]
-					local text = self._widgets_by_name[widget.content.entry.attachment_slot.."_custom_text"]
-					local active = entry and entry[3]
-					if active or not any_active or not entry then
-						widget.alpha_multiplier = math_lerp(widget.alpha_multiplier, 1, dt * 2)
-						text.alpha_multiplier = widget.alpha_multiplier
-					else
-						widget.alpha_multiplier = math_lerp(widget.alpha_multiplier, .25, dt * 2)
-						text.alpha_multiplier = widget.alpha_multiplier
-					end
-					if scenegraph_entry and scenegraph_entry.position then
-						if scenegraph_entry.position[2] > grid_size[2] / 2 then
-							widget.content.grow_downwards = false
+					if widget.content.entry.attachment_slot then
+						local entry = self.dropdown_positions[widget.content.entry.attachment_slot]
+						local text = self._widgets_by_name[widget.content.entry.attachment_slot.."_custom_text"]
+						local active = entry and entry[3]
+						if active or not any_active or not entry then
+							widget.alpha_multiplier = math_lerp(widget.alpha_multiplier, 1, dt * 2)
+							text.alpha_multiplier = widget.alpha_multiplier
 						else
-							widget.content.grow_downwards = true
+							widget.alpha_multiplier = math_lerp(widget.alpha_multiplier, .25, dt * 2)
+							text.alpha_multiplier = widget.alpha_multiplier
 						end
+						if scenegraph_entry and scenegraph_entry.position then
+							if scenegraph_entry.position[2] > grid_size[2] / 2 then
+								widget.content.grow_downwards = false
+							else
+								widget.content.grow_downwards = true
+							end
+						end
+					else
+						widget.content.grow_downwards = false
 					end
 					self:update_dropdown(widget, input_service, dt, t)
+
+					-- self._widgets_by_name[widget.name.."_lock"].visible = self:is_tab() and not self:is_busy()
+				elseif widget.content.checkbox then
+
+					widget.visible = self:is_tab()
+
 				end
 			end
 		end
@@ -1591,25 +1713,27 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		if content.close_setting then
 			content.close_setting = nil
 
-			-- self:release_attachment_packages()
-			self:destroy_attachment_previews()
-			
-			local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
-			if content.reset and ui_weapon_spawner._weapon_spawn_data then
-				content.reset = nil
-				self.dropdown_positions[entry.attachment_slot][3] = false
-				local unit_3p = ui_weapon_spawner._weapon_spawn_data.unit_3p
-				local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
-				-- local unit = mod:get_attachment_slot_in_attachments(attachment_units_3p, entry.attachment_slot)
-				local unit = mod.gear_settings:attachment_unit(attachment_units_3p, entry.attachment_slot)
+			if entry.attachment_slot then
+				-- self:release_attachment_packages()
+				self:destroy_attachment_previews()
 				
-				if unit then self:unit_hide_meshes(unit, false) end
-				if attachment_units_3p then self:execute_hide_meshes(self._presentation_item, unit_3p, attachment_units_3p) end
-				-- mod.build_animation.animations = {}
-				mod.weapon_part_animation_update = true
-				-- self:detach_attachment(self.cosmetics_view._presentation_item, entry.attachment_slot, nil, selected_option.value, nil, nil, nil, "attach")
-				mod.build_animation:animate(self._presentation_item, entry.attachment_slot, nil, selected_option.value, nil, nil, nil, "attach")
-				
+				local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
+				if content.reset and ui_weapon_spawner._weapon_spawn_data then
+					content.reset = nil
+					self.dropdown_positions[entry.attachment_slot][3] = false
+					local unit_3p = ui_weapon_spawner._weapon_spawn_data.unit_3p
+					local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
+					-- local unit = mod:get_attachment_slot_in_attachments(attachment_units_3p, entry.attachment_slot)
+					local unit = mod.gear_settings:attachment_unit(attachment_units_3p, entry.attachment_slot)
+					
+					if unit then self:unit_hide_meshes(unit, false) end
+					if attachment_units_3p then self:execute_hide_meshes(self._presentation_item, unit_3p, attachment_units_3p) end
+					-- mod.build_animation.animations = {}
+					mod.weapon_part_animation_update = true
+					-- self:detach_attachment(self.cosmetics_view._presentation_item, entry.attachment_slot, nil, selected_option.value, nil, nil, nil, "attach")
+					mod.build_animation:animate(self._presentation_item, entry.attachment_slot, nil, selected_option.value, nil, nil, nil, "attach")
+					
+				end
 			end
 	
 			content.exclusive_focus = false
@@ -1624,31 +1748,58 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			return
 		end
 	
-		self.dropdown_positions[entry.attachment_slot] = self.dropdown_positions[entry.attachment_slot] or {}
-		self.dropdown_positions[entry.attachment_slot][3] = (not mod.dropdown_open and content.hotspot.is_hover) or content.hotspot.is_selected
+		if entry.attachment_slot then
+			self.dropdown_positions[entry.attachment_slot] = self.dropdown_positions[entry.attachment_slot] or {}
+			self.dropdown_positions[entry.attachment_slot][3] = not mod.dropdown_open and (content.hotspot.is_hover or content.hotspot.is_selected or content.next_widget.content.option_hotspot_1.is_hover or content.prev_widget.content.option_hotspot_1.is_hover)
+		end
 	
-		if (content.hotspot.is_hover or content.hotspot.is_selected) and not mod.dropdown_open and not mod.build_animation:is_busy() then
+		if entry.attachment_slot and (content.hotspot.is_hover or content.hotspot.is_selected or content.next_widget.content.option_hotspot_1.is_hover or content.prev_widget.content.option_hotspot_1.is_hover) and not mod.dropdown_open and not mod.build_animation:is_busy() then
 			
-			local weapon_attachments = mod.attachment_models[self._item_name]
-			local attachment_data = weapon_attachments[value]
-			local attachment_name = attachment_data and attachment_data.name
-			local new_angle = attachment_data and attachment_data.angle or 0
-			local new_move = attachment_data and attachment_data.move
-			-- mod.do_rotation = true
-			-- mod.new_rotation = new_angle
-			
-			if mod.attachment_preview_index ~= content.selected_index then
-				mod:play_attachment_sound(self._selected_item, entry.attachment_slot, entry.preview_attachment, "select")
-			end
 			self.dropdown_positions[entry.attachment_slot][3] = true
 
-			local ui_weapon_spawner = self:ui_weapon_spawner()
-			if ui_weapon_spawner then
-				ui_weapon_spawner:initiate_camera_movement(new_move)
-				ui_weapon_spawner:initiate_weapon_rotation(new_angle, 1)
+			if (content.next_widget.content.option_hotspot_1.is_hover and not content.next_widget.content.option_hotspot_1.hovered)
+				or (content.prev_widget.content.option_hotspot_1.is_hover and not content.prev_widget.content.option_hotspot_1.hovered)
+				or (content.hotspot.is_hover and not content.hotspot.hovered) then
+				
+				local weapon_attachments = mod.attachment_models[self._item_name]
+				local attachment_data = weapon_attachments[value] --or weapon_attachments[selected_option.value]
+				local attachment_name = attachment_data and attachment_data.name
+				local new_angle = attachment_data and attachment_data.angle or 0
+				local new_move = attachment_data and attachment_data.move
+				-- mod.do_rotation = true
+				-- mod.new_rotation = new_angle
+				
+				if mod.attachment_preview_index ~= content.selected_index then
+					mod:play_attachment_sound(self._selected_item, entry.attachment_slot, entry.preview_attachment, "select")
+				end
+				-- mod.attachment_preview_index = content.selected_index
+				-- self.dropdown_positions[entry.attachment_slot][3] = true
+
+				local ui_weapon_spawner = self:ui_weapon_spawner()
+				if ui_weapon_spawner then
+					ui_weapon_spawner:initiate_camera_movement(new_move)
+					ui_weapon_spawner:initiate_weapon_rotation(new_angle, 1)
+				end
+				
+				mod.attachment_preview_index = content.selected_index
+		
+				if content.next_widget.content.option_hotspot_1.is_hover then
+					content.next_widget.content.option_hotspot_1.hovered = true
+				end
+
+				if content.prev_widget.content.option_hotspot_1.is_hover then
+					content.prev_widget.content.option_hotspot_1.hovered = true
+				end
+
+				if content.hotspot.is_hover then
+					content.hotspot.hovered = true
+				end
+
 			end
-			mod.attachment_preview_index = content.selected_index
-	
+
+			-- mod.attachment_preview_index = content.selected_index
+			-- self.dropdown_positions[entry.attachment_slot][3] = true
+
 			-- local ui_weapon_spawner = self.cosmetics_view._weapon_preview._ui_weapon_spawner
 			-- local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
 			-- local attachment_unit = self:get_attachment_slot_in_attachments(attachment_units_3p, entry.attachment_slot)
@@ -1673,10 +1824,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	
 		-- else
 		-- 	mod.dropdown_positions[entry.attachment_slot][3] = false
+		else
+			content.next_widget.content.option_hotspot_1.hovered = false
+			content.prev_widget.content.option_hotspot_1.hovered = false
+			content.hotspot.hovered = false
 		end
 	
 		local is_disabled = entry.disabled or false
-		content.disabled = is_disabled or mod.build_animation:is_busy()
+		content.disabled = is_disabled or mod.build_animation:is_busy() or (content.lock and content.lock.content and content.lock.content.checked)
 		-- local size = {
 		-- 	400,
 		-- 	dropdown_height
@@ -1798,7 +1953,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			option_hotspot.is_selected = actual_i == selected_index
 			local option = options[actual_i]
 	
-			if option_hotspot.is_hover then
+			if option_hotspot.is_hover and entry.attachment_slot then
 				
 				-- entry.original_value = entry.original_value or value
 				entry.preview_attachment = entry.preview_attachment or option.value
@@ -1834,7 +1989,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 					content.selected_index = actual_i
 					mod.dropdown_closing = true
 					content.option_disabled = false
-					self.dropdown_positions[entry.attachment_slot][3] = false
+					if entry.attachment_slot then
+						self.dropdown_positions[entry.attachment_slot][3] = false
+					end
 				end
 			elseif option_hotspot.on_pressed and option.disabled then
 				content.option_disabled = true
@@ -1902,10 +2059,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			mod.dropdown_closing = false
 
 			-- self:start_weapon_move()
-			local ui_weapon_spawner = self:ui_weapon_spawner()
-			if ui_weapon_spawner then
-				ui_weapon_spawner:initiate_weapon_rotation(0, 1)
-				ui_weapon_spawner:initiate_camera_movement()
+			if entry.attachment_slot then
+				local ui_weapon_spawner = self:ui_weapon_spawner()
+				if ui_weapon_spawner then
+					ui_weapon_spawner:initiate_weapon_rotation(0, 1)
+					ui_weapon_spawner:initiate_camera_movement()
+				end
 			end
 	
 			return
@@ -2346,12 +2505,20 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			vector3_box(vector3_zero()),
 		}
 		self.scenegraph_to_widgets = {}
+		self.combination = nil
 	end
 
 	-- Custom enter
 	instance.custom_enter = function(self)
+		-- self.current_combination = 1
+		-- self.combinations = self:create_all_combinations()
+		self.combination_count = self:combination_count()
+		-- self.filtered_combinations = self.combinations
+		-- self.filtered_combinations = {}
+		-- self:update_filtered_combinations()
 		-- Switch off modding tool
 		self._modding_tool_toggled_on = false
+		self._visibility_toggled_on = true
 		-- -- Remove player visible equipment
 		-- self:remove_player_visible_equipment()
 		-- Generate custom widgets
@@ -2375,8 +2542,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Create bar breakdown widgets
 		self:create_bar_breakdown_widgets()
 		-- Hide UI widgets
-		self._item_grid._widgets_by_name.grid_divider_top.visible = false
-		self._item_grid._widgets_by_name.grid_divider_bottom.visible = false
+		-- self._item_grid._widgets_by_name.grid_divider_top.visible = false
+		-- self._item_grid._widgets_by_name.grid_divider_bottom.visible = false
+		-- self._item_grid._widgets_by_name.grid_divider_title.visible = false
 		self._item_grid._widgets_by_name.grid_background.visible = false
 		-- Set scrollbar progress
 		self:set_scrollbar_progress(0)
@@ -2386,6 +2554,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- self:get_changed_weapon_settings()
 		-- -- Update start settings
 		-- self:update_start_settings()
+		-- Register custom button callbacks
+		self:register_custom_button_callbacks()
+		-- self:update_combination_inputs()
 	end
 
 	instance.reset_stuff = function(self)
@@ -2485,21 +2656,45 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self._widgets_by_name.reset_button.content.hotspot.pressed_callback = callback(self, "cb_on_reset_pressed")
 		-- Randomize button
 		self._widgets_by_name.randomize_button.content.hotspot.pressed_callback = callback(self, "cb_on_randomize_pressed")
+		-- Prev button
+		-- self._widgets_by_name.prev_button.content.hotspot.pressed_callback = callback(self, "cb_on_prev_pressed")
+		-- Next button
+		-- self._widgets_by_name.next_button.content.hotspot.pressed_callback = callback(self, "cb_on_next_pressed")
+		-- Combination button
+		self._widgets_by_name.reload_definitions_button.content.hotspot.pressed_callback = callback(self, "cb_on_reload_definitions_pressed")
 	end
+
+	-- instance.cb_on_prev_pressed = function(self)
+	-- 	self.current_combination = math_max(self.current_combination - 1, 1)
+	-- 	-- self:attach_attachments(self.filtered_combinations[self.current_combination])
+	-- 	self:update_combination_inputs()
+	-- end
+
+	-- instance.cb_on_next_pressed = function(self)
+	-- 	self.current_combination = math_min(self.current_combination + 1, #self.filtered_combinations)
+	-- 	-- self:attach_attachments(self.filtered_combinations[self.current_combination])
+	-- 	self:update_combination_inputs()
+	-- end
+
+	
 
 	-- Update equip button
 	instance.update_equip_button = function(self)
+		-- Get button widget
+		local button = self._widgets_by_name.equip_button
+		-- Get button content
+		local button_content = button and button.content
+		-- Check if tab
 		if self:is_tab() then
-			-- Get button widget
-			local button = self._widgets_by_name.equip_button
-			-- Get button content
-			local button_content = button and button.content
 			-- Get disabled state
-			local disabled = not self:attachments_changed_since_start() or mod.build_animation:is_busy()
+			local disabled = not self:attachments_changed_since_start() or self:is_busy() or self._modding_tool_toggled_on or not button.visible or not self._visibility_toggled_on or not self._gear_id
 			-- Set disabled
 			button_content.hotspot.disabled = disabled
 			-- Update text
 			button_content.text = utf8_upper(disabled and mod:localize("loc_weapon_inventory_equipped_button") or mod:localize("loc_weapon_inventory_equip_button"))
+		else
+			-- Set disabled
+			button_content.hotspot.disabled = false
 		end
 	end
 	
@@ -2510,7 +2705,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Get button content
 		local button_content = button and button.content
 		-- Get disabled state
-		local disabled = not self:attachments_changed_at_all() or mod.build_animation:is_busy()
+		-- local disabled = not self:attachments_changed_at_all() or mod.build_animation:is_busy()
+		local disabled = not self:attachments_changed_at_all() or self:is_busy() or self._modding_tool_toggled_on or not button.visible or not self._visibility_toggled_on or not self._gear_id or not self.changed_weapon_settings or table_size(self.changed_weapon_settings) <= 0
 		-- Set disabled
 		button_content.hotspot.disabled = disabled
 		-- Update text
@@ -2519,27 +2715,24 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Reset button pressed callback
 	instance.cb_on_reset_pressed = function(self, skip_animation)
-		-- Check visibility
-		if self._visibility_toggled_on and self._gear_id and self.changed_weapon_settings and table_size(self.changed_weapon_settings) > 0 then
-			-- Skip animation?
-			local skip_animation = skip_animation or not mod:get(MOD_OPTION_BUILD_ANIMATION)
-			-- Clone changed settings
-			local changed_weapon_settings = table_clone(self.changed_weapon_settings)
-			for attachment_slot, value in pairs(changed_weapon_settings) do
-				changed_weapon_settings[attachment_slot] = "default"
-			end
-			-- Attach default attachments
-			self:attach_attachments(changed_weapon_settings, skip_animation)
-			-- Reset animation
-			-- self:start_weapon_move()
-			local ui_weapon_spawner = self:ui_weapon_spawner()
-			if ui_weapon_spawner then
-				ui_weapon_spawner:initiate_camera_movement()
-				ui_weapon_spawner:initiate_weapon_rotation(0, 1)
-			end
-			-- mod.new_rotation = 0
-			-- mod.do_rotation = true
+		-- Skip animation?
+		local skip_animation = skip_animation or not mod:get(MOD_OPTION_BUILD_ANIMATION)
+		-- Clone changed settings
+		local changed_weapon_settings = table_clone(self.changed_weapon_settings)
+		for attachment_slot, value in pairs(changed_weapon_settings) do
+			changed_weapon_settings[attachment_slot] = "default"
 		end
+		-- Attach default attachments
+		self:attach_attachments(changed_weapon_settings, skip_animation)
+		-- Reset animation
+		-- self:start_weapon_move()
+		local ui_weapon_spawner = self:ui_weapon_spawner()
+		if ui_weapon_spawner then
+			ui_weapon_spawner:initiate_camera_movement()
+			ui_weapon_spawner:initiate_weapon_rotation(0, 1)
+		end
+		-- mod.new_rotation = 0
+		-- mod.do_rotation = true
 	end
 
 	-- Update randomize button
@@ -2549,7 +2742,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Get button content
 		local button_content = button and button.content
 		-- Get disabled state
-		local disabled = mod.build_animation:is_busy()
+		local disabled = self:is_busy() or self._modding_tool_toggled_on or not button.visible or not self._visibility_toggled_on or not self._gear_id
 		-- Set disabled
 		button_content.hotspot.disabled = disabled
 	end
@@ -2559,8 +2752,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Get random attachments
 		local random_attachments = mod.gear_settings:randomize_weapon(self._selected_item)
 		-- mod:dtf(random_attachments, "random_attachments", 10)
-		-- Check visibility
-		if self._visibility_toggled_on and self._gear_id and random_attachments then
+		-- Check attachments
+		if random_attachments then
 			-- Skip animation?
 			local skip_animation = skip_animation or not mod:get(MOD_OPTION_BUILD_ANIMATION)
 			-- Attach random attachments
@@ -2572,8 +2765,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	-- Custom switch tab
 	instance.custom_switch_tab = function(self, index)
+		self.__selected_tab_index = index
+		-- self._grid_display_name = ""
 		if self:is_tab(index) then
 			mod.weapon_skin_override = nil
+			-- local content = self._tabs_content[self.__selected_tab_index]
+			-- self._grid_display_name = "loc_weapon_cosmetics_customization"
 			self:present_grid_layout({})
 			self._item_grid._widgets_by_name.grid_empty.visible = false
 			self:hide_custom_widgets(false)
@@ -2586,7 +2783,41 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			-- mod.reset_start = t
 			self:check_unsaved_changes(true)
 			self:hide_custom_widgets(true)
+			-- local content = self._tabs_content[self.__selected_tab_index]
+			-- mod:echo("Switching to " .. content.display_name)
+			-- self._grid_display_name = content.display_name
+			-- self:present_grid_layout({})
 		end
+		
+	end
+
+	instance.update_reload_definitions_button = function(self)
+		-- Get button widget
+		local button = self._widgets_by_name.reload_definitions_button
+		-- visibility
+		-- button.visible = self:is_tab()
+		-- Get button content
+		local button_content = button and button.content
+		-- Get disabled state
+		local disabled = self:is_busy() or self._modding_tool_toggled_on or not button.visible or not self._visibility_toggled_on or not self._gear_id
+		-- Set disabled
+		button_content.hotspot.disabled = disabled
+	end
+
+	instance.cb_on_reload_definitions_pressed = function(self)
+		-- Reload weapon definitions
+		mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_customization_anchors")
+		-- Reload plugins via registered definition callback
+		local reload_definitions = mod:persistent_table(REFERENCE).reload_definitions
+		for _, callback in pairs(reload_definitions) do
+			if callback and type(callback) == "function" then callback() end
+		end
+		-- Create new preview item instance
+		self._presentation_item = MasterItems.create_preview_item_instance(self._selected_item)
+		-- Preview item
+		self:_preview_item(self._presentation_item)
+		-- Get slot info
+		self._slot_info_id = mod.gear_settings:slot_info_id(self._presentation_item)
 	end
 
 	instance.update_attachment_info = function(self)
@@ -2613,6 +2844,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		self:update_equip_button()
 		self:update_reset_button()
 		self:update_randomize_button()
+		-- self:update_combination_inputs()
+		self:update_reload_definitions_button()
 
 		if not self:is_busy() then
 			ui_weapon_spawner:initiate_camera_movement()
@@ -2622,19 +2855,164 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	instance.set_combinations_text = function(self)
 		-- Set text
-		self._widgets_by_name.sub_display_name.content.text = ItemUtils.display_name(self._selected_item).." - "..tostring(self:calculate_combinations()).." combinations"
+		self._widgets_by_name.sub_display_name.content.text = ItemUtils.display_name(self._selected_item).." - "..tostring(self.combination_count).." combinations"
 	end
 
-	instance.calculate_combinations = function(self)
-		-- Calculate combinations
-		local combinations = 0
-		local attachment_slots = mod.gear_settings:possible_attachment_slots(self._selected_item)
-		for _, attachment_slot in pairs(attachment_slots) do
-			-- local possible_attachments = mod.gear_settings:possible_attachments(self._selected_item, attachment_slot)
-			combinations = combinations + table_size(mod.gear_settings:possible_attachments(self._selected_item, attachment_slot))
-		end
-		return combinations
+	-- instance.calculate_combinations = function(self)
+	-- 	-- Calculate combinations
+	-- 	local combinations = 0
+	-- 	local attachment_slots = mod.gear_settings:possible_attachment_slots(self._selected_item)
+	-- 	for _, attachment_slot in pairs(attachment_slots) do
+	-- 		-- local possible_attachments = mod.gear_settings:possible_attachments(self._selected_item, attachment_slot)
+	-- 		combinations = combinations + table_size(mod.gear_settings:possible_attachments(self._selected_item, attachment_slot))
+	-- 	end
+	-- 	return combinations
+	-- end
+
+	instance.attachment_by_index = function(self, attachment_slot, index)
+		return mod.gear_settings:possible_attachments(self._selected_item, attachment_slot)[index]
 	end
+
+	instance.attachment_combination = function(self, attachment_slots, attachment_indices)
+		local combination = {}
+		for _, attachment_slot in pairs(attachment_slots) do
+			combination[attachment_slot] = self:attachment_by_index(attachment_slot, attachment_indices[_])
+		end
+		return combination
+	end
+
+	-- local lol = false
+	-- instance.update_filtered_combinations = function(self)
+
+	-- 	-- mod:echo("update_filtered_combinations")
+	-- 	-- table_clear(self.filtered_combinations)
+
+	-- 	-- for _, combination in pairs(self.combinations) do
+
+	-- 	-- 	local add_combination = true
+
+	-- 	-- 	for attachment_slot, value in pairs(combination) do
+
+	-- 	-- 		local lock_widget = self._widgets_by_name[attachment_slot.."_lock"]
+
+	-- 	-- 		if lock_widget and lock_widget.content.checked then
+
+	-- 	-- 			local selected_value = mod.gear_settings:get(self._gear_id, attachment_slot) --self._widgets_by_name[attachment_slot.."_custom"].content.entry.get_function()
+
+	-- 	-- 			-- if not lol then
+	-- 	-- 			-- 	mod:dtf(self._widgets_by_name[attachment_slot.."_custom"], "test", 10)
+	-- 	-- 			-- 	lol = true
+	-- 	-- 			-- end
+
+	-- 	-- 			if value ~= selected_value then
+
+	-- 	-- 				mod:echo(value.." ~= "..selected_value)
+
+	-- 	-- 				add_combination = false
+
+	-- 	-- 			end
+
+	-- 	-- 		end
+
+	-- 	-- 	end
+
+	-- 	-- 	if add_combination then
+
+	-- 	-- 		self.filtered_combinations[#self.filtered_combinations+1] = combination
+
+	-- 	-- 	end
+
+	-- 	-- end
+
+	-- 	self.filtered_combinations = {}
+	-- 	self:update_combination_inputs()
+	-- 	self:set_combinations_text()
+
+	-- end
+
+	-- local function icombn_many(n, params, t)
+	-- 	t = t or {}
+	-- 	if n < 1 then return nil end
+	-- 	local o = params[n]
+	-- 	local l = table.getn(o)
+	-- 	if n == 1 then
+	-- 		local i = 1
+	-- 		return function()
+	-- 			if i > l then return nil end
+	-- 			t[n] = o[i]
+	-- 			i = i + 1
+	-- 			return t[n]
+	-- 		end
+	-- 	end
+	-- 	local i = 1
+	-- 	local v = icombn_many(n-1, params, t)
+	-- 	return function()
+	-- 		if i > l then return nil end
+	-- 		local x = v()
+	-- 		if x == nil then
+	-- 			i = i + 1
+	-- 			if i > l or n < 0 then return nil end
+	-- 			v = icombn_many(n-1, params, t)
+	-- 			x = v()
+	-- 		end
+	-- 		if x == nil then return nil end
+	-- 		t[n] = o[i]
+	-- 		return unpack(t)
+	-- 	end
+	-- end
+	-- local function combn_many(...)
+	-- 	local params = {...}
+	-- 	local l = table.getn(params)
+	-- 	if l == 0 then error("Need at least one array.") end
+	-- 	return icombn_many(l, params, nil)
+	-- end
+	local possible_attachments = {}
+	-- local possible_combinations = {}
+	instance.combination_count = function(self)
+		local count = 1
+		local attachment_slots = mod.gear_settings:possible_attachment_slots(self._selected_item)
+		table_clear(possible_attachments)
+		for _, attachment_slot in pairs(attachment_slots) do
+			local attachments = mod.gear_settings:possible_attachments(self._selected_item, attachment_slot)
+			if attachments and #attachments > 0 then
+				possible_attachments[#possible_attachments+1] = attachments
+			end
+		end
+		for _, attachments in pairs(possible_attachments) do
+			count = count * #attachments
+		end
+		return count
+	end
+	-- instance.create_all_combinations = function(self, get_count, get_n)
+	-- 	if not mod:persistent_table(REFERENCE).cache.combinations[self._selected_item.name] then
+
+	-- 		local attachment_slots = mod.gear_settings:possible_attachment_slots(self._selected_item)
+
+	-- 		table_clear(possible_attachments)
+
+	-- 		for _, attachment_slot in pairs(attachment_slots) do
+	-- 			local attachments = mod.gear_settings:possible_attachments(self._selected_item, attachment_slot)
+	-- 			if attachments and #attachments > 0 then
+	-- 				possible_attachments[#possible_attachments+1] = attachments
+	-- 			end
+	-- 		end
+
+	-- 		table_clear(possible_combinations)
+
+	-- 		local f = combn_many(unpack(possible_attachments))
+	-- 		while true do
+	-- 			local x = {f()}
+	-- 			if #x == 0 then break end
+	-- 			possible_combinations[#possible_combinations+1] = x
+	-- 		end
+
+	-- 		mod:dtf(possible_combinations, "combinations", 10)
+
+	-- 		mod:persistent_table(REFERENCE).cache.combinations[self._selected_item.name] = possible_combinations
+	-- 	end
+
+	-- 	return mod:persistent_table(REFERENCE).cache.combinations[self._selected_item.name]
+	-- end
 
 end)
 
@@ -2666,6 +3044,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 	-- Create temp gear settings
 	-- self:create_temp_setting()
 	mod.gear_settings:create_temp_settings(self._gear_id)
+
+	-- mod:echo("on_enter")
 
 	-- Original function
 	func(self, ...)
@@ -2710,16 +3090,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, sel
 		self._weapon_zoom_target = zoom_target
 		self._weapon_zoom_fraction = zoom_fraction
 	end
-
-end)
-
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", function(func, self, ...)
-
-	-- Original function
-	func(self, ...)
-	
-	-- Register custom button callbacks
-	self:register_custom_button_callbacks()
 
 end)
 
@@ -2804,4 +3174,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
 	-- self._widgets_by_name.sub_display_name.content.text = ItemUtils.display_name(self._selected_item).." - "..tostring(self:calculate_combinations().." combinations")
 	self:set_combinations_text()
 
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "present_grid_layout", function(func, self, layout, optional_on_present_callback, ...)
+	self._grid_display_name = nil
+	-- Original function
+	func(self, layout, optional_on_present_callback, ...)
 end)

@@ -141,7 +141,7 @@ local GearSettings = class("GearSettings")
 		local item = self:item_from_gear_id(gear_id_or_item)
 		local item_type = item.item_type
 		-- Return item type is weapon
-		return item_type == WEAPON_MELEE or item_type == WEAPON_RANGED --or item_type == nil
+		return item_type == WEAPON_MELEE or item_type == WEAPON_RANGED
 	end
 
 	-- Check if attachment slot is automatic slot
@@ -624,6 +624,7 @@ local GearSettings = class("GearSettings")
 		-- Get item from potential gear id
 		local item = self:item_from_gear_id(gear_id_or_item)
 		local item_name = item and item.name
+		local mod_attachment_models = mod.attachment_models
 		-- Check item and attachments
 		-- if item and attachments then
 		if item_name and attachments and self:is_weapon_item(gear_id_or_item) then
@@ -635,10 +636,10 @@ local GearSettings = class("GearSettings")
 			for i = 1, #possible_attachment_slots, 1 do
 				local attachment_slot = possible_attachment_slots[i]
 				-- Don't handle trinkets
-				local item_data = mod.attachment_models[item_name]
+				local item_data = mod_attachment_models[item_name]
 				if item_data then
 					-- Get item data
-					-- local item_data = mod.attachment_models[item_name]
+					-- local item_data = mod_attachment_models[item_name]
 					-- Get attachment
 					local attachment = attachment_list_or_nil and attachment_list_or_nil[attachment_slot] or self:get(gear_id_or_nil or gear_id_or_item, attachment_slot)
 					-- Customize
@@ -662,6 +663,7 @@ local GearSettings = class("GearSettings")
 		-- Get item from potential gear id
 		local item = self:item_from_gear_id(gear_id_or_item)
 		local item_name = item and item.name
+		local mod_attachment_models = mod.attachment_models
 		-- Check item and attachments
 		-- if item and attachments then
 		if item_name and attachments and self:is_weapon_item(gear_id_or_item) then
@@ -679,7 +681,7 @@ local GearSettings = class("GearSettings")
 					attachment_setting = attachment_setting_overwrite[attachment_slot]
 				end
 				-- Get attachment data
-				local model_data = mod.attachment_models[item_name]
+				local model_data = mod_attachment_models[item_name]
 				local attachment_data = model_data and model_data[attachment_setting]
 				local attachment_parent = attachment_data and attachment_data.parent
 				-- Check attachment data
@@ -789,10 +791,11 @@ local GearSettings = class("GearSettings")
 				local model = attachment and attachment.item
 				-- Get original item
 				local original_item = model and mod:persistent_table(REFERENCE).item_definitions[model]
+				local original_item_resource_dependencies = original_item.resource_dependencies
 				-- Check original item and dependencies
-				if original_item and original_item.resource_dependencies then
+				if original_item and original_item_resource_dependencies then
 					-- Iterate dependencies
-					for resource, _ in pairs(original_item.resource_dependencies) do
+					for resource, _ in pairs(original_item_resource_dependencies) do
 						-- Add resource
 						out_result[resource] = true
 					end
@@ -1017,12 +1020,15 @@ local GearSettings = class("GearSettings")
 				table_clear(special_resolve_entries)
 				table_clear(auto_equip_entries)
 				table_clear(trigger_move_entries)
+				local mod_attachment = mod.attachment
+				local mod_attachment_models = mod.attachment_models
+				local mod_automatic_slots = mod.automatic_slots
 				-- Iterate attachment slots
 				for _, attachment_slot in pairs(attachment_slots) do
 					-- Check attachments for slots
-					local item_attachments = mod.attachment[item_name]
-					local item_models = mod.attachment_models[item_name]
-					if item_attachments and item_attachments[attachment_slot] and not table_contains(mod.automatic_slots, attachment_slot) then
+					local item_attachments = mod_attachment[item_name]
+					local item_models = mod_attachment_models[item_name]
+					if item_attachments and item_attachments[attachment_slot] and not table_contains(mod_automatic_slots, attachment_slot) then
 						local chance_success = true
 						-- Randomization chance
 						local random_attachment_list = mod.random_chance[attachment_slot]
@@ -1224,6 +1230,7 @@ end
 					-- local _current_attachments = self:pull(gear_id_or_item)
 					-- Get fixes
 					local fix_list = item_anchors.fixes
+					local mod_attachment_slots = mod.attachment_slots
 					-- Iterate fixes
 					for fix_index, fix_data in pairs(fix_list) do
 						-- Dependencies
@@ -1259,7 +1266,7 @@ end
 									dependency_possibility = negative and possibility.possibility or dependency_possibility
 
 
-									local is_slot = table_contains(mod.attachment_slots, dependency_possibility)
+									local is_slot = table_contains(mod_attachment_slots, dependency_possibility)
 
 									if possibility.original_item and is_slot then
 										if negative then
@@ -1369,6 +1376,7 @@ end
 	GearSettings.load_attachment_sounds = function(self, item)
 		-- local attachments = self:get_item_attachment_slots(item)
 		local attachments = self:possible_attachment_slots(item)
+		local managers_package = managers.package
 		for _, attachment_slot in pairs(attachments) do
 			local attachment_name = self:get(item, attachment_slot)
 			local detach_sounds = mod:get_equipment_sound_effect(item, attachment_slot, attachment_name, "detach", true)
@@ -1376,7 +1384,7 @@ end
 				for _, detach_sound in pairs(detach_sounds) do
 					if not self:loaded_packages()[detach_sound] then
 						self:used_packages()[detach_sound] = true
-						self:loaded_packages()[detach_sound] = managers.package:load(detach_sound, REFERENCE)
+						self:loaded_packages()[detach_sound] = managers_package:load(detach_sound, REFERENCE)
 					end
 				end
 			end
@@ -1385,7 +1393,7 @@ end
 				for _, attach_sound in pairs(attach_sounds) do
 					if not self:loaded_packages()[attach_sound] then
 						self:used_packages()[attach_sound] = true
-						self:loaded_packages()[attach_sound] = managers.package:load(attach_sound, REFERENCE)
+						self:loaded_packages()[attach_sound] = managers_package:load(attach_sound, REFERENCE)
 					end
 				end
 			end
@@ -1394,7 +1402,7 @@ end
 				for _, select_sound in pairs(select_sounds) do
 					if not self:loaded_packages()[select_sound] then
 						self:used_packages()[select_sound] = true
-						self:loaded_packages()[select_sound] = managers.package:load(select_sound, REFERENCE)
+						self:loaded_packages()[select_sound] = managers_package:load(select_sound, REFERENCE)
 					end
 				end
 			end
@@ -1442,17 +1450,18 @@ end
 		else
 			local possible_attachment_slots = self:possible_attachment_slots(gear_id_or_item)
 			if possible_attachment_slots then
+				local mod_add_custom_attachments = mod.add_custom_attachments
 				-- Iterate through attachment settings
 				for _, attachment_slot in pairs(possible_attachment_slots) do
 					-- Custom attachments
-					if not mod.add_custom_attachments[attachment_slot] then
+					if not mod_add_custom_attachments[attachment_slot] then
 						self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
 					end
 				end
 				-- Iterate through attachment settings
 				for _, attachment_slot in pairs(possible_attachment_slots) do
 					-- Non-Custom attachments
-					if mod.add_custom_attachments[attachment_slot] then
+					if mod_add_custom_attachments[attachment_slot] then
 						self:_resolve_auto_equips(gear_id_or_item, attachment_slot)
 					end
 				end
@@ -1513,17 +1522,18 @@ end
 			local possible_attachment_slots = self:possible_attachment_slots(gear_id_or_item, true)
 			-- Check attachments
 			if possible_attachment_slots then
+				local mod_add_custom_attachments = mod.add_custom_attachments
 				-- Iterate through attachment settings
 				for _, attachment_slot in pairs(possible_attachment_slots) do
 					-- Custom attachments
-					if mod.add_custom_attachments[attachment_slot] then
+					if mod_add_custom_attachments[attachment_slot] then
 						self:_resolve_special_changes(gear_id_or_item, self:get(gear_id_or_item, attachment_slot))
 					end
 				end
 				-- Iterate through attachment settings
 				for _, attachment_slot in pairs(possible_attachment_slots) do
 					-- Non-Custom attachments
-					if not mod.add_custom_attachments[attachment_slot] then
+					if not mod_add_custom_attachments[attachment_slot] then
 						self:_resolve_special_changes(gear_id_or_item, self:get(gear_id_or_item, attachment_slot))
 					end
 				end

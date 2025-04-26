@@ -44,7 +44,7 @@ return table.combine(
                 _common_ranged.reflex_sights_attachments(),
                 _common_ranged.sights_attachments(false)
             ),
-            weapon_sling = _common_ranged.weapon_sling_attachments(),
+            -- weapon_sling = _common_ranged.weapon_sling_attachments(),
             -- Bolter
             -- help_sight = _bolter_p1_m1.sight_attachments(),
             -- Common

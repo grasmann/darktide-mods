@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\servo_friend_tag_cannon\scripts\mods\servo_friend_tag_cannon" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\servo_friend_tag_cannon\scripts\mods\servo_friend_tag_cannon"

@@ -16,8 +16,9 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 
 --#region local functions
-    local vector3_box = Vector3Box
     local table = table
+    local vector3_box = Vector3Box
+    local table_combine = table.combine
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
@@ -25,7 +26,7 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
 
 local changes = {}
-return table.combine(
+return table_combine(
     _ogryn_heavystubber_p2_m1,
     {
         attachments = {
@@ -42,7 +43,7 @@ return table.combine(
             emblem_left = _common.emblem_left_attachments(),
             trinket_hook = _common.trinket_hook_attachments(),
         },
-        models = table.combine(
+        models = table_combine(
             -- Native
             _ogryn_heavystubber_p2_m1.barrel_models(nil, -.25, vector3_box(.35, -3, 0), vector3_box(0, .2, 0)),
             _ogryn_heavystubber_p2_m1.receiver_models(nil, 0, vector3_box(0, -1, 0), vector3_box(0, 0, -.00001)),
@@ -69,22 +70,15 @@ return table.combine(
         anchors = {
             fixes = {
                 -- Bayonet
-                {dependencies = {"bayonet_blade_01", "receiver_05|receiver_06|receiver_07"},
-                    bayonet = {position = vector3_box(0, .85, -0.13), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)}},
                 {dependencies = {"bayonet_blade_01"},
-                    bayonet = {position = vector3_box(0, 1.04, -0.39), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)}},
-                    
+                    bayonet = {position = vector3_box(0, .85, -0.15), rotation = vector3_box(-90, 0, 0), scale = vector3_box(2, 2, 2)}},
                 {bayonet = {position = vector3_box(0, .9, -0.12), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                -- {bayonet = {position = vector3_box(0, 1.08, -0.36), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 -- Laser Pointer / Flashlight
                 {dependencies = {"flashlight_04|laser_pointer"},
                     flashlight = {position = vector3_box(.15, .86, .21), rotation = vector3_box(0, 128, 0), scale = vector3_box(2, 2, 2)}},
                 {dependencies = {"flashlight_ogryn_01|flashlight_ogryn_long_01"},
                     flashlight = {position = vector3_box(.05, .8, .13), rotation = vector3_box(0, 311, 0), scale = vector3_box(1, 1, 1)}},
                 {flashlight = {position = vector3_box(.09, .9, .13), rotation = vector3_box(0, 311, 0), scale = vector3_box(2, 2, 2)}},
-                -- Magazines
-                {dependencies = {"magazine_06|magazine_07|magazine_08"},
-                    magazine = {parent = "receiver", position = vector3_box(0, .4, -.125), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 -- Emblems
                 {dependencies = {"emblem_left_02"},
                     emblem_left = {offset = true, position = vector3_box(-.09, .42, .085), rotation = vector3_box(0, 0, 180), scale = vector3_box(2, -2, 2)}},

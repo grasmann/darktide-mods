@@ -7,6 +7,7 @@ local mod = get_mod("weapon_customization")
 --#region Require
 	local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
 	local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
+	local MinionAttack = mod:original_require("scripts/utilities/minion_attack")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -105,6 +106,7 @@ local mod = get_mod("weapon_customization")
 
 mod.mesh_positions = {}
 mod.mesh_positions_changed = {}
+mod.minion_options = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -257,6 +259,20 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
 					-- Parent
 					local parent = parent_name and slot_infos[slot_info_id].attachment_slot_to_unit[parent_name] or item_unit
+					-- if type(parent_node) == "string" then
+					-- 	mod:echo("parent_node "..parent_node.." is string")
+					-- 	if not unit_has_node(parent, parent_node) then
+					-- 		mod:echo("parent_node "..parent_node.." does not exist")
+					-- 	end
+					-- end
+					parent_node = (type(parent_node) == "string" and (unit_has_node(parent, parent_node) and unit_node(parent, parent_node) or 1)) or parent_node
+					
+					-- local slot_node = "ap_"..attachment_slot.."_01"
+					-- if unit_has_node(parent, slot_node) then
+					-- 	local old_node = parent_node
+					-- 	parent_node = unit_has_node(parent, slot_node) and unit_node(parent, slot_node) or parent_node
+					-- 	mod:echo(attachment_slot..": used node "..parent_node.."("..slot_node..") instead of "..old_node)
+					-- end
 
 					-- Default position
 					local default_position1 = unit and unit_alive(unit) and unit_local_position(unit, 1)
@@ -627,6 +643,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			end
 		--#endregion Original
 
+		-- mod:echo(attach_node)
 		local attach_node_name = instance._node_name_to_attachment_slot(item_name, attach_node)
 		local attachment_slot = attachment_type or attach_node_name --instance._node_name_to_attachment_slot(item_name, attach_node)
 		attachment_slot_info = attachment_slot_info or {}
@@ -807,6 +824,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	instance._apply_material_override = function(unit, material_override_data)
 		if material_override_data.property_overrides ~= nil then
 			for property_name, property_override_data in pairs(material_override_data.property_overrides) do
+				-- mod:echo("_apply_material_override property", property_name, property_override_data)
 				if type(property_override_data) == "number" then
 					Unit_set_scalar_for_materials(unit, property_name, property_override_data, true)
 				else
@@ -827,9 +845,40 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 	
 		if material_override_data.texture_overrides ~= nil then
 			for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+				-- mod:echo("_apply_material_override texture", texture_slot, texture_override_data.resource)
 				Unit_set_texture_for_materials(unit, texture_slot, texture_override_data.resource, true)
 			end
 		end
 	end
 
 end)
+
+-- mod:hook(CLASS.MinionSpawnManager, "spawn_minion", function(func, self, breed_name, position, rotation, side_id, optional_param_table, ...)
+-- 	-- Original function
+-- 	local unit = func(self, breed_name, position, rotation, side_id, optional_param_table, ...)
+-- 	-- Add
+-- 	mod.minion_options[unit] = {
+-- 		no_drop = true
+-- 	}
+-- 	-- Return
+-- 	return unit
+-- end)
+
+-- mod:hook(CLASS.MinionDeathManager, "die", function(func, self, unit, attacking_unit_or_nil, attack_direction, hit_zone_name_or_nil, damage_profile, attack_type_or_nil, herding_template_or_nil, damage_type_or_nil, ...)
+-- 	-- Original function
+-- 	func(self, unit, attacking_unit_or_nil, attack_direction, hit_zone_name_or_nil, damage_profile, attack_type_or_nil, herding_template_or_nil, damage_type_or_nil, ...)
+-- 	-- Remove
+-- 	mod.minion_options[unit] = nil
+-- end)
+
+-- mod:hook(CLASS.MinionVisualLoadoutExtension, "_drop_slot", function(func, self, slot_name, ...)
+-- 	if mod.minion_options[self._unit] and mod.minion_options[self._unit].no_drop then
+-- 		-- MinionAttack.trigger_shoot_sfx_and_vfx(self._unit, scratchpad, action_data, optional_end_position)
+
+-- 		-- local fx_extension = ScriptUnit.extension(self._unit, "fx_system")
+		
+-- 		-- fx_extension:trigger_inventory_wwise_event(shoot_event_name, inventory_slot_name, fx_source_name, target_unit, is_ranged_attack)
+
+-- 		return
+-- 	end
+-- end)

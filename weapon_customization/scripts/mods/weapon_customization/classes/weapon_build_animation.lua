@@ -20,6 +20,7 @@ local mod = get_mod("weapon_customization")
     local table_remove = table.remove
     local vector3_unbox = vector3_box.unbox
     local math_ease_in_exp = math.ease_in_exp
+    local unit_local_scale = Unit.local_scale
     local unit_local_position = Unit.local_position
     local math_ease_out_elastic = math.ease_out_elastic
 --#endregion
@@ -157,6 +158,13 @@ WeaponBuildAnimation.update = function(self, dt, t)
             local animation_wait_detach = attachment_data and attachment_data.animation_wait_detach
             local unit = gear_settings:attachment_unit(weapon_spawn_data.attachment_units_3p, entry.slot)
             local unit_good = unit and unit_alive(unit)
+            local is_zero_scale = unit_good and unit_local_scale(unit, 1) == vector3_zero()
+
+            if not unit_good or is_zero_scale then
+                entry.detach_done = true
+                entry.attach_done = true
+                entry.finished = true
+            end
 
             -- self.cached_data[self.item_name] = self.cached_data[self.item_name] or {}
 
@@ -212,7 +220,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
             end
 
             if process then
-                if not self.ui_weapon_spawner.weapon_spawning then
+                if not ui_weapon_spawner.weapon_spawning then
                     local this_animation_speed = entry.speed or self.animation_speed or .1
                     -- No timer yet - start new state
                     if not entry.end_time then
@@ -377,7 +385,7 @@ WeaponBuildAnimation.update = function(self, dt, t)
                         end
                     end
                 else
-                    if self.ui_weapon_spawner.weapon_spawning then
+                    if ui_weapon_spawner.weapon_spawning then
                         if unit_good then
                             mod:unit_set_local_position_mesh(self.slot_info_id, unit, movement)
                         end
@@ -438,10 +446,11 @@ end
 WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment, new_attachment, no_children, speed, hide_ui, attachment_type, callback)
     local existing_animation = self:animation_exists(attachment_slot)
     if not existing_animation then
+        local gear_settings = mod.gear_settings
         local attachment_type = attachment_type or "detach"
         local hide_ui = hide_ui == nil and true or hide_ui
         -- Slot
-        local slot = mod.gear_settings:_recursive_find_attachment(item.attachments, attachment_slot)
+        local slot = gear_settings:_recursive_find_attachment(item.attachments, attachment_slot)
         -- Type
         local detach_only = attachment_type == "detach_only"
         local attach_only = attachment_type == "attach"
@@ -451,7 +460,7 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
             slot = attachment_slot,
             type = real_type,
             new = new_attachment,
-            old = attachment or mod.gear_settings:get(self.item, attachment_slot),
+            old = attachment or gear_settings:get(self.item, attachment_slot),
             children = slot and slot.children and #slot.children or 0,
             speed = speed,
             detach_only = detach_only,
@@ -469,7 +478,7 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
         -- Trigger move
         local attachment_data = mod.attachment_models[self.item_name][new_attachment]
         local trigger_move = attachment_data and attachment_data.trigger_move
-        attachment_data = mod.gear_settings:apply_fixes(item, attachment_slot) or attachment_data
+        attachment_data = gear_settings:apply_fixes(item, attachment_slot) or attachment_data
         trigger_move = attachment_data and attachment_data.trigger_move or trigger_move
         if trigger_move then
             for _, trigger_attachment_slot in pairs(trigger_move) do
@@ -478,14 +487,14 @@ WeaponBuildAnimation.animate = function(self, item, attachment_slot, attachment,
         end
         -- Find attached children
         if slot and slot.children then
-            mod.gear_settings:_recursive_get_attachments(slot.children, nil, children)
+            gear_settings:_recursive_get_attachments(slot.children, nil, children)
         end
         if table.size(children) > 0 and not no_children then
             -- Iterate children
             for attachment_slot, attachment_name in pairs(children) do
                 if not self:animation_exists(attachment_slot) then
-                    local new_child_attachment = mod.gear_settings:get(self.item, attachment_slot)
-                    local old_child_attachment = mod.gear_settings:get(self.item, attachment_slot)
+                    local new_child_attachment = gear_settings:get(self.item, attachment_slot)
+                    local old_child_attachment = gear_settings:get(self.item, attachment_slot)
                     self:animate(item, attachment_slot, old_child_attachment, new_child_attachment, no_children, speed, hide_ui, attachment_type)
                 end
             end

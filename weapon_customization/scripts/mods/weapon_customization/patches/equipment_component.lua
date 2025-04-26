@@ -12,6 +12,8 @@ local mod = get_mod("weapon_customization")
 	local ScriptUnit = ScriptUnit
 	local table_clear = table.clear
 	local script_unit_extension = ScriptUnit.extension
+	local unit_set_scalar_for_materials = Unit.set_scalar_for_materials
+	local unit_set_shader_pass_flag_for_meshes = Unit.set_shader_pass_flag_for_meshes
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

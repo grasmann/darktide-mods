@@ -86,6 +86,7 @@ return {
             {id = "body_04", name = "Body 4"},
             {id = "body_05", name = "Body 5"},
             {id = "body_06", name = "Body 6"},
+            {id = "body_07", name = "Body 7"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -102,7 +103,8 @@ return {
             {name = "body_03",      model = _item_melee.."/full/shotgun_grenade_full_03"},
             {name = "body_04",      model = _item_melee.."/full/shotgun_grenade_full_04"},
             {name = "body_05",      model = _item_melee.."/full/shotgun_grenade_full_05"},
-            {name = "body_06",      model = _item_melee.."/full/shotgun_grenade_full_ml01"},
+            {name = "body_06",      model = _item_melee.."/full/shotgun_grenade_full_06"},
+            {name = "body_07",      model = _item_melee.."/full/shotgun_grenade_full_ml01"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move)
     end
 }
