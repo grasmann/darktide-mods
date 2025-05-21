@@ -128,7 +128,10 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
 	instance.preview_flashlight = function(self)
 		if self._weapon_spawn_data then
-			local flashlight = mod.gear_settings:attachment_unit(self._weapon_spawn_data.attachment_units_3p, "flashlight")
+			local unit_3p = self._weapon_spawn_data.item_unit_3p
+			local attachment_units_3p = self._weapon_spawn_data.attachment_units_3p and self._weapon_spawn_data.attachment_units_3p[unit_3p]
+			-- local flashlight = mod.gear_settings:attachment_unit(self._weapon_spawn_data.attachment_units_3p, "flashlight")
+			local flashlight = mod.gear_settings:attachment_unit(attachment_units_3p, "flashlight")
 			local attachment_name = flashlight and unit_get_data(flashlight, "attachment_name")
 			if flashlight and attachment_name then
 				mod:preview_flashlight(true, self._world, flashlight, attachment_name, true)
@@ -163,7 +166,10 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 		local weapon_spawn_data = self._weapon_spawn_data
 		if weapon_spawn_data then
 			self:unit_manipulation_remove(weapon_spawn_data.item_unit_3p)
-			for _, unit in pairs(weapon_spawn_data.attachment_units_3p) do
+			local unit_3p = weapon_spawn_data.item_unit_3p
+			local attachment_units_3p = weapon_spawn_data.attachment_units_3p and weapon_spawn_data.attachment_units_3p[unit_3p]
+			-- for _, unit in pairs(weapon_spawn_data.attachment_units_3p) do
+			for _, unit in pairs(attachment_units_3p) do
 				self:unit_manipulation_remove(unit)
 			end
 		end
@@ -385,9 +391,16 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 		local weapon_spawn_data = self._weapon_spawn_data
 		local world = self._unit_spawner._world
 		if weapon_spawn_data then
-			for i = #weapon_spawn_data.attachment_units_3p, 1, -1 do
-				if weapon_spawn_data.attachment_units_3p[i] and unit_alive(weapon_spawn_data.attachment_units_3p[i]) then
-					world_unlink_unit(world, weapon_spawn_data.attachment_units_3p[i])
+			local unit_3p = weapon_spawn_data.item_unit_3p
+			local attachment_units_3p = weapon_spawn_data.attachment_units_3p and weapon_spawn_data.attachment_units_3p[unit_3p]
+			-- for i = #weapon_spawn_data.attachment_units_3p, 1, -1 do
+			-- 	if weapon_spawn_data.attachment_units_3p[i] and unit_alive(weapon_spawn_data.attachment_units_3p[i]) then
+			-- 		world_unlink_unit(world, weapon_spawn_data.attachment_units_3p[i])
+			-- 	end
+			-- end
+			for i = #attachment_units_3p, 1, -1 do
+				if attachment_units_3p[i] and unit_alive(attachment_units_3p[i]) then
+					world_unlink_unit(world, attachment_units_3p[i])
 				end
 			end
 			if weapon_spawn_data.item_unit_3p and unit_alive(weapon_spawn_data.item_unit_3p) then

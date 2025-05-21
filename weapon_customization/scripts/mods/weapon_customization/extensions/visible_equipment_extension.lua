@@ -920,6 +920,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
     -- self.helper_units[slot] = {}
     if not self.dummy_units[slot].base then
         self.dummy_units[slot].base, self.dummy_units[slot].attachments = VisualLoadoutCustomization.spawn_item(slot.item, attach_settings, self.player_unit)
+        self.dummy_units[slot].attachments = self.dummy_units[slot].attachments and self.dummy_units[slot].attachments[self.dummy_units[slot].base]
     end
     -- self:check_attach_points(slot)
     -- Get list of units ( Slab shield )
@@ -1249,8 +1250,11 @@ VisibleEquipmentExtension.update_equipment_visibility = function(self)
                 end
             end
             -- Iterate third person units
-            if slot.attachments_3p then
-                for i, unit in pairs(slot.attachments_3p) do
+            local attachments_3p = slot.attachments_by_unit_3p and slot.attachments_by_unit_3p[slot.unit_3p]
+            if attachments_3p then
+                for i, unit in pairs(attachments_3p) do
+            -- if slot.attachments_3p then
+            --     for i, unit in pairs(slot.attachments_3p) do
                     -- Check unit
                     if unit and unit_alive(unit) then
                         -- Set equipment visibility
@@ -1265,8 +1269,11 @@ VisibleEquipmentExtension.update_equipment_visibility = function(self)
                 end
             end
             -- Iterate first person units
-            if slot.attachments_1p then
-                for i, unit in pairs(slot.attachments_1p) do
+            local attachments_1p = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p]
+            if attachments_1p then
+                for i, unit in pairs(attachments_1p) do
+            -- if slot.attachments_1p then
+            --     for i, unit in pairs(slot.attachments_1p) do
                     -- Check unit
                     if unit and unit_alive(unit) then
                         -- Set equipment visibility

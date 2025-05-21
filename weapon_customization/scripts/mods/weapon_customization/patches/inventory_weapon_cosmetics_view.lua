@@ -529,7 +529,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		-- Get weapon spawn data
 		local weapon_spawn_data = self:weapon_spawn_data()
 		-- Return attachment units
-		return weapon_spawn_data and weapon_spawn_data.attachment_units_3p
+		-- return weapon_spawn_data and weapon_spawn_data.attachment_units_3p
+		return weapon_spawn_data and weapon_spawn_data.attachment_units_3p and weapon_spawn_data.attachment_units_3p[weapon_spawn_data.item_unit_3p]
 	end
 
 	-- Check if is busy
@@ -1480,8 +1481,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				if not mod.build_animation:is_busy() then
 					if mod:get("mod_option_carousel") then
 						local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
-						local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
-						local unit_3p = ui_weapon_spawner._weapon_spawn_data.unit_3p
+						-- local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
+						local unit_3p = ui_weapon_spawner._weapon_spawn_data.item_unit_3p
+						local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p and ui_weapon_spawner._weapon_spawn_data.attachment_units_3p[unit_3p]
 						-- local attachment_unit = attachment_units_3p and mod:get_attachment_slot_in_attachments(attachment_units_3p, attachment_slot)
 						local attachment_unit = unit_3p and mod.gear_settings:attachment_unit(attachment_units_3p, attachment_slot)
 						local attachment_name = attachment_unit and Unit.get_data(attachment_unit, "attachment_name")
@@ -1721,8 +1723,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				if content.reset and ui_weapon_spawner._weapon_spawn_data then
 					content.reset = nil
 					self.dropdown_positions[entry.attachment_slot][3] = false
-					local unit_3p = ui_weapon_spawner._weapon_spawn_data.unit_3p
-					local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
+					local unit_3p = ui_weapon_spawner._weapon_spawn_data.item_unit_3p
+					-- local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
+					local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p and ui_weapon_spawner._weapon_spawn_data.attachment_units_3p[unit_3p]
 					-- local unit = mod:get_attachment_slot_in_attachments(attachment_units_3p, entry.attachment_slot)
 					local unit = mod.gear_settings:attachment_unit(attachment_units_3p, entry.attachment_slot)
 					
@@ -2272,8 +2275,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 							end
 							mod:preview_flashlight(true, world, unit, attachment_name)
 							local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
-							local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
-							local unit_3p = ui_weapon_spawner._weapon_spawn_data.unit_3p
+							-- local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
+							local unit_3p = ui_weapon_spawner._weapon_spawn_data.item_unit_3p
+							local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p and ui_weapon_spawner._weapon_spawn_data.attachment_units_3p[unit_3p]
 							-- local attachment_unit = attachment_units_3p and mod:get_attachment_slot_in_attachments(attachment_units_3p, attachment_slot)
 							local attachment_unit = unit_3p and mod.gear_settings:attachment_unit(attachment_units_3p, attachment_slot)
 							
@@ -2445,8 +2449,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		if self._weapon_preview._ui_weapon_spawner._camera then
 			local ui_weapon_spawner = self._weapon_preview._ui_weapon_spawner
 			if ui_weapon_spawner._weapon_spawn_data then
-				local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
-				local unit_3p = ui_weapon_spawner._weapon_spawn_data.unit_3p
+				-- local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p
+				local unit_3p = ui_weapon_spawner._weapon_spawn_data.item_unit_3p
+				local attachment_units_3p = ui_weapon_spawner._weapon_spawn_data.attachment_units_3p and ui_weapon_spawner._weapon_spawn_data.attachment_units_3p[unit_3p]
 				-- local attachment_unit = attachment_units_3p and mod:get_attachment_slot_in_attachments(attachment_units_3p, attachment_slot)
 				local attachment_unit = unit_3p and mod.gear_settings:attachment_unit(attachment_units_3p, attachment_slot)
 				

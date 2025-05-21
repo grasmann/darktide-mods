@@ -26,13 +26,11 @@ mod:register_extension("ServoFriendMarkerExtension", "servo_friend_marker_system
 ServoFriendMarkerExtension.init = function(self, extension_init_context, unit, extension_init_data)
     -- Base class
     ServoFriendMarkerExtension.super.init(self, extension_init_context, unit, extension_init_data)
-    -- Data
-    self.event_manager = managers.event
     -- Events
-    self.event_manager:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
-    self.event_manager:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
-    self.event_manager:register(self, "servo_friend_world_marker_created", "on_servo_friend_world_marker_created")
-    self.event_manager:register(self, "servo_friend_world_marker_destroyed", "on_servo_friend_world_marker_destroyed")
+    -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
+    -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
+    managers.event:register(self, "servo_friend_world_marker_created", "on_servo_friend_world_marker_created")
+    managers.event:register(self, "servo_friend_world_marker_destroyed", "on_servo_friend_world_marker_destroyed")
     -- Settings
     self:on_settings_changed()
     -- Debug
@@ -41,10 +39,10 @@ end
 
 ServoFriendMarkerExtension.destroy = function(self)
     -- Events
-    self.event_manager:unregister(self, "servo_friend_spawned")
-    self.event_manager:unregister(self, "servo_friend_destroyed")
-    self.event_manager:unregister(self, "servo_friend_world_marker_created")
-    self.event_manager:unregister(self, "servo_friend_world_marker_destroyed")
+    -- managers.event:unregister(self, "servo_friend_spawned")
+    -- managers.event:unregister(self, "servo_friend_destroyed")
+    managers.event:unregister(self, "servo_friend_world_marker_created")
+    managers.event:unregister(self, "servo_friend_world_marker_destroyed")
     -- Debug
     self:print("ServoFriendMarkerExtension destroyed")
     -- Base class
@@ -93,12 +91,12 @@ end
 ServoFriendMarkerExtension.on_servo_friend_world_marker_created = function(self, marker)
     local own = not self.only_own_tags or self:is_owned(marker)
     if self.focus_world_markers and own then
-        self.event_manager:trigger("servo_friend_point_of_interest_created", marker, "marker")
+        managers.event:trigger("servo_friend_point_of_interest_created", marker, "marker")
     end
 end
 
 ServoFriendMarkerExtension.on_servo_friend_world_marker_destroyed = function(self, marker)
-    self.event_manager:trigger("servo_friend_point_of_interest_removed", marker)
+    managers.event:trigger("servo_friend_point_of_interest_removed", marker)
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################

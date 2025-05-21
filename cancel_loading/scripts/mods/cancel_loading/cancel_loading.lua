@@ -85,10 +85,11 @@ end)
 mod:hook_require("scripts/ui/views/mission_intro_view/mission_intro_view", function(instance)
 
     instance.init_custom = function(self)
-        self._widgets = {}
-        self._widgets_by_name = {}
-        self._ui_manager = managers.ui
-        self._party_immaterium = managers.party_immaterium
+        self._widgets = self._widgets or {}
+        self._widgets_by_name = self._widgets_by_name or {}
+        self._pass_draw = true
+        self._ui_manager = self._ui_manager or managers.ui
+        self._party_immaterium = self._party_immaterium or managers.party_immaterium
     end
 
     instance.cb_on_cancel_pressed = function(self)
@@ -98,6 +99,10 @@ mod:hook_require("scripts/ui/views/mission_intro_view/mission_intro_view", funct
 
     instance.custom_enter = function(self)
         mod.mission_intro_view = self
+
+        if self._widgets_by_name.display then
+            self._widgets_by_name.display.visible = false
+        end
 
         local widget = self:_create_widget("cancel_button", Definitions.widget_definitions.cancel_button)
         self._widgets_by_name.cancel_button = widget
@@ -117,6 +122,10 @@ mod:hook_require("scripts/ui/views/mission_intro_view/mission_intro_view", funct
     instance.update_custom = function(self, dt, t, input_service)
         local wait_reason, wait_time = self._ui_manager:current_wait_info()
         self._widgets_by_name.done_loading.content.text = tostring(wait_reason).." - "..tostring(wait_time)
+    end
+
+    instance.draw = function(self, ...)
+        self.super.draw(self, ...)
     end
 
 end)

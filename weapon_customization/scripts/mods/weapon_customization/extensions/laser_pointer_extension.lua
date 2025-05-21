@@ -11,6 +11,7 @@ local Recoil = mod:original_require("scripts/utilities/recoil")
 local Sway = mod:original_require("scripts/utilities/sway")
 local Breed = mod:original_require("scripts/utilities/breed")
 local AttackSettings = mod:original_require("scripts/settings/damage/attack_settings")
+local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -569,7 +570,7 @@ LaserPointerExtension.spawn_laser = function(self)
     if self.on and common and particle and husk and slot then
         self:set_fx_spawner()
         local spawner_name = self:get_spawner_name()
-        local unit = self.fx_extension._vfx_spawners[spawner_name].unit
+        local unit = self.fx_extension._vfx_spawners[spawner_name][VisualLoadoutCustomization.ROOT_ATTACH_NAME].unit
         if unit and unit_alive(unit) then
             self.end_position:store(self.end_position and vector3_unbox(self.end_position) or self:target_fallback())
             for i = 1, self.laser_count do
@@ -593,7 +594,8 @@ end
 
 -- end)
 
-mod:hook(CLASS.PlayerUnitFxExtension, "_spawn_unit_particles", function(func, self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, ...)
+-- mod:hook(CLASS.PlayerUnitFxExtension, "_spawn_unit_particles", function(func, self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, ...)
+mod:hook(CLASS.PlayerUnitFxExtension, "_spawn_unit_particles", function(func, self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, optional_attachment_name, ...)
     -- Original function
     local effect_id = func(self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, ...)
     -- Check if laser particle and initialize
@@ -698,26 +700,32 @@ end
 
 LaserPointerExtension.set_fx_spawner = function(self)
     if self.fx_extension then
-        local vfx_spawner_1p = self.fx_extension._vfx_spawners[SPAWNER_NAME]
+        local vfx_spawner_1p = self.fx_extension._vfx_spawners[SPAWNER_NAME] and self.fx_extension._vfx_spawners[SPAWNER_NAME][VisualLoadoutCustomization.ROOT_ATTACH_NAME]
         if not vfx_spawner_1p then
             self.fx_extension._vfx_spawners[SPAWNER_NAME] = {
-                node = 2,
-                node_3p = 2,
-                unit = self.laser_pointer_unit,
+                [VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
+                    node = 2,
+                    node_3p = 2,
+                    unit = self.laser_pointer_unit,
+                }
             }
         else
+            -- local vfx_spawner_1p = self.fx_extension._vfx_spawners[SPAWNER_NAME][VisualLoadoutCustomization.ROOT_ATTACH_NAME]
             vfx_spawner_1p.unit = self.laser_pointer_unit
             vfx_spawner_1p.node = 2
             vfx_spawner_1p.node_3p = 2
         end
-        local vfx_spawner_3p = self.fx_extension._vfx_spawners[SPAWNER_NAME_3P]
+        local vfx_spawner_3p = self.fx_extension._vfx_spawners[SPAWNER_NAME_3P] and self.fx_extension._vfx_spawners[SPAWNER_NAME_3P][VisualLoadoutCustomization.ROOT_ATTACH_NAME]
         if not vfx_spawner_3p then
             self.fx_extension._vfx_spawners[SPAWNER_NAME_3P] = {
-                node = 2,
-                node_3p = 2,
-                unit = self.laser_pointer_unit_3p,
+                [VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
+                    node = 2,
+                    node_3p = 2,
+                    unit = self.laser_pointer_unit_3p,
+                }
             }
         else
+            -- local vfx_spawner_3p = self.fx_extension._vfx_spawners[SPAWNER_NAME_3P][VisualLoadoutCustomization.ROOT_ATTACH_NAME]
             vfx_spawner_3p.unit = self.laser_pointer_unit_3p
             vfx_spawner_3p.node = 2
             vfx_spawner_3p.node_3p = 2

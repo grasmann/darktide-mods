@@ -303,8 +303,13 @@ ServoFriendTagCannonExtension.respawn_cannon = function(self)
     self:spawn_cannon()
 end
 
+ServoFriendTagCannonExtension.all_packages_loaded = function(self)
+    local pt = self:pt()
+    return pt.all_packages_loaded
+end
+
 ServoFriendTagCannonExtension.spawn_cannon = function(self)
-    if self.initialized and self.use_cannon and (not self.base_unit or not unit_alive(self.base_unit)) and servo_friend.all_packages_loaded then
+    if self.initialized and self.use_cannon and (not self.base_unit or not unit_alive(self.base_unit)) and self:all_packages_loaded() then
         local pt = self:pt()
         if pt.player_unit and unit_alive(pt.player_unit) and script_unit_has_extension(pt.player_unit, "visual_loadout_system") then
             -- Get visual loadout of player to have access to an equipment component

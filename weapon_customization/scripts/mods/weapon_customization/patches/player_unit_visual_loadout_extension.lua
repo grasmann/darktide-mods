@@ -140,7 +140,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
 
             else
                 local weapon_unit = self._weapon_extension._weapons[SLOT_SECONDARY]
-                local attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p
+                -- local attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p
+                local slot = self._equipment[SLOT_SECONDARY]
+                local attachment_units = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p]
                 if weapon_unit and attachment_units then
                     -- Add SightExtension
                     script_unit_add_extension({
@@ -169,7 +171,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         if self.use_dof_system then
             if not weapon_dof_extensions then
                 local weapon_unit = self._weapon_extension._weapons[SLOT_SECONDARY]
-                local attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p
+                -- local attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p
+                -- local attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p[self._equipment[SLOT_SECONDARY].unit_1p]
+                local slot = self._equipment[SLOT_SECONDARY]
+                local attachment_units = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p]
                 if weapon_unit and attachment_units then
                     -- Add WeaponDOFExtension
                     script_unit_add_extension({
@@ -231,6 +236,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         end
     end
 
+    local lol = false
     instance.update_flashlight = function(self, dt, t)
         local flashlight_extension = script_unit_extension(self._unit, "flashlight_system")
         if self.use_flashlight_system then
@@ -243,8 +249,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
                 local slot = self._equipment[SLOT_SECONDARY]
                 if slot then
                     -- Add FlashlightExtension
-                    local flashlight_unit_1p = mod.gear_settings:attachment_unit(slot.attachments_1p, "flashlight")
-                    local flashlight_unit_3p = mod.gear_settings:attachment_unit(slot.attachments_3p, "flashlight")
+                    -- if not lol then
+                    --     mod:dtf(slot, "slot", 10)
+                    --     lol = true
+                    -- end
+                    local flashlight_unit_1p = mod.gear_settings:attachment_unit(slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p], "flashlight")
+                    local flashlight_unit_3p = mod.gear_settings:attachment_unit(slot.attachments_by_unit_3p and slot.attachments_by_unit_3p[slot.unit_3p], "flashlight")
                     if flashlight_unit_1p and flashlight_unit_3p then
                         -- Add FlashlightExtension
                         script_unit_add_extension({
@@ -257,8 +267,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
                             flashlight_unit_3p = flashlight_unit_3p,
                             -- wielded_slot = wielded_slot_name and self._equipment[wielded_slot_name],
                             wielded_slot = self._equipment[self._inventory_component.wielded_slot],
+                            -- ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
+                            --     {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p}),
                             ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
-                                {attachment_units = self._equipment[SLOT_SECONDARY].attachments_1p}),
+                                {attachment_units = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p]}),
+
+                                -- attachments_by_unit_1p
                         })
                     end
                 end

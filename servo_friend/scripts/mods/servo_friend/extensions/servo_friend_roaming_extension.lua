@@ -42,8 +42,8 @@ local quaternion_from_euler_angles_xyz = quaternion.from_euler_angles_xyz
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local close_proximity_checks = {
-    {offset = vector3_box(1, 0, 0),  move = vector3_box(-.75, 0, 0), side = 0},
-    {offset = vector3_box(-1, 0, 0), move = vector3_box(.75, 0, 0),  side = 1},
+    -- {offset = vector3_box(1, 0, 0),  move = vector3_box(-.75, 0, 0), side = 0},
+    -- {offset = vector3_box(-1, 0, 0), move = vector3_box(.75, 0, 0),  side = 1},
     -- {offset = vector3_box(.5, 0, 0),  move = vector3_box(-.5, 0, 0), side = 0},
     -- {offset = vector3_box(-.5, 0, 0), move = vector3_box(.5, 0, 0),  side = 1},
     -- {offset = vector3_box(.25, 0, 0),  move = vector3_box(-.25, 0, 0), side = 0},
@@ -53,6 +53,8 @@ local close_proximity_checks = {
     -- {offset = vector3_box(0, 0, .5),  move = vector3_box(0, 0, -.25)},
     -- {offset = vector3_box(0, 0, -.5), move = vector3_box(0, 0, .25)},
     {offset = vector3_box(0, 0, 0)},
+    {offset = vector3_box(0, 0, 0),  direction = vector3_box(-1, 0, 0)},
+    {offset = vector3_box(0, 0, 0), direction = vector3_box(1, 0, 0)},
 }
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -71,17 +73,16 @@ ServoFriendRoamingExtension.init = function(self, extension_init_context, unit, 
     -- Base class
     ServoFriendRoamingExtension.super.init(self, extension_init_context, unit, extension_init_data)
     -- Data
-    self.event_manager = managers.event
     self.roaming = false
     self.enabled = true
     self.current_roam_side = 0
     self.roam_position = vector3_box(vector3_zero())
     self.character_height = self.servo_friend_extension.character_height
     -- Events
-    self.event_manager:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
-    self.event_manager:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
-    self.event_manager:register(self, "servo_friend_roaming_enabled", "on_servo_friend_roaming_enabled")
-    self.event_manager:register(self, "servo_friend_roaming_disabled", "on_servo_friend_roaming_disabled")
+    -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
+    -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
+    managers.event:register(self, "servo_friend_roaming_enabled", "on_servo_friend_roaming_enabled")
+    managers.event:register(self, "servo_friend_roaming_disabled", "on_servo_friend_roaming_disabled")
     -- Settings
     self:on_settings_changed()
     -- Debug
@@ -90,10 +91,10 @@ end
 
 ServoFriendRoamingExtension.destroy = function(self)
     -- Events
-    self.event_manager:unregister(self, "servo_friend_spawned")
-    self.event_manager:unregister(self, "servo_friend_destroyed")
-    self.event_manager:unregister(self, "servo_friend_roaming_enabled")
-    self.event_manager:unregister(self, "servo_friend_roaming_disabled")
+    -- managers.event:unregister(self, "servo_friend_spawned")
+    -- managers.event:unregister(self, "servo_friend_destroyed")
+    managers.event:unregister(self, "servo_friend_roaming_enabled")
+    managers.event:unregister(self, "servo_friend_roaming_disabled")
     -- Debug
     self:print("ServoFriendRoamingExtension destroyed")
     -- Base class
@@ -104,12 +105,15 @@ end
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
+ServoFriendRoamingExtension.clamped_dt = function(self, dt, multiplier)
+    return math_clamp(dt, 0, 1) * multiplier
+end
+
 ServoFriendRoamingExtension.update = function(self, dt, t)
     -- Base class
     ServoFriendRoamingExtension.super.update(self, dt, t)
     -- Idle
-    -- local pt = self:pt()
-    if self.enabled and self.use_free_roaming then
+    if self:is_initialized() and self.enabled and self.use_free_roaming then
         local found_something_valid = self:found_something_valid()
 
         if not self.enabled or (found_something_valid and self.roaming) then
@@ -144,7 +148,8 @@ ServoFriendRoamingExtension.update = function(self, dt, t)
 
             local move_distance = vector3_distance(current_roam_position, new_roam_position)
             local dynamic_speed = self:movement_speed() * math_clamp(move_distance, 0, 1)
-            local final_roam_position = vector3_lerp(current_roam_position, new_roam_position, dt * dynamic_speed)
+            -- local final_roam_position = vector3_lerp(current_roam_position, new_roam_position, dt * dynamic_speed)
+            local final_roam_position = vector3_lerp(current_roam_position, new_roam_position, self:clamped_dt(dt, dynamic_speed))
 
             -- Correct nan
             if final_roam_position[1] ~= final_roam_position[1] then

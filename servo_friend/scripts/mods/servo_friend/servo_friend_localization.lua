@@ -127,6 +127,14 @@ return {
 		["zh-cn"] = "照明系统",
 		ru = "Фонарик",
 	},
+	mod_option_flashlight_toggle = {
+		en = "Toggle Flashlight",
+		de = "Lichtquelle umschalten",
+	},
+	mod_option_flashlight_toggle_tooltip = {
+		en = "Toggle flashlight on and off.",
+		de = "Lichtquelle ein- / ausschalten.",
+	},
 	mod_option_flashlight = {
 		en = "Flashlight",
 		de = "Lichtquelle",
@@ -241,6 +249,63 @@ return {
 		ru = "Фонарик будет выключен в Моунингстар.",
 	},
 
+	group_distribution = {
+		en = "Distribution",
+		de = "Verteilung",
+		["zh-cn"] = "伺服颅骨分配协议"
+	},
+	mod_option_distribution = {
+		en = "Distribution",
+		de = "Verteilung",
+		["zh-cn"] = "伺服颅骨分配协议"
+	},
+	mod_option_distribution_tooltip = {
+		en = "Select the distribution among other players.",
+		de = "Verteilung unter anderen Spielern auswahlen.",
+		["zh-cn"] = "设定伺服颅骨的配备数量"
+	},
+	mod_option_distribution_flashlight = {
+		en = "Flashlight",
+		de = "Lichtquelle",
+		["zh-cn"] = "战术手电",
+		ru = "Фонарик",
+	},
+	mod_option_distribution_flashlight_tooltip = {
+		en = "Select the distribution of flashlights among other players.",
+		de = "Verteilung von Lichtquellen unter anderen Spielern auswahlen.",
+		["zh-cn"] = "其他玩家的伺服颅骨是否有手电筒功能？",
+	},
+	mod_option_distribution_alert = {
+		en = "Alert Mode",
+		de = "Alarmmodus",
+		["zh-cn"] = "机魂预警"
+	},
+	mod_option_distribution_alert_tooltip = {
+		en = "Select the distribution of alert mode among other players.",
+		de = "Verteilung von Alarmmodus unter anderen Spielern auswahlen.",
+		["zh-cn"] = "其他玩家的伺服颅骨是否有手电筒功能？",
+	},
+	mod_option_distribution_everyone = {
+		en = "Everyone",
+		de = "Jeder",
+		["zh-cn"] = "全员配备伺服颅骨"
+	},
+	mod_option_distribution_only_me = {
+		en = "Only Me",
+		de = "Nur ich",
+		["zh-cn"] = "仅本人配备"
+	},
+	mod_option_distribution_one = {
+		en = "One more player",
+		de = "Ein anderer Spieler",
+		["zh-cn"] = "一名队友配备"
+	},
+	mod_option_distribution_two = {
+		en = "Two more players",
+		de = "Zwei andere Spieler",
+		["zh-cn"] = "两名队友配备"
+	},
+
 	group_appearance = {
 		en = "Appearance",
 		de = "Aussehen",
@@ -280,6 +345,62 @@ return {
 		["zh-cn"] = "突刺构型"
 	},
 
+	group_alert = {
+		en = "Alert Mode",
+		de = "Alarmmodus",
+		["zh-cn"] = "机魂预警"
+	},
+	mod_option_alert_mode = {
+		en = "Activate",
+		de = "Aktiviert",
+		["zh-cn"] = "启动预警模式"
+	},
+	mod_option_alert_mode_tooltip = {
+		en = "In alert mode the servo friend will warn of incoming attacks.",
+		de = "Im Alarmmodus wird der Servo Freund vor eingehenden Angriffen warnen.",
+		["zh-cn"] = "激活伺服颅骨的亚空间扰动感知模块，它会尝试侦测可能到来的敌袭"
+	},
+	mod_option_alert_mode_lights = {
+		en = "Lights",
+		de = "Lichter",
+		["zh-cn"] = "灯光预警模式"
+	},
+	mod_option_alert_mode_lights_tooltip = {
+		en = "Activate the lights in alert mode.",
+		de = "Lichter aktivieren im Alarmmodus.",
+		["zh-cn"] = "启用灯光预警模式，警示即将到来的敌袭"
+	},
+	mod_option_alert_mode_sound = {
+		en = "Sound",
+		de = "Ton",
+		["zh-cn"] = "警报预警模式"
+	},
+	mod_option_alert_mode_sound_tooltip = {
+		en = "Activate the sound in alert mode.",
+		de = "Ton aktivieren im Alarmmodus.",
+		["zh-cn"] = "启用音频预警模式，警示即将到来的敌袭"
+	},
+	mod_option_alert_mode_sound_volume = {
+		en = "Volume",
+		de = "Lautstrecke",
+		["zh-cn"] = "音量振幅"
+	},
+	mod_option_alert_mode_sound_volume_tooltip = {
+		en = "Volume of the sound in alert mode.",
+		de = "Lautstrecke des Tons im Alarmmodus.",
+		["zh-cn"] = "调节音频预警模式的音量强度"
+	},
+	mod_option_alert_mode_only_when_idle = {
+		en = "Only when idle",
+		de = "Nur wenn untätig",
+		["zh-cn"] = "仅非战斗姿态"
+	},
+	mod_option_alert_mode_only_when_idle_tooltip = {
+		en = "Only activate the alert mode when the servo friend is idle.",
+		de = "Nur aktivieren wenn der Servo Freund untätig ist.",
+		["zh-cn"] = "仅在伺服颅骨未进入战斗模式的情况下，才启用机魂预警"
+	},
+
 	group_voice = {
 		en = "Voice",
 		de = "Stimme",
@@ -289,12 +410,12 @@ return {
 	mod_option_use_audio_mod = {
 		en = "Use Audio Plugin Mod",
 		de = "Audio Plugin Mod benutzen",
-		["zh-cn"] = "激活声波增幅协议",
+		["zh-cn"] = "激活语音协议",
 	},
 	mod_option_use_audio_mod_tooltip = {
 		en = "Use the audio plugin mod to play audio.",
 		de = "Benutze die Audio Plugin Mod, um Audio zu spielen.",
-		["zh-cn"] = "启用机械教圣音频段解码器播放战术语音",
+		["zh-cn"] = "为伺服颅骨加装附属功能，可播放额外的战术语音",
 	},
 	mod_option_voice_volume = {
 		en = "Volume",
@@ -387,6 +508,16 @@ return {
 		en = "Prevents the servo friend from shining the flashligh on daemonhosts.",
 		de = "Verhindert, dass der Servo Freund auf Daemonhosts leuchtet.",
 		["zh-cn"] = "激活灵能遮蔽场，避免伺服颅骨助手的光学传感器惊醒恶魔宿主",
+	},
+	mod_option_keep_packages = {
+		en = "Keep Packages Loaded",
+		de = "Pakete im Speicher behalten",
+		["zh-cn"] = "机魂永驻协议",
+	},
+	mod_option_keep_packages_tooltip = {
+		en = "Keep the packages for servo friend and addons loaded on mod reload.",
+		de = "Pakete fürs Servo Freund und Addons im Speicher halten, wenn die Mod neu geladen wird.",
+		["zh-cn"] = "重新加载mod后，在内存中维持伺服颅骨及其圣约插件的数据",
 	},
 
 	group_aiming = {

@@ -156,7 +156,9 @@ WeaponBuildAnimation.update = function(self, dt, t)
             local movement = attachment_data and attachment_data.remove and vector3_unbox(attachment_data.remove) or vector3_zero()
             local animation_wait_attach = attachment_data and attachment_data.animation_wait_attach
             local animation_wait_detach = attachment_data and attachment_data.animation_wait_detach
-            local unit = gear_settings:attachment_unit(weapon_spawn_data.attachment_units_3p, entry.slot)
+            local attachment_units_3p = weapon_spawn_data and weapon_spawn_data.attachment_units_3p and weapon_spawn_data.attachment_units_3p[weapon_spawn_data.item_unit_3p]
+            -- local unit = gear_settings:attachment_unit(weapon_spawn_data.attachment_units_3p, entry.slot)
+            local unit = gear_settings:attachment_unit(attachment_units_3p, entry.slot)
             local unit_good = unit and unit_alive(unit)
             local is_zero_scale = unit_good and unit_local_scale(unit, 1) == vector3_zero()
 

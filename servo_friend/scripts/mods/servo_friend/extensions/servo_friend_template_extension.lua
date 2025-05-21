@@ -21,21 +21,17 @@ mod:register_extension("ServoFriendTemplateExtension", "servo_friend_template_sy
 ServoFriendTemplateExtension.init = function(self, extension_init_context, unit, extension_init_data)
     -- Base class
     ServoFriendTemplateExtension.super.init(self, extension_init_context, unit, extension_init_data)
-    -- Data
-    self.event_manager = managers.event
     -- Events
-    self.event_manager:register(self, "servo_friend_settings_changed", "on_settings_changed")
-    self.event_manager:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
-    self.event_manager:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
+    managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
+    managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
     -- Settings
     self:on_settings_changed()
 end
 
 ServoFriendTemplateExtension.destroy = function(self)
     -- Events
-    self.event_manager:unregister(self, "servo_friend_settings_changed")
-    self.event_manager:unregister(self, "servo_friend_spawned")
-    self.event_manager:unregister(self, "servo_friend_destroyed")
+    managers.event:unregister(self, "servo_friend_spawned")
+    managers.event:unregister(self, "servo_friend_destroyed")
     -- Base class
     ServoFriendTemplateExtension.super.destroy(self)
 end

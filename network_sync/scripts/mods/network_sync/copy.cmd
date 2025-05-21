@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\network_sync\scripts\mods\network_sync" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\network_sync\scripts\mods\network_sync"

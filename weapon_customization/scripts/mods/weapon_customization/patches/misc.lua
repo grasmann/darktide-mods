@@ -147,20 +147,25 @@ end)
 -- ##### ├┤ ┌┴┬┘  └─┐│ ││ │├┬┘│  ├┤ └─┐ ###############################################################################
 -- ##### └  ┴ └─  └─┘└─┘└─┘┴└─└─┘└─┘└─┘ ###############################################################################
 
-mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments, node_name, ...)
-	if attachments and mod.gear_settings:find_node_in_attachments(parent_unit, node_name, attachments) then
-		return func(self, sources, source_name, parent_unit, attachments, node_name, ...)
-	elseif mod.gear_settings:find_node_in_unit(parent_unit, node_name) then
-		return func(self, sources, source_name, parent_unit, nil, node_name, ...)
+-- mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments, node_name, ...)
+-- PlayerUnitFxExtension._register_sound_source = function (self, sources, source_name, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name)
+mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name, ...)
+	local attachments = attachments_by_unit and attachments_by_unit[parent_unit]
+	if attachments and mod.gear_settings:find_node_in_attachments(parent_unit, optional_node_name, attachments) then
+		return func(self, sources, source_name, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name, ...)
+	elseif mod.gear_settings:find_node_in_unit(parent_unit, optional_node_name) then
+		return func(self, sources, source_name, parent_unit, nil, attachment_name_lookup, optional_node_name, ...)
 	end
-	return func(self, sources, source_name, parent_unit, nil, 1, ...)
+	return func(self, sources, source_name, parent_unit, nil, attachment_name_lookup, 1, ...)
 end)
 
-mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
+-- mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
+mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments_by_unit, attachment_name_lookup, node_name, should_add_3p_node, ...)
+	local attachments = attachments_by_unit and attachments_by_unit[parent_unit]
 	if attachments and mod.gear_settings:find_node_in_attachments(parent_unit, node_name, attachments) then
-		return func(self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
+		return func(self, spawners, spawner_name, parent_unit, attachments_by_unit, attachment_name_lookup, node_name, should_add_3p_node, ...)
 	elseif mod.gear_settings:find_node_in_unit(parent_unit, node_name) then
-		return func(self, spawners, spawner_name, parent_unit, nil, node_name, should_add_3p_node, ...)
+		return func(self, spawners, spawner_name, parent_unit, nil, attachment_name_lookup, node_name, should_add_3p_node, ...)
 	end
 	for name, special_node in pairs(special_nodes) do
 		if table_contains(special_node.nodes, node_name) then
@@ -169,13 +174,13 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, se
 				local attachment_unit = mod.gear_settings:attachment_unit(attachments, target)
 				
 				if attachment_unit then
-					return func(self, spawners, spawner_name, attachment_unit, nil, 1, should_add_3p_node, ...)
+					return func(self, spawners, spawner_name, parent_unit, nil, attachment_name_lookup, 1, should_add_3p_node, ...)
 				end
 			end
 		end
 	end
 
-	return func(self, spawners, spawner_name, parent_unit, nil, 1, should_add_3p_node, ...)
+	return func(self, spawners, spawner_name, parent_unit, nil, attachment_name_lookup, 1, should_add_3p_node, ...)
 end)
 
 -- ##### ┬ ┬┬  ┬ ┬┌─┐┬─┐┬  ┌┬┐ ########################################################################################

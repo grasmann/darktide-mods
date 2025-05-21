@@ -1,6 +1,7 @@
 local mod = get_mod("servo_friend_audio_server_plugin")
 local audio_mod, servo_friend = nil, nil
 
+local unit = Unit
 local math = math
 local pairs = pairs
 local table = table
@@ -10,6 +11,7 @@ local tostring = tostring
 local managers = Managers
 local math_uuid = math.uuid
 local table_size = table.size
+local unit_alive = unit.alive
 local math_random = math.random
 local table_clear = table.clear
 local table_remove = table.remove
@@ -166,6 +168,8 @@ local avoid_daemonhost_speeches = {
     {name = "avoid_daemonhost_07", length = 1.5},
 }
 
+local alert_sound = "alert"
+
 local temp_map = {}
 
 mod.on_all_mods_loaded = function()
@@ -173,7 +177,7 @@ mod.on_all_mods_loaded = function()
     audio_mod = get_mod("Audio")
     servo_friend = get_mod("servo_friend")
     -- Init
-    mod.event_manager = managers.event
+    -- mod.event_manager = managers.event
     mod.voice_volume = 1
     mod.queued_audio = {}
     mod.running_audio = {}
@@ -184,19 +188,21 @@ mod.on_all_mods_loaded = function()
     mod.avoid_daemonhost_speeches_timer = 0
     mod.avoid_daemonhost_speeches_cooldown = 5
     mod.used_avoid_daemonhost_speech = {}
+    mod.running_alert_sound = nil
     -- Events
-    mod.event_manager:register(mod, "servo_friend_settings_changed", "on_settings_changed")
+    managers.event:register(mod, "servo_friend_settings_changed", "on_settings_changed")
     -- Settings
     mod:on_settings_changed()
 end
 
 mod.on_unload = function()
-    mod.event_manager:unregister("servo_friend_settings_changed")
+    managers.event:unregister("servo_friend_settings_changed")
 end
 
 mod.on_game_state_changed = function(status, state_name)
     mod.talk_timer = 0
     mod.avoid_daemonhost_speeches_timer = 0
+    mod:stop_alert()
 end
 
 mod.on_setting_changed = function(setting_id)
@@ -205,6 +211,7 @@ end
 
 mod.on_settings_changed = function(self)
     self.voice_volume = nil
+    self.alert_volume = nil
 end
 
 mod.volume = function(self)
@@ -212,6 +219,13 @@ mod.volume = function(self)
         self.voice_volume = servo_friend:get("mod_option_voice_volume")
     end
     return self.voice_volume or 1
+end
+
+mod.alert_volumne = function(self)
+    if not self.alert_volume then
+        self.alert_volume = servo_friend:get("mod_option_alert_mode_sound_volume")
+    end
+    return self.alert_volume or 1
 end
 
 mod.update = function(dt)
@@ -229,19 +243,21 @@ mod.play_queued_audio = function(self, dt, t)
             if queued_audio and queued_audio.time < t then
 
                 local audio_key = math_uuid()
-                local audio_id = audio_mod.play_file("servo_friend_audio_server_plugin/audio/sfx/"..queued_audio.name..".ogg", {
-                    audio_type = "sfx",
-                    track_status = function()
-                        mod:on_running_audio_finished(audio_key)
-                    end,
-                    volume = 200 * self:volume(),
-                }, queued_audio.unit)
+                if queued_audio.unit and unit_alive(queued_audio.unit) then
+                    local audio_id = audio_mod.play_file("servo_friend_audio_server_plugin/audio/sfx/"..queued_audio.name..".ogg", {
+                        audio_type = "sfx",
+                        track_status = function()
+                            mod:on_running_audio_finished(audio_key)
+                        end,
+                        volume = 200 * self:volume(),
+                    }, queued_audio.unit)
 
-                self.running_audio[audio_key] = {
-                    name = queued_audio.name,
-                    time = t,
-                    audio_id = audio_id,
-                }
+                    self.running_audio[audio_key] = {
+                        name = queued_audio.name,
+                        time = t,
+                        audio_id = audio_id,
+                    }
+                end
 
                 table_remove(self.queued_audio, i)
             end
@@ -293,13 +309,53 @@ mod.talk = function(self, dt, t, event_name, unit)
             end
 
             self.talk_timer = t + self.talk_cooldown
+
         end
+
+    end
+
+    if event_name == "start_alert" then
+
+        self:start_alert(dt, t, unit)
+
+    elseif event_name == "stop_alert" then
+
+        self:stop_alert(dt, t, unit)
 
     end
 
 end
 
-mod.map_avoid_daemonhost = function(self, event_name)
+mod.start_alert = function(self, dt, t, unit, audio_key)
+    if not self.running_alert_sound or self.running_alert_sound == audio_key then
+        audio_key = math_uuid()
+        if unit and unit_alive(unit) then
+            audio_mod.play_file("servo_friend_audio_server_plugin/audio/sfx/"..alert_sound..".ogg", {
+                audio_type = "sfx",
+                track_status = function()
+                    mod:on_alert_finished(unit, audio_key)
+                end,
+                volume = 200 * self:alert_volumne(),
+            }, unit)
+            self.running_alert_sound = audio_key
+        end
+    end
+end
+
+mod.on_alert_finished = function(self, unit, audio_key)
+    if self.running_alert_sound == audio_key then
+        if mod.time_manager and mod.time_manager:has_timer("gameplay") then
+            local dt, t = mod.time_manager:delta_time("gameplay"), mod.time_manager:time("gameplay")
+            self:start_alert(dt, t, unit, audio_key)
+        end
+    end
+end
+
+mod.stop_alert = function(self, dt, t, unit)
+    self.running_alert_sound = nil
+end
+
+mod.map_avoid_daemonhost = function(self)
     table_clear(temp_map)
     if table_size(mod.used_avoid_daemonhost_speech) >= #avoid_daemonhost_speeches then
         table_clear(mod.used_avoid_daemonhost_speech)
@@ -338,7 +394,7 @@ mod.awake = function(self, dt, t, unit)
     }
 end
 
-mod.map_victory = function(self, event_name)
+mod.map_victory = function(self)
     table_clear(temp_map)
     if table_size(mod.used_victory_speech) >= #victory_speeches then
         table_clear(mod.used_victory_speech)

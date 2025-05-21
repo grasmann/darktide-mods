@@ -177,7 +177,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_husk_visual_lo
                             player = self._player,
                             player_unit = self._player.player_unit,
                             is_local_unit = self._is_local_unit,
-                            ranged_weapon = table_merge_recursive(slot, {weapon_template = weapon_template, weapon_unit = slot.unit_1p, attachment_units = slot.attachments_1p}
+                            -- ranged_weapon = table_merge_recursive(slot, {weapon_template = weapon_template, weapon_unit = slot.unit_1p, attachment_units = slot.attachments_1p}
+                            ranged_weapon = table_merge_recursive(slot, {weapon_template = weapon_template, weapon_unit = slot.unit_1p, attachment_units = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p]}
                             ),
                             wielded_slot = self._equipment[self._wielded_slot],
                             equipment_component = self._equipment_component,
@@ -251,7 +252,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_husk_visual_lo
                             ranged_weapon = table_merge_recursive(slot, {
                                 weapon_template = weapon_template,
                                 weapon_unit = slot.unit_1p,
-                                attachment_units = slot.attachments_1p
+                                -- attachment_units = slot.attachments_1p
+                                attachment_units = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p],
                             }),
                             wielded_slot = self._equipment[self._wielded_slot],
                         })
@@ -273,8 +275,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_husk_visual_lo
                 local slot = self._equipment[SLOT_SECONDARY]
                 if slot then
                     -- Add FlashlightExtension
-                    local flashlight_unit_1p = mod.gear_settings:attachment_unit(slot.attachments_1p, "flashlight")
-                    local flashlight_unit_3p = mod.gear_settings:attachment_unit(slot.attachments_3p, "flashlight")
+                    -- local flashlight_unit_1p = mod.gear_settings:attachment_unit(slot.attachments_1p, "flashlight")
+                    -- local flashlight_unit_3p = mod.gear_settings:attachment_unit(slot.attachments_3p, "flashlight")
+                    local flashlight_unit_1p = mod.gear_settings:attachment_unit(slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p], "flashlight")
+                    local flashlight_unit_3p = mod.gear_settings:attachment_unit(slot.attachments_by_unit_3p and slot.attachments_by_unit_3p[slot.unit_3p], "flashlight")
                     if flashlight_unit_1p and flashlight_unit_3p then
                         -- Add FlashlightExtension
                         script_unit_add_extension({
@@ -286,6 +290,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_husk_visual_lo
                             flashlight_unit_1p = flashlight_unit_1p,
                             flashlight_unit_3p = flashlight_unit_3p,
                             wielded_slot = self._equipment[self._wielded_slot],
+                            -- ranged_weapon = table_merge_recursive(self._weapon_extension._weapons[SLOT_SECONDARY],
+                            --     {attachment_units = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p]}),
                         })
                     end
                 end

@@ -24,13 +24,11 @@ mod:register_extension("ServoFriendTagExtension", "servo_friend_tag_system")
 ServoFriendTagExtension.init = function(self, extension_init_context, unit, extension_init_data)
     -- Base class
     ServoFriendTagExtension.super.init(self, extension_init_context, unit, extension_init_data)
-    -- Data
-    self.event_manager = managers.event
     -- Events
-    self.event_manager:register(self, "event_smart_tag_created", "event_smart_tag_created")
-    self.event_manager:register(self, "event_smart_tag_removed", "event_smart_tag_removed")
-    self.event_manager:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
-    self.event_manager:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
+    managers.event:register(self, "event_smart_tag_created", "event_smart_tag_created")
+    managers.event:register(self, "event_smart_tag_removed", "event_smart_tag_removed")
+    -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
+    -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
     -- Settings
     self:on_settings_changed()
     -- Debug
@@ -39,10 +37,10 @@ end
 
 ServoFriendTagExtension.destroy = function(self)
     -- Events
-    self.event_manager:unregister(self, "event_smart_tag_created")
-    self.event_manager:unregister(self, "event_smart_tag_removed")
-    self.event_manager:unregister(self, "servo_friend_spawned")
-    self.event_manager:unregister(self, "servo_friend_destroyed")
+    managers.event:unregister(self, "event_smart_tag_created")
+    managers.event:unregister(self, "event_smart_tag_removed")
+    -- managers.event:unregister(self, "servo_friend_spawned")
+    -- managers.event:unregister(self, "servo_friend_destroyed")
     -- Debug
     self:print("ServoFriendTagExtension destroyed")
     -- Base class
@@ -97,13 +95,13 @@ ServoFriendTagExtension.event_smart_tag_created = function(self, tag)
     local daemonhost = not self:is_daemonhost(tag)
     if own and (enemy or item) and daemonhost then
         local tag_type = self:type(tag)
-        self.event_manager:trigger("servo_friend_point_of_interest_created", tag, tag_type)
+        managers.event:trigger("servo_friend_point_of_interest_created", tag, tag_type)
     end
 end
 
 ServoFriendTagExtension.event_smart_tag_removed = function(self, tag)
     self:print("Smart tag removed")
-    self.event_manager:trigger("servo_friend_point_of_interest_removed", tag)
+    managers.event:trigger("servo_friend_point_of_interest_removed", tag)
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################

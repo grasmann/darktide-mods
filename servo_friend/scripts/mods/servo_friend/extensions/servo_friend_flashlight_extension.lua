@@ -17,6 +17,7 @@ local quaternion = Quaternion
 local unit_light = unit.light
 local unit_alive = unit.alive
 local vector3_box = Vector3Box
+local script_unit = ScriptUnit
 local vector3_zero = vector3.zero
 local vector3_unbox = vector3_box.unbox
 local world_link_unit = world.link_unit
@@ -34,6 +35,7 @@ local light_set_casts_shadows = light.set_casts_shadows
 local light_set_falloff_start = light.set_falloff_start
 local light_set_spot_reflector = light.set_spot_reflector
 local light_set_spot_angle_end = light.set_spot_angle_end
+local script_unit_has_extension = script_unit.has_extension
 local light_set_spot_angle_start = light.set_spot_angle_start
 local light_color_with_intensity = light.color_with_intensity
 local unit_set_vector3_for_materials = unit.set_vector3_for_materials
@@ -61,7 +63,7 @@ local flashlight_profiles = {
         spot_angle_end = 0.6,
         falloff_start = 0,
         falloff_end = 70,
-        volumetric_intensity = 0.6,
+        volumetric_intensity = 0.3,
         offset = vector3_box(vector3(.05, 0, 0)),
     },
     large = {
@@ -74,7 +76,7 @@ local flashlight_profiles = {
         spot_angle_end = 1.5,
         falloff_start = 0,
         falloff_end = 40,
-        volumetric_intensity = 0.3,
+        volumetric_intensity = 0.15,
         offset = vector3_box(vector3(.075, 0, 0)),
     },
 }
@@ -96,18 +98,26 @@ ServoFriendFlashlightExtension.init = function(self, extension_init_context, uni
     -- Base class
     ServoFriendFlashlightExtension.super.init(self, extension_init_context, unit, extension_init_data)
     -- Data
-    self.event_manager = managers.event
     self.dark_mission = self:is_dark_mission()
     self.flashlight_unit = nil
     self.light = nil
-    self.initialized = true
+    self.user_state = nil
     -- Events
-    self.event_manager:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
-    self.event_manager:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
-    self.event_manager:register(self, "servo_friend_overwrite_color", "on_servo_friend_overwrite_color")
-    self.event_manager:register(self, "servo_friend_reset_color", "on_servo_friend_reset_color")
-    self.event_manager:register(self, "servo_friend_overwrite_volumetric_intensity", "on_servo_friend_overwrite_volumetric_intensity")
-    self.event_manager:register(self, "servo_friend_reset_volumetric_intensity", "on_servo_friend_reset_volumetric_intensity")
+    -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
+    -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
+    managers.event:register(self, "servo_friend_overwrite_color", "on_servo_friend_overwrite_color")
+    managers.event:register(self, "servo_friend_reset_color", "on_servo_friend_reset_color")
+    managers.event:register(self, "servo_friend_overwrite_volumetric_intensity", "on_servo_friend_overwrite_volumetric_intensity")
+    managers.event:register(self, "servo_friend_reset_volumetric_intensity", "on_servo_friend_reset_volumetric_intensity")
+    -- -- P2P
+    -- if mod.p2p and not mod.p2p_flashlight_registered then
+    --     mod.p2p.register(mod, "flashlight_toggle", function(player, data)
+    --         mod:echo(player:name() .. " flashlight_toggle: " .. data.user_state)
+    --         local player_unit = player and player.player_unit
+    --         if player_unit then mod:player_flashlight_toggle(player_unit) end
+    --     end)
+    --     mod.p2p_flashlight_registered = true
+    -- end
     -- Settings
     self:on_settings_changed()
     -- Debug
@@ -115,14 +125,14 @@ ServoFriendFlashlightExtension.init = function(self, extension_init_context, uni
 end
 
 ServoFriendFlashlightExtension.destroy = function(self)
-    -- Data
-    self.initialized = false
+    -- Deinit
+    self.user_state = false
     -- Events
-    self.event_manager:unregister(self, "servo_friend_spawned")
-    self.event_manager:unregister(self, "servo_friend_destroyed")
-    self.event_manager:unregister(self, "servo_friend_overwrite_color")
-    self.event_manager:unregister(self, "servo_friend_overwrite_volumetric_intensity")
-    self.event_manager:unregister(self, "servo_friend_reset_color")
+    -- managers.event:unregister(self, "servo_friend_spawned")
+    -- managers.event:unregister(self, "servo_friend_destroyed")
+    managers.event:unregister(self, "servo_friend_overwrite_color")
+    managers.event:unregister(self, "servo_friend_overwrite_volumetric_intensity")
+    managers.event:unregister(self, "servo_friend_reset_color")
     -- Destroy
     self:destroy_flashlight()
     -- Debug
@@ -207,13 +217,14 @@ end
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 ServoFriendFlashlightExtension.wants_flashlight_on = function(self)
+    if self.user_state ~= nil then return self.user_state end
     local hub = not self:is_in_hub() or not self.flashlight_no_hub
     local dark_mission = self.flashlight == "only_dark_missions" and self.dark_mission
     return (self.flashlight == "always_on" or dark_mission) and hub
 end
 
 ServoFriendFlashlightExtension.flashlight_unit_alive = function(self)
-    return self.flashlight_unit and unit_alive(self.flashlight_unit)
+    return mod:is_unit_alive(self.flashlight_unit)
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
@@ -221,8 +232,7 @@ end
 -- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
 
 ServoFriendFlashlightExtension.spawn_flashlight = function(self)
-    -- local pt = self:pt()
-    if self.initialized and not self:flashlight_unit_alive() then
+    if self:is_initialized() and not self:flashlight_unit_alive() then
         local player_position = self:player_position()
         local flashlight_profile = flashlight_profiles[self.flashlight_type]
         if flashlight_profile then
@@ -242,6 +252,11 @@ ServoFriendFlashlightExtension.spawn_flashlight = function(self)
 end
 
 ServoFriendFlashlightExtension.destroy_flashlight = function(self)
+    if self.light then
+        self.user_state = false
+        self:set_enabled(false)
+        self.light = nil
+    end
     if self:flashlight_unit_alive() then
         world_unlink_unit(self._world, self.flashlight_unit)
         world_destroy_unit(self._world, self.flashlight_unit)
@@ -268,9 +283,23 @@ ServoFriendFlashlightExtension.set_volumetric_intensity = function(self, volumet
     end
 end
 
-ServoFriendFlashlightExtension.set_light = function(self)
+ServoFriendFlashlightExtension.set_enabled = function(self)
     if self.light then
         light_set_enabled(self.light, self:wants_flashlight_on())
+        if self.is_local_unit then
+            if self.user_state then
+                self:play_sound("selection")
+            else
+                self:play_sound("wrong")
+            end
+        end
+    end
+end
+
+ServoFriendFlashlightExtension.set_light = function(self)
+    if self.light then
+        -- light_set_enabled(self.light, self:wants_flashlight_on())
+        self:set_enabled()
         light_set_casts_shadows(self.light, self.flashlight_shadows)
         light_set_ies_profile(self.light, self.flashlight_template.ies_profile)
         light_set_correlated_color_temperature(self.light, self.flashlight_template.color_temperature)
@@ -283,6 +312,29 @@ ServoFriendFlashlightExtension.set_light = function(self)
         self:set_volumetric_intensity(self.flashlight_template.volumetric_intensity)
         self:set_color(self.r, self.g, self.b)
     end
+end
+
+local command_table = {user_state = false}
+mod.player_flashlight_toggle = function(self, player_unit, send)
+    local pt = self:pt()
+    player_unit = player_unit or self:local_player_unit()
+    local player_unit_first_person_extension = script_unit_has_extension(player_unit, "first_person_system")
+    local first_person_unit = player_unit_first_person_extension and player_unit_first_person_extension._unit
+    local player_unit_servo_friend_extension = first_person_unit and pt.player_unit_extensions[first_person_unit]
+    local servo_friend_unit = player_unit_servo_friend_extension and player_unit_servo_friend_extension.servo_friend_unit
+    local flashlight_extension = servo_friend_unit and self:servo_friend_extension(servo_friend_unit, "servo_friend_flashlight_system")
+    if flashlight_extension then
+        flashlight_extension.user_state = not flashlight_extension.user_state
+        flashlight_extension:set_enabled()
+        -- if send then
+        --     command_table.user_state = flashlight_extension.user_state
+        --     self:p2p_command("flashlight_toggle", servo_friend_unit, command_table)
+        -- end
+    end
+end
+
+mod.flashlight_toggle = function()
+    mod:player_flashlight_toggle(nil, true)
 end
 
 return ServoFriendFlashlightExtension

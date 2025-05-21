@@ -24,6 +24,7 @@ local mod = get_mod("weapon_customization")
 	local CLASS = CLASS
 	local color = Color
 	local Level = Level
+	local ipairs = ipairs
 	local string = string
 	local rawget = rawget
 	local vector2 = Vector2
@@ -120,7 +121,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		HAIR = 3
 	}
 
-	instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template, optional_equipment)
+	-- ################################################################################################################
+	instance.spawn_item_attachments = function(item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment)
+		if not item_unit then
+			return nil, nil, nil, nil
+		end
+
 		mod:setup_item_definitions()
 
 		local item_name = mod.gear_settings:short_name(item_data.name)
@@ -130,6 +136,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		local attachment_slot_info = {}
 		local weapon_item = item_data.item_type == "WEAPON_MELEE" or item_data.item_type == "WEAPON_RANGED"
 		local player_item = item_data.item_list_faction == "Player"
+
+		local extract_data = instance._create_extract_data(optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names)
+
+		instance._push_extract_data(extract_data, item_unit, item_data.name, nil)
+
+		local attachments = item_data.attachments
 
 		if item_unit and attachments and weapon_item and player_item and not mod:is_premium_store_item() then
 			-- Add custom attachments
@@ -144,37 +156,63 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		--#region Original
 			local attachment_units, attachment_units_bind_poses, attachment_name_to_unit  = nil, nil, nil
 			-- local attachments = item_data.attachments
+			-- attachment_units = extract_data.attachment_units_by_unit and extract_data.attachment_units_by_unit[item_unit]
+			-- attachment_units = attachment_units or extract_data.attachment_units_by_unit
 		
 			if item_unit and attachments then
-				attachment_name_to_unit = optional_map_attachment_name_to_unit and {}
-				attachment_units_bind_poses = optional_extract_attachment_units_bind_poses and {}
-				attachment_units = {}
+				-- attachment_name_to_unit = optional_map_attachment_name_to_unit and {}
+				-- attachment_units_bind_poses = optional_extract_attachment_units_bind_poses and {}
+				-- attachment_units = {}
+				-- local attachment_names = table_keys(attachments)
+		
+				-- table_sort(attachment_names)
+		
+				-- local skin_color_slot_name = "slot_body_skin_color"
+				-- local skin_color_slot_index = table_find(attachment_names, skin_color_slot_name)
+		
+				-- if skin_color_slot_index then
+				-- 	table_remove(attachment_names, skin_color_slot_index)
+		
+				-- 	attachment_names[#attachment_names + 1] = skin_color_slot_name
+				-- end
+		
+				-- for i = 1, #attachment_names do
+				-- 	local name = attachment_names[i]
+				-- 	local attachment_slot_data = attachments[name]
+				-- 	attachment_units, attachment_name_to_unit, attachment_units_bind_poses = instance._attach_hierarchy(attachment_slot_data, override_lookup, attach_settings, item_unit, attachment_units, name, attachment_name_to_unit, attachment_units_bind_poses, optional_mission_template, optional_equipment, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+				-- end
+
 				local attachment_names = table_keys(attachments)
-		
+
 				table_sort(attachment_names)
-		
+
 				local skin_color_slot_name = "slot_body_skin_color"
 				local skin_color_slot_index = table_find(attachment_names, skin_color_slot_name)
-		
+
 				if skin_color_slot_index then
 					table_remove(attachment_names, skin_color_slot_index)
-		
+
 					attachment_names[#attachment_names + 1] = skin_color_slot_name
 				end
-		
+
 				for i = 1, #attachment_names do
 					local name = attachment_names[i]
 					local attachment_slot_data = attachments[name]
-					attachment_units, attachment_name_to_unit, attachment_units_bind_poses = instance._attach_hierarchy(attachment_slot_data, override_lookup, attach_settings, item_unit, attachment_units, name, attachment_name_to_unit, attachment_units_bind_poses, optional_mission_template, optional_equipment, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+
+					instance._attach_hierarchy(attachment_slot_data, override_lookup, attach_settings, item_unit, name, extract_data, optional_mission_template, optional_equipment, attachment_slot_info, item_name, in_possesion_of_player, item_data)
 				end
 			end
 		--#endregion Original
+
+		attachment_units = extract_data.attachment_units_by_unit and extract_data.attachment_units_by_unit[item_unit]
+		attachment_units = attachment_units or extract_data.attachment_units_by_unit
 
 		-- ############################################################################################################
 
 		if attachment_units and item_unit and attachments and weapon_item and player_item and not mod:is_premium_store_item() then
 
 			unit_set_data(item_unit, "attachment_units", attachment_units)
+			-- unit_set_data(item_unit, "all_attachment_units", attachment_units)
 
 			local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 			slot_infos[slot_info_id] = attachment_slot_info
@@ -444,23 +482,70 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		--#endregion
 	
 		-- Return original values
-		return attachment_units, attachment_name_to_unit, attachment_units_bind_poses
+		-- return attachment_units, attachment_name_to_unit, attachment_units_bind_poses
+
+		instance._pop_extract_data(extract_data, item_unit)
+
+		return extract_data.attachment_units_by_unit, extract_data.attachment_id_lookup, extract_data.attachment_name_lookup, extract_data.bind_poses_by_unit, extract_data.item_name_by_unit
 	end
 
-	instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template, optional_equipment)
+	-- ################################################################################################################
+	instance.spawn_item = function(item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment)
 		mod:setup_item_definitions()
 
+		-- local weapon_skin = instance._validate_item_name(item_data.slot_weapon_skin)
+		-- local in_possesion_of_player = mod.gear_settings:player_item(item_data)
+		-- local in_store = mod:is_store_item(item_data)
+		-- local attachments = item_data.attachments
+		-- local weapon_item = item_data.item_type == "WEAPON_MELEE" or item_data.item_type == "WEAPON_RANGED"
+		-- local player_item = item_data.item_list_faction == "Player"
+
+		-- if type(weapon_skin) == "string" then
+		-- 	-- weapon_skin = attach_settings.item_definitions[weapon_skin]
+		-- 	weapon_skin = mod:persistent_table(REFERENCE).item_definitions[weapon_skin]
+		-- end
+
+		-- if attachments and weapon_item and player_item and not mod:is_premium_store_item() then
+		-- 	-- mod:dtf(item_data, "item_data", 10)
+		-- 	-- Add custom attachments
+		-- 	mod.gear_settings:_add_custom_attachments(item_data, attachments)
+		-- 	-- Overwrite attachments
+		-- 	mod.gear_settings:_overwrite_attachments(item_data, attachments)
+		-- end
+	
+		-- local item_unit, bind_pose = instance.spawn_base_unit(item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment, in_possesion_of_player)
+		-- local skin_overrides = instance.generate_attachment_overrides_lookup(item_data, weapon_skin, in_possesion_of_player)
+		-- local attachment_units_by_unit, attachment_name_to_unit, attachment_units_bind_poses = instance.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment)
+	
+		-- instance.apply_material_overrides(item_data, item_unit, parent_unit, attach_settings)
+	
+		-- if weapon_skin then
+		-- 	instance.apply_material_overrides(weapon_skin, item_unit, parent_unit, attach_settings)
+		-- end
+	
+		-- instance.add_extensions(item_unit, attachment_units_by_unit and attachment_units_by_unit[item_unit], attach_settings)
+		-- instance.play_item_on_spawn_anim_event(item_data, parent_unit)
+	
+		-- return item_unit, attachment_units_by_unit, bind_pose, attachment_name_to_unit, attachment_units_bind_poses
+
 		local weapon_skin = instance._validate_item_name(item_data.slot_weapon_skin)
-		local in_possesion_of_player = mod.gear_settings:player_item(item_data)
-		local in_store = mod:is_store_item(item_data)
+
+		if type(weapon_skin) == "string" then
+			-- if attach_settings.in_editor then
+			-- 	if attach_settings.item_manager and ToolsMasterItems then
+			-- 		weapon_skin = ToolsMasterItems:get(weapon_skin)
+			-- 	else
+			-- 		weapon_skin = rawget(attach_settings.item_definitions, weapon_skin)
+			-- 	end
+			-- else
+			-- 	weapon_skin = attach_settings.item_definitions[weapon_skin]
+			-- end
+			weapon_skin = mod:persistent_table(REFERENCE).item_definitions[weapon_skin]
+		end
+
 		local attachments = item_data.attachments
 		local weapon_item = item_data.item_type == "WEAPON_MELEE" or item_data.item_type == "WEAPON_RANGED"
 		local player_item = item_data.item_list_faction == "Player"
-
-		if type(weapon_skin) == "string" then
-			-- weapon_skin = attach_settings.item_definitions[weapon_skin]
-			weapon_skin = mod:persistent_table(REFERENCE).item_definitions[weapon_skin]
-		end
 
 		if attachments and weapon_item and player_item and not mod:is_premium_store_item() then
 			-- mod:dtf(item_data, "item_data", 10)
@@ -469,99 +554,195 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			-- Overwrite attachments
 			mod.gear_settings:_overwrite_attachments(item_data, attachments)
 		end
-	
-		local item_unit, bind_pose = instance.spawn_base_unit(item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment, in_possesion_of_player)
-		local skin_overrides = instance.generate_attachment_overrides_lookup(item_data, weapon_skin, in_possesion_of_player)
-		local attachment_units, attachment_name_to_unit, attachment_units_bind_poses = instance.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_mission_template, optional_equipment)
-	
+
+		local item_unit, bind_pose = instance.spawn_base_unit(item_data, attach_settings, parent_unit, optional_mission_template)
+		local skin_overrides = instance.generate_attachment_overrides_lookup(item_data, weapon_skin)
+		local attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit = instance.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment)
+
 		instance.apply_material_overrides(item_data, item_unit, parent_unit, attach_settings)
-	
+
 		if weapon_skin then
 			instance.apply_material_overrides(weapon_skin, item_unit, parent_unit, attach_settings)
 		end
-	
-		instance.add_extensions(item_unit, attachment_units, attach_settings)
+
+		instance.add_extensions(item_unit, attachment_units_by_unit and attachment_units_by_unit[item_unit], attach_settings)
 		instance.play_item_on_spawn_anim_event(item_data, parent_unit)
-	
-		return item_unit, attachment_units, bind_pose, attachment_name_to_unit, attachment_units_bind_poses
+
+		return item_unit, attachment_units_by_unit, bind_pose, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit
 	end
 
 	instance.spawn_base_unit = function(item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment, in_possesion_of_player)
-		return instance._spawn_attachment(item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment, nil, nil, nil, nil, in_possesion_of_player)
+		return instance._spawn_attachment(item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment, nil, nil, nil, nil, nil, in_possesion_of_player)
 	end
 
-	instance._attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, optional_equipment, attachment_slot_info, item_name, in_possesion_of_player, item_data)
-		local item_name_ = attachment_slot_data.item
-		local item = instance._validate_item_name(item_name_)
+	instance.attach_hierarchy = function (attachment_slot_data, override_lookup, settings, parent_unit, parent_item_name, attachment_name, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template)
+		local extract_data = instance._create_extract_data(optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names)
+
+		instance._push_extract_data(extract_data, parent_unit, parent_item_name, attachment_name)
+		instance._attach_hierarchy(attachment_slot_data, override_lookup, settings, parent_unit, attachment_name, extract_data, optional_mission_template)
+		instance._pop_extract_data(extract_data, parent_unit)
+
+		return extract_data.attachment_units_by_unit
+	end
+
+	local ignore_slot_item_assigning = table.set({
+		"slot_primary",
+		"slot_secondary",
+	})
+
+	-- instance._attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, optional_equipment, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+	instance._attach_hierarchy = function(attachment_slot_data, override_lookup, settings, parent_unit, attachment_name, extract_data, optional_mission_template, optional_equipment, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+		-- local item_name_ = attachment_slot_data.item
+		-- local item = instance._validate_item_name(item_name_)
+		-- local override_item = override_lookup[attachment_slot_data]
+		-- item = override_item or item
+	
+		-- if type(item) == "string" then
+		-- 	-- item = settings.item_definitions[item]
+		-- 	item = mod:persistent_table(REFERENCE).item_definitions[item]
+		-- end
+	
+		-- if not item then
+		-- 	return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
+		-- end
+	
+		-- local attachment_unit, bind_pose = instance._spawn_attachment(item, settings, parent_unit, optional_mission_template, nil, attachment_slot_info, attachment_slot_data.attachment_type, attachment_slot_data.attachment_name, item_name, in_possesion_of_player)
+
+		-- if optional_equipment and item.slots then
+		-- 	for _, slot_name in ipairs(item.slots) do
+		-- 		if optional_equipment[slot_name] then
+		-- 			optional_equipment[slot_name].item = item
+		-- 		end
+		-- 	end
+		-- end
+	
+		-- if attachment_unit then
+		-- 	attached_units[#attached_units + 1] = attachment_unit
+	
+		-- 	if attachment_name_to_unit_or_nil and attachment_name_or_nil then
+		-- 		attachment_name_to_unit_or_nil[attachment_name_or_nil] = attachment_unit
+		-- 	end
+
+		-- 	if attached_units_bind_poses_or_nil then
+		-- 		attached_units_bind_poses_or_nil[attachment_unit] = matrix4x4_box(bind_pose)
+		-- 	end
+	
+		-- 	local attachments = item and item.attachments
+		-- 	attached_units = instance._attach_hierarchy_children(attachments, override_lookup, settings, attachment_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, nil, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+		-- 	local children = attachment_slot_data.children
+		-- 	attached_units = instance._attach_hierarchy_children(children, override_lookup, settings, attachment_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, nil, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+		-- 	local material_overrides = {}
+		-- 	local item_material_overrides = item.material_overrides
+	
+		-- 	if item_material_overrides then
+		-- 		table_append(material_overrides, item_material_overrides)
+		-- 	end
+	
+		-- 	local parent_material_overrides = attachment_slot_data.material_overrides
+	
+		-- 	if parent_material_overrides then
+		-- 		table_append(material_overrides, parent_material_overrides)
+		-- 	end
+	
+		-- 	local apply_to_parent = item.material_override_apply_to_parent
+	
+		-- 	if material_overrides then
+		-- 		for _, material_override in pairs(material_overrides) do
+		-- 			instance.apply_material_override(attachment_unit, parent_unit, apply_to_parent, material_override)
+		-- 		end
+		-- 	end
+		-- end
+	
+		-- return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
+
+		local item_name = attachment_slot_data.item
+		local item = instance._validate_item_name(item_name)
 		local override_item = override_lookup[attachment_slot_data]
+
 		item = override_item or item
-	
+
 		if type(item) == "string" then
-			-- item = settings.item_definitions[item]
+			-- if settings.in_editor then
+			-- 	if settings.item_manager and ToolsMasterItems then
+			-- 		item = ToolsMasterItems:get(item)
+			-- 	else
+			-- 		item = rawget(settings.item_definitions, item)
+			-- 	end
+			-- else
+			-- 	item = settings.item_definitions[item]
+			-- end
 			item = mod:persistent_table(REFERENCE).item_definitions[item]
+		elseif item then
+			item_name = item.name
 		end
-	
+
 		if not item then
-			return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
+			return
 		end
-	
-		local attachment_unit, bind_pose = instance._spawn_attachment(item, settings, parent_unit, optional_mission_template, nil, attachment_slot_info, attachment_slot_data.attachment_type, attachment_slot_data.attachment_name, item_name, in_possesion_of_player)
+
+		local override_attach_node = attachment_slot_data.leaf_attach_node_override
+		local override_map_mode = World[attachment_slot_data.link_map_mode_override]
+		local attachment_unit, bind_pose = instance._spawn_attachment(item, settings, parent_unit, optional_mission_template, override_attach_node, override_map_mode, attachment_slot_info, attachment_slot_data.attachment_type, attachment_slot_data.attachment_name, item_name, in_possesion_of_player)
 
 		if optional_equipment and item.slots then
 			for _, slot_name in ipairs(item.slots) do
-				if optional_equipment[slot_name] then
+				if optional_equipment[slot_name] and not ignore_slot_item_assigning[slot_name] then
 					optional_equipment[slot_name].item = item
 				end
 			end
 		end
-	
-		if attachment_unit then
-			attached_units[#attached_units + 1] = attachment_unit
-	
-			if attachment_name_to_unit_or_nil and attachment_name_or_nil then
-				attachment_name_to_unit_or_nil[attachment_name_or_nil] = attachment_unit
-			end
 
-			if attached_units_bind_poses_or_nil then
-				attached_units_bind_poses_or_nil[attachment_unit] = matrix4x4_box(bind_pose)
-			end
-	
+		if attachment_unit then
+			instance._fill_extract_data(extract_data, attachment_name, attachment_unit, bind_pose)
+			instance._push_extract_data(extract_data, attachment_unit, item_name, attachment_name)
+
 			local attachments = item and item.attachments
-			attached_units = instance._attach_hierarchy_children(attachments, override_lookup, settings, attachment_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, nil, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+
+			instance._attach_hierarchy_children(attachments, override_lookup, settings, attachment_unit, extract_data, optional_mission_template, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+			instance._pop_extract_data(extract_data, attachment_unit)
+
 			local children = attachment_slot_data.children
-			attached_units = instance._attach_hierarchy_children(children, override_lookup, settings, attachment_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, nil, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+
+			instance._attach_hierarchy_children(children, override_lookup, settings, attachment_unit, extract_data, optional_mission_template, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+
 			local material_overrides = {}
 			local item_material_overrides = item.material_overrides
-	
+
 			if item_material_overrides then
 				table_append(material_overrides, item_material_overrides)
 			end
-	
+
 			local parent_material_overrides = attachment_slot_data.material_overrides
-	
+
 			if parent_material_overrides then
 				table_append(material_overrides, parent_material_overrides)
 			end
-	
+
 			local apply_to_parent = item.material_override_apply_to_parent
-	
+
 			if material_overrides then
 				for _, material_override in pairs(material_overrides) do
-					instance.apply_material_override(attachment_unit, parent_unit, apply_to_parent, material_override)
+					instance.apply_material_override(attachment_unit, parent_unit, apply_to_parent, material_override, settings.in_editor)
 				end
 			end
 		end
-	
-		return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
+
+		-- return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
 	end
 
-	instance._attach_hierarchy_children = function(children, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, optional_equipment, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+	-- instance._attach_hierarchy_children = function(children, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, optional_equipment, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+	instance._attach_hierarchy_children = function(children, override_lookup, settings, parent_unit, extract_data, optional_mission_template, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+		-- if children then
+		-- 	for name, child_attachment_slot_data in pairs(children) do
+		-- 		attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil = instance._attach_hierarchy(child_attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, nil, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+		-- 	end
+		-- end
+		-- return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
 		if children then
-			for name, child_attachment_slot_data in pairs(children) do
-				attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil = instance._attach_hierarchy(child_attachment_slot_data, override_lookup, settings, parent_unit, attached_units, attachment_name_or_nil, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil, optional_mission_template, nil, attachment_slot_info, item_name, in_possesion_of_player, item_data)
+			for attachment_name, child_attachment_slot_data in pairs(children) do
+				instance._attach_hierarchy(child_attachment_slot_data, override_lookup, settings, parent_unit, attachment_name, extract_data, optional_mission_template, nil, attachment_slot_info, item_name, in_possesion_of_player, item_data)
 			end
 		end
-		return attached_units, attachment_name_to_unit_or_nil, attached_units_bind_poses_or_nil
 	end
 
 	instance._validate_item_name = function(item)
@@ -591,7 +772,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		return "unknown"
 	end
 
-	instance._spawn_attachment = function(item_data, settings, parent_unit, optional_mission_template, optional_equipment, attachment_slot_info, attachment_type, attachment_name, item_name, in_possesion_of_player)
+	-- instance._spawn_attachment = function(item_data, settings, parent_unit, optional_mission_template, optional_equipment, attachment_slot_info, attachment_type, attachment_name, item_name, in_possesion_of_player)
+	instance._spawn_attachment = function(item_data, settings, parent_unit, optional_mission_template, optional_as_leaf_override_attach_node, optional_as_leaf_map_mode, attachment_slot_info, attachment_type, attachment_name, item_name, in_possesion_of_player)
 		--#region Original
 			if not item_data then
 				return nil
@@ -701,9 +883,21 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				unit_set_unit_objects_visibility(spawned_unit, false, true, visibility_contexts.RAYTRACING_CONTEXT)
 			end
 		
-			local keep_local_transform = not settings.skip_link_children and true
+			-- local keep_local_transform = not settings.skip_link_children and true
+			local map_mode
+
+			if optional_as_leaf_map_mode then
+				map_mode = optional_as_leaf_map_mode
+			elseif World[item_data.link_map_mode] then
+				map_mode = World[item_data.link_map_mode]
+			elseif settings.skip_link_children then
+				map_mode = World.LINK_MODE_NONE
+			else
+				map_mode = World.LINK_MODE_NODE_NAME
+			end
 		
-			world_link_unit(settings.world, spawned_unit, 1, parent_unit, attach_node_index, keep_local_transform)
+			-- world_link_unit(settings.world, spawned_unit, 1, parent_unit, attach_node_index, keep_local_transform)
+			World.link_unit(settings.world, spawned_unit, 1, parent_unit, attach_node_index, map_mode)
 		
 			if settings.lod_group and unit_has_lod_object(spawned_unit, "lod") and not settings.is_first_person then
 				local attached_lod_object = unit_lod_object(spawned_unit, "lod")
@@ -797,6 +991,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		return override_lookup
 	end
 
+	-- ################################################################################################################
 	instance.apply_material_override = function (unit, parent_unit, apply_to_parent, material_override, in_editor)
 		if material_override and material_override ~= "" then
 			local material_override_data = nil
@@ -821,32 +1016,72 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		end
 	end
 
+	-- ################################################################################################################
 	instance._apply_material_override = function(unit, material_override_data)
+		-- if material_override_data.property_overrides ~= nil then
+		-- 	for property_name, property_override_data in pairs(material_override_data.property_overrides) do
+		-- 		-- mod:echo("_apply_material_override property", property_name, property_override_data)
+		-- 		if type(property_override_data) == "number" then
+		-- 			Unit_set_scalar_for_materials(unit, property_name, property_override_data, true)
+		-- 		else
+		-- 			local property_override_data_num = #property_override_data
+	
+		-- 			if property_override_data_num == 1 then
+		-- 				Unit_set_scalar_for_materials(unit, property_name, property_override_data[1], true)
+		-- 			elseif property_override_data_num == 2 then
+		-- 				Unit_set_vector2_for_materials(unit, property_name, vector2(property_override_data[1], property_override_data[2]), true)
+		-- 			elseif property_override_data_num == 3 then
+		-- 				Unit_set_vector3_for_materials(unit, property_name, vector3(property_override_data[1], property_override_data[2], property_override_data[3]), true)
+		-- 			elseif property_override_data_num == 4 then
+		-- 				Unit_set_vector4_for_materials(unit, property_name, color(property_override_data[1], property_override_data[2], property_override_data[3], property_override_data[4]), true)
+		-- 			end
+		-- 		end
+		-- 	end
+		-- end
+	
+		-- if material_override_data.texture_overrides ~= nil then
+		-- 	for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+		-- 		-- mod:echo("_apply_material_override texture", texture_slot, texture_override_data.resource)
+		-- 		Unit_set_texture_for_materials(unit, texture_slot, texture_override_data.resource, true)
+		-- 	end
+		-- end
+
 		if material_override_data.property_overrides ~= nil then
 			for property_name, property_override_data in pairs(material_override_data.property_overrides) do
-				-- mod:echo("_apply_material_override property", property_name, property_override_data)
 				if type(property_override_data) == "number" then
 					Unit_set_scalar_for_materials(unit, property_name, property_override_data, true)
 				else
 					local property_override_data_num = #property_override_data
-	
+
 					if property_override_data_num == 1 then
 						Unit_set_scalar_for_materials(unit, property_name, property_override_data[1], true)
 					elseif property_override_data_num == 2 then
-						Unit_set_vector2_for_materials(unit, property_name, vector2(property_override_data[1], property_override_data[2]), true)
+						Unit_set_vector2_for_materials(unit, property_name, Vector2(property_override_data[1], property_override_data[2]), true)
 					elseif property_override_data_num == 3 then
-						Unit_set_vector3_for_materials(unit, property_name, vector3(property_override_data[1], property_override_data[2], property_override_data[3]), true)
+						Unit_set_vector3_for_materials(unit, property_name, Vector3(property_override_data[1], property_override_data[2], property_override_data[3]), true)
 					elseif property_override_data_num == 4 then
-						Unit_set_vector4_for_materials(unit, property_name, color(property_override_data[1], property_override_data[2], property_override_data[3], property_override_data[4]), true)
+						Unit_set_vector4_for_materials(unit, property_name, Color(property_override_data[1], property_override_data[2], property_override_data[3], property_override_data[4]), true)
 					end
 				end
 			end
 		end
-	
+
 		if material_override_data.texture_overrides ~= nil then
 			for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
-				-- mod:echo("_apply_material_override texture", texture_slot, texture_override_data.resource)
-				Unit_set_texture_for_materials(unit, texture_slot, texture_override_data.resource, true)
+				if texture_override_data.resource_by_item == nil then
+					Unit_set_texture_for_materials(unit, texture_slot, texture_override_data.resource, true)
+				else
+					local resources = texture_override_data.resource_by_item
+					local items_array_size = Unit.data_table_size(unit, "attached_item_names") or 0
+
+					for i = 1, items_array_size do
+						local resource = resources[Unit.get_data(unit, "attached_item_names", i)]
+
+						if resource ~= nil then
+							Unit_set_texture_for_materials(unit, texture_slot, resource, true)
+						end
+					end
+				end
 			end
 		end
 	end

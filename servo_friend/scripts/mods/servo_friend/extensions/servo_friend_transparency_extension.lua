@@ -32,23 +32,22 @@ ServoFriendTransparencyExtension.init = function(self, extension_init_context, u
     -- Base class
     ServoFriendTransparencyExtension.super.init(self, extension_init_context, unit, extension_init_data)
     -- Data
-    self.event_manager = managers.event
     self.enabled = true
     -- Events
-    self.event_manager:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
-    self.event_manager:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
-    self.event_manager:register(self, "servo_friend_transparency_enabled", "on_servo_friend_transparency_enabled")
-    self.event_manager:register(self, "servo_friend_transparency_disabled", "on_servo_friend_transparency_disabled")
+    -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
+    -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
+    managers.event:register(self, "servo_friend_transparency_enabled", "on_servo_friend_transparency_enabled")
+    managers.event:register(self, "servo_friend_transparency_disabled", "on_servo_friend_transparency_disabled")
     -- Settings
     self:on_settings_changed()
 end
 
 ServoFriendTransparencyExtension.destroy = function(self)
     -- Events
-    self.event_manager:unregister(self, "servo_friend_spawned")
-    self.event_manager:unregister(self, "servo_friend_destroyed")
-    self.event_manager:unregister(self, "servo_friend_transparency_enabled")
-    self.event_manager:unregister(self, "servo_friend_transparency_disabled")
+    -- managers.event:unregister(self, "servo_friend_spawned")
+    -- managers.event:unregister(self, "servo_friend_destroyed")
+    managers.event:unregister(self, "servo_friend_transparency_enabled")
+    managers.event:unregister(self, "servo_friend_transparency_disabled")
     -- Base class
     ServoFriendTransparencyExtension.super.destroy(self)
 end
@@ -62,7 +61,7 @@ ServoFriendTransparencyExtension.update = function(self, dt, t)
     ServoFriendTransparencyExtension.super.update(self, dt, t)
     -- Update
     -- local player_position = mod:player_position()
-    if self:servo_friend_alive() then
+    if self:is_initialized() and self:servo_friend_alive() then
         local pt = self:pt()
         -- local first_person_extension = mod.first_person_unit
         local first_person_position = unit_world_position(self.first_person_unit, 1)
