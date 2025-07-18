@@ -254,6 +254,7 @@ end
 			mod.anchors.shotgun_p1_m2      = mod.anchors.shotgun_p1_m1
 			mod.anchors.shotgun_p1_m3      = mod.anchors.shotgun_p1_m1
 			mod.anchors.shotgun_p4_m2      = mod.anchors.shotgun_p4_m1
+			mod.anchors.shotgun_p4_m3      = mod.anchors.shotgun_p4_m1
 			mod.anchors.bolter_p1_m2       = mod.anchors.bolter_p1_m1
 			mod.anchors.bolter_p1_m3       = mod.anchors.bolter_p1_m1
 			mod.anchors.laspistol_p1_m2    = mod.anchors.laspistol_p1_m1
@@ -407,6 +408,7 @@ end
 			mod.attachment.shotgun_p1_m2      = mod.attachment.shotgun_p1_m1
 			mod.attachment.shotgun_p1_m3      = mod.attachment.shotgun_p1_m1
 			mod.attachment.shotgun_p4_m2      = mod.attachment.shotgun_p4_m1
+			mod.attachment.shotgun_p4_m3      = mod.attachment.shotgun_p4_m1
 			mod.attachment.bolter_p1_m2       = mod.attachment.bolter_p1_m1
 			mod.attachment.bolter_p1_m3       = mod.attachment.bolter_p1_m1
 			mod.attachment.stubrevolver_p1_m2 = mod.attachment.stubrevolver_p1_m1
@@ -979,6 +981,7 @@ end
 			mod.attachment_models.shotgun_p1_m2      = mod.attachment_models.shotgun_p1_m1
 			mod.attachment_models.shotgun_p1_m3      = mod.attachment_models.shotgun_p1_m1
 			mod.attachment_models.shotgun_p4_m2      = mod.attachment_models.shotgun_p4_m1
+			mod.attachment_models.shotgun_p4_m3      = mod.attachment_models.shotgun_p4_m1
 			mod.attachment_models.bolter_p1_m2       = mod.attachment_models.bolter_p1_m1
 			mod.attachment_models.bolter_p1_m3       = mod.attachment_models.bolter_p1_m1
 			mod.attachment_models.stubrevolver_p1_m2 = mod.attachment_models.stubrevolver_p1_m1
@@ -1148,6 +1151,7 @@ end
 			mod.attachment_sounds.shotgun_p1_m2      = mod.attachment_sounds.shotgun_p1_m1
 			mod.attachment_sounds.shotgun_p1_m3      = mod.attachment_sounds.shotgun_p1_m1
 			mod.attachment_sounds.shotgun_p4_m2      = mod.attachment_sounds.shotgun_p4_m1
+			mod.attachment_sounds.shotgun_p4_m3      = mod.attachment_sounds.shotgun_p4_m1
 			mod.attachment_sounds.bolter_p1_m2       = mod.attachment_sounds.bolter_p1_m1
 			mod.attachment_sounds.bolter_p1_m3       = mod.attachment_sounds.bolter_p1_m1
 			mod.attachment_sounds.stubrevolver_p1_m2 = mod.attachment_sounds.stubrevolver_p1_m1

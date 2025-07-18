@@ -699,6 +699,7 @@ local mod = get_mod("weapon_customization")
             mod.visible_equipment_offsets.shotgun_p1_m2 = mod.visible_equipment_offsets.shotgun_p1_m1
             mod.visible_equipment_offsets.shotgun_p1_m3 = mod.visible_equipment_offsets.shotgun_p1_m1
             mod.visible_equipment_offsets.shotgun_p4_m2 = mod.visible_equipment_offsets.shotgun_p4_m1
+            mod.visible_equipment_offsets.shotgun_p4_m3 = mod.visible_equipment_offsets.shotgun_p4_m1
             mod.visible_equipment_offsets.stubrevolver_p1_m2 = mod.visible_equipment_offsets.stubrevolver_p1_m1
             mod.visible_equipment_offsets.stubrevolver_p1_m3 = mod.visible_equipment_offsets.stubrevolver_p1_m1
             mod.visible_equipment_offsets.laspistol_p1_m2 = mod.visible_equipment_offsets.laspistol_p1_m1
