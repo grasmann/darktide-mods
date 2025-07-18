@@ -306,11 +306,16 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         return item_instance
     end)
 
+    -- local lol = false
     mod:hook(instance, "get_cached", function(func, original, ...)
         local master_items = func(original, ...)
         local persistent_table = mod:persistent_table(REFERENCE)
         -- Setup definitions
         if not persistent_table.item_definitions and master_items then mod:setup_item_definitions(master_items) end
+        -- if not lol then
+        --     mod:dtf(master_items, "master_items", 10)
+        --     lol = true
+        -- end
         -- Return custom definitions
         if not original and persistent_table.item_definitions then return persistent_table.item_definitions end
         -- Return original definitions

@@ -128,7 +128,7 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 	instance.preview_flashlight = function(self, slot_id)
 		if self._character_spawn_data then
 			local slot = self._character_spawn_data.slots[SLOT_SECONDARY]
-			local attachments_3p = slot.attachments_by_unit_3p[slot.unit_3p]
+			local attachments_3p = slot.attachments_by_unit_3p and slot.attachments_by_unit_3p[slot.unit_3p]
 			local flashlight = mod.gear_settings:attachment_unit(attachments_3p, "flashlight")
 			local attachment_name = flashlight and unit_get_data(flashlight, "attachment_name")
 			if flashlight and attachment_name and slot_id == SLOT_SECONDARY then

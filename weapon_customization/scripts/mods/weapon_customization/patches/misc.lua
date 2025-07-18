@@ -6,6 +6,7 @@ local mod = get_mod("weapon_customization")
 
 --#region Require
 	local PlayerCharacterLoopingParticleAliases = mod:original_require("scripts/settings/particles/player_character_looping_particle_aliases")
+	local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 --#endregion
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -158,6 +159,22 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, s
 	end
 	return func(self, sources, source_name, parent_unit, nil, attachment_name_lookup, 1, ...)
 end)
+
+-- mod:hook(CLASS.PlayerUnitFxExtension, "sound_source", function(func, self, source_name, optional_attachment_name, ...)
+-- 	local sound_source = self._sources[source_name]
+-- 	local reference_attachment_name = optional_attachment_name or VisualLoadoutCustomization.ROOT_ATTACH_NAME
+
+-- 	if sound_source then
+-- 		sound_source = sound_source[reference_attachment_name]
+-- 	elseif source_name then
+-- 		self._sources[source_name] = {
+-- 			[reference_attachment_name] = self._sources["fx_right_hand"][VisualLoadoutCustomization.ROOT_ATTACH_NAME]
+-- 		}
+-- 		sound_source = self._sources[source_name][reference_attachment_name]
+-- 	end
+
+-- 	return sound_source
+-- end)
 
 -- mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments, node_name, should_add_3p_node, ...)
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments_by_unit, attachment_name_lookup, node_name, should_add_3p_node, ...)

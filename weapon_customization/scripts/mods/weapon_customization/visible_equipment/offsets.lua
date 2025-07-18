@@ -476,6 +476,14 @@ local mod = get_mod("weapon_customization")
                     step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
                 loading = mod.visible_equipment_loading_offsets.ranged_huge,
             },
+            shotgun_p4_m1 = {
+                default = {position = vector3_box(.3, .25, .125), rotation = vector3_box(180, -10, 90), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.01, 0, 0), step_rotation = vector3_box(2.5, -2.5, 0)},
+                backpack = {position = vector3_box(.3, .25, .25), rotation = vector3_box(200, 0, 90), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.01, 0, 0), step_rotation = vector3_box(2.5, -2.5, 0)},
+                -- center_mass = vector3_box(0, -.1, -.025),
+                loading = mod.visible_equipment_loading_offsets.default,
+            },
             flamer_p1_m1 = {
                 default = {position = vector3_box(.3, .22, .125), rotation = vector3_box(200, -10, 90), scale = vector3_box(1, 1, 1),
                     step_move = vector3_box(-.01, .0075, .005), step_rotation = vector3_box(-5, -2.5, -5)},
@@ -522,6 +530,14 @@ local mod = get_mod("weapon_customization")
                 loading = mod.visible_equipment_loading_offsets.default,
                 -- step_sounds = {SoundEventAliases.sfx_weapon_locomotion.events.flamer_p1_m1},
             },
+            -- shotgun_p4_m1 = {
+            --     default = {position = vector3_box(.6, .25, .125), rotation = vector3_box(180, -10, 90), scale = vector3_box(1, 1, 1),
+            --         step_move = vector3_box(-.01, 0, 0), step_rotation = vector3_box(2.5, -2.5, 0)},
+            --     backpack = {position = vector3_box(.3, .25, .25), rotation = vector3_box(200, 0, 90), scale = vector3_box(1, 1, 1),
+            --         step_move = vector3_box(-.01, 0, 0), step_rotation = vector3_box(2.5, -2.5, 0)},
+            --     loading = mod.visible_equipment_loading_offsets.default,
+            --     -- step_sounds = {SoundEventAliases.sfx_weapon_locomotion.events.flamer_p1_m1},
+            -- },
         --#endregion
         --#region Melee
             -- combataxe_p3_m1 = {
@@ -682,6 +698,7 @@ local mod = get_mod("weapon_customization")
         --#region Guns
             mod.visible_equipment_offsets.shotgun_p1_m2 = mod.visible_equipment_offsets.shotgun_p1_m1
             mod.visible_equipment_offsets.shotgun_p1_m3 = mod.visible_equipment_offsets.shotgun_p1_m1
+            mod.visible_equipment_offsets.shotgun_p4_m2 = mod.visible_equipment_offsets.shotgun_p4_m1
             mod.visible_equipment_offsets.stubrevolver_p1_m2 = mod.visible_equipment_offsets.stubrevolver_p1_m1
             mod.visible_equipment_offsets.stubrevolver_p1_m3 = mod.visible_equipment_offsets.stubrevolver_p1_m1
             mod.visible_equipment_offsets.laspistol_p1_m2 = mod.visible_equipment_offsets.laspistol_p1_m1

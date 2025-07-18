@@ -32,7 +32,8 @@ return {
             {id = "sabre_grip_04",      name = "Grip 4"},
             {id = "sabre_grip_05",      name = "Grip 5"},
             {id = "sabre_grip_06",      name = "Grip 6"},
-            {id = "sabre_grip_ml01",      name = "Grip 7"},
+            {id = "sabre_grip_07",      name = "Grip 7"},
+            {id = "sabre_grip_ml01",      name = "Grip 8"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -50,7 +51,8 @@ return {
             {name = "sabre_grip_04",      model = _item_melee.."/grips/sabre_grip_04"},
             {name = "sabre_grip_05",      model = _item_melee.."/grips/sabre_grip_05"},
             {name = "sabre_grip_06",      model = _item_melee.."/grips/sabre_grip_06"},
-            {name = "sabre_grip_ml01",      model = _item_melee.."/grips/sabre_grip_ml01"},
+            {name = "sabre_grip_07",      model = _item_melee.."/grips/sabre_grip_07"},
+            {name = "sabre_grip_ml01",    model = _item_melee.."/grips/sabre_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 

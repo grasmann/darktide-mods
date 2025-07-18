@@ -81,7 +81,7 @@ mod.stop_sound_event = function(self, audio_id)
     -- Get wwise world
     local wwise_world = self:wwise_world()
     -- Check if sound still playing
-    if wwise_world_is_playing(wwise_world, audio_id) then
+    if wwise_world and wwise_world_is_playing(wwise_world, audio_id) then
         -- Stop sound
         wwise_world_stop_event(wwise_world, audio_id)
     end

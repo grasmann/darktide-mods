@@ -67,8 +67,9 @@ return {
             {id = "knife_body_05",      name = "Combat Knife 5"},
             {id = "knife_body_06",      name = "Combat Knife 6"},
             {id = "knife_body_07",      name = "Combat Knife 7"},
-            {id = "combat_knife_blade_ml01", name = "Combat Knife 8"},
-            {id = "knife_body_08",      name = "Combat Knife 9"},
+            {id = "knife_body_08",      name = "Combat Knife 8"},
+            {id = "knife_body_09",      name = "Combat Knife 9"},
+            {id = "combat_knife_blade_ml01", name = "Combat Knife 10"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -87,8 +88,9 @@ return {
             {name = "knife_body_05",      model = _item_melee.."/blades/combat_knife_blade_05"},
             {name = "knife_body_06",      model = _item_melee.."/blades/combat_knife_blade_06"},
             {name = "knife_body_07",      model = _item_melee.."/blades/combat_knife_blade_07"},
-            {name = "combat_knife_blade_ml01",      model = _item_melee.."/blades/combat_knife_blade_ml01"},
             {name = "knife_body_08",      model = _item_melee.."/blades/combat_knife_blade_08"},
+            {name = "knife_body_09",      model = _item_melee.."/blades/combat_knife_blade_09"},
+            {name = "combat_knife_blade_ml01",      model = _item_melee.."/blades/combat_knife_blade_ml01"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

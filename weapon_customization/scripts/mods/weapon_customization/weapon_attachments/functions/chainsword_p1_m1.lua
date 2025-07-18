@@ -35,7 +35,8 @@ return {
             {id = "chain_sword_grip_07",      name = "Grip 7"},
             {id = "chain_sword_grip_08",      name = "Grip 8"},
             {id = "chain_sword_grip_09",      name = "Grip 9"},
-            {id = "chain_sword_grip_ml01",      name = "Grip 10"},
+            {id = "chain_sword_grip_10",      name = "Grip 10"},
+            {id = "chain_sword_grip_ml01",      name = "Grip 11"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -56,6 +57,7 @@ return {
             {name = "chain_sword_grip_07",      model = _item_melee.."/grips/chain_sword_grip_07"},
             {name = "chain_sword_grip_08",      model = _item_melee.."/grips/chain_sword_grip_08"},
             {name = "chain_sword_grip_09",      model = _item_melee.."/grips/chain_sword_grip_09"},
+            {name = "chain_sword_grip_10",      model = _item_melee.."/grips/chain_sword_grip_10"},
             {name = "chain_sword_grip_ml01",      model = _item_melee.."/grips/chain_sword_grip_ml01"},
         }, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
@@ -71,7 +73,8 @@ return {
             {id = "chain_sword_body_08",      name = "Body 8"},
             {id = "chain_sword_body_09",      name = "Body 9"},
             {id = "chain_sword_full_10",      name = "Body 10"},
-            {id = "chain_sword_full_ml01",      name = "Body 11"},
+            {id = "chain_sword_full_11",      name = "Body 11"},
+            {id = "chain_sword_full_ml01",      name = "Body 12"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -93,12 +96,14 @@ return {
             {name = "chain_sword_body_08",      model = _item_melee.."/full/chain_sword_full_08"},
             {name = "chain_sword_body_09",      model = _item_melee.."/full/chain_sword_full_09"},
             {name = "chain_sword_full_10",      model = _item_melee.."/full/chain_sword_full_10"},
+            {name = "chain_sword_full_11",      model = _item_melee.."/full/chain_sword_full_11"},
             {name = "chain_sword_full_ml01",      model = _item_melee.."/full/chain_sword_full_ml01"},
         }, parent, angle, move, remove, type or "body", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     chain_attachments = function(default)
         local attachments = {
             {id = "chain_sword_chain_01",      name = "Chain 1"},
+            {id = "chain_sword_chain_01_gold_01", name = "Chain 2"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -111,6 +116,7 @@ return {
         return table.model_table({
             {name = "chain_sword_chain_default", model = ""},
             {name = "chain_sword_chain_01",      model = _item_melee.."/chains/chain_sword_chain_01"},
+            {name = "chain_sword_chain_01_gold_01", model = _item_melee.."/chains/chain_sword_chain_01_gold_01"},
         }, parent, angle, move, remove, type or "chain", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }

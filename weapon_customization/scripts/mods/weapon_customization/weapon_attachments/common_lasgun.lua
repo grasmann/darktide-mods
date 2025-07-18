@@ -36,7 +36,8 @@ return {
             {id = "barrel_06", name = "Infantry Lasgun 6"},
             {id = "barrel_07", name = "Infantry Lasgun 7"},
             {id = "barrel_08", name = "Infantry Lasgun 8"},
-            {id = "barrel_21", name = "Infantry Lasgun 9"},
+            {id = "barrel_23", name = "Infantry Lasgun 9"},
+            {id = "barrel_21", name = "Infantry Lasgun 10"},
             {id = "barrel_09", name = "Helbore Lasgun 1"},
             {id = "barrel_10", name = "Helbore Lasgun 2"},
             {id = "barrel_11", name = "Helbore Lasgun 3"},
@@ -69,6 +70,7 @@ return {
             {name = "barrel_06",      model = _item_ranged.."/barrels/lasgun_rifle_barrel_06"},
             {name = "barrel_07",      model = _item_ranged.."/barrels/lasgun_rifle_barrel_07"},
             {name = "barrel_08",      model = _item_ranged.."/barrels/lasgun_rifle_barrel_08"},
+            {name = "barrel_23",      model = _item_ranged.."/barrels/lasgun_rifle_barrel_09"},
             {name = "barrel_09",      model = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_01"},
             {name = "barrel_10",      model = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_02"},
             {name = "barrel_11",      model = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_04"},
@@ -90,7 +92,8 @@ return {
             {id = "muzzle_01", name = "Infantry Lasgun 1"},
             {id = "muzzle_02", name = "Infantry Lasgun 2"},
             {id = "muzzle_03", name = "Infantry Lasgun 3"},
-            {id = "muzzle_12", name = "Infantry Lasgun 4"},
+            {id = "muzzle_14", name = "Infantry Lasgun 4"},
+            {id = "muzzle_12", name = "Infantry Lasgun 5"},
             {id = "muzzle_04", name = "Helbore Lasgun 1"},
             {id = "muzzle_05", name = "Helbore Lasgun 2"},
             {id = "muzzle_06", name = "Helbore Lasgun 3"},
@@ -114,6 +117,7 @@ return {
             {name = "muzzle_01",      model = _item_ranged.."/muzzles/lasgun_rifle_muzzle_01"},
             {name = "muzzle_02",      model = _item_ranged.."/muzzles/lasgun_rifle_muzzle_02"},
             {name = "muzzle_03",      model = _item_ranged.."/muzzles/lasgun_rifle_muzzle_03"},
+            {name = "muzzle_14",      model = _item_ranged.."/muzzles/lasgun_rifle_muzzle_04"},
             {name = "muzzle_04",      model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_02"},
             {name = "muzzle_05",      model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_04"},
             {name = "muzzle_06",      model = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_05"},
@@ -130,6 +134,7 @@ return {
         local attachments = {
             {id = "rail_01", name = "Rail 1"},
             {id = "rail_02", name = "Rail 2"},
+            {id = "rail_03", name = "Rail 3"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -143,6 +148,8 @@ return {
             {name = "rail_default", model = ""},
             {name = "rail_01",      model = _item_ranged.."/rails/lasgun_rifle_rail_01"},
             {name = "rail_02",      model = _item_ranged.."/rails/lasgun_pistol_rail_01"},
+            {name = "rail_03",      model = _item_ranged.."/rails/assault_shotgun_rail_01"},
+            {name = "rail_04",      model = _item_ranged.."/rails/assault_shotgun_rail_02"},
         }, parent, angle, move, remove, type or "rail", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
     magazine_attachments = function(default)

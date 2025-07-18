@@ -41,6 +41,7 @@ mod.version = "2.10"
 		attachment_slot_infos = {},
 		weapon_templates = {},
 		temp_gear_settings = {},
+		temp_cached_fixes = {},
 		-- Packages
 		package_info = {},
 		loaded_packages = {
@@ -82,6 +83,7 @@ mod.version = "2.10"
 			string_cap = {},
 			cached_data = {},
 			combinations = {},
+			diff = 0,
 		},
 		debug_split = {split = 0, cache = 0},
 		debug_gsub = {gsub = 0, cache = 0},

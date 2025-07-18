@@ -53,6 +53,7 @@ return {
             {name = "left_06",      model = _item_melee.."/ogryn_powermaul_slabshield_p1_05"},
             {name = "left_07",      model = _item_melee.."/ogryn_slabshield_p1_ml01"},
             {name = "left_08",      model = _item_melee.."/ogryn_slabshield_p1_05"},
+            {name = "left_09",      model = _item_melee.."/ogryn_slabshield_p1_06"},
         }, parent, angle, move, remove, type or "left", no_support, automatic_equip, hide_mesh, mesh_move)
     end,
 }

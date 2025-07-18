@@ -196,86 +196,156 @@ mod.load_needed_packages = function(self)
     end
 end
 
+-- mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
+-- 	if unit and unit_alive(unit) then
+-- 		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
+-- 		local gear_info = slot_infos[slot_info_id]
+-- 		local mesh_move = gear_info and gear_info.unit_mesh_move[unit]
+-- 		local unit_and_meshes = mesh_move == "both" or false
+-- 		local root_unit = gear_info and gear_info.attachment_slot_to_unit["root"] or unit
+-- 		local attachment_slot = gear_info and gear_info.unit_to_attachment_slot[unit]
+-- 		local mesh_position = gear_info and gear_info.unit_mesh_position[unit]
+-- 		local mesh_rotation = gear_info and gear_info.unit_mesh_rotation[unit]
+-- 		local mesh_index = gear_info and gear_info.unit_mesh_index[unit]
+
+-- 		local num_meshes = unit_num_meshes(unit)
+-- 		if (mesh_move or unit_and_meshes or mesh_position) and num_meshes > 0 then
+-- 			-- local mesh_positions = {}
+-- 			-- local mesh_rotations = {}
+-- 			table_clear(mesh_positions)
+-- 			table_clear(mesh_rotations)
+-- 			if mesh_position and mesh_index then
+-- 				if type(mesh_position) == "table" and type(mesh_index) == "table" then
+-- 					for i = 1, #mesh_position do
+-- 						local index = mesh_index[i]
+-- 						mesh_positions[index] = vector3_unbox(mesh_position[i])
+-- 						if mesh_rotation then
+-- 							mesh_rotations[index] = vector3_unbox(mesh_rotation[i])
+-- 						end
+-- 					end
+-- 				else
+-- 					mesh_positions[mesh_index] = vector3_unbox(mesh_position)
+-- 					if mesh_rotation then
+-- 						mesh_rotations[mesh_index] = vector3_unbox(mesh_rotation)
+-- 					end
+-- 				end
+-- 			end
+-- 			local mesh_start, mesh_end = 1, num_meshes
+-- 			for i = mesh_start, mesh_end do
+-- 				local mesh = unit_mesh(unit, i)
+-- 				local unit_data = self.mesh_positions[unit]
+-- 				local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
+-- 				local mesh_pos = mesh_positions[i] or vector3_zero()
+-- 				local position = mesh_default + mesh_pos
+-- 				if mesh_move or unit_and_meshes then
+-- 					position = position + movement
+-- 				end
+-- 				if mesh_rotations[i] then
+-- 					-- local rotation = quaternion_from_euler_angles_xyz(mesh_rotations[i][1], mesh_rotations[i][2], mesh_rotations[i][3])
+-- 					local rotation = quaternion_from_vector(mesh_rotations[i])
+-- 					mesh_set_local_rotation(mesh, unit, rotation)
+-- 				end
+-- 				mesh_set_local_position(mesh, unit, position)
+-- 			end
+-- 			-- for i = mesh_start, mesh_end do
+-- 			-- for i, mesh_index in pairs(mesh_index) do
+-- 			-- 	local mesh = unit_mesh(unit, i)
+-- 			-- 	local unit_data = self.mesh_positions[unit]
+-- 			-- 	local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
+-- 			-- 	local mesh_position = mesh_position[i] or vector3_zero()
+-- 			-- 	local position = mesh_default + mesh_position
+-- 			-- 	if mesh_move or unit_and_meshes then
+-- 			-- 		position = position + movement
+-- 			-- 	end
+-- 			-- 	mesh_set_local_position(mesh, unit, position)
+-- 			-- end
+-- 		end
+
+-- 		if not mesh_move or unit_and_meshes then
+-- 			-- mod:info("mod.unit_set_local_position_mesh: "..tostring(unit))
+-- 			unit_set_local_position(unit, 1, movement)
+-- 		end
+
+-- 		local root_movement = gear_info and gear_info.unit_root_movement[unit]
+-- 		local root_default_position = gear_info and gear_info.unit_default_position["root"]
+-- 		local root_position = gear_info and gear_info.unit_root_position[unit]
+-- 		if (root_movement or root_position) and root_unit and unit_alive(root_unit) then
+-- 			local default_position = root_default_position and vector3_unbox(root_default_position) or vector3_zero()
+-- 			local position = root_position and vector3_unbox(root_position) or vector3_zero()
+-- 			local offset = default_position + position + movement
+-- 			-- mod:info("mod.unit_set_local_position_mesh: "..tostring(root_unit))
+-- 			unit_set_local_position(root_unit, 1, default_position + position + movement)
+-- 		end
+-- 	end
+-- end
 mod.unit_set_local_position_mesh = function(self, slot_info_id, unit, movement)
-	if unit and unit_alive(unit) then
-		local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
-		local gear_info = slot_infos[slot_info_id]
-		local mesh_move = gear_info and gear_info.unit_mesh_move[unit]
-		local unit_and_meshes = mesh_move == "both" or false
-		local root_unit = gear_info and gear_info.attachment_slot_to_unit["root"] or unit
-		local attachment_slot = gear_info and gear_info.unit_to_attachment_slot[unit]
-		local mesh_position = gear_info and gear_info.unit_mesh_position[unit]
-		local mesh_rotation = gear_info and gear_info.unit_mesh_rotation[unit]
-		local mesh_index = gear_info and gear_info.unit_mesh_index[unit]
+	if not unit or not unit_alive(unit) then return end
 
-		local num_meshes = unit_num_meshes(unit)
-		if (mesh_move or unit_and_meshes or mesh_position) and num_meshes > 0 then
-			-- local mesh_positions = {}
-			-- local mesh_rotations = {}
-			table_clear(mesh_positions)
-			table_clear(mesh_rotations)
-			if mesh_position and mesh_index then
-				if type(mesh_position) == "table" and type(mesh_index) == "table" then
-					for i = 1, #mesh_position do
-						local index = mesh_index[i]
-						mesh_positions[index] = vector3_unbox(mesh_position[i])
-						if mesh_rotation then
-							mesh_rotations[index] = vector3_unbox(mesh_rotation[i])
-						end
-					end
-				else
-					mesh_positions[mesh_index] = vector3_unbox(mesh_position)
+	local slot_infos = self:persistent_table(REFERENCE).attachment_slot_infos
+	local gear_info = slot_infos[slot_info_id]
+	if not gear_info then return end
+
+	local mesh_move = gear_info.unit_mesh_move[unit]
+	local unit_and_meshes = (mesh_move == "both")
+	local root_unit = gear_info.attachment_slot_to_unit["root"] or unit
+	local attachment_slot = gear_info.unit_to_attachment_slot[unit]
+	local mesh_position = gear_info.unit_mesh_position[unit]
+	local mesh_rotation = gear_info.unit_mesh_rotation[unit]
+	local mesh_index = gear_info.unit_mesh_index[unit]
+
+	local num_meshes = unit_num_meshes(unit)
+	if (mesh_move or unit_and_meshes or mesh_position) and num_meshes > 0 then
+		table_clear(mesh_positions)
+		table_clear(mesh_rotations)
+
+		if mesh_position and mesh_index then
+			local pos_is_table = type(mesh_position) == "table"
+			local idx_is_table = type(mesh_index) == "table"
+
+			if pos_is_table and idx_is_table then
+				for i = 1, #mesh_position do
+					local index = mesh_index[i]
+					mesh_positions[index] = vector3_unbox(mesh_position[i])
 					if mesh_rotation then
-						mesh_rotations[mesh_index] = vector3_unbox(mesh_rotation)
+						mesh_rotations[index] = vector3_unbox(mesh_rotation[i])
 					end
 				end
-			end
-			local mesh_start, mesh_end = 1, num_meshes
-			for i = mesh_start, mesh_end do
-				local mesh = unit_mesh(unit, i)
-				local unit_data = self.mesh_positions[unit]
-				local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
-				local mesh_pos = mesh_positions[i] or vector3_zero()
-				local position = mesh_default + mesh_pos
-				if mesh_move or unit_and_meshes then
-					position = position + movement
+			else
+				mesh_positions[mesh_index] = vector3_unbox(mesh_position)
+				if mesh_rotation then
+					mesh_rotations[mesh_index] = vector3_unbox(mesh_rotation)
 				end
-				if mesh_rotations[i] then
-					-- local rotation = quaternion_from_euler_angles_xyz(mesh_rotations[i][1], mesh_rotations[i][2], mesh_rotations[i][3])
-					local rotation = quaternion_from_vector(mesh_rotations[i])
-					mesh_set_local_rotation(mesh, unit, rotation)
-				end
-				mesh_set_local_position(mesh, unit, position)
 			end
-			-- for i = mesh_start, mesh_end do
-			-- for i, mesh_index in pairs(mesh_index) do
-			-- 	local mesh = unit_mesh(unit, i)
-			-- 	local unit_data = self.mesh_positions[unit]
-			-- 	local mesh_default = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
-			-- 	local mesh_position = mesh_position[i] or vector3_zero()
-			-- 	local position = mesh_default + mesh_position
-			-- 	if mesh_move or unit_and_meshes then
-			-- 		position = position + movement
-			-- 	end
-			-- 	mesh_set_local_position(mesh, unit, position)
-			-- end
 		end
 
-		if not mesh_move or unit_and_meshes then
-			-- mod:info("mod.unit_set_local_position_mesh: "..tostring(unit))
-			unit_set_local_position(unit, 1, movement)
+		local unit_data = self.mesh_positions[unit]
+		for i = 1, num_meshes do
+			local mesh = unit_mesh(unit, i)
+			local default_pos = unit_data and unit_data[i] and vector3_unbox(unit_data[i]) or vector3_zero()
+			local offset_pos = mesh_positions[i] or vector3_zero()
+			local position = default_pos + offset_pos
+			if mesh_move or unit_and_meshes then
+				position = position + movement
+			end
+			if mesh_rotations[i] then
+				mesh_set_local_rotation(mesh, unit, quaternion_from_vector(mesh_rotations[i]))
+			end
+			mesh_set_local_position(mesh, unit, position)
 		end
+	end
 
-		local root_movement = gear_info and gear_info.unit_root_movement[unit]
-		local root_default_position = gear_info and gear_info.unit_default_position["root"]
-		local root_position = gear_info and gear_info.unit_root_position[unit]
-		if (root_movement or root_position) and root_unit and unit_alive(root_unit) then
-			local default_position = root_default_position and vector3_unbox(root_default_position) or vector3_zero()
-			local position = root_position and vector3_unbox(root_position) or vector3_zero()
-			local offset = default_position + position + movement
-			-- mod:info("mod.unit_set_local_position_mesh: "..tostring(root_unit))
-			unit_set_local_position(root_unit, 1, default_position + position + movement)
-		end
+	if not mesh_move or unit_and_meshes then
+		unit_set_local_position(unit, 1, movement)
+	end
+
+	local root_movement = gear_info.unit_root_movement[unit]
+	local root_default_position = gear_info.unit_default_position["root"]
+	local root_position = gear_info.unit_root_position[unit]
+
+	if (root_movement or root_position) and root_unit and unit_alive(root_unit) then
+		local default_position = root_default_position and vector3_unbox(root_default_position) or vector3_zero()
+		local position = root_position and vector3_unbox(root_position) or vector3_zero()
+		unit_set_local_position(root_unit, 1, default_position + position + movement)
 	end
 end
 

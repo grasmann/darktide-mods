@@ -21,6 +21,7 @@ local mod = get_mod("weapon_customization")
 	local unpack = unpack
 	local get_mod = get_mod
 	local tostring = tostring
+	local table_size = table.size
 	local string_cap = string.cap
 	local vector3_box = Vector3Box
 	local string_trim = string._trim
@@ -119,6 +120,31 @@ mod.check_master_items = function(self)
 	end
 end
 
+local math = math
+local math_max = math.max
+mod.table_sub_counts = function(self, t)
+	local count = 0
+	for k, v in pairs(t) do
+		if type(v) == "table" then
+			count = count + math_max(table_size(v), #v)
+		else
+			count = count + 1
+		end
+	end
+	return count
+end
+
+mod.check_cache_difference = function(self)
+	if self.data_cache and self.anchors then
+		local diff = self:table_sub_counts(self.attachment) + self:table_sub_counts(self.attachment_slots) + self:table_sub_counts(self.anchors)
+		local current_diff = self.data_cache.cache.diff
+		if current_diff and diff and current_diff ~= diff then
+			mod:echo("Cache difference current: "..tostring(current_diff).." new: "..tostring(diff).." dif: "..tostring(diff - current_diff))
+			return true
+		end
+	end
+end
+
 -- Try to initialize the cache
 -- Returns: boolean
 mod.try_init_cache = function(self)
@@ -131,6 +157,16 @@ mod.try_init_cache = function(self)
 			-- Return
 			return true
 		end
+	elseif self.all_mods_loaded and self.data_cache and self:check_cache_difference() then
+		self:echo("Reloading Weapon Customization Cache")
+		-- Destroy cache
+		self.data_cache:destroy()
+		-- Set cache not initialized
+		PERSISTENT_TABLE.cache.initialized = false
+		-- Init cache
+		self.data_cache = DataCache:new()
+		-- Return
+		return true
 	end
 end
 
@@ -234,12 +270,13 @@ end
 
 -- Cache attachment data
 -- Returns: nil
-DataCache.cache_attachment_data = function(self)
+DataCache.cache_attachment_data = function(self, update)
 	local cache = self.cache
 	if not cache.initialized then
 		local mod_attachments = mod.attachment
 		local mod_attachment_slots = mod.attachment_slots
 		local mod_anchors = mod.anchors
+		cache.diff = mod:table_sub_counts(mod_attachments) + mod:table_sub_counts(mod_attachment_slots) + mod:table_sub_counts(mod_anchors)
 		local gear_settings = mod.gear_settings
 		local cache_item_names = cache.item_names
 		local cache_item_strings = cache.item_strings

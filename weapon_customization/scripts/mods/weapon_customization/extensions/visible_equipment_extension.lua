@@ -652,58 +652,110 @@ VisibleEquipmentExtension.apply_center_mass = function(self)
     end
 end
 
+-- VisibleEquipmentExtension.position_equipment = function(self)
+--     -- Iterate equipment
+--     for slot_name, slot in pairs(self.equipment) do
+--         local position_overwrite = self.position_overwrite[slot]
+--         local rotation_overwrite = self.rotation_overwrite[slot]
+--         local scale_overwrite = self.scale_overwrite[slot]
+--         local slot_units = self.slot_units[slot]
+--         -- Check dummies
+--         if self.dummy_units[slot] and self.is_linked[slot] then
+--             -- Data
+--             local data = self.equipment_data[slot]
+--             -- Iterate units
+--             for i, unit in pairs(slot_units) do
+--                 if unit and unit_alive(unit) then
+--                     local rot = vector3_unbox(data.rotation[i])
+--                     local rotation = quaternion_from_vector(rot)
+--                     -- Position equipment
+--                     local position = vector3_unbox(data.position[i])
+--                     if position_overwrite then
+--                         position = vector3_unbox(position_overwrite)
+--                     end
+--                     -- Modding tools
+--                     if unit_get_data(unit, "unit_manipulation_position_offset") then
+--                         position = position + vector3_unbox(unit_get_data(unit, "unit_manipulation_position_offset"))
+--                     end
+--                     -- Set position
+--                     unit_set_local_position(unit, 1, position)
+--                     -- Rotate equipment
+--                     if rotation_overwrite then
+--                         rotation = quaternion_unbox(rotation_overwrite)
+--                     end
+--                     -- Modding tools
+--                     if unit_get_data(unit, "unit_manipulation_rotation_offset") then
+--                         rotation = Quaternion.multiply(rotation, quaternion_unbox(unit_get_data(unit, "unit_manipulation_rotation_offset")))
+--                     end
+--                     -- Set rotation
+--                     unit_set_local_rotation(unit, 1, rotation)
+--                     -- Scale equipment
+--                     local scale = vector3_unbox(data.scale[i])
+--                     if scale_overwrite then
+--                         scale = vector3_unbox(scale_overwrite)
+--                     end
+--                     -- Modding tools
+--                     if unit_get_data(unit, "unit_manipulation_scale_offset") then
+--                         scale = scale + vector3_unbox(unit_get_data(unit, "unit_manipulation_scale_offset"))
+--                     end
+--                     -- Set scale
+--                     unit_set_local_scale(unit, 1, scale)
+--                 end
+--             end
+--         end
+--     end
+-- end
 VisibleEquipmentExtension.position_equipment = function(self)
-    -- Iterate equipment
-    for slot_name, slot in pairs(self.equipment) do
-        local position_overwrite = self.position_overwrite[slot]
-        local rotation_overwrite = self.rotation_overwrite[slot]
-        local scale_overwrite = self.scale_overwrite[slot]
-        local slot_units = self.slot_units[slot]
-        -- Check dummies
-        if self.dummy_units[slot] and self.is_linked[slot] then
-            -- Data
-            local data = self.equipment_data[slot]
-            -- Iterate units
-            for i, unit in pairs(slot_units) do
-                if unit and unit_alive(unit) then
-                    local rot = vector3_unbox(data.rotation[i])
-                    local rotation = quaternion_from_vector(rot)
-                    -- Position equipment
-                    local position = vector3_unbox(data.position[i])
-                    if position_overwrite then
-                        position = vector3_unbox(position_overwrite)
-                    end
-                    -- Modding tools
-                    if unit_get_data(unit, "unit_manipulation_position_offset") then
-                        position = position + vector3_unbox(unit_get_data(unit, "unit_manipulation_position_offset"))
-                    end
-                    -- Set position
-                    unit_set_local_position(unit, 1, position)
-                    -- Rotate equipment
-                    if rotation_overwrite then
-                        rotation = quaternion_unbox(rotation_overwrite)
-                    end
-                    -- Modding tools
-                    if unit_get_data(unit, "unit_manipulation_rotation_offset") then
-                        rotation = Quaternion.multiply(rotation, quaternion_unbox(unit_get_data(unit, "unit_manipulation_rotation_offset")))
-                    end
-                    -- Set rotation
-                    unit_set_local_rotation(unit, 1, rotation)
-                    -- Scale equipment
-                    local scale = vector3_unbox(data.scale[i])
-                    if scale_overwrite then
-                        scale = vector3_unbox(scale_overwrite)
-                    end
-                    -- Modding tools
-                    if unit_get_data(unit, "unit_manipulation_scale_offset") then
-                        scale = scale + vector3_unbox(unit_get_data(unit, "unit_manipulation_scale_offset"))
-                    end
-                    -- Set scale
-                    unit_set_local_scale(unit, 1, scale)
-                end
-            end
-        end
-    end
+	local dummy_units = self.dummy_units
+	local is_linked = self.is_linked
+	local equipment = self.equipment
+	local slot_units_all = self.slot_units
+	local equipment_data_all = self.equipment_data
+	local pos_overwrites = self.position_overwrite
+	local rot_overwrites = self.rotation_overwrite
+	local scale_overwrites = self.scale_overwrite
+
+	for slot_name, slot in pairs(equipment) do
+		if dummy_units[slot] and is_linked[slot] then
+			local slot_units = slot_units_all[slot]
+			local data = equipment_data_all[slot]
+			local pos_overwrite = pos_overwrites[slot]
+			local rot_overwrite = rot_overwrites[slot]
+			local scale_overwrite = scale_overwrites[slot]
+
+			local pos_override_vec = pos_overwrite and vector3_unbox(pos_overwrite)
+			local rot_override_quat = rot_overwrite and quaternion_unbox(rot_overwrite)
+			local scale_override_vec = scale_overwrite and vector3_unbox(scale_overwrite)
+
+			for i, unit in pairs(slot_units) do
+				if unit and unit_alive(unit) then
+					-- Position
+					local position = pos_override_vec or vector3_unbox(data.position[i])
+					local pos_offset_data = unit_get_data(unit, "unit_manipulation_position_offset")
+					if pos_offset_data then
+						position = position + vector3_unbox(pos_offset_data)
+					end
+					unit_set_local_position(unit, 1, position)
+
+					-- Rotation
+					local rotation = rot_override_quat or quaternion_from_vector(vector3_unbox(data.rotation[i]))
+					local rot_offset_data = unit_get_data(unit, "unit_manipulation_rotation_offset")
+					if rot_offset_data then
+						rotation = Quaternion.multiply(rotation, quaternion_unbox(rot_offset_data))
+					end
+					unit_set_local_rotation(unit, 1, rotation)
+
+					-- Scale
+					local scale = scale_override_vec or vector3_unbox(data.scale[i])
+					local scale_offset_data = unit_get_data(unit, "unit_manipulation_scale_offset")
+					if scale_offset_data then
+						scale = scale + vector3_unbox(scale_offset_data)
+					end
+					unit_set_local_scale(unit, 1, scale)
+				end
+			end
+		end
+	end
 end
 
 VisibleEquipmentExtension.delete_slots = function(self)
@@ -1214,79 +1266,155 @@ VisibleEquipmentExtension.update = function(self, dt, t)
     -- self:update_player_visibility()
 end
 
+-- VisibleEquipmentExtension.update_equipment_visibility = function(self)
+--     local mod_attachment_slots_always_sheathed = mod.attachment_slots_always_sheathed
+--     local mod_attachment_slots_always_unsheathed = mod.attachment_slots_always_unsheathed
+--     -- Values
+--     local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
+--     local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+--     local spectated = not self.is_local_unit and (not self.spectated or not first_person)
+--     local player = self.is_local_unit and not first_person
+--     local cutscene = self.ui_profile_spawner or not self.cut_scene
+--     -- Iterate slots
+--     for slot_name, slot in pairs(self.equipment) do
+--         -- Values
+--         local slot_not_wielded = slot_name ~= wielded_slot
+--         local visible = slot_not_wielded and (player or spectated)
+--         -- Check units
+--         local dummy_units = self.dummy_units[slot]
+--         if dummy_units then
+--             local item = slot.item and slot.item.__master_item
+--             -- Iterate dummy attachment units
+--             for i, unit in pairs(dummy_units.attachments) do
+--                 -- Check unit
+--                 if unit and unit_alive(unit) then
+--                     -- Set equipment visibility
+--                     local attachment_slot = unit_get_data(unit, "attachment_slot")
+--                     local visible = visible
+--                     if table_contains(mod_attachment_slots_always_sheathed, attachment_slot) and not visible then
+--                         visible = true
+--                     end
+--                     if (table_contains(mod_attachment_slots_always_unsheathed, attachment_slot) and visible) then
+--                         visible = false
+--                     end
+--                     visible = (cutscene and visible) or false
+--                     unit_set_unit_visibility(unit, visible, false)
+--                 end
+--             end
+--             -- Iterate third person units
+--             local attachments_3p = slot.attachments_by_unit_3p and slot.attachments_by_unit_3p[slot.unit_3p]
+--             if attachments_3p then
+--                 for i, unit in pairs(attachments_3p) do
+--             -- if slot.attachments_3p then
+--             --     for i, unit in pairs(slot.attachments_3p) do
+--                     -- Check unit
+--                     if unit and unit_alive(unit) then
+--                         -- Set equipment visibility
+--                         local attachment_slot = unit_get_data(unit, "attachment_slot")
+--                         if first_person or table_contains(mod_attachment_slots_always_sheathed, attachment_slot) then
+--                             unit_set_unit_visibility(unit, false, false)
+--                         elseif table_contains(mod_attachment_slots_always_unsheathed, attachment_slot) then
+--                             local visible = (cutscene and true) or false
+--                             unit_set_unit_visibility(unit, visible, false)
+--                         end
+--                     end
+--                 end
+--             end
+--             -- Iterate first person units
+--             local attachments_1p = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p]
+--             if attachments_1p then
+--                 for i, unit in pairs(attachments_1p) do
+--             -- if slot.attachments_1p then
+--             --     for i, unit in pairs(slot.attachments_1p) do
+--                     -- Check unit
+--                     if unit and unit_alive(unit) then
+--                         -- Set equipment visibility
+--                         local attachment_slot = unit_get_data(unit, "attachment_slot")
+--                         if not first_person or table_contains(mod_attachment_slots_always_sheathed, attachment_slot) then
+--                             unit_set_unit_visibility(unit, false, false)
+--                         elseif table_contains(mod_attachment_slots_always_unsheathed, attachment_slot) then
+--                             local visible = (cutscene and true) or false
+--                             unit_set_unit_visibility(unit, visible, false)
+--                         end
+--                     end
+--                 end
+--             end
+--         end
+--     end
+-- end
 VisibleEquipmentExtension.update_equipment_visibility = function(self)
-    local mod_attachment_slots_always_sheathed = mod.attachment_slots_always_sheathed
-    local mod_attachment_slots_always_unsheathed = mod.attachment_slots_always_unsheathed
-    -- Values
-    local wielded_slot = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
+    local always_sheathed = mod.attachment_slots_always_sheathed
+    local always_unsheathed = mod.attachment_slots_always_unsheathed
+
+    local wielded_slot_name = self.wielded_slot and self.wielded_slot.name or SLOT_UNARMED
     local first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
-    local spectated = not self.is_local_unit and (not self.spectated or not first_person)
+    local spectated = (not self.is_local_unit) and (not self.spectated or not first_person)
     local player = self.is_local_unit and not first_person
-    local cutscene = self.ui_profile_spawner or not self.cut_scene
-    -- Iterate slots
+    local cutscene = self.ui_profile_spawner or (not self.cut_scene)
+
     for slot_name, slot in pairs(self.equipment) do
-        -- Values
-        local slot_not_wielded = slot_name ~= wielded_slot
-        local visible = slot_not_wielded and (player or spectated)
-        -- Check units
+        local slot_not_wielded = slot_name ~= wielded_slot_name
+        local base_visible = slot_not_wielded and (player or spectated)
         local dummy_units = self.dummy_units[slot]
+
         if dummy_units then
-            local item = slot.item and slot.item.__master_item
-            -- Iterate dummy attachment units
-            for i, unit in pairs(dummy_units.attachments) do
-                -- Check unit
-                if unit and unit_alive(unit) then
-                    -- Set equipment visibility
+            local function set_unit_visibility(unit)
+                if not unit or not unit_alive(unit) then return end
+
+                local attachment_slot = unit_get_data(unit, "attachment_slot")
+                local is_always_sheathed = table_contains(always_sheathed, attachment_slot)
+                local is_always_unsheathed = table_contains(always_unsheathed, attachment_slot)
+
+                -- Default visible value for dummy units
+                local visible = base_visible
+                if is_always_sheathed and not visible then
+                    visible = true
+                end
+                if is_always_unsheathed and visible then
+                    visible = false
+                end
+                visible = cutscene and visible or false
+
+                unit_set_unit_visibility(unit, visible, false)
+            end
+
+            -- Update dummy attachment units visibility
+            for _, unit in pairs(dummy_units.attachments) do
+                set_unit_visibility(unit)
+            end
+
+            -- Helper for 3p and 1p attachments, since logic is very similar
+            local function update_attachments(attachments, first_person_check)
+                if not attachments then return end
+
+                for _, unit in pairs(attachments) do
+                    if not unit or not unit_alive(unit) then goto continue end
+
                     local attachment_slot = unit_get_data(unit, "attachment_slot")
-                    local visible = visible
-                    if table_contains(mod_attachment_slots_always_sheathed, attachment_slot) and not visible then
-                        visible = true
-                    end
-                    if (table_contains(mod_attachment_slots_always_unsheathed, attachment_slot) and visible) then
-                        visible = false
-                    end
-                    visible = (cutscene and visible) or false
-                    unit_set_unit_visibility(unit, visible, false)
-                end
-            end
-            -- Iterate third person units
-            local attachments_3p = slot.attachments_by_unit_3p and slot.attachments_by_unit_3p[slot.unit_3p]
-            if attachments_3p then
-                for i, unit in pairs(attachments_3p) do
-            -- if slot.attachments_3p then
-            --     for i, unit in pairs(slot.attachments_3p) do
-                    -- Check unit
-                    if unit and unit_alive(unit) then
-                        -- Set equipment visibility
-                        local attachment_slot = unit_get_data(unit, "attachment_slot")
-                        if first_person or table_contains(mod_attachment_slots_always_sheathed, attachment_slot) then
+                    local is_always_sheathed = table_contains(always_sheathed, attachment_slot)
+                    local is_always_unsheathed = table_contains(always_unsheathed, attachment_slot)
+
+                    if first_person_check then
+                        -- For 3p units
+                        if first_person or is_always_sheathed then
                             unit_set_unit_visibility(unit, false, false)
-                        elseif table_contains(mod_attachment_slots_always_unsheathed, attachment_slot) then
-                            local visible = (cutscene and true) or false
-                            unit_set_unit_visibility(unit, visible, false)
+                        elseif is_always_unsheathed then
+                            unit_set_unit_visibility(unit, cutscene, false)
+                        end
+                    else
+                        -- For 1p units
+                        if (not first_person) or is_always_sheathed then
+                            unit_set_unit_visibility(unit, false, false)
+                        elseif is_always_unsheathed then
+                            unit_set_unit_visibility(unit, cutscene, false)
                         end
                     end
+                    ::continue::
                 end
             end
-            -- Iterate first person units
-            local attachments_1p = slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p]
-            if attachments_1p then
-                for i, unit in pairs(attachments_1p) do
-            -- if slot.attachments_1p then
-            --     for i, unit in pairs(slot.attachments_1p) do
-                    -- Check unit
-                    if unit and unit_alive(unit) then
-                        -- Set equipment visibility
-                        local attachment_slot = unit_get_data(unit, "attachment_slot")
-                        if not first_person or table_contains(mod_attachment_slots_always_sheathed, attachment_slot) then
-                            unit_set_unit_visibility(unit, false, false)
-                        elseif table_contains(mod_attachment_slots_always_unsheathed, attachment_slot) then
-                            local visible = (cutscene and true) or false
-                            unit_set_unit_visibility(unit, visible, false)
-                        end
-                    end
-                end
-            end
+
+            update_attachments(slot.attachments_by_unit_3p and slot.attachments_by_unit_3p[slot.unit_3p], true)
+            update_attachments(slot.attachments_by_unit_1p and slot.attachments_by_unit_1p[slot.unit_1p], false)
         end
     end
 end
@@ -1607,5 +1735,170 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t)
         end
     end
 end
+-- VisibleEquipmentExtension.update_animation = function(self, dt, t)
+-- 	local locomotion = (self.locomotion_ext and self.locomotion_ext:move_speed() or 0)
+-- 	self.step_speed = math.max(math.abs(locomotion), 1)
+
+-- 	self.trigger_wobble = nil
+
+-- 	local rotation_unit = not self.is_in_hub and self.first_person_unit or self.player_unit
+-- 	local parent_rotation = quaternion_to_vector(unit_world_rotation(rotation_unit, 1))
+-- 	local last_rotation = self.last_player_rotation and vector3_unbox(self.last_player_rotation) or parent_rotation
+-- 	local rotation_diff = last_rotation - parent_rotation
+-- 	self.last_player_rotation:store(parent_rotation)
+
+-- 	local step_speed = self.step_speed
+-- 	local math_abs, math_clamp = math.abs, math.clamp
+
+-- 	for _, slot in pairs(self.equipment) do
+-- 		if self.slot_loaded[slot] then
+-- 			local slot_units = self.slot_units[slot]
+-- 			local data = self.equipment_data[slot]
+-- 			local step_anim = self.step_animation[slot]
+-- 			local gear_node = self.gear_nodes[slot]
+-- 			local weight = self.weight[slot]
+-- 			local weight_factor = weight and WEIGHT_FACTORS[weight] or 0.33
+-- 			local is_secondary = slot.name == SLOT_SECONDARY
+
+-- 			if step_anim then
+-- 				local length = self:get_foot_step_interval()
+-- 				step_anim.length = length
+-- 				step_anim.step_length = length * 0.4
+-- 				step_anim.back_length = length * 0.6
+-- 				step_anim.wobble_length = length * 6
+
+-- 				if self.wobble[slot] then
+-- 					if locomotion <= 0 then
+-- 						step_anim.state = STEP_WOBBLE
+-- 						step_anim.end_time = t + step_anim.wobble_length
+-- 					elseif step_anim.state ~= STEP_STATE and step_anim.state ~= STEP_STATE_BACK then
+-- 						step_anim.state = STEP_STATE
+-- 						step_anim.end_time = t + step_anim.step_length * (is_secondary and 1 or 2)
+-- 					end
+-- 					self.wobble[slot] = nil
+-- 				end
+
+-- 				local function get_values(i)
+-- 					local unit = slot_units[i]
+-- 					if not unit then return vector3_zero(), vector3_zero(), vector3_zero(), vector3_zero() end
+
+-- 					local rot = unit_local_rotation(unit, 1)
+-- 					local mat = quaternion_matrix4x4(rot)
+
+-- 					local base_pos = vector3_unbox(data.position[i])
+-- 					local base_rot = vector3_unbox(data.rotation[i])
+-- 					local move_factor = (gear_node and 0.5 or 1) * step_speed
+
+-- 					local move_pos = matrix4x4_transform(mat, vector3_unbox(data.step_move[i])) * move_factor
+-- 					local move_rot = matrix4x4_transform(mat, vector3_unbox(data.step_rotation[i])) * move_factor
+
+-- 					return base_pos, move_pos, base_rot, move_rot
+-- 				end
+
+-- 				local function animate_units(anim_progress, lerp_from_fn, lerp_to_fn)
+-- 					for i, unit in pairs(slot_units) do
+-- 						if unit and unit_alive(unit) then
+-- 							local base_pos, move_pos, base_rot, move_rot = get_values(i)
+-- 							unit_set_local_position(unit, 1, vector3_lerp(lerp_from_fn(base_pos, move_pos), lerp_to_fn(base_pos, move_pos), anim_progress))
+-- 							unit_set_local_rotation(unit, 1, quaternion_from_vector(vector3_lerp(lerp_from_fn(base_rot, move_rot), lerp_to_fn(base_rot, move_rot), anim_progress)))
+-- 						end
+-- 					end
+-- 				end
+
+-- 				if not step_anim.state then
+-- 					step_anim.state = locomotion > 0 and STEP_STATE or STEP_WOBBLE
+-- 					step_anim.end_time = t + (locomotion > 0 and step_anim.step_length or step_anim.wobble_length)
+
+-- 					for i, unit in pairs(slot_units) do
+-- 						if unit and unit_alive(unit) then
+-- 							unit_set_local_position(unit, 1, vector3_unbox(data.position[i]))
+-- 							unit_set_local_rotation(unit, 1, quaternion_from_vector(vector3_unbox(data.rotation[i])))
+-- 						end
+-- 					end
+-- 				elseif step_anim.state == STEP_STATE and t < step_anim.end_time then
+-- 					if locomotion == 0 then
+-- 						step_anim.state = STEP_WOBBLE
+-- 						step_anim.end_time = t + step_anim.wobble_length
+-- 					end
+-- 					local progress = (step_anim.end_time - t) / step_anim.step_length
+-- 					animate_units(math.ease_sine(1 - progress), function(a, b) return a end, function(a, b) return a + b end)
+
+-- 				elseif step_anim.state == STEP_STATE and t >= step_anim.end_time then
+-- 					step_anim.state = locomotion > 0 and STEP_STATE_BACK or STEP_WOBBLE
+-- 					step_anim.end_time = t + (locomotion > 0 and step_anim.back_length or step_anim.wobble_length)
+-- 					for i, unit in pairs(slot_units) do
+-- 						if unit and unit_alive(unit) then
+-- 							local base_pos, move_pos, base_rot, move_rot = get_values(i)
+-- 							unit_set_local_position(unit, 1, base_pos + move_pos)
+-- 							unit_set_local_rotation(unit, 1, quaternion_from_vector(base_rot + move_rot))
+-- 							if is_secondary then self:play_equipment_sound(slot, i) end
+-- 						end
+-- 					end
+
+-- 				elseif step_anim.state == STEP_STATE_BACK and t < step_anim.end_time then
+-- 					if locomotion == 0 then
+-- 						step_anim.state = STEP_WOBBLE
+-- 						step_anim.end_time = t + step_anim.wobble_length
+-- 					end
+-- 					local progress = (step_anim.end_time - t) / step_anim.back_length
+-- 					animate_units(math.ease_sine(1 - progress), function(a, b) return a + b end, function(a, b) return a end)
+
+-- 				elseif step_anim.state == STEP_STATE_BACK and t >= step_anim.end_time then
+-- 					step_anim.state = locomotion > 0 and STEP_STATE or STEP_WOBBLE
+-- 					step_anim.end_time = t + (locomotion > 0 and step_anim.step_length or step_anim.wobble_length)
+-- 					for i, unit in pairs(slot_units) do
+-- 						if unit and unit_alive(unit) then
+-- 							local base_pos, _, base_rot = get_values(i)
+-- 							unit_set_local_position(unit, 1, base_pos)
+-- 							unit_set_local_rotation(unit, 1, quaternion_from_vector(base_rot))
+-- 							if not is_secondary then self:play_equipment_sound(slot, i) end
+-- 						end
+-- 					end
+
+-- 				elseif step_anim.state == STEP_WOBBLE and t < step_anim.end_time then
+-- 					if locomotion > 0 then
+-- 						step_anim.state = STEP_STATE
+-- 						step_anim.end_time = t + step_anim.step_length * (is_secondary and 1 or 2)
+-- 					end
+-- 					local progress = (step_anim.end_time - t) / step_anim.wobble_length
+-- 					animate_units(math_ease_out_elastic(1 - progress), function(a, b) return a + b end, function(a, b) return a end)
+
+-- 				elseif step_anim.state == STEP_WOBBLE and t >= step_anim.end_time then
+-- 					step_anim.state = nil
+-- 					step_anim.end_time = nil
+-- 					for i, unit in pairs(slot_units) do
+-- 						if unit and unit_alive(unit) then
+-- 							local base_pos, _, base_rot = get_values(i)
+-- 							unit_set_local_position(unit, 1, base_pos)
+-- 							unit_set_local_rotation(unit, 1, quaternion_from_vector(base_rot))
+-- 						end
+-- 					end
+-- 				end
+-- 			end
+
+-- 			for i, unit in pairs(slot_units) do
+-- 				if unit and unit_alive(unit) then
+-- 					local rot = unit_local_rotation(unit, 1)
+-- 					local angle = rotation_diff[3] % 360
+-- 					angle = (angle + 360) % 360
+-- 					if angle > 180 then angle = angle - 360 end
+-- 					angle = -angle * weight_factor
+-- 					local drag = is_secondary and vector3(angle, -angle, -math_abs(angle) * 0.5) or vector3(math_abs(angle) * 0.5, angle, -angle)
+
+-- 					local current = self.rotate_animation[slot] and vector3_unbox(self.rotate_animation[slot]) or vector3_zero()
+-- 					current = current + matrix4x4_transform(quaternion_matrix4x4(rot), drag)
+
+-- 					current = current - current * (dt * (is_secondary and 8 or 6))
+-- 					for j = 1, 3 do
+-- 						current[j] = math_clamp(current[j], is_secondary and -15 or -10, is_secondary and 10 or 15)
+-- 					end
+
+-- 					unit_set_local_rotation(unit, 1, Quaternion.multiply(rot, quaternion_from_vector(current)))
+-- 					self.rotate_animation[slot]:store(current)
+-- 				end
+-- 			end
+-- 		end
+-- 	end
+-- end
 
 return VisibleEquipmentExtension

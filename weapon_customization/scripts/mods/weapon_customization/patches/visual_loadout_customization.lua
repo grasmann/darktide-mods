@@ -217,22 +217,50 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 			local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
 			slot_infos[slot_info_id] = attachment_slot_info
 
-			slot_infos[slot_info_id].attachment_slot_to_unit = 	slot_infos[slot_info_id].attachment_slot_to_unit or {}
-			slot_infos[slot_info_id].unit_to_attachment_slot = 	slot_infos[slot_info_id].unit_to_attachment_slot or {}
-			slot_infos[slot_info_id].unit_to_attachment_name = 	slot_infos[slot_info_id].unit_to_attachment_name or {}
-			slot_infos[slot_info_id].unit_root_movement =      	slot_infos[slot_info_id].unit_root_movement or {}
-			slot_infos[slot_info_id].unit_mesh_move =        	slot_infos[slot_info_id].unit_mesh_move or {}
-			slot_infos[slot_info_id].unit_root_position =		slot_infos[slot_info_id].unit_root_position or {}
-			slot_infos[slot_info_id].unit_mesh_position =		slot_infos[slot_info_id].unit_mesh_position or {}
-			slot_infos[slot_info_id].unit_mesh_rotation =		slot_infos[slot_info_id].unit_mesh_rotation or {}
-			slot_infos[slot_info_id].unit_mesh_index = 			slot_infos[slot_info_id].unit_mesh_index or {}
-			slot_infos[slot_info_id].unit_default_position = 	slot_infos[slot_info_id].unit_default_position or {}
-			slot_infos[slot_info_id].unit_default_rotation = 	slot_infos[slot_info_id].unit_default_rotation or {}
-			slot_infos[slot_info_id].unit_changed_position = 	slot_infos[slot_info_id].unit_changed_position or {}
-			slot_infos[slot_info_id].unit_changed_rotation = 	slot_infos[slot_info_id].unit_changed_rotation or {}
-			slot_infos[slot_info_id].attachment_slot_to_unit["root"] = item_unit
-			slot_infos[slot_info_id].unit_to_attachment_slot[item_unit] = "root"
-			slot_infos[slot_info_id].unit_to_attachment_name[item_unit] = "root"
+			-- slot_infos[slot_info_id].attachment_slot_to_unit = 	slot_infos[slot_info_id].attachment_slot_to_unit or {}
+			-- slot_infos[slot_info_id].unit_to_attachment_slot = 	slot_infos[slot_info_id].unit_to_attachment_slot or {}
+			-- slot_infos[slot_info_id].unit_to_attachment_name = 	slot_infos[slot_info_id].unit_to_attachment_name or {}
+			-- slot_infos[slot_info_id].unit_root_movement =      	slot_infos[slot_info_id].unit_root_movement or {}
+			-- slot_infos[slot_info_id].unit_mesh_move =        	slot_infos[slot_info_id].unit_mesh_move or {}
+			-- slot_infos[slot_info_id].unit_root_position =		slot_infos[slot_info_id].unit_root_position or {}
+			-- slot_infos[slot_info_id].unit_mesh_position =		slot_infos[slot_info_id].unit_mesh_position or {}
+			-- slot_infos[slot_info_id].unit_mesh_rotation =		slot_infos[slot_info_id].unit_mesh_rotation or {}
+			-- slot_infos[slot_info_id].unit_mesh_index = 			slot_infos[slot_info_id].unit_mesh_index or {}
+			-- slot_infos[slot_info_id].unit_default_position = 	slot_infos[slot_info_id].unit_default_position or {}
+			-- slot_infos[slot_info_id].unit_default_rotation = 	slot_infos[slot_info_id].unit_default_rotation or {}
+			-- slot_infos[slot_info_id].unit_changed_position = 	slot_infos[slot_info_id].unit_changed_position or {}
+			-- slot_infos[slot_info_id].unit_changed_rotation = 	slot_infos[slot_info_id].unit_changed_rotation or {}
+			-- slot_infos[slot_info_id].attachment_slot_to_unit["root"] = item_unit
+			-- slot_infos[slot_info_id].unit_to_attachment_slot[item_unit] = "root"
+			-- slot_infos[slot_info_id].unit_to_attachment_name[item_unit] = "root"
+			local slot_info = slot_infos[slot_info_id]
+			if not slot_info then
+				slot_info = {}
+				slot_infos[slot_info_id] = slot_info
+			end
+
+			-- Predefine field names to initialize
+			local fields = {
+				"attachment_slot_to_unit", "unit_to_attachment_slot", "unit_to_attachment_name",
+				"unit_root_movement", "unit_mesh_move", "unit_root_position", "unit_mesh_position",
+				"unit_mesh_rotation", "unit_mesh_index", "unit_default_position", "unit_default_rotation",
+				"unit_changed_position", "unit_changed_rotation"
+			}
+
+			-- Initialize missing fields only once
+			for _, key in ipairs(fields) do
+				slot_info[key] = slot_info[key] or {}
+			end
+
+			-- Assign root data
+			slot_info.attachment_slot_to_unit["root"] = item_unit
+			slot_info.unit_to_attachment_slot[item_unit] = "root"
+			slot_info.unit_to_attachment_name[item_unit] = "root"
+
+
+
+
+
 
 			-- Set root default position
 			slot_infos[slot_info_id].unit_default_position["root"] = vector3_box(unit_local_position(item_unit, 1))
@@ -407,33 +435,68 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 				unit_set_data(unit, "changed_rotation", QuaternionBox(Unit.local_rotation(unit, 1)))
 			end
 
-			for _, unit in pairs(attachment_units) do
-				local anchor = nil
-				-- Handle positioning and setup infos
-				if slot_infos[slot_info_id] then
-					local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
-					local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
-					-- Hide meshes
+			-- for _, unit in pairs(attachment_units) do
+			-- 	local anchor = nil
+			-- 	-- Handle positioning and setup infos
+			-- 	if slot_infos[slot_info_id] then
+			-- 		local attachment_name = slot_infos[slot_info_id].unit_to_attachment_name[unit]
+			-- 		local attachment_data = attachment_name and mod.attachment_models[item_name] and mod.attachment_models[item_name][attachment_name]
+			-- 		-- Hide meshes
+			-- 		local hide_mesh = attachment_data and attachment_data.hide_mesh
+			-- 		-- Get fixes
+			-- 		local fixes = mod.gear_settings:apply_fixes(item_data, unit)
+			-- 		hide_mesh = fixes and fixes.hide_mesh or hide_mesh
+			-- 		-- Check hide mesh
+			-- 		if hide_mesh then
+			-- 			-- Iterate hide mesh entries
+			-- 			for _, hide_entry in pairs(hide_mesh) do
+			-- 				-- Check more than one parameter
+			-- 				if #hide_entry > 1 then
+			-- 					-- Get attachment name - parameter 1
+			-- 					local attachment_slot = hide_entry[1]
+			-- 					-- Get attachment unit
+			-- 					local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
+			-- 					-- Check unit
+			-- 					if hide_unit and unit_alive(hide_unit) then
+			-- 						-- Hide nodes
+			-- 						for i = 2, #hide_entry do
+			-- 							local mesh_index = hide_entry[i]
+			-- 							if unit_num_meshes(hide_unit) >= mesh_index then
+			-- 								unit_set_mesh_visibility(hide_unit, mesh_index, false)
+			-- 							end
+			-- 						end
+			-- 					end
+			-- 				end
+			-- 			end
+			-- 		end
+			-- 	end
+			-- end
+			local slot_info = slot_infos[slot_info_id]
+			if slot_info then
+				for _, unit in pairs(attachment_units) do
+					local attachment_name = slot_info.unit_to_attachment_name[unit]
+					local item_attachments = mod.attachment_models[item_name]
+					local attachment_data = item_attachments and attachment_name and item_attachments[attachment_name]
 					local hide_mesh = attachment_data and attachment_data.hide_mesh
-					-- Get fixes
+
+					-- Apply gear fixes (might override hide_mesh)
 					local fixes = mod.gear_settings:apply_fixes(item_data, unit)
-					hide_mesh = fixes and fixes.hide_mesh or hide_mesh
-					-- Check hide mesh
+					if fixes and fixes.hide_mesh then
+						hide_mesh = fixes.hide_mesh
+					end
+
 					if hide_mesh then
-						-- Iterate hide mesh entries
-						for _, hide_entry in pairs(hide_mesh) do
-							-- Check more than one parameter
-							if #hide_entry > 1 then
-								-- Get attachment name - parameter 1
+						for _, hide_entry in ipairs(hide_mesh) do
+							local entry_len = #hide_entry
+							if entry_len > 1 then
 								local attachment_slot = hide_entry[1]
-								-- Get attachment unit
-								local hide_unit = slot_infos[slot_info_id].attachment_slot_to_unit[attachment_slot]
-								-- Check unit
+								local hide_unit = slot_info.attachment_slot_to_unit[attachment_slot]
+
 								if hide_unit and unit_alive(hide_unit) then
-									-- Hide nodes
-									for i = 2, #hide_entry do
+									local mesh_count = unit_num_meshes(hide_unit)
+									for i = 2, entry_len do
 										local mesh_index = hide_entry[i]
-										if unit_num_meshes(hide_unit) >= mesh_index then
+										if mesh_count >= mesh_index then
 											unit_set_mesh_visibility(hide_unit, mesh_index, false)
 										end
 									end
@@ -750,26 +813,51 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		return item
 	end
 
+	-- instance._node_name_to_attachment_slot = function(item_name, node_name)
+	-- 	if type(node_name) == "string" then
+	-- 		local name = node_name
+	-- 		-- name = string_gsub(name, "ap_", "")
+	-- 		-- if mod:cached_find(name, "ap_") then
+	-- 		-- 	mod:echo("node: "..tostring(name))
+	-- 		-- end
+	-- 		name = mod:cached_gsub(name, "ap_", "")
+	-- 		-- name = string_gsub(name, "_01", "")
+	-- 		name = mod:cached_gsub(name, "_01", "")
+	-- 		-- name = string_gsub(name, "rp_", "")
+	-- 		name = mod:cached_gsub(name, "rp_", "")
+	-- 		-- name = string_gsub(name, "magazine_02", "magazine2")
+	-- 		name = mod:cached_gsub(name, "magazine_02", "magazine2")
+	-- 		-- if string_find(name, "chained_rig") then name = "receiver" end
+	-- 		if mod:cached_find(name, "chained_rig") then name = "receiver" end
+	-- 		if name == "trinket" then name = mod.anchors[item_name] and mod.anchors[item_name].trinket_slot or "slot_trinket_1" end
+	-- 		return name
+	-- 	end
+	-- 	return "unknown"
+	-- end
 	instance._node_name_to_attachment_slot = function(item_name, node_name)
-		if type(node_name) == "string" then
-			local name = node_name
-			-- name = string_gsub(name, "ap_", "")
-			-- if mod:cached_find(name, "ap_") then
-			-- 	mod:echo("node: "..tostring(name))
-			-- end
-			name = mod:cached_gsub(name, "ap_", "")
-			-- name = string_gsub(name, "_01", "")
-			name = mod:cached_gsub(name, "_01", "")
-			-- name = string_gsub(name, "rp_", "")
-			name = mod:cached_gsub(name, "rp_", "")
-			-- name = string_gsub(name, "magazine_02", "magazine2")
-			name = mod:cached_gsub(name, "magazine_02", "magazine2")
-			-- if string_find(name, "chained_rig") then name = "receiver" end
-			if mod:cached_find(name, "chained_rig") then name = "receiver" end
-			if name == "trinket" then name = mod.anchors[item_name] and mod.anchors[item_name].trinket_slot or "slot_trinket_1" end
-			return name
+		if type(node_name) ~= "string" then
+			return "unknown"
 		end
-		return "unknown"
+
+		local name = node_name
+
+		-- Perform string replacements using mod's cached gsub
+		name = mod:cached_gsub(name, "ap_", "")
+		name = mod:cached_gsub(name, "_01", "")
+		name = mod:cached_gsub(name, "rp_", "")
+		name = mod:cached_gsub(name, "magazine_02", "magazine2")
+
+		-- Special case handling
+		if mod:cached_find(name, "chained_rig") then
+			return "receiver"
+		end
+
+		if name == "trinket" then
+			local anchors = mod.anchors[item_name]
+			return (anchors and anchors.trinket_slot) or "slot_trinket_1"
+		end
+
+		return name
 	end
 
 	-- instance._spawn_attachment = function(item_data, settings, parent_unit, optional_mission_template, optional_equipment, attachment_slot_info, attachment_type, attachment_name, item_name, in_possesion_of_player)
@@ -826,15 +914,39 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 		--#endregion Original
 
 		-- mod:echo(attach_node)
-		local attach_node_name = instance._node_name_to_attachment_slot(item_name, attach_node)
-		local attachment_slot = attachment_type or attach_node_name --instance._node_name_to_attachment_slot(item_name, attach_node)
+		-- local attach_node_name = instance._node_name_to_attachment_slot(item_name, attach_node)
+		-- local attachment_slot = attachment_type or attach_node_name --instance._node_name_to_attachment_slot(item_name, attach_node)
+		-- attachment_slot_info = attachment_slot_info or {}
+		-- attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
+		-- attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
+		-- attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
+		-- attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
+		-- attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
+		-- attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
+		-- Unit.set_data(spawned_unit, "attachment_name", attachment_name)
+		-- Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
+		-- Unit.set_data(spawned_unit, "parent_unit", parent_unit)
+		-- Unit.set_data(spawned_unit, "parent_node", attach_node_index)
+		-- Determine attachment slot only if not explicitly provided
+		local attachment_slot = attachment_type or instance._node_name_to_attachment_slot(item_name, attach_node)
+
+		-- Initialize or reuse attachment slot info tables
 		attachment_slot_info = attachment_slot_info or {}
-		attachment_slot_info.attachment_slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
-		attachment_slot_info.unit_to_attachment_slot = attachment_slot_info.unit_to_attachment_slot or {}
-		attachment_slot_info.unit_to_attachment_name = attachment_slot_info.unit_to_attachment_name or {}
-		attachment_slot_info.attachment_slot_to_unit[attachment_slot] = spawned_unit
-		attachment_slot_info.unit_to_attachment_slot[spawned_unit] = attachment_slot
-		attachment_slot_info.unit_to_attachment_name[spawned_unit] = attachment_name
+		local slot_to_unit = attachment_slot_info.attachment_slot_to_unit or {}
+		local unit_to_slot = attachment_slot_info.unit_to_attachment_slot or {}
+		local unit_to_name = attachment_slot_info.unit_to_attachment_name or {}
+
+		-- Update mappings
+		slot_to_unit[attachment_slot] = spawned_unit
+		unit_to_slot[spawned_unit] = attachment_slot
+		unit_to_name[spawned_unit] = attachment_name
+
+		-- Reassign back in case they were nil
+		attachment_slot_info.attachment_slot_to_unit = slot_to_unit
+		attachment_slot_info.unit_to_attachment_slot = unit_to_slot
+		attachment_slot_info.unit_to_attachment_name = unit_to_name
+
+		-- Set unit data in one block for readability
 		Unit.set_data(spawned_unit, "attachment_name", attachment_name)
 		Unit.set_data(spawned_unit, "attachment_slot", attachment_slot)
 		Unit.set_data(spawned_unit, "parent_unit", parent_unit)

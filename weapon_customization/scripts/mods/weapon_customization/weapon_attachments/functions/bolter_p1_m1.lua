@@ -38,6 +38,7 @@ return {
 			{id = "receiver_07", name = "Bolter 7"},
 			{id = "receiver_08", name = "Bolter 8"},
 			{id = "receiver_09", name = "Bolter 9"},
+			{id = "receiver_10", name = "Bolter 10"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -57,7 +58,8 @@ return {
 			{name = "receiver_06",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_06"},
 			{name = "receiver_07",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_07"},
 			{name = "receiver_08",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_08"},
-			{name = "receiver_09",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_ml01"},
+			{name = "receiver_09",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_09"},
+			{name = "receiver_10",		model = _item_ranged.."/recievers/boltgun_rifle_receiver_ml01"},
 		}, parent, angle, move, remove, type or "receiver", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
 	-- ##### ┌┬┐┌─┐┌─┐┌─┐┌─┐┬┌┐┌┌─┐┌─┐
@@ -119,6 +121,7 @@ return {
 			{id = "underbarrel_04", name = "Bolter 4"},
 			{id = "underbarrel_05", name = "Bolter 5"},
 			{id = "underbarrel_06", name = "Bolter 6"},
+			{id = "underbarrel_07", name = "Bolter 7"},
 		}
 		if default == nil then default = true end
 		if default then return table_icombine(
@@ -135,7 +138,8 @@ return {
 			{name = "underbarrel_03",		model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_03"},
 			{name = "underbarrel_04",		model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_04"},
 			{name = "underbarrel_05",		model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_05"},
-			{name = "underbarrel_06",		model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_ml01"},
+			{name = "underbarrel_06",		model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_06"},
+			{name = "underbarrel_07",		model = _item_ranged.."/underbarrels/boltgun_rifle_underbarrel_ml01"},
 			{name = "no_underbarrel",		model = ""},
 		}, parent, angle, move, remove, type or "underbarrel", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,

@@ -35,7 +35,8 @@ return {
 			{id = "chain_axe_grip_03", name = "Chain Axe 3"},
 			{id = "chain_axe_grip_04", name = "Chain Axe 4"},
 			{id = "chain_axe_grip_05", name = "Chain Axe 5"},
-			{id = "chain_axe_grip_ml01", name = "Chain Axe 6"},
+			{id = "chain_axe_grip_06", name = "Chain Axe 6"},
+			{id = "chain_axe_grip_ml01", name = "Chain Axe 7"},
 		}
 		if default == nil then default = true end
 		if default then return table.icombine(
@@ -52,6 +53,7 @@ return {
 			{name = "chain_axe_grip_03", model = _item_melee.."/grips/chain_axe_grip_03"},
 			{name = "chain_axe_grip_04", model = _item_melee.."/grips/chain_axe_grip_04"},
 			{name = "chain_axe_grip_05", model = _item_melee.."/grips/chain_axe_grip_05"},
+			{name = "chain_axe_grip_06", model = _item_melee.."/grips/chain_axe_grip_06"},
 			{name = "chain_axe_grip_ml01", model = _item_melee.."/grips/chain_axe_grip_ml01"},
 		}, parent, angle, move, remove, type or "grip", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
@@ -65,6 +67,7 @@ return {
 			{id = "chain_axe_shaft_03",   name = "Chain Axe 3"},
 			{id = "chain_axe_shaft_04",   name = "Chain Axe 4"},
 			{id = "chain_axe_shaft_05",   name = "Chain Axe 5"},
+			{id = "chain_axe_shaft_06",   name = "Chain Axe 6"},
 			{id = "chain_axe_shaft_ml01", name = "Chain Axe ML01"},
 		}
 		if default == nil then default = true end
@@ -82,6 +85,7 @@ return {
 			{name = "chain_axe_shaft_03", 	model = _item_ranged.."/shafts/chain_axe_shaft_03"},
 			{name = "chain_axe_shaft_04", 	model = _item_ranged.."/shafts/chain_axe_shaft_04"},
 			{name = "chain_axe_shaft_05",   model = _item_ranged.."/shafts/chain_axe_shaft_05"},
+			{name = "chain_axe_shaft_06",   model = _item_ranged.."/shafts/chain_axe_shaft_06"},
 			{name = "chain_axe_shaft_ml01", model = _item_ranged.."/shafts/chain_axe_shaft_ml01"},
 		}, parent, angle, move, remove, type or "shaft", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,
@@ -96,7 +100,8 @@ return {
 			{id = "chain_axe_blade_04", name = "Blade 4"},
 			{id = "chain_axe_blade_05", name = "Blade 5"},
 			{id = "chain_axe_blade_06", name = "Blade 6"},
-			{id = "chain_axe_blade_ml01", name = "Blade 6"},
+			{id = "chain_axe_blade_07", name = "Blade 7"},
+			{id = "chain_axe_blade_ml01", name = "Blade 8"},
 		}
 		if default == nil then default = true end
 		if default then return table.icombine(
@@ -114,6 +119,7 @@ return {
 			{name = "chain_axe_blade_04",		model = _item_melee.."/blades/chain_axe_blade_04"},
 			{name = "chain_axe_blade_05",		model = _item_melee.."/blades/chain_axe_blade_05"},
 			{name = "chain_axe_blade_06",		model = _item_melee.."/blades/chain_axe_blade_06"},
+			{name = "chain_axe_blade_07",		model = _item_melee.."/blades/chain_axe_blade_07"},
 			{name = "chain_axe_blade_ml01",		model = _item_melee.."/blades/chain_axe_blade_ml01"},
 		}, parent, angle, move, remove, type or "blade", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
 	end,

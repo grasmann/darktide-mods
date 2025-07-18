@@ -93,6 +93,10 @@ ServoFriendVoiceExtension.init = function(self, extension_init_context, unit, ex
 end
 
 ServoFriendVoiceExtension.destroy = function(self)
+    if self.alert_playing then
+        self:stop_repeating_sound()
+        self.alert_playing = nil
+    end
     -- Events
     -- managers.event:unregister(self, "servo_friend_spawned")
     -- managers.event:unregister(self, "servo_friend_destroyed")
