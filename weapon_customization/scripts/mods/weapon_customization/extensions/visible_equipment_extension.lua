@@ -101,6 +101,10 @@ local mod = get_mod("weapon_customization")
     local BACKPACK_OFFSET = "j_backpackoffset"
     local EMPTY_UNIT = "core/units/empty_root"
     local SLAB_SHIELD = "ogryn_powermaul_slabshield_p1_m1"
+    -- local ASSAULT_SHIELD = "assault_shield_p1_m1"
+    local MAUL_SHIELD = "powermaul_shield_p1_m1"
+    local MAUL_SHIELD2 = "powermaul_shield_p1_m2"
+    local PISTOL_SHIELD = "shotpistol_shield_p1_m1"
     local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
     local ATTACHMENT_SPAWN_STATUS = table_enum("waiting_for_load", "fully_spawned")
     local BACKPACK_EMPTY = "content/items/characters/player/human/backpacks/empty_backpack"
@@ -124,6 +128,9 @@ local mod = get_mod("weapon_customization")
         "forcestaff_p3_m1",
         "forcestaff_p4_m1",
         "ogryn_powermaul_slabshield_p1_m1",
+        "shotpistol_shield_p1_m1",
+        "powermaul_shield_p1_m1",
+        "powermaul_shield_p1_m2",
         "ogryn_pickaxe_2h_p1_m1",
         "ogryn_pickaxe_2h_p1_m2",
         "ogryn_pickaxe_2h_p1_m3",
@@ -394,18 +401,28 @@ VisibleEquipmentExtension.equipment_data_by_slot = function(self, slot)
     -- Attach node
     local attach_node = item_equipment_data and item_equipment_data.attach_node or item_data and item_data.attach_node
     local gear_node_offsets = mod.gear_node_offsets[breed] and mod.gear_node_offsets[breed].default and mod.gear_node_offsets[breed].default[item_type]
-    local gear_position, gear_rotation, gear_scale = nil, nil, nil
+    local gear_position, gear_position2, gear_rotation, gear_scale = nil, nil, nil, nil
     local slot_gear_node = self.gear_nodes[slot]
     if slot_gear_node and gear_node_offsets then
         gear_position = gear_node_offsets[slot_gear_node] and gear_node_offsets[slot_gear_node].position
+        gear_position2 = gear_node_offsets[slot_gear_node] and gear_node_offsets[slot_gear_node].position2
         gear_rotation = gear_node_offsets[slot_gear_node] and gear_node_offsets[slot_gear_node].rotation
         gear_scale = gear_node_offsets[slot_gear_node] and gear_node_offsets[slot_gear_node].scale
     end
+    local position_fix = mod.gear_settings:apply_fixes(slot.item, "position")
+    local position2_fix = mod.gear_settings:apply_fixes(slot.item, "position2")
+    gear_position = (position_fix and (position_fix[data_type] or position_fix)) or gear_position
+    gear_position2 = (position2_fix and (position2_fix[data_type] or position2_fix)) or gear_position2
+    -- Scale
+    local scale = gear_scale or item_equipment_data.scale
+    local scale2 = gear_scale or item_equipment_data.scale2
+    scale = mod.gear_settings:apply_fixes(slot.item, "scale") or scale
+    scale2 = mod.gear_settings:apply_fixes(slot.item, "scale2") or scale2
     -- Compile equipment data
     local equipment_data = {
-        position = {gear_position or item_equipment_data.position, item_equipment_data.position2},
+        position = {gear_position or item_equipment_data.position, gear_position2 or item_equipment_data.position2},
         rotation = {gear_rotation or item_equipment_data.rotation, item_equipment_data.rotation2},
-        scale = {gear_scale or item_equipment_data.scale, item_equipment_data.scale2},
+        scale = {scale, scale2},
         -- center_mass = {item_equipment_data.center_mass or item_data and item_data.center_mass, item_equipment_data.center_mass2 or item_data and item_data.center_mass2},
         center_mass = {center_mass, center_mass2},
         step_move = {item_equipment_data.step_move, item_equipment_data.step_move2},
@@ -978,6 +995,12 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
     -- Get list of units ( Slab shield )
     if self.item_names[slot] == SLAB_SHIELD then
         self.slot_units[slot] = {self.dummy_units[slot].attachments[3], self.dummy_units[slot].attachments[1]}
+    elseif self.item_names[slot] == PISTOL_SHIELD then
+        self.slot_units[slot] = {self.dummy_units[slot].attachments[5], self.dummy_units[slot].attachments[1]}
+    elseif self.item_names[slot] == MAUL_SHIELD then
+        self.slot_units[slot] = {self.dummy_units[slot].attachments[5], self.dummy_units[slot].attachments[1]}
+    elseif self.item_names[slot] == MAUL_SHIELD2 then
+        self.slot_units[slot] = {self.dummy_units[slot].attachments[5], self.dummy_units[slot].attachments[1]}
     else
         self.slot_units[slot] = {self.dummy_units[slot].base}
     end
@@ -1023,8 +1046,10 @@ VisibleEquipmentExtension.load_slot = function(self, slot)
         or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
         -- or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
         -- or SoundEventAliases.sfx_equip.events[self.item_names[slot]]
+        or SoundEventAliases.sfx_weapon_foley_left_hand_01.events[self.item_names[slot]]
         or SoundEventAliases.sfx_equip.events.default
-    local sounds_4 = SoundEventAliases.sfx_weapon_foley_left_hand_01.events[self.item_names[slot]]
+    local sounds_4 = SoundEventAliases.sfx_weapon_foley_left_hand_02.events[self.item_names[slot]]
+        or SoundEventAliases.sfx_weapon_foley_left_hand_01.events[self.item_names[slot]]
         or SoundEventAliases.sfx_ads_down.events[self.item_names[slot]]
         -- or SoundEventAliases.sfx_grab_weapon.events[self.item_names[slot]]
         -- or SoundEventAliases.sfx_equip.events[self.item_names[slot]]

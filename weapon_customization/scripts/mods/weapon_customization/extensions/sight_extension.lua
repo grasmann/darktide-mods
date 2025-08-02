@@ -107,6 +107,7 @@ local mod = get_mod("weapon_customization")
 	local SLOT_UNARMED = "slot_unarmed"
 	local reticle_multiplier = .5
 	local MIN_TRANSPARENCY = .15
+	local sight_fallback = {position = vector3_box(vector3_zero())}
 --#endregion
 
 -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #################################################################
@@ -317,7 +318,7 @@ SightExtension.set_sight_offset = function(self, offset_type)
 	local offset_type = offset_type or SCOPE_OFFSET
 	local anchor = mod.anchors[self.ranged_weapon.weapon_template.name]
 	local sight_offset = anchor and anchor[offset_type]
-	self.offset = mod.gear_settings:apply_fixes(self.ranged_weapon.item, offset_type) or sight_offset --or {position = vector3_box(vector3_zero())}
+	self.offset = mod.gear_settings:apply_fixes(self.ranged_weapon.item, offset_type) or sight_offset or sight_fallback --or {position = vector3_box(vector3_zero())}
 end
 
 SightExtension.set_sniper_scope_unit = function(self)

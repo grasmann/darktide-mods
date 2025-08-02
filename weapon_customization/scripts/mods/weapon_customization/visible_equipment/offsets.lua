@@ -19,6 +19,8 @@ local mod = get_mod("weapon_customization")
     local unit_alive = Unit.alive
     local Quaternion = Quaternion
     local vector3_box = Vector3Box
+    local unit_local_position = Unit.local_position
+    local unit_set_local_scale = Unit.set_local_scale
     local quaternion_to_vector = Quaternion.to_vector
     local quaternion_from_vector = Quaternion.from_vector
     local unit_set_local_position = Unit.set_local_position
@@ -417,14 +419,14 @@ local mod = get_mod("weapon_customization")
                 loading = mod.visible_equipment_loading_offsets.melee_medium,
             },
             ogryn_powermaul_slabshield_p1_m1 = {
-                default = {position = vector3_box(.5, .5, -.15), rotation = vector3_box(170, -85, 90), scale = vector3_box(1, 1, 1),
-                    step_move = vector3_box(-.03, .0075, 0), step_rotation = vector3_box(2.5, -2.5, 5),
-                    position2 = vector3_box(.2, .45, -.2), rotation2 = vector3_box(0, 90, 70), scale2 = vector3_box(1, 1, 1),
-                    step_move2 = vector3_box(-.02, .05, 0), step_rotation2 = vector3_box(2.5, 0, 0)},
-                backpack = {position = vector3_box(.65, .5, .4), rotation = vector3_box(180, -15, 135), scale = vector3_box(1, 1, 1),
-                    step_move = vector3_box(0, 0, 0), step_rotation = vector3_box(0, -2.5, 5),
+                default = {position = vector3_box(0, .4, -.15), rotation = vector3_box(170, -85, 120), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.03, .0075, 0), step_rotation = vector3_box(-2.5, 1, 1.5),
+                    position2 = vector3_box(.2, .45, -.2), rotation2 = vector3_box(20, 90, 70), scale2 = vector3_box(1, 1, 1),
+                    step_move2 = vector3_box(-.01, 0, 0), step_rotation2 = vector3_box(.5, 0, -.5)},
+                backpack = {position = vector3_box(.65, .5, 0), rotation = vector3_box(180, -15, 120), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(0, 0, 0), step_rotation = vector3_box(-2.5, 1, 1.5),
                     position2 = vector3_box(.2, .6, -.25), rotation2 = vector3_box(20, 90, 60), scale2 = vector3_box(1, 1, 1),
-                    step_move2 = vector3_box(-.02, .05, 0), step_rotation2 = vector3_box(2.5, 0, 0)},
+                    step_move2 = vector3_box(-.01, 0, 0), step_rotation2 = vector3_box(2.5, 0, -2.5)},
                 loading = mod.visible_equipment_loading_offsets.melee_medium,
                 step_sounds = {SoundEventAliases.sfx_equip.events.default},
                 step_sounds2 = {
@@ -552,6 +554,96 @@ local mod = get_mod("weapon_customization")
             --     loading = mod.visible_equipment_loading_offsets.melee_medium,
             --     step_sounds = {SoundEventAliases.sfx_equip.events.ogryn_combatblade_p1_m1, SoundEventAliases.sfx_equip_03.events.combatknife_p1_m2},
             -- },
+
+            -- default = {position = vector3_box(.3, .25, -.1), rotation = vector3_box(180, -90, 110), scale = vector3_box(1, 1, 1),
+            --     step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
+            -- backpack = {position = vector3_box(.4, .25, -.225), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
+            --     step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
+            -- center_mass = vector3_box(0, 0, -.075),
+
+            -- step_move = vector3_box(-.01, 0, 0), step_rotation = vector3_box(2.5, -2.5, 0)
+
+            powermaul_shield_p1_m1 = {
+                default = {position = vector3_box(.2, .15, -.1), rotation = vector3_box(180, -90, 110), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(0, 2.5, 0),
+                    position2 = vector3_box(.2, .2, -.1), rotation2 = vector3_box(0, 90, 80), scale2 = vector3_box(1, 1, 1),
+                    step_move2 = vector3_box(-.01, 0, 0), step_rotation2 = vector3_box(2.5, 0, -2.5)},
+                backpack = {position = vector3_box(.2, .2, -.15), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(0, 2.5, 0),
+                    position2 = vector3_box(.2, .25, -.15), rotation2 = vector3_box(20, 90, 70), scale2 = vector3_box(1, 1, 1),
+                    step_move2 = vector3_box(-.01, 0, 0), step_rotation2 = vector3_box(2.5, 0, -2.5)},
+                loading = mod.visible_equipment_loading_offsets.melee_medium,
+                center_mass = vector3_box(0, 0, -.075),
+                -- center_mass2 = vector3_box(0, 0, 0.3),
+                step_sounds = {SoundEventAliases.sfx_weapon_foley_left_hand_01.events.default},
+                step_sounds2 = {
+                    -- SoundEventAliases.sfx_push_follow_up.events.powermaul_shield_p1_m1,
+                    SoundEventAliases.sfx_weapon_locomotion.events.ogryn_gauntlet_p1_m1,
+                    -- SoundEventAliases.sfx_weapon_foley_left_hand_02.events.powermaul_shield_p1_m1,
+                },
+                -- init = function(visible_equipment_extension, slot)
+                --     local slot_info_id = mod.gear_settings:slot_info_id(slot.item)
+                --     local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+                --     local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
+                --     if attachment_slot_info then
+                --         local left = attachment_slot_info.attachment_slot_to_unit["left"]
+                --         local attachment = attachment_slot_info.unit_to_attachment_name[left]
+                --         mod:echo("left"..tostring(left).." "..attachment)
+                --         if left and unit_alive(left) and attachment == "left_03" then
+                --             -- unit_set_local_scale(left, 1, vector3(.5, .5, .5))
+                --             unit_set_local_position(left, 1, unit_local_position(left, 1) + vector3(0, 0, -.5))
+                --         end
+                --     end
+                -- end,
+                wield = function(visible_equipment_extension, slot)
+                    visible_equipment_extension:position_equipment()
+                end,
+            },
+
+            -- default = {position = vector3_box(-.01, .2, .1), rotation = vector3_box(30, -10, 90), scale = vector3_box(1, 1, 1),
+            --     step_move = vector3_box(-.0025, -.01, .005), step_rotation = vector3_box(-2.5, -2.5, 2.5)},
+            -- backpack = {position = vector3_box(-.09, .21, .1), rotation = vector3_box(180, 10, 90), scale = vector3_box(1, 1, 1),
+            --     step_move = vector3_box(-.01, .0075, .0025), step_rotation = vector3_box(-1.5, -2.5, -5)},
+            -- loading = mod.visible_equipment_loading_offsets.default,
+            -- -- step_sounds = {SoundEventAliases.sfx_equip.events.stubrevolver_p1_m1},
+            -- -- step_sounds = {SoundEventAliases.sfx_ads_up.events.stubrevolver_p1_m1},
+            -- step_sounds = {SoundEventAliases.sfx_ads_up.events.default},
+            -- attach_node = "j_spine1",
+
+            shotpistol_shield_p1_m1 = {
+                default = {position = vector3_box(.2, .15, -.1), rotation = vector3_box(180, -90, 110), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(0, 2.5, 0),
+                    position2 = vector3_box(.2, .2, -.1), rotation2 = vector3_box(0, 90, 80), scale2 = vector3_box(1, 1, 1),
+                    step_move2 = vector3_box(-.01, 0, 0), step_rotation2 = vector3_box(2.5, 0, -2.5)},
+                backpack = {position = vector3_box(.2, .2, -.15), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(0, 2.5, 0),
+                    position2 = vector3_box(.2, .25, -.15), rotation2 = vector3_box(20, 90, 70), scale2 = vector3_box(1, 1, 1),
+                    step_move2 = vector3_box(-.01, 0, 0), step_rotation2 = vector3_box(2.5, 0, -2.5)},
+                loading = mod.visible_equipment_loading_offsets.melee_medium,
+                center_mass = vector3_box(0, 0, -.075),
+                step_sounds = {SoundEventAliases.sfx_equip.events.default},
+                step_sounds2 = {
+                    SoundEventAliases.sfx_equip.events.powermaul_shield_p1_m1,
+                    SoundEventAliases.sfx_weapon_foley_left_hand_02.events.powermaul_shield_p1_m1,
+                },
+                -- attach_node = "j_spine1",
+                -- init = function(visible_equipment_extension, slot)
+                --     local slot_info_id = mod.gear_settings:slot_info_id(slot.item)
+                --     local slot_infos = mod:persistent_table(REFERENCE).attachment_slot_infos
+                --     local attachment_slot_info = slot_infos and slot_infos[slot_info_id]
+                --     if attachment_slot_info then
+                --         local left = attachment_slot_info.attachment_slot_to_unit["left"]
+                --         local attachment = attachment_slot_info.unit_to_attachment_name[left]
+                --         mod:echo("left", left, attachment)
+                --         if attachment ~= "left_01" then
+                --             unit_set_local_scale(left, 1, vector3(.5, .5, .5))
+                --         end
+                --     end
+                -- end,
+                wield = function(visible_equipment_extension, slot)
+                    visible_equipment_extension:position_equipment()
+                end,
+            },
             thunderhammer_2h_p1_m1 = {
                 default = {position = vector3_box(.3, .25, -.1), rotation = vector3_box(180, -90, 130), scale = vector3_box(1, 1, 1),
                     step_move = vector3_box(-.02, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
@@ -587,6 +679,15 @@ local mod = get_mod("weapon_customization")
                 step_sounds = {SoundEventAliases.sfx_equip_03.events.combatknife_p1_m2},
             },
             powermaul_p1_m1 = {
+                default = {position = vector3_box(.3, .25, -.1), rotation = vector3_box(180, -90, 110), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
+                backpack = {position = vector3_box(.4, .25, -.225), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
+                    step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
+                center_mass = vector3_box(0, 0, -.1),
+                loading = mod.visible_equipment_loading_offsets.melee_medium,
+                step_sounds = {SoundEventAliases.sfx_equip_03.events.combatknife_p1_m2},
+            },
+            powermaul_p2_m1 = {
                 default = {position = vector3_box(.3, .25, -.1), rotation = vector3_box(180, -90, 110), scale = vector3_box(1, 1, 1),
                     step_move = vector3_box(-.01, .0125, 0), step_rotation = vector3_box(5, -2.5, 5)},
                 backpack = {position = vector3_box(.4, .25, -.225), rotation = vector3_box(120, -95, 90), scale = vector3_box(1, 1, 1),
@@ -673,6 +774,11 @@ local mod = get_mod("weapon_customization")
             mod.visible_equipment_offsets.combatsword_p3_m3 = mod.visible_equipment_offsets.combatsword_p3_m1
             mod.visible_equipment_offsets.chainaxe_p1_m2 = mod.visible_equipment_offsets.chainaxe_p1_m1
             mod.visible_equipment_offsets.powermaul_p1_m2 = mod.visible_equipment_offsets.powermaul_p1_m1
+            -- mod.visible_equipment_offsets.powermaul_p2_m1 = mod.visible_equipment_offsets.powermaul_p1_m1
+            -- mod.visible_equipment_offsets.powermaul_p2_m2 = mod.visible_equipment_offsets.powermaul_p1_m1
+            mod.visible_equipment_offsets.powermaul_shield_p1_m2 = mod.visible_equipment_offsets.powermaul_shield_p1_m1
+            -- mod.visible_equipment_offsets.assault_shield_p1_m1 = mod.visible_equipment_offsets.powermaul_shield_p1_m1
+            -- mod.visible_equipment_offsets.shotpistol_shield_p1_m1 = mod.visible_equipment_offsets.powermaul_shield_p1_m1
         --#endregion
         --#region Ogryn Guns
             mod.visible_equipment_offsets.ogryn_heavystubber_p1_m2 = mod.visible_equipment_offsets.ogryn_heavystubber_p1_m1

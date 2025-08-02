@@ -98,7 +98,7 @@ local SPAWNER_NAME = "slot_secondary_laser_pointer_1p"
 local SPAWNER_NAME_3P = "slot_secondary_laser_pointer_3p"
 local LOCK_STATES = {"walking", "sliding", "jumping", "falling", "dodging", "ledge_vaulting"}
 local SWAY_MULTIPLIER = 2.5
-local SWAY_MULTIPLIER_AIMING = 10
+local SWAY_MULTIPLIER_AIMING = 5
 -- local CROUCH_OPTION = "mod_option_crouch_animation"
 
 -- ##### ┬  ┌─┐┌─┐┌─┐┬─┐  ┌─┐┌─┐┬┌┐┌┌┬┐┌─┐┬─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #############################################
@@ -239,7 +239,8 @@ LaserPointerExtension.update = function(self, dt, t)
 end
 
 LaserPointerExtension.update_lock = function(self, dt, t)
-    self.lock = table_contains(LOCK_STATES, self.character_state)
+    self.lock = table_contains(LOCK_STATES, self.character_state and self.character_state.name or "")
+    -- mod:echo((self.character_state and self.character_state.name or "").." -> "..tostring(self.lock))
     -- local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching
     -- if mod:get(CROUCH_OPTION) and is_crouching then
     --     self.lock = false
@@ -419,8 +420,9 @@ LaserPointerExtension.update_laser_particle = function(self, dt, t)
             -- elseif laser_index > 2 then
             --     scale = .075
             -- end
-            -- local rotation = Quaternion.look(vector3.normalize(end_position - laser_position))
-		    -- World.move_particles(self.world, laser_effect_id, laser_position, rotation)
+            local rotation = Quaternion.look(end_position - laser_position)
+            -- mod:echo("rotation: "..tostring(rotation))
+		    World.move_particles(self.world, laser_effect_id, laser_position, rotation)
             world_set_particles_variable(self.world, laser_effect_id, variable_index, vector3(.02, distance, .5))
             self:update_effect_fov(laser_effect_id)
             -- -- Weapon FOV compatibility
@@ -574,7 +576,7 @@ LaserPointerExtension.spawn_laser = function(self)
         if unit and unit_alive(unit) then
             self.end_position:store(self.end_position and vector3_unbox(self.end_position) or self:target_fallback())
             for i = 1, self.laser_count do
-                self.fx_extension:_spawn_unit_fx_line(LINE_EFFECT, true, spawner_name, vector3_unbox(self.end_position), true, "destroy", vector3(1, 1, 1), false)
+                self.fx_extension:_spawn_unit_fx_line(LINE_EFFECT, true, spawner_name, vector3_unbox(self.end_position), false, "destroy", vector3(1, 1, 1), false)
             end
         end
     end

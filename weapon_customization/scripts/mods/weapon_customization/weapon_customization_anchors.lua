@@ -160,6 +160,8 @@ end
 	local _thunderhammer_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/thunderhammer_2h_p1_m1")
 	local _powermaul_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powermaul_2h_p1_m1")
 	local _powermaul_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powermaul_p1_m1")
+	local _powermaul_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powermaul_p2_m1")
+	local _powermaul_shield_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/powermaul_shield_p1_m1")
 	local _chainsword_2h_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/chainsword_2h_p1_m1")
 	local _combatsword_p2_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/combatsword_p2_m1")
 	local _forcesword_p1_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/forcesword_p1_m1")
@@ -214,6 +216,8 @@ end
 			thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.anchors,
 			powermaul_2h_p1_m1     = _powermaul_2h_p1_m1.anchors,
 			powermaul_p1_m1        = _powermaul_p1_m1.anchors,
+			powermaul_p2_m1        = _powermaul_p2_m1.anchors,
+			powermaul_shield_p1_m1 = _powermaul_shield_p1_m1.anchors,
 			chainsword_2h_p1_m1    = _chainsword_2h_p1_m1.anchors,
 			combatsword_p2_m1      = _combatsword_p2_m1.anchors,
 			forcesword_p1_m1       = _forcesword_p1_m1.anchors,
@@ -318,6 +322,8 @@ end
 			mod.anchors.combatsword_p3_m2      = mod.anchors.combatsword_p3_m1
 			mod.anchors.combatsword_p3_m3      = mod.anchors.combatsword_p3_m1
 			mod.anchors.powermaul_p1_m2        = mod.anchors.powermaul_p1_m1
+			mod.anchors.powermaul_shield_p1_m2 = mod.anchors.powermaul_shield_p1_m1
+			-- mod.anchors.powermaul_p2_m2        = mod.anchors.powermaul_p2_m1
 		--#endregion
 	--#endregion
 --#endregion
@@ -369,6 +375,8 @@ end
 			thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.attachments,
 			powermaul_2h_p1_m1     = _powermaul_2h_p1_m1.attachments,
 			powermaul_p1_m1        = _powermaul_p1_m1.attachments,
+			powermaul_p2_m1        = _powermaul_p2_m1.attachments,
+			powermaul_shield_p1_m1 = _powermaul_shield_p1_m1.attachments,
 			chainsword_2h_p1_m1    = _chainsword_2h_p1_m1.attachments,
 			combatsword_p2_m1      = _combatsword_p2_m1.attachments,
 			forcesword_p1_m1       = _forcesword_p1_m1.attachments,
@@ -477,6 +485,8 @@ end
 			mod.attachment.combatsword_p3_m2      = mod.attachment.combatsword_p3_m1
 			mod.attachment.combatsword_p3_m3      = mod.attachment.combatsword_p3_m1
 			mod.attachment.powermaul_p1_m2        = mod.attachment.powermaul_p1_m1
+			mod.attachment.powermaul_shield_p1_m2 = mod.attachment.powermaul_shield_p1_m1
+			-- mod.attachment.powermaul_p2_m2        = mod.attachment.powermaul_p2_m1
 		--#endregion
 	--#endregion
 --#endregion
@@ -942,6 +952,8 @@ end
 			thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.models,
 			powermaul_2h_p1_m1     = _powermaul_2h_p1_m1.models,
 			powermaul_p1_m1        = _powermaul_p1_m1.models,
+			powermaul_p2_m1        = _powermaul_p2_m1.models,
+			powermaul_shield_p1_m1 = _powermaul_shield_p1_m1.models,
 			chainsword_2h_p1_m1    = _chainsword_2h_p1_m1.models,
 			combatsword_p2_m1      = _combatsword_p2_m1.models,
 			forcesword_p1_m1       = _forcesword_p1_m1.models,
@@ -1050,6 +1062,8 @@ end
 			mod.attachment_models.combatsword_p3_m2      = mod.attachment_models.combatsword_p3_m1
 			mod.attachment_models.combatsword_p3_m3      = mod.attachment_models.combatsword_p3_m1
 			mod.attachment_models.powermaul_p1_m2        = mod.attachment_models.powermaul_p1_m1
+			mod.attachment_models.powermaul_shield_p1_m2 = mod.attachment_models.powermaul_shield_p1_m1
+			-- mod.attachment_models.powermaul_p2_m2        = mod.attachment_models.powermaul_p2_m1
 		--#endregion
 	--#endregion
 --#endregion
@@ -1112,6 +1126,8 @@ end
 			thunderhammer_2h_p1_m1 = _thunderhammer_2h_p1_m1.sounds,
 			powermaul_2h_p1_m1     = _powermaul_2h_p1_m1.sounds,
 			powermaul_p1_m1        = _powermaul_p1_m1.sounds,
+			powermaul_p2_m1        = _powermaul_p2_m1.sounds,
+			powermaul_shield_p1_m1 = _powermaul_shield_p1_m1.sounds,
 			chainsword_2h_p1_m1    = _chainsword_2h_p1_m1.sounds,
 			combatsword_p2_m1      = _combatsword_p2_m1.sounds,
 			forcesword_p1_m1       = _forcesword_p1_m1.sounds,
@@ -1220,6 +1236,8 @@ end
 			mod.attachment_sounds.combatsword_p3_m2      = mod.attachment_sounds.combatsword_p3_m1
 			mod.attachment_sounds.combatsword_p3_m3      = mod.attachment_sounds.combatsword_p3_m1
 			mod.attachment_sounds.powermaul_p1_m2        = mod.attachment_sounds.powermaul_p1_m1
+			mod.attachment_sounds.powermaul_shield_p1_m2 = mod.attachment_sounds.powermaul_shield_p1_m1
+			-- mod.attachment_sounds.powermaul_p2_m2        = mod.attachment_sounds.powermaul_p2_m1
 		--#endregion
 	--#endregion
 --#endregion

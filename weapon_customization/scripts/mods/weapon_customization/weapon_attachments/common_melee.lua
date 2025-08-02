@@ -596,6 +596,7 @@ return {
             {id = "2h_force_sword_grip_03",   name = "2H Force Sword 3"},
             {id = "2h_force_sword_grip_ml01", name = "2H Force Sword 4"},
             {id = "2h_force_sword_grip_04",   name = "2H Force Sword 5"},
+            {id = "2h_force_sword_grip_05",   name = "2H Force Sword 6"},
             {id = "sabre_grip_01",      name = "Sabre 1"},
             {id = "sabre_grip_02",      name = "Sabre 2"},
             {id = "sabre_grip_03",      name = "Sabre 3"},
@@ -652,6 +653,7 @@ return {
             {name = "2h_force_sword_grip_03",   model = _item_melee.."/grips/2h_force_sword_grip_03"},
             {name = "2h_force_sword_grip_ml01", model = _item_melee.."/grips/2h_force_sword_grip_ml01"},
             {name = "2h_force_sword_grip_04",   model = _item_melee.."/grips/2h_force_sword_grip_04"},
+            {name = "2h_force_sword_grip_05",   model = _item_melee.."/grips/2h_force_sword_grip_05"},
             {name = "sabre_grip_01",      model = _item_melee.."/grips/sabre_grip_01"},
             {name = "sabre_grip_02",      model = _item_melee.."/grips/sabre_grip_02"},
             {name = "sabre_grip_03",      model = _item_melee.."/grips/sabre_grip_03"},
@@ -703,6 +705,7 @@ return {
             {id = "2h_force_sword_blade_03",   name = "2H Force Sword 3"},
             {id = "2h_force_sword_blade_ml01", name = "2H Force Sword 4"},
             {id = "2h_force_sword_blade_04",   name = "2H Force Sword 5"},
+            {id = "2h_force_sword_blade_05",   name = "2H Force Sword 6"},
             {id = "sabre_blade_01",      name = "Sabre 1"},
             {id = "sabre_blade_02",      name = "Sabre 2"},
             {id = "sabre_blade_03",      name = "Sabre 3"},
@@ -754,6 +757,7 @@ return {
             {name = "2h_force_sword_blade_03",   model = _item_melee.."/blades/2h_force_sword_blade_03"},
             {name = "2h_force_sword_blade_ml01", model = _item_melee.."/blades/2h_force_sword_blade_ml01"},
             {name = "2h_force_sword_blade_04",   model = _item_melee.."/blades/2h_force_sword_blade_04"},
+            {name = "2h_force_sword_blade_05",   model = _item_melee.."/blades/2h_force_sword_blade_05"},
             {name = "sabre_blade_01",      model = _item_melee.."/blades/sabre_blade_01"},
             {name = "sabre_blade_02",      model = _item_melee.."/blades/sabre_blade_02"},
             {name = "sabre_blade_03",      model = _item_melee.."/blades/sabre_blade_03"},
@@ -794,6 +798,7 @@ return {
             {id = "2h_force_sword_hilt_03",   name = "2H Force Sword 3"},
             {id = "2h_force_sword_hilt_ml01", name = "2H Force Sword 4"},
             {id = "2h_force_sword_hilt_04",   name = "2H Force Sword 5"},
+            {id = "2h_force_sword_hilt_05",   name = "2H Force Sword 6"},
         }
         if default == nil then default = true end
         if default then return table.icombine(
@@ -823,6 +828,7 @@ return {
             {name = "2h_force_sword_hilt_03",   model = _item_melee.."/hilts/2h_force_sword_hilt_03"},
             {name = "2h_force_sword_hilt_ml01", model = _item_melee.."/hilts/2h_force_sword_hilt_ml01"},
             {name = "2h_force_sword_hilt_04",   model = _item_melee.."/hilts/2h_force_sword_hilt_04"},
+            {name = "2h_force_sword_hilt_05",   model = _item_melee.."/hilts/2h_force_sword_hilt_05"},
         }, parent, angle, move, remove, type or "hilt", no_support, automatic_equip, hide_mesh, mesh_move, special_resolve)
     end,
 }
