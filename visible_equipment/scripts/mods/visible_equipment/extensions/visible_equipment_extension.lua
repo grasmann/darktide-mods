@@ -137,10 +137,10 @@ VisibleEquipmentExtension.has_backpack = function(self)
     local inventory_cosmetics_view = mod:get_cosmetic_view()
     if inventory_cosmetics_view then
         -- Get presentation profile value
-        profile = inventory_cosmetics_view and inventory_cosmetics_view._presentation_profile
+        profile = inventory_cosmetics_view and inventory_cosmetics_view._presentation_profile or profile
     end
     -- Get loadout from profile
-    local slot_gear_extra_cosmetic = profile.loadout[SLOT_GEAR_EXTRA_COSMETIC]
+    local slot_gear_extra_cosmetic = profile and profile.loadout[SLOT_GEAR_EXTRA_COSMETIC]
     -- Get backpack name
     local name = slot_gear_extra_cosmetic and slot_gear_extra_cosmetic.__master_item.name
     -- Return if name is not empty backpack
@@ -626,21 +626,21 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 
 
                 unit_set_local_position(obj, 1, position)
-                rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(momentum_drag))
+                -- rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(momentum_drag))
                 unit_set_local_rotation(obj, 1, rotation)
 
-                return
+                -- return
 
             end
         end
 
-        local current_position = vector3_unbox(self.anim[slot].current_position[obj])
+        -- local current_position = vector3_unbox(self.anim[slot].current_position[obj])
         local current_rotation = vector3_unbox(self.anim[slot].current_rotation[obj])
 
-        local position = vector3_unbox(self.anim[slot].default_position[obj]) + current_position
+        -- local position = vector3_unbox(self.anim[slot].default_position[obj]) + unit_local_position(self.unit, 1)
         local rotation = vector3_unbox(self.anim[slot].default_rotation[obj]) + current_rotation
 
-        unit_set_local_position(obj, 1, position)
+        -- unit_set_local_position(obj, 1, position)
         rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(momentum_drag))
         unit_set_local_rotation(obj, 1, rotation)
 
