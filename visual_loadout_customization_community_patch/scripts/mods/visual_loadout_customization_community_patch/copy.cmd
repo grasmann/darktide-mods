@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\visual_loadout_customization_community_patch\scripts\mods\visual_loadout_customization_community_patch" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\visual_loadout_customization_community_patch\scripts\mods\visual_loadout_customization_community_patch"
