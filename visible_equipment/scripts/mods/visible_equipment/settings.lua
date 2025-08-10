@@ -6,7 +6,10 @@ local mod = get_mod("visible_equipment")
 
 local ogryn = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/breeds/ogryn")
 local human = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/breeds/human")
+
 local autogun_p1_m1 = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/weapons/autogun_p1_m1")
+
+local backpack_scions_a = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/backpacks/backpack_scions_a")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -21,32 +24,56 @@ local autogun_p1_m1 = mod:io_dofile("visible_equipment/scripts/mods/visible_equi
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local breed_human = "human"
-local breed_ogryn = "ogryn"
+local BREED_HUMAN = "human"
+local BREED_OGRYN = "ogryn"
 local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
 
 local offsets = {
-    [breed_human] = human.offsets,
-    [breed_ogryn] = ogryn.offsets,
+    [BREED_HUMAN] = human.offsets,
+    [BREED_OGRYN] = ogryn.offsets,
     autogun_p1_m1 = autogun_p1_m1.offsets,
 
     forcestaff_p1_m1 = {
         default = {
             right = {
+                node = "j_spine2",
                 position = vector3_box(.3, .175, -.15),
-                rotation = vector3_box(0, 90, 90),
+                rotation = vector3_box(10, 90, -90),
             },
         },
         backpack = {
             right = {
+                node = "j_spine2",
                 position = vector3_box(.3, .175, -.25),
                 rotation = vector3_box(0, 90, 90),
             },
         },
     },
+
+    ogryn_pickaxe_2h_p1_m1 = {
+        default = {
+            right = {
+                node = "j_spine2",
+                position = vector3_box(-.9, .5, .25),
+                rotation = vector3_box(0, 90, 180),
+                center_mass = vector3_box(.8, 0, 0),
+            },
+        },
+        backpack = {
+            right = {
+                node = "j_spine2",
+                position = vector3_box(-.9, .7, .45),
+                rotation = vector3_box(0, 90, 180),
+                center_mass = vector3_box(.8, 0, 0),
+            },
+        },
+    },
+
 }
 
+offsets.ogryn_pickaxe_2h_p1_m2 = offsets.ogryn_pickaxe_2h_p1_m1
+offsets.ogryn_pickaxe_2h_p1_m3 = offsets.ogryn_pickaxe_2h_p1_m1
 offsets.forcestaff_p2_m1 = offsets.forcestaff_p1_m1
 offsets.forcestaff_p3_m1 = offsets.forcestaff_p1_m1
 offsets.forcestaff_p4_m1 = offsets.forcestaff_p1_m1
@@ -60,13 +87,69 @@ offsets.autogun_p3_m2 = offsets.autogun_p1_m1
 offsets.autogun_p3_m3 = offsets.autogun_p1_m1
 
 local footstep_animations = {
-    [breed_human] = human.footstep_animations,
-    [breed_ogryn] = ogryn.footstep_animations,
+    [BREED_HUMAN] = human.footstep_animations,
+    [BREED_OGRYN] = ogryn.footstep_animations,
     autogun_p1_m1 = autogun_p1_m1.footstep_animations,
+
+    forcestaff_p1_m1 = {
+        default = {
+            right = {
+                start = "step",
+                states = 2,
+                step = {
+                    name = "step",
+                    start_position = vector3_box(vector3_zero()),
+                    start_rotation = vector3_box(vector3_zero()),
+                    end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "back",
+                },
+                back = {
+                    name = "back",
+                    start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3_zero()),
+                    end_rotation = vector3_box(vector3_zero()),
+                },
+            },
+        },
+        sheath = {
+            right = {
+                states = 3,
+                start = "place",
+                interrupt = true,
+                place = {
+                    name = "place",
+                    no_modifiers = true,
+                    start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 90, -5) * .5),
+                    end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "step",
+                },
+                step = {
+                    name = "step",
+                    start_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "back",
+                },
+                back = {
+                    name = "back",
+                    start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3_zero()),
+                    end_rotation = vector3_box(vector3_zero()),
+                },
+            },
+        },
+    },
 
     default = {
         right = {
             start = "step",
+            states = 2,
             step = {
                 name = "step",
                 start_position = vector3_box(vector3_zero()),
@@ -85,6 +168,7 @@ local footstep_animations = {
         },
         left = {
             start = "step",
+            states = 2,
             step = {
                 name = "step",
                 start_position = vector3_box(vector3(-.05, 0, 0) * .5),
@@ -104,6 +188,9 @@ local footstep_animations = {
     },
 }
 
+footstep_animations.forcestaff_p2_m1 = footstep_animations.forcestaff_p1_m1
+footstep_animations.forcestaff_p3_m1 = footstep_animations.forcestaff_p1_m1
+footstep_animations.forcestaff_p4_m1 = footstep_animations.forcestaff_p1_m1
 footstep_animations.autogun_p1_m2 = footstep_animations.autogun_p1_m1
 footstep_animations.autogun_p1_m3 = footstep_animations.autogun_p1_m1
 footstep_animations.autogun_p2_m1 = footstep_animations.autogun_p1_m1
@@ -114,8 +201,8 @@ footstep_animations.autogun_p3_m2 = footstep_animations.autogun_p1_m1
 footstep_animations.autogun_p3_m3 = footstep_animations.autogun_p1_m1
 
 local sounds = {
-    [breed_human] = human.sounds,
-    [breed_ogryn] = ogryn.sounds,
+    [BREED_HUMAN] = human.sounds,
+    [BREED_OGRYN] = ogryn.sounds,
     autogun_p1_m1 = autogun_p1_m1.sounds,
 
     ogryn_powermaul_slabshield_p1_m1 = {
@@ -179,6 +266,13 @@ sounds.autogun_p2_m3 = sounds.autogun_p1_m1
 sounds.autogun_p3_m1 = sounds.autogun_p1_m1
 sounds.autogun_p3_m2 = sounds.autogun_p1_m1
 sounds.autogun_p3_m3 = sounds.autogun_p1_m1
+
+local backpacks = {
+    backpack_scions_a = backpack_scions_a,
+    default = {
+        width = 2,
+    },
+}
 
 return {
     sounds = sounds,

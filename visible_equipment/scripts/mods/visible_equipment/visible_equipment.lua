@@ -33,16 +33,23 @@ mod.pt = function(self)
     return self:persistent_table(REFERENCE)
 end
 
+mod.time = function(self)
+    return self:game_time() or self:main_time()
+end
+
 mod.main_time = function(self)
-	return managers.time:time("main")
+    local time_manager = managers.time
+	return time_manager and time_manager:has_timer("main") and time_manager:time("main")
 end
 
 mod.game_time = function(self)
-	return managers.time:time("gameplay")
+    local time_manager = managers.time
+	return time_manager and time_manager:has_timer("gameplay") and time_manager:time("gameplay")
 end
 
 mod.get_view = function(self, view_name)
-    return managers.ui:view_active(view_name) and managers.ui:view_instance(view_name) or nil
+    local ui_manager = managers.ui
+    return ui_manager:view_active(view_name) and ui_manager:view_instance(view_name) or nil
 end
 
 mod.get_cosmetic_view = function(self)
@@ -54,8 +61,8 @@ mod.vector3_equal = function(self, v1, v2)
 end
 
 mod.is_in_hub = function(self)
-    local manager = managers.state.game_mode
-	local game_mode_name = manager and manager:game_mode_name()
+    local game_mode_manager = managers.state.game_mode
+	local game_mode_name = game_mode_manager and game_mode_manager:game_mode_name()
 	return game_mode_name == "hub"
 end
 
@@ -63,6 +70,10 @@ end
 -- ##### ├─┘├─┤ │ │  ├─┤├┤ └─┐ ########################################################################################
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
 
+mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/common")
+mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/main_menu_view")
+mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/result_view")
+mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/lobby_view")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_cosmetics_view")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/player_unit_visual_loadout_extension")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/player_husk_visual_loadout_extension")
@@ -70,5 +81,4 @@ mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/world")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/ui_profile_spawner")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/equipment_component")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/material_fx")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/common")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/visible_equipment_extension")

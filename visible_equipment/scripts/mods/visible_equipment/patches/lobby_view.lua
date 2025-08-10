@@ -11,22 +11,9 @@ local mod = get_mod("visible_equipment")
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
-mod:hook(CLASS.InventoryCosmeticsView, "_preview_element", function(func, self, element, ...)
+mod:hook(CLASS.LobbyView, "init", function(func, self, settings, context, ...)
     -- Original function
-    func(self, element, ...)
-    -- Update equipment component
-    if self._profile_spawner and self._profile_spawner._character_spawn_data then
-        local equipment_component = self._profile_spawner._character_spawn_data.equipment_component
-        equipment_component:position_objects()
-    end
-end)
-
-mod:hook(CLASS.InventoryCosmeticsView, "_stop_previewing", function(func, self, ...)
-    -- Original function
-    func(self, ...)
-    -- Update equipment component
-    if self._profile_spawner and self._profile_spawner._character_spawn_data then
-        local equipment_component = self._profile_spawner._character_spawn_data.equipment_component
-        equipment_component:position_objects()
-    end
+    func(self, settings, context, ...)
+    -- Mod
+    self._pass_input = true
 end)

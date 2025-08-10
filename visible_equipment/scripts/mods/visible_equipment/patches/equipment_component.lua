@@ -51,7 +51,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
             self.visible_equipment_system:destroy()
         end
         -- Clear equipment component tables
-        -- self.pt.map_visible_equipment_by_equipment_component[self] = nil
         self.pt.equipment_components[self] = nil
     end
 
@@ -79,11 +78,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         end
     end
 
-    instance.update_objects = function(self)
+    instance.position_objects = function(self)
         -- Check visible equipment system
         if self.visible_equipment_system then
             -- Update visible equipment
-            self.visible_equipment_system:update_objects()
+            self.visible_equipment_system:position_objects()
         end
     end
 
@@ -98,20 +97,19 @@ mod:hook(CLASS.EquipmentComponent, "init", function(func, self, world, item_defi
     func(self, world, item_definitions, unit_spawner, unit_3p, optional_extension_manager, optional_item_streaming_settings, optional_force_highest_lod_step, optional_from_ui_profile_spawner, ...)
     -- Set pt variable
     self.pt = mod:pt()
-
+    -- Create equipment component table
     self.pt.equipment_components[self] = unit_3p
+    -- Catch equipment
     catch_equipment = self
-
+    -- Set equipment component
     unit_set_data(unit_3p, "visible_equipment_component", self)
-
     -- Check if visible equipment extension is already added
     if not self.visible_equipment_system then
         -- Add visible equipment extension
         self.visible_equipment_system = script_unit_add_extension({}, unit_3p, "VisibleEquipmentExtension", "visible_equipment_system", {
             equipment_component = self,
+            from_ui_profile_spawner = optional_from_ui_profile_spawner,
         })
-        -- Create equipment component tables
-        -- self.pt.map_visible_equipment_by_equipment_component[self] = self.visible_equipment_system
     end
 end)
 
@@ -140,10 +138,9 @@ end)
 mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_person_mode, ...)
     -- Original function
     func(slot, first_person_mode, ...)
-
+    -- Get equipment component
     if slot.parent_unit_3p and unit_alive(slot.parent_unit_3p) then
         local equipment_component = unit_get_data(slot.parent_unit_3p, "visible_equipment_component")
-
         -- Check visible equipment system
         if equipment_component and equipment_component.visible_equipment_system then
             -- Load slot
@@ -152,15 +149,19 @@ mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_pers
     end
 end)
 
--- mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, optional_equipment, optional_companion_unit_3p, ...)
---     -- Original function
---     func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, optional_equipment, optional_companion_unit_3p, ...)
---     -- Check visible equipment system
---     if self.visible_equipment_system then
---         -- Load slot
---         self.visible_equipment_system:load_slot(slot, optional_mission_template)
---     end
--- end)
+mod:hook(CLASS.EquipmentComponent, "unwield_slot", function(func, slot, first_person_mode, ...)
+    -- Original function
+    func(slot, first_person_mode, ...)
+    -- Get equipment component
+    if slot.parent_unit_3p and unit_alive(slot.parent_unit_3p) then
+        local equipment_component = unit_get_data(slot.parent_unit_3p, "visible_equipment_component")
+        -- Check visible equipment system
+        if equipment_component and equipment_component.visible_equipment_system then
+            -- Load slot
+            equipment_component.visible_equipment_system:unwield_slot(slot)
+        end
+    end
+end)
 
 mod:hook(CLASS.EquipmentComponent, "_spawn_player_item_units", function(func, self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, optional_equipment, ...)
     -- Original function
@@ -172,10 +173,8 @@ mod:hook(CLASS.EquipmentComponent, "_spawn_player_item_units", function(func, se
     end
 end)
 
--- mod:hook(CLASS.EquipmentComponent, "_spawn_player_item_units", function(func, self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, optional_equipment, ...)
 mod:hook(CLASS.EquipmentComponent, "_spawn_player_item_attachments", function(func, self, item, slot, optional_mission_template, ...)
     -- Original function
-    -- func(self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, optional_equipment, ...)
     func(self, item, slot, optional_mission_template, ...)
     -- Check visible equipment system
     if self.visible_equipment_system then
@@ -185,12 +184,10 @@ mod:hook(CLASS.EquipmentComponent, "_spawn_player_item_attachments", function(fu
 end)
 
 mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
-
     -- Original function
     func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
-
+    -- Get equipment component
     local equipment_component = unit_get_data(unit_3p, "visible_equipment_component")
-
     -- Check visible equipment system
     if equipment_component and equipment_component.visible_equipment_system then
         -- Update slot

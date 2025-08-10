@@ -14,9 +14,6 @@ local mod = get_mod("weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 return {
-    center_mass = {
-        position = vector3_box(0, 0, 0),
-    },
     offsets = {
         default = {
             right = {
@@ -36,11 +33,87 @@ return {
     footstep_animations = {
         default = {
             right = {
+                states = 2,
                 start = "step",
                 step = {
                     name = "step",
                     start_position = vector3_box(vector3_zero()),
                     start_rotation = vector3_box(vector3_zero()),
+                    end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "back",
+                },
+                back = {
+                    name = "back",
+                    start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3_zero()),
+                    end_rotation = vector3_box(vector3_zero()),
+                },
+            },
+        },
+        shoot = {
+            right = {
+                states = 2,
+                start = "step",
+                interval = .035,
+                interrupt = true,
+                step = {
+                    name = "step",
+                    start_position = vector3_box(vector3_zero()),
+                    start_rotation = vector3_box(vector3_zero()),
+                    end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "back",
+                },
+                back = {
+                    name = "back",
+                    start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3_zero()),
+                    end_rotation = vector3_box(vector3_zero()),
+                },
+            },
+            left = {
+                start = "step",
+                states = 2,
+                interval = .035,
+                interrupt = true,
+                step = {
+                    name = "step",
+                    start_position = vector3_box(vector3_zero()),
+                    start_rotation = vector3_box(vector3_zero()),
+                    end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "back",
+                },
+                back = {
+                    name = "back",
+                    start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3_zero()),
+                    end_rotation = vector3_box(vector3_zero()),
+                },
+            },
+        },
+        sheath = {
+            right = {
+                states = 3,
+                start = "place",
+                interrupt = true,
+                place = {
+                    name = "place",
+                    no_modifiers = true,
+                    start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, -90) * .5),
+                    end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "step",
+                },
+                step = {
+                    name = "step",
+                    start_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
                     end_position = vector3_box(vector3(-.05, 0, 0) * .5),
                     end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
                     next = "back",

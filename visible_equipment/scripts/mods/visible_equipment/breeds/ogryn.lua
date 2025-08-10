@@ -22,24 +22,24 @@ return {
             default = {
                 left = {
                     node = "j_spine2",
-                    position = vector3_box(.2, .35, -.15),
+                    position = vector3_box(.2, .5, -.25),
                     rotation = vector3_box(0, 90, 90),
                 },
                 right = {
                     node = "j_spine2",
-                    position = vector3_box(.3, .15, .15),
+                    position = vector3_box(.3, .5, .25),
                     rotation = vector3_box(0, -90, 90),
                 },
             },
             backpack = {
                 left = {
                     node = "j_spine2",
-                    position = vector3_box(.2, .7, -.15),
+                    position = vector3_box(.2, .5, -.45),
                     rotation = vector3_box(0, 90, 90),
                 },
                 right = {
                     node = "j_spine2",
-                    position = vector3_box(.3, .25, .25),
+                    position = vector3_box(.3, .7, .45),
                     rotation = vector3_box(0, -90, 90),
                 },
             },
@@ -55,7 +55,7 @@ return {
             backpack = {
                 right = {
                     node = "j_spine2",
-                    position = vector3_box(.5, .5, -.35),
+                    position = vector3_box(.5, .7, -.45),
                     rotation = vector3_box(0, 0, 90),
                 },
             },
@@ -66,6 +66,7 @@ return {
             default = {
                 right = {
                     start = "step",
+                    states = 2,
                     step = {
                         name = "step",
                         start_position = vector3_box(vector3_zero()),
@@ -84,6 +85,7 @@ return {
                 },
                 left = {
                     start = "step",
+                    states = 2,
                     step = {
                         name = "step",
                         start_position = vector3_box(vector3_zero()),
@@ -101,25 +103,107 @@ return {
                     },
                 },
             },
-            equip = {
+            shoot = {
                 right = {
-                    start = "equip",
-                    equip = {
-                        name = "equip",
+                    states = 2,
+                    start = "step",
+                    interval = .035,
+				    interrupt = true,
+                    step = {
+                        name = "step",
                         start_position = vector3_box(vector3_zero()),
                         start_rotation = vector3_box(vector3_zero()),
-                        end_position = "equip",
-                        end_rotation = "equip",
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "back",
+                    },
+                    back = {
+                        name = "back",
+                        start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3_zero()),
+                        end_rotation = vector3_box(vector3_zero()),
                     },
                 },
                 left = {
-                    start = "equip",
-                    equip = {
-                        name = "equip",
+                    start = "step",
+                    states = 2,
+                    interval = .035,
+				    interrupt = true,
+                    step = {
+                        name = "step",
                         start_position = vector3_box(vector3_zero()),
                         start_rotation = vector3_box(vector3_zero()),
-                        end_position = "equip",
-                        end_rotation = "equip",
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "back",
+                    },
+                    back = {
+                        name = "back",
+                        start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3_zero()),
+                        end_rotation = vector3_box(vector3_zero()),
+                    },
+                },
+            },
+            sheath = {
+                left = {
+                    states = 3,
+                    start = "place",
+                    interrupt = true,
+                    place = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, -90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    step = {
+                        name = "step",
+                        start_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "back",
+                    },
+                    back = {
+                        name = "back",
+                        start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3_zero()),
+                        end_rotation = vector3_box(vector3_zero()),
+                    },
+                },
+                right = {
+                    states = 3,
+                    start = "place",
+                    interrupt = true,
+                    place = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 90, -5) * .5),
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    step = {
+                        name = "step",
+                        start_position = vector3_box(vector3_zero()),
+                        start_rotation = vector3_box(vector3_zero()),
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "back",
+                    },
+                    back = {
+                        name = "back",
+                        start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3_zero()),
+                        end_rotation = vector3_box(vector3_zero()),
                     },
                 },
             },
@@ -128,6 +212,7 @@ return {
             default = {
                 right = {
                     start = "step",
+                    states = 2,
                     step = {
                         name = "step",
                         start_position = vector3_box(vector3_zero()),
@@ -146,6 +231,111 @@ return {
                 },
                 left = {
                     start = "step",
+                    states = 2,
+                    step = {
+                        name = "step",
+                        start_position = vector3_box(vector3_zero()),
+                        start_rotation = vector3_box(vector3_zero()),
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "back",
+                    },
+                    back = {
+                        name = "back",
+                        start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3_zero()),
+                        end_rotation = vector3_box(vector3_zero()),
+                    },
+                },
+            },
+            shoot = {
+                right = {
+                    states = 2,
+                    start = "step",
+                    interval = .035,
+				    interrupt = true,
+                    step = {
+                        name = "step",
+                        start_position = vector3_box(vector3_zero()),
+                        start_rotation = vector3_box(vector3_zero()),
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "back",
+                    },
+                    back = {
+                        name = "back",
+                        start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3_zero()),
+                        end_rotation = vector3_box(vector3_zero()),
+                    },
+                },
+                left = {
+                    start = "step",
+                    states = 2,
+                    interval = .035,
+				    interrupt = true,
+                    step = {
+                        name = "step",
+                        start_position = vector3_box(vector3_zero()),
+                        start_rotation = vector3_box(vector3_zero()),
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "back",
+                    },
+                    back = {
+                        name = "back",
+                        start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3_zero()),
+                        end_rotation = vector3_box(vector3_zero()),
+                    },
+                },
+            },
+            sheath = {
+                left = {
+                    states = 3,
+                    start = "place",
+                    interrupt = true,
+                    place = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, -90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    step = {
+                        name = "step",
+                        start_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "back",
+                    },
+                    back = {
+                        name = "back",
+                        start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        end_position = vector3_box(vector3_zero()),
+                        end_rotation = vector3_box(vector3_zero()),
+                    },
+                },
+                right = {
+                    states = 3,
+                    start = "place",
+                    interrupt = true,
+                    place = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 90, -5) * .5),
+                        end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
                     step = {
                         name = "step",
                         start_position = vector3_box(vector3_zero()),

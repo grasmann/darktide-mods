@@ -4,11 +4,22 @@ local mod = get_mod("visible_equipment")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local unit = Unit
     local CLASS = CLASS
     local actor = Actor
+    local world = World
+    local vector3 = Vector3
     local actor_unit = actor.unit
+    local quaternion = Quaternion
     local physics_world = PhysicsWorld
+    local world_unlink_unit = world.unlink_unit
+    local unit_world_position = unit.world_position
+    local unit_world_rotation = unit.world_rotation
+    local quaternion_multiply = quaternion.multiply
     local physics_world_raycast = physics_world.raycast
+    local quaternion_from_vector = quaternion.from_vector
+    local unit_set_local_position = unit.set_local_position
+    local unit_set_local_rotation = unit.set_local_rotation
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -69,6 +80,8 @@ mod:hook(CLASS.UIProfileSpawner, "init", function(func, self, reference_name, wo
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_service, ...)
+    -- Enable rotation input
+    self._rotation_input_disabled = false
     -- Original function
     func(self, dt, t, input_service, ...)
     -- Check spawn data
@@ -93,6 +106,9 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
     if self:valid_instance(profile) then
         self.pt.catch_unit = profile
     end
+    -- Ignore slots
+    self._ignored_slots[SLOT_SECONDARY] = nil
+	self._ignored_slots[SLOT_PRIMARY] = nil
     -- Original function
     func(self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
 end)
@@ -105,14 +121,17 @@ mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ..
 	end
 end)
 
--- mod:hook(CLASS.UIProfileSpawner, "_update_ingore_slots", function(func, self, ...)
-
--- end)
-
--- mod:hook(CLASS.UIProfileSpawner, "_handle_input", function(func, self, input_service, dt, ...)
---     -- Original function
---     func(self, input_service, dt, ...)
--- end)
+mod:hook(CLASS.UIProfileSpawner, "_spawn_companion", function(func, self, unit_3p, breed_name, position, rotation, attach_to_character, ...)
+    -- Original function
+    local companion_unit_3p = func(self, unit_3p, breed_name, position, rotation, attach_to_character, ...)
+    -- local companion_attach_index = Unit.has_node(unit_3p, "ap_companion") and Unit.node(unit_3p, "ap_companion") or 1
+    -- Unlink companion
+    world_unlink_unit(self._world, companion_unit_3p)
+    unit_set_local_position(companion_unit_3p, 1, unit_world_position(unit_3p, 1) + vector3(-.55, .65, 0))
+    unit_set_local_rotation(companion_unit_3p, 1, quaternion_from_vector(vector3(0, 0, 160)))
+    -- Return companion
+    return companion_unit_3p
+end)
 
 mod:hook(CLASS.UIProfileSpawner, "_get_raycast_hit", function(func, self, from, to, physics_world, collision_filter, ...)
 	-- Return custom raycast
