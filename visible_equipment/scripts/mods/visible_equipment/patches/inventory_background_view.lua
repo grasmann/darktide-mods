@@ -36,17 +36,4 @@ mod:hook(CLASS.InventoryBackgroundView, "on_enter", function(func, self, ...)
     func(self, ...)
     -- Update equipment position
     self:update_placements()
-    -- local profile_spawner = self._profile_spawner
-    -- -- Check profile spawner and character spawn data
-    -- if profile_spawner and profile_spawner._character_spawn_data then
-    --     local character_spawn_data = profile_spawner._character_spawn_data
-    --     -- Get equipment component
-    --     local equipment_component = character_spawn_data.equipment_component
-    --     -- Check equipment component
-    --     if equipment_component then
-    --         -- Position objects
-    --         equipment_component:position_objects()
-    --         equipment_component:animate_equipment()
-    --     end
-    -- end
 end)

@@ -35,15 +35,6 @@ mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
     local main_menu_background_view = mod:get_view("main_menu_background_view")
     if main_menu_background_view then
         main_menu_background_view:update_placements()
-        -- local profile_spawner = main_menu_background_view._profile_spawner
-        -- if profile_spawner and profile_spawner._character_spawn_data then
-        --     local character_spawn_data = profile_spawner._character_spawn_data
-        --     local equipment_component = character_spawn_data.equipment_component
-        --     if equipment_component then
-        --         equipment_component:position_objects()
-        --         equipment_component:animate_equipment()
-        --     end
-        -- end
     end
 
 end)

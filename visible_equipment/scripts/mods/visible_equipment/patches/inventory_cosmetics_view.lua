@@ -138,10 +138,6 @@ mod:hook(CLASS.InventoryCosmeticsView, "_preview_element", function(func, self, 
     func(self, element, ...)
     -- Update equipment component
     self:update_placements()
-    -- if self._profile_spawner and self._profile_spawner._character_spawn_data then
-    --     local equipment_component = self._profile_spawner._character_spawn_data.equipment_component
-    --     equipment_component:position_objects()
-    -- end
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_stop_previewing", function(func, self, ...)
@@ -149,8 +145,4 @@ mod:hook(CLASS.InventoryCosmeticsView, "_stop_previewing", function(func, self, 
     func(self, ...)
     -- Update equipment component
     self:update_placements()
-    -- if self._profile_spawner and self._profile_spawner._character_spawn_data then
-    --     local equipment_component = self._profile_spawner._character_spawn_data.equipment_component
-    --     equipment_component:position_objects()
-    -- end
 end)

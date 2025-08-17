@@ -73,9 +73,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
             local slot = element.slot
             slot_title = slot and slot.name or slot_title
             content.slot_title = mod:localize(slot_title.."_placement")
-
-            -- content.slot_title = slot_title and utf8_upper(localize(slot_title)) or ""
-
             
             local player = parent and parent.player and parent:player()
             local player_profile = player and player:profile()
