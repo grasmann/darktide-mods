@@ -1,51 +1,158 @@
 local mod = get_mod("weapon_customization")
 
--- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
--- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
--- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
-
---#region Require
-    local _common = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common")
-    local _common_melee = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/common_melee")
-    local _combatsword_p3_m1 = mod:io_dofile("weapon_customization/scripts/mods/weapon_customization/weapon_attachments/functions/combatsword_p3_m1")
---#endregion
-
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
-
---#region local functions
+-- #region Performance
+    local vector3 = Vector3
     local vector3_box = Vector3Box
-    local table = table
+    local vector3_zero = vector3.zero
 --#endregion
 
--- ##### ┌┬┐┌─┐┌─┐┬┌┐┌┬┌┬┐┬┌─┐┌┐┌┌─┐ ##################################################################################
--- #####  ││├┤ ├┤ │││││ │ ││ ││││└─┐ ##################################################################################
--- ##### ─┴┘└─┘└  ┴┘└┘┴ ┴ ┴└─┘┘└┘└─┘ ##################################################################################
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-return table.combine(
-    _combatsword_p3_m1,
-    {
-        attachments = {
-            trinket_hook = _common.trinket_hook_attachments(),
-            emblem_right = _common.emblem_right_attachments(),
-            emblem_left = _common.emblem_left_attachments(),
-            grip = _combatsword_p3_m1.grip_attachments(),
-            body = _combatsword_p3_m1.body_attachments(),
-            scabbard = _common_melee.scabbard_attachments(),
+return {
+    offsets = {
+        default = {
+			left = {
+				node = "j_spine2",
+				position = vector3_box(.2, .175, -.125),
+				rotation = vector3_box(0, 90, 90),
+			},
+			right = {
+				node = "j_spine2",
+				position = vector3_box(.3, .2, .15),
+				rotation = vector3_box(10, -90, -90),
+			},
+		},
+		backpack = {
+			left = {
+				node = "j_spine2",
+				position = vector3_box(.2, .35, -.125),
+				rotation = vector3_box(0, 90, 90),
+			},
+			right = {
+				node = "j_spine2",
+				position = vector3_box(.3, .2, .2),
+				rotation = vector3_box(0, -90, -120),
+			},
+		},
+    },
+    animations = {
+        default = {
+            right = {
+                states = 2,
+                start = "step",
+                step = {
+                    name = "step",
+                    start_position = vector3_box(vector3_zero()),
+                    start_rotation = vector3_box(vector3_zero()),
+                    end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "back",
+                },
+                back = {
+                    name = "back",
+                    start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3_zero()),
+                    end_rotation = vector3_box(vector3_zero()),
+                },
+            },
         },
-        models = table.combine(
-            _common.emblem_right_models("head", 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
-            _common.emblem_left_models("head", -3, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
-            _common.trinket_hook_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, 0)),
-            _combatsword_p3_m1.body_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2)),
-            _combatsword_p3_m1.grip_models(nil, 0, vector3_box(0, 0, 0), vector3_box(0, 0, -.2)),
-            _common_melee.scabbard_models("body", 0, vector3_box(0, 0, 0), vector3_box(0, 0, .2))
-        ),
-        anchors = {
-            fixes = {
-                {scabbard = {parent = "body", position = vector3_box(0, 0, .08), rotation = vector3_box(0, 0, 0), scale = vector3_box(1.36, 1.2, 1)}},
-            }
+        shoot = {
+            right = {
+				states = 2,
+				start = "step",
+				interval = .035,
+				interrupt = true,
+				step = {
+					name = "step",
+					start_position = vector3_box(vector3_zero()),
+					start_rotation = vector3_box(vector3_zero()),
+					end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+					end_rotation = vector3_box(vector3(-5, 2.5, 25) * .5),
+					next = "back",
+				},
+				back = {
+					name = "back",
+					start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+					start_rotation = vector3_box(vector3(-5, 2.5, 25) * .5),
+					end_position = vector3_box(vector3_zero()),
+					end_rotation = vector3_box(vector3_zero()),
+				},
+			},
+			left = {
+				start = "step",
+				states = 2,
+				interval = .035,
+				interrupt = true,
+				step = {
+					name = "step",
+					start_position = vector3_box(vector3_zero()),
+					start_rotation = vector3_box(vector3_zero()),
+					end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+					end_rotation = vector3_box(vector3(-5, 2.5, 25) * .5),
+					next = "back",
+				},
+				back = {
+					name = "back",
+					start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+					start_rotation = vector3_box(vector3(-5, 2.5, 25) * .5),
+					end_position = vector3_box(vector3_zero()),
+					end_rotation = vector3_box(vector3_zero()),
+				},
+			},
         },
-    }
-)
+        sheath = {
+            right = {
+                states = 3,
+                start = "place",
+                interrupt = true,
+                place = {
+                    name = "place",
+                    no_modifiers = true,
+                    start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, -90) * .5),
+                    end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "step",
+                },
+                step = {
+                    name = "step",
+                    start_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    next = "back",
+                },
+                back = {
+                    name = "back",
+                    start_position = vector3_box(vector3(-.05, 0, 0) * .5),
+                    start_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                    end_position = vector3_box(vector3_zero()),
+                    end_rotation = vector3_box(vector3_zero()),
+                },
+            },
+        },
+    },
+    sounds = {
+        crouching = {
+            "sfx_ads_up",
+            "sfx_ads_down",
+        },
+        default = {
+            "sfx_ads_up",
+            "sfx_ads_down",
+        },
+        accent = {
+            "sfx_equip",
+            "sfx_magazine_eject",
+            "sfx_magazine_insert",
+            "sfx_reload_lever_pull",
+            "sfx_reload_lever_release",
+        },
+    },
+}

@@ -1,5 +1,11 @@
 local mod = get_mod("visible_equipment")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -8,14 +14,24 @@ local mod = get_mod("visible_equipment")
     local CLASS = CLASS
     local actor = Actor
     local world = World
+    local table = table
+    local string = string
     local vector3 = Vector3
+    local table_size = table.size
     local actor_unit = actor.unit
     local quaternion = Quaternion
+    local vector3_box = Vector3Box
+    local string_find = string.find
+    local table_remove = table.remove
+    local vector3_zero = vector3.zero
     local physics_world = PhysicsWorld
+    local vector3_unbox = vector3_box.unbox
     local world_unlink_unit = world.unlink_unit
+    local quaternion_identity = quaternion.identity
     local unit_world_position = unit.world_position
     local unit_world_rotation = unit.world_rotation
     local quaternion_multiply = quaternion.multiply
+    local quaternion_to_vector = quaternion.to_vector
     local physics_world_raycast = physics_world.raycast
     local quaternion_from_vector = quaternion.from_vector
     local unit_set_local_position = unit.set_local_position
@@ -64,6 +80,19 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
         return profile and (profile.loadout[SLOT_PRIMARY] or profile.loadout[SLOT_SECONDARY])
     end
 
+    instance.placement_slot = function(self, profile)
+        profile = profile or self._character_spawn_data and self._character_spawn_data.profile
+        if profile then
+            local slot_body_torso = profile.loadout.slot_body_torso
+            local slot_gear_head = profile.loadout.slot_gear_head
+            local slot_primary = profile.loadout.slot_primary and not profile.loadout.slot_secondary
+            local slot_secondary = profile.loadout.slot_secondary and not profile.loadout.slot_primary
+            if (not slot_body_torso or not slot_body_torso.dev_name) and (not slot_gear_head or not slot_gear_head.dev_name) and (slot_primary or slot_secondary) then
+                return true
+            end
+        end
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -101,6 +130,26 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
     end
 end)
 
+mod.push_ui_profile_spawner_placement_name = function(self, name)
+    self.next_ui_profile_spawner_placement_name[#self.next_ui_profile_spawner_placement_name+1] = name
+end
+
+mod.pop_ui_profile_spawner_placement_name = function(self)
+    local name = self.next_ui_profile_spawner_placement_name[1]
+    table_remove(self.next_ui_profile_spawner_placement_name, 1)
+    return name
+end
+
+mod:hook(CLASS.UIProfileSpawner, "_despawn_current_character_profile", function(func, self, ...)
+    -- Original function
+    func(self, ...)
+
+    if self.default_pose then
+        ScriptCamera.set_local_position(self._camera, vector3_unbox(self.default_pose.position))
+        self._rotation_angle = self.default_pose.rotation
+    end
+end)
+
 mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
     -- Catch profile
     if self:valid_instance(profile) then
@@ -108,7 +157,48 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
     end
     -- Ignore slots
     self._ignored_slots[SLOT_SECONDARY] = nil
-	self._ignored_slots[SLOT_PRIMARY] = nil
+    self._ignored_slots[SLOT_PRIMARY] = nil
+
+    -- Get camera data
+    if not self.default_pose and self._camera then
+        self.default_pose = {
+            position = vector3_box(ScriptCamera.local_position(self._camera)),
+            rotation = self._rotation_angle,
+        }
+    end
+
+    if self.default_pose and self._camera then
+        ScriptCamera.set_local_position(self._camera, vector3_unbox(self.default_pose.position))
+        self._rotation_angle = self.default_pose.rotation
+    end
+
+    if (self:placement_slot(profile) and (self._reference_name == "PortraitUI") or self._reference_name == "InventoryCosmeticsView") then
+
+        local placement = mod.next_ui_profile_spawner_placement_name[profile.character_id]
+        if placement and self._camera then
+
+            local offset = mod.settings.placement_camera[placement]
+            local position = offset and offset.position and vector3_unbox(offset.position) or vector3_zero()
+
+            if self._reference_name == "InventoryCosmeticsView" then
+                position = position + vector3(0, 3, 0)
+            end
+
+            ScriptCamera.set_local_position(self._camera, position)
+
+            self._rotation_angle = offset and offset.rotation or 0
+
+            local primary = profile.loadout[SLOT_PRIMARY]
+            local secondary = profile.loadout[SLOT_SECONDARY]
+
+            local gear_id = primary and primary.gear_id or secondary and secondary.gear_id
+
+            if gear_id then
+                mod:gear_placement(gear_id, placement)
+            end
+        end
+    end
+
     -- Original function
     func(self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
 end)

@@ -22,6 +22,41 @@ return {
                 rotation = vector3_box(-10, 0, 90),
             },
         },
+        hip_back = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(.05, -.2, 0),
+                rotation = vector3_box(0, 0, 90),
+            },
+        },
+        leg_left = {
+            right = {
+                node = "j_leftupleg",
+                position = vector3_box(.1, .125, -.15),
+                rotation = vector3_box(290, 220, 100),
+            },
+        },
+        leg_right = {
+            right = {
+                node = "j_rightupleg",
+                position = vector3_box(-.1, -.125, 0),
+                rotation = vector3_box(290, 220 + 180, 280 + 180),
+            },
+        },
+        hip_left = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(-.2, .125, 0),
+                rotation = vector3_box(180+45, 180, 0),
+            },
+        },
+        hip_right = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(.2, .125, 0),
+                rotation = vector3_box(180+45, 180, 30),
+            },
+        },
         backpack = {
             right = {
                 node = "j_spine2",
@@ -30,7 +65,7 @@ return {
             },
         },
     },
-    footstep_animations = {
+    animations = {
         default = {
             right = {
                 states = 2,

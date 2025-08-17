@@ -7,7 +7,6 @@ local mod = get_mod("visible_equipment")
 local visual_loadout_customization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 local player_character_sound_event_aliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
 local weapon_templates = mod:original_require("scripts/utilities/weapon/weapon_template")
-local settings = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/settings")
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
 -- ##### │  │  ├─┤└─┐└─┐ ##############################################################################################
@@ -28,10 +27,12 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local rawget = rawget
     local vector3 = Vector3
     local tostring = tostring
+    local managers = Managers
     local math_abs = math.abs
     local matrix4x4 = Matrix4x4
     local unit_node = unit.node
     local math_lerp = math.lerp
+    local table_keys = table.keys
     local math_clamp = math.clamp
     local unit_alive = unit.alive
     local table_size = table.size
@@ -95,15 +96,20 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.from_ui_profile_spawner = extension_init_data.from_ui_profile_spawner
     self.profile = unit_get_data(unit, "visible_equipment_profile")
     self.unit = unit
+    self.is_local_unit = self.unit == mod:me() and not self.from_ui_profile_spawner
     self.rotation = vector3_box(quaternion_to_vector(unit_local_rotation(unit, 1)))
     self.difference = 1
     self.right_foot_next = true
+    self.settings = mod.settings
     -- Clear slot tables
     self:clear_slot_tables()
     -- Create equipment component tables
     self:reset_pt_tables()
     -- Initialized
     self.initialized = true
+    -- Events
+    managers.event:register(self, "visible_equipment_settings_changed", "on_settings_changed")
+    self:on_settings_changed()
 end
 
 VisibleEquipmentExtension.extensions_ready = function(self)
@@ -121,7 +127,16 @@ VisibleEquipmentExtension.extensions_ready = function(self)
     self.sprint_character_state_component = self.unit_data and self.unit_data:read_component("sprint_character_state")
 end
 
+VisibleEquipmentExtension.on_settings_changed = function(self)
+    self.sound_self = mod:get("mod_option_sounds_self")
+    self.sound_others = mod:get("mod_option_sounds_others")
+    self.animations = mod:get("mod_option_animations")
+    self.random_placements = mod:get("mod_option_random_placements")
+end
+
 VisibleEquipmentExtension.destroy = function(self)
+    -- Events
+    managers.event:unregister(self, "visible_equipment_settings_changed")
     -- Initialized
     self.initialized = false
     -- Delete visible equipment
@@ -213,6 +228,20 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
             end_position = {},
             end_rotation = {},
         }
+        -- Sheathed
+        self.sheathed[slot] = true
+        -- Iterate through objects
+        for index, obj in pairs(self.objects[slot]) do
+            -- Anim values
+            self.anim[slot].default_position[obj] = vector3_box(vector3_zero())
+            self.anim[slot].default_rotation[obj] = vector3_box(vector3_zero())
+            self.anim[slot].start_position[obj] = vector3_box(vector3_zero())
+            self.anim[slot].start_rotation[obj] = vector3_box(vector3_zero())
+            self.anim[slot].end_position[obj] = vector3_box(vector3_zero())
+            self.anim[slot].end_rotation[obj] = vector3_box(vector3_zero())
+            self.anim[slot].current_position[obj] = vector3_box(vector3_zero())
+            self.anim[slot].current_rotation[obj] = vector3_box(vector3_zero())
+        end
         -- Set loaded
         self.loaded[slot] = true
         -- Position slot objects
@@ -294,7 +323,7 @@ VisibleEquipmentExtension.unwield_slot = function(self, slot)
         -- Animate
         self:animate_equipment(slot, "sheath", 10)
         -- Sound
-        self:play_equipment_sound(slot)
+        self:play_equipment_sound(slot, "accent")
     end
 end
 
@@ -310,7 +339,7 @@ end
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-VisibleEquipmentExtension.has_backpack = function(self)
+VisibleEquipmentExtension.get_backpack = function(self)
     -- Get current profile value
     local profile = self.profile
     -- Get loadout from profile
@@ -318,7 +347,7 @@ VisibleEquipmentExtension.has_backpack = function(self)
     -- Get backpack name
     local name = slot_gear_extra_cosmetic and slot_gear_extra_cosmetic.__master_item.dev_name
     -- Return if name is not empty backpack
-    return name and name ~= EMPTY_BACKPACK_DEV
+    return name ~= EMPTY_BACKPACK_DEV and name
 end
 
 VisibleEquipmentExtension.attach_settings = function(self, slot)
@@ -327,6 +356,22 @@ VisibleEquipmentExtension.attach_settings = function(self, slot)
     -- attach_settings.from_script_component = true
     attach_settings.skip_link_children = true
     return attach_settings
+end
+
+VisibleEquipmentExtension.is_me = function(self)
+    return mod:me() == self.unit
+end
+
+VisibleEquipmentExtension.should_play_sound = function(self)
+    if self:is_me() then
+        local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+        local on = self.sound_self == "on"
+        local fp = in_first_person and (on or self.sound_self == "first_person")
+        local tp = not in_first_person and (on or self.sound_self == "third_person")
+        return fp or tp
+    else
+        return self.sound_others == "on"
+    end
 end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
@@ -341,41 +386,76 @@ VisibleEquipmentExtension.position_objects = function(self)
     end
 end
 
+-- local debugged_backpacks = {}
+-- local debug_backpack = function(name)
+--     if not debugged_backpacks[name] then
+--         debugged_backpacks[name] = true
+--         mod:dtf(debugged_backpacks, "debugged_backpacks", 10)
+--     end
+-- end
+-- local last_backpack = nil
+
 VisibleEquipmentExtension.position_slot_objects = function(self, slot)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
         -- Get offset
         local name = self.names[slot][index]
         -- Check backpack
-        local backpack = self:has_backpack() and "backpack" or "default"
+        -- local backpacks = self.settings.backpacks
+        local backpack_name = self:get_backpack()
+        local backpack_table = backpack_name and self.settings.backpacks[backpack_name] or
+            self.settings.backpacks.default
+        local backpack_item_table = backpack_table and backpack_table[slot.item.item_type]
+        local backpack_values = backpack_item_table and backpack_item_table[name] or
+            backpack_table[name]
+        -- if backpack_name then
+        -- mod:echo(backpack_name)
+        --     -- last_backpack = backpack_name
+        -- --     -- debug_backpack(backpack_name)
+        -- --     -- mod:echo("Values: "..tostring(backpack_values))
+        -- end
+        local backpack_group = backpack_name and "backpack" or "default"
         -- Item offsets
-        local item_offset = settings.offsets[slot.item.weapon_template]
-        local offset = item_offset and item_offset[backpack][name]
+        local item_offset = self.settings.offsets[slot.item.weapon_template]
+        -- local placement = self.pt.gear_placements[slot.item.gear_id]
+        local placement = mod:gear_placement(slot.item.gear_id, nil, nil, true) --or "default" --or self.pt.gear_placements[slot.item.gear_id]
+        if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
+        if placement == "backpack" and backpack_group == "default" then placement = "default" end
+        -- if self.random_placements and not placement and not self.is_local_unit and item_offset and item_offset[placement] then
+        --     local count = table_size(item_offset[placement])
+        --     placement = table_keys(item_offset[placement])[math_random(1, count)]
+        -- end
+        local offset = (item_offset and item_offset[placement] and item_offset[placement][name]) or (item_offset and item_offset[backpack_group][name])
+        -- offset = (item_offset and item_offset.leg_right and item_offset.leg_right[name]) or offset
         -- Breed offsets
-        local breed_offsets = settings.offsets[slot.breed_name][slot.item.item_type]
-        local offset = offset or breed_offsets[backpack][name] or breed_offsets[backpack].right
+        local breed_offsets = self.settings.offsets[slot.breed_name][slot.item.item_type]
+        local offset = offset or breed_offsets[backpack_group][name] or
+            breed_offsets[backpack_group].right
         -- Node
         local node_name = offset and offset.node or "j_spine2"
         local node_index = unit_has_node(self.unit, node_name) and unit_node(self.unit, node_name)
         -- Position and rotation
         local position = offset and offset.position and vector3_unbox(offset.position) or vector3_zero()
-        local rotation = offset and offset.rotation and quaternion_from_vector(vector3_unbox(offset.rotation)) or quaternion_identity()
+        local rotation = offset and offset.rotation and vector3_unbox(offset.rotation) or vector3_zero()
+        -- Backpack
+        position = position + vector3_unbox(backpack_values.position)
+        rotation = rotation + vector3_unbox(backpack_values.rotation)
         -- Link visible equipment
         local world = self.equipment_component._world
         world_unlink_unit(world, obj)
         world_link_unit(world, obj, 1, self.unit, node_index)
         -- Set offset
         unit_set_local_position(obj, 1, position)
-        unit_set_local_rotation(obj, 1, rotation)
-        -- Anim values
-        self.anim[slot].default_position[obj] = vector3_box(position)
-        self.anim[slot].default_rotation[obj] = vector3_box(quaternion_to_vector(rotation))
-        self.anim[slot].start_position[obj] = vector3_box(vector3_zero())
-        self.anim[slot].start_rotation[obj] = vector3_box(vector3_zero())
-        self.anim[slot].end_position[obj] = vector3_box(vector3_zero())
-        self.anim[slot].end_rotation[obj] = vector3_box(vector3_zero())
-        self.anim[slot].current_position[obj] = vector3_box(vector3_zero())
-        self.anim[slot].current_rotation[obj] = vector3_box(vector3_zero())
+        unit_set_local_rotation(obj, 1, quaternion_from_vector(rotation))
+        -- -- Anim values
+        self.anim[slot].default_position[obj]:store(position)
+        self.anim[slot].default_rotation[obj]:store(rotation)
+        self.anim[slot].start_position[obj]:store(vector3_zero())
+        self.anim[slot].start_rotation[obj]:store(vector3_zero())
+        self.anim[slot].end_position[obj]:store(vector3_zero())
+        self.anim[slot].end_rotation[obj]:store(vector3_zero())
+        self.anim[slot].current_position[obj]:store(vector3_zero())
+        self.anim[slot].current_rotation[obj]:store(vector3_zero())
     end
 end
 
@@ -399,6 +479,10 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
                     -- Set visibility
                     unit_set_unit_visibility(obj, self.visible[slot], true)
                 end
+                -- Animation in ui profile spawner
+                if self.visible[slot] and not self.sheathed[slot] and self.from_ui_profile_spawner then
+                    self:unwield_slot(slot)
+                end
             end
         end
     end
@@ -408,25 +492,34 @@ end
 -- ##### └─┐│ ││ ││││ ││└─┐ ###########################################################################################
 -- ##### └─┘└─┘└─┘┘└┘─┴┘└─┘ ###########################################################################################
 
-VisibleEquipmentExtension.play_equipment_sound = function(self, optional_slot)
+VisibleEquipmentExtension.play_equipment_sound = function(self, optional_slot, optional_effect)
+    -- Exit when sound requirements are not met
+    if not self:should_play_sound() then return end
+    -- Play sound
     if not optional_slot then
         -- Iterate through equipment
         for slot, units in pairs(self.objects) do
-            self:play_equipment_slot_sound(slot)
+            -- Play sound for slot
+            self:play_equipment_slot_sound(slot, optional_effect)
         end
     else
-        self:play_equipment_slot_sound(optional_slot)
+        -- Play sound for slot
+        self:play_equipment_slot_sound(optional_slot, optional_effect)
     end
 end
 
-VisibleEquipmentExtension.play_equipment_slot_sound = function(self, slot)
-    if self.loaded[slot] and self.wielded_slot ~= slot.name then
+VisibleEquipmentExtension.play_equipment_slot_sound = function(self, slot, effect)
+    -- Exit when sound requirements are not met
+    if not self:should_play_sound() then return end
+    -- Play sound
+    if self.loaded[slot] and (self.wielded_slot ~= slot.name or self.sheathing[slot]) then
         -- Get slot data
         local weapon_template = slot.item.weapon_template
         local breed_name = slot.breed_name
         local item_type = slot.item.item_type
+        effect = effect or "default"
         -- Get sounds
-        local sounds =  settings.sounds[weapon_template] or settings.sounds[breed_name][item_type] or settings.sounds.default[item_type]
+        local sounds =  self.settings.sounds[weapon_template] or self.settings.sounds[breed_name][item_type] or self.settings.sounds.default[item_type]
         local group = nil
         -- Get character state
         if sounds then
@@ -449,8 +542,12 @@ VisibleEquipmentExtension.play_equipment_slot_sound = function(self, slot)
             if accent and sounds.accent and #sounds.accent > 0 and not self.accent[slot] then
                 self.accent[slot] = mod:time() + accent_timeout
                 group = sounds.accent[math_random(#sounds.accent)]
+            elseif self.sheathing[slot] then
+                group = "sfx_equip"
             elseif is_crouching and sounds.crouching and #sounds.crouching > 0 then
                 group = sounds.crouching[math_random(#sounds.crouching)]
+            elseif sounds[effect] and #sounds[effect] > 0 then
+                group = sounds[effect][math_random(#sounds[effect])]
             elseif sounds.default and #sounds.default > 0 then
                 group = sounds.default[math_random(#sounds.default)]
             end
@@ -515,28 +612,23 @@ VisibleEquipmentExtension.update = function(self, dt, t)
     local rotation_unit = (not mod:is_in_hub() and first_person_unit) or self.unit
     local rotation = quaternion_to_vector(unit_world_rotation(rotation_unit, 1))
     local difference = math_clamp((vector3_unbox(self.rotation) - rotation)[3], -10, 10)
-    self.difference = math_lerp(self.difference, difference, dt * 5)
-    -- local bigger = (self.difference > 0 and self.difference < difference) or (self.difference < 0 and self.difference > difference)
-    -- if bigger then
-    --     self.difference = math_lerp(self.difference, difference, dt * 20)
-    --     -- self.difference = difference
-    -- else
-    --     self.difference = math_lerp(self.difference, difference, dt * 5)
-    -- end
+    self.difference = math_lerp(self.difference, difference, dt * 4)
     self.rotation:store(rotation)
-
     -- Iterate through equipment
     for slot, units in pairs(self.objects) do
         -- Update accent
         if self.accent[slot] and self.accent[slot] < t then
             self.accent[slot] = nil
         end
-        -- Update animation interval
-        for index, obj in pairs(self.objects[slot]) do
-            self.anim[slot].interval[obj] = self:footstep_interval(slot)
-        end
         -- Update animation
-        self:update_animation(dt, t, slot)
+        if self.animations then
+            -- Update animation interval
+            for index, obj in pairs(self.objects[slot]) do
+                self.anim[slot].interval[obj] = self:footstep_interval(slot)
+            end
+            -- Update animation
+            self:update_animation(dt, t, slot)
+        end
     end
 
 end
@@ -546,6 +638,9 @@ end
 -- ##### ┴ ┴┘└┘┴┴ ┴┴ ┴ ┴ ┴└─┘┘└┘ ######################################################################################
 
 VisibleEquipmentExtension.animate_equipment = function(self, optional_slot, optional_animation, optional_strength)
+    -- Exit when animations are not enabled
+    if not self.animations then return end
+    -- Animate
     local animation = optional_animation or "default"
     if not optional_slot then
         for slot, units in pairs(self.objects) do
@@ -557,23 +652,21 @@ VisibleEquipmentExtension.animate_equipment = function(self, optional_slot, opti
 end
 
 VisibleEquipmentExtension.animate_slot = function(self, slot, animation, strength_override)
+    -- Exit when animations are not enabled
+    if not self.animations then return end
+    -- Animate, iterate through slot objects
     for index, obj in pairs(self.objects[slot]) do
-
+        -- Get animation
         local anim = self.anim[slot]
         local name = self.names[slot][index]
-        local animation_table = settings.footstep_animations[slot.item.weapon_template] or
-            settings.footstep_animations[slot.breed_name][slot.item.item_type] or
-            settings.footstep_animations
-
-        -- local breed_table = settings.footstep_animations[slot.breed_name]
-        -- local breed_item_table = breed_table and breed_table[slot.item.item_type]
-        -- local breed_animation = breed_item_table and breed_item_table[name]
+        local animation_table = self.settings.animations[slot.item.weapon_template] or
+            self.settings.animations[slot.breed_name][slot.item.item_type] or
+            self.settings.animations
         local specific_animation = animation_table[animation] and animation_table[animation][name]
         local new_animation = specific_animation or animation_table[name]
-        -- if not self.sheathing[slot] or animation ~= "default" then
-        -- if not anim.current[obj] or new_animation.interrupt or animation == "default" then
-        -- if not anim.current[obj] or new_animation.interrupt or anim.current[obj] == anim.previous[obj] then
-        if not anim.current[obj] or not anim.current[obj].interrupt then
+        -- Check animation requirements
+        if not anim.current[obj] or new_animation.interrupt or not anim.current[obj].interrupt then
+            -- Set animation
             anim.previous[obj] = new_animation
             anim.current[obj] = new_animation
             anim.strength_override[obj] = strength_override
@@ -586,7 +679,6 @@ end
 VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
-
         -- Swing
         local angle = self.difference
         -- reduce the angle
@@ -596,20 +688,20 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
         -- force into the minimum absolute value residue class, so that -180 < angle <= 180
         if angle > 180 then angle = angle - 360 end
         -- angle = angle * weight_factor
-        angle = angle * -1
-        -- Calculate momentum_drag 
-        local momentum_drag = vector3_zero()
-        local multiplier = self.from_ui_profile_spawner and -2 or 2
-        if self.names[slot][index] == "left" then
-            momentum_drag = vector3(angle, 0, math.abs(angle) * .5) * multiplier
-        elseif slot.item.item_type == WEAPON_MELEE then
-            -- momentum_drag = vector3(5, 10, 2.5) * self.difference
-            momentum_drag = vector3(-angle, -angle, math.abs(angle) * .5) * multiplier
-        elseif slot.item.item_type == WEAPON_RANGED then
-            -- momentum_drag = vector3(5, -10, 2.5) * self.difference
-            momentum_drag = vector3(angle, -angle, math.abs(angle) * .5) * multiplier
+        if not self.from_ui_profile_spawner then
+            angle = angle * -1
         end
+        -- Momentum vector
+        local item_momentum = self.settings.momentum[slot.item.weapon_template]
+        local side_momentum = item_momentum and item_momentum[self.names[slot][index]]
+        local default_momentum = self.settings.momentum[slot.item.item_type][self.names[slot][index]]
+        local momentum = (side_momentum and side_momentum.momentum) or (default_momentum and default_momentum.momentum)
+        local momentum_vector = momentum and vector3_unbox(momentum) or vector3_zero()
 
+        -- Calculate momentum_drag 
+        -- local momentum_drag = vector3_zero()
+        local multiplier = self.from_ui_profile_spawner and -2 or 2
+        local momentum_drag = (momentum_vector * angle) * multiplier
         -- Get foot side
         local right_foot_next = self.right_foot_next
         -- Check if first person extension is set up
@@ -619,7 +711,6 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
         end
         
         local anim = self.anim[slot]
-
         -- Check for current active animation
         if anim.current[obj] then
             -- Check if not started yet
@@ -645,7 +736,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
 
             -- Get interval
             local states = anim.current[obj].states
-            local interval = anim.current[obj].interval or anim.interval[obj] / states
+            local interval = anim.current[obj].interval or self:footstep_interval(slot) / states --anim.interval[obj] / states
             -- local interval = anim.interval[obj] / states
             -- Get state
             local state = anim.state[obj]
@@ -672,6 +763,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
 
             -- Check if any animation is started
             if anim.started[obj] then
+                self.sheathing[slot] = nil
                 -- Calculate progress
                 -- local progress = (anim.ending[obj] - t) / interval
                 local progress = ((anim.started[obj] + interval) - t) / interval
@@ -709,17 +801,17 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 local end_position = vector3_unbox(anim.end_position[obj]) * end_strength
                 local end_rotation = vector3_unbox(anim.end_rotation[obj]) * end_strength
                 -- Calculate current target positions and rotations
-                local target_position = vector3_lerp(start_position, end_position, anim_progress)
-                local target_rotation = vector3_lerp(start_rotation, end_rotation, anim_progress)
+                local target_position = vector3_lerp(start_position, end_position, progress)
+                local target_rotation = vector3_lerp(start_rotation, end_rotation, progress)
                 -- Calculate current positions and rotations
-                local current_position = vector3_lerp(vector3_unbox(anim.current_position[obj]), target_position, dt * 20)
-                local current_rotation = vector3_lerp(vector3_unbox(anim.current_rotation[obj]), target_rotation, dt * 20)
+                local current_position = vector3_lerp(vector3_unbox(anim.current_position[obj]), target_position, anim_progress)
+                local current_rotation = vector3_lerp(vector3_unbox(anim.current_rotation[obj]), target_rotation, anim_progress)
                 -- Store current positions and rotations
                 anim.current_position[obj]:store(current_position)
                 anim.current_rotation[obj]:store(current_rotation)
                 -- Calculate final positions and rotations
                 local position = vector3_unbox(anim.default_position[obj]) + current_position
-                local rotation = vector3_unbox(anim.default_rotation[obj]) + current_rotation
+                local rotation = quaternion_from_vector(vector3_unbox(anim.default_rotation[obj]) + current_rotation)
                 -- Set final positions and rotations
                 unit_set_local_position(obj, 1, position)
                 unit_set_local_rotation(obj, 1, rotation)
@@ -734,7 +826,9 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
         local rotation = vector3_unbox(anim.default_rotation[obj]) + current_rotation
         -- Set final positions and rotations
         -- unit_set_local_position(obj, 1, position)
-        rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(momentum_drag))
+        local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
+        local rotated_pos = matrix4x4_transform(mat, momentum_drag)
+        rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(rotated_pos))
         unit_set_local_rotation(obj, 1, rotation)
 
     end
@@ -808,49 +902,3 @@ VisibleEquipmentExtension.set_pt_tables = function(self, slot, item_unit, attach
     self.pt.unit_attachment_names_by_equipment_component[self.equipment_component][slot.name] = attachment_names
     self.pt.item_names_by_equipment_component[self.equipment_component][slot.name] = item_name
 end
-
--- ##### ┬─┐┌─┐┌─┐┌─┐┬┬   #############################################################################################
--- ##### ├┬┘├┤ │  │ │││   #############################################################################################
--- ##### ┴└─└─┘└─┘└─┘┴┴─┘ #############################################################################################
-
-mod:hook(CLASS.ActionShootHitScan, "_shoot", function(func, self, position, rotation, power_level, charge_level, t, fire_config, ...)
-    -- Original function
-    func(self, position, rotation, power_level, charge_level, t, fire_config, ...)
-    -- Get equipment component
-    if self._player_unit and unit_alive(self._player_unit) then
-        local equipment_component = unit_get_data(self._player_unit, "visible_equipment_component")
-        -- Check visible equipment system
-        if equipment_component and equipment_component.visible_equipment_system then
-            -- Animate
-            equipment_component.visible_equipment_system:animate_equipment(nil, "shoot", 5)
-        end
-    end
-end)
-
-mod:hook(CLASS.ActionShootPellets, "_shoot", function(func, self, position, rotation, power_level, charge_level, t, fire_config, ...)
-    -- Original function
-    func(self, position, rotation, power_level, charge_level, t, fire_config, ...)
-    -- Get equipment component
-    if self._player_unit and unit_alive(self._player_unit) then
-        local equipment_component = unit_get_data(self._player_unit, "visible_equipment_component")
-        -- Check visible equipment system
-        if equipment_component and equipment_component.visible_equipment_system then
-            -- Animate
-            equipment_component.visible_equipment_system:animate_equipment(nil, "shoot", 10)
-        end
-    end
-end)
-
-mod:hook(CLASS.ActionShootProjectile, "_shoot", function(func, self, position, rotation, power_level, charge_level, t, fire_config, ...)
-    -- Original function
-    func(self, position, rotation, power_level, charge_level, t, fire_config, ...)
-    -- Get equipment component
-    if self._player_unit and unit_alive(self._player_unit) then
-        local equipment_component = unit_get_data(self._player_unit, "visible_equipment_component")
-        -- Check visible equipment system
-        if equipment_component and equipment_component.visible_equipment_system then
-            -- Animate
-            equipment_component.visible_equipment_system:animate_equipment(nil, "shoot", 5)
-        end
-    end
-end)

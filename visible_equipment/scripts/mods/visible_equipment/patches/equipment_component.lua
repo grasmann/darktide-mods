@@ -86,6 +86,14 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         end
     end
 
+    instance.animate_equipment = function(self, optional_slot, optional_animation, optional_strength)
+        -- Check visible equipment system
+        if self.visible_equipment_system then
+            -- Update visible equipment
+            self.visible_equipment_system:animate_equipment(optional_slot, optional_animation, optional_strength)
+        end
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -139,13 +147,11 @@ mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_pers
     -- Original function
     func(slot, first_person_mode, ...)
     -- Get equipment component
-    if slot.parent_unit_3p and unit_alive(slot.parent_unit_3p) then
-        local equipment_component = unit_get_data(slot.parent_unit_3p, "visible_equipment_component")
-        -- Check visible equipment system
-        if equipment_component and equipment_component.visible_equipment_system then
-            -- Load slot
-            equipment_component.visible_equipment_system:wield_slot(slot)
-        end
+    local equipment_component = mod:equipment_component_from_unit(slot.parent_unit_3p)
+    -- Check visible equipment system
+    if equipment_component and equipment_component.visible_equipment_system then
+        -- Load slot
+        equipment_component.visible_equipment_system:wield_slot(slot)
     end
 end)
 
@@ -153,13 +159,11 @@ mod:hook(CLASS.EquipmentComponent, "unwield_slot", function(func, slot, first_pe
     -- Original function
     func(slot, first_person_mode, ...)
     -- Get equipment component
-    if slot.parent_unit_3p and unit_alive(slot.parent_unit_3p) then
-        local equipment_component = unit_get_data(slot.parent_unit_3p, "visible_equipment_component")
-        -- Check visible equipment system
-        if equipment_component and equipment_component.visible_equipment_system then
-            -- Load slot
-            equipment_component.visible_equipment_system:unwield_slot(slot)
-        end
+    local equipment_component = mod:equipment_component_from_unit(slot.parent_unit_3p)
+    -- Check visible equipment system
+    if equipment_component and equipment_component.visible_equipment_system then
+        -- Load slot
+        equipment_component.visible_equipment_system:unwield_slot(slot)
     end
 end)
 
@@ -187,7 +191,7 @@ mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equi
     -- Original function
     func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
     -- Get equipment component
-    local equipment_component = unit_get_data(unit_3p, "visible_equipment_component")
+    local equipment_component = mod:equipment_component_from_unit(unit_3p)
     -- Check visible equipment system
     if equipment_component and equipment_component.visible_equipment_system then
         -- Update slot
