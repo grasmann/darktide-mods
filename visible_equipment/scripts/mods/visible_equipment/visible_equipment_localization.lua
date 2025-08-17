@@ -67,57 +67,71 @@ return {
 	mod_option_animations_tooltip = {
 		en = "Toggle animations.",
 		de = "Aktiviere Animationen.",
+		["zh-cn"] = "切换动画效果",
 	},
 	mod_option_random_placements = {
 		en = "Random Placements",
 		de = "Zufallige Platzierungen",
+		["zh-cn"] = "随机位置",
 	},
 	mod_option_random_placements_tooltip = {
 		en = "Random equipment placements for other players.",
 		de = "Zufallige Ausrüstungsplatzierungen für andere Spieler.",
+		["zh-cn"] = "为其他玩家随机生成装备位置",
 	},
 	slot_primary_placement = {
 		en = "Primary Placement",
 		de = "Primäre Platzierung",
+		["zh-cn"] = "主武器位置",
 	},
 	slot_secondary_placement = {
 		en = "Secondary Placement",
 		de = "Sekundäre Platzierung",
+		["zh-cn"] = "副武器位置",
 	},
 	placement_leg_left = {
 		en = "Left Leg",
 		de = "Linkes Bein",
+		["zh-cn"] = "左腿",
 	},
 	placement_leg_right = {
 		en = "Right Leg",
 		de = "Rechtes Bein",
+		["zh-cn"] = "右腿",
 	},
 	placement_hip_front = {
 		en = "Hips Front",
 		de = "Hüfte Vorne",
+		["zh-cn"] = "腰部前方",
 	},
 	placement_hip_right = {
 		en = "Hips Right",
 		de = "Hüfte Rechts",
+		["zh-cn"] = "腰部右侧",
 	},
 	placement_hip_left = {
 		en = "Hips Left",
 		de = "Hüfte Links",
+		["zh-cn"] = "腰部左侧",
 	},
 	placement_hip_back = {
 		en = "Hips Back",
 		de = "Hüfte Hinten",
+		["zh-cn"] = "腰部后方",
 	},
 	placement_default = {
 		en = "Default",
 		de = "Standard",
+		["zh-cn"] = "默认位置",
 	},
 	placement_back = {
 		en = "Back",
 		de = "Rücken",
+		["zh-cn"] = "背部",
 	},
 	placement_backpack = {
 		en = "Backpack",
 		de = "Rucksack",
+		["zh-cn"] = "背包位置",
 	},
 }
