@@ -22,7 +22,6 @@ mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/u
 mod.next_ui_profile_spawner_placement_name = {}
 
 local REFERENCE = "visible_equipment"
-local COSMETIC_VIEW = "inventory_cosmetics_view"
 
 mod:persistent_table(REFERENCE, {
     equipment_components = {},
@@ -65,7 +64,7 @@ mod.get_view = function(self, view_name)
 end
 
 mod.get_cosmetic_view = function(self)
-	return self:get_view(COSMETIC_VIEW)
+	return self:get_view("inventory_cosmetics_view")
 end
 
 mod.vector3_equal = function(self, v1, v2)

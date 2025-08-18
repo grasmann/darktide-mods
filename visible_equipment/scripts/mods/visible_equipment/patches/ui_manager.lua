@@ -14,9 +14,13 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local CLASS = CLASS
     local table = table
     local string = string
+	local vector3 = Vector3
     local managers = Managers
+	local vector3_box = Vector3Box
+	local vector3_zero = vector3.zero
     local string_format = string.format
     local table_is_empty = table.is_empty
+	local vector3_unbox = vector3_box.unbox
     local table_clone_instance = table.clone_instance
 --#endregion
 
@@ -24,8 +28,6 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
-local vector3_unbox = Vector3Box.unbox
-local vector3_zero = Vector3.zero
 mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, render_context, dummy_profile, prioritize, unload_cb, ...)
 
     local item_name = real_item.name
@@ -44,6 +46,7 @@ mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, 
 	local item_type = item.item_type
 
     if render_context and render_context.custom_slot_name == "slot_primary_placement" then
+
         render_context = render_context or {}
 
 		local player = managers.player:local_player(1)
@@ -96,7 +99,9 @@ mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, 
 		local instance = self._back_buffer_render_handlers.cosmetics
 
 		return instance:load_profile_portrait(dummy_profile, cb, render_context, prioritize, unload_cb)
+
     elseif render_context and render_context.custom_slot_name == "slot_secondary_placement" then
+
         render_context = render_context or {}
 
 		local player = managers.player:local_player(1)
@@ -155,6 +160,7 @@ mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, 
 		local instance = self._back_buffer_render_handlers.cosmetics
 
 		return instance:load_profile_portrait(dummy_profile, cb, render_context, prioritize, unload_cb)
+		
     else
         -- Original function
         return func(self, real_item, cb, render_context, dummy_profile, prioritize, unload_cb, ...)

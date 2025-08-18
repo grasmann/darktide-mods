@@ -130,16 +130,6 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
     end
 end)
 
-mod.push_ui_profile_spawner_placement_name = function(self, name)
-    self.next_ui_profile_spawner_placement_name[#self.next_ui_profile_spawner_placement_name+1] = name
-end
-
-mod.pop_ui_profile_spawner_placement_name = function(self)
-    local name = self.next_ui_profile_spawner_placement_name[1]
-    table_remove(self.next_ui_profile_spawner_placement_name, 1)
-    return name
-end
-
 mod:hook(CLASS.UIProfileSpawner, "_despawn_current_character_profile", function(func, self, ...)
     -- Original function
     func(self, ...)
@@ -173,6 +163,12 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
     end
 
     if (self:placement_slot(profile) and (self._reference_name == "PortraitUI") or self._reference_name == "InventoryCosmeticsView") then
+
+        force_highest_mip = false
+        self._force_highest_lod_step = false
+        if self._loading_profile_data then
+            self._loading_profile_data.force_highest_mip = false
+        end
 
         local placement = mod.next_ui_profile_spawner_placement_name[profile.character_id]
         if placement and self._camera then

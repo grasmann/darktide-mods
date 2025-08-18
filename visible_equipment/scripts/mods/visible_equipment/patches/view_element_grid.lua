@@ -102,24 +102,14 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                             horizontal_alignment = "center",
                             vertical_alignment = "center",
                             color = color_ui_terminal(255, true),
-                            size_addition = {
-                                20,
-                                20,
-                            },
-                            offset = {
-                                0,
-                                0,
-                                4,
-                            },
+                            size_addition = {20, 20},
+                            offset = {0, 0, 4},
                         },
                         change_function = function (content, style)
                             local anim_progress = math_max(math_max(content.hotspot.anim_hover_progress, content.hotspot.anim_select_progress), content.hotspot.anim_focus_progress)
-
                             style.color[1] = anim_progress * 255
-
                             local size_addition = style.size_addition
                             local size_padding = 10 - math_easeInCubic(anim_progress) * 10
-
                             size_addition[1] = size_padding
                             size_addition[2] = size_padding
                         end,
@@ -133,9 +123,6 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                         value = "n/a",
                         value_id = "title_text",
                         style = cosmetic_item_display_name_text_style,
-                        -- visibility_function = function (content, style)
-                        --     return false
-                        -- end,
                     },
                     {
                         pass_type = "texture",
@@ -157,15 +144,8 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                             scale_to_material = true,
                             vertical_alignment = "center",
                             color = Color.ui_terminal(nil, true),
-                            size_addition = {
-                                23,
-                                24,
-                            },
-                            offset = {
-                                0,
-                                0,
-                                -1,
-                            },
+                            size_addition = {23, 24},
+                            offset = {0, 0, -1},
                         },
                         visibility_function = function (content, style)
                             return content.selected
@@ -179,26 +159,16 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                         style = {
                             horizontal_alignment = "center",
                             vertical_alignment = "bottom",
-                            size = {
-                                grid_size[1],
-                                grid_size[2],
-                            },
-                            -- size = ItemPassTemplates.gear_bundle_size,
-                            offset = {
-                                0,
-                                0,
-                                3,
-                            },
+                            size = {grid_size[1], grid_size[2]},
+                            offset = {0, 0, 3},
                             color = color_white(255, true),
                             material_values = {},
                         },
                         visibility_function = function(content, style)
                             local use_placeholder_texture = content.use_placeholder_texture
-
                             if use_placeholder_texture and use_placeholder_texture == 0 then
                                 return true
                             end
-
                             return false
                         end,
                     },
@@ -210,34 +180,19 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                             angle = 0,
                             horizontal_alignment = "center",
                             vertical_alignment = "center",
-                            size = {
-                                80,
-                                80,
-                            },
-                            color = {
-                                60,
-                                160,
-                                160,
-                                160,
-                            },
-                            offset = {
-                                0,
-                                0,
-                                3,
-                            },
+                            size = {80, 80},
+                            color = {60, 160, 160, 160},
+                            offset = {0, 0, 3},
                         },
                         visibility_function = function(content, style)
                             local use_placeholder_texture = content.use_placeholder_texture
-
                             if not use_placeholder_texture or use_placeholder_texture == 1 then
                                 return true
                             end
-
                             return false
                         end,
                         change_function = function(content, style, _, dt)
                             local add = -0.5 * dt
-
                             style.rotation_progress = ((style.rotation_progress or 0) + add) % 1
                             style.angle = style.rotation_progress * math_pi * 2
                         end,
@@ -247,48 +202,37 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                 init = function (parent, widget, element, callback_name, secondary_callback_name)
                     local content = widget.content
                     local style = widget.style
-
-                    -- content.title_text = element.placement_name --Items.display_name(item)
                     content.hotspot.pressed_callback = callback(parent, callback_name, widget, element)
                     content.hotspot.right_pressed_callback = callback(parent, secondary_callback_name, widget, element)
                     content.element = element
                     element.custom_slot_name = "gear_placement_slot"
                     element.view_name = "inventory_cosmetics_view"
                     element.loadout_slot = false
-
-                    local slot_title = element.slot_title
-
                     content.title_text = mod:localize("placement_"..element.placement_name) or element.placement_name
-
                     content.has_new_items_update_callback = element.has_new_items_update_callback
                 end,
                 update = function (parent, widget, input_service, dt, t, ui_renderer)
                     local content = widget.content
                     local element = content.element
                     local slot = element.slot
-
                     if slot then
                         local slot_name = slot.name
                         local item = element.item
                         local item_name = item and item.name
                         local equipped_item = element.item
                         local equipped_item_name = equipped_item and equipped_item.name
-
                         content.equipped = item_name and item_name == equipped_item_name
                     end
                 end,
                 load_icon = function (parent, widget, element)
                     local content = widget.content
-
                     if not content.icon_load_id then
                         local cb = callback(_apply_live_item_icon_cb_func, widget)
                         local slot = element.slot
                         if slot then
                             local slot_name = slot.name
                             local equipped_item = element.item
-
                             local item = MasterItems.create_preview_item_instance(element.item)
-
                             if item then
                                 local item_state_machine = equipped_item.state_machine
                                 local item_animation_event = equipped_item.animation_event
@@ -306,7 +250,6 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                                     placement = true,
                                 }
                                 preview_profile.placement_name = element.placement_name
-
                                 content.icon_load_id = managers.ui:load_item_icon(item, cb, render_context, preview_profile)
                             end
                         end
@@ -314,21 +257,17 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                 end,
                 unload_icon = function (parent, widget, element, ui_renderer)
                     local content = widget.content
-
                     if content.icon_load_id then
                         _remove_live_item_icon_cb_func(widget, ui_renderer)
                         managers.ui:unload_item_icon(content.icon_load_id)
-
                         content.icon_load_id = nil
                     end
                 end,
                 destroy = function (parent, widget, element, ui_renderer)
                     local content = widget.content
-
                     if content.icon_load_id then
                         _remove_live_item_icon_cb_func(widget, ui_renderer)
                         managers.ui:unload_item_icon(content.icon_load_id)
-
                         content.icon_load_id = nil
                     end
                 end,
@@ -343,11 +282,9 @@ end)
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, self, widget, element, ...)
-    if self.__destroyed then return end
-
     -- Original function
     func(self, widget, element, ...)
-
+    -- Custom placement selection
     if element.placement then
         local slot = element.slot
         if slot then
@@ -362,15 +299,14 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
                         local equipment_component = character_spawn_data.equipment_component
                         equipment_component:position_objects()
                         equipment_component:animate_equipment()
-
+                        -- Camera
                         local offset = mod.settings.placement_camera[element.placement_name]
-
                         local rotation = offset and offset.rotation and offset.rotation + 2.25
-
                         parent._profile_spawner._rotation_angle = rotation or parent._profile_spawner._rotation_angle
+                        -- Data
                         parent.selected_placement = element.placement_name
                         parent.placement_saved = false
-
+                        -- Update widgets
                         local widgets = self._grid_widgets
                         if widgets then
                             for i, widget in pairs(widgets) do
