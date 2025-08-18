@@ -7,6 +7,10 @@ local mod = get_mod("visible_equipment")
     local CLASS = CLASS
 --#endregion
 
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
+
 mod:hook_require("scripts/ui/views/main_menu_background_view/main_menu_background_view", function(instance)
 
     instance.update_placements = function(self)

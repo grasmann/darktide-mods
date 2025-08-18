@@ -36,6 +36,10 @@ local gear_bundle_size = ItemPassTemplates.gear_bundle_size
     local script_unit_extension = script_unit.extension
 --#endregion
 
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
+
 mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid", function(instance)
 
     instance.inject_blueprint = function(self, content_blueprints, preview_profile)
@@ -249,7 +253,7 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                                     placement_name = element.placement_name,
                                     placement = true,
                                 }
-                                preview_profile.placement_name = element.placement_name
+                                -- preview_profile.placement_name = element.placement_name
                                 content.icon_load_id = managers.ui:load_item_icon(item, cb, render_context, preview_profile)
                             end
                         end
@@ -301,6 +305,8 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
                         equipment_component:animate_equipment()
                         -- Camera
                         local offset = mod.settings.placement_camera[element.placement_name]
+                        local item_type = item.item_type
+                        offset = offset and item_type and offset[item_type] or offset
                         local rotation = offset and offset.rotation and offset.rotation + 2.25
                         parent._profile_spawner._rotation_angle = rotation or parent._profile_spawner._rotation_angle
                         -- Data
@@ -347,12 +353,12 @@ mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func
             local gear_id = item and item.__gear_id or item.gear_id
             local real_item = player_profile.loadout[selected_slot.name]
             gear_id = real_item and real_item.__gear_id or real_item.gear_id
-            placement = gear_id and mod:gear_placement(gear_id)
+            placement = gear_id and mod:gear_placement(gear_id, nil, nil, true)
             self.placement_name = placement
 
-            local preview_profile = profile
+            -- local preview_profile = profile
 
-            self:inject_blueprint(content_blueprints, preview_profile)
+            self:inject_blueprint(content_blueprints, profile)
 
             local item_placements = mod.settings.offsets[item.weapon_template]
             if item_placements then
@@ -373,7 +379,7 @@ mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func
                             placement_name = placement_name,
                             sort_group = 1,
                             locked = false,
-                            profile = preview_profile,
+                            profile = profile,
                             entry_id = item.gear_id,
                             sort_data = item,
                             item = item,

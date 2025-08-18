@@ -20,6 +20,7 @@ mod.settings = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/u
 mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/plugins")
 mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/save")
 mod.next_ui_profile_spawner_placement_name = {}
+mod.next_ui_profile_spawner_placement_slot = {}
 
 local REFERENCE = "visible_equipment"
 

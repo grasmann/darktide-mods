@@ -57,7 +57,8 @@ mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, 
 		local archetype_name = archetype and archetype.name
 
 		dummy_profile = Items.create_mannequin_profile_by_item(real_item, gender_name, archetype_name, breed_name)
-        dummy_profile.placement_name = render_context.placement_name
+        -- dummy_profile.placement_name = render_context.placement_name
+		-- dummy_profile.placement = true
         dummy_profile.loadout.slot_gear_extra_cosmetic = profile.loadout.slot_gear_extra_cosmetic
 
 		local item_slot_name
@@ -112,14 +113,15 @@ mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, 
 		local archetype_name = archetype and archetype.name
 
 		dummy_profile = Items.create_mannequin_profile_by_item(real_item, gender_name, archetype_name, breed_name)
-        dummy_profile.placement_name = render_context.placement_name
+        -- dummy_profile.placement_name = render_context.placement_name
+		-- dummy_profile.placement = true
         dummy_profile.loadout.slot_gear_extra_cosmetic = profile.loadout.slot_gear_extra_cosmetic
         -- dummy_profile.loadout.slot_animation_end_of_round = profile.loadout.slot_animation_end_of_round
-        local camera = mod.settings.placement_camera[render_context.placement_name]
-        if camera then
-            local position = camera.position and vector3_unbox(camera.position) or vector3_zero()
-            render_context.icon_render_camera_position_offset = {position[1], position[2], position[3]}
-        end
+        -- local camera = mod.settings.placement_camera[render_context.placement_name]
+        -- if camera then
+        --     local position = camera.position and vector3_unbox(camera.position) or vector3_zero()
+        --     render_context.icon_render_camera_position_offset = {position[1], position[2], position[3]}
+        -- end
 
 		local item_slot_name
 
@@ -160,7 +162,7 @@ mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, 
 		local instance = self._back_buffer_render_handlers.cosmetics
 
 		return instance:load_profile_portrait(dummy_profile, cb, render_context, prioritize, unload_cb)
-		
+
     else
         -- Original function
         return func(self, real_item, cb, render_context, dummy_profile, prioritize, unload_cb, ...)

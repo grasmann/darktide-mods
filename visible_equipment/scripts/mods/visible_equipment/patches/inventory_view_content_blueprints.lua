@@ -77,7 +77,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
             local player = parent and parent.player and parent:player()
             local player_profile = player and player:profile()
 
-            player_profile.placement_name = element.placement_name
+            -- player_profile.placement_name = element.placement_name
 
             if slot then
                 local slot_name = slot.name
@@ -108,6 +108,8 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                         size = gear_icon_size,
                         placement_name = element.placement_name,
 					}
+
+                    mod.next_ui_profile_spawner_placement_name[player_profile] = element.placement_name
 
                     content.icon_load_id = managers.ui:load_item_icon(equipped_item, cb, render_context, player_profile)
                 end
@@ -142,7 +144,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                 local player = parent and parent.player and parent:player()
                 local player_profile = player and player:profile()
 
-                player_profile.placement_name = element.placement_name
+                -- player_profile.placement_name = element.placement_name
 
                 if update then
                     content.item = equipped_item
@@ -189,6 +191,8 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                             size = gear_icon_size,
                             placement_name = element.placement_name,
                         }
+
+                        mod.next_ui_profile_spawner_placement_name[player_profile] = element.placement_name
 
                         content.icon_load_id = managers.ui:load_item_icon(equipped_item, cb, render_context, player_profile)
                     end

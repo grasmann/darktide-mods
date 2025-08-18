@@ -101,7 +101,9 @@ mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, pr
         local profile_spawner = self._profile_spawner
         if profile_spawner then
             local placement = mod:gear_placement(gear_id, nil, true)
+            local item_type = item.item_type
             local offset = mod.settings.placement_camera[placement]
+            offset = offset and item_type and offset[item_type] or offset
             local rotation = offset and offset.rotation and offset.rotation + 2.25
             profile_spawner._rotation_angle = rotation or profile_spawner._rotation_angle
         end
