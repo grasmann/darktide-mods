@@ -73,10 +73,6 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 		end
 	end
 
-    instance.get_profile = function(self, profile)
-        return self._character_spawn_data and self._character_spawn_data.profile or self._loading_profile_data and self._loading_profile_data.profile or profile
-    end
-
     instance.valid_instance = function(self, profile, spawned)
         if not profile then
             profile = self._character_spawn_data and self._character_spawn_data.profile
@@ -84,89 +80,24 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
         return profile and (profile.loadout[SLOT_PRIMARY] or profile.loadout[SLOT_SECONDARY])
     end
 
-    instance.placement_entry = function(self, profile)
-        local profile = self:get_profile(profile)
-        if profile then
-            local slot_body_torso = profile.loadout.slot_body_torso and profile.loadout.slot_body_torso.__master_item or profile.loadout.slot_body_torso
-            local slot_gear_head = profile.loadout.slot_gear_head and profile.loadout.slot_gear_head.__master_item or profile.loadout.slot_gear_head
-            local slot_primary = profile.loadout.slot_primary and not profile.loadout.slot_secondary
-            local slot_secondary = profile.loadout.slot_secondary and not profile.loadout.slot_primary
-            if (not slot_body_torso or not slot_body_torso.dev_name) and (not slot_gear_head or not slot_gear_head.dev_name) and (slot_primary or slot_secondary) then
-                return true
-            end
-        end
+    instance.set_placement_name = function(self, placement_name)
+        self._placement_name = placement_name
     end
 
-    instance.placement_slot = function(self, profile)
-        local profile = self:get_profile(profile)
-        if profile then
-            local slot_body_torso = profile.loadout.slot_body_torso and profile.loadout.slot_body_torso.__master_item or profile.loadout.slot_body_torso
-            local slot_gear_head = profile.loadout.slot_gear_head and profile.loadout.slot_gear_head.__master_item or profile.loadout.slot_gear_head
-            local slot_primary = profile.loadout.slot_primary and profile.loadout.slot_primary.dev_name
-            local slot_secondary = profile.loadout.slot_secondary and profile.loadout.slot_secondary.dev_name
-            if (not slot_body_torso or not slot_body_torso.dev_name) and (not slot_gear_head or not slot_gear_head.dev_name) and (slot_primary or slot_secondary) then
-                return true
-            end
-        end
+    instance.set_slot_name = function(self, slot_name)
+        self._slot_name = slot_name
     end
 
-    instance.position_camera = function(self, profile)
-        -- local set_default_camera = true
-
-        if self.default_pose and self._camera then
-            ScriptCamera.set_local_position(self._camera, vector3_unbox(self.default_pose.position))
-            self._rotation_angle = self.default_pose.rotation
+    instance.update_rotation = function(self, profile, slot_name)
+        local item = profile and profile.loadout[slot_name]
+        local gear_id = item and item.gear_id
+        local placement = gear_id and mod:gear_placement(gear_id, nil, nil, true)
+        local offset = placement and mod.settings.placement_camera[placement]
+        local item_type = item and item.item_type
+        offset = offset and item_type and offset[item_type] or offset
+        if offset and offset.rotation then
+            self._rotation_angle = offset.rotation + 2.25
         end
-
-        -- local player_profile = profile or self:get_profile()
-        local profile = self:get_profile(profile)
-        if (self:placement_entry(profile) and (self._reference_name == "PortraitUI" or self._reference_name == "InventoryCosmeticsView")) or self:placement_slot(profile) then
-
-            -- force_highest_mip = false
-            -- self._force_highest_lod_step = false
-            -- if self._loading_profile_data then
-            --     self._loading_profile_data.force_highest_mip = false
-            -- end
-
-            local primary = profile.loadout[SLOT_PRIMARY]
-            local secondary = profile.loadout[SLOT_SECONDARY]
-
-            local gear_id = primary and primary.gear_id or secondary and secondary.gear_id
-
-            -- local placement = mod.next_ui_profile_spawner_placement_name[player_profile.character_id] or (gear_id and mod:gear_placement(gear_id, nil, nil, true)) or player_profile.placement_name
-            local placement = mod.next_ui_profile_spawner_placement_name[profile] or profile.placement_name --or (gear_id and mod:gear_placement(gear_id, nil, nil, true))
-            placement = placement or (self:placement_slot(profile) and mod:gear_placement(gear_id))
-            if placement and self._camera then
-
-                mod.next_ui_profile_spawner_placement_name[profile] = nil  
-
-                local offset = mod.settings.placement_camera[placement] --or mod.settings.placement_camera.default
-                local item_type = primary and primary.item_type or secondary and secondary.item_type
-                offset = offset and item_type and offset[item_type] or offset
-                local camera_position = offset and offset.position and vector3_unbox(offset.position) --or vector3_zero()
-
-                if camera_position then
-                    if self._reference_name == "InventoryCosmeticsView" then
-                        camera_position = camera_position + vector3(0, 3, 0)
-                    end
-
-                    ScriptCamera.set_local_position(self._camera, camera_position)
-
-                    self._rotation_angle = offset and offset.rotation or 0
-                end
-
-                -- mod:gear_placement(gear_id, placement)
-
-                -- set_default_camera = false
-            end
-        end
-
-        -- if set_default_camera then
-        --     if self.default_pose and self._camera then
-        --         ScriptCamera.set_local_position(self._camera, vector3_unbox(self.default_pose.position))
-        --         self._rotation_angle = self.default_pose.rotation
-        --     end
-        -- end
     end
 
 end)
@@ -197,39 +128,6 @@ mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_ser
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, unit_3p, timeout, ...)
-
-    -- local player_profile = self:get_profile()
-    -- if (self:placement_entry(player_profile) and (self._reference_name == "PortraitUI" or self._reference_name == "InventoryCosmeticsView")) or self:placement_slot(player_profile) then
-
-    --     -- force_highest_mip = false
-    --     -- self._force_highest_lod_step = false
-    --     -- if self._loading_profile_data then
-    --     --     self._loading_profile_data.force_highest_mip = false
-    --     -- end
-
-    --     local primary = player_profile.loadout[SLOT_PRIMARY]
-    --     local secondary = player_profile.loadout[SLOT_SECONDARY]
-
-    --     local gear_id = primary and primary.gear_id or secondary and secondary.gear_id
-
-    --     local placement = mod.next_ui_profile_spawner_placement_name[player_profile.character_id] or (gear_id and mod:gear_placement(gear_id)) or player_profile.placement_name
-    --     if placement and self._camera then
-
-    --         local offset = mod.settings.placement_camera[placement] or mod.settings.placement_camera.default
-    --         local camera_position = offset and offset.position and vector3_unbox(offset.position) or vector3_zero()
-
-    --         if self._reference_name == "InventoryCosmeticsView" then
-    --             camera_position = camera_position + vector3(0, 3, 0)
-    --         end
-
-    --         ScriptCamera.set_local_position(self._camera, camera_position)
-
-    --         self._rotation_angle = offset and offset.rotation or 0
-
-    --         -- mod:gear_placement(gear_id, placement)
-    --     end
-    -- end
-
     -- Original function
     func(self, unit_3p, timeout, ...)
     -- Check spawn data
@@ -237,18 +135,15 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
         -- Update equipment component
         self._character_spawn_data.equipment_component:extensions_ready()
     end
-    
+    -- Update placement
+    if self._placement_name and self._slot_name then
+        local character_spawn_data = self._character_spawn_data
+        local profile = character_spawn_data and character_spawn_data.profile
+        local item = profile and profile.loadout[self._slot_name]
+        local gear_id = item and item.gear_id
+        mod:gear_placement(gear_id, self._placement_name)
+    end
 end)
-
--- mod:hook(CLASS.UIProfileSpawner, "_despawn_current_character_profile", function(func, self, ...)
---     -- Original function
---     func(self, ...)
-
---     if self.default_pose then
---         ScriptCamera.set_local_position(self._camera, vector3_unbox(self.default_pose.position))
---         self._rotation_angle = self.default_pose.rotation
---     end
--- end)
 
 mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
     -- Catch profile
@@ -259,22 +154,7 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
     self._ignored_slots[SLOT_SECONDARY] = nil
     self._ignored_slots[SLOT_PRIMARY] = nil
 
-    -- Get camera data
-    if not self.default_pose and self._camera then
-        self.default_pose = {
-            position = vector3_box(ScriptCamera.local_position(self._camera)),
-            rotation = self._rotation_angle,
-        }
-    end
-
-    if self.default_pose and self._camera then
-        ScriptCamera.set_local_position(self._camera, vector3_unbox(self.default_pose.position))
-        self._rotation_angle = self.default_pose.rotation
-    end
-
-    -- local set_default_camera = true
-    -- local player_profile = self:get_profile(profile)
-    if (self:placement_entry(profile) and (self._reference_name == "PortraitUI" or self._reference_name == "InventoryCosmeticsView")) or self:placement_slot(profile) then
+    if self._placement_name and self._slot_name then
 
         force_highest_mip = false
         self._force_highest_lod_step = false
@@ -282,47 +162,22 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
             self._loading_profile_data.force_highest_mip = false
         end
 
-        local primary = profile.loadout[SLOT_PRIMARY]
-        local secondary = profile.loadout[SLOT_SECONDARY]
+        local item = profile and profile.loadout[self._slot_name]
+        local gear_id = item and item.gear_id
+        local offset = mod.settings.placement_camera[self._placement_name]
+        local item_type = item and item.item_type
+        offset = offset and item_type and offset[item_type] or offset
 
-        local gear_id = primary and primary.gear_id or secondary and secondary.gear_id
-
-        local placement = mod.next_ui_profile_spawner_placement_name[profile] or profile.placement_name --or (gear_id and mod:gear_placement(gear_id, nil, nil, true))
-        placement = placement or (self:placement_slot(profile) and mod:gear_placement(gear_id))
-        if placement and self._camera then
-
-            mod.next_ui_profile_spawner_placement_name[profile] = nil
-
-            local offset = mod.settings.placement_camera[placement] --or mod.settings.placement_camera.default
-            local item_type = primary and primary.item_type or secondary and secondary.item_type
-            offset = offset and item_type and offset[item_type] or offset
-            local camera_position = offset and offset.position and vector3_unbox(offset.position) --or vector3_zero()
-            if camera_position then
-
-                if self._reference_name == "InventoryCosmeticsView" then
-                    camera_position = camera_position + vector3(0, 3, 0)
-                end
-
-                ScriptCamera.set_local_position(self._camera, camera_position)
-
-                self._rotation_angle = offset and offset.rotation or 0
-
-                mod:gear_placement(gear_id, placement)
-            end
-
-            -- set_default_camera = false
+        if offset and offset.rotation then
+            self._rotation_angle = offset.rotation
         end
-    end
 
-    -- if set_default_camera then
-    --     if self.default_pose and self._camera then
-    --         ScriptCamera.set_local_position(self._camera, vector3_unbox(self.default_pose.position))
-    --         self._rotation_angle = self.default_pose.rotation
-    --     end
-    -- end
+        mod:gear_placement(gear_id, self._placement_name)
+    end
 
     -- Original function
     func(self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
+
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ...)

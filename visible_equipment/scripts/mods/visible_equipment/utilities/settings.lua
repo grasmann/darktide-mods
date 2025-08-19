@@ -585,35 +585,35 @@ placements.backpack = placements.default
 -- z = up / down
 local placement_camera = {
     default = {
-        position = vector3_box(.1, -4, -.5),
+        position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
         rotation = 2.5,
         [WEAPON_RANGED] = {
-            position = vector3_box(.1, -4, -.5),
+            position = vector3_box(-1.3683889865875244, 2.639409065246582, 1.6318360567092896),
             rotation = 2.5,
         },
         [WEAPON_MELEE] = {
-            position = vector3_box(-.1, -4, -.5),
+            position = vector3_box(-1.1683889865875244, 2.639409065246582, 1.6318360567092896),
             rotation = 4.5,
         },
     },
     leg_left = {
-        position = vector3_box(.1, -4, -.5),
+        position = vector3_box(-1.1683889865875244, 2.639409065246582, 1.6318360567092896),
         rotation = 1,
     },
     leg_right = {
-        position = vector3_box(-.1, -4, -.5),
+        position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
         rotation = -.5,
     },
     hip_left = {
-        position = vector3_box(.1, -4, -.5),
+        position = vector3_box(-1.1683889865875244, 2.639409065246582, 1.6318360567092896),
         rotation = 1.5,
     },
     hip_right = {
-        position = vector3_box(-.1, -4, -.5),
-        rotation = -.45,
+        position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
+        rotation = -1,
     },
     hip_back = {
-        position = vector3_box(0, -4, -.5),
+        position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
         rotation = 3.5,
     },
 }

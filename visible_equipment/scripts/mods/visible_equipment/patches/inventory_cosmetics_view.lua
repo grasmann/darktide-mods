@@ -46,6 +46,12 @@ mod:hook_require("scripts/ui/views/inventory_cosmetics_view/inventory_cosmetics_
         end
     end
 
+    instance.update_rotation = function(self, profile, slot_name)
+        if self._profile_spawner then
+            self._profile_spawner:update_rotation(profile, slot_name)
+        end
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -53,7 +59,6 @@ end)
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
-
     if self.selected_placement then
         local slot = self._selected_slot
         local slot_name = slot and slot.name
@@ -82,9 +87,10 @@ mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, sel
             self.placement_saved = true
             self:_update_equip_button_status()
             self:_play_sound(UISoundEvents.apparel_equip_small)
+
+            self._refresh_tab = true
         end
     end
-
     -- Original function
     func(self, ...)
 end)
@@ -95,18 +101,8 @@ mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, pr
     -- Set custom camera
     local slot = self._selected_slot
     local slot_name = slot and slot.name
-    local item = self._presentation_profile.loadout[slot_name]
-    local gear_id = item and item.gear_id
-    if gear_id then
-        local profile_spawner = self._profile_spawner
-        if profile_spawner then
-            local placement = mod:gear_placement(gear_id, nil, true)
-            local item_type = item.item_type
-            local offset = mod.settings.placement_camera[placement]
-            offset = offset and item_type and offset[item_type] or offset
-            local rotation = offset and offset.rotation and offset.rotation + 2.25
-            profile_spawner._rotation_angle = rotation or profile_spawner._rotation_angle
-        end
+    if slot_name then
+        self:update_rotation(self._presentation_profile, slot_name)
     end
 end)
 
@@ -132,6 +128,12 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_exit", function(func, self, ...)
         -- Update equipment position
         inventory_background_view:update_placements()
     end
+    local inventory_view = mod:get_view("inventory_view")
+    if self._refresh_tab and inventory_view then
+        -- Refresh tab view
+        inventory_view:refresh_tab()
+        self._refresh_tab = false
+    end
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_preview_element", function(func, self, element, ...)
@@ -140,6 +142,7 @@ mod:hook(CLASS.InventoryCosmeticsView, "_preview_element", function(func, self, 
     func(self, element, ...)
     -- Update equipment component
     self:update_placements()
+    -- self:update_rotation(self._presentation_profile, self.placement_name)
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_stop_previewing", function(func, self, ...)

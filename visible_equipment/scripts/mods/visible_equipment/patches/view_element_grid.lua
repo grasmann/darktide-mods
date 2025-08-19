@@ -252,8 +252,9 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
                                     size = {gear_bundle_size[1], gear_bundle_size[2]},
                                     placement_name = element.placement_name,
                                     placement = true,
+                                    slot_name = slot_name,
                                 }
-                                -- preview_profile.placement_name = element.placement_name
+
                                 content.icon_load_id = managers.ui:load_item_icon(item, cb, render_context, preview_profile)
                             end
                         end
@@ -334,11 +335,12 @@ mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func
     local selected_slot = parent and parent._selected_slot
     local primary = selected_slot and selected_slot.name == "slot_primary"
     local secondary = selected_slot and selected_slot.name == "slot_secondary"
-    -- local selected_index = 1
+    -- Placement
     local placement = "default"
     if not self._parent.item_type and (primary or secondary) then
-
+        -- Profile
         local profile = parent._preview_player:profile()
+        -- Item
         local item
         if primary then
             item = profile.loadout.slot_primary
@@ -347,7 +349,7 @@ mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func
         end
         item = item._master_item or item
         if item then
-
+            -- Get data
             local player = managers.player:local_player_safe(1)
             local player_profile = player and player:profile()
             local gear_id = item and item.__gear_id or item.gear_id
@@ -355,25 +357,19 @@ mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func
             gear_id = real_item and real_item.__gear_id or real_item.gear_id
             placement = gear_id and mod:gear_placement(gear_id, nil, nil, true)
             self.placement_name = placement
-
-            -- local preview_profile = profile
-
+            -- Inject custom blueprint
             self:inject_blueprint(content_blueprints, profile)
-
+            -- Item placements
             local item_placements = mod.settings.offsets[item.weapon_template]
             if item_placements then
-
-                layout = {
-                    {
-                        widget_type = "spacing_vertical",
-                        is_external = true,
-                    }
-                }
-
+                -- Spacing widget
+                layout = {{
+                    widget_type = "spacing_vertical",
+                    is_external = true,
+                }}
+                -- Placement widgets
                 for placement_name, k in pairs(item_placements) do
-
                     if placement_name ~= "backpack" then
-
                         layout[#layout+1] = {
                             placement = true,
                             placement_name = placement_name,
@@ -388,17 +384,11 @@ mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func
                             },
                             widget_type = "cosmetic_gear_icon",
                         }
-
                     end
-
                 end
             end
         end
-
     end
-
-    self.placement_name = placement
-
     -- Original function
     func(self, layout, content_blueprints, left_click_callback, right_click_callback, display_name, optional_grow_direction, optional_left_double_click_callback, ...)
 
@@ -412,13 +402,13 @@ mod:hook(CLASS.ViewElementGrid, "_create_entry_widget_from_config", function(fun
     end
     -- Original function
     local widget, size = func(self, config, suffix, callback_name, secondary_callback_name, double_click_callback_name, ...)
-
+    -- Get placement
     local placement = self.placement_name
-
+    -- Check widget
     if widget then
-
+        -- Set widget placement
         widget.content.placement_name = config.placement_name
-
+        -- Set widget selected
         if config.placement_name == placement then
             widget.content.selected = true
             widget.content.current = true

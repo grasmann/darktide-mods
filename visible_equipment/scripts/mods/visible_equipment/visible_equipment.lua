@@ -19,8 +19,8 @@ local mod = get_mod("visible_equipment")
 mod.settings = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/settings")
 mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/plugins")
 mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/save")
-mod.next_ui_profile_spawner_placement_name = {}
-mod.next_ui_profile_spawner_placement_slot = {}
+-- mod.next_ui_profile_spawner_placement_name = {}
+-- mod.next_ui_profile_spawner_placement_slot = {}
 
 local REFERENCE = "visible_equipment"
 
@@ -93,7 +93,7 @@ end
 
 mod.gear_placement = function(self, gear_id, placement, file, no_default)
     local pt = self:pt()
-    if placement then
+    if placement and gear_id then
         pt.gear_placements[gear_id] = pt.gear_placements[gear_id] or {}
         local data = pt.gear_placements[gear_id]
 
@@ -102,7 +102,7 @@ mod.gear_placement = function(self, gear_id, placement, file, no_default)
         end
 
         data.placement = placement
-    else
+    elseif gear_id then
         local data = pt.gear_placements[gear_id]
 
         if (not data or file) and table_contains(pt.cache, gear_id..".lua") then

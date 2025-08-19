@@ -16,6 +16,23 @@ local mod = get_mod("visible_equipment")
     local unit_set_local_position = unit.set_local_position
 --#endregion
 
+mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(instance)
+
+    instance.refresh_tab = function(self)
+        local active_context_tabs = self._active_context_tabs
+        local tab_context = active_context_tabs[self._selected_tab_index]
+        local camera_settings = tab_context.camera_settings
+        self.skip_camera_focus = true
+	    self:_switch_active_layout(tab_context)
+        if self._entry_animation_id then
+            self:_stop_animation(self._entry_animation_id)
+            self._entry_animation_id = nil
+        end
+        self.skip_camera_focus = false
+    end
+
+end)
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
@@ -36,7 +53,13 @@ mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
     if main_menu_background_view then
         main_menu_background_view:update_placements()
     end
+end)
 
+mod:hook(CLASS.InventoryView, "_set_camera_focus_by_slot_name", function(func, self, slot_name, optional_camera_settings, force_instant_camera, ...)
+    if not self.skip_camera_focus then
+        -- Original function
+        func(self, slot_name, optional_camera_settings, force_instant_camera, ...)
+    end
 end)
 
 mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_context, ...)
@@ -68,7 +91,7 @@ mod:hook(CLASS.InventoryView, "_switch_active_layout", function(func, self, tab_
                 widget_type = "gear_placement_slot",
                 scenegraph_id = scenegraph_id, --"slot_primary_placement",
                 slot_icon = "content/ui/materials/icons/item_types/beveled/accessories",
-                slot_title = "loc_inventory_title_slot_gear_extra_cosmetic",
+                slot_title = slot_name, --"loc_inventory_title_slot_gear_extra_cosmetic",
                 loadout_slot = true,
                 name = name,
             }

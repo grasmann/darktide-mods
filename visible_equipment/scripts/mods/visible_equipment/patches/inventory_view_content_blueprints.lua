@@ -73,11 +73,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
             local slot = element.slot
             slot_title = slot and slot.name or slot_title
             content.slot_title = mod:localize(slot_title.."_placement")
-            
-            local player = parent and parent.player and parent:player()
-            local player_profile = player and player:profile()
-
-            -- player_profile.placement_name = element.placement_name
 
             if slot then
                 local slot_name = slot.name
@@ -99,19 +94,18 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
 					local companion_item_state_machine = equipped_item.companion_state_machine ~= nil and equipped_item.companion_state_machine ~= "" and equipped_item.companion_state_machine or nil
                     local companion_item_animation_event = equipped_item.companion_animation_event ~= nil and equipped_item.companion_animation_event ~= "" and equipped_item.companion_animation_event or nil
                     local render_context = {
-						camera_focus_slot_name = slot_name,
+						camera_focus_slot_name = element.placement_name or "default",
 						state_machine = item_state_machine,
 						animation_event = item_animation_event,
 						companion_state_machine = companion_item_state_machine,
 						companion_animation_event = companion_item_animation_event,
                         custom_slot_name = slot_name.."_placement",
                         size = gear_icon_size,
-                        placement_name = element.placement_name,
+                        placement_name = element.placement_name or "default",
+                        slot_name = slot_name,
 					}
 
-                    mod.next_ui_profile_spawner_placement_name[player_profile] = element.placement_name
-
-                    content.icon_load_id = managers.ui:load_item_icon(equipped_item, cb, render_context, player_profile)
+                    content.icon_load_id = managers.ui:load_item_icon(equipped_item, cb, render_context)
                 end
 
                 local rarity = equipped_item and equipped_item.rarity
@@ -140,11 +134,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                 local previous_item = content.item
                 local equipped_item = parent:equipped_item_in_slot(slot_name)
                 local update = equipped_item and not previous_item or not equipped_item and previous_item or previous_item and previous_item.gear_id ~= equipped_item.gear_id
-
-                local player = parent and parent.player and parent:player()
-                local player_profile = player and player:profile()
-
-                -- player_profile.placement_name = element.placement_name
 
                 if update then
                     content.item = equipped_item
@@ -182,19 +171,18 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                         local companion_item_state_machine = equipped_item.companion_state_machine ~= nil and equipped_item.companion_state_machine ~= "" and equipped_item.companion_state_machine or nil
                         local companion_item_animation_event = equipped_item.companion_animation_event ~= nil and equipped_item.companion_animation_event ~= "" and equipped_item.companion_animation_event or nil
                         local render_context = {
-                            camera_focus_slot_name = slot_name,
+                            camera_focus_slot_name = element.placement_name or "default",
 						    state_machine = item_state_machine,
                             animation_event = item_animation_event,
                             companion_state_machine = companion_item_state_machine,
                             companion_animation_event = companion_item_animation_event,
                             custom_slot_name = slot_name.."_placement",
                             size = gear_icon_size,
-                            placement_name = element.placement_name,
+                            placement_name = element.placement_name or "default",
+                            slot_name = slot_name,
                         }
 
-                        mod.next_ui_profile_spawner_placement_name[player_profile] = element.placement_name
-
-                        content.icon_load_id = managers.ui:load_item_icon(equipped_item, cb, render_context, player_profile)
+                        content.icon_load_id = managers.ui:load_item_icon(equipped_item, cb, render_context)
                     end
                 end
             end

@@ -6,18 +6,23 @@ local mod = get_mod("visible_equipment")
 
 local UIProfileSpawner = mod:original_require("scripts/managers/ui/ui_profile_spawner")
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
+local ItemSlotSettings = mod:original_require("scripts/settings/item/item_slot_settings")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
+    local pairs = pairs
+    local table = table
     local CLASS = CLASS
     local vector3 = Vector3
     local quaternion = Quaternion
     local vector3_box = Vector3Box
+    local table_clone = table.clone
     local vector3_zero = vector3.zero
     local vector3_unbox = vector3_box.unbox
+    local vector3_to_array = vector3.to_array
     local vector3_from_array = vector3.from_array
     local unit_world_position = unit.world_position
     local unit_world_rotation = unit.world_rotation
@@ -25,81 +30,37 @@ local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_c
     local quaternion_from_euler_angles_xyz = quaternion.from_euler_angles_xyz
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local SLOT_PRIMARY = "slot_primary"
+local SLOT_SECONDARY = "slot_secondary"
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
-mod:hook(CLASS.PortraitUI, "load_profile_portrait", function(func, self, profile, on_load_callback, optional_render_context, prioritized, on_unload_callback, ...)
-
-    -- self.custom_position = nil
-    if optional_render_context and optional_render_context.placement and optional_render_context.placement_name then
-        mod.next_ui_profile_spawner_placement_name[profile] = optional_render_context.placement_name
+mod:hook(CLASS.PortraitUI, "_store_camera_settings_by_breed", function(func, self, breed, camera_unit, ...)
+	-- Original function
+    func(self, breed, camera_unit, ...)
+    -- Add custom placements
+    local placement_camera = mod.settings.placement_camera
+    for placement_name, data in pairs(placement_camera) do
+        if data.position then
+            local position = placement_camera[placement_name].position and vector3_unbox(placement_camera[placement_name].position)
+            if position then
+                local camera_table = self._breed_camera_settings[breed].camera_settings_by_item_slot
+                camera_table[placement_name] = table_clone(camera_table.slot_animation_end_of_round)
+                camera_table[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
+            end
+        end
     end
-
-    -- if self._profile_spawner then
-    --     self._profile_spawner:position_camera()
-    -- end
-
-    -- Original function
-    return func(self, profile, on_load_callback, optional_render_context, prioritized, on_unload_callback, ...)
 end)
-
--- mod:hook(CLASS.PortraitUI, "_is_ready_to_capture_request", function(func, self, ...)
---     if self._profile_spawner then
---         self._profile_spawner:position_camera()
---     end
---     -- Original function
---     return func(self, ...)
--- end)
-
--- mod:hook(CLASS.PortraitUI, "update", function(func, self, dt, t, ...)
---     if self._profile_spawner then
---         self._profile_spawner:position_camera()
---     end
---     -- Original function
---     func(self, dt, t, ...)
--- end)
-
--- mod:hook(CLASS.PortraitUI, "_prepare_request_capture", function(func, self, request, ...)
---     -- Original function
---     func(self, request, ...)
-
---     if self._profile_spawner then
---         self._profile_spawner:position_camera(request.data)
---     end
-
---     -- local placement_slot = function(profile)
---     --     -- profile = profile or self:get_profile()
---     --     if profile then
---     --         local slot_body_torso = profile.loadout.slot_body_torso
---     --         local slot_gear_head = profile.loadout.slot_gear_head
---     --         local slot_primary = profile.loadout.slot_primary
---     --         local slot_secondary = profile.loadout.slot_secondary
---     --         if (not slot_body_torso or not slot_body_torso.dev_name) and (not slot_gear_head or not slot_gear_head.dev_name) then
---     --             mod:echo(slot_gear_head and slot_gear_head.dev_name)
---     --             return true
---     --         end
---     --     end
---     -- end
-
--- 	-- local render_context = request.render_context
---     -- if self._profile_spawner and render_context and render_context.placement and render_context.placement_name and placement_slot(request.data) then
---     --     local offset = mod.settings.placement_camera[render_context.placement_name] or mod.settings.placement_camera.default
---     --     local camera_position = offset and offset.position and vector3_unbox(offset.position) or vector3_zero()
-
---     --     if self._profile_spawner._reference_name == "InventoryCosmeticsView" then
---     --         camera_position = camera_position + vector3(0, 3, 0)
---     --     end
-
---     --     ScriptCamera.set_local_position(self._profile_spawner._camera, camera_position)
-
---     --     self._profile_spawner._rotation_angle = offset and offset.rotation or 0
---     -- end
--- end)
 
 mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, render_context, ...)
 
-    if render_context and render_context.placement and render_context.placement_name then
+    if render_context and render_context.placement_name and render_context.custom_slot_name then
         if self._profile_spawner then
             self._profile_spawner:destroy()
 
@@ -135,6 +96,12 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
             ignore = ignore_companion,
         }
 
+        local slot_name = render_context.slot_name
+        local placement = slot_name and mod:gear_placement(profile.loadout[slot_name].gear_id, nil, true, true)
+        placement = placement or render_context.placement_name or "default"
+        self._profile_spawner:set_placement_name(placement)
+        self._profile_spawner:set_slot_name(slot_name)
+
         profile_spawner:spawn_profile(profile, spawn_position, spawn_rotation, nil, optional_state_machine, optional_animation_event, nil, optional_face_animation_event, false, disable_hair_state_machine, nil, nil, companion_data)
 
         local archetype = profile.archetype
@@ -143,7 +110,7 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
         local camera_unit = camera_settings.camera_unit
 
         if render_context then
-            local camera_focus_slot_name = render_context.camera_focus_slot_name
+            local camera_focus_slot_name = placement or render_context.camera_focus_slot_name
 
             if camera_focus_slot_name then
                 local camera_settings_by_item_slot = camera_settings.camera_settings_by_item_slot
@@ -188,10 +155,8 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
         world_spawner:set_camera_position(camera_position)
         world_spawner:set_camera_rotation(camera_rotation)
 
-        return
+    else
+        -- Original function
+        return func(self, profile, render_context, ...)
     end
-
-    -- Original function
-    return func(self, profile, render_context, ...)
-
 end)
