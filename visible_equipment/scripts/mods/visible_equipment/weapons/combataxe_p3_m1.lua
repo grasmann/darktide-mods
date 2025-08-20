@@ -30,8 +30,9 @@ return {
         hip_back = {
             right = {
                 node = "j_hips",
-                position = vector3_box(.05, -.2, 0),
-                rotation = vector3_box(0, 0, 90),
+                -- x, -0.15, x is better for overcoats
+                position = vector3_box(0.075, -0.1, 0.15),
+                rotation = vector3_box(0, -120, 90),
             },
         },
 		backpack = {
