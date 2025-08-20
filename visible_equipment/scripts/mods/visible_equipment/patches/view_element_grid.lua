@@ -10,7 +10,7 @@ local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_setting
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local ItemPassTemplates = mod:original_require("scripts/ui/pass_templates/item_pass_templates")
 local MasterItems = mod:original_require("scripts/backend/master_items")
-local gear_bundle_size = ItemPassTemplates.gear_bundle_size
+local gear_bundle_size = {ItemPassTemplates.gear_bundle_size[1], ItemPassTemplates.gear_bundle_size[2] - 30}
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################

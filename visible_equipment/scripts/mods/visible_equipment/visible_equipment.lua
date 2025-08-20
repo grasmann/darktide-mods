@@ -5,6 +5,7 @@ local mod = get_mod("visible_equipment")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
+    local pairs = pairs
     local table = table
     local managers = Managers
     local unit_alive = unit.alive
@@ -19,8 +20,6 @@ local mod = get_mod("visible_equipment")
 mod.settings = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/settings")
 mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/plugins")
 mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/save")
--- mod.next_ui_profile_spawner_placement_name = {}
--- mod.next_ui_profile_spawner_placement_slot = {}
 
 local REFERENCE = "visible_equipment"
 
@@ -119,7 +118,11 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 mod.on_all_mods_loaded = function()
-    mod:load_plugins()
+    mod.loaded_plugins = mod:load_plugins()
+    local pt = mod:pt()
+    for equipment_component, player_unit in pairs(pt.equipment_components) do
+        equipment_component:position_objects()
+    end
 end
 
 mod.on_setting_changed = function(setting_id)

@@ -71,6 +71,8 @@ local BREED_HUMAN = "human"
 local BREED_OGRYN = "ogryn"
 local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
+local POCKETABLE_SMALL = "POCKETABLE_SMALL"
+local POCKETABLE = "POCKETABLE"
 
 local sounds = {
     [BREED_HUMAN] = human.sounds,
@@ -149,6 +151,16 @@ local sounds = {
                 "sfx_reload_lever_pull",
                 "sfx_reload_lever_release",
             },
+        },
+        [POCKETABLE_SMALL] = {
+            crouching = {},
+            default = {},
+            accent = {},
+        },
+        [POCKETABLE] = {
+            crouching = {},
+            default = {},
+            accent = {},
         },
     },
 }

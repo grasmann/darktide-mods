@@ -550,6 +550,14 @@ local momentum = {
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.momentum,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.momentum,
     forcestaff_p1_m1 = forcestaff_p1_m1.momentum,
+    default = {
+        right = {
+            momentum = vector3_box(1, 0, -3),
+        },
+        left = {
+            momentum = vector3_box(0, -3, -3),
+        },
+    },
 }
 
 --#endregion Copies
@@ -578,6 +586,8 @@ local placements = {
     leg_left = "leg_left",
     leg_right = "leg_right",
     chest = "chest",
+    POCKETABLE_SMALL = "POCKETABLE_SMALL",
+    POCKETABLE = "POCKETABLE",
 }
 
 placements.backpack = placements.default
@@ -595,6 +605,14 @@ local placement_camera = {
             position = vector3_box(-1.1683889865875244, 2.639409065246582, 1.6318360567092896),
             rotation = 4.5,
         },
+    },
+    POCKETABLE_SMALL = {
+        position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
+        rotation = 3.5,
+    },
+    POCKETABLE = {
+        position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
+        rotation = 3.5,
     },
     leg_left = {
         position = vector3_box(-1.1683889865875244, 2.639409065246582, 1.6318360567092896),
@@ -615,6 +633,14 @@ local placement_camera = {
     hip_back = {
         position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
         rotation = 3.5,
+    },
+    hip_front = {
+        position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
+        rotation = .5,
+    },
+    chest = {
+        position = vector3_box(-1.2683889865875244, 2.639409065246582, 1.6318360567092896),
+        rotation = .5,
     },
 }
 
