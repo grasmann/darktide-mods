@@ -2656,7 +2656,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				end,
 				-- Copied from scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view.lua
 				-- 		taken from the one where `content[idk]["slot_name"] = "slot_weapon_skin",`
-				-- 		there's another one from `content[idk]["slot_name"] = "slot_trinket_1",`
+				-- 		there's another one from `content[idk]["slot_name"] = "slot_trinket_1",` but that doesn't work
 				generate_visual_item_function = function (real_item, selected_item)
 					local visual_item
 	
