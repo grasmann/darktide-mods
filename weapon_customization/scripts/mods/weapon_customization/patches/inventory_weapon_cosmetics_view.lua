@@ -2653,6 +2653,27 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 				filter_on_weapon_template = true,
 				apply_on_preview = function(real_item, presentation_item)
 					self:_preview_item(presentation_item)
+				end,
+				-- Copied from scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view.lua
+				-- 		taken from the one where `content[idk]["slot_name"] = "slot_weapon_skin",`
+				-- 		there's another one from `content[idk]["slot_name"] = "slot_trinket_1",`
+				generate_visual_item_function = function (real_item, selected_item)
+					local visual_item
+	
+					if real_item.gear then
+						visual_item = MasterItems.create_preview_item_instance(selected_item)
+					else
+						visual_item = table.clone_instance(selected_item)
+					end
+	
+					visual_item.gear_id = real_item.gear_id
+					visual_item.slot_weapon_skin = real_item
+	
+					if visual_item.gear.masterDataInstance.overrides then
+						visual_item.gear.masterDataInstance.overrides.slot_weapon_skin = real_item
+					end
+	
+					return visual_item
 				end
 			}
 		end
