@@ -2647,7 +2647,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 			-- Add tab
 			content[3] = {
 				display_name = "loc_weapon_cosmetics_customization",
-				slot_name = "slot_weapon_skin",
+				slot_name = "slot_weapon_skin_ewc",
 				item_type = "WEAPON_SKIN",
 				icon = "content/ui/materials/icons/system/settings/category_gameplay",
 				filter_on_weapon_template = true,
