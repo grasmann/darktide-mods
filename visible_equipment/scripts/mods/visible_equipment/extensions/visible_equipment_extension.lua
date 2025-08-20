@@ -40,6 +40,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local table_find = table.find
     local script_unit = ScriptUnit
     local vector3_box = Vector3Box
+    local table_clone = table.clone
     local vector3_one = vector3.one
     local math_random = math.random
     local string_find = string.find
@@ -91,6 +92,25 @@ local EMPTY_BACKPACK = "content/items/characters/player/human/backpacks/empty_ba
 local EMPTY_BACKPACK_DEV = "empty_backpack"
 local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
+local ANIMATION_TABLE = {
+    current = {},
+    previous = {},
+    interval = {},
+    started = {},
+    ending = {},
+    state = {},
+    strength_override = {},
+    default_position = {},
+    default_rotation = {},
+    start_position = {},
+    start_rotation = {},
+    current_position = {},
+    current_rotation = {},
+    target_position = {},
+    target_rotation = {},
+    end_position = {},
+    end_rotation = {},
+}
 
 -- ##### ┌─┐┌─┐┌┬┐┬ ┬┌─┐ ##############################################################################################
 -- ##### └─┐├┤  │ │ │├─┘ ##############################################################################################
@@ -101,6 +121,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.pt = mod:pt()
     -- Set variables
     self.equipment_component = extension_init_data.equipment_component
+    self.world = extension_init_data.equipment_component._world
     self.from_ui_profile_spawner = extension_init_data.from_ui_profile_spawner
     self.profile = unit_get_data(unit, "visible_equipment_profile")
     self.unit = unit
@@ -217,25 +238,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
             self.items[slot][#self.items[slot]+1] = slot.item
         end
         -- Setup animation tables
-        self.anim[slot] = {
-            current = {},
-            previous = {},
-            interval = {},
-            started = {},
-            ending = {},
-            state = {},
-            strength_override = {},
-            default_position = {},
-            default_rotation = {},
-            start_position = {},
-            start_rotation = {},
-            current_position = {},
-            current_rotation = {},
-            target_position = {},
-            target_rotation = {},
-            end_position = {},
-            end_rotation = {},
-        }
+        self.anim[slot] = table_clone(ANIMATION_TABLE)
         -- Sheathed
         self.sheathed[slot] = true
         -- Iterate through objects
@@ -253,7 +256,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
         -- Set loaded
         self.loaded[slot] = true
         -- Position slot objects
-        self:position_slot_objects(slot)
+        self:position_slot_objects(slot, true)
     end
 end
 
@@ -403,7 +406,7 @@ end
 -- end
 -- local last_backpack = nil
 
-VisibleEquipmentExtension.position_slot_objects = function(self, slot)
+VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_center_mass_offset)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
         -- Get offset
@@ -461,6 +464,28 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot)
             position = position + vector3_unbox(backpack_values.position)
             rotation = rotation + vector3_unbox(backpack_values.rotation)
         end
+
+        -- Center mass
+        if apply_center_mass_offset then
+            local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
+            if center_mass_offset then
+                local all_item_units = self.pt.item_units_by_equipment_component[self.equipment_component]
+                local item_unit = all_item_units and all_item_units[slot.name]
+                local rotation = item_unit and unit_local_rotation(obj, 1)
+                local mat = quaternion_matrix4x4(rotation)
+                local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
+                local children = unit_get_child_units(obj)
+                if children and #children > 0 then
+                    for _, child in pairs(children) do
+                        unit_set_local_position(child, 1, unit_local_position(child, 1) + rotated_center_mass_offset)
+                    end
+                else
+                    -- unit_set_local_position(obj, 1, position + rotated_center_mass_offset)
+                    position = position + rotated_center_mass_offset
+                end
+            end
+        end
+
         -- Link visible equipment
         local world = self.equipment_component._world
         world_unlink_unit(world, obj)
@@ -469,7 +494,8 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot)
         unit_set_local_position(obj, 1, position)
         unit_set_local_rotation(obj, 1, quaternion_from_vector(rotation))
         unit_set_local_scale(obj, 1, scale)
-        -- -- Anim values
+        
+        -- Anim values
         self.anim[slot].default_position[obj]:store(position)
         self.anim[slot].default_rotation[obj]:store(rotation)
         self.anim[slot].start_position[obj]:store(vector3_zero())
