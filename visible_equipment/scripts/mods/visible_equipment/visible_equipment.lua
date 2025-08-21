@@ -17,6 +17,7 @@ local mod = get_mod("visible_equipment")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/common")
 mod.settings = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/settings")
 mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/plugins")
 mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/save")
@@ -133,8 +134,6 @@ end
 -- ##### ├─┘├─┤ │ │  ├─┤├┤ └─┐ ########################################################################################
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
 
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/save")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/common")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/main_menu_view")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/main_menu_background_view")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/result_view")

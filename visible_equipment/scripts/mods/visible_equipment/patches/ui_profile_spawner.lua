@@ -89,13 +89,21 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
     end
 
     instance.update_rotation = function(self, profile, slot_name)
+        -- Info
+        local breed_name = profile.archetype.name == "ogryn" and "ogryn" or "human"
+        local placement_camera = mod.settings.placement_camera
         local item = profile and profile.loadout[slot_name]
         local gear_id = item and item.gear_id
-        local placement = gear_id and mod:gear_placement(gear_id, nil, nil, true)
-        local offset = placement and mod.settings.placement_camera[placement]
+        -- Get placement
+        local placement = gear_id and mod:gear_placement(gear_id)
+        -- Get offset
+        local breed_camera = breed_name and placement_camera[breed_name]
+        local offset = breed_camera and breed_camera[placement]
         local item_type = item and item.item_type
-        offset = offset and item_type and offset[item_type] or offset
+        offset = (offset and item_type and offset[item_type]) or offset
+        -- Check offset
         if offset and offset.rotation then
+            -- Set rotation
             self._rotation_angle = offset.rotation + 2.25
         end
     end
@@ -163,8 +171,11 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
         end
 
         local item = profile and profile.loadout[self._slot_name]
+        local placement_camera = mod.settings.placement_camera
         local gear_id = item and item.gear_id
-        local offset = mod.settings.placement_camera[self._placement_name]
+        local breed_name = profile.archetype.name == "ogryn" and "ogryn" or "human"
+        local breed_camera = breed_name and placement_camera[breed_name]
+        local offset = (breed_camera and breed_camera[self._placement_name]) --or placement_camera[breed][self._placement_name]
         local item_type = item and item.item_type
         offset = offset and item_type and offset[item_type] or offset
 
@@ -178,6 +189,18 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
     -- Original function
     func(self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
 
+end)
+
+mod:hook(CLASS.UIProfileSpawner, "_despawn_players_gear", function(func, self, ...)
+    -- local character_spawn_data = self._character_spawn_data
+	if self._character_spawn_data then
+		local equipment_component = self._character_spawn_data.equipment_component
+        if equipment_component then
+            equipment_component:destroy()
+        end
+    end
+    -- Original function
+    func(self, ...)
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ...)

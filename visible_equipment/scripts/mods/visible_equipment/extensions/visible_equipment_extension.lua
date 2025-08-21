@@ -81,17 +81,25 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
 
 local POCKETABLE_SMALL = "POCKETABLE_SMALL"
 local POCKETABLE = "POCKETABLE"
-local SLOTS = {"slot_primary", "slot_secondary", "slot_pocketable", "slot_pocketable_small"}
-local SPECIAL_SLOT_PLACEMENTS = {
-    POCKETABLE_SMALL = POCKETABLE_SMALL,
-    POCKETABLE = POCKETABLE,
-}
-local SLOT_ATTACHMENTS = {"left", "right"}
 local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
 local EMPTY_BACKPACK = "content/items/characters/player/human/backpacks/empty_backpack"
 local EMPTY_BACKPACK_DEV = "empty_backpack"
 local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
+local SLOTS = {
+    "slot_primary",
+    "slot_secondary",
+    "slot_pocketable",
+    "slot_pocketable_small"
+}
+local SPECIAL_SLOT_PLACEMENTS = {
+    POCKETABLE_SMALL = POCKETABLE_SMALL,
+    POCKETABLE = POCKETABLE,
+}
+local SLOT_ATTACHMENTS = {
+    "left",
+    "right"
+}
 local ANIMATION_TABLE = {
     current = {},
     previous = {},
@@ -397,38 +405,24 @@ VisibleEquipmentExtension.position_objects = function(self)
     end
 end
 
--- local debugged_backpacks = {}
--- local debug_backpack = function(name)
---     if not debugged_backpacks[name] then
---         debugged_backpacks[name] = true
---         mod:dtf(debugged_backpacks, "debugged_backpacks", 10)
---     end
--- end
--- local last_backpack = nil
-
 VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_center_mass_offset)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
         -- Get offset
         local name = self.names[slot][index]
+        local item_type = slot.item and slot.item.item_type
         -- Check backpack
-        -- local backpacks = self.settings.backpacks
+        local backpacks = self.settings.backpacks
         local backpack_name = self:get_backpack()
-        local backpack_table = backpack_name and self.settings.backpacks[backpack_name] or self.settings.backpacks.default
+        local backpack_table = backpack_name and backpacks[backpack_name] or backpacks.default
         -- if backpack_table and not backpack_table[slot.item.item_type] then
         --     mod:echo("item type missing: "..tostring(slot.item.item_type))
         -- end
         -- if not self.settings.offsets[slot.item.weapon_template] then
         --     mod:echo("template missing: "..tostring(slot.item.weapon_template))
         -- end
-        local backpack_item_table = backpack_table and backpack_table[slot.item.item_type] or backpack_table
+        local backpack_item_table = backpack_table and backpack_table[item_type] or backpack_table
         local backpack_values = backpack_item_table and backpack_item_table[name] or backpack_table[name]
-        -- if backpack_name then
-        -- mod:echo(backpack_name)
-        --     -- last_backpack = backpack_name
-        -- --     -- debug_backpack(backpack_name)
-        -- --     -- mod:echo("Values: "..tostring(backpack_values))
-        -- end
         local backpack_group = backpack_name and "backpack" or "default"
         -- Item offsets
         local item_offset = self.settings.offsets[slot.item.weapon_template]
@@ -440,14 +434,14 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         end
         if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
         if placement == "backpack" and backpack_group == "default" then placement = "default" end
-        placement = SPECIAL_SLOT_PLACEMENTS[slot.item.item_type] or placement
+        placement = SPECIAL_SLOT_PLACEMENTS[item_type] or placement
 
-        local item_type_offsets = self.settings.offsets[slot.item.item_type]
+        local item_type_offsets = self.settings.offsets[item_type]
         local offset = (item_offset and item_offset[placement] and item_offset[placement][name]) or
             (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
         -- offset = (item_offset and item_offset.leg_right and item_offset.leg_right[name]) or offset
         -- Breed offsets
-        local breed_offsets = self.settings.offsets[slot.breed_name][slot.item.item_type]
+        local breed_offsets = self.settings.offsets[slot.breed_name][item_type]
         local offset = offset or breed_offsets and (breed_offsets[backpack_group][name] or
             breed_offsets[backpack_group].right)
 
@@ -831,7 +825,6 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
             if anim.started[obj] then
                 self.sheathing[slot] = nil
                 -- Calculate progress
-                -- local progress = (anim.ending[obj] - t) / interval
                 local progress = ((anim.started[obj] + interval) - t) / interval
                 local anim_progress = math_ease_sine(1 - progress)
                 -- Get move speed multiplier

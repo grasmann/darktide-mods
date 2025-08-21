@@ -305,7 +305,10 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
                         equipment_component:position_objects()
                         equipment_component:animate_equipment()
                         -- Camera
-                        local offset = mod.settings.placement_camera[element.placement_name]
+                        local placement_camera = mod.settings.placement_camera
+                        local breed_name = character_spawn_data.profile.archetype.name == "ogryn" and "ogryn" or "human"
+                        local breed_camera = breed_name and placement_camera[breed_name]
+                        local offset = (breed_camera and breed_camera[element.placement_name])
                         local item_type = item.item_type
                         offset = offset and item_type and offset[item_type] or offset
                         local rotation = offset and offset.rotation and offset.rotation + 2.25

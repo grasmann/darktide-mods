@@ -58,6 +58,19 @@ end)
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
+mod:hook(CLASS.InventoryCosmeticsView, "on_enter", function(func, self, ...)
+    -- Original function
+    func(self, ...)
+    
+    local slot = self._selected_slot
+    local slot_name = slot and slot.name
+    local item = self._presentation_profile.loadout[slot_name]
+    local gear_id = item and item.gear_id
+    self.placement_name = gear_id and mod:gear_placement(gear_id)
+    self.selected_placement = self.placement_name
+    self:_update_equip_button_status()
+end)
+
 mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
     if self.selected_placement then
         local slot = self._selected_slot
@@ -83,8 +96,8 @@ mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, sel
                 end
             end
 
-            self.selected_placement = nil
-            self.placement_saved = true
+            self.placement_name = self.selected_placement
+            -- self.selected_placement = nil
             self:_update_equip_button_status()
             self:_play_sound(UISoundEvents.apparel_equip_small)
 
@@ -107,11 +120,17 @@ mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, pr
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_update_equip_button_status", function(func, self, ...)
-    if self.placement_saved then
-        local button = self._widgets_by_name.equip_button
-		local button_content = button.content
-		button_content.hotspot.disabled = true
+    local button = self._widgets_by_name.equip_button
+	local button_content = button.content
+    local inactive = false
+    if (self.selected_placement and self.selected_placement == self.placement_name) then
+        inactive = true
+    end
+    button_content.hotspot.disabled = inactive
+    if inactive then
         return "equipped"
+    else
+        return "equip"
     end
     -- Original function
     return func(self, ...)
@@ -137,7 +156,7 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_exit", function(func, self, ...)
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_preview_element", function(func, self, element, ...)
-    self.placement_name = element.placement_name
+    -- self.placement_name = self.placement_name or element.placement_name
     -- Original function
     func(self, element, ...)
     -- Update equipment component
