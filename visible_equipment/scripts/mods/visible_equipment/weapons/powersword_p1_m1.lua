@@ -23,7 +23,7 @@ return {
 			},
 			right = {
 				node = "j_spine2",
-				position = vector3_box(.3, .2, .15),
+				position = vector3_box(.3, .15, .2),
 				rotation = vector3_box(10, -90, -90),
 			},
 		},
