@@ -59,15 +59,15 @@ return {
         hip_left = {
             right = {
                 node = "j_hips",
-                position = vector3_box(-.2, .125, 0),
-                rotation = vector3_box(-60, 180, 0),
+                position = vector3_box(-.2, .125, 0.1),
+                rotation = vector3_box(-40, 180, 0),
             },
         },
         hip_right = {
             right = {
                 node = "j_hips",
-                position = vector3_box(.2, .125, 0),
-                rotation = vector3_box(-60, 180, 30),
+                position = vector3_box(.2, .125, 0.1),
+                rotation = vector3_box(-40, 180, 30),
             },
         },
 		backpack = {
