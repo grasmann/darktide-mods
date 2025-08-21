@@ -27,6 +27,20 @@ return {
 				rotation = vector3_box(10, -90, -90),
 			},
 		},
+        leg_left = {
+            right = {
+                node = "j_leftupleg",
+                position = vector3_box(0.1, 0.11, -0.06),
+                rotation = vector3_box(-10, 75, 100),
+            },
+        },
+        leg_right = {
+            right = {
+                node = "j_rightupleg",
+                position = vector3_box(-.1, -.125, 0),
+                rotation = vector3_box(-10, 250, -90),
+            },
+        },
         hip_back = {
             right = {
                 node = "j_hips",
