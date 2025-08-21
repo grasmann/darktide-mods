@@ -23,15 +23,51 @@ return {
 			},
 			right = {
 				node = "j_spine2",
-				position = vector3_box(.3, .2, .15),
+				position = vector3_box(0.3, 0.13, 0.12),
 				rotation = vector3_box(10, -90, -90),
 			},
 		},
+        leg_left = {
+            right = {
+                node = "j_leftupleg",
+                position = vector3_box(0.1, 0.11, -0.06),
+                rotation = vector3_box(-10, 75, 100),
+            },
+        },
+        leg_right = {
+            right = {
+                node = "j_rightupleg",
+                position = vector3_box(-.1, -.125, 0),
+                rotation = vector3_box(-10, 250, -90),
+            },
+        },
         hip_back = {
             right = {
                 node = "j_hips",
-                position = vector3_box(.05, -.2, 0),
-                rotation = vector3_box(0, 0, 90),
+                -- x, -0.15, x is better for overcoats
+                position = vector3_box(0.075, -0.1, 0.15),
+                rotation = vector3_box(0, -120, 90),
+            },
+        },
+        hip_front = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(0.075, 0.15, 0.15),
+                rotation = vector3_box(0, -110, 90),
+            },
+        },
+        hip_left = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(-.2, .125, 0.1),
+                rotation = vector3_box(-40, 180, 0),
+            },
+        },
+        hip_right = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(.2, .125, 0.1),
+                rotation = vector3_box(-40, 180, 30),
             },
         },
 		backpack = {

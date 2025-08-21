@@ -23,6 +23,13 @@ return {
                 center_mass = vector3_box(0, -.2, 0),
             },
         },
+        hip_front = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(.05, .2, 0.1),
+                rotation = vector3_box(0, -20, 90),
+            },
+        },
         hip_back = {
             right = {
                 node = "j_hips",

@@ -27,6 +27,78 @@ return {
                 rotation = vector3_box(10, -90, -90),
             },
         },
+        leg_left = {
+            left = {
+                node = "j_spine2",
+                position = vector3_box(.2, .175, -.125),
+                rotation = vector3_box(0, 90, 90),
+            },
+            right = {
+                node = "j_leftupleg",
+                position = vector3_box(0.1, 0.11, -0.06),
+                rotation = vector3_box(-10, 75, -280),
+            },
+        },
+        leg_right = {
+            left = {
+                node = "j_spine2",
+                position = vector3_box(.2, .175, -.125),
+                rotation = vector3_box(0, 90, 90),
+            },
+            right = {
+                node = "j_rightupleg",
+                position = vector3_box(-.1, -.125, 0),
+                rotation = vector3_box(-10, 250, 90),
+            },
+        },
+        hip_back = {
+            left = {
+                node = "j_spine2",
+                position = vector3_box(.2, .175, -.125),
+                rotation = vector3_box(0, 90, 90),
+            },
+            right = {
+                node = "j_hips",
+                position = vector3_box(0.075, -0.1, 0.15),
+                rotation = vector3_box(0, -120, 270),
+            },
+        },
+        hip_front = {
+            left = {
+                node = "j_spine2",
+                position = vector3_box(.2, .175, -.125),
+                rotation = vector3_box(0, 90, 90),
+            },
+            right = {
+                node = "j_hips",
+                position = vector3_box(0.075, 0.15, 0.15),
+                rotation = vector3_box(0, -110, 270),
+            },
+        },
+        hip_left = {
+            left = {
+                node = "j_spine2",
+                position = vector3_box(.2, .175, -.125),
+                rotation = vector3_box(0, 90, 90),
+            },
+            right = {
+                node = "j_hips",
+                position = vector3_box(-.2, .125, 0.1),
+                rotation = vector3_box(-40, 180, 180),
+            },
+        },
+        hip_right = {
+            left = {
+                node = "j_spine2",
+                position = vector3_box(.2, .175, -.125),
+                rotation = vector3_box(0, 90, 90),
+            },
+            right = {
+                node = "j_hips",
+                position = vector3_box(.2, .125, 0.1),
+                rotation = vector3_box(-40, 180, 180),
+            },
+        },
         backpack = {
             left = {
                 node = "j_spine2",

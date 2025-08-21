@@ -22,6 +22,13 @@ return {
                 rotation = vector3_box(-10, 0, 90),
             },
         },
+        hip_front = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(.05, .2, 0.1),
+                rotation = vector3_box(0, -20, 90),
+            },
+        },
         hip_back = {
             right = {
                 node = "j_hips",
