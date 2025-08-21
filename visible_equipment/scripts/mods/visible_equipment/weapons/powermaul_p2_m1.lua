@@ -46,14 +46,14 @@ return {
                 node = "j_hips",
                 -- x, -0.15, x is better for overcoats
                 position = vector3_box(0.075, -0.1, 0.15),
-                rotation = vector3_box(0, -120, 90),
+                rotation = vector3_box(0, -120, 270),
             },
         },
         hip_front = {
             right = {
                 node = "j_hips",
                 position = vector3_box(0.075, 0.15, 0.15),
-                rotation = vector3_box(0, -110, 90),
+                rotation = vector3_box(0, -110, 270),
             },
         },
         hip_left = {
