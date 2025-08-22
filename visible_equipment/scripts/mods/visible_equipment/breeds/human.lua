@@ -15,6 +15,8 @@ local mod = get_mod("visible_equipment")
 
 local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
+local POCKETABLE_SMALL = "POCKETABLE_SMALL"
+local POCKETABLE = "POCKETABLE"
 
 return {
     offsets = {
@@ -67,6 +69,26 @@ return {
                     node = "j_spine2",
                     position = vector3_box(.3, .175, -.275),
                     rotation = vector3_box(-30, 0, 90),
+                },
+            },
+        },
+        [POCKETABLE_SMALL] = {
+            default = {
+                right = {
+                    node = "j_hips",
+                    position = vector3_box(.18, -.09, .075),
+                    rotation = vector3_box(-10, -10, 0),
+                    scale = vector3_box(1, 1, 1),
+                },
+            },
+        },
+        [POCKETABLE] = {
+            default = {
+                right = {
+                    node = "j_hips",
+                    position = vector3_box(0, -.1, .3),
+                    rotation = vector3_box(80, 0, 180),
+                    scale = vector3_box(.5, .5, .5),
                 },
             },
         },

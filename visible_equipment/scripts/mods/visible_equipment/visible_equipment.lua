@@ -120,10 +120,11 @@ end
 
 mod.on_all_mods_loaded = function()
     mod.loaded_plugins = mod:load_plugins()
-    local pt = mod:pt()
-    for equipment_component, player_unit in pairs(pt.equipment_components) do
-        equipment_component:position_objects()
-    end
+    -- local pt = mod:pt()
+    -- for equipment_component, player_unit in pairs(pt.equipment_components) do
+    --     equipment_component:position_objects()
+    -- end
+    managers.event:trigger("visible_equipment_mods_loaded")
 end
 
 mod.on_setting_changed = function(setting_id)

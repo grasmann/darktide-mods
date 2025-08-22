@@ -1,4 +1,4 @@
-local mod = get_mod("weapon_customization")
+local mod = get_mod("visible_equipment")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -15,11 +15,11 @@ local mod = get_mod("weapon_customization")
 --#endregion
 
 --#region Quaternion
-	Quaternion.to_vector = function(quaternion)
+	quaternion.to_vector = function(quaternion)
 		local x, y, z = quaternion_to_euler_angles_xyz(quaternion)
 		return vector3(x, y, z)
 	end
-	Quaternion.from_vector = function(vector)
+	quaternion.from_vector = function(vector)
 		return quaternion_from_euler_angles_xyz(vector[1], vector[2], vector[3])
 	end
 --#endregion

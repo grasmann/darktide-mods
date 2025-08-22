@@ -1,12 +1,20 @@
-local mod = get_mod("weapon_customization")
+local mod = get_mod("visible_equipment")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local unit = Unit
+    local table = table
     local vector3 = Vector3
+    local unit_node = unit.node
+    local table_find = table.find
+    local quaternion = Quaternion
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
+    local unit_has_node = unit.has_node
+    local quaternion_from_vector = quaternion.from_vector
+    local unit_set_local_rotation = unit.set_local_rotation
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -20,63 +28,47 @@ return {
                 node = "j_spine2",
                 position = vector3_box(.2, .6, -.3),
                 rotation = vector3_box(15, 7.5, 90),
-                center_mass = vector3_box(-.2, -.7, .1),
+                center_mass = vector3_box(-.2, -.7, 0),
             },
         },
         hip_back = {
             right = {
                 node = "j_hips",
-                position = vector3_box(.05, -.45, 0),
-                rotation = vector3_box(0, -20, 90),
-                center_mass = vector3_box(-.2, -.7, .1),
+                position = vector3_box(.05, -.325, .2),
+                rotation = vector3_box(10, -20, 90),
+                center_mass = vector3_box(-.2, -.7, 0),
             },
         },
         hip_front = {
             right = {
                 node = "j_hips",
-                position = vector3_box(.05, .5, 0),
-                rotation = vector3_box(0, -20, 90),
-                center_mass = vector3_box(-.2, -.7, .1),
-            },
-        },
-        leg_left = {
-            right = {
-                node = "j_leftupleg",
-                position = vector3_box(.2, .125, -.3),
-                rotation = vector3_box(280, 250, 100),
-                center_mass = vector3_box(-.2, -.7, .1),
-            },
-        },
-        leg_right = {
-            right = {
-                node = "j_rightupleg",
-                position = vector3_box(-.2, -.125, .3),
-                rotation = vector3_box(290 - 30, 220 + 180 + 30, 280 + 180),
-                center_mass = vector3_box(-.2, -.7, .1),
+                position = vector3_box(.05, .7, .2),
+                rotation = vector3_box(15, -20, 90),
+                center_mass = vector3_box(-.2, -.7, 0),
             },
         },
         hip_left = {
             right = {
                 node = "j_hips",
-                position = vector3_box(-.6, .125, 0),
+                position = vector3_box(-.8, -.125, 0),
                 rotation = vector3_box(180+45, 180-20, 0),
-                center_mass = vector3_box(-.2, -.7, .1),
+                center_mass = vector3_box(-.2, -.7, 0),
             },
         },
         hip_right = {
             right = {
                 node = "j_hips",
-                position = vector3_box(.6, .125, 0),
+                position = vector3_box(.4, .125, 0),
                 rotation = vector3_box(180+45, 180, 10),
-                center_mass = vector3_box(-.2, -.7, .1),
+                center_mass = vector3_box(-.2, -.7, 0),
             },
         },
         backpack = {
             right = {
                 node = "j_spine2",
-                position = vector3_box(.2, .6, -.6),
-                rotation = vector3_box(-40, 0, 90),
-                center_mass = vector3_box(-.2, -.7, .1),
+                position = vector3_box(.2, .8, -.5),
+                rotation = vector3_box(10, 0, 90),
+                center_mass = vector3_box(-.2, -.7, 0),
             },
         },
     },
@@ -199,5 +191,17 @@ return {
         right = {
             momentum = vector3_box(1, -3, 0),
         },
+    },
+    scripts = {
+        init = function(item, item_unit, attachment_units, attachment_names)
+            local receiver = table_find(attachment_names, "receiver")
+            if receiver then
+                local has_node = unit_has_node(receiver, "ap_anim_01")
+                local node_index = has_node and unit_node(receiver, "ap_anim_01")
+                if node_index then
+                    unit_set_local_rotation(receiver, node_index, quaternion_from_vector(vector3(0, 0, 90)))
+                end
+            end
+        end,
     },
 }

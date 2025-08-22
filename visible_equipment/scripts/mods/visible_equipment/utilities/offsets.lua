@@ -75,8 +75,8 @@ local BREED_OGRYN = "ogryn"
 local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
 local GADGET = "GADGET"
-local POCKETABLE_SMALL = "POCKETABLE_SMALL"
-local POCKETABLE = "POCKETABLE"
+-- local POCKETABLE_SMALL = "POCKETABLE_SMALL"
+-- local POCKETABLE = "POCKETABLE"
 
 local offsets = {
     [BREED_HUMAN] = human.offsets,
@@ -126,22 +126,22 @@ local offsets = {
     lasgun_p2_m1 = lasgun_p2_m1.offsets,
     lasgun_p3_m1 = lasgun_p3_m1.offsets,
     autogun_p1_m1 = autogun_p1_m1.offsets,
-    [POCKETABLE_SMALL] = {
-        right = {
-            node = "j_hips",
-            position = vector3_box(.18, -.09, .075),
-            rotation = vector3_box(-10, -10, 0),
-            scale = vector3_box(1, 1, 1),
-        },
-    },
-    [POCKETABLE] = {
-        right = {
-            node = "j_hips",
-            position = vector3_box(0, -.1, .3),
-            rotation = vector3_box(80, 0, 180),
-            scale = vector3_box(.5, .5, .5),
-        },
-    },
+    -- [POCKETABLE_SMALL] = {
+    --     right = {
+    --         node = "j_hips",
+    --         position = vector3_box(.18, -.09, .075),
+    --         rotation = vector3_box(-10, -10, 0),
+    --         scale = vector3_box(1, 1, 1),
+    --     },
+    -- },
+    -- [POCKETABLE] = {
+    --     right = {
+    --         node = "j_hips",
+    --         position = vector3_box(0, -.1, .3),
+    --         rotation = vector3_box(80, 0, 180),
+    --         scale = vector3_box(.5, .5, .5),
+    --     },
+    -- },
 }
 
 --#region Copies

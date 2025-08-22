@@ -6,6 +6,7 @@ local mod = get_mod("visible_equipment")
 
 local visual_loadout_customization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 local player_character_sound_event_aliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
+local WieldableSlotScripts = mod:original_require("scripts/extension_systems/visual_loadout/utilities/wieldable_slot_scripts")
 local weapon_templates = mod:original_require("scripts/utilities/weapon/weapon_template")
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -55,6 +56,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local world_link_unit = world.link_unit
     local quaternion_lerp = quaternion.lerp
     local vector3_unbox = vector3_box.unbox
+    local unit_flow_event = unit.flow_event
     local world_unlink_unit = world.unlink_unit
     local world_destroy_unit = world.destroy_unit
     local quaternion_unbox = quaternion_box.unbox
@@ -145,6 +147,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     -- Initialized
     self.initialized = true
     -- Events
+    managers.event:register(self, "visible_equipment_mods_loaded", "on_mods_loaded")
     managers.event:register(self, "visible_equipment_settings_changed", "on_settings_changed")
     self:on_settings_changed()
 end
@@ -171,8 +174,14 @@ VisibleEquipmentExtension.on_settings_changed = function(self)
     self.random_placements = mod:get("mod_option_random_placements")
 end
 
+VisibleEquipmentExtension.on_mods_loaded = function(self)
+    self:on_settings_changed()
+    self:position_objects(true)
+end
+
 VisibleEquipmentExtension.destroy = function(self)
     -- Events
+    managers.event:unregister(self, "visible_equipment_mods_loaded")
     managers.event:unregister(self, "visible_equipment_settings_changed")
     -- Initialized
     self.initialized = false
@@ -231,6 +240,12 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
     if (not self.loaded[slot] and table_contains(SLOTS, slot.name)) then
         -- Spawn visible equipment
         local item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p = self:spawn_slot(slot, optional_mission_template)
+        -- Init script
+        local scripts = self.settings.scripts
+        local item_script = slot.item and scripts[slot.item.weapon_template]
+        if item_script and item_script.init then
+            item_script.init(slot.item, item_unit_3p, attachment_units_3p[item_unit_3p], unit_attachment_name_3p[item_unit_3p])
+        end
         -- Reset equipment component tables
         self:reset_slot_tables(slot)
         -- Save visible equipment to pt
@@ -397,14 +412,15 @@ end
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
-VisibleEquipmentExtension.position_objects = function(self)
+VisibleEquipmentExtension.position_objects = function(self, apply_center_mass_offset)
     -- Iterate through equipment
     for slot, units in pairs(self.objects) do
         -- Position objects
-        self:position_slot_objects(slot)
+        self:position_slot_objects(slot, apply_center_mass_offset)
     end
 end
 
+mod.last_backpack = nil
 VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_center_mass_offset)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
@@ -415,6 +431,12 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         local backpacks = self.settings.backpacks
         local backpack_name = self:get_backpack()
         local backpack_table = backpack_name and backpacks[backpack_name] or backpacks.default
+        -- if backpack_name and not backpacks[backpack_name] then
+        --     if mod.last_backpack ~= backpack_name then mod:echo("backpack missing: "..tostring(backpack_name)) end
+        -- else
+        --     if mod.last_backpack ~= backpack_name then mod:echo("backpack: "..tostring(backpack_name)) end
+        -- end
+        -- mod.last_backpack = backpack_name
         -- if backpack_table and not backpack_table[slot.item.item_type] then
         --     mod:echo("item type missing: "..tostring(slot.item.item_type))
         -- end
@@ -437,15 +459,12 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         placement = SPECIAL_SLOT_PLACEMENTS[item_type] or placement
 
         local item_type_offsets = self.settings.offsets[item_type]
-        local offset = (item_offset and item_offset[placement] and item_offset[placement][name]) or
-            (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
-        -- offset = (item_offset and item_offset.leg_right and item_offset.leg_right[name]) or offset
+        local offset = item_offset and item_offset[placement] and item_offset[placement][name]
+        offset = offset or (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
         -- Breed offsets
-        local breed_offsets = self.settings.offsets[slot.breed_name][item_type]
-        local offset = offset or breed_offsets and (breed_offsets[backpack_group][name] or
-            breed_offsets[backpack_group].right)
-
-        -- mod:echo("offset: "..tostring(placement))
+        local breed_item_offsets = self.settings.offsets[slot.breed_name][item_type]
+        offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
+        offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
         -- Node
         local node_name = offset and offset.node or "j_spine2"
         local node_index = unit_has_node(self.unit, node_name) and unit_node(self.unit, node_name)
@@ -471,7 +490,7 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
                 local children = unit_get_child_units(obj)
                 if children and #children > 0 then
                     for _, child in pairs(children) do
-                        unit_set_local_position(child, 1, unit_local_position(child, 1) + rotated_center_mass_offset)
+                        unit_set_local_position(child, 1, rotated_center_mass_offset)
                     end
                 else
                     -- unit_set_local_position(obj, 1, position + rotated_center_mass_offset)
@@ -549,14 +568,6 @@ VisibleEquipmentExtension.play_equipment_sound = function(self, optional_slot, o
         self:play_equipment_slot_sound(optional_slot, optional_effect)
     end
 end
-
--- local unit_get_child_units = unit.get_child_units
--- VisibleEquipmentExtension.destroy_unit = function(self, unit)
---     local children = unit_get_child_units(unit)
---     for _, child in pairs(children) do
-        
---     end
--- end
 
 VisibleEquipmentExtension.play_equipment_slot_sound = function(self, slot, effect)
     -- Exit when sound requirements are not met
