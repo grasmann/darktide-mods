@@ -313,23 +313,23 @@ return table.combine(
                 {dependencies = {"laspistol_receiver_06"}, -- Emblems
                     emblem_left = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(2, 2, 2)},
                     emblem_right = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(2, 2, 2)}},
-                {dependencies = {"barrel_01", "autogun_bayonet_01"}, -- Bayonet 1
+                {dependencies = {"barrel_01", "autogun_bayonet_01|autogun_bayonet_05"}, -- Bayonets 1 and 5
                     bayonet = {offset = true, position = vector3_box(0, .08, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"barrel_01", "autogun_bayonet_02"}, -- Bayonet 2
                     bayonet = {offset = true, position = vector3_box(0, .08, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {dependencies = {"barrel_02", "autogun_bayonet_01"}, -- Bayonet 1
+                {dependencies = {"barrel_02", "autogun_bayonet_01|autogun_bayonet_05"}, -- Bayonets 1 and 5
                     bayonet = {offset = true, position = vector3_box(0, .1, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"barrel_02", "autogun_bayonet_02"}, -- Bayonet 2
                     bayonet = {offset = true, position = vector3_box(0, .1, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {dependencies = {"barrel_04", "autogun_bayonet_01"}, -- Bayonet 1
+                {dependencies = {"barrel_04", "autogun_bayonet_01|autogun_bayonet_05"}, -- Bayonets 1 and 5
                     bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"barrel_04", "autogun_bayonet_02"}, -- Bayonet 2
                     bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {dependencies = {"barrel_05", "autogun_bayonet_01"}, -- Bayonet 1
+                {dependencies = {"barrel_05", "autogun_bayonet_01|autogun_bayonet_05"}, -- Bayonets 1 and 5
                     bayonet = {offset = true, position = vector3_box(0, .13, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"barrel_05", "autogun_bayonet_02"}, -- Bayonet 2
                     bayonet = {offset = true, position = vector3_box(0, .13, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
-                {dependencies = {"barrel_06", "autogun_bayonet_01"}, -- Bayonet 1
+                {dependencies = {"barrel_06", "autogun_bayonet_01|autogun_bayonet_05"}, -- Bayonets 1 and 5
                     bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
                 {dependencies = {"barrel_06", "autogun_bayonet_02"}, -- Bayonet 2
                     bayonet = {offset = true, position = vector3_box(0, .11, -.033), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1)}},
