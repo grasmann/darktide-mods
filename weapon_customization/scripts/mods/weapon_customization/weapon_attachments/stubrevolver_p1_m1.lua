@@ -143,7 +143,7 @@ return table.combine(
             fixes = {
                 --#region Scopes
                     -- Ranger's Vigil
-                    {dependencies = {"scope_03", "barrel_04"},
+                    {dependencies = {"scope_03", "barrel_04|barrel_06"},
                         sight = {parent = "barrel", parent_node = 10, position = vector3_box(0, -.02, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1), hide_mesh = {{"barrel", 9}},
                             animation_wait_attach = {"rail"},
                         }
@@ -158,7 +158,7 @@ return table.combine(
                         scope_offset = {position = vector3_box(0, -.22, -.033), fov = 25, custom_fov = 32.5, custom_fov_multiplier = 1.3, aim_scale = .75, lense_transparency = true}, -- sniper_offset = {position = vector3_box(0, .35, 0)}
                         },
                     -- Martyr's Gaze
-                    {dependencies = {"scope_01", "barrel_04"},
+                    {dependencies = {"scope_01", "barrel_04|barrel_06"},
                         sight = {parent = "barrel", parent_node = 10, position = vector3_box(0, -.03, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1.5, 1), hide_mesh = {{"barrel", 9}},
                             animation_wait_attach = {"rail"},
                         }
@@ -173,7 +173,7 @@ return table.combine(
                         scope_offset = {position = vector3_box(0, -.175, -.033), fov = 15, custom_fov = 27, fov_multiplier = 1.8, aim_scale = .65, lense_transparency = true}, --sniper_offset = {position = vector3_box(0, .35, 0)}
                         },
                     -- Extermination Lense
-                    {dependencies = {"scope_02", "barrel_04"},
+                    {dependencies = {"scope_02", "barrel_04|barrel_06"},
                         sight = {parent = "barrel", parent_node = 10, position = vector3_box(0, -.07, .05), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 3, 1), hide_mesh = {{"barrel", 9}},
                             animation_wait_attach = {"rail"},
                         }
@@ -192,7 +192,7 @@ return table.combine(
                     {lens = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
                     {lens_2 = {parent = "sight", position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), scale = vector3_box(0, 0, 0)}},
 
-                    {dependencies = {"barrel_04|barrel_05"},
+                    {dependencies = {"barrel_04|barrel_05|barrel_06"},
                         no_scope_offset = {position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0)}},
 
                 --#endregion
@@ -207,12 +207,13 @@ return table.combine(
                             animation_wait_attach = {"barrel"},
                         },
                     },
-                    {dependencies = {"barrel_03"},
+                    -- barrel_03 and whichever is the Mastery barrel
+                    {dependencies = {"barrel_03|barrel_07"},
                         muzzle = {parent = "barrel", parent_node = 9, position = vector3_box(0, .22, -.023), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
                             animation_wait_attach = {"barrel"},
                         },
                     },
-                    {dependencies = {"barrel_04"},
+                    {dependencies = {"barrel_04|barrel_06"},
                         muzzle = {parent = "barrel", parent_node = 9, position = vector3_box(0, .1375, -.0425), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
                             animation_wait_attach = {"barrel"},
                         },
@@ -239,7 +240,7 @@ return table.combine(
                         emblem_right = {parent = "body", position = vector3_box(.011, .045, .0095), rotation = vector3_box(0, 0, 0), scale = vector3_box(.65, .65, .65)}},
                 --#endregion
                 --#region Barrel
-                    {dependencies = {"barrel_04"},
+                    {dependencies = {"barrel_04|barrel_06"},
                         -- body = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(1.5, 0, 0), rotation_node = 1, scale = vector3_box(1, 1, 1)},
                         barrel = {offset = true, position = vector3_box(0, 0, 0), rotation = vector3_box(0, 0, 0), rotation_node = 2, scale = vector3_box(1, 1, 1),
                             trigger_move = {"muzzle", "rail"}, animation_wait_detach = {"rail", "muzzle"},
@@ -256,7 +257,7 @@ return table.combine(
                     },
                 --#endregion
                 --#region Rail
-                    {dependencies = {"barrel_04", "scope_01|scope_02|scope_03|reflex_sight_01|reflex_sight_02|reflex_sight_03"},
+                    {dependencies = {"barrel_04|barrel_06", "scope_01|scope_02|scope_03|reflex_sight_01|reflex_sight_02|reflex_sight_03"},
                         rail = {parent = "barrel", parent_node = 9, position = vector3_box(0, -.06, -.0015), rotation = vector3_box(0, 0, 0), scale = vector3_box(.8, .75, 1),
                             trigger_move = {"sight"}, animation_wait_attach = {"barrel"}, animation_wait_detach = {"sight"}},
                         },
@@ -273,7 +274,7 @@ return table.combine(
                     },
                 --#endregion
                 --#regin Reflex sights
-                    {dependencies = {"barrel_04"},
+                    {dependencies = {"barrel_04|barrel_06"},
                         sight = {parent = "barrel", parent_node = 9, position = vector3_box(0, -.0505, -.0005), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, .75, 1), hide_mesh = {{"barrel", 9}},
                             animation_wait_attach = {"rail"},
                         },
