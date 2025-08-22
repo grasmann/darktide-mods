@@ -18,15 +18,17 @@ return {
         default = {
             right = {
                 node = "j_spine2",
-                position = vector3_box(-.9, .5, .25),
+                position = vector3_box(0, .5, .25),
                 rotation = vector3_box(0, 90, 180),
+                center_mass = vector3_box(0, 0, -1.2),
             },
         },
         backpack = {
             right = {
                 node = "j_spine2",
-                position = vector3_box(-.9, .7, .45),
+                position = vector3_box(0, .7, .45),
                 rotation = vector3_box(0, 90, 180),
+                center_mass = vector3_box(0, 0, -1.2),
             },
         },
     },

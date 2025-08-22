@@ -168,10 +168,10 @@ VisibleEquipmentExtension.extensions_ready = function(self)
 end
 
 VisibleEquipmentExtension.on_settings_changed = function(self)
-    self.sound_self = mod:get("mod_option_sounds_self")
-    self.sound_others = mod:get("mod_option_sounds_others")
-    self.animations = mod:get("mod_option_animations")
     self.random_placements = mod:get("mod_option_random_placements")
+    self.sound_others = mod:get("mod_option_sounds_others")
+    self.sound_self = mod:get("mod_option_sounds_self")
+    self.animations = mod:get("mod_option_animations")
 end
 
 VisibleEquipmentExtension.on_mods_loaded = function(self)
@@ -420,6 +420,16 @@ VisibleEquipmentExtension.position_objects = function(self, apply_center_mass_of
     end
 end
 
+VisibleEquipmentExtension.is_ogryn = function(self)
+    -- local player = self.player
+    -- local profile = self.profile --or player and player:profile()
+    return self.profile and self.profile.archetype.name == "ogryn"
+end
+
+VisibleEquipmentExtension.get_breed = function(self)
+    return self:is_ogryn() and "ogryn" or "human"
+end
+
 mod.last_backpack = nil
 VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_center_mass_offset)
     -- Iterate through objects
@@ -427,6 +437,10 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         -- Get offset
         local name = self.names[slot][index]
         local item_type = slot.item and slot.item.item_type
+        local weapon_template = slot.item and slot.item.weapon_template
+        local gear_id = slot.item and slot.item.gear_id
+        -- local breed_name = slot.breed_name
+        local breed_name = self:get_breed()
         -- Check backpack
         local backpacks = self.settings.backpacks
         local backpack_name = self:get_backpack()
@@ -447,9 +461,9 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         local backpack_values = backpack_item_table and backpack_item_table[name] or backpack_table[name]
         local backpack_group = backpack_name and "backpack" or "default"
         -- Item offsets
-        local item_offset = self.settings.offsets[slot.item.weapon_template]
+        local item_offset = weapon_template and self.settings.offsets[weapon_template]
         -- local placement = self.pt.gear_placements[slot.item.gear_id]
-        local placement = mod:gear_placement(slot.item.gear_id, nil, nil, true) --or "default" --or self.pt.gear_placements[slot.item.gear_id]
+        local placement = gear_id and mod:gear_placement(gear_id, nil, nil, true) or "default" --or self.pt.gear_placements[slot.item.gear_id]
         if self.random_placements and not self.is_local_unit and item_offset and not self.from_ui_profile_spawner then
             local count = table_size(item_offset)
             placement = table_keys(item_offset)[math_random(1, count)]
@@ -462,7 +476,7 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         local offset = item_offset and item_offset[placement] and item_offset[placement][name]
         offset = offset or (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
         -- Breed offsets
-        local breed_item_offsets = self.settings.offsets[slot.breed_name][item_type]
+        local breed_item_offsets = self.settings.offsets[breed_name][item_type]
         offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
         offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
         -- Node
