@@ -209,7 +209,7 @@ return table.combine(
                     },
                     -- barrel_03 and whichever is the Mastery barrel
                     {dependencies = {"barrel_03|barrel_07"},
-                        muzzle = {parent = "barrel", parent_node = 9, position = vector3_box(0, .22, -.023), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
+                        muzzle = {parent = "barrel", parent_node = 9, position = vector3_box(0, .22, -.027), rotation = vector3_box(0, 0, 0), scale = vector3_box(1, 1, 1),
                             animation_wait_attach = {"barrel"},
                         },
                     },
