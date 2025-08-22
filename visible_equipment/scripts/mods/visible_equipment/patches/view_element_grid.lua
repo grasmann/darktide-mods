@@ -10,7 +10,7 @@ local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_setting
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local ItemPassTemplates = mod:original_require("scripts/ui/pass_templates/item_pass_templates")
 local MasterItems = mod:original_require("scripts/backend/master_items")
-local gear_bundle_size = ItemPassTemplates.gear_bundle_size
+local gear_bundle_size = {ItemPassTemplates.gear_bundle_size[1], ItemPassTemplates.gear_bundle_size[2] - 30}
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -305,7 +305,10 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
                         equipment_component:position_objects()
                         equipment_component:animate_equipment()
                         -- Camera
-                        local offset = mod.settings.placement_camera[element.placement_name]
+                        local placement_camera = mod.settings.placement_camera
+                        local breed_name = character_spawn_data.profile.archetype.name == "ogryn" and "ogryn" or "human"
+                        local breed_camera = breed_name and placement_camera[breed_name]
+                        local offset = (breed_camera and breed_camera[element.placement_name])
                         local item_type = item.item_type
                         offset = offset and item_type and offset[item_type] or offset
                         local rotation = offset and offset.rotation and offset.rotation + 2.25

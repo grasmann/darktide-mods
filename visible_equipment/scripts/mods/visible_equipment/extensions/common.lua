@@ -5,9 +5,11 @@ local mod = get_mod("weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 --#region local functions
     local pairs = pairs
+    local table = table
     local ipairs = ipairs
 	local vector3 = Vector3
     local quaternion = Quaternion
+    local table_clone = table.clone
 	local quaternion_to_euler_angles_xyz = quaternion.to_euler_angles_xyz
 	local quaternion_from_euler_angles_xyz = quaternion.from_euler_angles_xyz
 --#endregion
@@ -32,5 +34,8 @@ local mod = get_mod("weapon_customization")
             end
         end
         return combined
+    end
+    table.clone_safe = function(t)
+        return t and table_clone(t)
     end
 --#endregion

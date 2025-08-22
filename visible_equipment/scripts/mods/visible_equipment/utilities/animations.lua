@@ -58,9 +58,11 @@ local lasgun_p3_m1 = mod:io_dofile(weapons_folder.."lasgun_p3_m1")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local table = table
     local vector3 = Vector3
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
+    local table_clone_safe = table.clone_safe
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -160,82 +162,82 @@ local animations = {
     },
 }
 
---#endregion Copies
+--#region Copies
     --#region Ogryn melee
-        animations.ogryn_combatblade_p1_m2 = animations.ogryn_combatblade_p1_m1
-        animations.ogryn_combatblade_p1_m3 = animations.ogryn_combatblade_p1_m1
-        animations.ogryn_pickaxe_2h_p1_m2 = animations.ogryn_pickaxe_2h_p1_m1
-        animations.ogryn_pickaxe_2h_p1_m3 = animations.ogryn_pickaxe_2h_p1_m1
-        animations.powermaul_shield_p1_m2 = animations.powermaul_shield_p1_m1
-        animations.ogryn_powermaul_p1_m2 = animations.ogryn_powermaul_p1_m1
-        animations.ogryn_powermaul_p1_m3 = animations.ogryn_powermaul_p1_m1
-        animations.powersword_2h_p1_m2 = animations.powersword_2h_p1_m1
-        animations.ogryn_club_p1_m2 = animations.ogryn_club_p1_m1
-        animations.ogryn_club_p1_m3 = animations.ogryn_club_p1_m1
-        animations.ogryn_club_p2_m2 = animations.ogryn_club_p2_m1
-        animations.ogryn_club_p2_m3 = animations.ogryn_club_p2_m1
-        animations.powersword_p1_m2 = animations.powersword_p1_m1
-        animations.powersword_p1_m3 = animations.powersword_p1_m1
+        animations.ogryn_combatblade_p1_m2 = table_clone_safe(animations.ogryn_combatblade_p1_m1)
+        animations.ogryn_combatblade_p1_m3 = table_clone_safe(animations.ogryn_combatblade_p1_m1)
+        animations.ogryn_pickaxe_2h_p1_m2 = table_clone_safe(animations.ogryn_pickaxe_2h_p1_m1)
+        animations.ogryn_pickaxe_2h_p1_m3 = table_clone_safe(animations.ogryn_pickaxe_2h_p1_m1)
+        animations.powermaul_shield_p1_m2 = table_clone_safe(animations.powermaul_shield_p1_m1)
+        animations.ogryn_powermaul_p1_m2 = table_clone_safe(animations.ogryn_powermaul_p1_m1)
+        animations.ogryn_powermaul_p1_m3 = table_clone_safe(animations.ogryn_powermaul_p1_m1)
+        animations.powersword_2h_p1_m2 = table_clone_safe(animations.powersword_2h_p1_m1)
+        animations.ogryn_club_p1_m2 = table_clone_safe(animations.ogryn_club_p1_m1)
+        animations.ogryn_club_p1_m3 = table_clone_safe(animations.ogryn_club_p1_m1)
+        animations.ogryn_club_p2_m2 = table_clone_safe(animations.ogryn_club_p2_m1)
+        animations.ogryn_club_p2_m3 = table_clone_safe(animations.ogryn_club_p2_m1)
+        animations.powersword_p1_m2 = table_clone_safe(animations.powersword_p1_m1)
+        animations.powersword_p1_m3 = table_clone_safe(animations.powersword_p1_m1)
     --#endregion
     --#region Ogryn ranged
-        animations.ogryn_heavystubber_p1_m2 = animations.ogryn_heavystubber_p1_m1
-		animations.ogryn_heavystubber_p1_m3 = animations.ogryn_heavystubber_p1_m1
-        animations.ogryn_heavystubber_p2_m2 = animations.ogryn_heavystubber_p2_m1
-		animations.ogryn_heavystubber_p2_m3 = animations.ogryn_heavystubber_p2_m1
-        animations.ogryn_rippergun_p1_m2 = animations.ogryn_rippergun_p1_m1
-		animations.ogryn_rippergun_p1_m3 = animations.ogryn_rippergun_p1_m1
-        animations.ogryn_thumper_p1_m2 = animations.ogryn_thumper_p1_m1
+        animations.ogryn_heavystubber_p1_m2 = table_clone_safe(animations.ogryn_heavystubber_p1_m1)
+		animations.ogryn_heavystubber_p1_m3 = table_clone_safe(animations.ogryn_heavystubber_p1_m1)
+        animations.ogryn_heavystubber_p2_m2 = table_clone_safe(animations.ogryn_heavystubber_p2_m1)
+		animations.ogryn_heavystubber_p2_m3 = table_clone_safe(animations.ogryn_heavystubber_p2_m1)
+        animations.ogryn_rippergun_p1_m2 = table_clone_safe(animations.ogryn_rippergun_p1_m1)
+		animations.ogryn_rippergun_p1_m3 = table_clone_safe(animations.ogryn_rippergun_p1_m1)
+        animations.ogryn_thumper_p1_m2 = table_clone_safe(animations.ogryn_thumper_p1_m1)
     --#endregion
     --#region Human melee
-        animations.thunderhammer_2h_p1_m2 = animations.thunderhammer_2h_p1_m1
-        animations.chainsword_2h_p1_m2 = animations.chainsword_2h_p1_m1
-        animations.forcesword_2h_p1_m2 = animations.forcesword_2h_p1_m1
-        animations.combatknife_p1_m2 = animations.combatknife_p1_m1
-        animations.combatsword_p1_m2 = animations.combatsword_p1_m1
-        animations.combatsword_p1_m3 = animations.combatsword_p1_m1
-        animations.combatsword_p2_m2 = animations.combatsword_p2_m1
-        animations.combatsword_p2_m3 = animations.combatsword_p2_m1
-        animations.combatsword_p3_m2 = animations.combatsword_p3_m1
-        animations.combatsword_p3_m3 = animations.combatsword_p3_m1
-        animations.chainsword_p1_m2 = animations.chainsword_p1_m1
-        animations.forcesword_p1_m2 = animations.forcesword_p1_m1
-        animations.forcesword_p1_m3 = animations.forcesword_p1_m1
-        animations.combataxe_p1_m2 = animations.combataxe_p1_m1
-        animations.combataxe_p1_m3 = animations.combataxe_p1_m1
-        animations.combataxe_p2_m2 = animations.combataxe_p2_m1
-        animations.combataxe_p2_m3 = animations.combataxe_p2_m1
-        animations.combataxe_p3_m2 = animations.combataxe_p3_m1
-        animations.combataxe_p3_m3 = animations.combataxe_p3_m1
-        animations.powermaul_p1_m2 = animations.powermaul_p1_m1
+        animations.thunderhammer_2h_p1_m2 = table_clone_safe(animations.thunderhammer_2h_p1_m1)
+        animations.chainsword_2h_p1_m2 = table_clone_safe(animations.chainsword_2h_p1_m1)
+        animations.forcesword_2h_p1_m2 = table_clone_safe(animations.forcesword_2h_p1_m1)
+        animations.combatknife_p1_m2 = table_clone_safe(animations.combatknife_p1_m1)
+        animations.combatsword_p1_m2 = table_clone_safe(animations.combatsword_p1_m1)
+        animations.combatsword_p1_m3 = table_clone_safe(animations.combatsword_p1_m1)
+        animations.combatsword_p2_m2 = table_clone_safe(animations.combatsword_p2_m1)
+        animations.combatsword_p2_m3 = table_clone_safe(animations.combatsword_p2_m1)
+        animations.combatsword_p3_m2 = table_clone_safe(animations.combatsword_p3_m1)
+        animations.combatsword_p3_m3 = table_clone_safe(animations.combatsword_p3_m1)
+        animations.chainsword_p1_m2 = table_clone_safe(animations.chainsword_p1_m1)
+        animations.forcesword_p1_m2 = table_clone_safe(animations.forcesword_p1_m1)
+        animations.forcesword_p1_m3 = table_clone_safe(animations.forcesword_p1_m1)
+        animations.combataxe_p1_m2 = table_clone_safe(animations.combataxe_p1_m1)
+        animations.combataxe_p1_m3 = table_clone_safe(animations.combataxe_p1_m1)
+        animations.combataxe_p2_m2 = table_clone_safe(animations.combataxe_p2_m1)
+        animations.combataxe_p2_m3 = table_clone_safe(animations.combataxe_p2_m1)
+        animations.combataxe_p3_m2 = table_clone_safe(animations.combataxe_p3_m1)
+        animations.combataxe_p3_m3 = table_clone_safe(animations.combataxe_p3_m1)
+        animations.powermaul_p1_m2 = table_clone_safe(animations.powermaul_p1_m1)
     --#endregion
     --#region Human ranged
-        animations.stubrevolver_p1_m2 = animations.stubrevolver_p1_m1
-        animations.stubrevolver_p1_m3 = animations.stubrevolver_p1_m1
-        animations.forcestaff_p2_m1 = animations.forcestaff_p1_m1
-        animations.forcestaff_p3_m1 = animations.forcestaff_p1_m1
-        animations.forcestaff_p4_m1 = animations.forcestaff_p1_m1
-        animations.laspistol_p1_m2 = animations.laspistol_p1_m1
-        animations.laspistol_p1_m3 = animations.laspistol_p1_m1
-        animations.autogun_p1_m2 = animations.autogun_p1_m1
-        animations.autogun_p1_m3 = animations.autogun_p1_m1
-        animations.autogun_p2_m1 = animations.autogun_p1_m1
-        animations.autogun_p2_m2 = animations.autogun_p1_m1
-        animations.autogun_p2_m3 = animations.autogun_p1_m1
-        animations.autogun_p3_m1 = animations.autogun_p1_m1
-        animations.autogun_p3_m2 = animations.autogun_p1_m1
-        animations.autogun_p3_m3 = animations.autogun_p1_m1
-        animations.shotgun_p1_m2 = animations.shotgun_p1_m1
-        animations.shotgun_p1_m3 = animations.shotgun_p1_m1
-        animations.shotgun_p4_m2 = animations.shotgun_p4_m1
-        animations.shotgun_p4_m3 = animations.shotgun_p4_m1
-        animations.bolter_p1_m2 = animations.bolter_p1_m1
-        animations.bolter_p1_m3 = animations.bolter_p1_m1
-        animations.lasgun_p1_m2 = animations.lasgun_p1_m1
-        animations.lasgun_p1_m3 = animations.lasgun_p1_m1
-        animations.lasgun_p2_m2 = animations.lasgun_p2_m1
-        animations.lasgun_p2_m3 = animations.lasgun_p2_m1
-        animations.lasgun_p3_m2 = animations.lasgun_p3_m1
-        animations.lasgun_p3_m3 = animations.lasgun_p3_m1
+        animations.stubrevolver_p1_m2 = table_clone_safe(animations.stubrevolver_p1_m1)
+        animations.stubrevolver_p1_m3 = table_clone_safe(animations.stubrevolver_p1_m1)
+        animations.forcestaff_p2_m1 = table_clone_safe(animations.forcestaff_p1_m1)
+        animations.forcestaff_p3_m1 = table_clone_safe(animations.forcestaff_p1_m1)
+        animations.forcestaff_p4_m1 = table_clone_safe(animations.forcestaff_p1_m1)
+        animations.laspistol_p1_m2 = table_clone_safe(animations.laspistol_p1_m1)
+        animations.laspistol_p1_m3 = table_clone_safe(animations.laspistol_p1_m1)
+        animations.autogun_p1_m2 = table_clone_safe(animations.autogun_p1_m1)
+        animations.autogun_p1_m3 = table_clone_safe(animations.autogun_p1_m1)
+        animations.autogun_p2_m1 = table_clone_safe(animations.autogun_p1_m1)
+        animations.autogun_p2_m2 = table_clone_safe(animations.autogun_p1_m1)
+        animations.autogun_p2_m3 = table_clone_safe(animations.autogun_p1_m1)
+        animations.autogun_p3_m1 = table_clone_safe(animations.autogun_p1_m1)
+        animations.autogun_p3_m2 = table_clone_safe(animations.autogun_p1_m1)
+        animations.autogun_p3_m3 = table_clone_safe(animations.autogun_p1_m1)
+        animations.shotgun_p1_m2 = table_clone_safe(animations.shotgun_p1_m1)
+        animations.shotgun_p1_m3 = table_clone_safe(animations.shotgun_p1_m1)
+        animations.shotgun_p4_m2 = table_clone_safe(animations.shotgun_p4_m1)
+        animations.shotgun_p4_m3 = table_clone_safe(animations.shotgun_p4_m1)
+        animations.bolter_p1_m2 = table_clone_safe(animations.bolter_p1_m1)
+        animations.bolter_p1_m3 = table_clone_safe(animations.bolter_p1_m1)
+        animations.lasgun_p1_m2 = table_clone_safe(animations.lasgun_p1_m1)
+        animations.lasgun_p1_m3 = table_clone_safe(animations.lasgun_p1_m1)
+        animations.lasgun_p2_m2 = table_clone_safe(animations.lasgun_p2_m1)
+        animations.lasgun_p2_m3 = table_clone_safe(animations.lasgun_p2_m1)
+        animations.lasgun_p3_m2 = table_clone_safe(animations.lasgun_p3_m1)
+        animations.lasgun_p3_m3 = table_clone_safe(animations.lasgun_p3_m1)
     --#endregion
 --#endregion
 

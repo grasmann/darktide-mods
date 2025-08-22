@@ -58,19 +58,23 @@ local lasgun_p3_m1 = mod:io_dofile(weapons_folder.."lasgun_p3_m1")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local table = table
     local vector3 = Vector3
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
+    local table_clone_safe = table.clone_safe
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local POCKETABLE_SMALL = "POCKETABLE_SMALL"
+local WEAPON_RANGED = "WEAPON_RANGED"
+local WEAPON_MELEE = "WEAPON_MELEE"
+local POCKETABLE = "POCKETABLE"
 local BREED_HUMAN = "human"
 local BREED_OGRYN = "ogryn"
-local WEAPON_MELEE = "WEAPON_MELEE"
-local WEAPON_RANGED = "WEAPON_RANGED"
 
 local sounds = {
     [BREED_HUMAN] = human.sounds,
@@ -150,85 +154,95 @@ local sounds = {
                 "sfx_reload_lever_release",
             },
         },
+        [POCKETABLE_SMALL] = {
+            crouching = {},
+            default = {},
+            accent = {},
+        },
+        [POCKETABLE] = {
+            crouching = {},
+            default = {},
+            accent = {},
+        },
     },
 }
 
---#endregion Copies
+--#region Copies
     --#region Ogryn melee
-        sounds.ogryn_combatblade_p1_m2 = sounds.ogryn_combatblade_p1_m1
-        sounds.ogryn_combatblade_p1_m3 = sounds.ogryn_combatblade_p1_m1
-        sounds.ogryn_pickaxe_2h_p1_m2 = sounds.ogryn_pickaxe_2h_p1_m1
-        sounds.ogryn_pickaxe_2h_p1_m3 = sounds.ogryn_pickaxe_2h_p1_m1
-        sounds.powermaul_shield_p1_m2 = sounds.powermaul_shield_p1_m1
-        sounds.ogryn_powermaul_p1_m2 = sounds.ogryn_powermaul_p1_m1
-        sounds.ogryn_powermaul_p1_m3 = sounds.ogryn_powermaul_p1_m1
-        sounds.powersword_2h_p1_m2 = sounds.powersword_2h_p1_m1
-        sounds.ogryn_club_p1_m2 = sounds.ogryn_club_p1_m1
-        sounds.ogryn_club_p1_m3 = sounds.ogryn_club_p1_m1
-        sounds.ogryn_club_p2_m2 = sounds.ogryn_club_p2_m1
-        sounds.ogryn_club_p2_m3 = sounds.ogryn_club_p2_m1
-        sounds.powersword_p1_m2 = sounds.powersword_p1_m1
-        sounds.powersword_p1_m3 = sounds.powersword_p1_m1
+        sounds.ogryn_combatblade_p1_m2 = table_clone_safe(sounds.ogryn_combatblade_p1_m1)
+        sounds.ogryn_combatblade_p1_m3 = table_clone_safe(sounds.ogryn_combatblade_p1_m1)
+        sounds.ogryn_pickaxe_2h_p1_m2 = table_clone_safe(sounds.ogryn_pickaxe_2h_p1_m1)
+        sounds.ogryn_pickaxe_2h_p1_m3 = table_clone_safe(sounds.ogryn_pickaxe_2h_p1_m1)
+        sounds.powermaul_shield_p1_m2 = table_clone_safe(sounds.powermaul_shield_p1_m1)
+        sounds.ogryn_powermaul_p1_m2 = table_clone_safe(sounds.ogryn_powermaul_p1_m1)
+        sounds.ogryn_powermaul_p1_m3 = table_clone_safe(sounds.ogryn_powermaul_p1_m1)
+        sounds.powersword_2h_p1_m2 = table_clone_safe(sounds.powersword_2h_p1_m1)
+        sounds.ogryn_club_p1_m2 = table_clone_safe(sounds.ogryn_club_p1_m1)
+        sounds.ogryn_club_p1_m3 = table_clone_safe(sounds.ogryn_club_p1_m1)
+        sounds.ogryn_club_p2_m2 = table_clone_safe(sounds.ogryn_club_p2_m1)
+        sounds.ogryn_club_p2_m3 = table_clone_safe(sounds.ogryn_club_p2_m1)
+        sounds.powersword_p1_m2 = table_clone_safe(sounds.powersword_p1_m1)
+        sounds.powersword_p1_m3 = table_clone_safe(sounds.powersword_p1_m1)
     --#endregion
     --#region Ogryn ranged
-        sounds.ogryn_heavystubber_p1_m2 = sounds.ogryn_heavystubber_p1_m1
-		sounds.ogryn_heavystubber_p1_m3 = sounds.ogryn_heavystubber_p1_m1
-        sounds.ogryn_heavystubber_p2_m2 = sounds.ogryn_heavystubber_p2_m1
-		sounds.ogryn_heavystubber_p2_m3 = sounds.ogryn_heavystubber_p2_m1
-        sounds.ogryn_rippergun_p1_m2 = sounds.ogryn_rippergun_p1_m1
-		sounds.ogryn_rippergun_p1_m3 = sounds.ogryn_rippergun_p1_m1
-        sounds.ogryn_thumper_p1_m2 = sounds.ogryn_thumper_p1_m1
+        sounds.ogryn_heavystubber_p1_m2 = table_clone_safe(sounds.ogryn_heavystubber_p1_m1)
+		sounds.ogryn_heavystubber_p1_m3 = table_clone_safe(sounds.ogryn_heavystubber_p1_m1)
+        sounds.ogryn_heavystubber_p2_m2 = table_clone_safe(sounds.ogryn_heavystubber_p2_m1)
+		sounds.ogryn_heavystubber_p2_m3 = table_clone_safe(sounds.ogryn_heavystubber_p2_m1)
+        sounds.ogryn_rippergun_p1_m2 = table_clone_safe(sounds.ogryn_rippergun_p1_m1)
+		sounds.ogryn_rippergun_p1_m3 = table_clone_safe(sounds.ogryn_rippergun_p1_m1)
+        sounds.ogryn_thumper_p1_m2 = table_clone_safe(sounds.ogryn_thumper_p1_m1)
     --#endregion
     --#region Human melee
-        sounds.thunderhammer_2h_p1_m2 = sounds.thunderhammer_2h_p1_m1
-        sounds.chainsword_2h_p1_m2 = sounds.chainsword_2h_p1_m1
-        sounds.forcesword_2h_p1_m2 = sounds.forcesword_2h_p1_m1
-        sounds.combatknife_p1_m2 = sounds.combatknife_p1_m1
-        sounds.combatsword_p1_m2 = sounds.combatsword_p1_m1
-        sounds.combatsword_p1_m3 = sounds.combatsword_p1_m1
-        sounds.combatsword_p2_m2 = sounds.combatsword_p2_m1
-        sounds.combatsword_p2_m3 = sounds.combatsword_p2_m1
-        sounds.combatsword_p3_m2 = sounds.combatsword_p3_m1
-        sounds.combatsword_p3_m3 = sounds.combatsword_p3_m1
-        sounds.chainsword_p1_m2 = sounds.chainsword_p1_m1
-        sounds.forcesword_p1_m2 = sounds.forcesword_p1_m1
-        sounds.forcesword_p1_m3 = sounds.forcesword_p1_m1
-        sounds.combataxe_p1_m2 = sounds.combataxe_p1_m1
-        sounds.combataxe_p1_m3 = sounds.combataxe_p1_m1
-        sounds.combataxe_p2_m2 = sounds.combataxe_p2_m1
-        sounds.combataxe_p2_m3 = sounds.combataxe_p2_m1
-        sounds.combataxe_p3_m2 = sounds.combataxe_p3_m1
-        sounds.combataxe_p3_m3 = sounds.combataxe_p3_m1
-        sounds.powermaul_p1_m2 = sounds.powermaul_p1_m1
+        sounds.thunderhammer_2h_p1_m2 = table_clone_safe(sounds.thunderhammer_2h_p1_m1)
+        sounds.chainsword_2h_p1_m2 = table_clone_safe(sounds.chainsword_2h_p1_m1)
+        sounds.forcesword_2h_p1_m2 = table_clone_safe(sounds.forcesword_2h_p1_m1)
+        sounds.combatknife_p1_m2 = table_clone_safe(sounds.combatknife_p1_m1)
+        sounds.combatsword_p1_m2 = table_clone_safe(sounds.combatsword_p1_m1)
+        sounds.combatsword_p1_m3 = table_clone_safe(sounds.combatsword_p1_m1)
+        sounds.combatsword_p2_m2 = table_clone_safe(sounds.combatsword_p2_m1)
+        sounds.combatsword_p2_m3 = table_clone_safe(sounds.combatsword_p2_m1)
+        sounds.combatsword_p3_m2 = table_clone_safe(sounds.combatsword_p3_m1)
+        sounds.combatsword_p3_m3 = table_clone_safe(sounds.combatsword_p3_m1)
+        sounds.chainsword_p1_m2 = table_clone_safe(sounds.chainsword_p1_m1)
+        sounds.forcesword_p1_m2 = table_clone_safe(sounds.forcesword_p1_m1)
+        sounds.forcesword_p1_m3 = table_clone_safe(sounds.forcesword_p1_m1)
+        sounds.combataxe_p1_m2 = table_clone_safe(sounds.combataxe_p1_m1)
+        sounds.combataxe_p1_m3 = table_clone_safe(sounds.combataxe_p1_m1)
+        sounds.combataxe_p2_m2 = table_clone_safe(sounds.combataxe_p2_m1)
+        sounds.combataxe_p2_m3 = table_clone_safe(sounds.combataxe_p2_m1)
+        sounds.combataxe_p3_m2 = table_clone_safe(sounds.combataxe_p3_m1)
+        sounds.combataxe_p3_m3 = table_clone_safe(sounds.combataxe_p3_m1)
+        sounds.powermaul_p1_m2 = table_clone_safe(sounds.powermaul_p1_m1)
     --#endregion
     --#region Human ranged
-        sounds.stubrevolver_p1_m2 = sounds.stubrevolver_p1_m1
-        sounds.stubrevolver_p1_m3 = sounds.stubrevolver_p1_m1
-        sounds.forcestaff_p2_m1 = sounds.forcestaff_p1_m1
-        sounds.forcestaff_p3_m1 = sounds.forcestaff_p1_m1
-        sounds.forcestaff_p4_m1 = sounds.forcestaff_p1_m1
-        sounds.laspistol_p1_m2 = sounds.laspistol_p1_m1
-        sounds.laspistol_p1_m3 = sounds.laspistol_p1_m1
-        sounds.autogun_p1_m2 = sounds.autogun_p1_m1
-        sounds.autogun_p1_m3 = sounds.autogun_p1_m1
-        sounds.autogun_p2_m1 = sounds.autogun_p1_m1
-        sounds.autogun_p2_m2 = sounds.autogun_p1_m1
-        sounds.autogun_p2_m3 = sounds.autogun_p1_m1
-        sounds.autogun_p3_m1 = sounds.autogun_p1_m1
-        sounds.autogun_p3_m2 = sounds.autogun_p1_m1
-        sounds.autogun_p3_m3 = sounds.autogun_p1_m1
-        sounds.shotgun_p1_m2 = sounds.shotgun_p1_m1
-        sounds.shotgun_p1_m3 = sounds.shotgun_p1_m1
-        sounds.shotgun_p4_m2 = sounds.shotgun_p4_m1
-        sounds.shotgun_p4_m3 = sounds.shotgun_p4_m1
-        sounds.bolter_p1_m2 = sounds.bolter_p1_m1
-        sounds.bolter_p1_m3 = sounds.bolter_p1_m1
-        sounds.lasgun_p1_m2 = sounds.lasgun_p1_m1
-        sounds.lasgun_p1_m3 = sounds.lasgun_p1_m1
-        sounds.lasgun_p2_m2 = sounds.lasgun_p2_m1
-        sounds.lasgun_p2_m3 = sounds.lasgun_p2_m1
-        sounds.lasgun_p3_m2 = sounds.lasgun_p3_m1
-        sounds.lasgun_p3_m3 = sounds.lasgun_p3_m1
+        sounds.stubrevolver_p1_m2 = table_clone_safe(sounds.stubrevolver_p1_m1)
+        sounds.stubrevolver_p1_m3 = table_clone_safe(sounds.stubrevolver_p1_m1)
+        sounds.forcestaff_p2_m1 = table_clone_safe(sounds.forcestaff_p1_m1)
+        sounds.forcestaff_p3_m1 = table_clone_safe(sounds.forcestaff_p1_m1)
+        sounds.forcestaff_p4_m1 = table_clone_safe(sounds.forcestaff_p1_m1)
+        sounds.laspistol_p1_m2 = table_clone_safe(sounds.laspistol_p1_m1)
+        sounds.laspistol_p1_m3 = table_clone_safe(sounds.laspistol_p1_m1)
+        sounds.autogun_p1_m2 = table_clone_safe(sounds.autogun_p1_m1)
+        sounds.autogun_p1_m3 = table_clone_safe(sounds.autogun_p1_m1)
+        sounds.autogun_p2_m1 = table_clone_safe(sounds.autogun_p1_m1)
+        sounds.autogun_p2_m2 = table_clone_safe(sounds.autogun_p1_m1)
+        sounds.autogun_p2_m3 = table_clone_safe(sounds.autogun_p1_m1)
+        sounds.autogun_p3_m1 = table_clone_safe(sounds.autogun_p1_m1)
+        sounds.autogun_p3_m2 = table_clone_safe(sounds.autogun_p1_m1)
+        sounds.autogun_p3_m3 = table_clone_safe(sounds.autogun_p1_m1)
+        sounds.shotgun_p1_m2 = table_clone_safe(sounds.shotgun_p1_m1)
+        sounds.shotgun_p1_m3 = table_clone_safe(sounds.shotgun_p1_m1)
+        sounds.shotgun_p4_m2 = table_clone_safe(sounds.shotgun_p4_m1)
+        sounds.shotgun_p4_m3 = table_clone_safe(sounds.shotgun_p4_m1)
+        sounds.bolter_p1_m2 = table_clone_safe(sounds.bolter_p1_m1)
+        sounds.bolter_p1_m3 = table_clone_safe(sounds.bolter_p1_m1)
+        sounds.lasgun_p1_m2 = table_clone_safe(sounds.lasgun_p1_m1)
+        sounds.lasgun_p1_m3 = table_clone_safe(sounds.lasgun_p1_m1)
+        sounds.lasgun_p2_m2 = table_clone_safe(sounds.lasgun_p2_m1)
+        sounds.lasgun_p2_m3 = table_clone_safe(sounds.lasgun_p2_m1)
+        sounds.lasgun_p3_m2 = table_clone_safe(sounds.lasgun_p3_m1)
+        sounds.lasgun_p3_m3 = table_clone_safe(sounds.lasgun_p3_m1)
     --#endregion
 --#endregion
 

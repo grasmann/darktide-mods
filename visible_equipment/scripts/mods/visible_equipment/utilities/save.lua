@@ -106,8 +106,6 @@ SaveLua._scan_dir = function(self, directory)
 		t[i] = filename
 	end
 	pfile:close()
-	-- local text = mod:localize("weapon_customization_cached")
-	-- mod:echo(text)
 	return t
 end
 
@@ -127,7 +125,6 @@ SaveLua._create_directory = function(self)
 end
 
 SaveLua._create_entry_path = function(self, gear_id, data)
-	-- local gear_id = self.gear_settings:item_to_gear_id(data.item)
 	local file_name = tostring(gear_id)..".lua"
 	return self:_appdata_path()..file_name, file_name
 end
@@ -138,7 +135,6 @@ end
 
 local entries = {}
 SaveLua.get_entries = function(self, data, scan_dir)
-	-- local entries = {}
 	table_clear(entries)
 	local appdata = self:_appdata_path()
     local cache = self:_get_entries_cache()
@@ -200,10 +196,6 @@ end
 -- ##### └─┘┴ ┴ └┘ └─┘ ################################################################################################
 
 SaveLua._save_entry = function(self, gear_id, data)
-
-	-- Infos
-	-- local unit_good = data.unit and unit_alive(data.unit)
-	-- local node = data.node or 1
 	local previous = nil
 
 	-- Create appdata folder
@@ -228,19 +220,7 @@ SaveLua._save_entry = function(self, gear_id, data)
 	-- Write lines
 	file:write("return {\n")
 	if data then
-		-- Attachments
-		-- local gear_settings = self.gear_settings
-		-- local attachments = data.attachments or gear_settings:attachments(data.item)
-		-- if attachments then
-			-- file:write(tt.."attachments = {\n")
-			-- for attachment_slot, attachment_name in pairs(attachments) do
-			-- 	file:write(ttt..tostring(attachment_slot).." = '"..tostring(attachment_name).."',\n")
-			-- end
-			-- local gear_node = data.gear_node or gear_settings:get(data.item, "gear_node")
-			-- gear_node = gear_node and "'"..tostring(gear_node).."'"
 		file:write(ttt.."placement = '"..tostring(data and data.placement or "default").."',\n")
-			-- file:write(tt.."},\n")
-		-- end
 	end
 	file:write("}")
 
@@ -268,22 +248,6 @@ SaveLua._save_entry = function(self, gear_id, data)
 	return new_entry
 
 end
-
--- ##### ┬ ┬┌─┐┬  ┌─┐ #################################################################################################
--- ##### ├─┤├┤ │  ├─┘ #################################################################################################
--- ##### ┴ ┴└─┘┴─┘┴   #################################################################################################
-
--- SaveLua._cast_vector3_to_string = function(self, vector)
--- 	local str = tostring(vector)
--- 	if not mod:cached_find(str, "Vector3Box") then
--- 		str = mod:cached_gsub(str, "Vector3", "Vector3Box")
--- 	end
--- 	return str
--- end
-
--- SaveLua._cast_quaternion_to_string = function(self, quaternion)
--- 	return mod:cached_gsub(tostring(quaternion), "Vector4", "QuaternionBox")
--- end
 
 -- ##### ┬┌┐┌┌┬┐┌─┐┬─┐┌─┐┌─┐┌─┐┌─┐ ####################################################################################
 -- ##### ││││ │ ├┤ ├┬┘├┤ ├─┤│  ├┤  ####################################################################################

@@ -46,13 +46,23 @@ mod:hook(CLASS.PortraitUI, "_store_camera_settings_by_breed", function(func, sel
     func(self, breed, camera_unit, ...)
     -- Add custom placements
     local placement_camera = mod.settings.placement_camera
-    for placement_name, data in pairs(placement_camera) do
+    for placement_name, data in pairs(placement_camera[breed]) do
         if data.position then
-            local position = placement_camera[placement_name].position and vector3_unbox(placement_camera[placement_name].position)
+            local position = data.position and vector3_unbox(data.position)
             if position then
                 local camera_table = self._breed_camera_settings[breed].camera_settings_by_item_slot
                 camera_table[placement_name] = table_clone(camera_table.slot_animation_end_of_round)
                 camera_table[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
+            end
+        elseif placement_name == "default" or placement_name == "backpack" then
+            for item_type, data in pairs(data) do
+                local position = data.position and vector3_unbox(data.position)
+                if position then
+                    local placement_name = placement_name.."_"..item_type
+                    local camera_table = self._breed_camera_settings[breed].camera_settings_by_item_slot
+                    camera_table[placement_name] = table_clone(camera_table.slot_animation_end_of_round)
+                    camera_table[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
+                end
             end
         end
     end
@@ -111,6 +121,9 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
         if render_context then
             local camera_focus_slot_name = placement or render_context.camera_focus_slot_name
+            local item = profile.loadout[slot_name]
+            local item_type_name = item and item.item_type and placement.."_"..item.item_type
+            if camera_settings.camera_settings_by_item_slot[item_type_name] then camera_focus_slot_name = item_type_name end
 
             if camera_focus_slot_name then
                 local camera_settings_by_item_slot = camera_settings.camera_settings_by_item_slot
@@ -127,6 +140,8 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
         local camera_position = vector3_from_array(camera_settings.boxed_camera_start_position)
         local camera_rotation = camera_settings.boxed_camera_start_rotation:unbox()
+
+        -- camera_position = vector3(-1.4683889865875244, 1.039409065246582, 2.0318360567092896)
 
         if render_context then
             local wield_slot = render_context.wield_slot
