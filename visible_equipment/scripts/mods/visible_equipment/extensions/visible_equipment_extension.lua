@@ -146,7 +146,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.momentum = 0
     self.right_foot_next = true
     self.settings = mod.settings
-    -- self.modding_tools = get_mod("modding_tools")
+    self.modding_tools = get_mod("modding_tools")
     -- Clear slot tables
     self:clear_slot_tables()
     -- Create equipment component tables
@@ -204,7 +204,7 @@ VisibleEquipmentExtension.set_debug_data = function(self, camera, gui, world)
     self.camera = camera
     self.gui = gui
     self.gui_world = world
-    -- self:add_unit_manipulation()
+    self:add_unit_manipulation()
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
@@ -256,6 +256,11 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
     if (not self.loaded[slot] and table_contains(SLOTS, slot.name)) then
         -- Spawn visible equipment
         local item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p = self:spawn_slot(slot, optional_mission_template)
+        -- -- Link attachments
+        -- for _, attachment_unit in pairs(attachment_units_3p[item_unit_3p]) do
+        --     world_unlink_unit(self.world, attachment_unit, true)
+        --     world_link_unit(self.world, attachment_unit, 1, item_unit_3p, 1, true)
+        -- end
         -- Init script
         local scripts = self.settings.scripts
         local item_script = slot.item and scripts[slot.item.weapon_template]
@@ -439,7 +444,7 @@ end
 VisibleEquipmentExtension.attach_settings = function(self, slot)
     local attach_settings = self.equipment_component:_attach_settings()
     self.equipment_component:_fill_attach_settings_3p(self.unit, attach_settings, slot)
-    -- attach_settings.from_script_component = true
+    attach_settings.from_script_component = true
     attach_settings.skip_link_children = true
     return attach_settings
 end
@@ -509,12 +514,20 @@ VisibleEquipmentExtension.slot_offset = function(self, index, slot)
     placement = SPECIAL_SLOT_PLACEMENTS[item_type] or placement
 
     local item_type_offsets = self.settings.offsets[item_type]
-    local offset = item_offset and item_offset[placement] and item_offset[placement][name]
-    offset = offset or (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
-    -- Breed offsets
     local breed_item_offsets = self.settings.offsets[breed_name][item_type]
-    offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
-    offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
+    local offset = item_offset and item_offset[placement] and item_offset[placement][name]
+    offset = offset or (item_offset and item_offset[backpack_group] and item_offset[backpack_group][name]) or
+        (item_type_offsets and item_type_offsets[backpack_group] and item_type_offsets[backpack_group][name]) or
+        (breed_item_offsets and breed_item_offsets[backpack_group] and breed_item_offsets[backpack_group][name]) or
+        (item_type_offsets and item_type_offsets[name])
+    -- Breed offsets
+    -- local breed_item_offsets = self.settings.offsets[breed_name][item_type]
+    -- offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
+    -- offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
+
+    if offset then
+        mod:echo("offset: "..tostring(offset.position))
+    end
 
     return offset, backpack_values
 end
@@ -563,16 +576,28 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         placement = SPECIAL_SLOT_PLACEMENTS[item_type] or placement
 
         local item_type_offsets = self.settings.offsets[item_type]
-        local offset = item_offset and item_offset[placement] and item_offset[placement][name]
-        offset = offset or (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
-        -- Breed offsets
         local breed_item_offsets = self.settings.offsets[breed_name][item_type]
-        offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
-        offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
+        local offset = 
+            (item_offset and item_offset[backpack_group] and item_offset[backpack_group][name]) or
+            (breed_item_offsets and breed_item_offsets[backpack_group] and breed_item_offsets[backpack_group][name]) or
+            (item_type_offsets and item_type_offsets[backpack_group] and item_type_offsets[backpack_group][name]) or
+            (item_type_offsets and item_type_offsets[name]) or
+            (breed_item_offsets and breed_item_offsets.default and breed_item_offsets.default[name]) or
+            (item_offset and item_offset[placement] and item_offset[placement][name]) or
+            nil
+
+        -- local offset = item_offset and item_offset[placement] and item_offset[placement][name]
+        -- offset = offset or (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
+        -- -- Breed offsets
+        -- local breed_item_offsets = self.settings.offsets[breed_name][item_type]
+        -- offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
+        -- offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
         -- local offset, backpack_values = self:slot_offset(index, slot)
         -- Node
         local node_name = offset and offset.node or "j_spine2"
-        local node_index = unit_has_node(self.unit, node_name) and unit_node(self.unit, node_name)
+        -- self.node[slot][obj] = offset and offset.node or "j_spine2"
+        -- local node_index = unit_has_node(self.unit, node_name) and unit_node(self.unit, node_name)
+        self.node[slot][obj] = unit_has_node(self.unit, node_name) and unit_node(self.unit, node_name)
         -- Position and rotation
         local position = offset and offset.position and vector3_unbox(offset.position) or vector3_zero()
         local rotation = offset and offset.rotation and vector3_unbox(offset.rotation) or vector3_zero()
@@ -617,7 +642,7 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         -- Link visible equipment
         local world = self.equipment_component._world
         world_unlink_unit(world, obj)
-        world_link_unit(world, obj, 1, self.unit, node_index)
+        world_link_unit(world, obj, 1, self.unit, self.node[slot][obj])
         -- Set offset
         unit_set_local_position(obj, 1, position)
         unit_set_local_rotation(obj, 1, quaternion_from_vector(rotation))
@@ -667,7 +692,7 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
                         local attachments_by_name = active_slot and active_slot.attachment_map_by_unit_3p
                         local item_attachments_by_name = attachments_by_name and attachments_by_name[unit_3p]
                         -- If shield is currently wielded or is already showing; don't show
-                        if showing_shield or (attachments_by_name and table_find(attachments_by_name, "left")) then unit_set_unit_visibility(obj, false, true) end
+                        if showing_shield or (item_attachments_by_name and table_find(item_attachments_by_name, "left")) then unit_set_unit_visibility(obj, false, true) end
                         showing_shield = true
                     else
                         -- Set visibility
@@ -781,26 +806,28 @@ end
 
 VisibleEquipmentExtension.footstep_interval = function(self, slot)
     -- Get info
-    local weapon_template = weapon_templates.weapon_template_from_item(slot.item)
-    local breed_footstep_intervals = weapon_template.breed_footstep_intervals
-    local footstep_intervals = breed_footstep_intervals and breed_footstep_intervals[slot.breed_name] or weapon_template.footstep_intervals
-    -- Get interval
     local interval = .4
-    if footstep_intervals then
-        local character_state_name = self.character_state_component and self.character_state_component.state_name or "walking"
-        local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching or false
-        local alternate_fire_active = self.alternate_fire_component and self.alternate_fire_component.is_active or false
-        local sprint_sprint_overtime = self.sprint_character_state_component and self.sprint_character_state_component.sprint_overtime or 0
-        if character_state_name == "sprinting" then
-            interval = sprint_sprint_overtime > 0 and footstep_intervals.sprinting_overtime or footstep_intervals.sprinting
-        elseif character_state_name == "walking" then
-            if is_crouching then
-                interval = alternate_fire_active and footstep_intervals.crouch_walking_alternate_fire or footstep_intervals.crouch_walking
-            else
-                interval = alternate_fire_active and footstep_intervals.walking_alternate_fire or footstep_intervals.walking
+    local weapon_template = weapon_templates.weapon_template_from_item(slot.item)
+    if weapon_template then
+        local breed_footstep_intervals = weapon_template.breed_footstep_intervals
+        local footstep_intervals = breed_footstep_intervals and breed_footstep_intervals[slot.breed_name] or weapon_template.footstep_intervals
+        -- Get interval
+        if footstep_intervals then
+            local character_state_name = self.character_state_component and self.character_state_component.state_name or "walking"
+            local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching or false
+            local alternate_fire_active = self.alternate_fire_component and self.alternate_fire_component.is_active or false
+            local sprint_sprint_overtime = self.sprint_character_state_component and self.sprint_character_state_component.sprint_overtime or 0
+            if character_state_name == "sprinting" then
+                interval = sprint_sprint_overtime > 0 and footstep_intervals.sprinting_overtime or footstep_intervals.sprinting
+            elseif character_state_name == "walking" then
+                if is_crouching then
+                    interval = alternate_fire_active and footstep_intervals.crouch_walking_alternate_fire or footstep_intervals.crouch_walking
+                else
+                    interval = alternate_fire_active and footstep_intervals.walking_alternate_fire or footstep_intervals.walking
+                end
             end
+            interval = interval or footstep_intervals[character_state_name]
         end
-        interval = interval or footstep_intervals[character_state_name]
     end
     -- Return
     return interval
@@ -899,15 +926,18 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
         -- Momentum vector
         local item_momentum = self.settings.momentum[slot.item.weapon_template]
         local side_momentum = item_momentum and item_momentum[self.names[slot][index]]
-        local item_type_momentum = self.settings.momentum[slot.item.item_type] or self.settings.momentum.default
+        local item_type_momentum = self.settings.momentum[slot.item.item_type] or
+            self.settings.momentum.default
         local default_momentum = item_type_momentum and item_type_momentum[self.names[slot][index]]
-        local momentum = (side_momentum and side_momentum.momentum) or (default_momentum and default_momentum.momentum)
+        local momentum = (side_momentum and side_momentum.momentum) or
+            (default_momentum and default_momentum.momentum)
         local momentum_vector = momentum and vector3_unbox(momentum) or vector3_zero()
 
         -- Calculate momentum_drag 
         -- local momentum_drag = vector3_zero()
         local multiplier = self.from_ui_profile_spawner and -2 or 2
         local momentum_drag = (momentum_vector * angle) * multiplier
+        momentum_drag[1] = math_abs(momentum_drag[1])
         -- Get foot side
         local right_foot_next = self.right_foot_next
         -- Check if first person extension is set up
@@ -1128,6 +1158,7 @@ end
 
 VisibleEquipmentExtension.reset_slot_tables = function(self, slot)
     self.objects[slot] = {}
+    self.node[slot] = {}
     self.accent[slot] = nil
     self.sheathed[slot] = nil
     self.sheathing[slot] = nil
@@ -1142,6 +1173,7 @@ end
 
 VisibleEquipmentExtension.unset_slot_tables = function(self, slot)
     self.objects[slot] = nil
+    self.node[slot] = nil
     self.accent[slot] = nil
     self.sheathed[slot] = nil
     self.sheathing[slot] = nil
@@ -1156,6 +1188,7 @@ end
 
 VisibleEquipmentExtension.clear_slot_tables = function(self)
     self.objects = {}
+    self.node = {}
     self.accent = {}
     self.sheathed = {}
     self.sheathing = {}

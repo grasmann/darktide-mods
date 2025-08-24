@@ -102,7 +102,7 @@ return {
         backpack = {
             left = {
                 node = "j_spine2",
-                position = vector3_box(.2, .4, -.125),
+                position = vector3_box(.2, .35, -.125),
                 rotation = vector3_box(0, 90, 90),
             },
             right = {
@@ -206,7 +206,8 @@ return {
                     name = "place",
                     no_modifiers = true,
                     start_position = vector3_box(vector3(1, -.5, 0) * .5),
-                    start_rotation = vector3_box(vector3(-5, 2.5, -90) * .5),
+                    -- start_rotation = vector3_box(vector3(-5, 2.5, -90) * .5),
+                    start_rotation = vector3_box(vector3(180, -180, -180) * .5),
                     end_position = vector3_box(vector3(-.15, 0, 0) * .5),
                     end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
                     next = "step",
