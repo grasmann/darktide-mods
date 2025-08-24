@@ -85,6 +85,25 @@ mod.me = function(self)
     return player and player.player_unit
 end
 
+mod.player = function(self)
+    return managers.player:local_player_safe(1)
+end
+
+mod.profile = function(self, player)
+    local player = player or self:player()
+    return player and player:profile()
+end
+
+mod.breed = function(self, profile)
+    local profile = profile or self:profile()
+    return profile.archetype.name == "ogryn" and "ogryn" or "human"
+end
+
+mod.gear_id = function(self, item)
+    -- local item = item.__master_item or item
+    return item and item.gear_id or item.__gear_id
+end
+
 mod.equipment_component_from_unit = function(self, unit)
     if unit and unit_alive(unit) then
         return unit_get_data(unit, "visible_equipment_component")

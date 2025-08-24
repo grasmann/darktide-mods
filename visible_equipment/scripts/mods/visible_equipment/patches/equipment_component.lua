@@ -94,6 +94,38 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         end
     end
 
+    -- instance.add_unit_manipulation = function(self, camera, world, gui, pressed_callback, changed_callback)
+    --     -- Check visible equipment system
+    --     if self.visible_equipment_system then
+    --         -- Update visible equipment
+    --         self.visible_equipment_system:add_unit_manipulation(camera, world, gui, pressed_callback, changed_callback)
+    --     end
+    -- end
+
+    -- instance.remove_unit_manipulation = function(self)
+    --     -- Check visible equipment system
+    --     if self.visible_equipment_system then
+    --         -- Update visible equipment
+    --         self.visible_equipment_system:remove_unit_manipulation()
+    --     end
+    -- end
+
+    instance.unit_manipulation_busy = function(self)
+        -- Check visible equipment system
+        if self.visible_equipment_system then
+            -- Update visible equipment
+            return self.visible_equipment_system:unit_manipulation_busy()
+        end
+    end
+
+    instance.set_debug_data = function(self, camera, gui, world)
+        -- Check visible equipment system
+        if self.visible_equipment_system then
+            -- Update visible equipment
+            self.visible_equipment_system:set_debug_data(camera, gui, world)
+        end
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################

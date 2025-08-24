@@ -20,6 +20,7 @@ return {
                 node = "j_spine2",
                 position = vector3_box(.3, .2, -.15),
                 rotation = vector3_box(-10, 0, 90),
+                center_mass = vector3_box(0, -.1, 0),
             },
         },
         hip_front = {
@@ -27,6 +28,7 @@ return {
                 node = "j_hips",
                 position = vector3_box(.05, .2, 0.1),
                 rotation = vector3_box(0, -20, 90),
+                center_mass = vector3_box(0, -.1, 0),
             },
         },
         hip_back = {
@@ -34,6 +36,7 @@ return {
                 node = "j_hips",
                 position = vector3_box(.05, -.2, 0),
                 rotation = vector3_box(0, 0, 90),
+                center_mass = vector3_box(0, -.1, 0),
             },
         },
         leg_left = {
@@ -41,6 +44,7 @@ return {
                 node = "j_leftupleg",
                 position = vector3_box(.1, .125, -.15),
                 rotation = vector3_box(290, 220, 100),
+                center_mass = vector3_box(0, -.1, 0),
             },
         },
         leg_right = {
@@ -48,6 +52,7 @@ return {
                 node = "j_rightupleg",
                 position = vector3_box(-.1, -.125, 0),
                 rotation = vector3_box(290, 220 + 180, 280 + 180),
+                center_mass = vector3_box(0, -.1, 0),
             },
         },
         hip_left = {
@@ -55,6 +60,7 @@ return {
                 node = "j_hips",
                 position = vector3_box(-.2, .125, 0),
                 rotation = vector3_box(180+45, 180, 0),
+                center_mass = vector3_box(0, -.1, 0),
             },
         },
         hip_right = {
@@ -62,6 +68,7 @@ return {
                 node = "j_hips",
                 position = vector3_box(.2, .125, 0),
                 rotation = vector3_box(180+45, 180, 30),
+                center_mass = vector3_box(0, -.1, 0),
             },
         },
         backpack = {
@@ -69,6 +76,7 @@ return {
                 node = "j_spine2",
                 position = vector3_box(.3, .175, -.275),
                 rotation = vector3_box(-30, 0, 90),
+                center_mass = vector3_box(0, -.1, 0),
             },
         },
     },

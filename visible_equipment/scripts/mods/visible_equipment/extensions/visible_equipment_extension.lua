@@ -21,11 +21,13 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
 -- #region Performance
     local unit = Unit
     local math = math
+    local world = World
     local CLASS = CLASS
     local pairs = pairs
     local world = World
     local table = table
     local rawget = rawget
+    local get_mod = get_mod
     local vector3 = Vector3
     local tostring = tostring
     local managers = Managers
@@ -53,6 +55,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local quaternion_box = QuaternionBox
     local math_ease_sine = math.ease_sine
     local table_contains = table.contains
+    local unit_world_pose = unit.world_pose
     local world_link_unit = world.link_unit
     local quaternion_lerp = quaternion.lerp
     local vector3_unbox = vector3_box.unbox
@@ -60,8 +63,10 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local world_unlink_unit = world.unlink_unit
     local world_destroy_unit = world.destroy_unit
     local quaternion_unbox = quaternion_box.unbox
+    local world_spawn_unit_ex = world.spawn_unit_ex
     local quaternion_multiply = quaternion.multiply
     local unit_world_rotation = unit.world_rotation
+    local unit_world_position = unit.world_position
     local matrix4x4_transform = matrix4x4.transform
     local unit_local_position = unit.local_position
     local unit_local_rotation = unit.local_rotation
@@ -88,6 +93,7 @@ local EMPTY_BACKPACK = "content/items/characters/player/human/backpacks/empty_ba
 local EMPTY_BACKPACK_DEV = "empty_backpack"
 local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
+local EMPTY_UNIT = "core/units/empty_root"
 local SLOTS = {
     "slot_primary",
     "slot_secondary",
@@ -137,9 +143,10 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     self.unit = unit
     self.is_local_unit = self.unit == mod:me() and not self.from_ui_profile_spawner
     self.rotation = vector3_box(quaternion_to_vector(unit_local_rotation(unit, 1)))
-    self.difference = 1
+    self.momentum = 0
     self.right_foot_next = true
     self.settings = mod.settings
+    -- self.modding_tools = get_mod("modding_tools")
     -- Clear slot tables
     self:clear_slot_tables()
     -- Create equipment component tables
@@ -172,14 +179,16 @@ VisibleEquipmentExtension.on_settings_changed = function(self)
     self.sound_others = mod:get("mod_option_sounds_others")
     self.sound_self = mod:get("mod_option_sounds_self")
     self.animations = mod:get("mod_option_animations")
+    self.shield_visibility = mod:get("mod_option_left_hand_visibility")
 end
 
 VisibleEquipmentExtension.on_mods_loaded = function(self)
     self:on_settings_changed()
-    self:position_objects(true)
+    self:position_objects()
 end
 
 VisibleEquipmentExtension.destroy = function(self)
+    self:remove_unit_manipulation()
     -- Events
     managers.event:unregister(self, "visible_equipment_mods_loaded")
     managers.event:unregister(self, "visible_equipment_settings_changed")
@@ -189,6 +198,13 @@ VisibleEquipmentExtension.destroy = function(self)
     self:delete_all()
     -- Clear equipment component tables
     self:unset_pt_tables()
+end
+
+VisibleEquipmentExtension.set_debug_data = function(self, camera, gui, world)
+    self.camera = camera
+    self.gui = gui
+    self.gui_world = world
+    -- self:add_unit_manipulation()
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
@@ -275,21 +291,41 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
             self.anim[slot].end_rotation[obj] = vector3_box(vector3_zero())
             self.anim[slot].current_position[obj] = vector3_box(vector3_zero())
             self.anim[slot].current_rotation[obj] = vector3_box(vector3_zero())
+            -- Center point
+            self.unit_center_point[slot][obj] = world_spawn_unit_ex(self.world, EMPTY_UNIT, nil, unit_world_pose(obj, 1))
+            world_link_unit(self.world, self.unit_center_point[slot][obj], 1, obj, 1)
+            -- local offset, backpack_values = self:slot_offset(index, slot)
+            -- local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
+            -- if center_mass_offset then
+            --     local rotation = unit_local_rotation(obj, 1)
+            --     local mat = quaternion_matrix4x4(rotation)
+            --     local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
+            --     unit_set_local_position(self.unit_center_point[slot][obj], 1, rotated_center_mass_offset)
+            -- end
         end
         -- Set loaded
         self.loaded[slot] = true
+        -- Manipulation
+        -- self:add_unit_manipulation()
+        self:_add_unit_manipulation(slot)
         -- Position slot objects
         self:position_slot_objects(slot, true)
     end
 end
 
 VisibleEquipmentExtension.delete_all = function(self, target_slot)
+    -- Manipulation
+    if target_slot then
+        self:_remove_unit_manipulation(target_slot)
+    else
+        self:remove_unit_manipulation()
+    end
     -- Get equipment component infos
     local equipment_component = self.equipment_component
     local unit_spawner = equipment_component._unit_spawner
     local all_attachment_units = self.pt.attachment_units_by_equipment_component[equipment_component]
     local all_item_units = self.pt.item_units_by_equipment_component[equipment_component]
-    local world = equipment_component._world
+    -- local world = equipment_component._world
     -- Delete attachment unit(s)
     if all_attachment_units then
         for slot_name, attachments in pairs(all_attachment_units) do
@@ -305,7 +341,7 @@ VisibleEquipmentExtension.delete_all = function(self, target_slot)
                         local attachment_unit = attachment_units[i]
                         if attachment_unit and unit_alive(attachment_unit) then
                             -- Unlink attachment unit
-                            world_unlink_unit(world, attachment_unit)
+                            world_unlink_unit(self.world, attachment_unit)
                             -- Delete attachment unit
                             unit_spawner:mark_for_deletion(attachment_unit)
                         end
@@ -323,12 +359,28 @@ VisibleEquipmentExtension.delete_all = function(self, target_slot)
                 -- Delete item unit
                 if item_unit and unit_alive(item_unit) then
                     -- Unlink item unit
-                    world_unlink_unit(world, item_unit)
+                    world_unlink_unit(self.world, item_unit)
                     -- Delete item unit
                     unit_spawner:mark_for_deletion(item_unit)
                     -- Unset item unit
                     item_unit = nil
                 end
+            end
+        end
+    end
+    -- Delete center unit
+    -- Iterate through equipment
+    for slot, units in pairs(self.objects) do
+        if not target_slot or target_slot == slot.name then
+            -- Iterate through objects
+            for index, obj in pairs(self.objects[slot]) do
+                -- Unlink center unit
+                world_unlink_unit(self.world, self.unit_center_point[slot][obj])
+                -- Delete center unit
+                -- unit_spawner:mark_for_deletion(self.unit_center_point[slot][obj])
+                world_destroy_unit(self.world, self.unit_center_point[slot][obj])
+                -- Unset center unit
+                self.unit_center_point[slot][obj] = nil
             end
         end
     end
@@ -430,10 +482,48 @@ VisibleEquipmentExtension.get_breed = function(self)
     return self:is_ogryn() and "ogryn" or "human"
 end
 
+VisibleEquipmentExtension.slot_offset = function(self, index, slot)
+    local name = self.names[slot][index]
+    local item_type = slot.item and slot.item.item_type
+    local weapon_template = slot.item and slot.item.weapon_template
+    local gear_id = slot.item and slot.item.gear_id
+    local breed_name = self:get_breed()
+
+    local backpacks = self.settings.backpacks
+    local backpack_name = self:get_backpack()
+    local backpack_table = backpack_name and backpacks[backpack_name] or backpacks.default
+
+    local backpack_item_table = backpack_table and backpack_table[item_type] or backpack_table
+    local backpack_values = backpack_item_table and backpack_item_table[name] or backpack_table[name]
+    local backpack_group = backpack_name and "backpack" or "default"
+    -- Item offsets
+    local item_offset = weapon_template and self.settings.offsets[weapon_template]
+    -- local placement = self.pt.gear_placements[slot.item.gear_id]
+    local placement = gear_id and mod:gear_placement(gear_id) --or "default" --or self.pt.gear_placements[slot.item.gear_id]
+    if self.random_placements and not self.is_local_unit and item_offset and not self.from_ui_profile_spawner then
+        local count = table_size(item_offset)
+        placement = table_keys(item_offset)[math_random(1, count)]
+    end
+    if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
+    if placement == "backpack" and backpack_group == "default" then placement = "default" end
+    placement = SPECIAL_SLOT_PLACEMENTS[item_type] or placement
+
+    local item_type_offsets = self.settings.offsets[item_type]
+    local offset = item_offset and item_offset[placement] and item_offset[placement][name]
+    offset = offset or (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
+    -- Breed offsets
+    local breed_item_offsets = self.settings.offsets[breed_name][item_type]
+    offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
+    offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
+
+    return offset, backpack_values
+end
+
 mod.last_backpack = nil
 VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_center_mass_offset)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
+
         -- Get offset
         local name = self.names[slot][index]
         local item_type = slot.item and slot.item.item_type
@@ -479,6 +569,7 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         local breed_item_offsets = self.settings.offsets[breed_name][item_type]
         offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
         offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
+        -- local offset, backpack_values = self:slot_offset(index, slot)
         -- Node
         local node_name = offset and offset.node or "j_spine2"
         local node_index = unit_has_node(self.unit, node_name) and unit_node(self.unit, node_name)
@@ -493,12 +584,13 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         end
 
         -- Center mass
+        local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
         if apply_center_mass_offset then
-            local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
+            -- local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
             if center_mass_offset then
-                local all_item_units = self.pt.item_units_by_equipment_component[self.equipment_component]
-                local item_unit = all_item_units and all_item_units[slot.name]
-                local rotation = item_unit and unit_local_rotation(obj, 1)
+                -- local all_item_units = self.pt.item_units_by_equipment_component[self.equipment_component]
+                -- local item_unit = all_item_units and all_item_units[slot.name]
+                local rotation = unit_local_rotation(obj, 1)
                 local mat = quaternion_matrix4x4(rotation)
                 local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
                 local children = unit_get_child_units(obj)
@@ -507,10 +599,19 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
                         unit_set_local_position(child, 1, rotated_center_mass_offset)
                     end
                 else
-                    -- unit_set_local_position(obj, 1, position + rotated_center_mass_offset)
                     position = position + rotated_center_mass_offset
                 end
+                -- unit_set_local_position(self.unit_center_point[slot][obj], 1, rotated_center_mass_offset)
             end
+        end
+
+        -- local offset, backpack_values = self:slot_offset(index, slot)
+        -- local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
+        if center_mass_offset then
+            local rotation = unit_local_rotation(obj, 1)
+            local mat = quaternion_matrix4x4(rotation)
+            local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
+            unit_set_local_position(self.unit_center_point[slot][obj], 1, rotated_center_mass_offset)
         end
 
         -- Link visible equipment
@@ -531,12 +632,14 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         self.anim[slot].end_rotation[obj]:store(vector3_zero())
         self.anim[slot].current_position[obj]:store(vector3_zero())
         self.anim[slot].current_rotation[obj]:store(vector3_zero())
+
     end
 end
 
 VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wielded_slot)
     -- Set wielded slot
     self.wielded_slot = wielded_slot
+    local showing_shield = false
     -- Iterate through equipment
     for slot_name, slot in pairs(equipment) do
         -- Check if slot should be processed
@@ -546,13 +649,32 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
                 -- Hidden?
                 local old_value = self.visible[slot]
                 self.visible[slot] = (slot_name ~= wielded_slot and true) or false
-                local player_invisible = self.player_visibility and not self.player_visibility:visible()
+                local player_invisible = self.player_visibility and not self.player_visibility.__destroyed and not self.player_visibility:visible()
                 local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
                 if player_invisible or in_first_person then self.visible[slot] = false end
                 -- Iterate through objects
                 for index, obj in pairs(self.objects[slot]) do
-                    -- Set visibility
-                    unit_set_unit_visibility(obj, self.visible[slot], true)
+                    local name = self.names[slot][index]
+                    -- Shield Visibility
+                    if self.shield_visibility == "one_on_back" and name == "left" and self.visible[slot] then
+                        -- If shield is already showing; don't show
+                        if showing_shield then unit_set_unit_visibility(obj, false, true) end
+                        showing_shield = true
+                    elseif self.shield_visibility == "one_visible" and name == "left" and self.visible[slot] then
+                        -- Check wielded slot
+                        local active_slot = equipment[wielded_slot]
+                        local unit_3p = active_slot and active_slot.unit_3p
+                        local attachments_by_name = active_slot and active_slot.attachment_map_by_unit_3p
+                        local item_attachments_by_name = attachments_by_name and attachments_by_name[unit_3p]
+                        -- If shield is currently wielded or is already showing; don't show
+                        if showing_shield or (attachments_by_name and table_find(attachments_by_name, "left")) then unit_set_unit_visibility(obj, false, true) end
+                        showing_shield = true
+                    else
+                        -- Set visibility
+                        unit_set_unit_visibility(obj, self.visible[slot], true)
+                    end
+                    -- -- Set visibility
+                    -- unit_set_unit_visibility(obj, self.visible[slot], true)
                 end
                 -- Animation in ui profile spawner
                 if self.visible[slot] and not self.sheathed[slot] and self.from_ui_profile_spawner then
@@ -689,8 +811,8 @@ VisibleEquipmentExtension.update = function(self, dt, t)
 	local first_person_unit = self.first_person_extension and self.first_person_extension:first_person_unit()
     local rotation_unit = (not mod:is_in_hub() and first_person_unit) or self.unit
     local rotation = quaternion_to_vector(unit_world_rotation(rotation_unit, 1))
-    local difference = math_clamp((vector3_unbox(self.rotation) - rotation)[3], -10, 10)
-    self.difference = math_lerp(self.difference, difference, dt * 4)
+    local momentum = math_clamp((vector3_unbox(self.rotation) - rotation)[3], -10, 10)
+    self.momentum = math_lerp(self.momentum, momentum, dt * 4)
     self.rotation:store(rotation)
     -- Iterate through equipment
     for slot, units in pairs(self.objects) do
@@ -708,7 +830,6 @@ VisibleEquipmentExtension.update = function(self, dt, t)
             self:update_animation(dt, t, slot)
         end
     end
-
 end
 
 -- ##### ┌─┐┌┐┌┬┌┬┐┌─┐┌┬┐┬┌─┐┌┐┌ ######################################################################################
@@ -764,7 +885,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
         -- Swing
-        local angle = self.difference
+        local angle = self.momentum
         -- reduce the angle
         angle = angle % 360
         -- force it to be the positive remainder, so that 0 <= angle < 360
@@ -885,11 +1006,15 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 local end_position = vector3_unbox(anim.end_position[obj]) * end_strength
                 local end_rotation = vector3_unbox(anim.end_rotation[obj]) * end_strength
                 -- Calculate current target positions and rotations
+                local _current_position = vector3_unbox(anim.current_position[obj])
+                local _current_rotation = vector3_unbox(anim.current_rotation[obj])
+                local direction = _current_position
+
                 local target_position = vector3_lerp(start_position, end_position, progress)
                 local target_rotation = vector3_lerp(start_rotation, end_rotation, progress)
                 -- Calculate current positions and rotations
-                local current_position = vector3_lerp(vector3_unbox(anim.current_position[obj]), target_position, anim_progress)
-                local current_rotation = vector3_lerp(vector3_unbox(anim.current_rotation[obj]), target_rotation, anim_progress)
+                local current_position = vector3_lerp(_current_position, target_position, anim_progress)
+                local current_rotation = vector3_lerp(_current_rotation, target_rotation, anim_progress)
                 -- Store current positions and rotations
                 anim.current_position[obj]:store(current_position)
                 anim.current_rotation[obj]:store(current_rotation)
@@ -919,6 +1044,84 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
 
 end
 
+-- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐┌─┐┬┌┐┌┌─┐  ┌─┐┌┐┌┌┬┐  ┌┬┐┌─┐┬  ┬┌─┐┬  ┌─┐┌─┐┌┬┐┌─┐┌┐┌┌┬┐ #####################################
+-- #####  ││├┤ ├┴┐│ ││ ┬│ ┬│││││ ┬  ├─┤│││ ││   ││├┤ └┐┌┘├┤ │  │ │├─┘│││├┤ │││ │  #####################################
+-- ##### ─┴┘└─┘└─┘└─┘└─┘└─┘┴┘└┘└─┘  ┴ ┴┘└┘─┴┘  ─┴┘└─┘ └┘ └─┘┴─┘└─┘┴  ┴ ┴└─┘┘└┘ ┴  #####################################
+
+VisibleEquipmentExtension.unit_manipulation_busy = function(self)
+    if self.modding_tools then
+        return self.modding_tools:unit_manipulation_busy()
+    end
+end
+
+VisibleEquipmentExtension.add_unit_manipulation = function(self)
+    if self.modding_tools then
+        -- Iterate through equipment
+        for slot, units in pairs(self.objects) do
+            -- Add slot manipulation
+            self:_add_unit_manipulation(slot)
+        end
+    end
+end
+
+VisibleEquipmentExtension._add_unit_manipulation = function(self, slot)
+    if self.modding_tools and self.objects[slot] then
+        for index, obj in pairs(self.objects[slot]) do
+            if self.camera and self.gui_world and self.gui then
+                -- self.unit_manipulation[slot][obj] = self.modding_tools:unit_manipulation_add({
+                --     unit = obj, camera = self.camera, world = self.gui_world, gui = self.gui, name = slot.name, node = 1,
+                --     font_size = nil, button = nil, pressed_callback = function() end,
+                --     changed_callback = function() end,
+                -- })
+                self.unit_manipulation[slot][obj] = self:__add_unit_manipulation(obj, slot.name)
+                local unit_center_point = self.unit_center_point[slot][obj]
+                self.unit_manipulation[slot][unit_center_point] = self:__add_unit_manipulation(unit_center_point, slot.name.."_center_point")
+            end
+        end
+    end
+end
+
+VisibleEquipmentExtension.__add_unit_manipulation = function(self, unit, name)
+    if self.modding_tools then
+        return self.modding_tools:unit_manipulation_add({
+            unit = unit, camera = self.camera, world = self.gui_world, gui = self.gui, name = name, node = 1,
+            font_size = nil, button = nil, pressed_callback = function() end,
+            changed_callback = function() end,
+        })
+    end
+end
+
+VisibleEquipmentExtension.remove_unit_manipulation = function(self)
+    if self.modding_tools then
+        -- Iterate through equipment
+        for slot, units in pairs(self.objects) do
+            -- Remove slot manipulation
+            self:_remove_unit_manipulation(slot)
+        end
+    end
+end
+
+VisibleEquipmentExtension._remove_unit_manipulation = function(self, slot)
+    if self.modding_tools and self.objects[slot] then
+        -- Iterate through objects
+        for index, obj in pairs(self.objects[slot]) do
+            -- self.modding_tools:unit_manipulation_remove(obj)
+            self:__remove_unit_manipulation(obj)
+            self.unit_manipulation[slot][obj] = nil
+
+            local unit_center_point = self.unit_center_point[slot][obj]
+            self:__remove_unit_manipulation(unit_center_point)
+            self.unit_manipulation[slot][unit_center_point] = nil
+        end
+    end
+end
+
+VisibleEquipmentExtension.__remove_unit_manipulation = function(self, unit)
+    if self.modding_tools then
+        self.modding_tools:unit_manipulation_remove(unit)
+    end
+end
+
 -- ##### ┌─┐┬  ┌─┐┌┬┐  ┌┬┐┌─┐┌┐ ┬  ┌─┐┌─┐ #############################################################################
 -- ##### └─┐│  │ │ │    │ ├─┤├┴┐│  ├┤ └─┐ #############################################################################
 -- ##### └─┘┴─┘└─┘ ┴    ┴ ┴ ┴└─┘┴─┘└─┘└─┘ #############################################################################
@@ -933,6 +1136,8 @@ VisibleEquipmentExtension.reset_slot_tables = function(self, slot)
     self.anim[slot] = {}
     self.loaded[slot] = false
     self.visible[slot] = {}
+    self.unit_manipulation[slot] = {}
+    self.unit_center_point[slot] = {}
 end
 
 VisibleEquipmentExtension.unset_slot_tables = function(self, slot)
@@ -945,6 +1150,8 @@ VisibleEquipmentExtension.unset_slot_tables = function(self, slot)
     self.anim[slot] = nil
     self.loaded[slot] = nil
     self.visible[slot] = nil
+    self.unit_manipulation[slot] = nil
+    self.unit_center_point[slot] = nil
 end
 
 VisibleEquipmentExtension.clear_slot_tables = function(self)
@@ -957,6 +1164,8 @@ VisibleEquipmentExtension.clear_slot_tables = function(self)
     self.anim = {}
     self.loaded = {}
     self.visible = {}
+    self.unit_manipulation = {}
+    self.unit_center_point = {}
 end
 
 -- ##### ┌─┐┌┬┐  ┌┬┐┌─┐┌┐ ┬  ┌─┐┌─┐ ###################################################################################

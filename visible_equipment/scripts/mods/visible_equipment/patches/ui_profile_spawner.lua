@@ -5,6 +5,7 @@ local mod = get_mod("visible_equipment")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
+local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -17,10 +18,13 @@ local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_c
     local table = table
     local string = string
     local vector3 = Vector3
+    local managers = Managers
+    local tostring = tostring
     local table_size = table.size
     local actor_unit = actor.unit
     local quaternion = Quaternion
     local vector3_box = Vector3Box
+    local string_gsub = string.gsub
     local string_find = string.find
     local table_remove = table.remove
     local vector3_zero = vector3.zero
@@ -90,10 +94,12 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 
     instance.update_rotation = function(self, profile, slot_name)
         -- Info
-        local breed_name = profile.archetype.name == "ogryn" and "ogryn" or "human"
+        -- local breed_name = profile.archetype.name == "ogryn" and "ogryn" or "human"
+        local breed_name = mod:breed(profile)
         local placement_camera = mod.settings.placement_camera
         local item = profile and profile.loadout[slot_name]
-        local gear_id = item and item.gear_id
+        -- local gear_id = item and item.gear_id
+        local gear_id = mod:gear_id(item)
         -- Get placement
         local placement = gear_id and mod:gear_placement(gear_id)
         -- Get offset
@@ -105,6 +111,71 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
         if offset and offset.rotation then
             -- Set rotation
             self._rotation_angle = offset.rotation + 2.25
+        end
+    end
+
+    -- instance.add_unit_manipulation = function(self)
+    --     local character_spawn_data = self._character_spawn_data
+    --     local equipment_component = character_spawn_data and character_spawn_data.equipment_component
+    --     if equipment_component then
+    --         local gui = self._ui_forward_renderer and self._ui_forward_renderer.gui
+    --         if gui then
+    --             equipment_component:add_unit_manipulation(self._camera, self._world, gui, function() end, function() end)
+    --         end
+    --     end
+    -- end
+
+    -- instance.remove_unit_manipulation = function(self)
+    --     local character_spawn_data = self._character_spawn_data
+    --     local equipment_component = character_spawn_data and character_spawn_data.equipment_component
+    --     if equipment_component then
+    --         equipment_component:remove_unit_manipulation()
+    --     end
+    -- end
+
+    instance.unit_manipulation_busy = function(self)
+        local character_spawn_data = self._character_spawn_data
+        local equipment_component = character_spawn_data and character_spawn_data.equipment_component
+        if equipment_component then
+            return equipment_component:unit_manipulation_busy()
+        end
+    end
+
+    instance._setup_forward_gui = function (self)
+        local ui_manager = managers.ui
+        local timer_name = "ui"
+        local world_layer = 110
+        local world_name = self._unique_id .. "_ui_forward_world"
+        local view_name = self.view_name
+
+        self._forward_world = ui_manager:create_world(world_name, world_layer, timer_name, view_name)
+
+        local viewport_name = self._unique_id .. "_ui_forward_world_viewport"
+        local viewport_type = "default_with_alpha"
+        local viewport_layer = 1
+
+        self._forward_viewport = ui_manager:create_viewport(self._forward_world, viewport_name, viewport_type, viewport_layer)
+        self._forward_viewport_name = viewport_name
+
+        local renderer_name = self._unique_id .. "_forward_renderer"
+
+        self._ui_forward_renderer = ui_manager:create_renderer(renderer_name, self._forward_world)
+    end
+
+    instance._destroy_forward_gui = function (self)
+        if self._ui_forward_renderer then
+            self._ui_forward_renderer = nil
+
+            managers.ui:destroy_renderer(self._unique_id .. "_forward_renderer")
+
+            local world = self._forward_world
+            local viewport_name = self._forward_viewport_name
+
+            ScriptWorld.destroy_viewport(world, viewport_name)
+            managers.ui:destroy_world(world)
+
+            self._forward_viewport_name = nil
+            self._forward_world = nil
         end
     end
 
@@ -121,11 +192,24 @@ mod:hook(CLASS.UIProfileSpawner, "init", function(func, self, reference_name, wo
     func(self, reference_name, world, camera, unit_spawner, force_highest_lod_step, optional_mission_template, ...)
     -- Enable rotation input
     self._rotation_input_disabled = false
+    -- Create forward gui
+    if self._reference_name == "InventoryCosmeticsView" then
+        local class_name = self.__class_name
+        self._unique_id = class_name .. "_" .. string_gsub(tostring(self), "table: ", "")
+        self:_setup_forward_gui()
+    end
+end)
+
+mod:hook(CLASS.UIProfileSpawner, "destroy", function(func, self, ...)
+    -- Destroy forward gui
+    self:_destroy_forward_gui()
+    -- Original function
+    func(self, ...)
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_service, ...)
     -- Enable rotation input
-    self._rotation_input_disabled = false
+    self._rotation_input_disabled = self:unit_manipulation_busy()
     -- Original function
     func(self, dt, t, input_service, ...)
     -- Check spawn data
@@ -148,8 +232,16 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
         local character_spawn_data = self._character_spawn_data
         local profile = character_spawn_data and character_spawn_data.profile
         local item = profile and profile.loadout[self._slot_name]
-        local gear_id = item and item.gear_id
+        -- local gear_id = item and item.gear_id
+        local gear_id = mod:gear_id(item)
         mod:gear_placement(gear_id, self._placement_name)
+    end
+    -- Add unit manipulation
+    if self:valid_instance() and self._character_spawn_data and self._ui_forward_renderer then
+        local equipment_component = self._character_spawn_data.equipment_component
+        if equipment_component then
+            equipment_component:set_debug_data(self._camera, self._ui_forward_renderer.gui, self._forward_world)
+        end
     end
 end)
 
@@ -172,10 +264,12 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
 
         local item = profile and profile.loadout[self._slot_name]
         local placement_camera = mod.settings.placement_camera
-        local gear_id = item and item.gear_id
-        local breed_name = profile.archetype.name == "ogryn" and "ogryn" or "human"
+        -- local gear_id = item and item.gear_id
+        local gear_id = mod:gear_id(item)
+        -- local breed_name = profile.archetype.name == "ogryn" and "ogryn" or "human"
+        local breed_name = mod:breed(profile)
         local breed_camera = breed_name and placement_camera[breed_name]
-        local offset = (breed_camera and breed_camera[self._placement_name]) --or placement_camera[breed][self._placement_name]
+        local offset = (breed_camera and breed_camera[self._placement_name])
         local item_type = item and item.item_type
         offset = offset and item_type and offset[item_type] or offset
 
@@ -224,6 +318,8 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_companion", function(func, self, unit_3
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "_get_raycast_hit", function(func, self, from, to, physics_world, collision_filter, ...)
-	-- Return custom raycast
-	return self:custom_raycast(from, to, physics_world, collision_filter)
+    if not self:unit_manipulation_busy() then
+        -- Return custom raycast
+        return self:custom_raycast(from, to, physics_world, collision_filter)
+    end
 end)

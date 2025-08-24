@@ -18,8 +18,41 @@ return {
         default = {
             right = {
                 node = "j_spine2",
-                position = vector3_box(.5, .5, -.3),
+                position = vector3_box(.3, .5, -.4),
                 rotation = vector3_box(-20, 0, 90),
+                center_mass = vector3_box(0, -.2, 0),
+            },
+        },
+        hip_back = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(.1, -.4, .1),
+                rotation = vector3_box(0, -20, 90),
+                center_mass = vector3_box(0, -.2, 0),
+            },
+        },
+        hip_front = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(.05, .6, 0),
+                rotation = vector3_box(0, -20, 90),
+                center_mass = vector3_box(0, -.2, 0),
+            },
+        },
+        hip_left = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(-.6, .125, 0),
+                rotation = vector3_box(180+45, 180-20, 0),
+                center_mass = vector3_box(0, -.2, 0),
+            },
+        },
+        hip_right = {
+            right = {
+                node = "j_hips",
+                position = vector3_box(.6, .125, 0),
+                rotation = vector3_box(180+45, 180, 10),
+                center_mass = vector3_box(0, -.2, 0),
             },
         },
         backpack = {
@@ -27,6 +60,7 @@ return {
                 node = "j_spine2",
                 position = vector3_box(.2, .7, -.6),
                 rotation = vector3_box(-20, 0, 90),
+                center_mass = vector3_box(0, -.2, 0),
             },
         },
     },

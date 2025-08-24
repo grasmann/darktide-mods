@@ -79,6 +79,27 @@ return {
 		de = "Zufallige Ausrüstungsplatzierungen für andere Spieler.",
 		["zh-cn"] = "为其他玩家随机生成装备位置",
 	},
+	mod_option_left_hand_visibility = {
+		en = "Shield Visibility",
+		de = "Schild Sichtbarkeit",
+	},
+	mod_option_left_hand_visibility_tooltip = {
+		en = "Toggle shield visibility.\n\nDefault:\nBoth shields are visible on the character.\n\nOnly carry on:\nOnly one shield is visible on characters back.\n\nOnly one:\nOnly one shield is visible on the character.",
+		de = "Aktiviere Schild Sichtbarkeit.\n\nStandard:\nBeide Schilder sind am Charakter sichtbar.\n\nNur eins tragen:\nNur ein Schild ist auf dem Rücken sichtbar.\n\nNur eins:\nNur ein Schild ist am Charakter sichtbar.",
+	},
+	mod_option_left_hand_visibility_default = {
+		en = "Default",
+		de = "Standard",
+	},
+	mod_option_left_hand_visibility_one_on_back = {
+		en = "Only carry one",
+		de = "Nur eins tragen",
+	},
+	mod_option_left_hand_visibility_one_visible = {
+		en = "Only one",
+		de = "Nur eins",
+	},
+
 	slot_primary_placement = {
 		en = "Primary Placement",
 		de = "Primäre Platzierung",

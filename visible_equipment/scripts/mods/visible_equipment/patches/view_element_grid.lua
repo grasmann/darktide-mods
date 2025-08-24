@@ -304,6 +304,10 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
                         local equipment_component = character_spawn_data.equipment_component
                         equipment_component:position_objects()
                         equipment_component:animate_equipment()
+                        -- parent._profile_spawner:remove_unit_manipulation()
+                        -- parent._profile_spawner:add_unit_manipulation()
+                        -- equipment_component:remove_unit_manipulation()
+                        -- equipment_component:add_unit_manipulation(camera, world, gui, pressed_callback, changed_callback)
                         -- Camera
                         local placement_camera = mod.settings.placement_camera
                         local breed_name = character_spawn_data.profile.archetype.name == "ogryn" and "ogryn" or "human"
@@ -353,11 +357,14 @@ mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func
         item = item._master_item or item
         if item then
             -- Get data
-            local player = managers.player:local_player_safe(1)
-            local player_profile = player and player:profile()
-            local gear_id = item and item.__gear_id or item.gear_id
+            -- local player = managers.player:local_player_safe(1)
+            -- local player_profile = player and player:profile()
+            local player_profile = mod:profile()
+            -- local gear_id = item and item.__gear_id or item.gear_id
+            -- local gear_id = mod:gear_id(item)
             local real_item = player_profile.loadout[selected_slot.name]
-            gear_id = real_item and real_item.__gear_id or real_item.gear_id
+            -- gear_id = real_item and real_item.__gear_id or real_item.gear_id
+            local gear_id = mod:gear_id(real_item)
             placement = gear_id and mod:gear_placement(gear_id, nil, nil, true)
             self.placement_name = placement
             -- Inject custom blueprint
