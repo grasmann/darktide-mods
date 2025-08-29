@@ -125,9 +125,8 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_equip_item_from_pro
 	local slot_name = NetworkLookup.player_inventory_slot_names[slot_id]
 	local player = self._player
 	local peer_id = player:peer_id()
-	local local_player_id = player:local_player_id()
-	local package_synchronizer_client = self._package_synchronizer_client
-	local profile = package_synchronizer_client:cached_profile(peer_id, local_player_id)
+	local local_player_id = player:local_player_id()	
+	local profile = player:profile(peer_id, local_player_id)
 	local visual_loadout = profile.visual_loadout
 	local item = visual_loadout[slot_name]
 	local optional_existing_unit_3p = nil

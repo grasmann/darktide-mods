@@ -133,7 +133,9 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                 local slot_name = slot.name
                 local previous_item = content.item
                 local equipped_item = parent:equipped_item_in_slot(slot_name)
-                local update = equipped_item and not previous_item or not equipped_item and previous_item or previous_item and previous_item.gear_id ~= equipped_item.gear_id
+                local equipped_gear_id = mod:gear_id(equipped_item)
+                local previous_gear_id = mod:gear_id(previous_item)
+                local update = equipped_item and not previous_item or not equipped_item and previous_item or previous_item and previous_gear_id ~= equipped_gear_id
 
                 if update then
                     content.item = equipped_item

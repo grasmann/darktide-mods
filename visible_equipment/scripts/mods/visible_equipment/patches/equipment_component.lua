@@ -78,11 +78,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         end
     end
 
-    instance.position_objects = function(self)
+    instance.position_objects = function(self, apply_center_mass_offset)
         -- Check visible equipment system
         if self.visible_equipment_system then
             -- Update visible equipment
-            self.visible_equipment_system:position_objects()
+            self.visible_equipment_system:position_objects(apply_center_mass_offset)
         end
     end
 
@@ -94,11 +94,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         end
     end
 
-    -- instance.add_unit_manipulation = function(self, camera, world, gui, pressed_callback, changed_callback)
+    -- instance.set_placement = function(self, slot, placement)
     --     -- Check visible equipment system
     --     if self.visible_equipment_system then
     --         -- Update visible equipment
-    --         self.visible_equipment_system:add_unit_manipulation(camera, world, gui, pressed_callback, changed_callback)
+    --         self.visible_equipment_system:set_placement(slot, placement)
     --     end
     -- end
 

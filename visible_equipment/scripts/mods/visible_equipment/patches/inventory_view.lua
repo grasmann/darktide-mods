@@ -8,6 +8,7 @@ local mod = get_mod("visible_equipment")
     local pairs = pairs
     local CLASS = CLASS
     local vector3 = Vector3
+    local managers = Managers
     local unit_alive = unit.alive
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
@@ -37,6 +38,13 @@ end)
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
+mod:hook(CLASS.InventoryView, "on_enter", function(func, self, ...)
+    -- Original function
+    func(self, ...)
+    -- -- Events
+    -- managers.event:register(self, "visible_equipment_refresh_inventory", "refresh_tab")
+end)
+
 mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
     -- Original function
     func(self, ...)
@@ -53,6 +61,8 @@ mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
     if main_menu_background_view then
         main_menu_background_view:update_placements()
     end
+    -- -- Events
+    -- managers.event:unregister(self, "visible_equipment_refresh_inventory")
 end)
 
 mod:hook(CLASS.InventoryView, "_set_camera_focus_by_slot_name", function(func, self, slot_name, optional_camera_settings, force_instant_camera, ...)

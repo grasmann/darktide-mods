@@ -31,12 +31,21 @@ end)
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
+mod:hook(CLASS.MainMenuBackgroundView, "on_enter", function(func, self, ...)
+    -- Original function
+    func(self, ...)
+
+    mod:echo("MainMenuBackgroundView Enter")
+end)
+
 mod:hook(CLASS.MainMenuBackgroundView, "_spawn_profile", function(func, self, profile, ...)
     -- Load gear placements for profile from file
     local primary_item = profile.loadout.slot_primary
     local secondary_item = profile.loadout.slot_secondary
-    local primary_gear_id = primary_item and primary_item.__gear_id or primary_item.gear_id
-    local secondary_gear_id = secondary_item and secondary_item.__gear_id or secondary_item.gear_id
+    -- local primary_gear_id = primary_item and primary_item.__gear_id or primary_item.gear_id
+    local primary_gear_id = mod:gear_id(primary_item)
+    -- local secondary_gear_id = secondary_item and secondary_item.__gear_id or secondary_item.gear_id
+    local secondary_gear_id = mod:gear_id(secondary_item)
     mod:gear_placement(primary_gear_id, nil, true)
     mod:gear_placement(secondary_gear_id, nil, true)
     -- Original function

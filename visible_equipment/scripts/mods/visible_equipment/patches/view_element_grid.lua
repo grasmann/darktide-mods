@@ -297,12 +297,16 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
             local item = element.item
             if item then
                 local parent = self._parent
-                mod:gear_placement(item.gear_id, element.placement_name)
-                if parent._profile_spawner then
-                    local character_spawn_data = parent._profile_spawner._character_spawn_data
+                local profile_spawner = parent._profile_spawner
+                if profile_spawner then
+                    local character_spawn_data = profile_spawner._character_spawn_data
                     if character_spawn_data then
+                        -- local gear_id = item.__gear_id or item.gear_id
+                        local gear_id = mod:gear_id(item)
+                        mod:gear_placement(item.gear_id, element.placement_name)
                         local equipment_component = character_spawn_data.equipment_component
-                        equipment_component:position_objects()
+                        -- equipment_component:set_placement(slot, element.placement_name)
+                        equipment_component:position_objects(true)
                         equipment_component:animate_equipment()
                         -- parent._profile_spawner:remove_unit_manipulation()
                         -- parent._profile_spawner:add_unit_manipulation()
@@ -316,7 +320,7 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
                         local item_type = item.item_type
                         offset = offset and item_type and offset[item_type] or offset
                         local rotation = offset and offset.rotation and offset.rotation + 2.25
-                        parent._profile_spawner._rotation_angle = rotation or parent._profile_spawner._rotation_angle
+                        profile_spawner._rotation_angle = rotation or profile_spawner._rotation_angle
                         -- Data
                         parent.selected_placement = element.placement_name
                         parent.placement_saved = false
@@ -360,12 +364,12 @@ mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func
             -- local player = managers.player:local_player_safe(1)
             -- local player_profile = player and player:profile()
             local player_profile = mod:profile()
-            -- local gear_id = item and item.__gear_id or item.gear_id
+            local gear_id = item and item.__gear_id or item.gear_id
             -- local gear_id = mod:gear_id(item)
-            local real_item = player_profile.loadout[selected_slot.name]
+            -- local real_item = player_profile.loadout[selected_slot.name]
             -- gear_id = real_item and real_item.__gear_id or real_item.gear_id
-            local gear_id = mod:gear_id(real_item)
-            placement = gear_id and mod:gear_placement(gear_id, nil, nil, true)
+            -- local gear_id = mod:gear_id(real_item)
+            placement = gear_id and mod:gear_placement(gear_id)
             self.placement_name = placement
             -- Inject custom blueprint
             self:inject_blueprint(content_blueprints, profile)

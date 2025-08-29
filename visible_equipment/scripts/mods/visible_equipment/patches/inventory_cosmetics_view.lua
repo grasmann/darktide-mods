@@ -49,12 +49,12 @@ mod:hook_require("scripts/ui/views/inventory_cosmetics_view/inventory_cosmetics_
         -- local slot = self._selected_slot
         local slot_name = self._selected_slot and self._selected_slot.name
         -- local item = self._presentation_profile.loadout[slot_name]
-        local equipped_item = profile.loadout[slot_name]
-        -- local equipped_item = slot_name and self:equipped_item_in_slot(slot_name)
+        -- local equipped_item = profile.loadout[slot_name]
+        local equipped_item = slot_name and self:equipped_item_in_slot(slot_name)
         -- local gear_id = equipped_item and equipped_item.gear_id or equipped_item.__gear_id
-        local gear_id = mod:gear_id(equipped_item)
+        local gear_id = equipped_item and mod:gear_id(equipped_item)
         if gear_id then
-            mod:gear_placement(gear_id, nil, true)
+            mod:gear_placement(gear_id, self.original_placement)
         end
     end
 
@@ -84,6 +84,7 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_enter", function(func, self, ...)
     -- local gear_id = item and item.gear_id
     local gear_id = mod:gear_id(item)
     self.placement_name = gear_id and mod:gear_placement(gear_id, nil, true)
+    self.original_placement = self.placement_name
     self.selected_placement = self.placement_name
 
     -- local slot = self._selected_slot
@@ -124,6 +125,7 @@ mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, sel
                 end
 
                 self.placement_name = self.selected_placement
+                -- self.original_placement = self.placement_name
                 -- self.selected_placement = nil
                 self:_update_equip_button_status()
                 self:_play_sound(UISoundEvents.apparel_equip_small)
@@ -184,6 +186,7 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_exit", function(func, self, ...)
         end
         local inventory_view = mod:get_view("inventory_view")
         if self._refresh_tab and inventory_view then
+        -- if inventory_view and self.original_placement ~= self.placement_name then
             -- Refresh tab view
             inventory_view:refresh_tab()
             self._refresh_tab = false

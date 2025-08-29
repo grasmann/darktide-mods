@@ -26,6 +26,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local pairs = pairs
     local world = World
     local table = table
+    local string = string
     local rawget = rawget
     local get_mod = get_mod
     local vector3 = Vector3
@@ -103,6 +104,7 @@ local SLOTS = {
 local SPECIAL_SLOT_PLACEMENTS = {
     POCKETABLE_SMALL = POCKETABLE_SMALL,
     POCKETABLE = POCKETABLE,
+    left = "default",
 }
 local SLOT_ATTACHMENTS = {
     "left",
@@ -156,6 +158,7 @@ VisibleEquipmentExtension.init = function(self, extension_init_context, unit, ex
     -- Events
     managers.event:register(self, "visible_equipment_mods_loaded", "on_mods_loaded")
     managers.event:register(self, "visible_equipment_settings_changed", "on_settings_changed")
+    -- Initialize settings
     self:on_settings_changed()
 end
 
@@ -204,7 +207,7 @@ VisibleEquipmentExtension.set_debug_data = function(self, camera, gui, world)
     self.camera = camera
     self.gui = gui
     self.gui_world = world
-    self:add_unit_manipulation()
+    -- self:add_unit_manipulation()
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
@@ -218,9 +221,7 @@ VisibleEquipmentExtension.add_object = function(self, slot, attachments, name)
     if object then
         -- Add object
         self.objects[slot][#self.objects[slot]+1] = object
-        -- Add name
-        self.names[slot][#self.names[slot]+1] = name
-        self.items[slot][#self.items[slot]+1] = slot.item
+        self.names[slot][object] = name
     end
 end
 
@@ -256,11 +257,6 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
     if (not self.loaded[slot] and table_contains(SLOTS, slot.name)) then
         -- Spawn visible equipment
         local item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p = self:spawn_slot(slot, optional_mission_template)
-        -- -- Link attachments
-        -- for _, attachment_unit in pairs(attachment_units_3p[item_unit_3p]) do
-        --     world_unlink_unit(self.world, attachment_unit, true)
-        --     world_link_unit(self.world, attachment_unit, 1, item_unit_3p, 1, true)
-        -- end
         -- Init script
         local scripts = self.settings.scripts
         local item_script = slot.item and scripts[slot.item.weapon_template]
@@ -278,8 +274,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
         -- Item unit as sole object when no attachments
         if #self.objects == 0 then
             self.objects[slot][#self.objects[slot]+1] = item_unit_3p
-            self.names[slot][#self.names[slot]+1] = "right"
-            self.items[slot][#self.items[slot]+1] = slot.item
+            self.names[slot][item_unit_3p] = "right"
         end
         -- Setup animation tables
         self.anim[slot] = table_clone(ANIMATION_TABLE)
@@ -310,21 +305,18 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
         end
         -- Set loaded
         self.loaded[slot] = true
-        -- Manipulation
-        -- self:add_unit_manipulation()
-        self:_add_unit_manipulation(slot)
         -- Position slot objects
         self:position_slot_objects(slot, true)
     end
 end
 
 VisibleEquipmentExtension.delete_all = function(self, target_slot)
-    -- Manipulation
-    if target_slot then
-        self:_remove_unit_manipulation(target_slot)
-    else
-        self:remove_unit_manipulation()
-    end
+    -- -- Manipulation
+    -- if target_slot then
+    --     self:_remove_unit_manipulation(target_slot)
+    -- else
+    --     self:remove_unit_manipulation()
+    -- end
     -- Get equipment component infos
     local equipment_component = self.equipment_component
     local unit_spawner = equipment_component._unit_spawner
@@ -487,47 +479,97 @@ VisibleEquipmentExtension.get_breed = function(self)
     return self:is_ogryn() and "ogryn" or "human"
 end
 
-VisibleEquipmentExtension.slot_offset = function(self, index, slot)
-    local name = self.names[slot][index]
+VisibleEquipmentExtension.slot_placement = function(self, obj, slot)
+
+    -- if self.placement_override[slot] then return self.placement_override[slot] end
+
+    local name = self.names[slot][obj]
+    local item_type = slot.item and slot.item.item_type
+    -- local gear_id = slot.item and slot.item.gear_id
+    local gear_id = mod:gear_id(slot.item)
+    local weapon_template = slot.item and slot.item.weapon_template
+
+    local backpack_name = self:get_backpack()
+    local backpack_group = backpack_name and "backpack" or "default"
+
+    local item_offset = weapon_template and self.settings.offsets[weapon_template]
+
+    local placement = gear_id and mod:gear_placement(gear_id) or "default" --or self.pt.gear_placements[slot.item.gear_id]
+    if self.random_placements and not self.is_local_unit and item_offset and not self.from_ui_profile_spawner then
+        local count = table_size(item_offset)
+        placement = table_keys(item_offset)[math_random(1, count)]
+    end
+    placement = SPECIAL_SLOT_PLACEMENTS[item_type] or SPECIAL_SLOT_PLACEMENTS[name] or placement
+    if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
+    if placement == "backpack" and backpack_group == "default" then placement = "default" end
+
+    return placement
+
+end
+
+-- VisibleEquipmentExtension.set_placement = function(self, slot, placement)
+--     if slot then
+--         self.placement_override[slot] = placement
+--     end
+-- end
+
+VisibleEquipmentExtension.slot_offset = function(self, obj, slot)
+    -- Get offset
+    local name = self.names[slot][obj]
     local item_type = slot.item and slot.item.item_type
     local weapon_template = slot.item and slot.item.weapon_template
-    local gear_id = slot.item and slot.item.gear_id
+    -- local gear_id = slot.item and slot.item.gear_id
+    local gear_id = mod:gear_id(slot.item)
+    -- local breed_name = slot.breed_name
     local breed_name = self:get_breed()
-
+    -- Check backpack
     local backpacks = self.settings.backpacks
     local backpack_name = self:get_backpack()
     local backpack_table = backpack_name and backpacks[backpack_name] or backpacks.default
-
     local backpack_item_table = backpack_table and backpack_table[item_type] or backpack_table
     local backpack_values = backpack_item_table and backpack_item_table[name] or backpack_table[name]
     local backpack_group = backpack_name and "backpack" or "default"
     -- Item offsets
     local item_offset = weapon_template and self.settings.offsets[weapon_template]
     -- local placement = self.pt.gear_placements[slot.item.gear_id]
-    local placement = gear_id and mod:gear_placement(gear_id) --or "default" --or self.pt.gear_placements[slot.item.gear_id]
-    if self.random_placements and not self.is_local_unit and item_offset and not self.from_ui_profile_spawner then
-        local count = table_size(item_offset)
-        placement = table_keys(item_offset)[math_random(1, count)]
-    end
-    if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
-    if placement == "backpack" and backpack_group == "default" then placement = "default" end
-    placement = SPECIAL_SLOT_PLACEMENTS[item_type] or placement
+    -- local placement = gear_id and mod:gear_placement(gear_id) or "default" --or self.pt.gear_placements[slot.item.gear_id]
+    -- if self.random_placements and not self.is_local_unit and item_offset and not self.from_ui_profile_spawner then
+    --     local count = table_size(item_offset)
+    --     placement = table_keys(item_offset)[math_random(1, count)]
+    -- end
+    -- if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
+    -- if placement == "backpack" and backpack_group == "default" then placement = "default" end
+    -- placement = SPECIAL_SLOT_PLACEMENTS[item_type] or placement
+    local placement = self:slot_placement(obj, slot)
 
     local item_type_offsets = self.settings.offsets[item_type]
     local breed_item_offsets = self.settings.offsets[breed_name][item_type]
+    -- local offset = 
+    --         (item_offset and item_offset[backpack_group] and item_offset[backpack_group][name]) or
+    --         (breed_item_offsets and breed_item_offsets[backpack_group] and breed_item_offsets[backpack_group][name]) or
+    --         (item_type_offsets and item_type_offsets[backpack_group] and item_type_offsets[backpack_group][name]) or
+    --         (item_type_offsets and item_type_offsets[name]) or
+    --         (breed_item_offsets and breed_item_offsets.default and breed_item_offsets.default[name]) or
+    --         (item_offset and item_offset[placement] and item_offset[placement][name]) or
+    --         nil
     local offset = item_offset and item_offset[placement] and item_offset[placement][name]
     offset = offset or (item_offset and item_offset[backpack_group] and item_offset[backpack_group][name]) or
         (item_type_offsets and item_type_offsets[backpack_group] and item_type_offsets[backpack_group][name]) or
         (breed_item_offsets and breed_item_offsets[backpack_group] and breed_item_offsets[backpack_group][name]) or
         (item_type_offsets and item_type_offsets[name])
     -- Breed offsets
+    local breed_item_offsets = self.settings.offsets[breed_name][item_type]
+    offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
+    offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
+    -- local offset = item_offset and item_offset[placement] and item_offset[placement][name]
+    -- offset = offset or (item_offset and item_offset[backpack_group] and item_offset[backpack_group][name]) or
+    --     (item_type_offsets and item_type_offsets[backpack_group] and item_type_offsets[backpack_group][name]) or
+    --     (breed_item_offsets and breed_item_offsets[backpack_group] and breed_item_offsets[backpack_group][name]) or
+    --     (item_type_offsets and item_type_offsets[name])
+    -- -- Breed offsets
     -- local breed_item_offsets = self.settings.offsets[breed_name][item_type]
     -- offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
     -- offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
-
-    if offset then
-        mod:echo("offset: "..tostring(offset.position))
-    end
 
     return offset, backpack_values
 end
@@ -537,62 +579,11 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
 
-        -- Get offset
-        local name = self.names[slot][index]
-        local item_type = slot.item and slot.item.item_type
-        local weapon_template = slot.item and slot.item.weapon_template
-        local gear_id = slot.item and slot.item.gear_id
-        -- local breed_name = slot.breed_name
-        local breed_name = self:get_breed()
-        -- Check backpack
-        local backpacks = self.settings.backpacks
-        local backpack_name = self:get_backpack()
-        local backpack_table = backpack_name and backpacks[backpack_name] or backpacks.default
-        -- if backpack_name and not backpacks[backpack_name] then
-        --     if mod.last_backpack ~= backpack_name then mod:echo("backpack missing: "..tostring(backpack_name)) end
-        -- else
-        --     if mod.last_backpack ~= backpack_name then mod:echo("backpack: "..tostring(backpack_name)) end
-        -- end
-        -- mod.last_backpack = backpack_name
-        -- if backpack_table and not backpack_table[slot.item.item_type] then
-        --     mod:echo("item type missing: "..tostring(slot.item.item_type))
-        -- end
-        -- if not self.settings.offsets[slot.item.weapon_template] then
-        --     mod:echo("template missing: "..tostring(slot.item.weapon_template))
-        -- end
-        local backpack_item_table = backpack_table and backpack_table[item_type] or backpack_table
-        local backpack_values = backpack_item_table and backpack_item_table[name] or backpack_table[name]
-        local backpack_group = backpack_name and "backpack" or "default"
-        -- Item offsets
-        local item_offset = weapon_template and self.settings.offsets[weapon_template]
-        -- local placement = self.pt.gear_placements[slot.item.gear_id]
-        local placement = gear_id and mod:gear_placement(gear_id, nil, nil, true) or "default" --or self.pt.gear_placements[slot.item.gear_id]
-        if self.random_placements and not self.is_local_unit and item_offset and not self.from_ui_profile_spawner then
-            local count = table_size(item_offset)
-            placement = table_keys(item_offset)[math_random(1, count)]
-        end
-        if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
-        if placement == "backpack" and backpack_group == "default" then placement = "default" end
-        placement = SPECIAL_SLOT_PLACEMENTS[item_type] or placement
+        -- Manipulation
+        self:_remove_unit_manipulation(slot)
 
-        local item_type_offsets = self.settings.offsets[item_type]
-        local breed_item_offsets = self.settings.offsets[breed_name][item_type]
-        local offset = 
-            (item_offset and item_offset[backpack_group] and item_offset[backpack_group][name]) or
-            (breed_item_offsets and breed_item_offsets[backpack_group] and breed_item_offsets[backpack_group][name]) or
-            (item_type_offsets and item_type_offsets[backpack_group] and item_type_offsets[backpack_group][name]) or
-            (item_type_offsets and item_type_offsets[name]) or
-            (breed_item_offsets and breed_item_offsets.default and breed_item_offsets.default[name]) or
-            (item_offset and item_offset[placement] and item_offset[placement][name]) or
-            nil
-
-        -- local offset = item_offset and item_offset[placement] and item_offset[placement][name]
-        -- offset = offset or (item_offset and item_offset[backpack_group][name]) or (item_type_offsets and item_type_offsets[name])
-        -- -- Breed offsets
-        -- local breed_item_offsets = self.settings.offsets[breed_name][item_type]
-        -- offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
-        -- offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
-        -- local offset, backpack_values = self:slot_offset(index, slot)
+        -- Offset
+        local offset, backpack_values = self:slot_offset(obj, slot)
         -- Node
         local node_name = offset and offset.node or "j_spine2"
         -- self.node[slot][obj] = offset and offset.node or "j_spine2"
@@ -609,34 +600,30 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         end
 
         -- Center mass
-        local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
-        if apply_center_mass_offset then
-            -- local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
-            if center_mass_offset then
-                -- local all_item_units = self.pt.item_units_by_equipment_component[self.equipment_component]
-                -- local item_unit = all_item_units and all_item_units[slot.name]
+        -- if apply_center_mass_offset then
+            local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass) --or vector3_zero()
+        if center_mass_offset then
+            local children = unit_get_child_units(obj)
+            if children and #children > 0 then
+                for _, child in pairs(children) do
+                    local rotation = unit_local_rotation(child, 1)
+                    local mat = quaternion_matrix4x4(rotation)
+                    local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
+                    unit_set_local_position(child, 1, rotated_center_mass_offset)
+                end
+            else
                 local rotation = unit_local_rotation(obj, 1)
                 local mat = quaternion_matrix4x4(rotation)
                 local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
-                local children = unit_get_child_units(obj)
-                if children and #children > 0 then
-                    for _, child in pairs(children) do
-                        unit_set_local_position(child, 1, rotated_center_mass_offset)
-                    end
-                else
-                    position = position + rotated_center_mass_offset
-                end
-                -- unit_set_local_position(self.unit_center_point[slot][obj], 1, rotated_center_mass_offset)
+                position = position + rotated_center_mass_offset
             end
-        end
-
-        -- local offset, backpack_values = self:slot_offset(index, slot)
-        -- local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
-        if center_mass_offset then
+        -- end
+        -- if center_mass_offset then
             local rotation = unit_local_rotation(obj, 1)
             local mat = quaternion_matrix4x4(rotation)
             local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
             unit_set_local_position(self.unit_center_point[slot][obj], 1, rotated_center_mass_offset)
+        -- end
         end
 
         -- Link visible equipment
@@ -647,6 +634,9 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         unit_set_local_position(obj, 1, position)
         unit_set_local_rotation(obj, 1, quaternion_from_vector(rotation))
         unit_set_local_scale(obj, 1, scale)
+
+        -- Manipulation
+        self:_add_unit_manipulation(slot)
         
         -- Anim values
         self.anim[slot].default_position[obj]:store(position)
@@ -679,7 +669,7 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
                 if player_invisible or in_first_person then self.visible[slot] = false end
                 -- Iterate through objects
                 for index, obj in pairs(self.objects[slot]) do
-                    local name = self.names[slot][index]
+                    local name = self.names[slot][obj]
                     -- Shield Visibility
                     if self.shield_visibility == "one_on_back" and name == "left" and self.visible[slot] then
                         -- If shield is already showing; don't show
@@ -698,8 +688,6 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
                         -- Set visibility
                         unit_set_unit_visibility(obj, self.visible[slot], true)
                     end
-                    -- -- Set visibility
-                    -- unit_set_unit_visibility(obj, self.visible[slot], true)
                 end
                 -- Animation in ui profile spawner
                 if self.visible[slot] and not self.sheathed[slot] and self.from_ui_profile_spawner then
@@ -888,7 +876,7 @@ VisibleEquipmentExtension.animate_slot = function(self, slot, animation, strengt
     for index, obj in pairs(self.objects[slot]) do
         -- Get animation
         local anim = self.anim[slot]
-        local name = self.names[slot][index]
+        local name = self.names[slot][obj]
         local animation_table = self.settings.animations[slot.item.weapon_template] or
             self.settings.animations[slot.breed_name][slot.item.item_type] or
             self.settings.animations.default
@@ -908,6 +896,21 @@ VisibleEquipmentExtension.animate_slot = function(self, slot, animation, strengt
     end
 end
 
+-- VisibleEquipmentExtension.equipment = function(self)
+--     return self.visual_loadout_extension and self.visual_loadout_extension._equipment
+-- end
+
+-- VisibleEquipmentExtension.equipped_slot = function(self, slot)
+--     local equipment = self:equipment()
+--     return equipment and equipment[slot]
+-- end
+
+-- VisibleEquipmentExtension.equipped_unit = function(self, slot, name)
+--     local slot = self:equipped_slot(slot)
+--     local object = table_find(attachments, name)
+--     return slot and slot.unit_3p
+-- end
+
 VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
@@ -925,13 +928,15 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
         end
         -- Momentum vector
         local item_momentum = self.settings.momentum[slot.item.weapon_template]
-        local side_momentum = item_momentum and item_momentum[self.names[slot][index]]
+        local side_momentum = item_momentum and item_momentum[self.names[slot][obj]]
         local item_type_momentum = self.settings.momentum[slot.item.item_type] or
             self.settings.momentum.default
-        local default_momentum = item_type_momentum and item_type_momentum[self.names[slot][index]]
+        local default_momentum = item_type_momentum and item_type_momentum[self.names[slot][obj]]
         local momentum = (side_momentum and side_momentum.momentum) or
             (default_momentum and default_momentum.momentum)
         local momentum_vector = momentum and vector3_unbox(momentum) or vector3_zero()
+
+        local placement = self:slot_placement(obj, slot)
 
         -- Calculate momentum_drag 
         -- local momentum_drag = vector3_zero()
@@ -954,7 +959,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 -- Get start state
                 local start_state = anim.current[obj].start
                 -- Set start state
-                anim.state[obj] = anim.current[obj][start_state]
+                anim.state[obj] = anim.current[obj][start_state] and anim.current[obj][start_state][placement] or anim.current[obj][start_state]
             -- Check if started
             elseif anim.started[obj] then
                 -- Check timer if elapsed
@@ -962,7 +967,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                     -- Get next state
                     local next_state = anim.state[obj].next
                     -- Set next state
-                    anim.state[obj] = anim.current[obj][next_state]
+                    anim.state[obj] = anim.current[obj][next_state] and anim.current[obj][next_state][placement] or anim.current[obj][next_state]
                     -- Reset timer
                     anim.started[obj] = nil
                     -- Reset strength
@@ -1038,7 +1043,11 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 -- Calculate current target positions and rotations
                 local _current_position = vector3_unbox(anim.current_position[obj])
                 local _current_rotation = vector3_unbox(anim.current_rotation[obj])
-                local direction = _current_position
+
+                -- local mod_rotation = unit_world_rotation(self.unit, self.node[slot][obj])
+                -- local mat = quaternion_matrix4x4(mod_rotation)
+                -- start_position = matrix4x4_transform(mat, start_position)
+                -- end_position = matrix4x4_transform(mat, end_position)
 
                 local target_position = vector3_lerp(start_position, end_position, progress)
                 local target_rotation = vector3_lerp(start_rotation, end_rotation, progress)
@@ -1162,11 +1171,13 @@ VisibleEquipmentExtension.reset_slot_tables = function(self, slot)
     self.accent[slot] = nil
     self.sheathed[slot] = nil
     self.sheathing[slot] = nil
-    self.items[slot] = {}
+    -- self.items[slot] = {}
     self.names[slot] = {}
     self.anim[slot] = {}
     self.loaded[slot] = false
     self.visible[slot] = {}
+    self.placement_override[slot] = {}
+    self.unit_default_position[slot] = {}
     self.unit_manipulation[slot] = {}
     self.unit_center_point[slot] = {}
 end
@@ -1177,11 +1188,13 @@ VisibleEquipmentExtension.unset_slot_tables = function(self, slot)
     self.accent[slot] = nil
     self.sheathed[slot] = nil
     self.sheathing[slot] = nil
-    self.items[slot] = nil
+    -- self.items[slot] = nil
     self.names[slot] = nil
     self.anim[slot] = nil
     self.loaded[slot] = nil
     self.visible[slot] = nil
+    self.placement_override[slot] = nil
+    self.unit_default_position[slot] = nil
     self.unit_manipulation[slot] = nil
     self.unit_center_point[slot] = nil
 end
@@ -1192,11 +1205,13 @@ VisibleEquipmentExtension.clear_slot_tables = function(self)
     self.accent = {}
     self.sheathed = {}
     self.sheathing = {}
-    self.items = {}
+    -- self.items = {}
     self.names = {}
     self.anim = {}
     self.loaded = {}
     self.visible = {}
+    self.placement_override = {}
+    self.unit_default_position = {}
     self.unit_manipulation = {}
     self.unit_center_point = {}
 end
