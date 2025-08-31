@@ -19,7 +19,7 @@ mod:hook_require("scripts/ui/views/main_menu_background_view/main_menu_backgroun
 	    local profile = player and player:profile()
         local item = profile and profile.loadout[slot_name]
         local gear_id = item and mod:gear_id(item)
-        mod:gear_placement(gear_id, optional_placement_name_to_save, true)
+        mod:gear_placement(gear_id, optional_placement_name_to_save)
     end
 
     instance.update_equipment_component = function(self)

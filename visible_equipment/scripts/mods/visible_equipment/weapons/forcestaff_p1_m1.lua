@@ -22,48 +22,48 @@ return {
 				rotation = vector3_box(10, 90, -90),
 			},
 		},
-        leg_left = {
-            right = {
-                node = "j_leftupleg",
-                position = vector3_box(0, 0.11, -0.06),
-                rotation = vector3_box(-10, 75, 280),
-            },
-        },
-        leg_right = {
-            right = {
-                node = "j_rightupleg",
-                position = vector3_box(0, -.125, 0),
-                rotation = vector3_box(10, 250, -90),
-            },
-        },
-        hip_back = {
-            right = {
-                node = "j_hips",
-                position = vector3_box(0.15, -0.1, 0.16),
-                rotation = vector3_box(0, 60, 90),
-            },
-        },
-        hip_front = {
-            right = {
-                node = "j_hips",
-                position = vector3_box(0.13, 0.15, 0.12),
-                rotation = vector3_box(180, -110, 90),
-            },
-        },
-        hip_left = {
-            right = {
-                node = "j_hips",
-                position = vector3_box(-.2, 0.11, 0.2),
-                rotation = vector3_box(140, 180, 0),
-            },
-        },
-        hip_right = {
-            right = {
-                node = "j_hips",
-                position = vector3_box(.2, .11, 0.2),
-                rotation = vector3_box(140, 180, 30),
-            },
-        },
+        -- leg_left = {
+        --     right = {
+        --         node = "j_leftupleg",
+        --         position = vector3_box(0, 0.11, -0.06),
+        --         rotation = vector3_box(-10, 75, 280),
+        --     },
+        -- },
+        -- leg_right = {
+        --     right = {
+        --         node = "j_rightupleg",
+        --         position = vector3_box(0, -.125, 0),
+        --         rotation = vector3_box(10, 250, -90),
+        --     },
+        -- },
+        -- hip_back = {
+        --     right = {
+        --         node = "j_hips",
+        --         position = vector3_box(0.15, -0.1, 0.16),
+        --         rotation = vector3_box(0, 60, 90),
+        --     },
+        -- },
+        -- hip_front = {
+        --     right = {
+        --         node = "j_hips",
+        --         position = vector3_box(0.13, 0.15, 0.12),
+        --         rotation = vector3_box(180, -110, 90),
+        --     },
+        -- },
+        -- hip_left = {
+        --     right = {
+        --         node = "j_hips",
+        --         position = vector3_box(-.2, 0.11, 0.2),
+        --         rotation = vector3_box(140, 180, 0),
+        --     },
+        -- },
+        -- hip_right = {
+        --     right = {
+        --         node = "j_hips",
+        --         position = vector3_box(.2, .11, 0.2),
+        --         rotation = vector3_box(140, 180, 30),
+        --     },
+        -- },
         backpack = {
             right = {
                 node = "j_spine2",
@@ -144,6 +144,78 @@ return {
                 start = "place",
                 interrupt = true,
                 place = {
+                    default = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, .5) * .5),
+                        start_rotation = vector3_box(vector3(0, 0, -90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    backpack = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, .5) * .5),
+                        start_rotation = vector3_box(vector3(0, 0, -90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    leg_left = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(-1, .5, 0) * .5),
+                        start_rotation = vector3_box(vector3(90, 0, 0) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    leg_right = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                        start_rotation = vector3_box(vector3(0, 0, 90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    hip_left = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, .5, 0) * .5),
+                        start_rotation = vector3_box(vector3(0, 0, -90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    hip_right = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(-1, .5, 0) * .5),
+                        start_rotation = vector3_box(vector3(0, 0, 90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    hip_front = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, -90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
+                    hip_back = {
+                        name = "place",
+                        no_modifiers = true,
+                        start_position = vector3_box(vector3(1, -.5, 0) * .5),
+                        start_rotation = vector3_box(vector3(-5, 2.5, 90) * .5),
+                        end_position = vector3_box(vector3(-.15, 0, 0) * .5),
+                        end_rotation = vector3_box(vector3(-5, 2.5, 5) * .5),
+                        next = "step",
+                    },
                     name = "place",
                     no_modifiers = true,
                     start_position = vector3_box(vector3(1, -.5, 0) * .5),

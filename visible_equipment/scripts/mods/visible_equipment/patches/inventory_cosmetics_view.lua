@@ -95,13 +95,13 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_enter", function(func, self, ...)
     func(self, ...)
     -- Init
     local slot_name = self._selected_slot and self._selected_slot.name
-    local item = slot_name and self._presentation_profile.loadout[slot_name]
-    local gear_id = item and mod:gear_id(item)
-    self.placement_name = gear_id and mod:gear_placement(gear_id, nil, true)
-    self.original_placement = self.placement_name
-    self.selected_placement = self.placement_name
-    -- Update equip button
     if self:is_valid_slot(slot_name) then
+        local item = slot_name and self._presentation_profile.loadout[slot_name]
+        local gear_id = item and mod:gear_id(item)
+        self.placement_name = gear_id and mod:gear_placement(gear_id, nil, true)
+        self.original_placement = self.placement_name
+        self.selected_placement = self.placement_name
+        -- Update equip button
         self:_update_equip_button_status()
     end
 end)
@@ -144,6 +144,7 @@ mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, sel
                 end
 
                 self.placement_name = self.selected_placement
+                self.original_placement = self.selected_placement
 
                 -- Update equip button
                 self:_update_equip_button_status()
@@ -158,6 +159,14 @@ mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, sel
     end
     -- Original function
     func(self, ...)
+
+    if not self.selected_placement then
+        local slot_name = self._selected_slot and self._selected_slot.name
+        if slot_name == SLOT_GEAR_EXTRA_COSMETIC then
+            -- Relay event to main menu background, inventory background, player
+            managers.event:trigger("visible_equipment_update_placements")
+        end
+    end
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, profile, initial_rotation, disable_rotation_input, ...)
@@ -198,6 +207,8 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_exit", function(func, self, ...)
         -- Reset gear_id equipment position
         self:reset_real_placement()
     end
+    -- Relay event to main menu background, inventory background, player
+    managers.event:trigger("visible_equipment_placement_saved", slot_name, self.original_placement)
     -- Original function
     func(self, ...)
 end)

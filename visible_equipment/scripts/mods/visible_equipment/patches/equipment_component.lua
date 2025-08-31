@@ -201,6 +201,7 @@ mod:hook(CLASS.EquipmentComponent, "_spawn_player_item_attachments", function(fu
         -- Load slot
         self.visible_equipment_system:load_slot(slot, optional_mission_template)
     end
+    self:position_objects()
 end)
 
 mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)

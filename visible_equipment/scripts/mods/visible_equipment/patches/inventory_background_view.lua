@@ -16,10 +16,10 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 
     instance.update_slot_placement = function(self, slot_name, optional_placement_name_to_save)
         local player = self._preview_player
-	    local profile = player and player:profile()
+	    local profile = self._presentation_profile or player and player:profile()
         local item = profile and profile.loadout[slot_name]
         local gear_id = item and mod:gear_id(item)
-        mod:gear_placement(gear_id, optional_placement_name_to_save, true)
+        mod:gear_placement(gear_id, optional_placement_name_to_save)
     end
 
     instance.update_equipment_component = function(self)
@@ -64,6 +64,14 @@ end)
 mod:hook(CLASS.InventoryBackgroundView, "on_enter", function(func, self, ...)
     -- Original function
     func(self, ...)
+    -- Update equipment position
+    self:update_placements()
+end)
+
+-- InventoryBackgroundView._equip_slot_item = function (self, slot_name, item, force_update)
+mod:hook(CLASS.InventoryBackgroundView, "_equip_slot_item", function(func, self, slot_name, item, force_update, ...)
+    -- Original function
+    func(self, slot_name, item, force_update, ...)
     -- Update equipment position
     self:update_placements()
 end)

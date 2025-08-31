@@ -56,6 +56,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local quaternion_box = QuaternionBox
     local math_ease_sine = math.ease_sine
     local table_contains = table.contains
+    local math_ease_cubic = math.easeCubic
     local unit_world_pose = unit.world_pose
     local world_link_unit = world.link_unit
     local quaternion_lerp = quaternion.lerp
@@ -405,7 +406,7 @@ VisibleEquipmentExtension.unwield_slot = function(self, slot)
         self.sheathed[slot] = true
         self.sheathing[slot] = true
         -- Animate
-        self:animate_equipment(slot, "sheath", 10)
+        self:animate_equipment(slot, "sheath", 5)
         -- Sound
         self:play_equipment_sound(slot, "accent")
     end
@@ -777,7 +778,7 @@ VisibleEquipmentExtension.play_equipment_slot_sound = function(self, slot, effec
             end
         end
         -- Testing
-        group = group or "sfx_ads_up"
+        -- group = group or "sfx_ads_up"
         local sound = player_character_sound_event_aliases[group].events[weapon_template] or
             player_character_sound_event_aliases[group].events.default
         -- Check sound and extension
@@ -786,6 +787,10 @@ VisibleEquipmentExtension.play_equipment_slot_sound = function(self, slot, effec
             local husk = player_character_sound_event_aliases[group].has_husk_events
             local move_speed = self.locomotion_extension and self.locomotion_extension:move_speed() or 1
             self.fx_extension:trigger_wwise_event(sound, husk, true, self.unit, 1, "foley_speed", move_speed)
+        end
+
+        if not self.animations then
+            self.sheathing[slot] = nil
         end
     end
 end
@@ -989,6 +994,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
             -- Get interval
             local states = anim.current[obj].states
             local interval = anim.current[obj].interval or self:footstep_interval(slot) / states --anim.interval[obj] / states
+            -- if self.sheathing[slot] then interval = 2 end
             -- local interval = anim.interval[obj] / states
             -- Get state
             local state = anim.state[obj]
@@ -1004,6 +1010,8 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 anim.end_position[obj] = state.end_position
                 anim.end_rotation[obj] = state.end_rotation
 
+                -- self.sheathing[slot] = nil
+
             -- Check state is not valid
             elseif not state then
                 -- Reset animation
@@ -1018,7 +1026,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 self.sheathing[slot] = nil
                 -- Calculate progress
                 local progress = ((anim.started[obj] + interval) - t) / interval
-                local anim_progress = math_ease_sine(1 - progress)
+                local anim_progress = math_ease_cubic(1 - progress)
                 -- Get move speed multiplier
                 local move_speed = self.locomotion_extension and self.locomotion_extension:move_speed() or 1
                 -- Get foot multiplier

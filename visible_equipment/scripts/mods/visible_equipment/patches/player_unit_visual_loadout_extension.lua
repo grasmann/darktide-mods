@@ -7,6 +7,7 @@ local mod = get_mod("visible_equipment")
     local unit = Unit
     local CLASS = CLASS
     local managers = Managers
+    local quaternion = Quaternion
     local unit_set_data = unit.set_data
 --#endregion
 
@@ -21,7 +22,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
 	    local profile = player and player:profile()
         local item = profile and profile.loadout[slot_name]
         local gear_id = item and mod:gear_id(item)
-        mod:gear_placement(gear_id, optional_placement_name_to_save, true)
+        mod:gear_placement(gear_id, optional_placement_name_to_save)
     end
 
     instance.update_equipment_component = function(self)
@@ -38,7 +39,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
         self:update_slot_placement("slot_primary")
         self:update_slot_placement("slot_secondary")
         self:update_equipment_component()
-
 	end
 
     instance.update_placement = function(self, slot_name, placement_name)
@@ -57,6 +57,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
     unit_set_data(unit, "visible_equipment_profile", extension_init_data.player:profile())
     -- Events
     managers.event:register(self, "visible_equipment_placement_saved", "update_placement")
+    managers.event:register(self, "visible_equipment_update_placements", "update_placements")
     -- Original function
     func(self, extension_init_context, unit, extension_init_data, game_object_data_or_game_session, unit_spawn_parameter_or_game_object_id, ...)
 end)
@@ -76,10 +77,11 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, 
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
-    -- Destroy equipment component
-    self._equipment_component:destroy()
     -- Events
     managers.event:unregister(self, "visible_equipment_placement_saved")
+    managers.event:unregister(self, "visible_equipment_update_placements")
+    -- Destroy equipment component
+    self._equipment_component:destroy()
     -- Original function
     func(self, ...)
 end)

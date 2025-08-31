@@ -173,3 +173,9 @@ mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/action_s
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/action_shoot_pellets")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/action_shoot_projectile")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/visible_equipment_extension")
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐┌─┐┬─┐┌─┐┬─┐┬ ┬ ##################################################################################
+-- #####  │ ├┤ │││├─┘│ │├┬┘├─┤├┬┘└┬┘ ##################################################################################
+-- #####  ┴ └─┘┴ ┴┴  └─┘┴└─┴ ┴┴└─ ┴  ##################################################################################
+
+mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/smooth_third_person_rotation")
