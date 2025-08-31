@@ -31,10 +31,15 @@ local gear_bundle_size = {ItemPassTemplates.gear_bundle_size[1], ItemPassTemplat
     local script_unit = ScriptUnit
     local table_clone = table.clone
     local color_white = color.white
+    local table_contains = table.contains
     local math_easeInCubic = math.easeInCubic
     local color_ui_terminal = color.ui_terminal
     local script_unit_extension = script_unit.extension
 --#endregion
+
+local SLOT_PRIMARY = "slot_primary"
+local SLOT_SECONDARY = "slot_secondary"
+local PROCESSED_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -280,6 +285,13 @@ mod:hook_require("scripts/ui/view_elements/view_element_grid/view_element_grid",
         end
     end
 
+    instance.valid_grid = function(self)
+        local parent = self._parent
+        local selected_slot = parent._selected_slot
+        local slot_name = selected_slot and selected_slot.name
+        return not parent.item_type and table_contains(PROCESSED_SLOTS, slot_name)
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -301,17 +313,13 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
                 if profile_spawner then
                     local character_spawn_data = profile_spawner._character_spawn_data
                     if character_spawn_data then
-                        -- local gear_id = item.__gear_id or item.gear_id
+                        -- Update placement
                         local gear_id = mod:gear_id(item)
                         mod:gear_placement(item.gear_id, element.placement_name)
+                        -- Update equipment component
                         local equipment_component = character_spawn_data.equipment_component
-                        -- equipment_component:set_placement(slot, element.placement_name)
                         equipment_component:position_objects(true)
                         equipment_component:animate_equipment()
-                        -- parent._profile_spawner:remove_unit_manipulation()
-                        -- parent._profile_spawner:add_unit_manipulation()
-                        -- equipment_component:remove_unit_manipulation()
-                        -- equipment_component:add_unit_manipulation(camera, world, gui, pressed_callback, changed_callback)
                         -- Camera
                         local placement_camera = mod.settings.placement_camera
                         local breed_name = character_spawn_data.profile.archetype.name == "ogryn" and "ogryn" or "human"
@@ -342,34 +350,34 @@ end)
 mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func, self, layout, content_blueprints, left_click_callback, right_click_callback, display_name, optional_grow_direction, optional_left_double_click_callback, ...)
     if self.__destroyed then return end
 
-    local parent = self._parent
-    local selected_slot = parent and parent._selected_slot
-    local primary = selected_slot and selected_slot.name == "slot_primary"
-    local secondary = selected_slot and selected_slot.name == "slot_secondary"
+    -- local parent = self._parent
+    -- local selected_slot = parent and parent._selected_slot
+    -- local slot_name = selected_slot and selected_slot.name
+    -- local primary = slot_name == "slot_primary"
+    -- local secondary = slot_name == "slot_secondary"
     -- Placement
-    local placement = "default"
-    if not self._parent.item_type and (primary or secondary) then
-        -- Profile
+    -- local placement = "default"
+    -- if not self._parent.item_type and (primary or secondary) then
+    if self:valid_grid() then
+        local parent = self._parent
+        local selected_slot = parent and parent._selected_slot
+        local slot_name = selected_slot and selected_slot.name
         local profile = parent._preview_player:profile()
         -- Item
-        local item
-        if primary then
-            item = profile.loadout.slot_primary
-        else
-            item = profile.loadout.slot_secondary
-        end
-        item = item._master_item or item
+        -- local item
+        -- if primary then
+        --     item = profile.loadout.slot_primary
+        -- else
+        --     item = profile.loadout.slot_secondary
+        -- end
+        -- item = item._master_item or item
+
+        local item = profile.loadout[slot_name]
         if item then
             -- Get data
-            -- local player = managers.player:local_player_safe(1)
-            -- local player_profile = player and player:profile()
-            local player_profile = mod:profile()
-            local gear_id = item and item.__gear_id or item.gear_id
-            -- local gear_id = mod:gear_id(item)
-            -- local real_item = player_profile.loadout[selected_slot.name]
-            -- gear_id = real_item and real_item.__gear_id or real_item.gear_id
-            -- local gear_id = mod:gear_id(real_item)
-            placement = gear_id and mod:gear_placement(gear_id)
+            -- local gear_id = item and item.__gear_id or item.gear_id
+            local gear_id = item and mod:gear_id(item)
+            local placement = mod:gear_placement(gear_id)
             self.placement_name = placement
             -- Inject custom blueprint
             self:inject_blueprint(content_blueprints, profile)

@@ -94,7 +94,6 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 
     instance.update_rotation = function(self, profile, slot_name)
         -- Info
-        -- local breed_name = profile.archetype.name == "ogryn" and "ogryn" or "human"
         local breed_name = mod:breed(profile)
         local placement_camera = mod.settings.placement_camera
         local item = profile and profile.loadout[slot_name]
@@ -113,25 +112,6 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
             self._rotation_angle = offset.rotation + 2.25
         end
     end
-
-    -- instance.add_unit_manipulation = function(self)
-    --     local character_spawn_data = self._character_spawn_data
-    --     local equipment_component = character_spawn_data and character_spawn_data.equipment_component
-    --     if equipment_component then
-    --         local gui = self._ui_forward_renderer and self._ui_forward_renderer.gui
-    --         if gui then
-    --             equipment_component:add_unit_manipulation(self._camera, self._world, gui, function() end, function() end)
-    --         end
-    --     end
-    -- end
-
-    -- instance.remove_unit_manipulation = function(self)
-    --     local character_spawn_data = self._character_spawn_data
-    --     local equipment_component = character_spawn_data and character_spawn_data.equipment_component
-    --     if equipment_component then
-    --         equipment_component:remove_unit_manipulation()
-    --     end
-    -- end
 
     instance.unit_manipulation_busy = function(self)
         local character_spawn_data = self._character_spawn_data
@@ -227,22 +207,40 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
         -- Update equipment component
         self._character_spawn_data.equipment_component:extensions_ready()
     end
+    local character_spawn_data = self._character_spawn_data
+    local equipment_component = character_spawn_data and character_spawn_data.equipment_component
     -- Update placement
     if self._placement_name and self._slot_name then
-        local character_spawn_data = self._character_spawn_data
+        -- local character_spawn_data = self._character_spawn_data
         local profile = character_spawn_data and character_spawn_data.profile
         local item = profile and profile.loadout[self._slot_name]
         -- local gear_id = item and item.gear_id
         local gear_id = mod:gear_id(item)
         mod:gear_placement(gear_id, self._placement_name)
     end
-    -- Add unit manipulation
-    if self:valid_instance() and self._character_spawn_data and self._ui_forward_renderer then
-        local equipment_component = self._character_spawn_data.equipment_component
-        if equipment_component then
+
+    -- local character_spawn_data = self._character_spawn_data
+    -- local equipment_component = self._character_spawn_data.equipment_component
+    if equipment_component then
+        -- equipment_component:animate_equipment()
+        -- Add unit manipulation
+        if self:valid_instance() and self._ui_forward_renderer then
+            -- local equipment_component = self._character_spawn_data.equipment_component
+            -- if equipment_component then
             equipment_component:set_debug_data(self._camera, self._ui_forward_renderer.gui, self._forward_world)
+                -- equipment_component:animate_equipment()
+            -- end
         end
     end
+
+    -- -- Add unit manipulation
+    -- if self:valid_instance() and self._character_spawn_data and self._ui_forward_renderer then
+    --     local equipment_component = self._character_spawn_data.equipment_component
+    --     if equipment_component then
+    --         equipment_component:set_debug_data(self._camera, self._ui_forward_renderer.gui, self._forward_world)
+    --         equipment_component:animate_equipment()
+    --     end
+    -- end
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
@@ -264,9 +262,7 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
 
         local item = profile and profile.loadout[self._slot_name]
         local placement_camera = mod.settings.placement_camera
-        -- local gear_id = item and item.gear_id
         local gear_id = mod:gear_id(item)
-        -- local breed_name = profile.archetype.name == "ogryn" and "ogryn" or "human"
         local breed_name = mod:breed(profile)
         local breed_camera = breed_name and placement_camera[breed_name]
         local offset = (breed_camera and breed_camera[self._placement_name])

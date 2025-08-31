@@ -81,6 +81,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local unit_set_local_position = unit.set_local_position
     local unit_set_local_rotation = unit.set_local_rotation
     local unit_set_unit_visibility = unit.set_unit_visibility
+    local script_unit_has_extension = script_unit.has_extension
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -574,7 +575,7 @@ VisibleEquipmentExtension.slot_offset = function(self, obj, slot)
     return offset, backpack_values
 end
 
-mod.last_backpack = nil
+-- mod.last_backpack = nil
 VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_center_mass_offset)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
@@ -655,6 +656,16 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
     -- Set wielded slot
     self.wielded_slot = wielded_slot
     local showing_shield = false
+    -- Get a fresh reference to player visibility component
+    -- if we save it we don't know when it is destroyed
+    local player_visibility = script_unit_has_extension(self.unit, "player_visibility_system")
+    local player_invisible = player_visibility and not player_visibility:visible()
+    local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+    -- Check wielded slot
+    local active_slot = equipment[wielded_slot]
+    local unit_3p = active_slot and active_slot.unit_3p
+    local attachments_by_name = active_slot and active_slot.attachment_map_by_unit_3p
+    local item_attachments_by_name = attachments_by_name and attachments_by_name[unit_3p]
     -- Iterate through equipment
     for slot_name, slot in pairs(equipment) do
         -- Check if slot should be processed
@@ -664,8 +675,8 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
                 -- Hidden?
                 local old_value = self.visible[slot]
                 self.visible[slot] = (slot_name ~= wielded_slot and true) or false
-                local player_invisible = self.player_visibility and not self.player_visibility.__destroyed and not self.player_visibility:visible()
-                local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+                -- local player_invisible = self.player_visibility and not self.player_visibility._destroyed and not self.player_visibility:visible()
+                -- local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
                 if player_invisible or in_first_person then self.visible[slot] = false end
                 -- Iterate through objects
                 for index, obj in pairs(self.objects[slot]) do
@@ -676,11 +687,11 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
                         if showing_shield then unit_set_unit_visibility(obj, false, true) end
                         showing_shield = true
                     elseif self.shield_visibility == "one_visible" and name == "left" and self.visible[slot] then
-                        -- Check wielded slot
-                        local active_slot = equipment[wielded_slot]
-                        local unit_3p = active_slot and active_slot.unit_3p
-                        local attachments_by_name = active_slot and active_slot.attachment_map_by_unit_3p
-                        local item_attachments_by_name = attachments_by_name and attachments_by_name[unit_3p]
+                        -- -- Check wielded slot
+                        -- local active_slot = equipment[wielded_slot]
+                        -- local unit_3p = active_slot and active_slot.unit_3p
+                        -- local attachments_by_name = active_slot and active_slot.attachment_map_by_unit_3p
+                        -- local item_attachments_by_name = attachments_by_name and attachments_by_name[unit_3p]
                         -- If shield is currently wielded or is already showing; don't show
                         if showing_shield or (item_attachments_by_name and table_find(item_attachments_by_name, "left")) then unit_set_unit_visibility(obj, false, true) end
                         showing_shield = true

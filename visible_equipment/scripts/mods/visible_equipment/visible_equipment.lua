@@ -35,6 +35,7 @@ mod:persistent_table(REFERENCE, {
     spawned_units = {},
     gear_placements = {},
     cache = mod:get("visible_equipment_entries") or {},
+    cache_files = {},
 })
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -100,7 +101,6 @@ mod.breed = function(self, profile)
 end
 
 mod.gear_id = function(self, item)
-    -- local item = item.__master_item or item
     return item and item.gear_id or item.__gear_id
 end
 
@@ -139,10 +139,6 @@ end
 
 mod.on_all_mods_loaded = function()
     mod.loaded_plugins = mod:load_plugins()
-    -- local pt = mod:pt()
-    -- for equipment_component, player_unit in pairs(pt.equipment_components) do
-    --     equipment_component:position_objects()
-    -- end
     managers.event:trigger("visible_equipment_mods_loaded")
 end
 
@@ -165,6 +161,7 @@ mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventor
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_background_view")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_view")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/portrait_ui")
+mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_cosmetics_view_definitions")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_cosmetics_view")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/player_unit_visual_loadout_extension")
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/player_husk_visual_loadout_extension")

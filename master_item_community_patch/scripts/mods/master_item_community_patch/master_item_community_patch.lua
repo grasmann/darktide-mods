@@ -370,30 +370,30 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         return _item_plus_overrides(gear, gear_id, is_preview_item)
     end
 
-    -- instance.get_item_instance = function(gear, gear_id)
-    --     if not gear then
-    --         log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
-    --         return nil
-    --     else
-    --         return instance.item_plus_overrides(gear, gear_id)
-    --     end
-    -- end
+    instance.get_item_instance = function(gear, gear_id)
+        if not gear then
+            log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
+            return nil
+        else
+            return instance.item_plus_overrides(gear, gear_id)
+        end
+    end
 
-    -- instance.create_preview_item_instance = function(item)
-    --     local gear = table.clone_instance(item.__gear)
-    --     local gear_id = item.__gear_id
+    instance.create_preview_item_instance = function(item)
+        local gear = table.clone_instance(item.__gear)
+        local gear_id = item.__gear_id
     
-    --     if not gear then
-    --         log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
-    --         return nil
-    --     else
-    --         local allow_modifications = true
-    --         return instance.item_plus_overrides(gear, gear_id, allow_modifications)
-    --     end
-    -- end
+        if not gear then
+            log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
+            return nil
+        else
+            local allow_modifications = true
+            return instance.item_plus_overrides(gear, gear_id, allow_modifications)
+        end
+    end
 
-    -- instance.get_store_item_instance = function (description)
-    --     return instance.store_item_plus_overrides(description)
-    -- end
+    instance.get_store_item_instance = function (description)
+        return instance.store_item_plus_overrides(description)
+    end
 
 end)

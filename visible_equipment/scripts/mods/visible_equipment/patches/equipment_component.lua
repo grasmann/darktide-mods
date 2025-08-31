@@ -94,22 +94,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         end
     end
 
-    -- instance.set_placement = function(self, slot, placement)
-    --     -- Check visible equipment system
-    --     if self.visible_equipment_system then
-    --         -- Update visible equipment
-    --         self.visible_equipment_system:set_placement(slot, placement)
-    --     end
-    -- end
-
-    -- instance.remove_unit_manipulation = function(self)
-    --     -- Check visible equipment system
-    --     if self.visible_equipment_system then
-    --         -- Update visible equipment
-    --         self.visible_equipment_system:remove_unit_manipulation()
-    --     end
-    -- end
-
     instance.unit_manipulation_busy = function(self)
         -- Check visible equipment system
         if self.visible_equipment_system then

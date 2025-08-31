@@ -4,17 +4,23 @@ local mod = get_mod("visible_equipment")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
+local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
+    local utf8 = Utf8
     local table = table
     local CLASS = CLASS
     local pairs = pairs
+    local Localize = Localize
     local managers = Managers
+    local callback = callback
+    local utf8_upper = utf8.upper
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
     local table_contains = table.contains
@@ -43,15 +49,9 @@ mod:hook_require("scripts/ui/views/inventory_cosmetics_view/inventory_cosmetics_
 	end
 
     instance.reset_real_placement = function(self)
-        -- local player = managers.player:local_player_safe(1)
-        -- local player_profile = player and player:profile()
         local profile = mod:profile()
-        -- local slot = self._selected_slot
         local slot_name = self._selected_slot and self._selected_slot.name
-        -- local item = self._presentation_profile.loadout[slot_name]
-        -- local equipped_item = profile.loadout[slot_name]
-        local equipped_item = slot_name and self:equipped_item_in_slot(slot_name)
-        -- local gear_id = equipped_item and equipped_item.gear_id or equipped_item.__gear_id
+        local equipped_item = slot_name and profile.loadout[slot_name]
         local gear_id = equipped_item and mod:gear_id(equipped_item)
         if gear_id then
             mod:gear_placement(gear_id, self.original_placement)
@@ -68,6 +68,22 @@ mod:hook_require("scripts/ui/views/inventory_cosmetics_view/inventory_cosmetics_
         return table_contains(supported_slot_names, slot_name)
     end
 
+    instance.cb_on_save_script_pressed = function(self)
+        mod:echo("cb_on_save_script_pressed")
+    end
+
+    instance._update_save_script_button_status = function(self)
+
+    end
+
+    instance.previewed_item_in_slot = function (self, slot_name)
+        local current_loadout = self._preview_profile_equipped_items
+        local slot_item = current_loadout and current_loadout[slot_name]
+        local item = slot_item and self:_get_item_from_inventory(slot_item)
+
+        return item
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -77,42 +93,45 @@ end)
 mod:hook(CLASS.InventoryCosmeticsView, "on_enter", function(func, self, ...)
     -- Original function
     func(self, ...)
-    
-    -- local slot = self._selected_slot
+    -- Init
     local slot_name = self._selected_slot and self._selected_slot.name
-    local item = self._presentation_profile.loadout[slot_name]
-    -- local gear_id = item and item.gear_id
-    local gear_id = mod:gear_id(item)
+    local item = slot_name and self._presentation_profile.loadout[slot_name]
+    local gear_id = item and mod:gear_id(item)
     self.placement_name = gear_id and mod:gear_placement(gear_id, nil, true)
     self.original_placement = self.placement_name
     self.selected_placement = self.placement_name
-
-    -- local slot = self._selected_slot
-    -- local slot_name = slot and slot.name
+    -- Update equip button
     if self:is_valid_slot(slot_name) then
-        -- local item = self._presentation_profile.loadout[slot_name]
-        -- local gear_id = item and item.gear_id
-        -- self.placement_name = gear_id and mod:gear_placement(gear_id)
-        -- self.selected_placement = self.placement_name
         self:_update_equip_button_status()
     end
 end)
 
+mod:hook(CLASS.InventoryCosmeticsView, "_register_button_callbacks", function(func, self, ...)
+    -- Original function
+    func(self, ...)
+    -- Add save script button
+    local widgets_by_name = self._widgets_by_name
+	widgets_by_name.save_script_button.content.hotspot.pressed_callback = callback(self, "cb_on_save_script_pressed")
+end)
+
+mod:hook(CLASS.InventoryCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
+    -- Original function
+    func(self, dt, t, input_service, ...)
+    -- Update save script button
+    self:_update_save_script_button_status()
+end)
+
 mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
     if self.selected_placement then
-        -- local slot = self._selected_slot
         local slot_name = self._selected_slot and self._selected_slot.name
         if self:is_valid_slot(slot_name) or slot_name == SLOT_GEAR_EXTRA_COSMETIC then
             local item = self._presentation_profile.loadout[slot_name]
-            -- local gear_id = item and item.gear_id
-            local gear_id = mod:gear_id(item)
+            local gear_id = item and mod:gear_id(item)
             if gear_id then
                 mod:gear_placement(gear_id, self.selected_placement, true)
                 
-                -- local equipped_item = self:equipped_item_in_slot(slot_name)
                 self._equip_button_status = "equipped"
 
-                -- local item_grid = self._item_grid
                 local widgets = self._item_grid and self._item_grid._grid_widgets
                 if widgets then
                     for i, widget in pairs(widgets) do
@@ -125,12 +144,15 @@ mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, sel
                 end
 
                 self.placement_name = self.selected_placement
-                -- self.original_placement = self.placement_name
-                -- self.selected_placement = nil
+
+                -- Update equip button
                 self:_update_equip_button_status()
+                -- Sound
                 self:_play_sound(UISoundEvents.apparel_equip_small)
 
-                self._refresh_tab = true
+                -- Relay event to main menu background, inventory background, player
+                managers.event:trigger("visible_equipment_placement_saved", slot_name, self.selected_placement)
+
             end
         end
     end
@@ -142,7 +164,6 @@ mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, pr
     -- Original function
     func(self, profile, initial_rotation, disable_rotation_input, ...)
     -- Set custom camera
-    -- local slot = self._selected_slot
     local slot_name = self._selected_slot and self._selected_slot.name
     if self:is_valid_slot(slot_name) then
         self:update_rotation(self._presentation_profile, slot_name)
@@ -150,7 +171,7 @@ mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, pr
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_update_equip_button_status", function(func, self, ...)
-    -- local slot = self._selected_slot
+    -- Update equip button
     local slot_name = self._selected_slot and self._selected_slot.name
     if self:is_valid_slot(slot_name) then
         local button = self._widgets_by_name.equip_button
@@ -164,8 +185,6 @@ mod:hook(CLASS.InventoryCosmeticsView, "_update_equip_button_status", function(f
         end
         if inactive then
             return "equipped"
-        -- else
-        --     return "equip"
         end
     end
     -- Original function
@@ -178,26 +197,12 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_exit", function(func, self, ...)
     if self:is_valid_slot(slot_name) or slot_name == SLOT_GEAR_EXTRA_COSMETIC then
         -- Reset gear_id equipment position
         self:reset_real_placement()
-        -- Update inventory background view placement
-        local inventory_background_view = mod:get_view("inventory_background_view")
-        if inventory_background_view then
-            -- Update equipment position
-            inventory_background_view:update_placements()
-        end
-        local inventory_view = mod:get_view("inventory_view")
-        if self._refresh_tab and inventory_view then
-        -- if inventory_view and self.original_placement ~= self.placement_name then
-            -- Refresh tab view
-            inventory_view:refresh_tab()
-            self._refresh_tab = false
-        end
     end
     -- Original function
     func(self, ...)
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_preview_element", function(func, self, element, ...)
-    -- self.placement_name = self.placement_name or element.placement_name
     -- Original function
     func(self, element, ...)
     -- local slot = self._selected_slot
@@ -205,7 +210,6 @@ mod:hook(CLASS.InventoryCosmeticsView, "_preview_element", function(func, self, 
     if self:is_valid_slot(slot_name) or slot_name == SLOT_GEAR_EXTRA_COSMETIC then
         -- Update equipment component
         self:update_placements()
-        -- self:update_rotation(self._presentation_profile, self.placement_name)
     end
 end)
 

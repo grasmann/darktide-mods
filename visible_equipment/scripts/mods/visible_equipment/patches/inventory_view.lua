@@ -17,53 +17,9 @@ local mod = get_mod("visible_equipment")
     local unit_set_local_position = unit.set_local_position
 --#endregion
 
-mod:hook_require("scripts/ui/views/inventory_view/inventory_view", function(instance)
-
-    instance.refresh_tab = function(self)
-        local active_context_tabs = self._active_context_tabs
-        local tab_context = active_context_tabs[self._selected_tab_index]
-        local camera_settings = tab_context.camera_settings
-        self.skip_camera_focus = true
-	    self:_switch_active_layout(tab_context)
-        if self._entry_animation_id then
-            self:_stop_animation(self._entry_animation_id)
-            self._entry_animation_id = nil
-        end
-        self.skip_camera_focus = false
-    end
-
-end)
-
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
-
-mod:hook(CLASS.InventoryView, "on_enter", function(func, self, ...)
-    -- Original function
-    func(self, ...)
-    -- -- Events
-    -- managers.event:register(self, "visible_equipment_refresh_inventory", "refresh_tab")
-end)
-
-mod:hook(CLASS.InventoryView, "on_exit", function(func, self, ...)
-    -- Original function
-    func(self, ...)
-    -- Update world equipment position
-    local me = mod:me()
-    if me and unit_alive(me) then
-        local equipment_component = mod:equipment_component_from_unit(me)
-        if equipment_component then
-            equipment_component:position_objects()
-        end
-    end
-    -- Update main menu background view equipment position
-    local main_menu_background_view = mod:get_view("main_menu_background_view")
-    if main_menu_background_view then
-        main_menu_background_view:update_placements()
-    end
-    -- -- Events
-    -- managers.event:unregister(self, "visible_equipment_refresh_inventory")
-end)
 
 mod:hook(CLASS.InventoryView, "_set_camera_focus_by_slot_name", function(func, self, slot_name, optional_camera_settings, force_instant_camera, ...)
     if not self.skip_camera_focus then
