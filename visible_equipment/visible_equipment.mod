@@ -8,5 +8,8 @@ return {
 			mod_localization = "visible_equipment/scripts/mods/visible_equipment/visible_equipment_localization",
 		})
 	end,
+	load_before = {
+        "GoToMastery",
+    },
 	packages = {},
 }
