@@ -347,35 +347,31 @@ mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_left_pressed", function(func, 
     end
 end)
 
+mod:hook(CLASS.ViewElementGrid, "cb_on_grid_entry_right_pressed", function(func, self, widget, element, ...)
+    -- Custom placement selection
+    if element.placement then
+        -- mod:echo("Right click")
+        self:cb_on_grid_entry_left_pressed(widget, element, ...)
+
+        local parent = self._parent
+        parent:cb_on_equip_pressed()
+    else
+        -- Original function
+        func(self, widget, element, ...)
+    end
+end)
+
 mod:hook(CLASS.ViewElementGrid, "_on_present_grid_layout_changed", function(func, self, layout, content_blueprints, left_click_callback, right_click_callback, display_name, optional_grow_direction, optional_left_double_click_callback, ...)
     if self.__destroyed then return end
 
-    -- local parent = self._parent
-    -- local selected_slot = parent and parent._selected_slot
-    -- local slot_name = selected_slot and selected_slot.name
-    -- local primary = slot_name == "slot_primary"
-    -- local secondary = slot_name == "slot_secondary"
-    -- Placement
-    -- local placement = "default"
-    -- if not self._parent.item_type and (primary or secondary) then
     if self:valid_grid() then
         local parent = self._parent
         local selected_slot = parent and parent._selected_slot
         local slot_name = selected_slot and selected_slot.name
         local profile = parent._preview_player:profile()
-        -- Item
-        -- local item
-        -- if primary then
-        --     item = profile.loadout.slot_primary
-        -- else
-        --     item = profile.loadout.slot_secondary
-        -- end
-        -- item = item._master_item or item
-
         local item = profile.loadout[slot_name]
         if item then
             -- Get data
-            -- local gear_id = item and item.__gear_id or item.gear_id
             local gear_id = item and mod:gear_id(item)
             local placement = mod:gear_placement(gear_id)
             self.placement_name = placement
