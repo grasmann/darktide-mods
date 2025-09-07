@@ -97,10 +97,10 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
         local breed_name = mod:breed(profile)
         local placement_camera = mod.settings.placement_camera
         local item = profile and profile.loadout[slot_name]
-        -- local gear_id = item and item.gear_id
-        local gear_id = mod:gear_id(item)
+        local gear_id = item and item.gear_id
+        -- local gear_id = mod:gear_id(item, true)
         -- Get placement
-        local placement = gear_id and mod:gear_placement(gear_id)
+        local placement = self._placement_name or gear_id and mod:gear_placement(gear_id)
         -- Get offset
         local breed_camera = breed_name and placement_camera[breed_name]
         local offset = breed_camera and breed_camera[placement]
@@ -214,8 +214,8 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
         -- local character_spawn_data = self._character_spawn_data
         local profile = character_spawn_data and character_spawn_data.profile
         local item = profile and profile.loadout[self._slot_name]
-        -- local gear_id = item and item.gear_id
-        local gear_id = mod:gear_id(item)
+        local gear_id = item and item.gear_id
+        -- local gear_id = mod:gear_id(item, true)
         mod:gear_placement(gear_id, self._placement_name)
     end
 

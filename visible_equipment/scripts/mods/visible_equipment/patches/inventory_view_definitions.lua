@@ -31,14 +31,22 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_definitions", f
             parent = "canvas",
             vertical_alignment = "center",
             size = gear_icon_size,
-            position = {-696, -12 + 117, 9},
+            position = {
+                -696,
+                -12 + 117,
+                9,
+            },
         },
         slot_secondary_placement = {
             horizontal_alignment = "center",
             parent = "canvas",
             vertical_alignment = "center",
             size = gear_icon_size,
-            position = {-696, 228 + 117, 9},
+            position = {
+                -696,
+                228 + 117,
+                9,
+            },
         },
     })
 

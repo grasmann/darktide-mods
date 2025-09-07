@@ -59,6 +59,8 @@ mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, 
 
 		dummy_profile = Items.create_mannequin_profile_by_item(real_item, gender_name, archetype_name, breed_name)
         
+		-- dummy_profile.loadout.slot_primary = profile.loadout.slot_primary
+		-- dummy_profile.loadout.slot_secondary = profile.loadout.slot_secondary
 		-- Copy profile loadout
 		dummy_profile.loadout.slot_body_face_tattoo = profile.loadout.slot_body_face_tattoo
 		dummy_profile.loadout.slot_body_hair_color = profile.loadout.slot_body_hair_color

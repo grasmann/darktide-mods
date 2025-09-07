@@ -108,9 +108,9 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
         local slot_name = render_context.slot_name
         local item = profile.loadout[slot_name]
-        local gear_id = mod:gear_id(item)
-        local placement = slot_name and mod:gear_placement(gear_id, nil, true, true)
-        placement = placement or render_context.placement_name or "default"
+        local gear_id = mod:gear_id(item, true)
+        local placement = render_context.placement_name or (slot_name and mod:gear_placement(gear_id))
+        -- placement = render_context.placement_name or placement or "default"
         self._profile_spawner:set_placement_name(placement)
         self._profile_spawner:set_slot_name(slot_name)
 
