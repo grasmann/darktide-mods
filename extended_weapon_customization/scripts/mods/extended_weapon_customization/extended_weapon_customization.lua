@@ -4,6 +4,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local type = type
     local CLASS = CLASS
     local pairs = pairs
     local table = table
@@ -31,6 +32,8 @@ mod:persistent_table(REFERENCE, {
     gear_settings = {},
     cached_items = {},
     gear_id_relays = {},
+    kitbash_entries = {},
+    exclude_from_vfx_spawner = {},
 })
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -121,9 +124,39 @@ mod.overwrite_attachment = function(self, attachments, target_slot, replacement_
     end
 end
 
+local table_find = table.find
+mod.fetch_attachment_parent = function(self, attachments, target_slot)
+    local attachment_parent = nil
+    for slot, data in pairs(attachments) do
+        if table_find(data, target_slot) then
+            attachment_parent = slot
+        elseif data.children then
+            attachment_parent = self:fetch_attachment_parent(data.children, target_slot)
+        end
+        if attachment_parent then break end
+    end
+    return attachment_parent
+end
+
+mod.fetch_attachment_fixes = function(self, attachments, attachment_fixes)
+    local attachment_fixes = attachment_fixes or {}
+    for slot, data in pairs(attachments) do
+        if data.fix then
+            attachment_fixes[data.fix] = slot
+        end
+        if data.children then
+            self:fetch_attachment_fixes(data.children, attachment_fixes)
+        end
+    end
+    return attachment_fixes
+end
+
 mod.fetch_attachment = function(self, attachments, target_slot)
     local attachment_item_path = nil
     for slot, data in pairs(attachments) do
+        if type(data.item) == "table" and data.item.attachments then
+            attachment_item_path = self:fetch_attachment(data.item.attachments, target_slot)
+        end
         if slot == target_slot then
             attachment_item_path = data.item
         elseif data.children then
@@ -194,6 +227,9 @@ end
 
 mod.on_all_mods_loaded = function()
     mod.loaded_plugins = mod:load_plugins()
+    if mod:pt().game_initialized then
+        mod:try_kitbash_load()
+    end
 end
 
 mod.on_setting_changed = function(setting_id)
@@ -206,6 +242,18 @@ mod.clear_chat = function()
 	managers.event:trigger("event_clear_notifications")
 end
 
+mod.on_game_state_changed = function(status, state_name)
+    -- mod:echo("status: "..tostring(status).." state_name: "..tostring(state_name))
+    if state_name == "StateTitle" and status == "exit" then
+        mod:pt().game_initialized = true
+        mod:try_kitbash_load()
+    end
+end
+
+-- mod.update = function(dt)
+--     mod:try_kitbash_load()
+-- end
+
 -- ##### ┌─┐┌─┐┌┬┐┌─┐┬ ┬┌─┐┌─┐ ########################################################################################
 -- ##### ├─┘├─┤ │ │  ├─┤├┤ └─┐ ########################################################################################
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
@@ -215,9 +263,12 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_custom
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/ui_character_profile_package_loader")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/inventory_weapon_cosmetics_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/visual_loadout_customization")
+mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/player_unit_fx_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/equipment_component")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/item_icon_loader_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/view_element_grid")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/weapon_icon_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/item_package")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/master_items")
+mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/kitbash")
+mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/fixes")

@@ -35,6 +35,8 @@ end)
 mod:hook(CLASS.WeaponIconUI, "load_weapon_icon", function(func, self, item, on_load_callback, optional_render_context, prioritized, on_unload_callback, ...)
     -- Modify item
     mod:modify_item(item)
+    -- Fixes
+    -- mod:apply_attachment_fixes(item)
     -- Original function
     return func(self, item, on_load_callback, optional_render_context, prioritized, on_unload_callback, ...)
 end)

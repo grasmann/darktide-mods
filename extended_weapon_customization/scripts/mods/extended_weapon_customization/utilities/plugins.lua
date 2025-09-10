@@ -39,7 +39,7 @@ mod.load_plugins = function(self)
                 -- Merge settings from plugin
 
                 if plugin.attachments then
-                    self.settings.attachments = table_combine(self.settings.attachments, plugin.attachments)
+                    self.settings.attachments = table_merge_recursive(self.settings.attachments, plugin.attachments)
                 end
 
             end

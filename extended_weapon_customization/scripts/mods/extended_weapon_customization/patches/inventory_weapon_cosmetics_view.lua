@@ -22,6 +22,7 @@ local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/butt
     local managers = Managers
     local localize = Localize
     local math_uuid = math.uuid
+    local table_size = table.size
     local utf8_upper = utf8.upper
     local quaternion = Quaternion
     local string_gsub = string.gsub
@@ -169,7 +170,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
             local layout = {}
 
             local attachment_entries = attachments[slot_name]
-            if attachment_entries then
+            if attachment_entries and table_size(attachment_entries) > 1 then
                 for attachment_name, attachment_data in pairs(attachment_entries) do
 
                     local attachment_item = master_items.get_item(attachment_data.replacement_path)
@@ -265,55 +266,59 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             local attachments = weapon_template and mod.settings.attachments[weapon_template]
             if attachments then
                 for attachment_slot, attachment_entries in pairs(attachments) do
-                    tabs_content[#tabs_content+1] = {
-                        display_name = attachment_slot,
-                        -- icon = "content/ui/materials/icons/item_types/weapon_trinkets",
-                        slot_name = attachment_slot,
-                        get_item_filters = function (slot_name, item_type)
-                            local slot_filter = slot_name and {
-                                slot_name,
-                            }
-                            return slot_filter, nil
-                        end,
-                        setup_selected_item_function = function (real_item, selected_item)
-                            if real_item.name == self["_selected_"..attachment_slot.."_name"] then
-                                self["_selected_"..attachment_slot] = real_item
-                            end
-                        end,
-                        get_empty_item = function (selected_item, presentation_item)
-                            return items.weapon_trinket_preview_item(presentation_item)
-                        end,
-                        generate_visual_item_function = function (slot_name, real_item, attachment_data) --, selected_item, presentation_item)
+                    if table_size(attachment_entries) > 1 then
+                        tabs_content[#tabs_content+1] = {
+                            display_name = attachment_slot,
+                            -- icon = "content/ui/materials/icons/item_types/weapon_trinkets",
+                            slot_name = attachment_slot,
+                            get_item_filters = function (slot_name, item_type)
+                                local slot_filter = slot_name and {
+                                    slot_name,
+                                }
+                                return slot_filter, nil
+                            end,
+                            setup_selected_item_function = function (real_item, selected_item)
+                                if real_item.name == self["_selected_"..attachment_slot.."_name"] then
+                                    self["_selected_"..attachment_slot] = real_item
+                                end
+                            end,
+                            get_empty_item = function (selected_item, presentation_item)
+                                return items.weapon_trinket_preview_item(presentation_item)
+                            end,
+                            generate_visual_item_function = function (slot_name, real_item, attachment_data) --, selected_item, presentation_item)
 
-                            local real_item = real_item or self["_selected_"..slot_name]
-                            local attachment_item = master_items.get_item(real_item.name)
-                            local visual_item = items.weapon_trinket_preview_item(real_item)
+                                local real_item = real_item or self["_selected_"..slot_name]
+                                local attachment_item = master_items.get_item(real_item.name)
+                                local visual_item = items.weapon_trinket_preview_item(real_item)
 
-                            local gear_id = math_uuid()
+                                local gear_id = math_uuid()
 
-                            visual_item.gear_id = gear_id
-                            visual_item.__attachment_customization = true
-                            attachment_item.icon_render_unit_rotation_offset = attachment_data.icon_render_unit_rotation_offset or {90, 0, 0}
-                            attachment_item.icon_render_camera_position_offset = attachment_data.icon_render_camera_position_offset or {0, -1, 0}
+                                visual_item.gear_id = gear_id
+                                visual_item.__attachment_customization = true
+                                attachment_item.icon_render_unit_rotation_offset = attachment_data.icon_render_unit_rotation_offset or {90, 0, 0}
+                                attachment_item.icon_render_camera_position_offset = attachment_data.icon_render_camera_position_offset or {0, -1, 0}
 
-                            mod:gear_settings(gear_id, {
-                                [slot_name] = real_item and real_item.name or "",
-                            })
+                                mod:gear_settings(gear_id, {
+                                    [slot_name] = real_item and real_item.name or "",
+                                })
 
-                            mod:modify_item(visual_item.__data or visual_item.__master_item or visual_item)
+                                mod:modify_item(visual_item.__data or visual_item.__master_item or visual_item)
 
-                            return visual_item
-                            
-                        end,
-                        apply_on_preview = function (real_item, presentation_item)
+                                return visual_item
+                                
+                            end,
+                            apply_on_preview = function (real_item, presentation_item)
 
-                            self["_selected_"..attachment_slot.."_name"] = real_item.name
-                            self["_selected_"..attachment_slot] = real_item
+                                if real_item then
+                                    self["_selected_"..attachment_slot.."_name"] = real_item.name
+                                    self["_selected_"..attachment_slot] = real_item
+                                end
 
-                            -- self:_preview_item(presentation_item)
+                                -- self:_preview_item(presentation_item)
 
-                        end,
-                    }
+                            end,
+                        }
+                    end
                 end
             end
         end

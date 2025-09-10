@@ -15,9 +15,13 @@ local mod = get_mod("weapon_customization")
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
+local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
 local braced_barrels = "autogun_rifle_barrel_ak_01|autogun_rifle_barrel_ak_02|autogun_rifle_barrel_ak_03|autogun_rifle_barrel_ak_04|autogun_rifle_barrel_ak_05|autogun_rifle_barrel_ak_06|autogun_rifle_barrel_ak_07|autogun_rifle_barrel_ak_08|autogun_rifle_barrel_ak_ml01"
+local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
+local infantry_receivers = "autogun_rifle_receiver_01|autogun_rifle_receiver_ml01"
+local scopes = "scope_01"
 
 return {
     attachments = {
@@ -370,6 +374,11 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, -95},
                 icon_render_camera_position_offset = {.035, -.1, .175},
             },
+            scope_01 = {
+                replacement_path = _item_ranged.."/sights/scope_01",
+                icon_render_unit_rotation_offset = {90, 0, -85},
+                icon_render_camera_position_offset = {0, -.8, .45},
+            },
         },
         stock = {
             --#region Infantry
@@ -523,8 +532,36 @@ return {
                 icon_render_camera_position_offset = {.075, -1, .05},
             },
         },
+        rail = {
+            lasgun_rifle_rail_01 = {
+                replacement_path = _item_ranged.."/rails/lasgun_rifle_rail_01",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
+        },
     },
     fixes = {
+        {attachment_slot = "rail",
+            requirements = {
+                receiver = {
+                    has = infantry_receivers,
+                },
+                sight = {
+                    has = reflex_sights.."|"..scopes,
+                },
+            },
+            fix = {
+                attach = {
+                    rail = "lasgun_rifle_rail_01",
+                },
+                offset = {
+                    position = vector3_box(0, -.05, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
         {attachment_slot = "barrel",
             requirements = {
                 receiver = {
