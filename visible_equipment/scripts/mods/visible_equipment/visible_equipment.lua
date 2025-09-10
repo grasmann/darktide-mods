@@ -73,10 +73,24 @@ mod.vector3_equal = function(self, v1, v2)
 	return v1[1] == v2[1] and v1[2] == v2[2] and v1[3] == v2[3]
 end
 
-mod.is_in_hub = function(self)
-    local game_mode_manager = managers.state.game_mode
-	local game_mode_name = game_mode_manager and game_mode_manager:game_mode_name()
-	return game_mode_name == "hub"
+-- mod.is_in_hub = function(self)
+--     local game_mode_manager = managers.state.game_mode
+-- 	local game_mode_name = game_mode_manager and game_mode_manager:game_mode_name()
+-- 	return game_mode_name == "hub"
+-- end
+
+mod.is_in_hub = function()
+	local state_manager = managers.state
+	local game_mode = state_manager and state_manager.game_mode
+	local game_mode_name = game_mode and game_mode:game_mode_name()
+	return game_mode_name == "hub" or mod:is_in_prologue_hub()
+end
+
+mod.is_in_prologue_hub = function()
+	local state_manager = managers.state
+	local game_mode = state_manager and state_manager.game_mode
+	local game_mode_name = game_mode and game_mode:game_mode_name()
+	return game_mode_name == "prologue_hub"
 end
 
 mod.me = function(self)

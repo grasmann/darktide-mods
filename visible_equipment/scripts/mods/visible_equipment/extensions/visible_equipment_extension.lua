@@ -205,6 +205,18 @@ VisibleEquipmentExtension.destroy = function(self)
     self:unset_pt_tables()
 end
 
+-- If item is changed - delete slot containing item
+-- Prevent package related crashes
+VisibleEquipmentExtension.item_attachments_updated = function(self, item)
+    local gear_id = mod:gear_id(item)
+    for slot, units in pairs(self.objects) do
+        local item_gear_id = mod:gear_id(slot.item)
+        if item_gear_id == gear_id then
+            self:delete_slot(slot)
+        end
+    end
+end
+
 VisibleEquipmentExtension.set_debug_data = function(self, camera, gui, world)
     self.camera = camera
     self.gui = gui
@@ -256,7 +268,7 @@ end
 
 VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_template)
     -- Check for valid slot
-    if (not self.loaded[slot] and table_contains(SLOTS, slot.name)) then
+    if (not self.loaded[slot] and table_contains(SLOTS, slot.name) and slot.item) then
         -- Spawn visible equipment
         local item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p = self:spawn_slot(slot, optional_mission_template)
         -- Init script
@@ -351,22 +363,6 @@ VisibleEquipmentExtension.delete_all = function(self, target_slot)
             end
         end
     end
-    -- Delete item unit(s)
-    if all_item_units then
-        for slot_name, item_unit in pairs(all_item_units) do
-            if not target_slot or target_slot == slot_name then
-                -- Delete item unit
-                if item_unit and unit_alive(item_unit) then
-                    -- Unlink item unit
-                    world_unlink_unit(self.world, item_unit)
-                    -- Delete item unit
-                    unit_spawner:mark_for_deletion(item_unit)
-                    -- Unset item unit
-                    item_unit = nil
-                end
-            end
-        end
-    end
     -- Delete center unit
     -- Iterate through equipment
     for slot, units in pairs(self.objects) do
@@ -380,6 +376,22 @@ VisibleEquipmentExtension.delete_all = function(self, target_slot)
                 world_destroy_unit(self.world, self.unit_center_point[slot][obj])
                 -- Unset center unit
                 self.unit_center_point[slot][obj] = nil
+            end
+        end
+    end
+    -- Delete item unit(s)
+    if all_item_units then
+        for slot_name, item_unit in pairs(all_item_units) do
+            if not target_slot or target_slot == slot_name then
+                -- Delete item unit
+                if item_unit and unit_alive(item_unit) then
+                    -- Unlink item unit
+                    world_unlink_unit(self.world, item_unit)
+                    -- Delete item unit
+                    unit_spawner:mark_for_deletion(item_unit)
+                    -- Unset item unit
+                    item_unit = nil
+                end
             end
         end
     end
@@ -671,6 +683,8 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
     for slot_name, slot in pairs(equipment) do
         -- Check if slot should be processed
         if (table_contains(SLOTS, slot_name)) then
+            -- -- Load slot
+            -- self:load_slot(slot)
             -- Check slot
             if self.loaded[slot] then
                 -- Hidden?
@@ -842,8 +856,30 @@ VisibleEquipmentExtension.update = function(self, dt, t)
 	local first_person_unit = self.first_person_extension and self.first_person_extension:first_person_unit()
     local rotation_unit = (not mod:is_in_hub() and first_person_unit) or self.unit
     local rotation = quaternion_to_vector(unit_world_rotation(rotation_unit, 1))
-    local momentum = math_clamp((vector3_unbox(self.rotation) - rotation)[3], -10, 10)
-    self.momentum = math_lerp(self.momentum, momentum, dt * 4)
+    local min, max = -10, 10
+    local momentum = math_clamp((vector3_unbox(self.rotation) - rotation)[3], min, max)
+    -- local ease = math.ease_out_elastic(dt)
+    if (momentum > 0 and momentum > self.momentum) or (momentum < 0 and momentum < self.momentum) then
+        self._momentum_delay = t + .1
+    -- elseif momentum == min or momentum == max then
+    --     self._momentum_delay = t + .1
+        self.momentum = math_lerp(self.momentum, momentum, dt * 2)
+    else
+        self.momentum = math_lerp(self.momentum, momentum, dt * 4)
+    end
+    -- if not self._momentum_delay then
+    -- self.momentum = math_lerp(self.momentum, momentum, dt)
+    -- elseif t > self._momentum_delay then
+    --     self._momentum_delay = nil
+    -- end
+    -- if (momentum > 0 and momentum > self.momentum) then
+    --     self.momentum = self.momentum + momentum * dt
+    -- elseif (momentum < 0 and momentum < self.momentum) then
+    --     self.momentum = self.momentum - momentum * dt
+    -- -- else
+    -- --     -- self.momentum = math_lerp(self.momentum, momentum, dt)
+    -- --     self.momentum = math_lerp(self.momentum, momentum, dt * 4)
+    -- end
     self.rotation:store(rotation)
     -- Iterate through equipment
     for slot, units in pairs(self.objects) do
@@ -1094,7 +1130,7 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
         -- Set final positions and rotations
         -- unit_set_local_position(obj, 1, position)
         local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
-        local rotated_pos = matrix4x4_transform(mat, momentum_drag)
+        local rotated_pos = matrix4x4_transform(mat, momentum_drag) --* 4
         rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(rotated_pos))
         unit_set_local_rotation(obj, 1, rotation)
 

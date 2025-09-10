@@ -28,5 +28,8 @@ mod:hook(CLASS.PlayerUnitLocomotionExtension, "update", function(func, self, uni
 	-- Original function
     func(self, unit, dt, t, ...)
 
-	unit_set_local_rotation(unit, 1, quaternion_lerp(current_rotation, extrapolated_rot, dt))
+    if not mod:is_in_hub() then
+        unit_set_local_rotation(unit, 1, quaternion_lerp(current_rotation, extrapolated_rot, dt))
+    end
+
 end)

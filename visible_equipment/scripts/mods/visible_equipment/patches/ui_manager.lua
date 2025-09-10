@@ -29,6 +29,22 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
+mod:hook(CLASS.UIManager, "item_icon_updated", function(func, self, item, ...)
+    local me = mod:me()
+    -- local equipemt_component = mod:equipment_component_from_unit(me)
+
+	-- Get equipment component
+    local equipment_component = mod:equipment_component_from_unit(me)
+    -- Check visible equipment system
+    if equipment_component and equipment_component.visible_equipment_system then
+        -- Load slot
+        equipment_component.visible_equipment_system:item_attachments_updated(item)
+    end
+
+    -- Original function
+    func(self, item, ...)
+end)
+
 mod:hook(CLASS.UIManager, "load_item_icon", function(func, self, real_item, cb, render_context, dummy_profile, prioritize, unload_cb, ...)
 
     local item_name = real_item.name
