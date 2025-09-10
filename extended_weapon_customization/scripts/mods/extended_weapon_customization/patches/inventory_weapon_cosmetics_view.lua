@@ -455,8 +455,6 @@ end)
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
     if self.customize_attachments then
 
-        mod:echo("cb_on_equip_pressed")
-
         local gear_id = mod:gear_id(self._selected_item)
 
         local gear_settings = {}

@@ -209,8 +209,6 @@ mod:hook_require("scripts/backend/master_items", function(instance)
     mod:hook(instance, "create_preview_item_instance", function(func, item, ...)
         -- Modify item
         mod:modify_item(item)
-        -- Fixes
-        -- mod:apply_attachment_fixes(item)
         -- Original function
         local item_instance --= func(item, ...)
         local gear = table.clone_instance(item.__gear)

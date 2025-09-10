@@ -14,8 +14,6 @@ local mod = get_mod("extended_weapon_customization")
 mod:hook(CLASS.UICharacterProfilePackageLoader, "load_slot_item", function(func, self, slot_id, item, complete_callback, ...)
     -- Modify item
     mod:modify_item(item)
-    -- Fixes
-    -- mod:apply_attachment_fixes(item)
     -- Original function
     return func(self, slot_id, item, complete_callback, ...)
 end)
