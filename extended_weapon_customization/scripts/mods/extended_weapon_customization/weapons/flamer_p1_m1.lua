@@ -1,0 +1,165 @@
+local mod = get_mod("extended_weapon_customization")
+
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/trinket_hook")
+local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/flashlight")
+local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/sight")
+local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/rail")
+
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+-- #region Performance
+    local table = table
+    local vector3 = Vector3
+    local vector3_box = Vector3Box
+    local vector3_zero = vector3.zero
+    local table_merge_recursive = table.merge_recursive
+--#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local _item = "content/items/weapons/player"
+local _item_ranged = _item.."/ranged"
+local _item_empty_trinket = _item.."/trinkets/unused_trinket"
+
+local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
+local scopes = "scope_01"
+
+return {
+    attachments = {
+        trinket_hook = trinket_hooks,
+        flashlight = flashlights,
+        rail = rails,
+        receiver = {
+            flamer_rifle_receiver_01 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
+            flamer_rifle_receiver_02 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_02",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
+            flamer_rifle_receiver_03 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_03",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
+            flamer_rifle_receiver_04 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_04",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
+            flamer_rifle_receiver_05 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_05",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
+            flamer_rifle_receiver_06 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_06",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
+            flamer_rifle_receiver_07 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_07",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.275, -3.5, .25},
+            },
+            flamer_rifle_receiver_ml01 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_ml01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
+        },
+        magazine = {
+            flamer_rifle_magazine_01 = {
+                replacement_path = _item_ranged.."/magazines/flamer_rifle_magazine_01",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.1, -1.5, -.05},
+            },
+            flamer_rifle_magazine_02 = {
+                replacement_path = _item_ranged.."/magazines/flamer_rifle_magazine_02",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.1, -1.5, -.05},
+            },
+            flamer_rifle_magazine_03 = {
+                replacement_path = _item_ranged.."/magazines/flamer_rifle_magazine_03",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.075, -1.75, -.05},
+            },
+            flamer_rifle_magazine_04 = {
+                replacement_path = _item_ranged.."/magazines/flamer_rifle_magazine_04",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.1, -1.5, -.05},
+            },
+            flamer_rifle_magazine_ml01 = {
+                replacement_path = _item_ranged.."/magazines/flamer_rifle_magazine_ml01",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.1, -1.5, -.05},
+            },
+        },
+        barrel = {
+            flamer_rifle_barrel_01 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
+            },
+            flamer_rifle_barrel_02 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_02",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
+            },
+            flamer_rifle_barrel_03 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_03",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
+            },
+            flamer_rifle_barrel_04 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_04",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
+            },
+            flamer_rifle_barrel_05 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_05",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
+            },
+            flamer_rifle_barrel_06 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_06",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
+            },
+            flamer_rifle_barrel_07 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_07",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.1, -5, .175},
+            },
+            flamer_rifle_barrel_ml01 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_ml01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
+            },
+        },
+    },
+    attachment_slots = {
+        flashlight = {
+            parent_slot = "receiver",
+            default_path = _item_empty_trinket,
+            fix = {
+                offset = {
+                    position = vector3_box(.03, .19, .146),
+                    rotation = vector3_box(0, -60, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
+    },
+}

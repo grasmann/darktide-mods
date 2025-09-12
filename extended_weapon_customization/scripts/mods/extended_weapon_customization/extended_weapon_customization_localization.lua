@@ -62,6 +62,15 @@ mod:add_global_localize_strings({
 	attachment_slot_body = {
 		en = "Body",
 	},
+	attachment_slot_shaft_upper = {
+		en = "Upper Shaft",
+	},
+	attachment_slot_shaft_lower = {
+		en = "Lower Shaft",
+	},
+	attachment_slot_hilt = {
+		en = "Hilt",
+	},
 })
 
 return {
