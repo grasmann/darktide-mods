@@ -1,12 +1,23 @@
 local mod = get_mod("extended_weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/trinket_hook")
+local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/flashlight")
+local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/sight")
+local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/rail")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local table = table
     local vector3 = Vector3
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
+    local table_merge_recursive = table.merge_recursive
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -25,116 +36,119 @@ local scopes = "scope_01"
 
 return {
     attachments = {
+        trinket_hook = trinket_hooks,
+        flashlight = flashlights,
+        rail = rails,
         barrel = {
             --#region Infantry
                 autogun_rifle_barrel_01 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_01",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_02 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_02",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_03 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_03",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_04 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_04",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_05 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_05",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_06 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_06",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_ml01 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ml01",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
             --#endregion
             --#region Braced
                 autogun_rifle_barrel_ak_01 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_01",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
                 autogun_rifle_barrel_ak_02 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_02",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
                 autogun_rifle_barrel_ak_03 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_03",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
                 autogun_rifle_barrel_ak_04 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_04",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
                 autogun_rifle_barrel_ak_05 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_05",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
                 autogun_rifle_barrel_ak_06 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_06",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
                 autogun_rifle_barrel_ak_07 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_07",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
                 autogun_rifle_barrel_ak_08 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_08",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
                 autogun_rifle_barrel_ak_ml01 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ak_ml01",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.2, -3, 0},
+                    icon_render_camera_position_offset = {-.245, -2.5, 0},
                 },
             --#endregion
             --#region Headhunter
                 autogun_rifle_barrel_killshot_01 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_01",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_killshot_03 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_03",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_killshot_04 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_04",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_killshot_05 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_05",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
                 autogun_rifle_barrel_killshot_ml01 = {
                     replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_killshot_ml01",
                     icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                    icon_render_camera_position_offset = {-.15, -2.5, 0},
+                    icon_render_camera_position_offset = {-.175, -2, 0},
                 },
             --#endregion
         },
@@ -270,22 +284,22 @@ return {
                 autogun_rifle_ak_receiver_01 = {
                     replacement_path = _item_ranged.."/recievers/autogun_rifle_ak_receiver_01",
                     icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.175, -2, .25},
+                    icon_render_camera_position_offset = {-.125, -1.75, .25},
                 },
                 autogun_rifle_ak_receiver_02 = {
                     replacement_path = _item_ranged.."/recievers/autogun_rifle_ak_receiver_02",
                     icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.175, -2, .25},
+                    icon_render_camera_position_offset = {-.125, -1.75, .25},
                 },
                 autogun_rifle_ak_receiver_03 = {
                     replacement_path = _item_ranged.."/recievers/autogun_rifle_ak_receiver_03",
                     icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.175, -2, .25},
+                    icon_render_camera_position_offset = {-.125, -1.75, .25},
                 },
                 autogun_rifle_ak_receiver_ml01 = {
                     replacement_path = _item_ranged.."/recievers/autogun_rifle_ak_receiver_ml01",
                     icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.175, -2, .25},
+                    icon_render_camera_position_offset = {-.125, -1.75, .25},
                 },
             --#endregion
             --#region Headhunter
@@ -316,29 +330,7 @@ return {
                 },
             --#endregion
         },
-        flashlight = {
-            flashlight_01 = {
-                replacement_path = _item_ranged.."/flashlights/flashlight_01",
-                icon_render_unit_rotation_offset = {90, 0, 90 + 30},
-                icon_render_camera_position_offset = {-.125, -.75, .15},
-            },
-            flashlight_02 = {
-                replacement_path = _item_ranged.."/flashlights/flashlight_02",
-                icon_render_unit_rotation_offset = {90, 0, 90 + 30},
-                icon_render_camera_position_offset = {-.075, -.75, .15},
-            },
-            flashlight_03 = {
-                replacement_path = _item_ranged.."/flashlights/flashlight_03",
-                icon_render_unit_rotation_offset = {90, 0, 90 + 30},
-                icon_render_camera_position_offset = {-.15, -.75, .15},
-            },
-            flashlight_05 = {
-                replacement_path = _item_ranged.."/flashlights/flashlight_05",
-                icon_render_unit_rotation_offset = {90, 0, 90 + 30},
-                icon_render_camera_position_offset = {-.075, -.75, .15},
-            },
-        },
-        sight = {
+        sight = table_merge_recursive({
             autogun_rifle_sight_01 = {
                 replacement_path = _item_ranged.."/sights/autogun_rifle_sight_01",
                 icon_render_unit_rotation_offset = {90, 0, -95},
@@ -359,27 +351,7 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, -95},
                 icon_render_camera_position_offset = {.035, -.1, .125},
             },
-            reflex_sight_01 = {
-                replacement_path = _item_ranged.."/sights/reflex_sight_01",
-                icon_render_unit_rotation_offset = {90, 0, -95},
-                icon_render_camera_position_offset = {.035, -.1, .175},
-            },
-            reflex_sight_02 = {
-                replacement_path = _item_ranged.."/sights/reflex_sight_02",
-                icon_render_unit_rotation_offset = {90, 0, -95},
-                icon_render_camera_position_offset = {.035, -.1, .175},
-            },
-            reflex_sight_03 = {
-                replacement_path = _item_ranged.."/sights/reflex_sight_03",
-                icon_render_unit_rotation_offset = {90, 0, -95},
-                icon_render_camera_position_offset = {.035, -.1, .175},
-            },
-            scope_01 = {
-                replacement_path = _item_ranged.."/sights/scope_01",
-                icon_render_unit_rotation_offset = {90, 0, -85},
-                icon_render_camera_position_offset = {0, -.8, .45},
-            },
-        },
+        }, sights),
         stock = {
             --#region Infantry
                 autogun_rifle_stock_01 = {
@@ -532,15 +504,21 @@ return {
                 icon_render_camera_position_offset = {.075, -1, .05},
             },
         },
-        rail = {
-            lasgun_rifle_rail_01 = {
-                replacement_path = _item_ranged.."/rails/lasgun_rifle_rail_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-        },
     },
     fixes = {
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = {
+                    has = reflex_sights.."|"..scopes,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, -.0085),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
         {attachment_slot = "rail",
             requirements = {
                 receiver = {

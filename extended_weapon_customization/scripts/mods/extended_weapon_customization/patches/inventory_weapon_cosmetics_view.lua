@@ -1,11 +1,16 @@
 local mod = get_mod("extended_weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
 local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
-local master_items = mod:original_require("scripts/backend/master_items")
-local items = mod:original_require("scripts/utilities/items")
-local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local ViewElementTabMenu = mod:original_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
+local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
+local InputDevice = mod:original_require("scripts/managers/input/input_device")
+local master_items = mod:original_require("scripts/backend/master_items")
+local items = mod:original_require("scripts/utilities/items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -78,7 +83,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
         local layer = 10
         local button_size = {
             270,
-            80,
+            40,
         }
         local button_spacing = 10
         local tab_menu_settings = {
@@ -140,57 +145,59 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
         local weapon_template = self._presentation_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
         local content = self._tabs_content[index]
-        local slot_name = content.slot_name
+        if content then
+            local slot_name = content.slot_name
 
-        if index ~= self._selected_tab_index then
-            if self._selected_tab_index then
-                local presentation_item = self._presentation_item
+            if index ~= self._selected_tab_index then
+                if self._selected_tab_index then
+                    local presentation_item = self._presentation_item
 
-                self["_selected_"..slot_name.."_name"] = mod:fetch_attachment(self._selected_item.attachments, slot_name)
+                    self["_selected_"..slot_name.."_name"] = mod:fetch_attachment(self._selected_item.attachments, slot_name)
 
-                local real_item = master_items.get_item(self["_selected_"..slot_name.."_name"])
+                    local real_item = master_items.get_item(self["_selected_"..slot_name.."_name"])
 
-                self._tabs_content[self._selected_tab_index].apply_on_preview(real_item, presentation_item)
+                    self._tabs_content[self._selected_tab_index].apply_on_preview(real_item, presentation_item)
 
-                self:_preview_item(presentation_item)
-            end
-
-            self._selected_tab_index = index
-
-            self._tab_menu_element:set_selected_index(index)
-
-            local generate_visual_item_function = content.generate_visual_item_function
-
-            self._grid_display_name = content.display_name
-
-            if not self._using_cursor_navigation then
-                self:_play_sound(UISoundEvents.tab_secondary_button_pressed)
-            end
-
-            local layout = {}
-
-            local attachment_entries = attachments[slot_name]
-            if attachment_entries and table_size(attachment_entries) > 1 then
-                for attachment_name, attachment_data in pairs(attachment_entries) do
-
-                    local attachment_item = master_items.get_item(attachment_data.replacement_path)
-                    local item = generate_visual_item_function(slot_name, attachment_item, attachment_data) --, self._selected_item, self._presentation_item)
-
-                    layout[#layout+1] = {
-                        widget_type = "gear_set",
-                        item = item,
-                        real_item = attachment_item,
-                        slot_name = slot_name,
-                    }
-
+                    self:_preview_item(presentation_item)
                 end
+
+                self._selected_tab_index = index
+
+                self._tab_menu_element:set_selected_index(index)
+
+                local generate_visual_item_function = content.generate_visual_item_function
+
+                self._grid_display_name = content.display_name
+
+                if not self._using_cursor_navigation then
+                    self:_play_sound(UISoundEvents.tab_secondary_button_pressed)
+                end
+
+                local layout = {}
+
+                local attachment_entries = attachments[slot_name]
+                if attachment_entries and table_size(attachment_entries) > 1 then
+                    for attachment_name, attachment_data in pairs(attachment_entries) do
+
+                        local attachment_item = master_items.get_item(attachment_data.replacement_path)
+                        local item = generate_visual_item_function(slot_name, attachment_item, attachment_data) --, self._selected_item, self._presentation_item)
+
+                        layout[#layout+1] = {
+                            widget_type = "gear_set",
+                            item = item,
+                            real_item = attachment_item,
+                            slot_name = slot_name,
+                        }
+
+                    end
+                end
+
+                self._offer_items_layout = layout
+
+                self:_present_layout_by_slot_filter()
             end
-
-            self._offer_items_layout = layout
-
-            self:_present_layout_by_slot_filter()
+            return
         end
-        return
     end
     -- Original function
     func(self, index, ...)
@@ -496,4 +503,11 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_fetch_inventory_items", function(
         return
     end
     return func(self, tabs_content, ...)
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, self, input_service, dt, t, ...)
+    if not self._item_grid:hovered() then
+        -- Original function
+        func(self, input_service, dt, t, ...)
+    end
 end)

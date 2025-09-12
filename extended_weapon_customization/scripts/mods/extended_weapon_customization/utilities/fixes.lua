@@ -34,9 +34,9 @@ local temp_requirement_parts = {}
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod.collect_fixes = function(self, item_data)
+mod.collect_fixes = function(self, item_data, target_slot)
     
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data.__master_item or item_data
+    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data --item_data.__master_item or item_data
     local item_type = item.item_type
 
     -- Clear temp
@@ -71,31 +71,43 @@ mod.collect_fixes = function(self, item_data)
 
                 -- Collect fixes to apply
                 for _, fix_entry in pairs(weapon_fixes) do
-                    local requirements_met = true
-                    -- Iterate through fix requirements
-                    for requirement_slot, requirement_data in pairs(fix_entry.requirements) do
-                        local requirement_met = true
-                        -- Fix data
-                        local positive = requirement_data.has and true or false
-                        local requirement_string = positive and requirement_data.has or requirement_data.missing
-                        temp_requirement_parts = string_split(requirement_string, "|")
-                        -- Check validity
-                        if positive and not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
-                            requirement_met = false
-                        elseif not positive and table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
-                            requirement_met = false
+
+                    if not target_slot or fix_entry.attachment_slot == target_slot then
+
+                        local requirements_met = true
+
+                        if fix_entry.requirements then
+
+                            -- Iterate through fix requirements
+                            for requirement_slot, requirement_data in pairs(fix_entry.requirements) do
+                                local requirement_met = true
+                                -- Fix data
+                                local positive = requirement_data.has and true or false
+                                local requirement_string = positive and requirement_data.has or requirement_data.missing
+                                temp_requirement_parts = string_split(requirement_string, "|")
+                                -- Check validity
+                                if positive and not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                    requirement_met = false
+                                elseif not positive and table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                    requirement_met = false
+                                end
+                                -- Break if not met
+                                if not requirement_met then
+                                    requirements_met = false
+                                    break
+                                end
+                            end
+
                         end
-                        -- Break if not met
-                        if not requirement_met then
-                            requirements_met = false
-                            break
+
+                        -- Check if requirements are met
+                        if requirements_met then
+                            -- Collect fix
+                            temp_fixes[fix_entry.fix] = fix_entry.attachment_slot
                         end
+
                     end
-                    -- Check if requirements are met
-                    if requirements_met then
-                        -- Collect fix
-                        temp_fixes[fix_entry.fix] = fix_entry.attachment_slot
-                    end
+
                 end
 
             end
@@ -109,7 +121,7 @@ end
 
 mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, optional_fixes, is_ui_item_preview)
     -- Item data
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data.__master_item or item_data
+    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data --item_data.__master_item or item_data
     -- Check data
     if item.attachments then
         -- Get fixes

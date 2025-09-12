@@ -62,6 +62,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         local is_ui_item_preview = false
         if attachment_id_lookup and item_data.attachments then
 
+            -- Collect current attachment names
+            local kitbash_fixes = mod:fetch_attachment_fixes(item_data.attachments)
+            if kitbash_fixes then
+                fixes = table_merge_recursive(fixes, kitbash_fixes)
+            end
+
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
 
                 local attachment_slot = attachment_id_lookup[attachment_unit]
@@ -129,6 +135,12 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
         if attachment_id_lookup and item_data.attachments then
 
+            -- Collect current attachment names
+            local kitbash_fixes = mod:fetch_attachment_fixes(item_data.attachments)
+            if kitbash_fixes then
+                fixes = table_merge_recursive(fixes, kitbash_fixes)
+            end
+
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
 
                 local attachment_slot = attachment_id_lookup[attachment_unit]
@@ -165,7 +177,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             return empty_overrides_table
         end
 
-        local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data.__master_item or item_data
+        local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data --item_data.__master_item or item_data
         if item.attachments then
             if override_lookup and override_item_data and gear_settings then
 

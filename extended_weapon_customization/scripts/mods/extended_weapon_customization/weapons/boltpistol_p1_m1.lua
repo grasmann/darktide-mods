@@ -1,0 +1,170 @@
+local mod = get_mod("extended_weapon_customization")
+
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/trinket_hook")
+local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/flashlight")
+local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/sight")
+local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/rail")
+
+-- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
+-- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
+-- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
+-- #region Performance
+    local table = table
+    local vector3 = Vector3
+    local vector3_box = Vector3Box
+    local vector3_zero = vector3.zero
+    local table_merge_recursive = table.merge_recursive
+--#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local _item = "content/items/weapons/player"
+local _item_ranged = _item.."/ranged"
+local _item_empty_trinket = _item.."/trinkets/unused_trinket"
+
+local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
+local scopes = "scope_01"
+
+return {
+    attachments = {
+        trinket_hook = trinket_hooks,
+        flashlight = flashlights,
+        rail = rails,
+        receiver = {
+            boltgun_pistol_receiver_01 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
+            boltgun_pistol_receiver_02 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_02",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
+            boltgun_pistol_receiver_03 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_03",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
+            boltgun_pistol_receiver_04 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_04",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
+            boltgun_pistol_receiver_05 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_05",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
+            boltgun_pistol_receiver_06 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_06",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
+            boltgun_pistol_receiver_07 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_07",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
+            boltgun_pistol_receiver_ml01 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_ml01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
+        },
+        magazine = {
+            boltgun_pistol_magazine_01 = {
+                replacement_path = _item_ranged.."/magazines/boltgun_pistol_magazine_01",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.125, -.75, 0},
+            },
+            boltgun_pistol_magazine_02 = {
+                replacement_path = _item_ranged.."/magazines/boltgun_pistol_magazine_02",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.125, -.75, 0},
+            },
+        },
+        barrel = {
+            boltgun_pistol_barrel_01 = {
+                replacement_path = _item_ranged.."/barrels/boltgun_pistol_barrel_01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.08, -.5, .15},
+            },
+            boltgun_pistol_barrel_02 = {
+                replacement_path = _item_ranged.."/barrels/boltgun_pistol_barrel_02",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.08, -.5, .15},
+            },
+            boltgun_pistol_barrel_03 = {
+                replacement_path = _item_ranged.."/barrels/boltgun_pistol_barrel_03",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.08, -.5, .15},
+            },
+        },
+        sight = table_merge_recursive({
+            boltgun_pistol_sight_01 = {
+                replacement_path = _item_ranged.."/sights/boltgun_pistol_sight_01",
+                icon_render_unit_rotation_offset = {90, 0, -95},
+                icon_render_camera_position_offset = {.035, -.1, .175},
+            },
+            boltgun_pistol_sight_02 = {
+                replacement_path = _item_ranged.."/sights/boltgun_pistol_sight_02",
+                icon_render_unit_rotation_offset = {90, 0, -95},
+                icon_render_camera_position_offset = {.035, -.1, .175},
+            },
+            boltgun_pistol_sight_03 = {
+                replacement_path = _item_ranged.."/sights/boltgun_pistol_sight_03",
+                icon_render_unit_rotation_offset = {90, 0, -95},
+                icon_render_camera_position_offset = {.035, -.1, .175},
+            },
+        }, sights),
+    },
+    attachment_slots = {
+        flashlight = {
+            parent_slot = "receiver",
+            default_path = _item_empty_trinket,
+            fix = {
+                offset = {
+                    position = vector3_box(.04, .12, .065),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
+    },
+    fixes = {
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = {
+                    has = reflex_sights.."|"..scopes,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, -.0095),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = reflex_sights.."|"..scopes,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .095, -.013),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+    },
+}

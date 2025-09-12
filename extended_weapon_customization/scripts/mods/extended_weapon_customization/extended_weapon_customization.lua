@@ -85,7 +85,8 @@ mod.on_setting_changed = function(setting_id)
     managers.event:trigger("extended_weapon_customization_settings_changed")
 end
 
-mod.on_unload = function(exit_game) end
+mod.on_unload = function(exit_game)
+end
 
 mod.clear_chat = function()
 	managers.event:trigger("event_clear_notifications")
@@ -102,13 +103,17 @@ end
 -- ##### ├─┘├─┤ │ │  ├─┤├┤ └─┐ ########################################################################################
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
 
+mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/master_items")
+
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/gear_settings")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/kitbash")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/fixes")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/items")
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/inventory_weapon_cosmetics_view_definitions")
+mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/player_unit_visual_loadout_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/ui_character_profile_package_loader")
+mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/player_unit_first_person_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/inventory_weapon_cosmetics_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/visual_loadout_customization")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/player_unit_fx_extension")
@@ -117,4 +122,5 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_custom
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/view_element_grid")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/weapon_icon_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/item_package")
-mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/master_items")
+
+mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/extensions/sight_extension")

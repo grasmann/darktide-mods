@@ -17,6 +17,7 @@ local FixedFrame = mod:original_require("scripts/utilities/fixed_frame")
     local table_find = table.find
     local script_unit = ScriptUnit
     local table_contains = table.contains
+    local table_clone_safe = table.clone_safe
     local script_unit_extension = script_unit.extension
 --#endregion
 
@@ -37,6 +38,23 @@ mod.overwrite_attachment = function(self, attachments, target_slot, replacement_
         end
         if data.children then
             self:overwrite_attachment(data.children, target_slot, replacement_path)
+        end
+    end
+end
+
+mod.inject_attachment = function(self, attachments, slot_name, inject_data)
+    for slot, attachment_data in pairs(attachments) do
+        if slot == inject_data.parent_slot then
+            attachment_data.children = attachment_data.children or {}
+            attachment_data.children[slot_name] = attachment_data.children[slot_name] or {
+                item = inject_data.default_path,
+                children = {},
+                fix = inject_data.fix,
+            }
+            break
+        end
+        if attachment_data.children then
+            self:inject_attachment(attachment_data.children, slot_name, inject_data)
         end
     end
 end
@@ -97,11 +115,23 @@ mod.fetch_attachment_data = function(self, attachments, target_slot)
 end
 
 mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data --item_data.__master_item or item_data
     local item_type = item_data and item_data.item_type
     -- if item_type == "WEAPON_MELEE" or item_type == "WEAPON_RANGED" and item.attachments then
     if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
         local pt = mod:pt()
+
+        local weapon_template = item.weapon_template
+        local custom_attachment_slots = weapon_template and self.settings.attachment_slots[weapon_template]
+        if custom_attachment_slots then
+            for slot_name, inject_data in pairs(custom_attachment_slots) do
+                -- Check if attachment slot exists
+                if not self:fetch_attachment(item.attachments, slot_name) then
+                    self:inject_attachment(item.attachments, slot_name, inject_data)
+                end
+            end
+        end
+
         local gear_id = mod:gear_id(item, fake_gear_id)
         local gear_settings = optional_settings or gear_id and mod:gear_settings(gear_id)
         if gear_settings then
@@ -109,6 +139,7 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
                 mod:overwrite_attachment(item.attachments, slot, replacement_path)
             end
         end
+
     end
 end
 

@@ -82,22 +82,27 @@ return {
 	mod_option_left_hand_visibility = {
 		en = "Shield Visibility",
 		de = "Schild Sichtbarkeit",
+		["zh-cn"] = "盾牌可见性",
 	},
 	mod_option_left_hand_visibility_tooltip = {
 		en = "Toggle shield visibility.\n\nDefault:\nBoth shields are visible on the character.\n\nOnly carry on:\nOnly one shield is visible on characters back.\n\nOnly one:\nOnly one shield is visible on the character.",
 		de = "Aktiviere Schild Sichtbarkeit.\n\nStandard:\nBeide Schilder sind am Charakter sichtbar.\n\nNur eins tragen:\nNur ein Schild ist auf dem Rücken sichtbar.\n\nNur eins:\nNur ein Schild ist am Charakter sichtbar.",
+		["zh-cn"] = "切换盾牌可见性\n\n默认：\n两个盾牌都在角色身上可见\n\n只携带一个：\n只有一个盾牌在角色背部可见\n\n只显示一个：\n只有一个盾牌在角色身上可见",
 	},
 	mod_option_left_hand_visibility_default = {
 		en = "Default",
 		de = "Standard",
+		["zh-cn"] = "默认",
 	},
 	mod_option_left_hand_visibility_one_on_back = {
 		en = "Only carry one",
 		de = "Nur eins tragen",
+		["zh-cn"] = "只携带一个",
 	},
 	mod_option_left_hand_visibility_one_visible = {
 		en = "Only one",
 		de = "Nur eins",
+		["zh-cn"] = "只显示一个",
 	},
 
 	slot_primary_placement = {

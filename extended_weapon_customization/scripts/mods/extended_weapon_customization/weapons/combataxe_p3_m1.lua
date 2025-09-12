@@ -1,5 +1,11 @@
 local mod = get_mod("extended_weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/trinket_hook")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -18,11 +24,12 @@ local _item_melee = _item.."/melee"
 
 return {
     attachments = {
+        trinket_hook = trinket_hooks,
         pommel = {
             shovel_pommel_01 = {
                 replacement_path = _item_melee.."/pommels/shovel_pommel_01",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -.5, .1},
+                icon_render_unit_rotation_offset = {90, 45, 0},
+                icon_render_camera_position_offset = {0, -.5, .05},
                 validate_attachments = {
                     "grip",
                     "head",
@@ -30,7 +37,7 @@ return {
             },
             shovel_pommel_02 = {
                 replacement_path = _item_melee.."/pommels/shovel_pommel_02",
-                icon_render_unit_rotation_offset = {90, 0, 0},
+                icon_render_unit_rotation_offset = {90, 45, 0},
                 icon_render_camera_position_offset = {0, -.5, .1},
                 validate_attachments = {
                     "grip",
@@ -39,7 +46,7 @@ return {
             },
             shovel_pommel_03 = {
                 replacement_path = _item_melee.."/pommels/shovel_pommel_03",
-                icon_render_unit_rotation_offset = {90, 0, 0},
+                icon_render_unit_rotation_offset = {90, 45, 0},
                 icon_render_camera_position_offset = {0, -.5, .1},
                 validate_attachments = {
                     "grip",
@@ -48,7 +55,7 @@ return {
             },
             shovel_pommel_04 = {
                 replacement_path = _item_melee.."/pommels/shovel_pommel_04",
-                icon_render_unit_rotation_offset = {90, 0, 0},
+                icon_render_unit_rotation_offset = {90, 45, 0},
                 icon_render_camera_position_offset = {0, -.5, .1},
                 validate_attachments = {
                     "grip",
@@ -57,7 +64,7 @@ return {
             },
             shovel_pommel_05 = {
                 replacement_path = _item_melee.."/pommels/shovel_pommel_05",
-                icon_render_unit_rotation_offset = {90, 0, 0},
+                icon_render_unit_rotation_offset = {90, 45, 0},
                 icon_render_camera_position_offset = {0, -.5, .1},
                 validate_attachments = {
                     "grip",
@@ -66,7 +73,7 @@ return {
             },
             shovel_pommel_ml01 = {
                 replacement_path = _item_melee.."/pommels/shovel_pommel_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 0},
+                icon_render_unit_rotation_offset = {90, 45, 0},
                 icon_render_camera_position_offset = {0, -.5, .1},
                 validate_attachments = {
                     "grip",
@@ -95,8 +102,8 @@ return {
         grip = {
             shovel_grip_01 = {
                 replacement_path = _item_melee.."/grips/shovel_grip_01",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -.75, .1},
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -.75, .2},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -108,8 +115,8 @@ return {
             },
             shovel_grip_02 = {
                 replacement_path = _item_melee.."/grips/shovel_grip_02",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -.75, .1},
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -.75, .2},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -121,8 +128,8 @@ return {
             },
             shovel_grip_03 = {
                 replacement_path = _item_melee.."/grips/shovel_grip_03",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -.75, .1},
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -.75, .2},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -134,8 +141,8 @@ return {
             },
             shovel_grip_04 = {
                 replacement_path = _item_melee.."/grips/shovel_grip_04",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -.75, .1},
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -.75, .2},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -147,8 +154,8 @@ return {
             },
             shovel_grip_05 = {
                 replacement_path = _item_melee.."/grips/shovel_grip_05",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -.75, .1},
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -.75, .2},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -160,8 +167,8 @@ return {
             },
             shovel_grip_ml01 = {
                 replacement_path = _item_melee.."/grips/shovel_grip_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -.75, .1},
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -.75, .2},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -175,8 +182,8 @@ return {
         head = {
             shovel_head_01 = {
                 replacement_path = _item_melee.."/heads/shovel_head_01",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -1.5, .6},
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.05, -1.5, .5},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -188,8 +195,8 @@ return {
             },
             shovel_head_02 = {
                 replacement_path = _item_melee.."/heads/shovel_head_02",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -1.5, .6},
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.05, -1.5, .5},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -201,8 +208,8 @@ return {
             },
             shovel_head_03 = {
                 replacement_path = _item_melee.."/heads/shovel_head_03",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -1.5, .6},
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.05, -1.5, .5},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -214,8 +221,8 @@ return {
             },
             shovel_head_04 = {
                 replacement_path = _item_melee.."/heads/shovel_head_04",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -1.5, .6},
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.05, -1.5, .5},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -227,8 +234,8 @@ return {
             },
             shovel_head_05 = {
                 replacement_path = _item_melee.."/heads/shovel_head_05",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -1.5, .6},
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.05, -1.5, .5},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -240,8 +247,8 @@ return {
             },
             shovel_head_ml01 = {
                 replacement_path = _item_melee.."/heads/shovel_head_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 0},
-                icon_render_camera_position_offset = {0, -1.5, .6},
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.05, -1.5, .5},
                 detach_attachments = {
                     "krieg_shovel_full_01",
                     "prologue_shovel_full_01",
@@ -251,13 +258,6 @@ return {
                     "grip",
                 },
             },
-        },
-    },
-    attachment_slot_infos = {
-        required_attachments = {
-            "pommel",
-            "grip",
-            "head",
         },
     },
 }
