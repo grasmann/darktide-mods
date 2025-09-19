@@ -1,3 +1,11 @@
+local mod = get_mod("visible_equipment")
+
+mod:add_global_localize_strings({
+	attachment_slot_scabbard = {
+		en = "Scabbard",
+	},
+})
+
 return {
 	mod_title = {
 		en = "Visible Equipment",

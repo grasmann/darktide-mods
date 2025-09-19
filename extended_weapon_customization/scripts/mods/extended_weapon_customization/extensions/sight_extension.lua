@@ -10,6 +10,7 @@ local mod = get_mod("extended_weapon_customization")
     local world = World
     local pairs = pairs
     local vector3 = Vector3
+    local managers = Managers
     local tostring = tostring
     local unit_node = unit.node
     local script_unit = ScriptUnit
@@ -29,6 +30,10 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local SLOT_SECONDARY = "slot_secondary"
+local empty_offset = {
+    position = vector3_box(vector3_zero()),
+    rotation = vector3_box(vector3_zero()),
+}
 
 -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #################################################################
 -- ##### └─┐││ ┬├─┤ │ └─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ #################################################################
@@ -49,17 +54,23 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
     self.alternate_fire_component = self.unit_data_extension:read_component("alternate_fire")
     self.first_person_unit = self.first_person_extension:first_person_unit()
 
-    self.weapon = self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
-    self.sight_name = mod:fetch_attachment(self.weapon.attachments, "sight")
-
-    self.offset = {
-        position = vector3_box(vector3_zero()),
-        rotation = vector3_box(vector3_zero()),
-    }
+    self.offset = empty_offset
     self.current_offset = {
         position = vector3_box(vector3_zero()),
         rotation = vector3_box(vector3_zero()),
     }
+
+    self:fetch_sight_offset()
+
+    managers.event:register(self, "extended_weapon_customization_reloaded", "on_mod_reload")
+
+end
+
+SightExtension.fetch_sight_offset = function(self)
+
+    self.weapon = self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
+    self.sight_name = mod:fetch_attachment(self.weapon.attachments, "sight")
+    self.sight_fix = nil
 
     local sight_offset_fixes = mod:collect_fixes(self.weapon, "sight_offset")
     if sight_offset_fixes then
@@ -70,18 +81,24 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 
     if self.sight_fix then
         self.offset = self.sight_fix.offset
+    else
+        self.offset = empty_offset
     end
 
 end
 
 SightExtension.delete = function(self)
+    
+    managers.event:unregister(self, "extended_weapon_customization_reloaded")
 
 end
 
+SightExtension.on_mod_reload = function(self)
+    self:fetch_sight_offset()
+end
+
 SightExtension.on_equip_weapon = function(self)
-    self.weapon = self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
-    self.sight_name = mod:fetch_attachment(self.weapon.attachments, "sight")
-    -- mod:echo("Sight: "..tostring(self.sight_name))
+    self:fetch_sight_offset()
 end
 
 SightExtension.update = function(self, dt, t)

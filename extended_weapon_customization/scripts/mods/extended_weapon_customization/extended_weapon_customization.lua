@@ -23,7 +23,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_custom
 
 mod.save_lua = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/save")
 mod.plugins = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/plugins")
-mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/settings")
+-- mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/settings")
 
 local REFERENCE = "extended_weapon_customization"
 
@@ -34,6 +34,7 @@ mod:persistent_table(REFERENCE, {
     gear_id_relays = {},
     kitbash_entries = {},
     exclude_from_vfx_spawner = {},
+    items_originating_from_customization_menu = {},
 })
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -79,6 +80,7 @@ mod.on_all_mods_loaded = function()
     if mod:pt().game_initialized then
         mod:try_kitbash_load()
     end
+    managers.event:trigger("extended_weapon_customization_reloaded")
 end
 
 mod.on_setting_changed = function(setting_id)
@@ -109,6 +111,8 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_custom
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/kitbash")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/fixes")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/items")
+
+mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/utilities/settings")
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/inventory_weapon_cosmetics_view_definitions")
 mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/patches/player_unit_visual_loadout_extension")

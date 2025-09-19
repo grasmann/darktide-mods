@@ -70,3 +70,13 @@ mod:hook(CLASS.ViewElementGrid, "present_grid_layout", function(func, self, layo
     -- Update size
     self:_update_window_size()
 end)
+
+mod:hook(CLASS.ViewElementGrid, "_create_entry_widget_from_config", function(func, self, config, suffix, callback_name, secondary_callback_name, double_click_callback_name, ...)
+    -- Check widget type
+    if not config.widget_type then
+        -- Set widget type
+        config.widget_type = "gear_set"
+    end
+    -- Original function
+    return func(self, config, suffix, callback_name, secondary_callback_name, double_click_callback_name, ...)
+end)

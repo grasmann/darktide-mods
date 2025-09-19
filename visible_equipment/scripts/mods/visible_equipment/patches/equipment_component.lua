@@ -51,7 +51,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
             self.visible_equipment_system:destroy()
         end
         -- Clear equipment component tables
-        self.pt.equipment_components[self] = nil
+        mod:pt().equipment_components[self] = nil
     end
 
     instance.footstep = function(self)
@@ -83,6 +83,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         if self.visible_equipment_system then
             -- Update visible equipment
             self.visible_equipment_system:position_objects(apply_center_mass_offset)
+            local equipment = mod:pt().equipment_by_equipment_component[self]
+            self.visible_equipment_system:update_item_visibility(equipment)
         end
     end
 
@@ -120,9 +122,9 @@ mod:hook(CLASS.EquipmentComponent, "init", function(func, self, world, item_defi
     -- Original function
     func(self, world, item_definitions, unit_spawner, unit_3p, optional_extension_manager, optional_item_streaming_settings, optional_force_highest_lod_step, optional_from_ui_profile_spawner, ...)
     -- Set pt variable
-    self.pt = mod:pt()
+    -- self.pt = mod:pt()
     -- Create equipment component table
-    self.pt.equipment_components[self] = unit_3p
+    mod:pt().equipment_components[self] = unit_3p
     -- Catch equipment
     catch_equipment = self
     -- Set equipment component

@@ -5,6 +5,7 @@ local mod = get_mod("visible_equipment")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
+    local type = type
     local pairs = pairs
     local table = table
     local managers = Managers
@@ -18,6 +19,7 @@ local mod = get_mod("visible_equipment")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/common")
+mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extended_weapon_customization_plugin")
 mod.settings = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/settings")
 mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/plugins")
 mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/save")
@@ -115,7 +117,7 @@ mod.breed = function(self, profile)
 end
 
 mod.gear_id = function(self, item)
-    return item and item.gear_id or item.__gear_id
+    return item and (item.gear_id or item.__gear_id)
 end
 
 mod.equipment_component_from_unit = function(self, unit)
@@ -145,6 +147,22 @@ mod.gear_placement = function(self, gear_id, placement, file, no_default)
 
         return (data and data.placement) or (not no_default and "default")
     end
+end
+
+mod.fetch_attachment = function(self, attachments, target_slot)
+    local attachment_item_path = nil
+    for slot, data in pairs(attachments) do
+        if type(data.item) == "table" and data.item.attachments then
+            attachment_item_path = self:fetch_attachment(data.item.attachments, target_slot)
+        end
+        if slot == target_slot then
+            attachment_item_path = data.item
+        elseif data.children then
+            attachment_item_path = self:fetch_attachment(data.children, target_slot)
+        end
+        if attachment_item_path then break end
+    end
+    return attachment_item_path
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################

@@ -8,6 +8,7 @@ local mod = get_mod("extended_weapon_customization")
     local pairs = pairs
     local table = table
     local string = string
+    local vector3 = Vector3
     local unit_alive = unit.alive
     local quaternion = Quaternion
     local vector3_box = Vector3Box
@@ -19,6 +20,7 @@ local mod = get_mod("extended_weapon_customization")
     local quaternion_from_vector = quaternion.from_vector
     local unit_set_local_position = unit.set_local_position
     local unit_set_local_rotation = unit.set_local_rotation
+    local unit_set_unit_visibility = unit.set_unit_visibility
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -29,25 +31,25 @@ local PROCESS_SLOTS = {"WEAPON_MELEE", "WEAPON_RANGED", "KITBASH"}
 local temp_fixes = {}
 local temp_attachments = {}
 local temp_requirement_parts = {}
+local split_cache = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.collect_fixes = function(self, item_data, target_slot)
-    
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data --item_data.__master_item or item_data
+    -- Get item data
+    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     local item_type = item.item_type
-
     -- Clear temp
     table_clear(temp_fixes)
-
+    -- Check item type
     if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
-
+        -- Get weapon data
         local weapon_template = item.weapon_template
         local weapon_fixes = mod.settings.fixes[weapon_template]
         if weapon_fixes then
-
+            -- Get weapon attachments
             local attachments = mod.settings.attachments[weapon_template]
             if attachments then
 
@@ -71,20 +73,20 @@ mod.collect_fixes = function(self, item_data, target_slot)
 
                 -- Collect fixes to apply
                 for _, fix_entry in pairs(weapon_fixes) do
-
+                    -- Check target slot
                     if not target_slot or fix_entry.attachment_slot == target_slot then
-
                         local requirements_met = true
-
+                        -- Check requirements
                         if fix_entry.requirements then
-
                             -- Iterate through fix requirements
                             for requirement_slot, requirement_data in pairs(fix_entry.requirements) do
                                 local requirement_met = true
                                 -- Fix data
                                 local positive = requirement_data.has and true or false
                                 local requirement_string = positive and requirement_data.has or requirement_data.missing
-                                temp_requirement_parts = string_split(requirement_string, "|")
+                                local cache = split_cache[requirement_string]
+                                temp_requirement_parts = cache or string_split(requirement_string, "|")
+                                split_cache[requirement_string] = temp_requirement_parts
                                 -- Check validity
                                 if positive and not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                     requirement_met = false
@@ -97,17 +99,17 @@ mod.collect_fixes = function(self, item_data, target_slot)
                                     break
                                 end
                             end
-
+                        elseif fix_entry.active_function then
+                            local gear_id = mod:gear_id(item, true)
+                            local is_customization_menu = mod:pt().items_originating_from_customization_menu[gear_id]
+                            requirements_met = fix_entry.active_function(item_data, item_data.__is_ui_item_preview, item_data.__is_preview_item, is_customization_menu, self.customization_menu_slot_name)
                         end
-
                         -- Check if requirements are met
                         if requirements_met then
                             -- Collect fix
                             temp_fixes[fix_entry.fix] = fix_entry.attachment_slot
                         end
-
                     end
-
                 end
 
             end
@@ -121,7 +123,9 @@ end
 
 mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, optional_fixes, is_ui_item_preview)
     -- Item data
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data --item_data.__master_item or item_data
+    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization)) or is_ui_item_preview
+    local is_ui_item_preview = is_ui_item_preview or (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
     -- Check data
     if item.attachments then
         -- Get fixes
@@ -130,7 +134,13 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
             -- Iterate through fixes
             for fix, attachment_slot in pairs(fixes) do
                 -- Check fix valid
-                if not fix.disable_in_ui or not is_ui_item_preview then
+                local active = true
+                if fix.active_function then
+                    local gear_id = mod:gear_id(item, true)
+                    local is_customization_menu = mod:pt().items_originating_from_customization_menu[gear_id]
+                    active = fix.active_function(item, item_data.__is_ui_item_preview, item_data.__is_preview_item, is_customization_menu, self.customization_menu_slot_name)
+                end
+                if active and (not fix.disable_in_ui or not is_ui_item_preview) and (not fix.only_in_ui or is_ui_item_preview) then
                     -- Current attachment unit
                     local attachment_unit = attachment_name_lookup[item_unit][attachment_slot]
                     -- Check fix offset
@@ -138,9 +148,14 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                         local offset = fix.offset
                         local node = offset.node or 1
                         -- Check offset data
-                        if offset.position then unit_set_local_position(attachment_unit, 1, vector3_unbox(offset.position)) end
-                        if offset.rotation then unit_set_local_rotation(attachment_unit, 1, quaternion_from_vector(vector3_unbox(offset.rotation))) end
-                        if offset.scale then unit_set_local_scale(attachment_unit, 1, vector3_unbox(offset.scale)) end
+                        if offset.position then unit_set_local_position(attachment_unit, node, vector3_unbox(offset.position)) end
+                        if offset.rotation then unit_set_local_rotation(attachment_unit, node, quaternion_from_vector(vector3_unbox(offset.rotation))) end
+                        if offset.scale then unit_set_local_scale(attachment_unit, node, vector3_unbox(offset.scale)) end
+                    end
+                    -- Check fix hide
+                    if fix.hide and attachment_unit and unit_alive(attachment_unit) then
+                        local hide = fix.hide
+                        if hide.node then unit_set_local_scale(attachment_unit, hide.node, vector3(0, 0, 0)) end
                     end
                 end
             end
@@ -150,7 +165,8 @@ end
 
 mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
     -- Item data
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data.__master_item or item_data
+    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
     local item_type = item.item_type
     -- Check data
     if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
@@ -162,17 +178,26 @@ mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
             local attachments = mod.settings.attachments[weapon_template]
             -- Iterate through fixes
             for fix, attachment_slot in pairs(fixes) do
-                -- Check fix attach
-                if fix.attach then
-                    local attach = fix.attach
-                    -- Iterate through attach entries
-                    for attachment_slot, attachment_name in pairs(attach) do
-                        -- Get attachment path
-                        local attachment_item_path = attachments[attachment_slot][attachment_name].replacement_path
-                        -- Apply fix
-                        mod:modify_item(item, nil, {
-                            [attachment_slot] = attachment_item_path
-                        })
+                local active = true
+                if fix.active_function then
+                    local gear_id = mod:gear_id(item, true)
+                    local is_customization_menu = mod:pt().items_originating_from_customization_menu[gear_id]
+                    active = fix.active_function(item, item_data.__is_ui_item_preview, item_data.__is_preview_item, is_customization_menu, self.customization_menu_slot_name)
+                end
+                -- Check active
+                if active and (not fix.disable_in_ui or not is_ui_item_preview) and (not fix.only_in_ui or is_ui_item_preview) then
+                    -- Check fix attach
+                    if fix.attach then
+                        local attach = fix.attach
+                        -- Iterate through attach entries
+                        for attachment_slot, attachment_name in pairs(attach) do
+                            -- Get attachment path
+                            local attachment_item_path = attachments[attachment_slot][attachment_name].replacement_path
+                            -- Apply fix
+                            mod:modify_item(item, nil, {
+                                [attachment_slot] = attachment_item_path
+                            })
+                        end
                     end
                 end
             end

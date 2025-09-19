@@ -8,6 +8,8 @@ local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/
 local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/flashlight")
 local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/sight")
 local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/rail")
+local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/emblem_left")
+local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/emblem_right")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -26,16 +28,21 @@ local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/extended
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
-local _item_empty_trinket = _item.."/trinkets/unused_trinket"
+
+local infantry_receivers = "autogun_rifle_receiver_01|autogun_rifle_receiver_ml01"
 
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
 local braced_barrels = "autogun_rifle_barrel_ak_01|autogun_rifle_barrel_ak_02|autogun_rifle_barrel_ak_03|autogun_rifle_barrel_ak_04|autogun_rifle_barrel_ak_05|autogun_rifle_barrel_ak_06|autogun_rifle_barrel_ak_07|autogun_rifle_barrel_ak_08|autogun_rifle_barrel_ak_ml01"
+
+local headhunter_receivers = "autogun_rifle_killshot_receiver_01|autogun_rifle_killshot_receiver_02|autogun_rifle_killshot_receiver_03|autogun_rifle_killshot_receiver_04|autogun_rifle_killshot_receiver_ml01"
+
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
-local infantry_receivers = "autogun_rifle_receiver_01|autogun_rifle_receiver_ml01"
 local scopes = "scope_01"
 
 return {
     attachments = {
+        emblem_left = emblem_left,
+        emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
         flashlight = flashlights,
         rail = rails,
@@ -265,7 +272,7 @@ return {
                 replacement_path = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
                 icon_render_unit_rotation_offset = {90, 0, 30},
                 icon_render_camera_position_offset = {-.15, -1.45, -.1},
-            }
+            },
         },
         receiver = {
             --#region Infantry
@@ -441,68 +448,72 @@ return {
             --#endregion
         },
         grip = {
-            autogun_rifle_grip_01 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_02 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_02",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_03 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_03",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_ml01 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-
-            autogun_rifle_grip_ak_01 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_ak_02 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_02",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_ak_03 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_03",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_ak_04 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_04",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_ak_05 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_05",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_ak_ml01 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-
-            autogun_rifle_grip_killshot_01 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_killshot_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            autogun_rifle_grip_killshot_ml01 = {
-                replacement_path = _item_ranged.."/grips/autogun_rifle_grip_killshot_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
+            --#region Infantry
+                autogun_rifle_grip_01 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_01",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_02 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_02",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_03 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_03",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_ml01 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ml01",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+            --#endregion
+            --#region Braced
+                autogun_rifle_grip_ak_01 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_01",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_ak_02 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_02",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_ak_03 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_03",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_ak_04 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_04",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_ak_05 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_05",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_ak_ml01 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_ak_ml01",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+            --#endregion
+            --#region Headhunter
+                autogun_rifle_grip_killshot_01 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_killshot_01",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+                autogun_rifle_grip_killshot_ml01 = {
+                    replacement_path = _item_ranged.."/grips/autogun_rifle_grip_killshot_ml01",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {.075, -1, .05},
+                },
+            --#endregion
         },
     },
     fixes = {
@@ -519,13 +530,95 @@ return {
                 },
             },
         },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = reflex_sights.."|"..scopes,
+                },
+                receiver = {
+                    has = braced_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.025, 0),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = reflex_sights.."|"..scopes,
+                },
+                receiver = {
+                    has = headhunter_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, 0),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = "lasgun_rifle_sight_01",
+                },
+                receiver = {
+                    has = infantry_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.0225, .025),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = "lasgun_rifle_sight_01",
+                },
+                receiver = {
+                    has = braced_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.0125, .025),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, .65, 1),
+                },
+            },
+        },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = "autogun_rifle_sight_01",
+                },
+                receiver = {
+                    has = braced_receivers,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .03, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                },
+            },
+        },
         {attachment_slot = "rail",
             requirements = {
                 receiver = {
                     has = infantry_receivers,
                 },
                 sight = {
-                    has = reflex_sights.."|"..scopes,
+                    has = reflex_sights.."|"..scopes.."|autogun_rifle_killshot_sight_01|autogun_rifle_ak_sight_01",
                 },
             },
             fix = {
@@ -535,7 +628,7 @@ return {
                 offset = {
                     position = vector3_box(0, -.05, 0),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
+                    scale = vector3_box(1, 1.3, 1),
                     node = 1,
                 },
             },

@@ -8,6 +8,8 @@ local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/
 local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/flashlight")
 local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/sight")
 local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/rail")
+local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/emblem_left")
+local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/emblem_right")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -33,9 +35,38 @@ local scopes = "scope_01"
 
 return {
     attachments = {
+        emblem_left = emblem_left,
+        emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
         flashlight = flashlights,
         rail = rails,
+        grip = {
+            flamer_rifle_grip_01 = {
+                replacement_path = _item_ranged.."/grips/flamer_rifle_grip_01",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
+            flamer_rifle_grip_02 = {
+                replacement_path = _item_ranged.."/grips/flamer_rifle_grip_02",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
+            flamer_rifle_grip_03 = {
+                replacement_path = _item_ranged.."/grips/flamer_rifle_grip_03",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
+            flamer_rifle_grip_04 = {
+                replacement_path = _item_ranged.."/grips/flamer_rifle_grip_04",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
+            flamer_rifle_grip_ml01 = {
+                replacement_path = _item_ranged.."/grips/flamer_rifle_grip_ml01",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
+        },
         receiver = {
             flamer_rifle_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_01",

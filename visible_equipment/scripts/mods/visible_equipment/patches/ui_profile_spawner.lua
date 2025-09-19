@@ -167,7 +167,7 @@ end)
 
 mod:hook(CLASS.UIProfileSpawner, "init", function(func, self, reference_name, world, camera, unit_spawner, force_highest_lod_step, optional_mission_template, ...)
     -- Set pt variable
-    self.pt = mod:pt()
+    -- self.pt = mod:pt()
     -- Original function
     func(self, reference_name, world, camera, unit_spawner, force_highest_lod_step, optional_mission_template, ...)
     -- Enable rotation input
@@ -231,7 +231,7 @@ end)
 mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
     -- Catch profile
     if self:valid_instance(profile) then
-        self.pt.catch_unit = profile
+        mod:pt().catch_unit = profile
     end
     -- Ignore slots
     self._ignored_slots[SLOT_SECONDARY] = nil

@@ -1,6 +1,13 @@
 local mod = get_mod("extended_weapon_customization")
 
 mod:add_global_localize_strings({
+	loc_weapon_inventory_reset_button = {
+		en = "Reset",
+	},
+	loc_weapon_inventory_random_button = {
+		en = "Random",
+	},
+
 	attachment_slot_pommel = {
 		en = "Pommel",
 		["zh-cn"] = "配重球",
@@ -70,6 +77,21 @@ mod:add_global_localize_strings({
 	},
 	attachment_slot_hilt = {
 		en = "Hilt",
+	},
+	attachment_slot_emblem_left = {
+		en = "Left Emblem",
+	},
+	attachment_slot_emblem_right = {
+		en = "Right Emblem",
+	},
+	attachment_slot_connector = {
+		en = "Connector",
+	},
+	attachment_slot_left = {
+		en = "Shield",
+	},
+	attachment_slot_handle = {
+		en = "Handle",
 	},
 })
 

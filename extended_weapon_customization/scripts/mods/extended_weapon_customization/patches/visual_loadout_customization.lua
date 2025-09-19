@@ -98,7 +98,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                             fixes = table_merge_recursive(fixes, kitbash_fixes)
                         end
 
-                        if item.is_kitbash then
+                        if item.is_kitbash and not item.disable_vfx_spawner_exclusion then
                             
                             local pt = mod:pt()
 
@@ -108,6 +108,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                             for _, child in pairs(all_children) do
                                 pt.exclude_from_vfx_spawner[child] = true
                             end
+
+                        elseif item.disable_vfx_spawner_exclusion then
+
+                            -- mod:echo("disable_vfx_spawner_exclusion: "..tostring(item.name))
 
                         end
 
@@ -160,7 +164,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         end
 
         -- Apply fixes
-        mod:apply_unit_fixes(item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, fixes)
+        mod:apply_unit_fixes(item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, fixes, true)
         -- Return
         return item_unit, attachment_units_by_unit, bind_pose, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit
     end)

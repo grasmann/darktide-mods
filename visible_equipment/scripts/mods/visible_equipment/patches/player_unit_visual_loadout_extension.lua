@@ -60,6 +60,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
     managers.event:register(self, "visible_equipment_update_placements", "update_placements")
     -- Original function
     func(self, extension_init_context, unit, extension_init_data, game_object_data_or_game_session, unit_spawn_parameter_or_game_object_id, ...)
+    -- Destroy mispredict handler
+    self._mispredict_package_handler = nil
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "extensions_ready", function(func, self, world, unit, ...)

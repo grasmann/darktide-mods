@@ -21,114 +21,52 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local extended_weapon_customization_plugin = {
     attachments = {
-        autopistol_p1_m1 = {
-            receiver = {
-                autogun_pistol_receiver_01 = {
-                    replacement_path = _item_ranged.."/recievers/autogun_pistol_receiver_01",
-                    icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.2, -2.75, .25},
-                },
-                autogun_pistol_receiver_02 = {
-                    replacement_path = _item_ranged.."/recievers/autogun_pistol_receiver_02",
-                    icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.2, -2.75, .25},
-                },
-                autogun_pistol_receiver_03 = {
-                    replacement_path = _item_ranged.."/recievers/autogun_pistol_receiver_03",
-                    icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.2, -2.75, .25},
-                },
-                autogun_pistol_receiver_04 = {
-                    replacement_path = _item_ranged.."/recievers/autogun_pistol_receiver_04",
-                    icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.2, -2.75, .25},
-                },
-                autogun_pistol_receiver_05 = {
-                    replacement_path = _item_ranged.."/recievers/autogun_pistol_receiver_05",
-                    icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.2, -2.75, .25},
-                },
-                autogun_pistol_receiver_ml01 = {
-                    replacement_path = _item_ranged.."/recievers/autogun_pistol_receiver_ml01",
-                    icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.2, -2.75, .25},
+        autogun_p1_m1 = {
+            magazine = {
+                autogun_rifle_magazine_01_double = {
+                    replacement_path = _item_ranged.."/magazines/autogun_rifle_magazine_01_double",
+                    icon_render_unit_rotation_offset = {90, 0, 30},
+                    icon_render_camera_position_offset = {-.09, -1.5, -.1},
                 },
             },
         },
-        bolter_p1_m1 = {
-            sight = {
-                scope_02 = {
-                    replacement_path = _item_ranged.."/sights/scope_02",
-                    icon_render_unit_rotation_offset = {90, 0, 45},
-                    icon_render_camera_position_offset = {-.2, -2.75, .25},
-                },
-            }
-        },
     },
-    fixes = {
-        bolter_p1_m1 = {
-            {attachment_slot = "sight",
-                requirements = {
-                    sight = {
-                        has = "scope_02",
-                    },
-                },
-                fix = {
-                    offset = {
-                        position = vector3_box(0, .1, -.01),
-                        rotation = vector3_box(0, 0, 0),
-                    },
-                },
-            },
-        }
-    },
-    kitbash = {
-        ["content/items/weapons/player/ranged/sights/scope_02"] = {
+    kitbashs = {
+        ["content/items/weapons/player/ranged/magazines/autogun_rifle_magazine_01_double"] = {
             attachments = {
-                base = {
-                    item = "content/items/weapons/player/ranged/sights/reflex_sight_02",
+                double_magazine_1 = {
+                    item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
                     fix = {
-                        disable_in_ui = true,
                         offset = {
                             node = 1,
-                            position = vector3_box(0, 0, .115),
+                            position = vector3_box(0, 0, 0),
                             rotation = vector3_box(0, 0, 0),
                             scale = vector3_box(1, 1, 1),
                         },
                     },
                     children = {
-                        body = {
-                            item = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_04",
+                        double_magazine_clip = {
+                            item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
                             fix = {
                                 offset = {
                                     node = 1,
-                                    position = vector3_box(0, -.04, .05),
-                                    rotation = vector3_box(0, 0, 0),
-                                    scale = vector3_box(1.5, 1.5, 1.5),
+                                    position = vector3_box(.0325, -.01, -.15),
+                                    rotation = vector3_box(0, 90, 0),
+                                    scale = vector3_box(1, 1.2, .75),
                                 },
                             },
                             children = {
-                                lense_1 = {
-                                    item = "content/items/weapons/player/ranged/bullets/rippergun_rifle_bullet_01",
+                                double_magazine_2 = {
+                                    item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
                                     fix = {
                                         offset = {
                                             node = 1,
-                                            position = vector3_box(0, .085, 0),
-                                            rotation = vector3_box(0, 0, 0),
-                                            scale = vector3_box(1, .35, 1),
+                                            position = vector3_box(.15, .005, -.125),
+                                            rotation = vector3_box(0, 90, 0),
+                                            scale = vector3_box(1.3, .85, 1),
                                         },
                                     },
-                                },
-                                lense_2 = {
-                                    item = "content/items/weapons/player/ranged/bullets/rippergun_rifle_bullet_01",
-                                    fix = {
-                                        offset = {
-                                            node = 1,
-                                            position = vector3_box(0, .075, 0),
-                                            rotation = vector3_box(180, 0, 0),
-                                            scale = vector3_box(1, .35, 1),
-                                        },
-                                    },
+                                    children = {},
                                 },
                             },
                         },
@@ -137,10 +75,19 @@ local extended_weapon_customization_plugin = {
             },
             display_name = "loc_scope_01",
             description = "loc_description_scope_01",
-            attach_node = "ap_sight",
+            attach_node = "ap_magazine_01",
             dev_name = "loc_scope_01",
         },
-    }
+    },
 }
+
+extended_weapon_customization_plugin.attachments.autogun_p1_m2 = table_clone(extended_weapon_customization_plugin.attachments.autogun_p1_m1)
+extended_weapon_customization_plugin.attachments.autogun_p1_m3 = table_clone(extended_weapon_customization_plugin.attachments.autogun_p1_m1)
+extended_weapon_customization_plugin.attachments.autogun_p2_m1 = table_clone(extended_weapon_customization_plugin.attachments.autogun_p1_m1)
+extended_weapon_customization_plugin.attachments.autogun_p2_m2 = table_clone(extended_weapon_customization_plugin.attachments.autogun_p1_m1)
+extended_weapon_customization_plugin.attachments.autogun_p2_m3 = table_clone(extended_weapon_customization_plugin.attachments.autogun_p1_m1)
+extended_weapon_customization_plugin.attachments.autogun_p3_m1 = table_clone(extended_weapon_customization_plugin.attachments.autogun_p1_m1)
+extended_weapon_customization_plugin.attachments.autogun_p3_m2 = table_clone(extended_weapon_customization_plugin.attachments.autogun_p1_m1)
+extended_weapon_customization_plugin.attachments.autogun_p3_m3 = table_clone(extended_weapon_customization_plugin.attachments.autogun_p1_m1)
 
 mod.extended_weapon_customization_plugin = extended_weapon_customization_plugin

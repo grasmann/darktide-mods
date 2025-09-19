@@ -7,22 +7,30 @@ local mod = get_mod("visible_equipment")
 local Items = mod:original_require("scripts/utilities/items")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local ItemPassTemplates = mod:original_require("scripts/ui/pass_templates/item_pass_templates")
-local gear_icon_size = ItemPassTemplates.gear_icon_size
-local gear_bundle_size = ItemPassTemplates.gear_bundle_size
+local MasterItems = mod:original_require("scripts/backend/master_items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local math = math
     local type = type
     local utf8 = Utf8
     local table = table
     local callback = callback
     local managers = Managers
     local localize = Localize
+    local math_uuid = math.uuid
     local utf8_upper = utf8.upper
     local table_clone = table.clone
 --#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local gear_icon_size = ItemPassTemplates.gear_icon_size
+local gear_bundle_size = ItemPassTemplates.gear_bundle_size
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
@@ -78,6 +86,15 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                 local slot_name = slot.name
                 local equipped_item = parent:equipped_item_in_slot(slot_name)
 
+                -- local preview_item = MasterItems.create_preview_item_instance(equipped_item)
+
+                -- local new_gear_id = math_uuid()
+                -- preview_item.gear_id = new_gear_id
+                -- preview_item.__gear_id = new_gear_id
+                -- preview_item.__original_gear_id = new_gear_id
+                -- preview_item.inventory_placement_icon = true
+                -- mod:gear_placement(new_gear_id, mod:gear_placement(mod:gear_id(equipped_item)))
+
                 content.item = equipped_item
 
                 local display_name = equipped_item and equipped_item.display_name
@@ -101,7 +118,8 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
 						companion_animation_event = companion_item_animation_event,
                         custom_slot_name = slot_name.."_placement",
                         size = gear_icon_size,
-                        placement_name = element.placement_name or "default",
+                        -- placement_name = element.placement_name or "default",
+                        placement_name = mod:gear_placement(mod:gear_id(equipped_item)),
                         slot_name = slot_name,
 					}
 
@@ -138,7 +156,19 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                 local update = equipped_item and not previous_item or not equipped_item and previous_item or previous_item and previous_gear_id ~= equipped_gear_id
 
                 if update then
+
+                    -- local preview_item = MasterItems.create_preview_item_instance(equipped_item)
+
+                    -- local new_gear_id = math_uuid()
+                    -- preview_item.gear_id = new_gear_id
+                    -- preview_item.__gear_id = new_gear_id
+                    -- preview_item.__original_gear_id = new_gear_id
+                    -- preview_item.inventory_placement_icon = true
+                    -- mod:gear_placement(new_gear_id, mod:gear_placement(mod:gear_id(equipped_item)))
+
                     content.item = equipped_item
+
+                    -- content.item = equipped_item
 
                     local display_name = equipped_item and equipped_item.display_name
 
@@ -180,7 +210,8 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                             companion_animation_event = companion_item_animation_event,
                             custom_slot_name = slot_name.."_placement",
                             size = gear_icon_size,
-                            placement_name = element.placement_name or "default",
+                            -- placement_name = element.placement_name or "default",
+                            placement_name = mod:gear_placement(mod:gear_id(equipped_item)),
                             slot_name = slot_name,
                         }
 

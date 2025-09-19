@@ -10,12 +10,14 @@ local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/butt
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local InputDevice = mod:original_require("scripts/managers/input/input_device")
 local master_items = mod:original_require("scripts/backend/master_items")
+local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local items = mod:original_require("scripts/utilities/items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local type = type
     local utf8 = Utf8
     local math = math
     local table = table
@@ -26,10 +28,13 @@ local items = mod:original_require("scripts/utilities/items")
     local callback = callback
     local managers = Managers
     local localize = Localize
+    local tostring = tostring
     local math_uuid = math.uuid
     local table_size = table.size
     local utf8_upper = utf8.upper
     local quaternion = Quaternion
+    local script_unit = ScriptUnit
+    local table_clear = table.clear
     local string_gsub = string.gsub
     local string_upper = string.upper
     local vector3_zero = vector3.zero
@@ -37,8 +42,187 @@ local items = mod:original_require("scripts/utilities/items")
     local quaternion_box = QuaternionBox
     local quaternion_identity = quaternion.identity
     local table_clone_instance = table.clone_instance
+    local script_unit_extension = script_unit.extension
     local quaternion_from_vector = quaternion.from_vector
 --#endregion
+
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
+
+mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view", function(instance)
+
+    instance.update_presentation_item = function(self, optional_item)
+        local item = optional_item or self._selected_item
+        
+        self._presentation_item = master_items.create_preview_item_instance(item, true)
+
+        local gear_id = math_uuid()
+
+        self._presentation_item.gear_id = gear_id
+        self._presentation_item.__gear_id = gear_id
+        self._presentation_item.__original_gear_id = gear_id
+        self._presentation_item.__attachment_customization = true
+
+        mod:pt().items_originating_from_customization_menu[gear_id] = true
+
+        self:_preview_item(self._presentation_item)
+        self:cb_switch_tab(1)
+    end
+
+    instance.update_real_world_item = function(self, optional_item)
+        local item = optional_item or self._selected_item
+        managers.ui:item_icon_updated(item)
+        managers.event:trigger("event_item_icon_updated", item)
+        managers.event:trigger("event_replace_list_item", item)
+        -- Redo weapon attachments
+        mod:reevaluate_packages()
+        mod:redo_weapon_attachments(self._selected_item)
+    end
+
+    instance.cb_on_reset_pressed = function(self)
+
+        mod.is_in_customization_menu = nil
+        mod.customization_menu_slot_name = nil
+        table_clear(mod:pt().items_originating_from_customization_menu)
+
+        local gear_id = mod:gear_id(self._selected_item)
+        mod:delete_gear_settings(gear_id, true)
+
+        local fake_gear_id = mod:gear_id(self._presentation_item, true)
+        mod:delete_gear_settings(gear_id, true)
+
+        mod:reset_item(self._selected_item, true)
+        mod:reset_item(self._presentation_item, true)
+
+        -- managers.ui:item_icon_updated(self._selected_item)
+        -- managers.event:trigger("event_item_icon_updated", self._selected_item)
+        -- managers.event:trigger("event_replace_list_item", self._selected_item)
+
+        -- mod:reevaluate_packages()
+
+        -- -- Redo weapon attachments
+        -- mod:redo_weapon_attachments(self._selected_item)
+
+
+        local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
+        for attachment_slot, data in pairs(attachment_slots) do
+
+            local attachment_item_path = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
+            local attachment_item = master_items.get_item(attachment_item_path)
+            
+            self["_equipped_"..attachment_slot.."_name"] = attachment_item_path or "content/items/weapons/player/trinkets/unused_trinket"
+            self["_selected_"..attachment_slot.."_name"] = attachment_item_path or "content/items/weapons/player/trinkets/unused_trinket"
+
+            self["_equipped_"..attachment_slot] = attachment_item
+            self["_selected_"..attachment_slot] = attachment_item
+
+        end
+
+
+        self:update_real_world_item()
+
+        self:update_presentation_item()
+
+        -- if self._presentation_item then
+        --     self:_setup_weapon_preview()
+        --     self:_preview_item(self._presentation_item)
+        --     self._weapon_preview:center_align(0, {
+        --         0,
+        --         0,
+        --         0,
+        --     })
+        -- end
+
+        -- self:present_grid_layout({})
+        -- self:_register_button_callbacks()
+        -- self:_fetch_inventory_items(tabs_content)
+
+        mod:pt().items_originating_from_customization_menu[fake_gear_id] = true
+
+        self:_preview_item(self._presentation_item)
+        -- self._weapon_preview:center_align(0, {
+        --     -0.2,
+        --     -0.3,
+        --     -0.2,
+        -- })
+        -- self:_setup_menu_tabs(self._tabs_content)
+        local index = self._selected_tab_index
+        self._selected_tab_index = nil
+        self:cb_switch_tab(index)
+        -- self:cb_switch_tab(1)
+
+        mod.is_in_customization_menu = true
+    end
+
+    instance.cb_on_random_pressed = function(self)
+        -- mod:echo("cb_on_random_pressed")
+
+        mod.is_in_customization_menu = nil
+        mod.customization_menu_slot_name = nil
+        table_clear(mod:pt().items_originating_from_customization_menu)
+
+        local new_gear_settings = mod:randomize_item(self._selected_item)
+
+        local gear_id = mod:gear_id(self._selected_item)
+        mod:gear_settings(gear_id, new_gear_settings, true)
+
+        local fake_gear_id = mod:gear_id(self._presentation_item, true)
+        -- mod:gear_settings(gear_id, new_gear_settings, true)
+
+        mod:modify_item(self._selected_item, false, new_gear_settings)
+        -- Fixes
+        mod:apply_attachment_fixes(self._selected_item)
+        -- mod:modify_item(self._presentation_item, true, new_gear_settings)
+
+        -- local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
+        for attachment_slot, replacement_path in pairs(new_gear_settings) do
+
+            -- local attachment_item_path = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
+            local attachment_item = master_items.get_item(replacement_path)
+            
+            self["_equipped_"..attachment_slot.."_name"] = replacement_path or "content/items/weapons/player/trinkets/unused_trinket"
+            self["_selected_"..attachment_slot.."_name"] = replacement_path or "content/items/weapons/player/trinkets/unused_trinket"
+
+            self["_equipped_"..attachment_slot] = attachment_item
+            self["_selected_"..attachment_slot] = attachment_item
+
+        end
+
+        self:update_real_world_item()
+
+        self:update_presentation_item()
+
+        -- if self._presentation_item then
+        --     self:_setup_weapon_preview()
+        --     self:_preview_item(self._presentation_item)
+        --     self._weapon_preview:center_align(0, {
+        --         0,
+        --         0,
+        --         0,
+        --     })
+        -- end
+
+        -- self:present_grid_layout({})
+
+        mod:pt().items_originating_from_customization_menu[fake_gear_id] = true
+
+        self:_preview_item(self._presentation_item)
+        -- self._weapon_preview:center_align(0, {
+        --     -0.2,
+        --     -0.3,
+        --     -0.2,
+        -- })
+        -- self:_setup_menu_tabs(self._tabs_content)
+        local index = self._selected_tab_index
+        self._selected_tab_index = nil
+        self:cb_switch_tab(index)
+
+        mod.is_in_customization_menu = true
+
+    end
+
+end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
@@ -82,7 +266,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
         local id = "tab_menu"
         local layer = 10
         local button_size = {
-            270,
+            230,
             40,
         }
         local button_spacing = 10
@@ -142,23 +326,29 @@ end)
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, self, index, ...)
     if self.customize_attachments then
 
+        -- self._item_grid.wepaon_customization = true
+
         local weapon_template = self._presentation_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
         local content = self._tabs_content[index]
         if content then
             local slot_name = content.slot_name
+            mod.customization_menu_slot_name = slot_name
 
             if index ~= self._selected_tab_index then
                 if self._selected_tab_index then
-                    local presentation_item = self._presentation_item
+                    -- local presentation_item = self._presentation_item
 
                     self["_selected_"..slot_name.."_name"] = mod:fetch_attachment(self._selected_item.attachments, slot_name)
 
                     local real_item = master_items.get_item(self["_selected_"..slot_name.."_name"])
 
-                    self._tabs_content[self._selected_tab_index].apply_on_preview(real_item, presentation_item)
+                    self._tabs_content[self._selected_tab_index].apply_on_preview(real_item, self._presentation_item)
 
-                    self:_preview_item(presentation_item)
+                    local gear_id = mod:gear_id(self._presentation_item, true)
+                    mod:pt().items_originating_from_customization_menu[gear_id] = true
+
+                    self:_preview_item(self._presentation_item)
                 end
 
                 self._selected_tab_index = index
@@ -166,6 +356,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                 self._tab_menu_element:set_selected_index(index)
 
                 local generate_visual_item_function = content.generate_visual_item_function
+                local get_empty_item_function = content.get_empty_item
 
                 self._grid_display_name = content.display_name
 
@@ -174,6 +365,18 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                 end
 
                 local layout = {}
+
+                if get_empty_item_function then
+                    local empty_item = get_empty_item_function(self._selected_item, self._presentation_item)
+                    layout[#layout + 1] = {
+                        is_empty = true,
+                        item = empty_item,
+                        slot_name = slot_name,
+                        sort_data = {
+                            display_name = "loc_weapon_cosmetic_empty",
+                        },
+                    }
+                end
 
                 local attachment_entries = attachments[slot_name]
                 if attachment_entries and table_size(attachment_entries) > 1 then
@@ -196,6 +399,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
                 self:_present_layout_by_slot_filter()
             end
+
             return
         end
     end
@@ -216,6 +420,14 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_update_equip_button_state", funct
 
         button_content.hotspot.disabled = disable_button
         button_content.text = utf8_upper(disable_button and localize("loc_weapon_inventory_equipped_button") or localize("loc_weapon_inventory_equip_button"))
+
+        local reset_button = self._widgets_by_name.reset_button
+        if reset_button then
+            local button_content = reset_button.content
+            local gear_id = mod:gear_id(self._selected_item)
+            button_content.hotspot.disabled = not mod:gear_settings(gear_id)
+        end
+
         return
     end
     -- Original function
@@ -238,9 +450,21 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "equipped_item_name_in_slot", funct
     return func(self, slot_name, ...)
 end)
 
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...)
+    if self.customize_attachments then
+        mod.is_in_customization_menu = nil
+        mod.customization_menu_slot_name = nil
+        table_clear(mod:pt().items_originating_from_customization_menu)
+    end
+    -- Original function
+    func(self, ...)
+end)
+
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
     if self.customize_attachments then
         CLASS.InventoryWeaponCosmeticsView.super.on_enter(self)
+
+        mod.is_in_customization_menu = true
 
         self._render_settings.alpha_multiplier = 0
 
@@ -276,7 +500,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
                     if table_size(attachment_entries) > 1 then
                         tabs_content[#tabs_content+1] = {
                             display_name = attachment_slot,
-                            -- icon = "content/ui/materials/icons/item_types/weapon_trinkets",
                             slot_name = attachment_slot,
                             get_item_filters = function (slot_name, item_type)
                                 local slot_filter = slot_name and {
@@ -290,7 +513,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
                                 end
                             end,
                             get_empty_item = function (selected_item, presentation_item)
-                                return items.weapon_trinket_preview_item(presentation_item)
+                                local empty_master_item = master_items.get_item("content/items/weapons/player/trinkets/unused_trinket")
+                                local item = items.weapon_trinket_preview_item(empty_master_item)
+                                item.empty_item = true
+                                return item
                             end,
                             generate_visual_item_function = function (slot_name, real_item, attachment_data) --, selected_item, presentation_item)
 
@@ -321,8 +547,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
                                     self["_selected_"..attachment_slot] = real_item
                                 end
 
-                                -- self:_preview_item(presentation_item)
-
                             end,
                         }
                     end
@@ -336,6 +560,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
         if self._presentation_item then
             self:_setup_weapon_preview()
+
+            local gear_id = mod:gear_id(self._presentation_item, true)
+            mod:pt().items_originating_from_customization_menu[gear_id] = true
+
             self:_preview_item(self._presentation_item)
             self._weapon_preview:center_align(0, {
                 -0.2,
@@ -371,69 +599,73 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
             self._previewed_item = item
             self._previewed_element = element
 
-            local attachment_data = mod.settings.attachment_data_by_item_string[real_item.name]
-            local attachments = mod.settings.attachments[presentation_item.weapon_template]
+            if real_item then
 
-            local detached, validated = {}, {}
+                local attachment_data = mod.settings.attachment_data_by_item_string[real_item.name]
+                local attachments = mod.settings.attachments[presentation_item.weapon_template]
 
-            -- Detach attachments
-            if attachment_data and attachment_data.detach_attachments then
-                for _, attachment_slot_or_attachment_name in pairs(attachment_data.detach_attachments) do
-                    
-                    if attachments[attachment_slot_or_attachment_name] then
-                        -- Remove attachment slot
-                        mod:modify_item(presentation_item, nil, {
-                            [attachment_slot_or_attachment_name] = "content/items/weapons/player/trinkets/unused_trinket"
-                        })
-                        detached[attachment_slot_or_attachment_name] = true
-                        self["_selected_"..attachment_slot_or_attachment_name.."_name"] = "content/items/weapons/player/trinkets/unused_trinket"
-                    else
-                        -- Iterate through attachments and remove attachment with specific name
-                        for attachment_slot, attachment_entries in pairs(attachments) do
-                            if self["_selected_"..attachment_slot.."_name"] == attachment_slot_or_attachment_name then
-                                mod:modify_item(presentation_item, nil, {
-                                    [attachment_slot] = "content/items/weapons/player/trinkets/unused_trinket"
-                                })
-                                detached[attachment_slot] = true
-                                self["_selected_"..attachment_slot.."_name"] = "content/items/weapons/player/trinkets/unused_trinket"
-                                break
+                local detached, validated = {}, {}
+
+                -- Detach attachments
+                if attachment_data and attachment_data.detach_attachments then
+                    for _, attachment_slot_or_attachment_name in pairs(attachment_data.detach_attachments) do
+                        
+                        if attachments[attachment_slot_or_attachment_name] then
+                            -- Remove attachment slot
+                            mod:modify_item(presentation_item, nil, {
+                                [attachment_slot_or_attachment_name] = "content/items/weapons/player/trinkets/unused_trinket"
+                            })
+                            detached[attachment_slot_or_attachment_name] = true
+                            self["_selected_"..attachment_slot_or_attachment_name.."_name"] = "content/items/weapons/player/trinkets/unused_trinket"
+                        else
+                            -- Iterate through attachments and remove attachment with specific name
+                            for attachment_slot, attachment_entries in pairs(attachments) do
+                                if self["_selected_"..attachment_slot.."_name"] == attachment_slot_or_attachment_name then
+                                    mod:modify_item(presentation_item, nil, {
+                                        [attachment_slot] = "content/items/weapons/player/trinkets/unused_trinket"
+                                    })
+                                    detached[attachment_slot] = true
+                                    self["_selected_"..attachment_slot.."_name"] = "content/items/weapons/player/trinkets/unused_trinket"
+                                    break
+                                end
                             end
                         end
                     end
                 end
-            end
 
-            -- Validate attachments
-            if attachment_data and attachment_data.validate_attachments then
-                for _, attachment_slot in pairs(attachment_data.validate_attachments) do
-                    local current_attachment = self["_selected_"..attachment_slot.."_name"]
-                    if attachments and attachments[attachment_slot] then
-                        local replacement_path = self["_equipped_"..attachment_slot.."_name"]
-                        -- Iterate through attachments and set first
-                        for attachment_name, attachment_data in pairs(attachments[attachment_slot]) do
-                            replacement_path = attachment_data.replacement_path
-                            break
+                -- Validate attachments
+                if attachment_data and attachment_data.validate_attachments then
+                    for _, attachment_slot in pairs(attachment_data.validate_attachments) do
+                        local current_attachment = self["_selected_"..attachment_slot.."_name"]
+                        if attachments and attachments[attachment_slot] then
+                            local replacement_path = self["_equipped_"..attachment_slot.."_name"]
+                            -- Iterate through attachments and set first
+                            for attachment_name, attachment_data in pairs(attachments[attachment_slot]) do
+                                replacement_path = attachment_data.replacement_path
+                                break
+                            end
+                            -- Validate
+                            mod:modify_item(presentation_item, nil, {
+                                [attachment_slot] = replacement_path
+                            })
+                            validated[attachment_slot] = true
+                            self["_selected_"..attachment_slot.."_name"] = replacement_path
                         end
-                        -- Validate
-                        mod:modify_item(presentation_item, nil, {
-                            [attachment_slot] = replacement_path
-                        })
-                        validated[attachment_slot] = true
-                        self["_selected_"..attachment_slot.."_name"] = replacement_path
                     end
                 end
-            end
 
-            -- Overwrite selected
-            for attachment_slot, attachment_entries in pairs(attachments) do
-                local current = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
-                local selected_or_saved = (slot_name == attachment_slot and self["_selected_"..attachment_slot.."_name"]) or self["_equipped_"..attachment_slot.."_name"] --or current
-                if selected_or_saved and not detached[attachment_slot] then --and not validated[attachment_slot] then
-                    mod:modify_item(presentation_item, nil, {
-                        [attachment_slot] = selected_or_saved
-                    })
-                    self["_selected_"..attachment_slot.."_name"] = selected_or_saved
+                -- Overwrite selected
+                for attachment_slot, attachment_entries in pairs(attachments) do
+                    local current = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
+                    local selected_or_saved = (slot_name == attachment_slot and self["_selected_"..attachment_slot.."_name"]) or self["_equipped_"..attachment_slot.."_name"] --or current
+                    if selected_or_saved and not detached[attachment_slot] then --and not validated[attachment_slot] then
+                        mod:modify_item(presentation_item, nil, {
+                            [attachment_slot] = selected_or_saved
+                        })
+                        self["_selected_"..attachment_slot.."_name"] = selected_or_saved
+                    end
                 end
+
             end
 
             -- Set selected element
@@ -442,17 +674,25 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
             })
 
             apply_on_preview(real_item, presentation_item)
+
+            local gear_id = mod:gear_id(presentation_item, true)
+            mod:pt().items_originating_from_customization_menu[gear_id] = true
+
             self:_preview_item(presentation_item)
 
             local widgets_by_name = self._widgets_by_name
 
-            local attachment_name = mod.settings.attachment_name_by_item_string[real_item.name]
+            local attachment_name = mod.settings.attachment_name_by_item_string[real_item and real_item.name] or "empty"
             attachment_name = string_gsub(attachment_name, "_", " ")
             attachment_name = string_gsub(attachment_name, "%f[%a].", string_upper)
 
             widgets_by_name.sub_display_name.content.text = string_format("%s • %s", items.weapon_card_display_name(self._selected_item), items.weapon_card_sub_display_name(self._selected_item))
             widgets_by_name.display_name.content.text = attachment_name --real_item and items.display_name(real_item) or localize("loc_weapon_cosmetic_empty")
+
+            return
         end
+    end
+    if not element then
         return
     end
     -- Original function
@@ -461,6 +701,10 @@ end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
     if self.customize_attachments then
+
+        mod.is_in_customization_menu = nil
+        mod.customization_menu_slot_name = nil
+        table_clear(mod:pt().items_originating_from_customization_menu)
 
         local gear_id = mod:gear_id(self._selected_item)
 
@@ -478,16 +722,20 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 
         mod:gear_settings(gear_id, gear_settings, true)
 
-        managers.ui:item_icon_updated(self._selected_item)
-        managers.event:trigger("event_item_icon_updated", self._selected_item)
-        managers.event:trigger("event_replace_list_item", self._selected_item)
+        -- managers.ui:item_icon_updated(self._selected_item)
+        -- managers.event:trigger("event_item_icon_updated", self._selected_item)
+        -- managers.event:trigger("event_replace_list_item", self._selected_item)
 
-        mod:reevaluate_packages()
+        -- mod:reevaluate_packages()
 
-        -- Redo weapon attachments
-        mod:redo_weapon_attachments(self._selected_item)
+        -- -- Redo weapon attachments
+        -- mod:redo_weapon_attachments(self._selected_item)
+
+        self:update_real_world_item()
 
         -- self:present_grid_layout({})
+
+        mod.is_in_customization_menu = true
 
         return
     end
@@ -509,5 +757,21 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, sel
     if not self._item_grid:hovered() then
         -- Original function
         func(self, input_service, dt, t, ...)
+    end
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", function(func, self, ...)
+    -- Original function
+    func(self, ...)
+    -- Custom
+    local widgets_by_name = self._widgets_by_name
+    local reset_button = widgets_by_name.reset_button
+    local random_button = widgets_by_name.random_button
+    if self.customize_attachments then
+        if reset_button then reset_button.content.hotspot.pressed_callback = callback(self, "cb_on_reset_pressed") end
+        if random_button then random_button.content.hotspot.pressed_callback = callback(self, "cb_on_random_pressed") end
+    else
+        if reset_button then reset_button.visible = false end
+        if random_button then random_button.visible = false end
     end
 end)

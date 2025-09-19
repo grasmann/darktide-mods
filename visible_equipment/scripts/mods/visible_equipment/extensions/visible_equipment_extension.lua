@@ -8,6 +8,7 @@ local visual_loadout_customization = mod:original_require("scripts/extension_sys
 local player_character_sound_event_aliases = mod:original_require("scripts/settings/sound/player_character_sound_event_aliases")
 local WieldableSlotScripts = mod:original_require("scripts/extension_systems/visual_loadout/utilities/wieldable_slot_scripts")
 local weapon_templates = mod:original_require("scripts/utilities/weapon/weapon_template")
+local master_items = mod:original_require("scripts/backend/master_items")
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
 -- ##### │  │  ├─┤└─┐└─┐ ##############################################################################################
@@ -62,6 +63,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local quaternion_lerp = quaternion.lerp
     local vector3_unbox = vector3_box.unbox
     local unit_flow_event = unit.flow_event
+    local unit_local_scale = unit.local_scale
     local world_unlink_unit = world.unlink_unit
     local world_destroy_unit = world.destroy_unit
     local quaternion_unbox = quaternion_box.unbox
@@ -77,6 +79,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local unit_get_child_units = unit.get_child_units
     local quaternion_matrix4x4 = quaternion.matrix4x4
     local quaternion_to_vector = quaternion.to_vector
+    local table_merge_recursive = table.merge_recursive
     local script_unit_extension = script_unit.extension
     local quaternion_from_vector = quaternion.from_vector
     local unit_set_local_position = unit.set_local_position
@@ -119,6 +122,7 @@ local ANIMATION_TABLE = {
     started = {},
     ending = {},
     state = {},
+    name = {},
     strength_override = {},
     default_position = {},
     default_rotation = {},
@@ -139,6 +143,7 @@ local ANIMATION_TABLE = {
 VisibleEquipmentExtension.init = function(self, extension_init_context, unit, extension_init_data)
     -- Set pt variable
     self.pt = mod:pt()
+    self.extended_weapon_customization = get_mod("extended_weapon_customization")
     -- Set variables
     self.equipment_component = extension_init_data.equipment_component
     self.world = extension_init_data.equipment_component._world
@@ -248,6 +253,39 @@ VisibleEquipmentExtension.spawn_slot = function(self, slot, optional_mission_tem
     local skin_overrides = visual_loadout_customization.generate_attachment_overrides_lookup(slot.item, skin_data)
     local item_unit_3p = visual_loadout_customization.spawn_base_unit(slot.item, attach_settings, self.unit, optional_mission_template)
     local attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, _, item_name_by_unit_3p = visual_loadout_customization.spawn_item_attachments(slot.item, skin_overrides, attach_settings, item_unit_3p, true, false, true, optional_mission_template)
+    local fixes = {}
+    -- Extended weapon customization
+    if self.extended_weapon_customization then
+
+        if unit_attachment_id_3p and slot.item.attachments then
+
+            fixes = self.extended_weapon_customization:collect_fixes(slot.item)
+
+            -- Collect current attachment names
+            local kitbash_fixes = self.extended_weapon_customization:fetch_attachment_fixes(slot.item.attachments)
+            if kitbash_fixes then
+                fixes = table_merge_recursive(fixes, kitbash_fixes)
+            end
+
+            for _, attachment_unit in pairs(attachment_units_3p[item_unit_3p]) do
+
+                local attachment_slot = unit_attachment_id_3p[attachment_unit]
+
+                local item_path = self.extended_weapon_customization:fetch_attachment(slot.item.attachments, attachment_slot)
+                local item = master_items.get_item(item_path)
+
+                if item and item.attachments then
+                    -- Collect current attachment names
+                    local kitbash_fixes = self.extended_weapon_customization:fetch_attachment_fixes(item.attachments)
+                    if kitbash_fixes then
+                        fixes = table_merge_recursive(fixes, kitbash_fixes)
+                    end
+                end
+
+            end
+
+        end
+    end
     -- Apply skins
     visual_loadout_customization.apply_material_overrides(slot.item, item_unit_3p, self.unit, attach_settings)
     if skin_data then
@@ -263,14 +301,14 @@ VisibleEquipmentExtension.spawn_slot = function(self, slot, optional_mission_tem
         end
     end
     -- Return units
-    return item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p
+    return item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p, fixes
 end
 
 VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_template)
     -- Check for valid slot
     if (not self.loaded[slot] and table_contains(SLOTS, slot.name) and slot.item) then
         -- Spawn visible equipment
-        local item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p = self:spawn_slot(slot, optional_mission_template)
+        local item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p, fixes = self:spawn_slot(slot, optional_mission_template)
         -- Init script
         local scripts = self.settings.scripts
         local item_script = slot.item and scripts[slot.item.weapon_template]
@@ -285,11 +323,34 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
         for index, name in pairs(SLOT_ATTACHMENTS) do
             self:add_object(slot, unit_attachment_name_3p[item_unit_3p], name)
         end
+        -- Fixes
+        self.fixes[slot] = table_clone(fixes)
         -- Item unit as sole object when no attachments
         if #self.objects == 0 then
             self.objects[slot][#self.objects[slot]+1] = item_unit_3p
             self.names[slot][item_unit_3p] = "right"
         end
+        -- Scabbard
+        if slot.item and slot.item.attachments then
+            local scabbard = mod:fetch_attachment(slot.item.attachments, "scabbard")
+            if scabbard then
+                -- local attachment_unit = attachment_name_lookup[item_unit][attachment_slot]
+                local attachment_unit = unit_attachment_name_3p[item_unit_3p]["scabbard"]
+                self.always_visible[slot][attachment_unit] = true
+                -- mod:echo("scabbard: "..tostring(attachment_unit))
+
+                -- local visual_loadout_extension = script_unit_extension(self.unit, "visual_loadout_system")
+                -- if visual_loadout_extension then
+                --     local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = visual_loadout_extension:unit_and_attachments_from_slot(slot.name)
+                --     -- mod:dtf(attachments_by_unit_1p, "attachments_by_unit_1p", 10)
+                --     -- mod:dtf(attachments_by_unit_3p, "attachments_by_unit_3p", 10)
+                --     mod:echo("visual_loadout_extension found")
+                -- else
+                --     mod:echo("visual_loadout_extension not found")
+                -- end
+            end
+        end
+
         -- Setup animation tables
         self.anim[slot] = table_clone(ANIMATION_TABLE)
         -- Sheathed
@@ -308,6 +369,7 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
             -- Center point
             self.unit_center_point[slot][obj] = world_spawn_unit_ex(self.world, EMPTY_UNIT, nil, unit_world_pose(obj, 1))
             world_link_unit(self.world, self.unit_center_point[slot][obj], 1, obj, 1)
+
             -- local offset, backpack_values = self:slot_offset(index, slot)
             -- local center_mass_offset = offset and offset.center_mass and vector3_unbox(offset.center_mass)
             -- if center_mass_offset then
@@ -442,7 +504,10 @@ VisibleEquipmentExtension.get_backpack = function(self)
     -- Get loadout from profile
     local slot_gear_extra_cosmetic = profile and profile.loadout[SLOT_GEAR_EXTRA_COSMETIC]
     -- Get backpack name
-    local name = slot_gear_extra_cosmetic and slot_gear_extra_cosmetic.__master_item.dev_name
+    local name = EMPTY_BACKPACK_DEV
+    name = slot_gear_extra_cosmetic and slot_gear_extra_cosmetic.__master_item and slot_gear_extra_cosmetic.__master_item.dev_name
+    name = slot_gear_extra_cosmetic and slot_gear_extra_cosmetic.dev_name
+    -- local name = (slot_gear_extra_cosmetic and (slot_gear_extra_cosmetic.__master_item and slot_gear_extra_cosmetic.__master_item.dev_name) or slot_gear_extra_cosmetic.dev_name) or EMPTY_BACKPACK_DEV
     -- Return if name is not empty backpack
     return name ~= EMPTY_BACKPACK_DEV and name
 end
@@ -649,6 +714,40 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         unit_set_local_rotation(obj, 1, quaternion_from_vector(rotation))
         unit_set_local_scale(obj, 1, scale)
 
+        -- Weapon customization
+        if self.extended_weapon_customization then
+            local item_unit = self.pt.item_units_by_equipment_component[self.equipment_component][slot.name]
+            local attachment_units = self.pt.attachment_units_by_equipment_component[self.equipment_component][slot.name]
+            local attachment_names = self.pt.unit_attachment_names_by_equipment_component[self.equipment_component][slot.name]
+            self.extended_weapon_customization:apply_unit_fixes(slot.item, item_unit, attachment_units, attachment_names, self.fixes[slot])
+
+            -- position = unit_local_position(obj, 1)
+            -- rotation = quaternion_to_vector(unit_local_rotation(obj, 1))
+            -- scale = unit_local_scale(obj, 1)
+        end
+
+        -- Always visible
+        for attachment_unit, _ in pairs(self.always_visible[slot]) do
+            -- local local_position = unit_world_position(self.unit, 1) + unit_local_position(self.unit, self.node[slot][obj]) - unit_local_position(attachment_unit, 1)
+            local item_unit = self.pt.item_units_by_equipment_component[self.equipment_component][slot.name]
+            local offset = unit_world_position(item_unit, 1) - unit_world_position(obj, 1) -- vector3(0, .3, 0)
+            -- local offset = unit_local_position(obj, 1) - unit_local_position(attachment_unit, 1)
+
+            world_unlink_unit(world, attachment_unit) --, false, false)
+            world_link_unit(world, attachment_unit, 1, self.unit, self.node[slot][obj]) --, false, false)
+
+            local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
+            local rotated_offset = matrix4x4_transform(mat, vector3(0, 0, -.06))
+
+            unit_set_local_position(attachment_unit, 1, position - offset + rotated_offset) -- rotated_offset)
+            unit_set_local_rotation(attachment_unit, 1, quaternion_from_vector(rotation))
+            unit_set_local_scale(attachment_unit, 1, scale)
+            -- unit_set_unit_visibility(attachment_unit, true, true)
+
+            self.always_visible_offset[slot][attachment_unit] = vector3_box(0, 0, -.06)
+
+        end
+
         -- Manipulation
         self:_add_unit_manipulation(slot)
         
@@ -665,9 +764,9 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
     end
 end
 
-VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wielded_slot)
+VisibleEquipmentExtension.update_item_visibility = function(self, equipment, optional_wielded_slot)
     -- Set wielded slot
-    self.wielded_slot = wielded_slot
+    self.wielded_slot = optional_wielded_slot or self.wielded_slot
     local showing_shield = false
     -- Get a fresh reference to player visibility component
     -- if we save it we don't know when it is destroyed
@@ -675,7 +774,7 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
     local player_invisible = player_visibility and not player_visibility:visible()
     local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
     -- Check wielded slot
-    local active_slot = equipment[wielded_slot]
+    local active_slot = equipment[self.wielded_slot]
     local unit_3p = active_slot and active_slot.unit_3p
     local attachments_by_name = active_slot and active_slot.attachment_map_by_unit_3p
     local item_attachments_by_name = attachments_by_name and attachments_by_name[unit_3p]
@@ -689,7 +788,7 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
             if self.loaded[slot] then
                 -- Hidden?
                 local old_value = self.visible[slot]
-                self.visible[slot] = (slot_name ~= wielded_slot and true) or false
+                self.visible[slot] = (slot_name ~= self.wielded_slot and true) or false
                 -- local player_invisible = self.player_visibility and not self.player_visibility._destroyed and not self.player_visibility:visible()
                 -- local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
                 if player_invisible or in_first_person then self.visible[slot] = false end
@@ -718,6 +817,10 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, wie
                 -- Animation in ui profile spawner
                 if self.visible[slot] and not self.sheathed[slot] and self.from_ui_profile_spawner then
                     self:unwield_slot(slot)
+                end
+                -- Always visible
+                for attachment_unit, _ in pairs(self.always_visible[slot]) do
+                    unit_set_unit_visibility(attachment_unit, true, true)
                 end
             end
         end
@@ -943,6 +1046,7 @@ VisibleEquipmentExtension.animate_slot = function(self, slot, animation, strengt
                 anim.strength_override[obj] = strength_override
                 anim.started[obj] = nil
                 anim.ending[obj] = nil
+                anim.name[obj] = animation
             end
         end
     end
@@ -1118,21 +1222,39 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 -- Set final positions and rotations
                 unit_set_local_position(obj, 1, position)
                 unit_set_local_rotation(obj, 1, rotation)
+
+                if anim.name[obj] ~= "sheath" then
+                    for attachment_unit, _ in pairs(self.always_visible[slot]) do
+                        local offset = self.always_visible_offset[slot][attachment_unit]
+                        local mat = quaternion_matrix4x4(rotation)
+                        -- local rotated_offset = matrix4x4_transform(mat, vector3(0, 0, -.06))
+                        offset = offset and matrix4x4_transform(mat, vector3_unbox(offset)) or vector3_zero()
+                        unit_set_local_position(attachment_unit, 1, position + offset)
+                        unit_set_local_rotation(attachment_unit, 1, rotation)
+                    end
+                end
             end
         end
 
         -- Get momentum drag
-        -- local current_position = vector3_unbox(anim.current_position[obj])
+        local current_position = vector3_unbox(anim.current_position[obj])
         local current_rotation = vector3_unbox(anim.current_rotation[obj])
         -- Calculate final positions and rotations
         -- local position = vector3_unbox(anim.default_position[obj]) + unit_local_position(self.unit, 1)
+        local position = vector3_unbox(anim.default_position[obj]) + current_position
         local rotation = vector3_unbox(anim.default_rotation[obj]) + current_rotation
         -- Set final positions and rotations
-        -- unit_set_local_position(obj, 1, position)
+        unit_set_local_position(obj, 1, position)
         local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
         local rotated_pos = matrix4x4_transform(mat, momentum_drag) --* 4
         rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(rotated_pos))
         unit_set_local_rotation(obj, 1, rotation)
+        for attachment_unit, _ in pairs(self.always_visible[slot]) do
+            -- if self.wielded_slot == slot.name then
+            --     vector3_unbox(anim.default_rotation[obj]) + current_rotation
+            -- end
+            unit_set_local_rotation(attachment_unit, 1, rotation)
+        end
 
     end
 
@@ -1222,6 +1344,9 @@ end
 
 VisibleEquipmentExtension.reset_slot_tables = function(self, slot)
     self.objects[slot] = {}
+    self.always_visible[slot] = {}
+    self.always_visible_offset[slot] = {}
+    self.fixes[slot] = {}
     self.node[slot] = {}
     self.accent[slot] = nil
     self.sheathed[slot] = nil
@@ -1239,6 +1364,9 @@ end
 
 VisibleEquipmentExtension.unset_slot_tables = function(self, slot)
     self.objects[slot] = nil
+    self.always_visible[slot] = nil
+    self.always_visible_offset[slot] = nil
+    self.fixes[slot] = nil
     self.node[slot] = nil
     self.accent[slot] = nil
     self.sheathed[slot] = nil
@@ -1256,6 +1384,9 @@ end
 
 VisibleEquipmentExtension.clear_slot_tables = function(self)
     self.objects = {}
+    self.always_visible = {}
+    self.always_visible_offset = {}
+    self.fixes = {}
     self.node = {}
     self.accent = {}
     self.sheathed = {}

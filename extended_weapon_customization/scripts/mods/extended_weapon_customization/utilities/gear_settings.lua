@@ -4,6 +4,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local pairs = pairs
     local table = table
     local table_contains = table.contains
 --#endregion
@@ -50,7 +51,15 @@ mod.gear_settings = function(self, gear_id, settings, file)
     end
 end
 
-mod.delete_gear_settings = function(self, gear_id)
+mod.delete_gear_settings = function(self, gear_id, file)
     local pt = self:pt()
     pt.gear_settings[gear_id] = nil
+    for fake_gear_id, real_gear_id in pairs(pt.gear_id_relays) do
+        if fake_gear_id == gear_id or real_gear_id == gear_id then
+            pt.gear_id_relays[fake_gear_id] = nil
+        end
+    end
+    if file then
+        mod.save_lua:delete_entry(gear_id)
+    end
 end

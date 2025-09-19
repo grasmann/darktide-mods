@@ -27,6 +27,7 @@ local gear_bundle_size = {ItemPassTemplates.gear_bundle_size[1], ItemPassTemplat
     local callback = callback
     local managers = Managers
     local localize = Localize
+    local math_uuid = math.uuid
     local utf8_upper = utf8.upper
     local script_unit = ScriptUnit
     local table_clone = table.clone
@@ -244,6 +245,14 @@ mod.view_element_grid_inject_blueprint = function(self, view_element_grid, conte
                         local slot_name = slot.name
                         local equipped_item = element.item
                         local item = MasterItems.create_preview_item_instance(element.item)
+
+                        local new_gear_id = math_uuid()
+                        item.gear_id = new_gear_id
+                        item.__gear_id = new_gear_id
+                        item.__original_gear_id = item.gear_id
+                        item.placement_icon = true
+                        mod:gear_placement(item.gear_id, element.placement_name)
+                        
                         if item then
                             local item_state_machine = equipped_item.state_machine
                             local item_animation_event = equipped_item.animation_event
