@@ -10,6 +10,7 @@ local mod = get_mod("extended_weapon_customization")
 	local vector3 = Vector3
     local quaternion = Quaternion
     local table_clone = table.clone
+    local table_clone_instance = table.clone_instance
 	local quaternion_to_euler_angles_xyz = quaternion.to_euler_angles_xyz
 	local quaternion_from_euler_angles_xyz = quaternion.from_euler_angles_xyz
 --#endregion
@@ -37,5 +38,8 @@ local mod = get_mod("extended_weapon_customization")
     end
     table.clone_safe = function(t)
         return t and table_clone(t)
+    end
+    table.clone_instance_safe = function(t)
+        return t and table_clone_instance(t)
     end
 --#endregion

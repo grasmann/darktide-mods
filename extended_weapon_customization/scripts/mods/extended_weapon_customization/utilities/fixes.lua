@@ -38,6 +38,8 @@ local split_cache = {}
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.collect_fixes = function(self, item_data, target_slot)
+    -- Create mod item
+    -- local item_data = self:create_mod_item(item_data)
     -- Get item data
     local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     local item_type = item.item_type
@@ -122,6 +124,8 @@ mod.collect_fixes = function(self, item_data, target_slot)
 end
 
 mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, optional_fixes, is_ui_item_preview)
+    -- Create mod item
+    -- local item_data = self:create_mod_item(item_data)
     -- Item data
     local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     -- local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization)) or is_ui_item_preview
@@ -164,6 +168,8 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
 end
 
 mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
+    -- Create mod item
+    -- local item_data = self:create_mod_item(item_data)
     -- Item data
     local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))

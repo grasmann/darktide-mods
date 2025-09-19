@@ -28,6 +28,7 @@ mod.plugins = mod:io_dofile("extended_weapon_customization/scripts/mods/extended
 local REFERENCE = "extended_weapon_customization"
 
 mod:persistent_table(REFERENCE, {
+    items = {},
     gear_files = mod:get("gear_files") or {},
     gear_settings = {},
     cached_items = {},

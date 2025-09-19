@@ -23,6 +23,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table_contains = table.contains
     local table_clone_safe = table.clone_safe
     local script_unit_extension = script_unit.extension
+    local table_clone_instance_safe = table.clone_instance_safe
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -132,6 +133,9 @@ mod.fetch_attachment_slots = function(self, attachments, attachment_slots)
 end
 
 mod.reset_item = function(self, item_data)
+    -- Create mod item
+    -- local item_data = self:create_mod_item(item_data)
+
     local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     local attachment_slots = self:fetch_attachment_slots(item.attachments)
     local original_item = master_items.get_item(item.name)
@@ -145,6 +149,8 @@ mod.reset_item = function(self, item_data)
 end
 
 mod.randomize_item = function(self, item_data)
+    -- Create mod item
+    -- local item_data = self:create_mod_item(item_data)
 
     local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     -- local is_ui_item_preview = item_data.__is_ui_item_preview
@@ -187,7 +193,23 @@ mod.randomize_item = function(self, item_data)
     -- end
 end
 
+mod.mod_item = function(self, item_data, fake_gear_id)
+    local pt = self:pt()
+    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    local item_type = item and item.item_type
+    if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
+        local gear_id = self:gear_id(item, fake_gear_id)
+        if gear_id and not pt.items[gear_id] then
+            pt.items[gear_id] = table_clone_instance_safe(item_data)
+        end
+        return gear_id and pt.items[gear_id]
+    end
+    return item_data
+end
+
 mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
+    -- Create mod item
+    -- local item_data = self:create_mod_item(item_data)
     -- Get item info
     local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     local item_type = item_data and item_data.item_type

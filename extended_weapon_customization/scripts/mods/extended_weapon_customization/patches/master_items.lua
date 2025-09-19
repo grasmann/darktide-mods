@@ -206,6 +206,11 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         return item_instance
     end
 
+    mod:hook(instance, "get_item_instance", function(func, gear, gear_id, ...)
+        local item_instance = func(gear, gear_id, ...)
+        return mod:gear_settings(gear_id) and mod:mod_item(item_instance) or item_instance
+    end)
+
     mod:hook(instance, "create_preview_item_instance", function(func, item, ...)
         -- Modify item
         mod:modify_item(item)
