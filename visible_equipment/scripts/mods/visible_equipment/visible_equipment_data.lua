@@ -1,7 +1,7 @@
 local mod = get_mod("visible_equipment")
 
 return {
-	name = "visible_equipment",
+	name = mod:localize("mod_title"),
 	description = mod:localize("mod_description"),
 	is_togglable = true,
 	options = {

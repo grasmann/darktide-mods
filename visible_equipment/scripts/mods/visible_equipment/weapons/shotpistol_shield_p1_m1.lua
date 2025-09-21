@@ -596,4 +596,16 @@ return {
             "sfx_swing_heavy",
         },
     },
+    hide_attachments = {
+        "bullet_01",
+        "bullet_02",
+        "bullet_03",
+        "bullet_04",
+        "bullet_05",
+        "casing_01",
+        "casing_02",
+        "casing_03",
+        "casing_04",
+        "casing_05",
+    },
 }

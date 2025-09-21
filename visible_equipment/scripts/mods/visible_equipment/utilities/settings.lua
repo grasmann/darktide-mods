@@ -6,6 +6,7 @@ local mod = get_mod("visible_equipment")
 
 return {
     placement_camera = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/placement_cameras"),
+    hide_attachments = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/hide_attachments"),
     animations = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/animations"),
     placements = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/placements"),
     backpacks = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/backpacks"),

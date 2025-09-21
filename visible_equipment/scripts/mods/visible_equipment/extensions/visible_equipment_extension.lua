@@ -350,6 +350,19 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
                 -- end
             end
         end
+        -- Hide attachments
+        local weapon_template = slot.item and slot.item.weapon_template
+        local hide_attachments = weapon_template and mod.settings.hide_attachments[weapon_template]
+        if hide_attachments then
+            for _, attachment_slot in pairs(hide_attachments) do
+                local attachment_unit = unit_attachment_name_3p[item_unit_3p][attachment_slot]
+                if attachment_unit and not self.always_visible[slot][attachment_unit] then
+                    -- mod:echo("hide attachment "..attachment_slot..": "..tostring(attachment_unit))
+                    -- unit_set_unit_visibility(attachment_unit, false, false)
+                    self.always_hidden[slot][attachment_unit] = true
+                end
+            end
+        end
 
         -- Setup animation tables
         self.anim[slot] = table_clone(ANIMATION_TABLE)
@@ -821,6 +834,10 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, opt
                 -- Always visible
                 for attachment_unit, _ in pairs(self.always_visible[slot]) do
                     unit_set_unit_visibility(attachment_unit, true, true)
+                end
+                -- Always hidden
+                for attachment_unit, _ in pairs(self.always_hidden[slot]) do
+                    unit_set_unit_visibility(attachment_unit, false, true)
                 end
             end
         end
@@ -1346,6 +1363,7 @@ VisibleEquipmentExtension.reset_slot_tables = function(self, slot)
     self.objects[slot] = {}
     self.always_visible[slot] = {}
     self.always_visible_offset[slot] = {}
+    self.always_hidden[slot] = {}
     self.fixes[slot] = {}
     self.node[slot] = {}
     self.accent[slot] = nil
@@ -1366,6 +1384,7 @@ VisibleEquipmentExtension.unset_slot_tables = function(self, slot)
     self.objects[slot] = nil
     self.always_visible[slot] = nil
     self.always_visible_offset[slot] = nil
+    self.always_hidden[slot] = nil
     self.fixes[slot] = nil
     self.node[slot] = nil
     self.accent[slot] = nil
@@ -1386,6 +1405,7 @@ VisibleEquipmentExtension.clear_slot_tables = function(self)
     self.objects = {}
     self.always_visible = {}
     self.always_visible_offset = {}
+    self.always_hidden = {}
     self.fixes = {}
     self.node = {}
     self.accent = {}

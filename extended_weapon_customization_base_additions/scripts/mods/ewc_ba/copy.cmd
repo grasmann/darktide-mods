@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba"

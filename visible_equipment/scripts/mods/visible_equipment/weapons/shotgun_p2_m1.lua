@@ -507,4 +507,10 @@ return {
             "sfx_reload_lever_release",
         },
     },
+    hide_attachments = {
+        "ammo_right",
+        "ammo_left",
+        "ammo_used_right",
+        "ammo_used_left",
+    },
 }

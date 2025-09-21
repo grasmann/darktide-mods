@@ -241,6 +241,8 @@ local copy_names = {
 
 local copy_names_2 = {
     "forcesword_2h_p1_m2",
+    "powersword_2h_p1_m1",
+    "powersword_2h_p1_m2",
 }
 
 for _, name in pairs(copy_names) do
