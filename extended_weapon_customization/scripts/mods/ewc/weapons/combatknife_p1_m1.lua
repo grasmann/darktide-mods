@@ -74,7 +74,7 @@ return {
                 icon_render_camera_position_offset = {0, -1, .2},
             },
         },
-        blade = {
+        body = {
             combat_knife_blade_01 = {
                 replacement_path = _item_melee.."/blades/combat_knife_blade_01",
                 icon_render_unit_rotation_offset = {90, -30, 0},
