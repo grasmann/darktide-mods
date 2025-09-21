@@ -191,6 +191,7 @@ local attachments = {
         attachments.combataxe_p3_m2 = table_clone_safe(attachments.combataxe_p3_m1)
         attachments.combataxe_p3_m3 = table_clone_safe(attachments.combataxe_p3_m1)
         attachments.powermaul_p1_m2 = table_clone_safe(attachments.powermaul_p1_m1)
+        attachments.chainaxe_p1_m2 = table_clone_safe(attachments.chainaxe_p1_m1)
     --#endregion
     --#region Human ranged
         attachments.stubrevolver_p1_m3 = table_clone_safe(attachments.stubrevolver_p1_m1)
@@ -319,6 +320,7 @@ local fixes = {
         fixes.combataxe_p3_m2 = table_clone_safe(fixes.combataxe_p3_m1)
         fixes.combataxe_p3_m3 = table_clone_safe(fixes.combataxe_p3_m1)
         fixes.powermaul_p1_m2 = table_clone_safe(fixes.powermaul_p1_m1)
+        fixes.chainaxe_p1_m2 = table_clone_safe(fixes.chainaxe_p1_m1)
     --#endregion
     --#region Human ranged
         fixes.stubrevolver_p1_m3 = table_clone_safe(fixes.stubrevolver_p1_m1)
@@ -447,6 +449,7 @@ local attachment_slots = {
         attachment_slots.combataxe_p3_m2 = table_clone_safe(attachment_slots.combataxe_p3_m1)
         attachment_slots.combataxe_p3_m3 = table_clone_safe(attachment_slots.combataxe_p3_m1)
         attachment_slots.powermaul_p1_m2 = table_clone_safe(attachment_slots.powermaul_p1_m1)
+        attachment_slots.chainaxe_p1_m2 = table_clone_safe(attachment_slots.chainaxe_p1_m1)
     --#endregion
     --#region Human ranged
         attachment_slots.stubrevolver_p1_m3 = table_clone_safe(attachment_slots.stubrevolver_p1_m1)

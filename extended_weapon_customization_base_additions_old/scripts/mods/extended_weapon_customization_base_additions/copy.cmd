@@ -1,1 +1,0 @@
-xcopy /s /y "I:\Darktide\darktide-mods\ewc_ba\scripts\mods\ewc_ba" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\ewc_ba\scripts\mods\ewc_ba"
