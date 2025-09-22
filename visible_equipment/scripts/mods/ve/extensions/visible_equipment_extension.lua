@@ -334,20 +334,8 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
         if slot.item and slot.item.attachments then
             local scabbard = mod:fetch_attachment(slot.item.attachments, "scabbard")
             if scabbard then
-                -- local attachment_unit = attachment_name_lookup[item_unit][attachment_slot]
                 local attachment_unit = unit_attachment_name_3p[item_unit_3p]["scabbard"]
                 self.always_visible[slot][attachment_unit] = true
-                -- mod:echo("scabbard: "..tostring(attachment_unit))
-
-                -- local visual_loadout_extension = script_unit_extension(self.unit, "visual_loadout_system")
-                -- if visual_loadout_extension then
-                --     local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = visual_loadout_extension:unit_and_attachments_from_slot(slot.name)
-                --     -- mod:dtf(attachments_by_unit_1p, "attachments_by_unit_1p", 10)
-                --     -- mod:dtf(attachments_by_unit_3p, "attachments_by_unit_3p", 10)
-                --     mod:echo("visual_loadout_extension found")
-                -- else
-                --     mod:echo("visual_loadout_extension not found")
-                -- end
             end
         end
         -- Hide attachments
@@ -357,8 +345,6 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
             for _, attachment_slot in pairs(hide_attachments) do
                 local attachment_unit = unit_attachment_name_3p[item_unit_3p][attachment_slot]
                 if attachment_unit and not self.always_visible[slot][attachment_unit] then
-                    -- mod:echo("hide attachment "..attachment_slot..": "..tostring(attachment_unit))
-                    -- unit_set_unit_visibility(attachment_unit, false, false)
                     self.always_hidden[slot][attachment_unit] = true
                 end
             end
@@ -1191,9 +1177,9 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                 if move_speed == 0 then
                     move_speed = 1
                 elseif slot.item.item_type == WEAPON_MELEE or slot.item.item_type == POCKETABLE_SMALL then
-                    foot_multiplier = right_foot_next and 1 or .5
+                    foot_multiplier = right_foot_next and 1 or .25
                 elseif slot.item.item_type == WEAPON_RANGED or slot.item.item_type == POCKETABLE then
-                    foot_multiplier = right_foot_next and .5 or 1
+                    foot_multiplier = right_foot_next and .25 or 1
                 end
                 -- Get strength multiplier
                 local start_strength = move_speed * foot_multiplier

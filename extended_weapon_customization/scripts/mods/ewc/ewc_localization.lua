@@ -1,6 +1,10 @@
 local mod = get_mod("extended_weapon_customization")
 
 mod:add_global_localize_strings({
+	loc_extended_weapon_customization = {
+		en = "Extended Weapon Customization",
+		["zh-cn"] = "扩展武器自定义",
+	},
 	loc_weapon_inventory_reset_button = {
 		en = "Reset",
 	},
@@ -97,8 +101,8 @@ mod:add_global_localize_strings({
 
 return {
 	mod_title = {
-		en = "Extended Weapon Customization",	
-		["zh-cn"] = "扩展武器自定义",	
+		en = "Extended Weapon Customization",
+		["zh-cn"] = "扩展武器自定义",
 	},
 	mod_description = {
 		en = "Extended Weapon Customization Description",

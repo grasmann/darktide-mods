@@ -13,29 +13,42 @@ local mod = get_mod("extended_weapon_customization")
     local table_clone_safe = table.clone_safe
 --#endregion
 
-mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name)
+mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name, optional_mod_of_origin)
 
     local attachments = attachments or self.settings.attachments
     local attachment_data_by_item_string = attachment_data_by_item_string or self.settings.attachment_data_by_item_string
     local attachment_name_by_item_string = attachment_name_by_item_string or self.settings.attachment_name_by_item_string
     local attachment_data_by_attachment_name = attachment_data_by_attachment_name or self.settings.attachment_data_by_attachment_name
+    local attachment_data_origin = mod:pt().attachment_data_origin
 
     for weapon_template, weapon_attachments in pairs(attachments) do
         for attachment_slot, attachment_entires in pairs(weapon_attachments) do
             for attachment_name, attachment_data in pairs(attachment_entires) do
+                
                 attachment_data_by_item_string[attachment_data.replacement_path] = attachment_data
+                
                 attachment_name_by_item_string[attachment_data.replacement_path] = attachment_name
+                
+                attachment_data_by_attachment_name[attachment_name] = attachment_data
+
+                if optional_mod_of_origin then
+                    local attachment_data = self.settings.attachments[weapon_template][attachment_slot][attachment_name]
+                    attachment_data_origin[attachment_data] = optional_mod_of_origin
+                    local mod_name = optional_mod_of_origin and optional_mod_of_origin:localize("mod_title") or optional_mod_of_origin:localize("mod_name") or optional_mod_of_origin:get_name()
+                    -- mod:print(tostring(attachment_data).." origin "..tostring(mod_name))
+                end
+
             end
         end
     end
 
-    for weapon_template, weapon_attachments in pairs(attachments) do
-        for attachment_slot, attachment_entires in pairs(weapon_attachments) do
-            for attachment_name, attachment_data in pairs(attachment_entires) do
-                attachment_data_by_attachment_name[attachment_name] = attachment_data
-            end
-        end
-    end
+    -- for weapon_template, weapon_attachments in pairs(attachments) do
+    --     for attachment_slot, attachment_entires in pairs(weapon_attachments) do
+    --         for attachment_name, attachment_data in pairs(attachment_entires) do
+    --             attachment_data_by_attachment_name[attachment_name] = attachment_data
+    --         end
+    --     end
+    -- end
 
 end
 

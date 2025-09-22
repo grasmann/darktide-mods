@@ -237,6 +237,8 @@ local copy_names = {
     "forcesword_p1_m1",
     "forcesword_p1_m2",
     "forcesword_p1_m3",
+    "powersword_p1_m1",
+    "powersword_p1_m2",
 }
 
 local copy_names_2 = {

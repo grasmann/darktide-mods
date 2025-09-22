@@ -4,7 +4,7 @@ local mod = get_mod("visible_equipment")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local weapons_folder = "visible_equipment/scripts/mods/visible_equipment/weapons/"
+local weapons_folder = "visible_equipment/scripts/mods/ve/weapons/"
 local shotpistol_shield_p1_m1 = mod:io_dofile(weapons_folder.."shotpistol_shield_p1_m1")
 local stubrevolver_p1_m1 = mod:io_dofile(weapons_folder.."stubrevolver_p1_m1")
 local shotgun_p1_m1 = mod:io_dofile(weapons_folder.."shotgun_p1_m1")

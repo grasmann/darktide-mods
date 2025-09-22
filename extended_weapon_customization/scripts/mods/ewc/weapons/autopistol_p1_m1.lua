@@ -18,8 +18,8 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
     local table = table
     local vector3 = Vector3
     local vector3_box = Vector3Box
-    local vector3_zero = vector3.zero
-    local table_merge_recursive = table.merge_recursive
+    -- local vector3_zero = vector3.zero
+    -- local table_merge_recursive = table.merge_recursive
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -29,8 +29,8 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
-local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
-local scopes = "scope_01"
+-- local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
+-- local scopes = "scope_01"
 
 return {
     attachments = {
@@ -38,7 +38,7 @@ return {
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
         flashlight = flashlights,
-        rail = rails,
+        -- rail = rails,
         receiver = {
             autogun_pistol_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/autogun_pistol_receiver_01",
@@ -105,13 +105,13 @@ return {
                 icon_render_camera_position_offset = {-.125, -1.25, -.05},
             },
         },
-        sight = table_merge_recursive({
+        sight = {
             autogun_pistol_sight_01 = {
                 replacement_path = _item_ranged.."/sights/autogun_pistol_sight_01",
                 icon_render_unit_rotation_offset = {90, 0, -95},
                 icon_render_camera_position_offset = {.035, -.1, .175},
             }
-        }, sights),
+        },
         muzzle = {
             autogun_pistol_muzzle_01 = {
                 replacement_path = _item_ranged.."/muzzles/autogun_pistol_muzzle_01",
@@ -167,50 +167,50 @@ return {
             },
         },
     },
-    fixes = {
-        {attachment_slot = "sight_offset",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.0085),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.04, 0),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "rail",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                -- attach = {
-                --     rail = "lasgun_rifle_rail_01",
-                -- },
-                offset = {
-                    position = vector3_box(0, -.05, 0),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-    },
+    -- fixes = {
+    --     {attachment_slot = "sight_offset",
+    --         requirements = {
+    --             sight = {
+    --                 has = reflex_sights.."|"..scopes,
+    --             },
+    --         },
+    --         fix = {
+    --             offset = {
+    --                 position = vector3_box(0, 0, -.0085),
+    --                 rotation = vector3_box(0, 0, 0),
+    --             },
+    --         },
+    --     },
+    --     {attachment_slot = "sight",
+    --         requirements = {
+    --             sight = {
+    --                 has = reflex_sights.."|"..scopes,
+    --             },
+    --         },
+    --         fix = {
+    --             offset = {
+    --                 position = vector3_box(0, -.04, 0),
+    --                 rotation = vector3_box(0, 0, 0),
+    --             },
+    --         },
+    --     },
+    --     {attachment_slot = "rail",
+    --         requirements = {
+    --             sight = {
+    --                 has = reflex_sights.."|"..scopes,
+    --             },
+    --         },
+    --         fix = {
+    --             -- attach = {
+    --             --     rail = "lasgun_rifle_rail_01",
+    --             -- },
+    --             offset = {
+    --                 position = vector3_box(0, -.05, 0),
+    --                 rotation = vector3_box(0, 0, 0),
+    --                 scale = vector3_box(1, 1, 1),
+    --                 node = 1,
+    --             },
+    --         },
+    --     },
+    -- },
 }

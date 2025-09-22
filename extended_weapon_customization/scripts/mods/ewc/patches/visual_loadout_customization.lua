@@ -14,6 +14,8 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local unit = Unit
     local pairs = pairs
     local table = table
+    local tostring = tostring
+    local unit_alive = unit.alive
     local table_clear = table.clear
     local unit_set_data = unit.set_data
     local table_set_readonly = table.set_readonly
@@ -65,7 +67,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         if attachment_id_lookup and item_data.attachments then
 
             -- Collect current attachment names
-            local kitbash_fixes = mod:fetch_attachment_fixes(item_data.attachments)
+            local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
             if kitbash_fixes then
                 fixes = table_merge_recursive(fixes, kitbash_fixes)
             end
@@ -83,7 +85,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                     if item and item.attachments then
                         -- Collect current attachment names
-                        local kitbash_fixes = mod:fetch_attachment_fixes(item.attachments)
+                        local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                         if kitbash_fixes then
                             fixes = table_merge_recursive(fixes, kitbash_fixes)
                         end
@@ -96,7 +98,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                     if item and item.attachments then
                         -- Collect current attachment names
-                        local kitbash_fixes = mod:fetch_attachment_fixes(item.attachments)
+                        local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                         if kitbash_fixes then
                             fixes = table_merge_recursive(fixes, kitbash_fixes)
                         end
@@ -104,6 +106,17 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                         if item.is_kitbash and not item.disable_vfx_spawner_exclusion then
                             
                             local pt = mod:pt()
+
+                            -- local deleted = 0
+                            for unit, _ in pairs(pt.exclude_from_vfx_spawner) do
+                                if not unit or not unit_alive(unit) then
+                                    pt.exclude_from_vfx_spawner[unit] = nil
+                                    -- deleted = deleted + 1
+                                end
+                            end
+                            -- if deleted > 0 then
+                            --     mod:print("exclude_from_vfx_spawner deleted: "..tostring(deleted))
+                            -- end
 
                             pt.exclude_from_vfx_spawner[attachment_unit] = true
 
@@ -143,7 +156,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         if attachment_id_lookup and item_data.attachments then
 
             -- Collect current attachment names
-            local kitbash_fixes = mod:fetch_attachment_fixes(item_data.attachments)
+            local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
             if kitbash_fixes then
                 fixes = table_merge_recursive(fixes, kitbash_fixes)
             end
@@ -158,7 +171,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                 if item and item.attachments then
                     -- Collect current attachment names
-                    local kitbash_fixes = mod:fetch_attachment_fixes(item.attachments)
+                    local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                     if kitbash_fixes then
                         fixes = table_merge_recursive(fixes, kitbash_fixes)
                     end

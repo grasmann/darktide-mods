@@ -4,10 +4,10 @@ local mod = get_mod("visible_equipment")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local breed_folder = "visible_equipment/scripts/mods/visible_equipment/breeds/"
+local breed_folder = "visible_equipment/scripts/mods/ve/breeds/"
 local ogryn = mod:io_dofile(breed_folder.."ogryn")
 local human = mod:io_dofile(breed_folder.."human")
-local weapons_folder = "visible_equipment/scripts/mods/visible_equipment/weapons/"
+local weapons_folder = "visible_equipment/scripts/mods/ve/weapons/"
 local ogryn_powermaul_slabshield_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_powermaul_slabshield_p1_m1")
 local ogryn_heavystubber_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_heavystubber_p1_m1")
 local ogryn_heavystubber_p2_m1 = mod:io_dofile(weapons_folder.."ogryn_heavystubber_p2_m1")

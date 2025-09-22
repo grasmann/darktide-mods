@@ -11,7 +11,7 @@ local mod = get_mod("visible_equipment")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local backpack_folder = "visible_equipment/scripts/mods/visible_equipment/backpacks/"
+local backpack_folder = "visible_equipment/scripts/mods/ve/backpacks/"
 local backpack_veteran_death_korps_of_krieg_a_var_02 = mod:io_dofile(backpack_folder.."backpack_veteran_death_korps_of_krieg_a_var_02")
 local skull_edition_backpack_cadian_c = mod:io_dofile(backpack_folder.."skull_edition_backpack_cadian_c")
 local backpack_cadian_b_01_var_01 = mod:io_dofile(backpack_folder.."backpack_cadian_b_01_var_01")

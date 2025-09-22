@@ -16,15 +16,9 @@ local mod = get_mod("extended_weapon_customization")
     local script_unit_extension = script_unit.extension
 --#endregion
 
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/common")
-
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-mod.save_lua = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/save")
--- mod.plugins = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/plugins")
--- mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/settings")
 
 local REFERENCE = "extended_weapon_customization"
 
@@ -38,7 +32,14 @@ mod:persistent_table(REFERENCE, {
     exclude_from_vfx_spawner = {},
     items_originating_from_customization_menu = {},
     game_initialized = false,
+    attachment_data_origin = {},
 })
+
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/common")
+
+mod.save_lua = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/save")
+-- mod.plugins = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/plugins")
+-- mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/settings")
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################

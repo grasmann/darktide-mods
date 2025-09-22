@@ -69,11 +69,12 @@ mod:hook_require("scripts/ui/views/inventory_cosmetics_view/inventory_cosmetics_
     end
 
     instance.cb_on_save_script_pressed = function(self)
-        mod:echo("cb_on_save_script_pressed")
+        -- mod:echo("cb_on_save_script_pressed")
     end
 
     instance._update_save_script_button_status = function(self)
-
+        local button = self._widgets_by_name.save_script_button
+        if button then button.visible = false end
     end
 
     instance.previewed_item_in_slot = function (self, slot_name)

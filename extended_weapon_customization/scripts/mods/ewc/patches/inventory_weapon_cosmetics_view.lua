@@ -166,7 +166,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
     end
 
     instance.cb_on_random_pressed = function(self)
-        -- mod:echo("cb_on_random_pressed")
 
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
@@ -333,11 +332,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
     func(self, content, ...)
 end)
 
+local temp_mod_count = {}
+
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, self, index, ...)
+
+    table_clear(temp_mod_count)
+
     if self.customize_attachments then
 
         -- self._item_grid.wepaon_customization = true
-
+        local pt = mod:pt()
         local weapon_template = self._presentation_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
         local content = self._tabs_content[index]
@@ -378,14 +382,19 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
                 if get_empty_item_function then
                     local empty_item = get_empty_item_function(self._selected_item, self._presentation_item)
+
+                    temp_mod_count[mod] = temp_mod_count[mod] or 0
+                    temp_mod_count[mod] = temp_mod_count[mod] + 1
+
                     layout[#layout + 1] = {
                         is_empty = true,
                         item = empty_item,
                         slot_name = slot_name,
                         sort_data = {
-                            display_name = "loc_weapon_cosmetic_empty",
+                            display_name = mod:get_name().."_99999",
                         },
                     }
+
                 end
 
                 local attachment_entries = attachments[slot_name]
@@ -395,20 +404,51 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                         local attachment_item = master_items.get_item(attachment_data.replacement_path)
                         local item = generate_visual_item_function(slot_name, attachment_item, attachment_data) --, self._selected_item, self._presentation_item)
 
+                        local origin_mod = pt.attachment_data_origin[attachment_data] or mod
+
+                        temp_mod_count[origin_mod] = temp_mod_count[origin_mod] or 0
+                        temp_mod_count[origin_mod] = temp_mod_count[origin_mod] + 1
+
+                        local mod_name = origin_mod:get_name()
+
                         layout[#layout+1] = {
                             widget_type = "gear_set",
                             item = item,
                             real_item = attachment_item,
                             slot_name = slot_name,
+                            sort_data = {
+                                display_name = origin_mod:get_name().."_"..tostring(temp_mod_count[origin_mod]),
+                            },
                         }
 
                     end
                 end
 
+                -- local num_mods = table_size(mod_count)
+                for plugin_mod, count in pairs(temp_mod_count) do
+                    local localization_name = "loc_"..tostring(plugin_mod:get_name())
+
+                    layout[#layout+1] = {
+                        widget_type = "sub_header",
+                        slot_name = slot_name,
+                        display_name = localization_name,
+                        sort_data = {
+                            display_name = plugin_mod:get_name().."_0",
+                        },
+                    }
+                end
+
                 self._offer_items_layout = layout
 
+                self:_sort_grid_layout(self._sort_options[1].sort_function)
+
                 self:_present_layout_by_slot_filter()
+
             end
+
+            -- self._selected_sort_option_index = 2
+            -- self:cb_on_sort_button_pressed(self._sort_options[1])
+            -- self:_sort_grid_layout(self._sort_options[1].sort_function)
 
             return
         end

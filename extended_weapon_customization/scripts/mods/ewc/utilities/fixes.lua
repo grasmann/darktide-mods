@@ -62,7 +62,7 @@ mod.collect_fixes = function(self, item_data, target_slot)
                 -- Collect current attachment names
                 for attachment_slot, attachment_entries in pairs(attachments) do
                     -- Get current attachment path
-                    local attachment_item_path = self:fetch_attachment(item.attachments, attachment_slot)
+                    local attachment_item_path = self:fetch_attachment(item.structure or item.attachments, attachment_slot)
                     -- Iterate attachment entries
                     for attachment_name, attachment_data in pairs(attachment_entries) do
                         -- Check attachment path

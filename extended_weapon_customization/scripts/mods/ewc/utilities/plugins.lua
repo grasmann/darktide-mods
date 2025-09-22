@@ -52,7 +52,7 @@ mod.load_plugins = function(self)
 
                 if plugin.attachments then
                     self.settings.attachments = table_merge_recursive(self.settings.attachments, plugin.attachments)
-                    mod:update_lookup_tables(plugin.attachments)
+                    mod:update_lookup_tables(plugin.attachments, nil, nil, nil, plugin_mod)
                 end
 
                 if plugin.attachment_slots then

@@ -25,6 +25,7 @@ local extended_weapon_customization_plugin = {
 local weapons_folder = "extended_weapon_customization_base_additions/scripts/mods/ewc_ba/weapons/"
 local load_weapons = {
     "autogun_p1_m1",
+    "autopistol_p1_m1",
 }
 
 for _, file_name in pairs(load_weapons) do

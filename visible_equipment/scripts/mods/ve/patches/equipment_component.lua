@@ -130,12 +130,14 @@ mod:hook(CLASS.EquipmentComponent, "init", function(func, self, world, item_defi
     -- Set equipment component
     unit_set_data(unit_3p, "visible_equipment_component", self)
     -- Check if visible equipment extension is already added
-    if not self.visible_equipment_system then
+    if not self.visible_equipment_system and not script_unit_extension(unit_3p, "visible_equipment_system") then
         -- Add visible equipment extension
         self.visible_equipment_system = script_unit_add_extension({}, unit_3p, "VisibleEquipmentExtension", "visible_equipment_system", {
             equipment_component = self,
             from_ui_profile_spawner = optional_from_ui_profile_spawner,
         })
+    elseif not self.visible_equipment_system and script_unit_extension(unit_3p, "visible_equipment_system") then
+        self.visible_equipment_system = script_unit_extension(unit_3p, "visible_equipment_system")
     end
 end)
 

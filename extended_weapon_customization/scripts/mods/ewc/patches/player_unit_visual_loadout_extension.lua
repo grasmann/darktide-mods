@@ -28,29 +28,33 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
     -- Destroy mispredict handler
     self._mispredict_package_handler = nil
 
-    script_unit_add_extension(
-        {
-            world = self._world
-        },
-        self._unit,
-        "SightExtension",
-        "sight_system",
-        {
-            visual_loadout_extension = self,
-        }
-    )
+    if not script_unit_extension(self._unit, "sight_system") then
+        script_unit_add_extension(
+            {
+                world = self._world
+            },
+            self._unit,
+            "SightExtension",
+            "sight_system",
+            {
+                visual_loadout_extension = self,
+            }
+        )
+    end
 
-    script_unit_add_extension(
-        {
-            world = self._world
-        },
-        self._unit,
-        "SwayExtension",
-        "sway_system",
-        {
-            visual_loadout_extension = self,
-        }
-    )
+    if not script_unit_extension(self._unit, "sway_system") then
+        script_unit_add_extension(
+            {
+                world = self._world
+            },
+            self._unit,
+            "SwayExtension",
+            "sway_system",
+            {
+                visual_loadout_extension = self,
+            }
+        )
+    end
 
 end)
 
@@ -68,7 +72,12 @@ end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
 
-    script_unit_remove_extension(self._unit, "sight_system")
+    if script_unit_extension(self._unit, "sight_system") then
+        script_unit_remove_extension(self._unit, "sight_system")
+    end
+    if script_unit_extension(self._unit, "sway_system") then
+        script_unit_remove_extension(self._unit, "sway_system")
+    end
 
     -- Original function
     func(self, ...)

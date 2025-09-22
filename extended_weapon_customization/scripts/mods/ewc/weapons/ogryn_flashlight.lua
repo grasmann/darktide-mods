@@ -39,11 +39,11 @@ local invisible_flashlight = {
     disable_vfx_spawner_exclusion = true,
 }
 
-if not mod:pt().game_initialized then
-    mod:kitbash_preload(invisible_flashlight.attachments, _item_ranged.."/flashlights/invisible_flashlight_ogryn", invisible_flashlight.display_name, invisible_flashlight.description, invisible_flashlight.attach_node, invisible_flashlight.dev_name, true)
-else
-    mod:kitbash_item(invisible_flashlight.attachments, _item_ranged.."/flashlights/invisible_flashlight_ogryn", invisible_flashlight.display_name, invisible_flashlight.description, invisible_flashlight.attach_node, invisible_flashlight.dev_name, true)
-end
+-- if not mod:pt().game_initialized then
+--     mod:kitbash_preload(invisible_flashlight.attachments, _item_ranged.."/flashlights/invisible_flashlight_ogryn", invisible_flashlight.display_name, invisible_flashlight.description, invisible_flashlight.attach_node, invisible_flashlight.dev_name, true)
+-- else
+--     mod:kitbash_item(invisible_flashlight.attachments, _item_ranged.."/flashlights/invisible_flashlight_ogryn", invisible_flashlight.display_name, invisible_flashlight.description, invisible_flashlight.attach_node, invisible_flashlight.dev_name, true)
+-- end
 
 return {
     invisible_flashlight_ogryn = {

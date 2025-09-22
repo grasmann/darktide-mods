@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\visible_equipment\scripts\mods\ve" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\visible_equipment\scripts\mods\ve"

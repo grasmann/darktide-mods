@@ -11,6 +11,8 @@ local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/
 local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 -- local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/emblem_left")
 -- local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/emblem_right")
+local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
+local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -35,41 +37,28 @@ local infantry_receivers = "autogun_rifle_receiver_01|autogun_rifle_receiver_ml0
 local headhunter_receivers = "autogun_rifle_killshot_receiver_01|autogun_rifle_killshot_receiver_02|autogun_rifle_killshot_receiver_03|autogun_rifle_killshot_receiver_04|autogun_rifle_killshot_receiver_ml01"
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
 
+local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
+
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
 local attachments = {
     autogun_p1_m1 = {
         rail = rails,
-        magazine = {
-            autogun_rifle_magazine_01_double = {
-                replacement_path = _item_ranged.."/magazines/autogun_rifle_magazine_01_double",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.09, -1.5, -.1},
+        magazine = table_merge_recursive(
+            magazine_autopistol,
+            magazine_autogun_double
+        ),
+        sight = table_merge_recursive(
+            table_merge_recursive({
+                lasgun_rifle_sight_01 = {
+                    replacement_path = _item_ranged.."/sights/lasgun_rifle_sight_01",
+                    icon_render_unit_rotation_offset = {90, 0, -95},
+                    icon_render_camera_position_offset = {.035, -.1, .125},
+                },
             },
-            autogun_rifle_magazine_02_double = {
-                replacement_path = _item_ranged.."/magazines/autogun_rifle_magazine_02_double",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.09, -1.5, -.1},
-            },
-            autogun_rifle_magazine_03_double = {
-                replacement_path = _item_ranged.."/magazines/autogun_rifle_magazine_03_double",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.09, -1.5, -.1},
-            },
-            autogun_rifle_ak_magazine_01_double = {
-                replacement_path = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.09, -1.5, -.1},
-            },
-        },
-        sight = table_merge_recursive(table_merge_recursive({
-            lasgun_rifle_sight_01 = {
-                replacement_path = _item_ranged.."/sights/lasgun_rifle_sight_01",
-                icon_render_unit_rotation_offset = {90, 0, -95},
-                icon_render_camera_position_offset = {.035, -.1, .125},
-            },
-        }, sight_reflex), sight_scope),
+            sight_reflex),
+        sight_scope),
     },
 }
 
@@ -84,6 +73,20 @@ attachments.autogun_p3_m3 = table_clone(attachments.autogun_p1_m1)
 
 local fixes = {
     autogun_p1_m1 = {
+        {attachment_slot = "magazine",
+            requirements = {
+                magazine = {
+                    has = autopistol_magazines,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1.8, 1.8),
+                },
+            },
+        },
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -380,8 +383,8 @@ local kitbashs = {
                                 fix = {
                                     offset = {
                                         node = 1,
-                                        position = vector3_box(.1, .005, -.125),
-                                        rotation = vector3_box(0, 90, 0),
+                                        position = vector3_box(.15, .1, -.125),
+                                        rotation = vector3_box(0, 90, 180),
                                         scale = vector3_box(1.3, .85, 1),
                                     },
                                 },

@@ -18,11 +18,11 @@ local mod = get_mod("visible_equipment")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/common")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extended_weapon_customization_plugin")
-mod.settings = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/settings")
-mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/plugins")
-mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/utilities/save")
+mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/common")
+mod:io_dofile("visible_equipment/scripts/mods/ve/ewc_plugin")
+mod.settings = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/settings")
+mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/plugins")
+mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/save")
 
 local REFERENCE = "visible_equipment"
 
@@ -182,32 +182,33 @@ end
 -- ##### ├─┘├─┤ │ │  ├─┤├┤ └─┐ ########################################################################################
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
 
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/main_menu_view")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/main_menu_background_view")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/result_view")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/lobby_view")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/ui_manager")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/view_element_grid")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_view_content_blueprints")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_view_definitions")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_background_view")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_view")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/portrait_ui")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_cosmetics_view_definitions")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/inventory_cosmetics_view")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/player_unit_visual_loadout_extension")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/player_husk_visual_loadout_extension")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/world")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/ui_profile_spawner")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/equipment_component")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/material_fx")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/action_shoot_hit_scan")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/action_shoot_pellets")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/patches/action_shoot_projectile")
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/extensions/visible_equipment_extension")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/main_menu_view")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/main_menu_background_view")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/result_view")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/lobby_view")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/ui_manager")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/view_element_grid")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_view_content_blueprints")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_view_definitions")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_background_view")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_view")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/portrait_ui")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_cosmetics_view_definitions")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_cosmetics_view")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/player_unit_visual_loadout_extension")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/player_husk_visual_loadout_extension")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/world")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/ui_profile_spawner")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/equipment_component")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/material_fx")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/action_shoot_hit_scan")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/action_shoot_pellets")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/action_shoot_projectile")
+
+mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/visible_equipment_extension")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐┌─┐┬─┐┌─┐┬─┐┬ ┬ ##################################################################################
 -- #####  │ ├┤ │││├─┘│ │├┬┘├─┤├┬┘└┬┘ ##################################################################################
 -- #####  ┴ └─┘┴ ┴┴  └─┘┴└─┴ ┴┴└─ ┴  ##################################################################################
 
-mod:io_dofile("visible_equipment/scripts/mods/visible_equipment/smooth_third_person_rotation")
+mod:io_dofile("visible_equipment/scripts/mods/ve/smooth_third_person_rotation")

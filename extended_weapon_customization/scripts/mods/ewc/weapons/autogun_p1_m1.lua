@@ -16,8 +16,8 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
     local table = table
     local vector3 = Vector3
     local vector3_box = Vector3Box
-    local vector3_zero = vector3.zero
-    local table_merge_recursive = table.merge_recursive
+    -- local vector3_zero = vector3.zero
+    -- local table_merge_recursive = table.merge_recursive
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################

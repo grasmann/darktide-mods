@@ -93,6 +93,16 @@ mod.fetch_attachment_fixes = function(self, attachments, attachment_fixes)
     return attachment_fixes
 end
 
+mod.clear_attachment_fixes = function(self, attachments)
+    for slot, data in pairs(attachments) do
+        data.fix = nil
+        if data.children then
+            self:clear_attachment_fixes(data.children)
+        end
+    end
+    return attachments
+end
+
 mod.fetch_attachment = function(self, attachments, target_slot)
     local attachment_item_path = nil
     for slot, data in pairs(attachments) do

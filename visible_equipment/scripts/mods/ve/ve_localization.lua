@@ -4,6 +4,11 @@ mod:add_global_localize_strings({
 	attachment_slot_scabbard = {
 		en = "Scabbard",
 	},
+	loc_visible_equipment = {
+		en = "Visible Equipment",
+		de = "Sichtbare Ausrüstung",
+		["zh-cn"] = "可见装备",
+	},
 })
 
 return {
