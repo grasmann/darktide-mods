@@ -32,9 +32,4 @@ return {
         icon_render_unit_rotation_offset = {90, 0, -95},
         icon_render_camera_position_offset = {.035, -.1, .175},
     },
-    scope_01 = {
-        replacement_path = _item_ranged.."/sights/scope_01",
-        icon_render_unit_rotation_offset = {90, 0, -85},
-        icon_render_camera_position_offset = {0, -.8, .45},
-    },
 }

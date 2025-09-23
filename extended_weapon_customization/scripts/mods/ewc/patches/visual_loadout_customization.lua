@@ -92,6 +92,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     end
 
                 else
+
+                    -- mod:dtf(item_data, "item_data", 20)
                     
                     local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
                     local item = master_items.get_item(item_path)
@@ -107,16 +109,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                             
                             local pt = mod:pt()
 
-                            -- local deleted = 0
                             for unit, _ in pairs(pt.exclude_from_vfx_spawner) do
                                 if not unit or not unit_alive(unit) then
                                     pt.exclude_from_vfx_spawner[unit] = nil
-                                    -- deleted = deleted + 1
                                 end
                             end
-                            -- if deleted > 0 then
-                            --     mod:print("exclude_from_vfx_spawner deleted: "..tostring(deleted))
-                            -- end
 
                             pt.exclude_from_vfx_spawner[attachment_unit] = true
 
@@ -127,7 +124,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                         elseif item.disable_vfx_spawner_exclusion then
 
-                            -- mod:echo("disable_vfx_spawner_exclusion: "..tostring(item.name))
+                            mod:echo("disable_vfx_spawner_exclusion: "..tostring(item.name))
 
                         end
 
@@ -175,6 +172,35 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     if kitbash_fixes then
                         fixes = table_merge_recursive(fixes, kitbash_fixes)
                     end
+
+                    if item.is_kitbash and not item.disable_vfx_spawner_exclusion then
+                            
+                        local pt = mod:pt()
+
+                        local deleted = 0
+                        for unit, _ in pairs(pt.exclude_from_vfx_spawner) do
+                            if not unit or not unit_alive(unit) then
+                                pt.exclude_from_vfx_spawner[unit] = nil
+                                deleted = deleted + 1
+                            end
+                        end
+                        if deleted > 0 then
+                            mod:print("exclude_from_vfx_spawner deleted: "..tostring(deleted))
+                        end
+
+                        pt.exclude_from_vfx_spawner[attachment_unit] = true
+
+                        local all_children = mod:recursive_children(attachment_unit, attachment_units_by_unit)
+                        for _, child in pairs(all_children) do
+                            pt.exclude_from_vfx_spawner[child] = true
+                        end
+
+                    elseif item.disable_vfx_spawner_exclusion then
+
+                        mod:print("disable_vfx_spawner_exclusion: "..tostring(item.name))
+
+                    end
+
                 end
 
             end

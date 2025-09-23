@@ -4,15 +4,12 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
--- local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/trinket_hook")
--- local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/flashlight")
+local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
+local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
+local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
 local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
--- local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/emblem_left")
--- local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/extended_weapon_customization/weapons/emblem_right")
-local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
-local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -46,9 +43,11 @@ local attachments = {
     autogun_p1_m1 = {
         rail = rails,
         magazine = table_merge_recursive(
-            magazine_autopistol,
-            magazine_autogun_double
-        ),
+            table_merge_recursive(
+                magazine_autopistol,
+                magazine_autogun_double
+            ),
+        magazine_autopistol_double),
         sight = table_merge_recursive(
             table_merge_recursive({
                 lasgun_rifle_sight_01 = {
@@ -90,7 +89,7 @@ local fixes = {
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
-                    has = reflex_sights.."|"..scopes,
+                    has = reflex_sights,
                 },
             },
             fix = {
@@ -100,10 +99,67 @@ local fixes = {
                 },
             },
         },
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = infantry_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, -.036),
+                    rotation = vector3_box(0, 0, 0),
+                    custom_fov = 32.5,
+                    aim_scale = .5,
+                    fov = 25,
+                },
+            },
+        },
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = braced_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, -.034),
+                    rotation = vector3_box(0, 0, 0),
+                    custom_fov = 32.5,
+                    aim_scale = .5,
+                    fov = 25,
+                },
+            },
+        },
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = headhunter_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, -.036),
+                    rotation = vector3_box(0, 0, 0),
+                    custom_fov = 32.5,
+                    aim_scale = .5,
+                    fov = 25,
+                },
+            },
+        },
         {attachment_slot = "sight",
             requirements = {
                 sight = {
-                    has = reflex_sights.."|"..scopes,
+                    has = reflex_sights,
                 },
                 receiver = {
                     has = braced_receivers,
@@ -119,7 +175,7 @@ local fixes = {
         {attachment_slot = "sight",
             requirements = {
                 sight = {
-                    has = reflex_sights.."|"..scopes,
+                    has = reflex_sights,
                 },
                 receiver = {
                     has = headhunter_receivers,
@@ -128,6 +184,54 @@ local fixes = {
             fix = {
                 offset = {
                     position = vector3_box(0, -.05, 0),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = braced_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.025, .025),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = headhunter_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, .025),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = infantry_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, .025),
                     rotation = vector3_box(0, 0, 0),
                 },
             },
@@ -188,7 +292,7 @@ local fixes = {
                     has = infantry_receivers,
                 },
                 sight = {
-                    has = reflex_sights.."|"..scopes.."|autogun_rifle_killshot_sight_01|autogun_rifle_ak_sight_01",
+                    has = reflex_sights.."|autogun_rifle_killshot_sight_01|autogun_rifle_ak_sight_01",
                 },
             },
             fix = {
@@ -215,192 +319,7 @@ fixes.autogun_p3_m1 = table_clone(fixes.autogun_p1_m1)
 fixes.autogun_p3_m2 = table_clone(fixes.autogun_p1_m1)
 fixes.autogun_p3_m3 = table_clone(fixes.autogun_p1_m1)
 
-local kitbashs = {
-    [_item_ranged.."/magazines/autogun_rifle_magazine_01_double"] = {
-        attachments = {
-            double_magazine_1 = {
-                item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
-                fix = {
-                    offset = {
-                        node = 1,
-                        position = vector3_box(0, 0, 0),
-                        rotation = vector3_box(0, 0, 0),
-                        scale = vector3_box(1, 1, 1),
-                    },
-                },
-                children = {
-                    double_magazine_clip = {
-                        item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                        fix = {
-                            offset = {
-                                node = 1,
-                                position = vector3_box(.0325, -.01, -.15),
-                                rotation = vector3_box(0, 90, 0),
-                                scale = vector3_box(1, 1.2, .75),
-                            },
-                        },
-                        children = {
-                            double_magazine_2 = {
-                                item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
-                                fix = {
-                                    offset = {
-                                        node = 1,
-                                        position = vector3_box(.15, .005, -.125),
-                                        rotation = vector3_box(0, 90, 0),
-                                        scale = vector3_box(1.3, .85, 1),
-                                    },
-                                },
-                                children = {},
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        display_name = "loc_autogun_rifle_magazine_01_double",
-        description = "loc_description_autogun_rifle_magazine_01_double",
-        attach_node = "ap_magazine_01",
-        dev_name = "loc_autogun_rifle_magazine_01_double",
-    },
-    [_item_ranged.."/magazines/autogun_rifle_magazine_02_double"] = {
-        attachments = {
-            double_magazine_1 = {
-                item = _item_ranged.."/magazines/autogun_rifle_magazine_02",
-                fix = {
-                    offset = {
-                        node = 1,
-                        position = vector3_box(0, 0, 0),
-                        rotation = vector3_box(0, 0, 0),
-                        scale = vector3_box(1, 1, 1),
-                    },
-                },
-                children = {
-                    double_magazine_clip = {
-                        item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                        fix = {
-                            offset = {
-                                node = 1,
-                                position = vector3_box(.0325, -.01, -.15),
-                                rotation = vector3_box(0, 90, 0),
-                                scale = vector3_box(1, 1.2, .75),
-                            },
-                        },
-                        children = {
-                            double_magazine_2 = {
-                                item = _item_ranged.."/magazines/autogun_rifle_magazine_02",
-                                fix = {
-                                    offset = {
-                                        node = 1,
-                                        position = vector3_box(.15, .005, -.125),
-                                        rotation = vector3_box(0, 90, 0),
-                                        scale = vector3_box(1.3, .85, 1),
-                                    },
-                                },
-                                children = {},
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        display_name = "loc_autogun_rifle_magazine_02_double",
-        description = "loc_description_autogun_rifle_magazine_02_double",
-        attach_node = "ap_magazine_01",
-        dev_name = "loc_autogun_rifle_magazine_02_double",
-    },
-    [_item_ranged.."/magazines/autogun_rifle_magazine_03_double"] = {
-        attachments = {
-            double_magazine_1 = {
-                item = _item_ranged.."/magazines/autogun_rifle_magazine_03",
-                fix = {
-                    offset = {
-                        node = 1,
-                        position = vector3_box(0, 0, 0),
-                        rotation = vector3_box(0, 0, 0),
-                        scale = vector3_box(1, 1, 1),
-                    },
-                },
-                children = {
-                    double_magazine_clip = {
-                        item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                        fix = {
-                            offset = {
-                                node = 1,
-                                position = vector3_box(.0325, -.01, -.15),
-                                rotation = vector3_box(0, 90, 0),
-                                scale = vector3_box(1, 1.2, .75),
-                            },
-                        },
-                        children = {
-                            double_magazine_2 = {
-                                item = _item_ranged.."/magazines/autogun_rifle_magazine_03",
-                                fix = {
-                                    offset = {
-                                        node = 1,
-                                        position = vector3_box(.15, .005, -.125),
-                                        rotation = vector3_box(0, 90, 0),
-                                        scale = vector3_box(1.3, .85, 1),
-                                    },
-                                },
-                                children = {},
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        display_name = "loc_autogun_rifle_magazine_03_double",
-        description = "loc_description_autogun_rifle_magazine_03_double",
-        attach_node = "ap_magazine_01",
-        dev_name = "loc_autogun_rifle_magazine_03_double",
-    },
-    [_item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double"] = {
-        attachments = {
-            double_magazine_1 = {
-                item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
-                fix = {
-                    offset = {
-                        node = 1,
-                        position = vector3_box(0, 0, 0),
-                        rotation = vector3_box(0, 0, 0),
-                        scale = vector3_box(1, 1, 1),
-                    },
-                },
-                children = {
-                    double_magazine_clip = {
-                        item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                        fix = {
-                            offset = {
-                                node = 1,
-                                position = vector3_box(.0325, 0, -.16),
-                                rotation = vector3_box(10, 90, 0),
-                                scale = vector3_box(1, 1.2, .75),
-                            },
-                        },
-                        children = {
-                            double_magazine_2 = {
-                                item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
-                                fix = {
-                                    offset = {
-                                        node = 1,
-                                        position = vector3_box(.15, .1, -.125),
-                                        rotation = vector3_box(0, 90, 180),
-                                        scale = vector3_box(1.3, .85, 1),
-                                    },
-                                },
-                                children = {},
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        display_name = "loc_autogun_rifle_ak_magazine_01_double",
-        description = "loc_description_autogun_rifle_ak_magazine_01_double",
-        attach_node = "ap_magazine_01",
-        dev_name = "loc_autogun_rifle_ak_magazine_01_double",
-    },
-}
+local kitbashs = {}
 
 return {
     attachments = attachments,

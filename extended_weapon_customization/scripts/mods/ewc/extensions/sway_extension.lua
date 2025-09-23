@@ -83,8 +83,8 @@ SwayExtension.update = function(self, dt, t)
         
         local min, max = -2.5, 2.5
         local diff = vector3_unbox(self.rotation) - rotation
-        local momentum_x = math_clamp(diff[3], min, max)
-        local momentum_y = math_clamp(diff[1], min, max)
+        local momentum_x = math_clamp(diff[3], min, max) * (self.alternate_fire_component.is_active and .5 or 1)
+        local momentum_y = math_clamp(diff[1], min, max) * (self.alternate_fire_component.is_active and .5 or 1)
         
         if (momentum_x > 0 and momentum_x > self.momentum_x) or (momentum_x < 0 and momentum_x < self.momentum_x) then
             self.momentum_x = math_lerp(self.momentum_x, momentum_x, dt * 4)

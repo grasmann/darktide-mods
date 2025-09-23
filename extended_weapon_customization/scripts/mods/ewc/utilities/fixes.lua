@@ -24,6 +24,9 @@ local mod = get_mod("extended_weapon_customization")
     local unit_set_local_position = unit.set_local_position
     local unit_set_local_rotation = unit.set_local_rotation
     local unit_set_unit_visibility = unit.set_unit_visibility
+    local unit_set_mesh_visibility = unit.set_mesh_visibility
+    local unit_set_scalar_for_materials = unit.set_scalar_for_materials
+    local unit_set_shader_pass_flag_for_meshes = unit.set_shader_pass_flag_for_meshes
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -42,7 +45,10 @@ local split_cache = {}
 
 mod.collect_fixes = function(self, item_data, target_slot)
     -- Get item data
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data.__master_item or item_data
+    local item = self:item_data(item_data)
+    --item = item and item.__master_item or item_data.__master_item or item
+    
     local item_type = item.item_type
     -- Clear temp
     table_clear(temp_fixes)
@@ -126,7 +132,9 @@ end
 
 mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, optional_fixes, is_ui_item_preview)
     -- Item data
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    local item = self:item_data(item_data)
+    --item = item and item.__master_item or item_data.__master_item or item
     -- local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization)) or is_ui_item_preview
     local is_ui_item_preview = is_ui_item_preview or (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
     -- Check data
@@ -158,15 +166,37 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                         if offset.rotation then unit_set_local_rotation(attachment_unit, node, quaternion_from_vector(vector3_unbox(offset.rotation))) end
                         if offset.scale then unit_set_local_scale(attachment_unit, node, vector3_unbox(offset.scale)) end
                     end
+                    -- Check alpha
+                    if fix.alpha and attachment_unit and unit_alive(attachment_unit) then
+                        unit_set_shader_pass_flag_for_meshes(attachment_unit, "one_bit_alpha", true, true)
+                        unit_set_scalar_for_materials(attachment_unit, "inv_jitter_alpha", fix.alpha, true)
+                    end
                     -- Check fix hide
                     if fix.hide and attachment_unit and unit_alive(attachment_unit) then
                         local hide = fix.hide
                         if hide.node then
+                            -- mod:print("fix hide "..tostring(attachment_slot))
                             local node = hide.node
                             if type(node) == "string" then
                                 node = unit_has_node(attachment_unit, node) and unit_node(attachment_unit, node) or 1
                             end
-                            unit_set_local_scale(attachment_unit, node, vector3(0, 0, 0))
+                            if type(node) == "table" then
+                                for i = 1, #node do
+                                    unit_set_local_scale(attachment_unit, node[i], vector3(0, 0, 0))
+                                end
+                            else
+                                unit_set_local_scale(attachment_unit, node, vector3(0, 0, 0))
+                            end
+                        end
+                        if hide.mesh then
+                            local mesh = hide.mesh
+                            if type(mesh) == "table" then
+                                for i = 1, #mesh do
+                                    unit_set_mesh_visibility(attachment_unit, mesh[i], false)
+                                end
+                            else
+                                unit_set_mesh_visibility(attachment_unit, mesh, false)
+                            end
                         end
                     end
                 end
@@ -177,7 +207,9 @@ end
 
 mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
     -- Item data
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    local item = self:item_data(item_data)
+    --item = item and item.__master_item or item_data.__master_item or item
     local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
     local item_type = item.item_type
     -- Check data

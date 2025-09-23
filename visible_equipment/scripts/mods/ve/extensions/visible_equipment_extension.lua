@@ -262,7 +262,7 @@ VisibleEquipmentExtension.spawn_slot = function(self, slot, optional_mission_tem
             fixes = self.extended_weapon_customization:collect_fixes(slot.item)
 
             -- Collect current attachment names
-            local kitbash_fixes = self.extended_weapon_customization:fetch_attachment_fixes(slot.item.attachments)
+            local kitbash_fixes = self.extended_weapon_customization:fetch_attachment_fixes(slot.item.structure or slot.item.attachments)
             if kitbash_fixes then
                 fixes = table_merge_recursive(fixes, kitbash_fixes)
             end
@@ -276,7 +276,7 @@ VisibleEquipmentExtension.spawn_slot = function(self, slot, optional_mission_tem
 
                 if item and item.attachments then
                     -- Collect current attachment names
-                    local kitbash_fixes = self.extended_weapon_customization:fetch_attachment_fixes(item.attachments)
+                    local kitbash_fixes = self.extended_weapon_customization:fetch_attachment_fixes(item.structure or item.attachments)
                     if kitbash_fixes then
                         fixes = table_merge_recursive(fixes, kitbash_fixes)
                     end

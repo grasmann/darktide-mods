@@ -4,12 +4,12 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/trinket_hook")
-local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/flashlight")
-local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/sight")
-local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/rail")
-local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/emblem_left")
-local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/emblem_right")
+local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
+local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
+local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
+local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
+local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
+local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################

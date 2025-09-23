@@ -4,12 +4,12 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/trinket_hook")
-local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/flashlight")
-local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/sight")
-local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/rail")
-local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/emblem_left")
-local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/weapons/emblem_right")
+local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
+-- local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
+-- local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
+-- local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
+local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
+local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -28,18 +28,18 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
-local _item_empty_trinket = _item.."/trinkets/unused_trinket"
+-- local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
-local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
-local scopes = "scope_01"
+-- local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
+-- local scopes = "scope_01"
 
 return {
     attachments = {
         emblem_left = emblem_left,
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
-        flashlight = flashlights,
-        rail = rails,
+        -- flashlight = flashlights,
+        -- rail = rails,
         receiver = {
             boltgun_rifle_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/boltgun_rifle_receiver_01",
@@ -163,7 +163,7 @@ return {
                 icon_render_camera_position_offset = {-.15, -1.5, .25},
             },
         },
-        sight = table_merge_recursive({
+        sight = {
             boltgun_rifle_sight_01 = {
                 replacement_path = _item_ranged.."/sights/boltgun_rifle_sight_01",
                 icon_render_unit_rotation_offset = {90, 0, 45},
@@ -174,7 +174,7 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, 45},
                 icon_render_camera_position_offset = {-.2, -2.75, .25},
             },
-        }, sights),
+        },
         grip = {
             boltgun_rifle_grip_01 = {
                 replacement_path = _item_ranged.."/grips/boltgun_rifle_grip_01",
@@ -208,46 +208,46 @@ return {
             },
         },
     },
-    attachment_slots = {
-        flashlight = {
-            parent_slot = "receiver",
-            default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(.05, .24, .1),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-    },
-    fixes = {
-        {attachment_slot = "sight_offset",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.0095),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, .1, -.01),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-    },
+    -- attachment_slots = {
+    --     flashlight = {
+    --         parent_slot = "receiver",
+    --         default_path = _item_empty_trinket,
+    --         fix = {
+    --             offset = {
+    --                 position = vector3_box(.05, .24, .1),
+    --                 rotation = vector3_box(0, 0, 0),
+    --                 scale = vector3_box(1, 1, 1),
+    --                 node = 1,
+    --             },
+    --         },
+    --     },
+    -- },
+    -- fixes = {
+    --     {attachment_slot = "sight_offset",
+    --         requirements = {
+    --             sight = {
+    --                 has = reflex_sights.."|"..scopes,
+    --             },
+    --         },
+    --         fix = {
+    --             offset = {
+    --                 position = vector3_box(0, 0, -.0095),
+    --                 rotation = vector3_box(0, 0, 0),
+    --             },
+    --         },
+    --     },
+    --     {attachment_slot = "sight",
+    --         requirements = {
+    --             sight = {
+    --                 has = reflex_sights.."|"..scopes,
+    --             },
+    --         },
+    --         fix = {
+    --             offset = {
+    --                 position = vector3_box(0, .1, -.01),
+    --                 rotation = vector3_box(0, 0, 0),
+    --             },
+    --         },
+    --     },
+    -- },
 }

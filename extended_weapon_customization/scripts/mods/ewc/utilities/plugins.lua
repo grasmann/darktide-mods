@@ -68,6 +68,7 @@ mod.load_plugins = function(self)
                 end
 
             end
+            
             mod:print("loaded plugin "..tostring(plugin_mod:localize("mod_title") or plugin_mod:localize("mod_name") or plugin_mod:get_name()))
             plugins[plugin_mod] = plugin
         end

@@ -41,6 +41,21 @@ local update_requests = function(weapon_icon_ui, request_id, item, prioritized)
     end
 end
 
+mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, timeout, ...)
+
+    -- Original function
+    func(self, item_unit_3p, timeout, ...)
+
+    local weapon_spawn_data = self._weapon_spawn_data
+    if weapon_spawn_data and weapon_spawn_data.item then
+        -- local item = mod:item_data(weapon_spawn_data.item)
+        if weapon_spawn_data.item.__attachment_customization then
+            -- mod:echo("__attachment_customization")
+        end
+    end
+
+end)
+
 mod:hook(CLASS.WeaponIconUI, "_spawn_weapon", function(func, self, item, render_context, ...)
     -- Original function
     func(self, item, render_context, ...)

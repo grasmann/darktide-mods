@@ -143,8 +143,19 @@ mod.fetch_attachment_slots = function(self, attachments, attachment_slots)
     return attachment_slots
 end
 
+mod.item_data = function(self, item_data)
+    local data = item_data and (item_data.__attachment_customization and item_data.__master_item) or (item_data.__is_ui_item_preview and item_data.__data)
+    -- if item_data.__attachment_customization then
+    --     mod:echo("customization: "..tostring(item_data))
+    -- end
+    return data or item_data
+end
+
 mod.reset_item = function(self, item_data)
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    local item = self:item_data(item_data)
+    --item = item and item.__master_item or item_data.__master_item or item
+
     local attachment_slots = self:fetch_attachment_slots(item.attachments)
 
     local original_item = master_items.get_item(item.name)
@@ -157,7 +168,10 @@ end
 
 mod.randomize_item = function(self, item_data)
 
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    local item = self:item_data(item_data)
+    --item = item and item.__master_item or item_data.__master_item or item
+
     local new_gear_settings = {}
     local attachment_slots = self:fetch_attachment_slots(item.attachments)
 
@@ -186,15 +200,16 @@ mod.randomize_item = function(self, item_data)
         end
     end
 
-        return new_gear_settings
+    return new_gear_settings
 end
 
 mod.mod_item = function(self, gear_id, item_data)
     local pt = self:pt()
 
     if gear_id and not pt.items[gear_id] then
-        local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
-        item = item and item.__master_item or item
+        -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+        local item = self:item_data(item_data)
+        --item = item and item.__master_item or item_data.__master_item or item
         local item_type = item_data and item_data.item_type or "unknown"
         if table_contains(PROCESS_SLOTS, item_type) then
             mod:print("cloning item "..tostring(gear_id))
@@ -211,7 +226,9 @@ end
 
 mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     -- Get item info
-    local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    local item = self:item_data(item_data)
+    --item = item and item.__master_item or item_data.__master_item or item
     local item_type = item_data and item_data.item_type
     -- Check supported item type
     if table_contains(PROCESS_SLOTS, item_type) and item.attachments then

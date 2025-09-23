@@ -30,37 +30,33 @@ mod.load_kitbash_collection = function(self, kitbash_collection)
     for kitbash_name, data in pairs(kitbash_collection) do
         -- Preload or load
         if preload then
-            -- mod:kitbash_preload(kitbash_data.attachments, kitbash_name, kitbash_data.display_name, kitbash_data.description, kitbash_data.attach_node, kitbash_data.dev_name, kitbash_data.disable_vfx_spawner_exclusion)
+            -- Preload kitbash item
             self:kitbash_preload(kitbash_name, data)
         else
-            -- mod:kitbash_item(kitbash_data.attachments, kitbash_name, kitbash_data.display_name, kitbash_data.description, kitbash_data.attach_node, kitbash_data.dev_name, kitbash_data.disable_vfx_spawner_exclusion)
+            -- Kitbash item directly
             self:kitbash_item(kitbash_name, data)
         end
     end
 end
 
--- mod.kitbash_preload = function(self, structure, name, display_name, description, attach_node, optional_dev_name, disable_vfx_spawner_exclusion)
 mod.kitbash_preload = function(self, name, data)
     -- Add kitbash entry to preload table
     self:pt().kitbash_entries[name] = data
 end
 
--- mod.kitbash_item = function(self, structure, name, display_name, description, attach_node, optional_dev_name, disable_vfx_spawner_exclusion)
 mod.kitbash_item = function(self, name, data)
     if data and type(data) == "table" then
         -- Get kitbash template
         local template = table_clone(master_items.get_item("content/items/weapons/player/trinkets/unused_trinket"))
         if template then
-            -- Modify item
 
+            -- Merge data
             template = table_merge_recursive(template, data)
 
-            template.show_in_1p = true
-            template.item_list_faction = "Player"
-
             -- Copy attachments
-            template.structure = table_clone(data.attachments)
-            template.attachments = self:clear_attachment_fixes(data.attachments)
+            -- template.structure = table_clone(data.attachments)
+            -- template.attachments = self:clear_attachment_fixes(data.attachments)
+            template.attachments = data.attachments
 
             -- Add shared material overrides
             if not template.attachments.zzz_shared_material_overrides then
@@ -83,6 +79,9 @@ mod.kitbash_item = function(self, name, data)
             end
             template.resource_dependencies = resource_dependencies
 
+            -- Other attributes
+            template.show_in_1p = true
+            template.item_list_faction = "Player"
             template.material_overrides = nil
             template.rarity = nil
             template.slots = nil
@@ -90,16 +89,12 @@ mod.kitbash_item = function(self, name, data)
             template.feature_flags = {
                 "FEATURE_item_retained",
             }
-            -- template.attach_node = data.attach_node
-            -- template.description = data.description or name
             template.slots = nil
             template.item_type = nil --"KITBASH"
-            -- template.dev_name = data.dev_name or name
             template.name = name
-            -- template.display_name = data.display_name or name
             template.is_fallback_item = false
             template.is_kitbash = true
-            -- template.disable_vfx_spawner_exclusion = data.disable_vfx_spawner_exclusion
+
             -- Inject item into master items
             master_items.get_cached()[template.name] = template
 
@@ -118,138 +113,13 @@ mod.try_kitbash_load = function(self)
             -- Iterate through kitbash entries
             for kitbash_name, data in pairs(kitbash_entries) do
                 -- Kitbash item
-                -- self:kitbash_item(kitbash_entry.attachments, name, kitbash_entry.display_name, kitbash_entry.description, kitbash_entry.attach_node, kitbash_entry.dev_name, kitbash_entry.disable_vfx_spawner_exclusion)
                 self:kitbash_item(kitbash_name, data)
             end
         end
 
         self:print("kitbash items finished loading")
-        self:dtf(master_items.get_cached(), "master_items", 20)
 
         -- Set loaded
         self.kitbash_loaded = true
     end
 end
-
-
-mod:kitbash_preload(
-    "content/items/weapons/player/ranged/sights/scope_01",
-    {
-        attachments = {
-            base = {
-                item = "content/items/weapons/player/ranged/sights/reflex_sight_03",
-                fix = {
-                    disable_in_ui = true,
-                    offset = {
-                        node = 1,
-                        position = vector3_box(0, 0, .115),
-                        rotation = vector3_box(0, 0, 0),
-                        scale = vector3_box(1, 1, 1),
-                    },
-                },
-                children = {
-                    body = {
-                        item = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_02",
-                        fix = {
-                            offset = {
-                                node = 1,
-                                position = vector3_box(0, -.04, .05),
-                                rotation = vector3_box(0, 0, 0),
-                                scale = vector3_box(1.5, 1.5, 1.5),
-                            },
-                        },
-                        children = {
-                            lense_1 = {
-                                item = "content/items/weapons/player/ranged/bullets/rippergun_rifle_bullet_01",
-                                fix = {
-                                    offset = {
-                                        node = 1,
-                                        position = vector3_box(0, .085, 0),
-                                        rotation = vector3_box(0, 0, 0),
-                                        scale = vector3_box(1, .35, 1),
-                                    },
-                                },
-                            },
-                            lense_2 = {
-                                item = "content/items/weapons/player/ranged/bullets/rippergun_rifle_bullet_01",
-                                fix = {
-                                    offset = {
-                                        node = 1,
-                                        position = vector3_box(0, .075, 0),
-                                        rotation = vector3_box(180, 0, 0),
-                                        scale = vector3_box(1, .35, 1),
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        attach_node = "ap_sight",
-        display_name = "loc_scope_01",
-        description = "loc_description_scope_01",
-        dev_name = "loc_scope_01",
-        disable_vfx_spawner_exclusion = true
-    }
-)
-
--- mod:kitbash_preload(
---     {
---         base = {
---             item = "content/items/weapons/player/ranged/sights/reflex_sight_03",
---             fix = {
---                 disable_in_ui = true,
---                 offset = {
---                     node = 1,
---                     position = vector3_box(0, 0, .115),
---                     rotation = vector3_box(0, 0, 0),
---                     scale = vector3_box(1, 1, 1),
---                 },
---             },
---             children = {
---                 body = {
---                     item = "content/items/weapons/player/ranged/muzzles/lasgun_rifle_krieg_muzzle_02",
---                     fix = {
---                         offset = {
---                             node = 1,
---                             position = vector3_box(0, -.04, .05),
---                             rotation = vector3_box(0, 0, 0),
---                             scale = vector3_box(1.5, 1.5, 1.5),
---                         },
---                     },
---                     children = {
---                         lense_1 = {
---                             item = "content/items/weapons/player/ranged/bullets/rippergun_rifle_bullet_01",
---                             fix = {
---                                 offset = {
---                                     node = 1,
---                                     position = vector3_box(0, .085, 0),
---                                     rotation = vector3_box(0, 0, 0),
---                                     scale = vector3_box(1, .35, 1),
---                                 },
---                             },
---                         },
---                         lense_2 = {
---                             item = "content/items/weapons/player/ranged/bullets/rippergun_rifle_bullet_01",
---                             fix = {
---                                 offset = {
---                                     node = 1,
---                                     position = vector3_box(0, .075, 0),
---                                     rotation = vector3_box(180, 0, 0),
---                                     scale = vector3_box(1, .35, 1),
---                                 },
---                             },
---                         },
---                     },
---                 },
---             },
---         },
---     },
---     "content/items/weapons/player/ranged/sights/scope_01",
---     "loc_scope_01",
---     "loc_description_scope_01",
---     "ap_sight",
---     "loc_scope_01",
---     true
--- )

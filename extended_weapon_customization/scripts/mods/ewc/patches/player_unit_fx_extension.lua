@@ -30,12 +30,13 @@ local VisualLoadoutCustomization = mod:original_require("scripts/extension_syste
 
 local function _register_vfx_spawner_from_attachments(parent_unit, attachments_by_unit, attachment_name_lookup, node_name, spawner_name)
 	local spawners = {}
+	local exclude_from_vfx_spawner = mod:pt().exclude_from_vfx_spawner
 
 	for unit, attachments in pairs(attachments_by_unit) do
 		for i = 1, #attachments do
 			local attachment_unit = attachments[i]
 
-            if not mod:pt().exclude_from_vfx_spawner[attachment_unit] then
+            if not exclude_from_vfx_spawner[attachment_unit] then
 
                 if unit_has_node(attachment_unit, node_name) then
                     local attachment_name = attachment_name_lookup[unit]
@@ -66,17 +67,6 @@ local function _register_vfx_spawner_from_attachments(parent_unit, attachments_b
 		return spawners
 	end
 
-	local attachment_string = ""
-	local attachments = attachments_by_unit[parent_unit]
-
-	for ii = 1, #attachments do
-		local unit = attachments[ii]
-
-		attachment_string = string_format("%s%s, ", attachment_string, tostring(unit))
-	end
-
-	log_exception("PlayerUnitFxExtension", "Could not register vfx spawner %q. Node %q could not be found in any of the given attachment (%q) units nor parent unit (%q)", spawner_name, node_name, attachment_string, tostring(parent_unit))
-
 	spawners[VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
 		node = 1,
 		unit = parent_unit,
@@ -106,4 +96,86 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, se
 			node_3p = node_3p,
 		}
 	end
+end)
+
+local WwiseWorld = WwiseWorld
+local tonumber = tonumber
+
+
+local function _register_sound_source(wwise_source_node_cache, unit, node_name, wwise_world, source_name)
+	if not wwise_source_node_cache[unit] then
+		wwise_source_node_cache[unit] = {}
+	end
+
+	local unit_cache = wwise_source_node_cache[unit]
+
+	if not unit_cache[node_name] then
+		local node = tonumber(node_name) or unit_node(unit, node_name)
+		local source = WwiseWorld.make_manual_source(wwise_world, unit, node)
+
+		unit_cache[node_name] = {
+			num_registered_sources = 0,
+			source = source,
+		}
+	end
+
+	local cache = unit_cache[node_name]
+
+	cache.num_registered_sources = cache.num_registered_sources + 1
+
+	local source_name_to_node_cache_lookup = {
+		unit = unit,
+		node_name = node_name,
+	}
+
+	wwise_source_node_cache[source_name] = source_name_to_node_cache_lookup
+
+	return cache.source
+end
+
+local function _register_sound_sources(wwise_source_node_cache, parent_unit, attachments_by_unit, attachment_name_lookup, node_name, wwise_world, source_name)
+	local has_any_attachments = false
+	local sources = {}
+
+	if attachments_by_unit then
+		for unit, attachments in pairs(attachments_by_unit) do
+			local num_attachments = #attachments
+
+			for ii = 1, num_attachments do
+				has_any_attachments = true
+
+				local attachment_unit = attachments[ii]
+
+				if unit_has_node(attachment_unit, node_name) then
+					local attachment_name = attachment_name_lookup[unit]
+
+					sources[attachment_name] = _register_sound_source(wwise_source_node_cache, attachment_unit, node_name, wwise_world, source_name)
+
+					break
+				end
+			end
+		end
+	end
+
+	if unit_has_node(parent_unit, node_name) then
+		local parent_id_name = attachment_name_lookup and attachment_name_lookup[parent_unit] or VisualLoadoutCustomization.ROOT_ATTACH_NAME
+
+		sources[parent_id_name] = _register_sound_source(wwise_source_node_cache, parent_unit, node_name, wwise_world, source_name)
+	end
+
+	if not table.is_empty(sources) then
+		return sources
+	end
+
+	sources[VisualLoadoutCustomization.ROOT_ATTACH_NAME] = _register_sound_source(wwise_source_node_cache, parent_unit, 1, wwise_world, source_name)
+
+	return sources
+end
+
+mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name, ...)
+	local wwise_source_node_cache = self._wwise_source_node_cache
+	local wwise_world = self._wwise_world
+	local source_by_attachment = _register_sound_sources(wwise_source_node_cache, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name or 1, wwise_world, source_name)
+
+	sources[source_name] = source_by_attachment
 end)

@@ -32,9 +32,16 @@ local master_items = mod:original_require("scripts/backend/master_items")
 
 local pt = mod:pt()
 
+local debug_master_items = false
+
+if pt.game_initialized then
+    if debug_master_items then mod:dtf(master_items.get_cached(), "master_items", 20) end
+end
+
 if not pt.master_item_listener then
     pt.master_item_listener = master_items.add_listener(function()
         mod:print("master items loaded")
+        if debug_master_items then mod:dtf(master_items.get_cached(), "master_items", 20) end
         mod:try_kitbash_load()
     end)
 end
