@@ -98,24 +98,24 @@ mod:hook(CLASS.MissionIntroView, "init", function(func, self, settings, context,
 	func(self, settings, context, ...)
 end)
 
-mod:hook(CLASS.OutOfBoundsManager, "pre_update", function(func, self, shared_state, ...)
-	local hard_cap_out_of_bounds_units = shared_state.hard_cap_out_of_bounds_units
-	local soft_cap_out_of_bounds_units = shared_state.soft_cap_out_of_bounds_units
-	local world = shared_state.world
-
-	table.clear(soft_cap_out_of_bounds_units)
-	table.clear(hard_cap_out_of_bounds_units)
-
-	-- local num_hard_cap_units, _ = 
-	world_update_out_of_bounds_checker(world, hard_cap_out_of_bounds_units, soft_cap_out_of_bounds_units)
-	for _, unit in pairs(hard_cap_out_of_bounds_units) do
-		local u = tostring(unit)
-		if u == "#ID[e90c4e5ba603c2af]" or u == "#ID[465f4895f3dc98d1]" then
-			unit_set_local_position(unit, 1, vector3_zero())
-		end
-	end
-	-- local local_hard_cap_out_of_bounds_units = self._local_hard_cap_out_of_bounds_units
-end)
+--mod:hook(CLASS.OutOfBoundsManager, "pre_update", function(func, self, shared_state, ...)
+--	local hard_cap_out_of_bounds_units = shared_state.hard_cap_out_of_bounds_units
+--	local soft_cap_out_of_bounds_units = shared_state.soft_cap_out_of_bounds_units
+--	local world = shared_state.world
+--
+--	table.clear(soft_cap_out_of_bounds_units)
+--	table.clear(hard_cap_out_of_bounds_units)
+--
+--	-- local num_hard_cap_units, _ = 
+--	world_update_out_of_bounds_checker(world, hard_cap_out_of_bounds_units, soft_cap_out_of_bounds_units)
+--	for _, unit in pairs(hard_cap_out_of_bounds_units) do
+--		local u = tostring(unit)
+--		if u == "#ID[e90c4e5ba603c2af]" or u == "#ID[465f4895f3dc98d1]" then
+--			unit_set_local_position(unit, 1, vector3_zero())
+--		end
+--	end
+--	-- local local_hard_cap_out_of_bounds_units = self._local_hard_cap_out_of_bounds_units
+--end)
 
 -- ##### ┌─┐┬─┐┌─┐┌─┐┬ ┬  ┌─┐┬─┐ ┬ ####################################################################################
 -- ##### │  ├┬┘├─┤└─┐├─┤  ├┤ │┌┴┬┘ ####################################################################################
