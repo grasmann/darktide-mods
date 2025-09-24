@@ -196,7 +196,7 @@ mod:hook_require("scripts/ui/views/inventory_background_view/inventory_backgroun
 		end
 		if self.inventory_view then
 			local wbn = self.inventory_view._widgets_by_name
-				if wbn then wbn.name_text.content.text = self._item_name or "n/a" end
+				if wbn and wbn.name_text and wbn.name_text.content then wbn.name_text.content.text = self._item_name or "n/a" end
 		end
 	end
 
