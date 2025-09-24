@@ -97,6 +97,12 @@ mod:add_global_localize_strings({
 	attachment_slot_handle = {
 		en = "Handle",
 	},
+	attachment_slot_bayonet = {
+		en = "Bayonet",
+	},
+	attachment_slot_rail = {
+		en = "Rail",
+	}
 })
 
 return {

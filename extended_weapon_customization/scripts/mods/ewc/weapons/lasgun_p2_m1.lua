@@ -40,7 +40,13 @@ return {
         trinket_hook = trinket_hooks,
         flashlight = flashlights,
         rail = rails,
-        sight = sights,
+        sight = table_merge_recursive({
+            lasgun_rifle_krieg_sight_01 = {
+                replacement_path = _item_ranged.."/sights/lasgun_rifle_krieg_sight_01",
+                icon_render_unit_rotation_offset = {90, 0, -95},
+                icon_render_camera_position_offset = {.035, -.1, .175},
+            },
+        }, sights),
         muzzle = {
             lasgun_rifle_krieg_muzzle_02 = {
                 replacement_path = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_02",
@@ -142,6 +148,11 @@ return {
                 replacement_path = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_07",
                 icon_render_unit_rotation_offset = {90, -20, 90 - 30},
                 icon_render_camera_position_offset = {-.175, -2, 0},
+            },
+            lasgun_rifle_krieg_barrel_08 = {
+                replacement_path = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_08",
+                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
+                icon_render_camera_position_offset = {-.2, -2.5, 0},
             },
             lasgun_rifle_krieg_barrel_ml01 = {
                 replacement_path = _item_ranged.."/barrels/lasgun_rifle_krieg_barrel_ml01",

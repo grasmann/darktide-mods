@@ -34,6 +34,38 @@ return {
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
         flashlight = flashlights,
+        bayonet = {
+            rippergun_rifle_bayonet_01 = {
+                replacement_path = _item_ranged.."/bayonets/rippergun_rifle_bayonet_01",
+                icon_render_unit_rotation_offset = {90, -10, 90 - 40},
+                icon_render_camera_position_offset = {-.4, -5, .25},
+            },
+            rippergun_rifle_bayonet_02 = {
+                replacement_path = _item_ranged.."/bayonets/rippergun_rifle_bayonet_02",
+                icon_render_unit_rotation_offset = {90, -10, 90 - 40},
+                icon_render_camera_position_offset = {-.4, -5, .25},
+            },
+            rippergun_rifle_bayonet_03 = {
+                replacement_path = _item_ranged.."/bayonets/rippergun_rifle_bayonet_03",
+                icon_render_unit_rotation_offset = {90, -10, 90 - 40},
+                icon_render_camera_position_offset = {-.4, -5, .25},
+            },
+            rippergun_rifle_bayonet_04 = {
+                replacement_path = _item_ranged.."/bayonets/rippergun_rifle_bayonet_04",
+                icon_render_unit_rotation_offset = {90, -10, 90 - 40},
+                icon_render_camera_position_offset = {-.4, -5, .25},
+            },
+            rippergun_rifle_bayonet_05 = {
+                replacement_path = _item_ranged.."/bayonets/rippergun_rifle_bayonet_05",
+                icon_render_unit_rotation_offset = {90, -10, 90 - 40},
+                icon_render_camera_position_offset = {-.4, -5, .25},
+            },
+            rippergun_rifle_bayonet_ml01 = {
+                replacement_path = _item_ranged.."/bayonets/rippergun_rifle_bayonet_ml01",
+                icon_render_unit_rotation_offset = {90, -10, 90 - 40},
+                icon_render_camera_position_offset = {-.4, -5, .25},
+            },
+        },
         barrel = {
             rippergun_rifle_barrel_01 = {
                 replacement_path = _item_ranged.."/barrels/rippergun_rifle_barrel_01",
@@ -114,6 +146,11 @@ return {
             },
             rippergun_rifle_receiver_09 = {
                 replacement_path = _item_ranged.."/recievers/rippergun_rifle_receiver_09",
+                icon_render_unit_rotation_offset = {90, 20, 90 - 40},
+                icon_render_camera_position_offset = {-.45, -9, 1},
+            },
+            rippergun_rifle_receiver_11 = {
+                replacement_path = _item_ranged.."/recievers/rippergun_rifle_receiver_11",
                 icon_render_unit_rotation_offset = {90, 20, 90 - 40},
                 icon_render_camera_position_offset = {-.45, -9, 1},
             },

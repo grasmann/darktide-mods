@@ -138,7 +138,7 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
     -- local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization)) or is_ui_item_preview
     local is_ui_item_preview = is_ui_item_preview or (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
     -- Check data
-    if item.attachments then
+    if item.attachments and attachment_name_lookup then
         -- Get fixes
         local fixes = optional_fixes or self:collect_fixes(item)
         if fixes then

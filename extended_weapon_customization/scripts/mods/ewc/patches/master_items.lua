@@ -7,6 +7,7 @@ local mod = get_mod("extended_weapon_customization")
     local log = Log
     local math = math
     local type = type
+    local cjson = cjson
     local CLASS = CLASS
     local table = table
     local pairs = pairs
@@ -17,8 +18,14 @@ local mod = get_mod("extended_weapon_customization")
     local managers = Managers
     local math_uuid = math.uuid
     local log_error = log.error
+    local string_find = string.find
+    local table_clear = table.clear
+    local string_gsub = string.gsub
+    local json_encode = json_encode
     local table_clone = table.clone
     local log_warning = log.warning
+    local string_split = string.split
+    local cjson_encode = cjson.encode
     local setmetatable = setmetatable
     local string_format = string.format
     local table_clone_instance = table.clone_instance
@@ -43,7 +50,211 @@ if not pt.master_item_listener then
         mod:print("master items loaded")
         if debug_master_items then mod:dtf(master_items.get_cached(), "master_items", 20) end
         mod:try_kitbash_load()
+
+        mod:find_missing_items()
+        mod:find_missing_attachments()
     end)
+end
+
+-- ##### ┌─┐┬┌┐┌┌┬┐  ┌┬┐┌─┐┌─┐┌┬┐┌─┐┬─┐  ┬┌┬┐┌─┐┌┬┐  ┌─┐┌┐┌┌┬┐┬─┐┬┌─┐┌─┐ ##############################################
+-- ##### ├┤ ││││ ││  │││├─┤└─┐ │ ├┤ ├┬┘  │ │ ├┤ │││  ├┤ │││ │ ├┬┘│├┤ └─┐ ##############################################
+-- ##### └  ┴┘└┘─┴┘  ┴ ┴┴ ┴└─┘ ┴ └─┘┴└─  ┴ ┴ └─┘┴ ┴  └─┘┘└┘ ┴ ┴└─┴└─┘└─┘ ##############################################
+
+local _temp_names = {}
+
+mod.find_missing_items = function(self)
+
+    local items = self:find_master_item_entries({
+        item_type = "WEAPON_MELEE|WEAPON_RANGED",
+        item_list_faction = "Player",
+        weapon_template = "!_nil|",
+    })
+
+    table_clear(_temp_names)
+
+    for name, item in pairs(items) do
+
+        local template_ok = item.weapon_template and item.weapon_template ~= ""
+
+        local filter = {
+            "bot",
+            "npc",
+        }
+
+        local filter_ok = true
+
+        for _, filter_name in pairs(filter) do
+            if string_find(item.weapon_template, filter_name) then
+                filter_ok = false
+                break
+            end
+        end
+
+        if template_ok and not self.settings.attachments[item.weapon_template] and filter_ok then
+
+            _temp_names[#_temp_names+1] = item.weapon_template
+
+        end
+
+    end
+
+    if #_temp_names > 0 then
+        self:print("################## unsupported items ##################")
+        for _, name in pairs(_temp_names) do
+            self:print(name)
+        end
+        self:print("####################################################")
+    end
+
+end
+
+mod.find_missing_attachments = function(self)
+
+    local items = self:find_master_item_entries({
+        attach_node = "!_nil|j_rightweaponattach|j_head|j_hips|j_spine1|j_spine2|root_point|1|j_leftleg|j_rightleg|j_backpackattach|j_backpackoffset|ap_anim_01|ap_anim_02|ap_anim_03|ap_anim_04|ap_anim_05|ap_anim_06",
+        attachments = "!_nil",
+        item_type = "!WEAPON_TRINKET",
+        item_list_faction = "Player",
+    })
+
+    table_clear(_temp_names)
+
+    for name, item in pairs(items) do
+
+        local parts = string_split(name, "/")
+        local item_name = parts[#parts]
+
+        local attachment_found = false
+
+        for weapon_template, weapon_attachments in pairs(self.settings.attachments) do
+            for attachment_slot, attachments in pairs(weapon_attachments) do
+                for attachment_name, attachment_data in pairs(attachments) do
+                    if name == attachment_data.replacement_path then
+                        attachment_found = true
+                        break
+                    end
+                end
+                if attachment_found then break end
+            end
+            if attachment_found then break end
+        end
+
+        local filter = {
+            "bot",
+            "npc",
+            "shell",
+            "bullet",
+            "trail",
+            "casing",
+        }
+
+        local filter_ok = true
+
+        for _, filter_name in pairs(filter) do
+            if string_find(item_name, filter_name) then
+                filter_ok = false
+                break
+            end
+        end
+
+        local search = nil --"rippergun_rifle"
+        local search_ok = search and false or true
+
+        if search then
+            search_ok = string_find(item_name, search)
+        end
+
+        if search_ok and filter_ok and not attachment_found then
+
+            _temp_names[#_temp_names+1] = item_name
+
+        end
+
+    end
+
+    if #_temp_names > 0 then
+        self:print("################## unsupported attachments ##################")
+        for _, name in pairs(_temp_names) do
+            self:print(name)
+        end
+        self:print("##########################################################")
+    end
+
+end
+
+local _temp_items = {}
+
+mod.find_master_item_entries = function(self, identifications)
+    local master_items = master_items.get_cached()
+    if master_items then
+
+        table_clear(_temp_items)
+
+        for item_name, item in pairs(master_items) do
+
+            local identifications_valid = true
+
+            for name, value in pairs(identifications) do
+
+                local identification_valid = true
+
+                local negative = string_find(name, "!")
+                local name_str = string_gsub(name, "!", "")
+                local table_value = item[name_str]
+
+                if type(value) == "table" and table_value and type(table_value) == "table" then
+
+                    identification_valid = cjson_encode(table_value) == cjson_encode(value)
+
+                elseif type(value) == "string" then
+
+                    local negative = string_find(value, "!")
+                    if not negative then
+                        identification_valid = false
+                    end
+                    local parts_str = string_gsub(value, "!", "")
+                    local parts = string_split(parts_str, "|")
+
+                    for _, part in pairs(parts) do
+
+                        if not negative then
+                            if part ~= "_nil" and table_value == part then
+                                identification_valid = true
+                                break
+                            elseif part == "_nil" and table_value == nil then
+                                identification_valid = true
+                                break
+                            end
+                        else
+                            if part ~= "_nil" and table_value == part then
+                                identification_valid = false
+                                break
+                            elseif part == "_nil" and table_value == nil then
+                                identification_valid = false
+                                break
+                            end
+                        end
+
+                    end
+
+                end
+
+                identifications_valid = identification_valid
+                if not identifications_valid then
+                    break
+                end
+
+            end
+
+            if identifications_valid then
+                _temp_items[item_name] = item
+            end
+
+        end
+
+        return _temp_items
+
+    end
 end
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################

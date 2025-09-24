@@ -21,10 +21,12 @@ return {
         replacement_path = _item_ranged.."/rails/lasgun_rifle_rail_01",
         icon_render_unit_rotation_offset = {90, 0, 30},
         icon_render_camera_position_offset = {.075, -1, .05},
+        hide_from_selection = true,
     },
     lasgun_pistol_rail_01 = {
         replacement_path = _item_ranged.."/rails/lasgun_pistol_rail_01",
         icon_render_unit_rotation_offset = {90, 0, 30},
         icon_render_camera_position_offset = {.075, -1, .05},
+        hide_from_selection = true,
     },
 }

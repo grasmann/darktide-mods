@@ -124,7 +124,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                         elseif item.disable_vfx_spawner_exclusion then
 
-                            mod:echo("disable_vfx_spawner_exclusion: "..tostring(item.name))
+                            mod:print("disable_vfx_spawner_exclusion: "..tostring(item.name))
 
                         end
 

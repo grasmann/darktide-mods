@@ -42,7 +42,13 @@ return {
         trinket_hook = trinket_hooks,
         flashlight = flashlights,
         sight = sights,
-        rail = rails,
+        rail = table_merge_recursive({
+            stubgun_pistol_rail_off = {
+                replacement_path = _item_ranged.."/rails/stubgun_pistol_rail_off",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
+        }, rails),
         muzzle = muzzles,
         body = {
             stubgun_pistol_full_01 = {

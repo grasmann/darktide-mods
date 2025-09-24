@@ -585,12 +585,6 @@ VisibleEquipmentExtension.slot_placement = function(self, obj, slot)
 
 end
 
--- VisibleEquipmentExtension.set_placement = function(self, slot, placement)
---     if slot then
---         self.placement_override[slot] = placement
---     end
--- end
-
 VisibleEquipmentExtension.slot_offset = function(self, obj, slot)
     -- Get offset
     local name = self.names[slot][obj]
@@ -652,7 +646,6 @@ VisibleEquipmentExtension.slot_offset = function(self, obj, slot)
     return offset, backpack_values
 end
 
--- mod.last_backpack = nil
 VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_center_mass_offset)
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
@@ -1054,21 +1047,6 @@ VisibleEquipmentExtension.animate_slot = function(self, slot, animation, strengt
         end
     end
 end
-
--- VisibleEquipmentExtension.equipment = function(self)
---     return self.visual_loadout_extension and self.visual_loadout_extension._equipment
--- end
-
--- VisibleEquipmentExtension.equipped_slot = function(self, slot)
---     local equipment = self:equipment()
---     return equipment and equipment[slot]
--- end
-
--- VisibleEquipmentExtension.equipped_unit = function(self, slot, name)
---     local slot = self:equipped_slot(slot)
---     local object = table_find(attachments, name)
---     return slot and slot.unit_3p
--- end
 
 VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
     -- Iterate through objects

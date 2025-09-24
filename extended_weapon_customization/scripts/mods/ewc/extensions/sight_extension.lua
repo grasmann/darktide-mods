@@ -24,6 +24,7 @@ local ScriptCamera = require("scripts/foundation/utilities/script_camera")
     local math_rad = math.rad
     local managers = Managers
     local tostring = tostring
+    local viewport = Viewport
     local math_lerp = math.lerp
     local unit_node = unit.node
     local quaternion = Quaternion
@@ -97,10 +98,17 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 
 end
 
-SightExtension.fetch_sight_offset = function(self)
+SightExtension.fetch_sight_offset = function(self, item)
 
-    self.weapon = self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
-    if self.weapon then
+    self.default_vertical_fov = nil
+    self.default_custom_vertical_fov = nil
+
+    self.lense_1_unit = nil
+    self.lense_2_unit = nil
+    self.sight_unit = nil
+
+    self.weapon = item or self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
+    if self.weapon and self.weapon.attachments then
         self.sight_name = mod:fetch_attachment(self.weapon.attachments, "sight")
         self.sight_fix = nil
 
@@ -117,37 +125,31 @@ SightExtension.fetch_sight_offset = function(self)
             self.offset = empty_offset
         end
 
-        self.default_vertical_fov = nil
-        self.default_custom_vertical_fov = nil
-
-        self.lense_1_unit = nil
-        self.lense_2_unit = nil
-        self.sight_unit = nil
-
         local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = self.visual_loadout_extension:unit_and_attachments_from_slot(SLOT_SECONDARY)
         local attachments_1p = attachments_by_unit_1p and attachments_by_unit_1p[unit_1p]
         if attachments_1p then
             for i = 1, #attachments_1p do
                 local attachment_unit = attachments_1p[i]
-                local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
-                local attachment_slot_parts = string_split(attachment_slot_string, ".")
-                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                if attachment_unit and unit_alive(attachment_unit) then
+                    local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
+                    local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                    local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
 
-                if attachment_slot == "lense_1" then
-                    self.lense_1_unit = attachment_unit
-                    unit_set_shader_pass_flag_for_meshes(self.lense_1_unit, "one_bit_alpha", true, true)
-                    mod:print("lense 1 unit: "..tostring(self.lense_1_unit))
-                elseif attachment_slot == "lense_2" then
-                    self.lense_2_unit = attachment_unit
-                    unit_set_shader_pass_flag_for_meshes(self.lense_2_unit, "one_bit_alpha", true, true)
-                    mod:print("lense 2 unit: "..tostring(self.lense_2_unit))
-                elseif attachment_slot == "sight" then
-                    self.sight_unit = attachment_unit
-                    mod:print("sight unit: "..tostring(self.sight_unit))
+                    if attachment_slot == "lense_1" then
+                        self.lense_1_unit = attachment_unit
+                        unit_set_shader_pass_flag_for_meshes(self.lense_1_unit, "one_bit_alpha", true, true)
+                        mod:print("lense 1 unit: "..tostring(self.lense_1_unit))
+                    elseif attachment_slot == "lense_2" then
+                        self.lense_2_unit = attachment_unit
+                        unit_set_shader_pass_flag_for_meshes(self.lense_2_unit, "one_bit_alpha", true, true)
+                        mod:print("lense 2 unit: "..tostring(self.lense_2_unit))
+                    elseif attachment_slot == "sight" then
+                        self.sight_unit = attachment_unit
+                        mod:print("sight unit: "..tostring(self.sight_unit))
+                    end
                 end
             end
         end
-
     end
 
 end
@@ -162,8 +164,8 @@ SightExtension.on_mod_reload = function(self)
     self:fetch_sight_offset()
 end
 
-SightExtension.on_equip_weapon = function(self)
-    self:fetch_sight_offset()
+SightExtension.on_equip_weapon = function(self, item)
+    self:fetch_sight_offset(item)
 end
 
 mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewport_name, ...)
@@ -173,14 +175,15 @@ mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewpor
     local camera_nodes = self._camera_nodes[viewport_name]
     local current_node = self:_current_node(camera_nodes)
     local root_unit = current_node:root_unit()
-
-    local viewport = ScriptWorld.viewport(self._world, viewport_name)
-    local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
-    -- Sights
-    -- mod:execute_extension(root_unit, "sight_system", "update_zoom", viewport_name)
-    local sight_extension = script_unit_extension(root_unit, "sight_system")
-    if sight_extension then
-        sight_extension:update_zoom(viewport_name, camera_data.vertical_fov, camera_data.custom_vertical_fov)
+    if root_unit and unit_alive(root_unit) then
+        local viewport = ScriptWorld.viewport(self._world, viewport_name)
+        local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[viewport.get_data(viewport, "overridden_viewport")]
+        -- Sights
+        -- mod:execute_extension(root_unit, "sight_system", "update_zoom", viewport_name)
+        local sight_extension = script_unit_extension(root_unit, "sight_system")
+        if sight_extension and camera_data then
+            sight_extension:update_zoom(viewport_name, camera_data.vertical_fov, camera_data.custom_vertical_fov)
+        end
     end
 end)
 
@@ -209,10 +212,10 @@ SightExtension.update = function(self, dt, t)
     local min_scale = self.offset.aim_scale or 1
 
     if self.first_person_extension:is_in_first_person_mode() and self.alternate_fire_component.is_active then
-        local offset_position = vector3_unbox(self.offset.position)
+        local offset_position = self.offset.position and vector3_unbox(self.offset.position) or vector3_zero()
         current_position = vector3_lerp(current_position, offset_position, dt * 10)
 
-        local offset_rotation = vector3_unbox(self.offset.rotation)
+        local offset_rotation = self.offset.rotation and vector3_unbox(self.offset.rotation) or vector3_zero()
         current_rotation = vector3_lerp(current_rotation, offset_rotation, dt * 10)
 
         self.lens_transparency = math_lerp(self.lens_transparency, 1, dt * 20)
@@ -228,7 +231,7 @@ SightExtension.update = function(self, dt, t)
 
         current_rotation = vector3_lerp(current_rotation, vector3_zero(), dt * 10)
 
-        self.lens_transparency = math_lerp(self.lens_transparency, .5, dt * 20)
+        self.lens_transparency = math_lerp(self.lens_transparency, .25, dt * 20)
         self.scale = math_lerp(self.scale, 1, dt * 20)
 
         if custom_fov and fov and self.default_vertical_fov and self.default_custom_vertical_fov then
@@ -253,9 +256,15 @@ SightExtension.update = function(self, dt, t)
     self.current_offset.position:store(current_position)
     self.current_offset.rotation:store(current_rotation)
 
-    local node = unit_node(self.first_person_unit, "ap_aim")
+    local first_person_unit = self.first_person_extension:first_person_unit()
 
-    unit_set_local_position(self.first_person_unit, node, current_position)
-    unit_set_local_rotation(self.first_person_unit, node, quaternion_from_vector(current_rotation))
+    if first_person_unit and unit_alive(first_person_unit) then
+
+        local node = unit_node(first_person_unit, "ap_aim")
+
+        unit_set_local_position(first_person_unit, node, current_position)
+        unit_set_local_rotation(first_person_unit, node, quaternion_from_vector(current_rotation))
+
+    end
 
 end

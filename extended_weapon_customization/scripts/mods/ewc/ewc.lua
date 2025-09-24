@@ -61,6 +61,8 @@ mod.on_all_mods_loaded = function()
     table_clear(pt.items)
     if pt.game_initialized then
         mod:try_kitbash_load()
+        mod:find_missing_items()
+        mod:find_missing_attachments()
     end
     managers.event:trigger("ewc_reloaded")
 end
@@ -111,6 +113,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/equipment_
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_icon_loader_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_element_grid")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/weapon_icon_ui")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/crafting_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_package")
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/sight_extension")

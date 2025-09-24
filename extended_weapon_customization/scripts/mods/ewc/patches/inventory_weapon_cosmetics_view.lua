@@ -30,6 +30,7 @@ local items = mod:original_require("scripts/utilities/items")
     local managers = Managers
     local localize = Localize
     local tostring = tostring
+    local math_lerp = math.lerp
     local math_uuid = math.uuid
     local table_size = table.size
     local utf8_upper = utf8.upper
@@ -398,28 +399,33 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                 end
 
                 local attachment_entries = attachments[slot_name]
-                if attachment_entries and table_size(attachment_entries) > 1 then
+                -- if attachment_entries and table_size(attachment_entries) > 1 then
+                if attachment_entries and mod:selectable_attachment_count(attachment_entries) > 1 then
                     for attachment_name, attachment_data in pairs(attachment_entries) do
 
-                        local attachment_item = master_items.get_item(attachment_data.replacement_path)
-                        local item = generate_visual_item_function(slot_name, attachment_item, attachment_data) --, self._selected_item, self._presentation_item)
+                        if not attachment_data.hide_from_selection then
 
-                        local origin_mod = pt.attachment_data_origin[attachment_data] or mod
+                            local attachment_item = master_items.get_item(attachment_data.replacement_path)
+                            local item = generate_visual_item_function(slot_name, attachment_item, attachment_data) --, self._selected_item, self._presentation_item)
 
-                        temp_mod_count[origin_mod] = temp_mod_count[origin_mod] or 0
-                        temp_mod_count[origin_mod] = temp_mod_count[origin_mod] + 1
+                            local origin_mod = pt.attachment_data_origin[attachment_data] or mod
 
-                        local mod_name = origin_mod:get_name()
+                            temp_mod_count[origin_mod] = temp_mod_count[origin_mod] or 0
+                            temp_mod_count[origin_mod] = temp_mod_count[origin_mod] + 1
 
-                        layout[#layout+1] = {
-                            widget_type = "gear_set",
-                            item = item,
-                            real_item = attachment_item,
-                            slot_name = slot_name,
-                            sort_data = {
-                                display_name = origin_mod:get_name().."_"..tostring(temp_mod_count[origin_mod]),
-                            },
-                        }
+                            local mod_name = origin_mod:get_name()
+
+                            layout[#layout+1] = {
+                                widget_type = "gear_set",
+                                item = item,
+                                real_item = attachment_item,
+                                slot_name = slot_name,
+                                sort_data = {
+                                    display_name = origin_mod:get_name().."_"..tostring(temp_mod_count[origin_mod]),
+                                },
+                            }
+
+                        end
 
                     end
                 end
@@ -457,7 +463,81 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
     func(self, index, ...)
 end)
 
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "_update_equip_button_state", function(func, self, ...)
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_sort_options", function(func, self, ...)
+    if self.customize_attachments then
+
+        local function sort_function_generator(item_comparator)
+            return function (a, b)
+                if a.sort_group ~= b.sort_group then
+                    return a.sort_group < b.sort_group
+                end
+
+                if a.widget_type == "divider" and b.widget_type == "divider" then
+                    return false
+                end
+
+                return item_comparator(a, b)
+            end
+        end
+
+        if not self._sort_options then
+            self._sort_options = {
+                {
+                    display_name = localize("loc_inventory_item_grid_sort_title_format_increasing_letters", true, {
+                        sort_name = localize("loc_inventory_item_grid_sort_title_name"),
+                    }),
+                    sort_function = items.sort_element_key_comparator({
+                        "<",
+                        "sort_data",
+                        items.compare_item_name,
+                    }),
+                },
+                {
+                    display_name = localize("loc_inventory_item_grid_sort_title_format_decreasing_letters", true, {
+                        sort_name = localize("loc_inventory_item_grid_sort_title_name"),
+                    }),
+                    sort_function = items.sort_element_key_comparator({
+                        ">",
+                        "sort_data",
+                        items.compare_item_name,
+                    }),
+                },
+            }
+        end
+
+        local sort_callback = callback(self, "cb_on_sort_button_pressed")
+
+        self._item_grid:setup_sort_button(self._sort_options, sort_callback)
+
+        return
+    end
+    -- Original function
+    func(self, ...)
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "draw", function(func, self, dt, t, input_service, layer, ...)
+
+    local item_grid_hovered = self._item_grid and self._item_grid:hovered()
+    local tab_menu_hovered = self._tab_menu_element and self._tab_menu_element:hovered()
+    local equip_button_hovered = self._widgets_by_name.equip_button and self._widgets_by_name.equip_button.content.hotspot.is_hover
+    local reset_button_hovered = self._widgets_by_name.reset_button and self._widgets_by_name.reset_button.content.hotspot.is_hover
+    local random_button_hovered = self._widgets_by_name.random_button and self._widgets_by_name.random_button.content.hotspot.is_hover
+
+    if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered and not equip_button_hovered and not reset_button_hovered and not random_button_hovered then
+        self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, .3, dt * 4)
+    else
+        self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, 1, dt * 4)
+    end
+
+    -- Original function
+    func(self, dt, t, input_service, layer, ...)
+
+end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
+    -- Original function
+    func(self, dt, t, input_service, ...)
+
     if self.customize_attachments then
         local content = self._tabs_content[self._selected_tab_index]
         local slot_name = content.slot_name
@@ -478,10 +558,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_update_equip_button_state", funct
             button_content.hotspot.disabled = not mod:gear_settings(gear_id)
         end
 
-        return
+
     end
-    -- Original function
-    func(self, ...)
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "selected_item_name_in_slot", function(func, self, slot_name, ...)
@@ -509,6 +587,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
     -- Original function
     func(self, ...)
 end)
+
+mod.selectable_attachment_count = function(self, attachment_entries)
+    local count = 0
+    for attachment_name, attachment_data in pairs(attachment_entries) do
+        if not attachment_data.hide_from_selection then
+            count = count + 1
+        end
+    end
+    return count
+end
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
     if self.customize_attachments then
@@ -547,7 +635,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             local attachments = weapon_template and mod.settings.attachments[weapon_template]
             if attachments then
                 for attachment_slot, attachment_entries in pairs(attachments) do
-                    if table_size(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
+                    -- if table_size(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
+                    if mod:selectable_attachment_count(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
                         tabs_content[#tabs_content+1] = {
                             display_name = attachment_slot,
                             slot_name = attachment_slot,
@@ -628,13 +717,17 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
         self:_setup_menu_tabs(tabs_content)
         self:cb_switch_tab(1)
 
+        local weapon_preview = self._weapon_preview
+
+        if weapon_preview then
+            weapon_preview:center_align(1, {-.3, 0, -.2})
+        end
+
         return
     end
     -- Original function
     func(self, ...)
 end)
-
-
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, self, element, ...)
     if self.customize_attachments then

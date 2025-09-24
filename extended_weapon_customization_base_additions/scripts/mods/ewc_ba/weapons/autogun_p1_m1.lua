@@ -8,7 +8,9 @@ local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
+local decals_right = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/decal_right")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
+local decals_left = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/decal_left")
 local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -42,6 +44,8 @@ local scopes = "scope_01"
 local attachments = {
     autogun_p1_m1 = {
         rail = rails,
+        emblem_left = decals_left,
+        emblem_right = decals_right,
         magazine = table_merge_recursive(
             table_merge_recursive(
                 magazine_autopistol,
@@ -88,15 +92,56 @@ local fixes = {
         },
         {attachment_slot = "sight_offset",
             requirements = {
-                sight = {
-                    has = reflex_sights,
-                },
+                sight = { has = "reflex_sight_01|reflex_sight_02" },
+                receiver = { has = infantry_receivers },
             },
             fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.0085),
-                    rotation = vector3_box(0, 0, 0),
-                },
+                offset = { position = vector3_box(0, 0, -.0085) },
+            },
+        },
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = { has = "reflex_sight_03" },
+                receiver = { has = infantry_receivers },
+            },
+            fix = {
+                offset = { position = vector3_box(0, 0, -.0075) },
+            },
+        },
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = { has = "reflex_sight_01|reflex_sight_02" },
+                receiver = { has = braced_receivers },
+            },
+            fix = {
+                offset = { position = vector3_box(0, 0, -.0085) },
+            },
+        },
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = { has = "reflex_sight_03" },
+                receiver = { has = braced_receivers },
+            },
+            fix = {
+                offset = { position = vector3_box(0, 0, -.0075) },
+            },
+        },
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = { has = "reflex_sight_01|reflex_sight_02" },
+                receiver = { has = headhunter_receivers },
+            },
+            fix = {
+                offset = { position = vector3_box(0, 0, -.011) },
+            },
+        },
+        {attachment_slot = "sight_offset",
+            requirements = {
+                sight = { has = "reflex_sight_03" },
+                receiver = { has = headhunter_receivers },
+            },
+            fix = {
+                offset = { position = vector3_box(0, 0, -.0085) },
             },
         },
         {attachment_slot = "sight_offset",
@@ -302,7 +347,25 @@ local fixes = {
                 offset = {
                     position = vector3_box(0, -.05, 0),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1.3, 1),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
+        {attachment_slot = "rail",
+            requirements = {
+                receiver = {
+                    missing = infantry_receivers,
+                },
+            },
+            fix = {
+                attach = {
+                    rail = "stubgun_pistol_rail_off",
+                },
+                offset = {
+                    position = vector3_box(0, -.05, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
                     node = 1,
                 },
             },

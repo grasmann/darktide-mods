@@ -1,5 +1,13 @@
 local mod = get_mod("extended_weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+-- local UIWorkspaceSettings = mod:original_require("scripts/settings/ui/ui_workspace_settings")
+local ViewElementTabMenuSettings = mod:original_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu_settings")
+local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -15,6 +23,8 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local WEAPON_OPTIONS_VIEW = "inventory_weapons_view_weapon_options"
+-- local panel_size = UIWorkspaceSettings.top_panel.size
+local button_size = ViewElementTabMenuSettings.button_size
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -53,6 +63,50 @@ mod.view_element_grid_cb_on_customize_pressed = function(self, view_element_grid
             new_items_gear_ids = view_element_grid._parent and view_element_grid._parent._new_items_gear_ids,
         })
     end
+end
+
+mod:hook_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu_definitions", function(instance)
+
+    instance.scenegraph_definition.grid_interaction = {
+        horizontal_alignment = "left",
+        parent = "entry_pivot",
+        vertical_alignment = "top",
+        size = {
+            button_size[1],
+            900,
+        },
+        position = {
+            0,
+            0,
+            0,
+        },
+    }
+
+    instance.widget_definitions.grid_interaction = UIWidget.create_definition({
+        {
+            content_id = "hotspot",
+            pass_type = "hotspot",
+        },
+    }, "grid_interaction")
+
+end)
+
+mod:hook_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu", function(instance)
+
+    instance.hovered = function(self)
+        return mod:view_element_tab_menu_is_hovered(self)
+    end
+
+end)
+
+mod.view_element_tab_menu_is_hovered = function (self, view_element_tab_menu)
+	local widgets_by_name = view_element_tab_menu._widgets_by_name
+	local interaction_widget = widgets_by_name.grid_interaction
+	local is_tab_menu_hovered = view_element_tab_menu._using_cursor_navigation and (interaction_widget.content.hotspot.is_hover or false)
+
+	is_tab_menu_hovered = is_tab_menu_hovered and not view_element_tab_menu._input_disabled
+
+	return is_tab_menu_hovered
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################

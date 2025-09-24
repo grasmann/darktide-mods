@@ -510,5 +510,11 @@ return {
     hide_attachments = {
         "ammo",
         "ammo_used",
+        "special_ammo_01",
+        "special_ammo_02",
+        "special_ammo_03",
+        "special_ammo_04",
+        "special_ammo_05",
+        "special_ammo_06",
     },
 }

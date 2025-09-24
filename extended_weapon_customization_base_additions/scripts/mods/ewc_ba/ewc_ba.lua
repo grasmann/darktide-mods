@@ -54,7 +54,7 @@ local extended_weapon_customization_plugin = {
                                             rotation = vector3_box(0, 0, 0),
                                             scale = vector3_box(1, .35, 1),
                                         },
-                                        alpha = .5,
+                                        alpha = .25,
                                     },
                                 },
                                 lense_2 = {
@@ -66,7 +66,7 @@ local extended_weapon_customization_plugin = {
                                             rotation = vector3_box(180, 0, 0),
                                             scale = vector3_box(1, .35, 1),
                                         },
-                                        alpha = .5,
+                                        alpha = .25,
                                     },
                                 },
                             },
@@ -317,6 +317,7 @@ local load_weapons = {
     "autogun_p1_m1",
     "autopistol_p1_m1",
     "bolter_p1_m1",
+    "shotgun_p4_m1",
 }
 
 for _, file_name in pairs(load_weapons) do

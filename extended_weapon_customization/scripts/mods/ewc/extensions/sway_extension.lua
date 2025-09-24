@@ -15,6 +15,7 @@ local mod = get_mod("extended_weapon_customization")
     local tostring = tostring
     local unit_node = unit.node
     local math_lerp = math.lerp
+    local unit_alive = unit.alive
     local math_clamp = math.clamp
     local quaternion = Quaternion
     local script_unit = ScriptUnit
@@ -53,7 +54,7 @@ SwayExtension.init = function(self, extension_init_context, unit, extension_init
     self.first_person_extension = script_unit_extension(self.unit, "first_person_system")
     self.unit_data_extension = script_unit_extension(unit, "unit_data_system")
     self.alternate_fire_component = self.unit_data_extension:read_component("alternate_fire")
-    self.first_person_unit = self.first_person_extension:first_person_unit()
+    -- self.first_person_unit = self.first_person_extension:first_person_unit()
 
     self.rotation = vector3_box(vector3_zero())
     self.momentum_x = 0
@@ -78,45 +79,49 @@ SwayExtension.update = function(self, dt, t)
 
     if self.active and self.first_person_extension and self.first_person_extension:is_in_first_person_mode() then
 
-        local node = unit_node(self.first_person_unit, "ap_aim")
-        local rotation = quaternion_to_vector(unit_local_rotation(self.first_person_unit, 1))
-        
-        local min, max = -2.5, 2.5
-        local diff = vector3_unbox(self.rotation) - rotation
-        local momentum_x = math_clamp(diff[3], min, max) * (self.alternate_fire_component.is_active and .5 or 1)
-        local momentum_y = math_clamp(diff[1], min, max) * (self.alternate_fire_component.is_active and .5 or 1)
-        
-        if (momentum_x > 0 and momentum_x > self.momentum_x) or (momentum_x < 0 and momentum_x < self.momentum_x) then
-            self.momentum_x = math_lerp(self.momentum_x, momentum_x, dt * 4)
-        else
-            self.momentum_x = math_lerp(self.momentum_x, momentum_x, dt * 10)
+        local first_person_unit = self.first_person_extension:first_person_unit()
+
+        if first_person_unit and unit_alive(first_person_unit) then
+            local node = unit_node(first_person_unit, "ap_aim")
+            local rotation = quaternion_to_vector(unit_local_rotation(first_person_unit, 1))
+            
+            local min, max = -2.5, 2.5
+            local diff = vector3_unbox(self.rotation) - rotation
+            local momentum_x = math_clamp(diff[3], min, max) * (self.alternate_fire_component.is_active and .5 or 1)
+            local momentum_y = math_clamp(diff[1], min, max) * (self.alternate_fire_component.is_active and .5 or 1)
+            
+            if (momentum_x > 0 and momentum_x > self.momentum_x) or (momentum_x < 0 and momentum_x < self.momentum_x) then
+                self.momentum_x = math_lerp(self.momentum_x, momentum_x, dt * 4)
+            else
+                self.momentum_x = math_lerp(self.momentum_x, momentum_x, dt * 10)
+            end
+
+            self.momentum_y = math_lerp(self.momentum_y, momentum_y, dt * 4)
+
+            local angle_x = self.momentum_x
+            -- reduce the angle_x
+            angle_x = angle_x % 360
+            -- force it to be the positive remainder, so that 0 <= angle_x < 360
+            angle_x = (angle_x + 360) % 360
+            -- force into the minimum absolute value residue class, so that -180 < angle_x <= 180
+            if angle_x > 180 then angle_x = angle_x - 360 end
+            angle_x = angle_x * -1
+            angle_x = angle_x * .05
+
+            local unit_position = unit_local_position(first_person_unit, node)
+            local unit_rotation = unit_local_rotation(first_person_unit, node)
+
+            unit_set_local_position(first_person_unit, node, unit_position + vector3(angle_x, 0, self.momentum_y * .05))
+            unit_set_local_rotation(first_person_unit, node, quaternion_multiply(unit_rotation, quaternion_from_vector(vector3(self.momentum_y * .05, -angle_x * 60, angle_x))))
+
+            self.rotation:store(rotation)
+
+            return
         end
 
-        self.momentum_y = math_lerp(self.momentum_y, momentum_y, dt * 4)
-
-        local angle_x = self.momentum_x
-        -- reduce the angle_x
-        angle_x = angle_x % 360
-        -- force it to be the positive remainder, so that 0 <= angle_x < 360
-        angle_x = (angle_x + 360) % 360
-        -- force into the minimum absolute value residue class, so that -180 < angle_x <= 180
-        if angle_x > 180 then angle_x = angle_x - 360 end
-        angle_x = angle_x * -1
-        angle_x = angle_x * .05
-
-        local unit_position = unit_local_position(self.first_person_unit, node)
-        local unit_rotation = unit_local_rotation(self.first_person_unit, node)
-
-        unit_set_local_position(self.first_person_unit, node, unit_position + vector3(angle_x, 0, self.momentum_y * .05))
-        unit_set_local_rotation(self.first_person_unit, node, quaternion_from_vector(vector3(self.momentum_y * .05, -angle_x * 60, angle_x)))
-
-        self.rotation:store(rotation)
-
-    else
-        
-        self.momentum_x = 0
-        self.momentum_y = 0
-
     end
+
+    self.momentum_x = 0
+    self.momentum_y = 0
 
 end

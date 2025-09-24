@@ -72,14 +72,29 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function
     func(self, slot_name, item, optional_existing_unit_3p, ...)
 end)
 
+local sight_extension_update = false
+
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)
     -- Original function
     func(self, item, slot_name, optional_existing_unit_3p, t, ...)
 
     if slot_name == SLOT_SECONDARY then
-        local sight_extension = script_unit_extension(self._unit, "sight_system")
-        if sight_extension then
-            sight_extension:on_equip_weapon()
+        sight_extension_update = true
+    end
+end)
+
+-- mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "update", function(func, self, dt, t, ...)
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "fixed_update", function(func, self, unit, dt, t, frame, ...)
+    -- Original function
+    func(self, unit, dt, t, frame, ...)
+
+    if sight_extension_update then
+        if self:is_slot_unit_spawned(SLOT_SECONDARY) then
+            local sight_extension = script_unit_extension(self._unit, "sight_system")
+            if sight_extension then
+                sight_extension:on_equip_weapon()
+            end
+            sight_extension_update = nil
         end
     end
 end)

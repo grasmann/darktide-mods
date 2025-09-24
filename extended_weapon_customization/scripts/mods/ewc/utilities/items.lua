@@ -145,9 +145,6 @@ end
 
 mod.item_data = function(self, item_data)
     local data = item_data and (item_data.__attachment_customization and item_data.__master_item) or (item_data.__is_ui_item_preview and item_data.__data)
-    -- if item_data.__attachment_customization then
-    --     mod:echo("customization: "..tostring(item_data))
-    -- end
     return data or item_data
 end
 
