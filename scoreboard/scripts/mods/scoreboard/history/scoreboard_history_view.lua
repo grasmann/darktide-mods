@@ -195,13 +195,13 @@ ScoreboardHistoryView._setup_category_config = function(self, scan_dir)
             if category_config.timer ~= "" then
                 mission_subname = "\n"..category_config.timer
             end
-            if category_config.mission_challenge ~= "" then
-                local mission_challenge = Danger[tonumber(category_config.mission_challenge)]
-                if mission_challenge then
+            if category_config.mission_resistance ~= "" then
+                local mission_resistance = Danger[tonumber(category_config.mission_resistance)]
+                if mission_resistance then
                     if mission_subname == "" then
-                        mission_subname = "\n"..Localize(mission_challenge.display_name)
+                        mission_subname = "\n"..Localize(mission_resistance.display_name)
                     else
-                        mission_subname = mission_subname.." | "..Localize(mission_challenge.display_name)
+                        mission_subname = mission_subname.." | "..Localize(mission_resistance.display_name)
                     end
                 end
             end
