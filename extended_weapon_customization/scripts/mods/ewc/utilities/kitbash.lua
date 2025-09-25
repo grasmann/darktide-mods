@@ -53,9 +53,7 @@ mod.kitbash_item = function(self, name, data)
             -- Merge data
             template = table_merge_recursive(template, data)
 
-            -- Copy attachments
-            -- template.structure = table_clone(data.attachments)
-            -- template.attachments = self:clear_attachment_fixes(data.attachments)
+            -- Set attachments
             template.attachments = data.attachments
 
             -- Add shared material overrides

@@ -915,9 +915,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 
         return
     else
-        local pt = mod:pt()
+        -- local pt = mod:pt()
         local gear_id = mod:gear_id(self._selected_item)
-        pt.items[gear_id] = nil
+        -- pt.items[gear_id] = nil
+        mod:clear_mod_item(gear_id)
     end
     -- Original function
     func(self, ...)

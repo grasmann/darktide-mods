@@ -60,6 +60,20 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
         )
     end
 
+    if not script_unit_extension(self._unit, "flashlight_system") then
+        script_unit_add_extension(
+            {
+                world = self._equipment_component._world
+            },
+            self._unit,
+            "FlashlightExtension",
+            "flashlight_system",
+            {
+                visual_loadout_extension = self,
+            }
+        )
+    end
+
 end)
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function(func, self, slot_name, item, optional_existing_unit_3p, ...)
@@ -73,6 +87,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function
 end)
 
 local sight_extension_update = false
+local flashlight_extension_update = false
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)
     -- Original function
@@ -80,6 +95,12 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(
 
     if slot_name == SLOT_SECONDARY then
         sight_extension_update = true
+        flashlight_extension_update = true
+    elseif slot_name == "slot_pocketable" or slot_name == "slot_pocketable_small" then
+        mod.pressed_once_t = nil
+        -- mod.pressed_twice_t = t + 2
+        mod.custom_twice_cooldown = 2
+        mod.pressed_twice = true
     end
 end)
 
@@ -97,6 +118,15 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "fixed_update", function(func, 
             sight_extension_update = nil
         end
     end
+    if flashlight_extension_update then
+        if self:is_slot_unit_spawned(SLOT_SECONDARY) then
+            local flashlight_extension = script_unit_extension(self._unit, "flashlight_system")
+            if flashlight_extension then
+                flashlight_extension:on_equip_weapon()
+            end
+            flashlight_extension_update = nil
+        end
+    end
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
@@ -106,6 +136,9 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
     end
     if script_unit_extension(self._unit, "sway_system") then
         script_unit_remove_extension(self._unit, "sway_system")
+    end
+    if script_unit_extension(self._unit, "flashlight_system") then
+        script_unit_remove_extension(self._unit, "flashlight_system")
     end
 
     -- Original function

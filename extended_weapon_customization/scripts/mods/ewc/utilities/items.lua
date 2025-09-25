@@ -20,6 +20,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table_size = table.size
     local table_find = table.find
     local script_unit = ScriptUnit
+    local table_clear = table.clear
     local math_random = math.random
     local table_contains = table.contains
     local table_clone_safe = table.clone_safe
@@ -35,9 +36,9 @@ local PROCESS_SLOTS = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
 local _item = "content/items/weapons/player"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+-- ##### ┬─┐┌─┐┌─┐┬ ┬┬─┐┌─┐┬┬  ┬┌─┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ########################
+-- ##### ├┬┘├┤ │  │ │├┬┘└─┐│└┐┌┘├┤   ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │   ├┤ │ │││││   │ ││ ││││└─┐ ########################
+-- ##### ┴└─└─┘└─┘└─┘┴└─└─┘┴ └┘ └─┘  ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴   └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ########################
 
 mod.overwrite_attachment = function(self, attachments, target_slot, replacement_path)
     for slot, data in pairs(attachments) do
@@ -143,43 +144,51 @@ mod.fetch_attachment_slots = function(self, attachments, attachment_slots)
     return attachment_slots
 end
 
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
 mod.item_data = function(self, item_data)
+    -- Get correct item data
     local data = item_data and (item_data.__attachment_customization and item_data.__master_item) or (item_data.__is_ui_item_preview and item_data.__data)
+    -- Return
     return data or item_data
 end
 
 mod.reset_item = function(self, item_data)
-    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- Get item info
     local item = self:item_data(item_data)
-    --item = item and item.__master_item or item_data.__master_item or item
-
+    -- Get attachment slots
     local attachment_slots = self:fetch_attachment_slots(item.attachments)
-
+    -- Get original item
     local original_item = master_items.get_item(item.name)
-
+    -- Iterate through attachment slots
     for attachment_slot, data in pairs(attachment_slots) do
+        -- Get original attachment
         local original_attachment = self:fetch_attachment(original_item.attachments, attachment_slot) or _item_empty_trinket
+        -- Overwrite attachment
         self:overwrite_attachment(item.attachments, attachment_slot, original_attachment)
     end
 end
 
 mod.randomize_item = function(self, item_data)
-
-    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+    -- Get item info
     local item = self:item_data(item_data)
-    --item = item and item.__master_item or item_data.__master_item or item
-
+    -- Create new gear settings
     local new_gear_settings = {}
+    -- Get attachment slots
     local attachment_slots = self:fetch_attachment_slots(item.attachments)
-
+    -- Iterate through attachment slots
     for attachment_slot, data in pairs(attachment_slots) do
+        -- Get slot attachments
         local attachments = self.settings.attachments[item.weapon_template]
         local slot_attachments = attachments and attachments[attachment_slot]
+        -- Check slot attachments
         if slot_attachments then
-
+            -- Get random slot attachment
             local num_attachments = table_size(slot_attachments)
             local rnd = math_random(1, num_attachments)
-            
+            -- Get nth attachment
             local i, selected_data = 1, nil
             for attachment_name, attachment_data in pairs(slot_attachments) do
                 if i == rnd then
@@ -188,44 +197,61 @@ mod.randomize_item = function(self, item_data)
                 end
                 i = i + 1
             end
-
+            -- Check selected attachment
             if selected_data then
+                -- Overwrite attachment
                 self:overwrite_attachment(item.attachments, attachment_slot, selected_data.replacement_path)
+                -- Set attachment in gear settings
                 new_gear_settings[attachment_slot] = selected_data.replacement_path
             end
 
         end
     end
-
+    -- Return new gear settings
     return new_gear_settings
+end
+
+mod.clear_mod_items = function(self)
+    local pt = self:pt()
+    -- Clear mod items
+    table_clear(pt.items)
+end
+
+mod.clear_mod_item = function(self, gear_id)
+    local pt = self:pt()
+    -- Check gear id and mod item
+    if gear_id and not pt.items[gear_id] then
+        -- Clear mod item
+        pt.items[gear_id] = nil
+    end
 end
 
 mod.mod_item = function(self, gear_id, item_data)
     local pt = self:pt()
-
+    -- Check gear id and mod item
     if gear_id and not pt.items[gear_id] then
-        -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
+        -- Get item info
         local item = self:item_data(item_data)
-        --item = item and item.__master_item or item_data.__master_item or item
         local item_type = item_data and item_data.item_type or "unknown"
+        -- Check supported item type
         if table_contains(PROCESS_SLOTS, item_type) then
             mod:print("cloning item "..tostring(gear_id))
+            -- Clone item to mod items
             pt.items[gear_id] = table_clone_instance_safe(item_data)
         end
     end
-
+    -- Check gear id and mod item
     if gear_id and pt.items[gear_id] then
+        -- Return mod item
         return pt.items[gear_id]
     end
-
+    -- Return default
     return item_data
 end
 
 mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     -- Get item info
-    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     local item = self:item_data(item_data)
-    --item = item and item.__master_item or item_data.__master_item or item
     local item_type = item_data and item_data.item_type
     -- Check supported item type
     if table_contains(PROCESS_SLOTS, item_type) and item.attachments then

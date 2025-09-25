@@ -16,9 +16,10 @@ mod:hook(CLASS.CraftingView, "craft", function(func, self, recipe, ingredients, 
     -- Check ingredient item
     if ingredients.item then
         -- Delete item from item cache
-        local pt = mod:pt()
+        -- local pt = mod:pt()
         local gear_id = mod:gear_id(ingredients.item)
-        pt.items[gear_id] = nil
+        -- pt.items[gear_id] = nil
+        mod:clear_mod_item(gear_id)
     end
 
     -- Original function

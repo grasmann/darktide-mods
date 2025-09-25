@@ -1,17 +1,40 @@
 local mod = get_mod("extended_weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local type = type
     local pairs = pairs
     local table = table
     local vector3 = Vector3
     local vector3_box = Vector3Box
     local vector3_one = vector3.one
+    local table_clone = table.clone
     local vector3_zero = vector3.zero
     local table_clone_safe = table.clone_safe
 --#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local extract_flicker = {
+    default = "default",
+    led_flicker = "lasgun_p1",
+    incandescent_flicker = "autogun_p1",
+    worn_incandescent_flicker = "ogryn_heavy_stubber_p2",
+}
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name, optional_mod_of_origin)
 
@@ -34,11 +57,31 @@ mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_s
                 if optional_mod_of_origin then
                     local attachment_data = self.settings.attachments[weapon_template][attachment_slot][attachment_name]
                     attachment_data_origin[attachment_data] = optional_mod_of_origin
-                    -- local mod_name = optional_mod_of_origin and optional_mod_of_origin:localize("mod_title") or optional_mod_of_origin:localize("mod_name") or optional_mod_of_origin:get_name()
-                    -- mod:print(tostring(attachment_data).." origin "..tostring(mod_name))
                 end
 
             end
+        end
+    end
+
+end
+
+mod.update_flashlight_templates = function(self, flashlight_templates)
+
+    for name, template in pairs(flashlight_templates) do
+
+        -- Copy template
+        mod.settings.flashlight_templates[name] = table_clone(template)
+
+        -- Check flicker
+        if not template.flicker or type(template.flicker) == "string" then
+            -- Flicker is not set or a string
+            local flicker_name = template.flicker or "default"
+            -- Get extract name
+            local extract_name = flicker_name and extract_flicker[flicker_name] or extract_flicker.default
+            -- Get flicker template from original
+            local flicker = FlashlightTemplates[extract_name].flicker
+            -- Set flicker template
+            mod.settings.flashlight_templates[name].flicker = table_clone(flicker)
         end
     end
 
@@ -559,9 +602,140 @@ local attachment_data_by_attachment_name = {}
 -- Update lookup tables
 mod:update_lookup_tables(attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name)
 
-local hide_attachment_slots_in_menu = {
-    -- "rail",
+-- Hide attachment slots
+local hide_attachment_slots_in_menu = {}
+
+local flashlight_templates = {
+    ogryn_powermaul_slabshield_p1_m1 = ogryn_powermaul_slabshield_p1_m1.flashlight_templates,
+    ogryn_heavystubber_p1_m1 = ogryn_heavystubber_p1_m1.flashlight_templates,
+    ogryn_heavystubber_p2_m1 = ogryn_heavystubber_p2_m1.flashlight_templates,
+    ogryn_combatblade_p1_m1 = ogryn_combatblade_p1_m1.flashlight_templates,
+    shotpistol_shield_p1_m1 = shotpistol_shield_p1_m1.flashlight_templates,
+    ogryn_pickaxe_2h_p1_m1 = ogryn_pickaxe_2h_p1_m1.flashlight_templates,
+    powermaul_shield_p1_m1 = powermaul_shield_p1_m1.flashlight_templates,
+    thunderhammer_2h_p1_m1 = thunderhammer_2h_p1_m1.flashlight_templates,
+    ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.flashlight_templates,
+    ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.flashlight_templates,
+    ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.flashlight_templates,
+    forcesword_2h_p1_m1 = forcesword_2h_p1_m1.flashlight_templates,
+    chainsword_2h_p1_m1 = chainsword_2h_p1_m1.flashlight_templates,
+    ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.flashlight_templates,
+    powersword_2h_p1_m1 = powersword_2h_p1_m1.flashlight_templates,
+    stubrevolver_p1_m1 = stubrevolver_p1_m1.flashlight_templates,
+    powermaul_2h_p1_m1 = powermaul_2h_p1_m1.flashlight_templates,
+    combatsword_p1_m1 = combatsword_p1_m1.flashlight_templates,
+    combatsword_p2_m1 = combatsword_p2_m1.flashlight_templates,
+    combatsword_p3_m1 = combatsword_p3_m1.flashlight_templates,
+    combatknife_p1_m1 = combatknife_p1_m1.flashlight_templates,
+    powersword_p1_m1 = powersword_p1_m1.flashlight_templates,
+    powersword_p2_m1 = powersword_p2_m1.flashlight_templates,
+    ogryn_club_p2_m1 = ogryn_club_p2_m1.flashlight_templates,
+    forcesword_p1_m1 = forcesword_p1_m1.flashlight_templates,
+    chainsword_p1_m1 = chainsword_p1_m1.flashlight_templates,
+    autopistol_p1_m1 = autopistol_p1_m1.flashlight_templates,
+    boltpistol_p1_m1 = boltpistol_p1_m1.flashlight_templates,
+    forcestaff_p1_m1 = forcestaff_p1_m1.flashlight_templates,
+    ogryn_club_p1_m1 = ogryn_club_p1_m1.flashlight_templates,
+    powermaul_p1_m1 = powermaul_p1_m1.flashlight_templates,
+    powermaul_p2_m1 = powermaul_p2_m1.flashlight_templates,
+    plasmagun_p1_m1 = plasmagun_p1_m1.flashlight_templates,
+    laspistol_p1_m1 = laspistol_p1_m1.flashlight_templates,
+    combataxe_p1_m1 = combataxe_p1_m1.flashlight_templates,
+    combataxe_p2_m1 = combataxe_p2_m1.flashlight_templates,
+    combataxe_p3_m1 = combataxe_p3_m1.flashlight_templates,
+    chainaxe_p1_m1 = chainaxe_p1_m1.flashlight_templates,
+    autogun_p1_m1 = autogun_p1_m1.flashlight_templates,
+    shotgun_p1_m1 = shotgun_p1_m1.flashlight_templates,
+    shotgun_p2_m1 = shotgun_p2_m1.flashlight_templates,
+    shotgun_p4_m1 = shotgun_p4_m1.flashlight_templates,
+    bolter_p1_m1 = bolter_p1_m1.flashlight_templates,
+    flamer_p1_m1 = flamer_p1_m1.flashlight_templates,
+    lasgun_p1_m1 = lasgun_p1_m1.flashlight_templates,
+    lasgun_p2_m1 = lasgun_p2_m1.flashlight_templates,
+    lasgun_p3_m1 = lasgun_p3_m1.flashlight_templates,
 }
+
+--#region Copies
+    --#region Ogryn melee
+        flashlight_templates.ogryn_combatblade_p1_m2 = table_clone_safe(flashlight_templates.ogryn_combatblade_p1_m1)
+        flashlight_templates.ogryn_combatblade_p1_m3 = table_clone_safe(flashlight_templates.ogryn_combatblade_p1_m1)
+        flashlight_templates.ogryn_pickaxe_2h_p1_m2 = table_clone_safe(flashlight_templates.ogryn_pickaxe_2h_p1_m1)
+        flashlight_templates.ogryn_pickaxe_2h_p1_m3 = table_clone_safe(flashlight_templates.ogryn_pickaxe_2h_p1_m1)
+        flashlight_templates.ogryn_powermaul_p1_m2 = table_clone_safe(flashlight_templates.ogryn_powermaul_p1_m1)
+		flashlight_templates.ogryn_powermaul_p1_m3 = table_clone_safe(flashlight_templates.ogryn_powermaul_p1_m1)
+        flashlight_templates.ogryn_club_p2_m2 = table_clone_safe(flashlight_templates.ogryn_club_p2_m1)
+		flashlight_templates.ogryn_club_p1_m3 = table_clone_safe(flashlight_templates.ogryn_club_p1_m1)
+		flashlight_templates.ogryn_club_p2_m3 = table_clone_safe(flashlight_templates.ogryn_club_p2_m1)
+        flashlight_templates.ogryn_club_p1_m2 = table_clone_safe(flashlight_templates.ogryn_club_p1_m1)
+    --#endregion
+    --#region Ogryn ranged
+        flashlight_templates.ogryn_heavystubber_p1_m2 = table_clone_safe(flashlight_templates.ogryn_heavystubber_p1_m1)
+		flashlight_templates.ogryn_heavystubber_p1_m3 = table_clone_safe(flashlight_templates.ogryn_heavystubber_p1_m1)
+        flashlight_templates.ogryn_heavystubber_p2_m2 = table_clone_safe(flashlight_templates.ogryn_heavystubber_p2_m1)
+		flashlight_templates.ogryn_heavystubber_p2_m3 = table_clone_safe(flashlight_templates.ogryn_heavystubber_p2_m1)
+        flashlight_templates.ogryn_rippergun_p1_m2 = table_clone_safe(flashlight_templates.ogryn_rippergun_p1_m1)
+		flashlight_templates.ogryn_rippergun_p1_m3 = table_clone_safe(flashlight_templates.ogryn_rippergun_p1_m1)
+        flashlight_templates.ogryn_thumper_p1_m2 = table_clone_safe(flashlight_templates.ogryn_thumper_p1_m1)
+    --#endregion
+    --#region Human melee
+        flashlight_templates.powermaul_shield_p1_m2 = table_clone_safe(flashlight_templates.powermaul_shield_p1_m1)
+        flashlight_templates.thunderhammer_2h_p1_m2 = table_clone_safe(flashlight_templates.thunderhammer_2h_p1_m1)
+        flashlight_templates.forcesword_2h_p1_m2 = table_clone_safe(flashlight_templates.forcesword_2h_p1_m1)
+        flashlight_templates.chainsword_2h_p1_m2 = table_clone_safe(flashlight_templates.chainsword_2h_p1_m1)
+        flashlight_templates.powersword_2h_p1_m2 = table_clone_safe(flashlight_templates.powersword_2h_p1_m1)
+        flashlight_templates.combatknife_p1_m2 = table_clone_safe(flashlight_templates.combatknife_p1_m1)
+        flashlight_templates.combatsword_p1_m2 = table_clone_safe(flashlight_templates.combatsword_p1_m1)
+        flashlight_templates.combatsword_p2_m2 = table_clone_safe(flashlight_templates.combatsword_p2_m1)
+        flashlight_templates.combatsword_p3_m2 = table_clone_safe(flashlight_templates.combatsword_p3_m1)
+        flashlight_templates.combatsword_p1_m3 = table_clone_safe(flashlight_templates.combatsword_p1_m1)
+		flashlight_templates.combatsword_p2_m3 = table_clone_safe(flashlight_templates.combatsword_p2_m1)
+		flashlight_templates.combatsword_p3_m3 = table_clone_safe(flashlight_templates.combatsword_p3_m1)
+		flashlight_templates.forcesword_p1_m3 = table_clone_safe(flashlight_templates.forcesword_p1_m1)
+        flashlight_templates.powersword_p1_m3 = table_clone_safe(flashlight_templates.powersword_p1_m1)
+        flashlight_templates.powersword_p1_m2 = table_clone_safe(flashlight_templates.powersword_p1_m1)
+        flashlight_templates.powersword_p2_m2 = table_clone_safe(flashlight_templates.powersword_p2_m1)
+        flashlight_templates.chainsword_p1_m2 = table_clone_safe(flashlight_templates.chainsword_p1_m1)
+        flashlight_templates.forcesword_p1_m2 = table_clone_safe(flashlight_templates.forcesword_p1_m1)
+        flashlight_templates.combataxe_p1_m2 = table_clone_safe(flashlight_templates.combataxe_p1_m1)
+        flashlight_templates.combataxe_p1_m3 = table_clone_safe(flashlight_templates.combataxe_p1_m1)
+        flashlight_templates.combataxe_p2_m2 = table_clone_safe(flashlight_templates.combataxe_p2_m1)
+        flashlight_templates.combataxe_p2_m3 = table_clone_safe(flashlight_templates.combataxe_p2_m1)
+        flashlight_templates.combataxe_p3_m2 = table_clone_safe(flashlight_templates.combataxe_p3_m1)
+        flashlight_templates.combataxe_p3_m3 = table_clone_safe(flashlight_templates.combataxe_p3_m1)
+        flashlight_templates.powermaul_p1_m2 = table_clone_safe(flashlight_templates.powermaul_p1_m1)
+        flashlight_templates.chainaxe_p1_m2 = table_clone_safe(flashlight_templates.chainaxe_p1_m1)
+    --#endregion
+    --#region Human ranged
+        flashlight_templates.stubrevolver_p1_m3 = table_clone_safe(flashlight_templates.stubrevolver_p1_m1)
+        flashlight_templates.stubrevolver_p1_m2 = table_clone_safe(flashlight_templates.stubrevolver_p1_m1)
+        flashlight_templates.forcestaff_p2_m1 = table_clone_safe(flashlight_templates.forcestaff_p1_m1)
+        flashlight_templates.forcestaff_p3_m1 = table_clone_safe(flashlight_templates.forcestaff_p1_m1)
+        flashlight_templates.forcestaff_p4_m1 = table_clone_safe(flashlight_templates.forcestaff_p1_m1)
+        flashlight_templates.boltpistol_p1_m2 = table_clone_safe(flashlight_templates.boltpistol_p1_m1)
+        flashlight_templates.laspistol_p1_m2 = table_clone_safe(flashlight_templates.laspistol_p1_m1)
+        flashlight_templates.laspistol_p1_m3 = table_clone_safe(flashlight_templates.laspistol_p1_m1)
+        flashlight_templates.autogun_p1_m2 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+        flashlight_templates.autogun_p1_m3 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+        flashlight_templates.autogun_p2_m1 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+        flashlight_templates.autogun_p2_m2 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+        flashlight_templates.autogun_p2_m3 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+        flashlight_templates.autogun_p3_m1 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+        flashlight_templates.autogun_p3_m2 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+        flashlight_templates.autogun_p3_m3 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+        flashlight_templates.shotgun_p1_m2 = table_clone_safe(flashlight_templates.shotgun_p1_m1)
+        flashlight_templates.shotgun_p1_m3 = table_clone_safe(flashlight_templates.shotgun_p1_m1)
+        flashlight_templates.shotgun_p4_m2 = table_clone_safe(flashlight_templates.shotgun_p4_m1)
+        flashlight_templates.shotgun_p4_m3 = table_clone_safe(flashlight_templates.shotgun_p4_m1)
+        flashlight_templates.bolter_p1_m2 = table_clone_safe(flashlight_templates.bolter_p1_m1)
+        flashlight_templates.bolter_p1_m3 = table_clone_safe(flashlight_templates.bolter_p1_m1)
+        flashlight_templates.lasgun_p1_m2 = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+        flashlight_templates.lasgun_p2_m2 = table_clone_safe(flashlight_templates.lasgun_p2_m1)
+        flashlight_templates.lasgun_p2_m3 = table_clone_safe(flashlight_templates.lasgun_p2_m1)
+        flashlight_templates.lasgun_p3_m2 = table_clone_safe(flashlight_templates.lasgun_p3_m1)
+        flashlight_templates.lasgun_p3_m3 = table_clone_safe(flashlight_templates.lasgun_p3_m1)
+		flashlight_templates.lasgun_p1_m3 = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+    --#endregion
+--#endregion
 
 return {
     fixes = fixes,
@@ -569,6 +743,7 @@ return {
     attachment_slots = attachment_slots,
     hide_attachment_slots_in_menu = hide_attachment_slots_in_menu,
     kitbashs = kitbashs,
+    flashlight_templates = flashlight_templates,
     attachment_data_by_item_string = attachment_data_by_item_string,
     attachment_name_by_item_string = attachment_name_by_item_string,
     attachment_data_by_attachment_name = attachment_data_by_attachment_name,

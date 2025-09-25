@@ -77,6 +77,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 local attachment_slot = attachment_id_lookup[attachment_unit]
                 unit_set_data(attachment_unit, "attachment_slot", attachment_slot)
 
+                local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+
+                local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+                unit_set_data(attachment_unit, "attachment_name", attachment_name)
+
                 if item_data.attachments.slot_trinket_1 and item_data.attachments.slot_trinket_1.item then
 
                     is_ui_item_preview = true
@@ -95,7 +100,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                     -- mod:dtf(item_data, "item_data", 20)
                     
-                    local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+                    -- local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
                     local item = master_items.get_item(item_path)
 
                     if item and item.attachments then
@@ -165,6 +170,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
                 local item = master_items.get_item(item_path)
+
+                local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+                unit_set_data(attachment_unit, "attachment_name", attachment_name)
 
                 if item and item.attachments then
                     -- Collect current attachment names

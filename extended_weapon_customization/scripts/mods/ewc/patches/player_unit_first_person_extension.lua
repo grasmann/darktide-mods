@@ -37,6 +37,13 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
 
         end
 
+        local flashlight_extension = script_unit_extension(self._unit, "flashlight_system")
+        if flashlight_extension then
+
+            flashlight_extension:update(dt, t)
+
+        end
+
         -- Update first person unit
         world_update_unit_and_children(self._world, self._first_person_unit)
 

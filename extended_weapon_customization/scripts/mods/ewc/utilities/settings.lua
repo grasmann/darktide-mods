@@ -11,6 +11,7 @@ return {
     attachments = attachments.attachments,
     attachment_slots = attachments.attachment_slots,
     kitbashs = attachments.kitbashs,
+    flashlight_templates = attachments.flashlight_templates,
     attachment_data_by_item_string = attachments.attachment_data_by_item_string,
     attachment_name_by_item_string = attachments.attachment_name_by_item_string,
     attachment_data_by_attachment_name = attachments.attachment_data_by_attachment_name,

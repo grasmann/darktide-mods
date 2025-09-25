@@ -118,16 +118,52 @@ return {
 		en = "Customize",
 		["zh-cn"] = "自定义",
 	},
-	mod_debug_mode = {
+
+	group_debug = {
+		en = "Debug",
+	},
+	debug_mode = {
 		en = "Debug Mode",
 	},
-	mod_debug_mode_tooltip = {
+	debug_mode_tooltip = {
 		en = "Debug Mode outputs some debug info.",
+	},
+	clear_chat = {
+		en = "Clear Chat",
+	},
+	clear_chat_tooltip = {
+		en = "Clears the chat.",
+	},
+
+	group_misc = {
+		en = "Misc",
 	},
 	mod_option_sway = {
 		en = "Sway",
 	},
 	mod_option_sway_tooltip = {
 		en = "Weapon sways when you rotate your character.",
+	},
+
+	group_flashlight = {
+		en = "Flashlight",
+	},
+	mod_option_flashlight_shadows = {
+		en = "Cast Shadows",
+	},
+	mod_option_flashlight_shadows_tooltip = {
+		en = "Flashlight casts shadows.",
+	},
+	mod_toggle_flashlight_interact_aim = {
+		en = "Toggle on Aiming Interact",
+	},
+	mod_toggle_flashlight_interact_aim_tooltip = {
+		en = "Toggle flashlight by pressing the interact button when aiming.",
+	},
+	mod_toggle_flashlight_interact_double = {
+		en = "Toggle on Double Interact",
+	},
+	mod_toggle_flashlight_interact_double_tooltip = {
+		en = "Toggle flashlight by pressing the interact button two times in quick succession when not aiming.",
 	},
 }

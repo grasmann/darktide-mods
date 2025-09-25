@@ -15,14 +15,28 @@ mod.time = function(self)
     return self:game_time() or self:main_time()
 end
 
+mod.delta_time = function(self)
+    return self:game_delta_time() or self:main_delta_time()
+end
+
 mod.main_time = function(self)
     local time_manager = managers.time
 	return time_manager and time_manager:has_timer("main") and time_manager:time("main")
 end
 
+mod.main_delta_time = function(self)
+    local time_manager = managers.time
+    return time_manager and time_manager:has_timer("main") and time_manager:delta_time("main")
+end
+
 mod.game_time = function(self)
     local time_manager = managers.time
 	return time_manager and time_manager:has_timer("gameplay") and time_manager:time("gameplay")
+end
+
+mod.game_delta_time = function(self)
+    local time_manager = managers.time
+    return time_manager and time_manager:has_timer("gameplay") and time_manager:delta_time("gameplay")
 end
 
 mod.is_in_hub = function()

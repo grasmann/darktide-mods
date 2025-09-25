@@ -57,11 +57,9 @@ local SaveLua = class("SaveExtendedWeaponCustomization")
 -- ##### └─┘└─┘ ┴ └─┘┴   ##############################################################################################
 
 SaveLua.init = function(self)
-	-- self.gear_settings = gear_settings
 end
 
 SaveLua.debug = function(self, file_name, message)
-    -- Print message to console
     if DEBUG then mod:echo(tostring(message)..tostring(file_name)) end
 end
 
