@@ -7,9 +7,13 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
+local bayonet_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/bayonet_common")
+local barrel_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_common")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
+local stock_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/stock_common")
 local decals_right = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/decal_right")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
+local grip_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_common")
 local decals_left = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/decal_left")
 local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 
@@ -46,6 +50,10 @@ local attachments = {
         rail = rails,
         emblem_left = decals_left,
         emblem_right = decals_right,
+        grip = grip_common,
+        stock = stock_common,
+        bayonet = bayonet_common,
+        barrel = barrel_common,
         magazine = table_merge_recursive(
             table_merge_recursive(
                 magazine_autopistol,
@@ -76,6 +84,34 @@ attachments.autogun_p3_m3 = table_clone(attachments.autogun_p1_m1)
 
 local fixes = {
     autogun_p1_m1 = {
+        {attachment_slot = "muzzle",
+            requirements = {
+                barrel = {
+                    has = "barrel_01",
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .1, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                },
+            },
+        },
+        {attachment_slot = "flashlight",
+            requirements = {
+                barrel = {
+                    has = "barrel_01",
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(.025, .035, -.04),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                },
+            },
+        },
         {attachment_slot = "magazine",
             requirements = {
                 magazine = {
@@ -86,7 +122,7 @@ local fixes = {
                 offset = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1.8, 1.8),
+                    scale = vector3_box(1, 1.8, 1),
                 },
             },
         },

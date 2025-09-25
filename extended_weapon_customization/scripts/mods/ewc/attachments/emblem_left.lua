@@ -72,6 +72,11 @@ return {
         icon_render_unit_rotation_offset = {-90, 180, 10},
         icon_render_camera_position_offset = {.0075, 0, .15},
     },
+    emblemleft_09a = {
+        replacement_path = _item_ranged.."/emblems/emblemleft_09a",
+        icon_render_unit_rotation_offset = {-90, 180, 10},
+        icon_render_camera_position_offset = {.0075, 0, .05},
+    },
     emblemleft_10 = {
         replacement_path = _item_ranged.."/emblems/emblemleft_10",
         icon_render_unit_rotation_offset = {-90, 180, 10},

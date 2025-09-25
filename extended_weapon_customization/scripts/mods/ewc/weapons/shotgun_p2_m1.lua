@@ -106,6 +106,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -20, 90 - 30},
                 icon_render_camera_position_offset = {-.25, -3.5, 0},
             },
+            shotgun_double_barrel_ml01 = {
+                replacement_path = _item_ranged.."/barrels/shotgun_double_barrel_ml01",
+                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
+                icon_render_camera_position_offset = {-.25, -3.5, 0},
+            },
         },
     },
 }

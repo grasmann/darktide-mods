@@ -46,6 +46,12 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, -95},
                 icon_render_camera_position_offset = {.035, -.1, .175},
             },
+            lasgun_p2_us003_1545_sight_01 = {
+                replacement_path = _item_ranged.."/sights/lasgun_p2_us003_1545_sight_01",
+                icon_render_unit_rotation_offset = {90, 0, -95},
+                icon_render_camera_position_offset = {.035, -.1, .175},
+                hide_from_selection = true,
+            },
         }, sights),
         muzzle = {
             lasgun_rifle_krieg_muzzle_02 = {

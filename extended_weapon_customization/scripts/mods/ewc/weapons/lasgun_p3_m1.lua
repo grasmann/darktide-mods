@@ -126,6 +126,11 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, 30},
                 icon_render_camera_position_offset = {-.1, -1.5, -.05},
             },
+            lasgun_elysian_magazine_ml01 = {
+                replacement_path = _item_ranged.."/magazines/lasgun_elysian_magazine_ml01",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.1, -1.5, -.05},
+            },
         },
         barrel = {
             lasgun_rifle_elysian_barrel_01 = {

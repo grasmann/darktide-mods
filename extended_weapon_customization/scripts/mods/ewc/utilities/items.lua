@@ -220,7 +220,7 @@ end
 mod.clear_mod_item = function(self, gear_id)
     local pt = self:pt()
     -- Check gear id and mod item
-    if gear_id and not pt.items[gear_id] then
+    if gear_id and pt.items[gear_id] then
         -- Clear mod item
         pt.items[gear_id] = nil
     end

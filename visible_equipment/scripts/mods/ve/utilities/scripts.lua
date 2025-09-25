@@ -33,6 +33,7 @@ local forcesword_p1_m1 = mod:io_dofile(weapons_folder.."forcesword_p1_m1")
 local ogryn_club_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p1_m1")
 local ogryn_club_p2_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p2_m1")
 local powersword_p1_m1 = mod:io_dofile(weapons_folder.."powersword_p1_m1")
+local powersword_p2_m1 = mod:io_dofile(weapons_folder.."powersword_p2_m1")
 local combataxe_p1_m1 = mod:io_dofile(weapons_folder.."combataxe_p1_m1")
 local combataxe_p2_m1 = mod:io_dofile(weapons_folder.."combataxe_p2_m1")
 local combataxe_p3_m1 = mod:io_dofile(weapons_folder.."combataxe_p3_m1")
@@ -92,6 +93,7 @@ local scripts = {
     ogryn_club_p1_m1 = ogryn_club_p1_m1.scripts,
     ogryn_club_p2_m1 = ogryn_club_p2_m1.scripts,
     powersword_p1_m1 = powersword_p1_m1.scripts,
+    powersword_p2_m1 = powersword_p2_m1.scripts,
     combataxe_p1_m1 = combataxe_p1_m1.scripts,
     combataxe_p2_m1 = combataxe_p2_m1.scripts,
     combataxe_p3_m1 = combataxe_p3_m1.scripts,
@@ -115,16 +117,12 @@ local scripts = {
         scripts.ogryn_combatblade_p1_m3 = table_clone_safe(scripts.ogryn_combatblade_p1_m1)
         scripts.ogryn_pickaxe_2h_p1_m2 = table_clone_safe(scripts.ogryn_pickaxe_2h_p1_m1)
         scripts.ogryn_pickaxe_2h_p1_m3 = table_clone_safe(scripts.ogryn_pickaxe_2h_p1_m1)
-        scripts.powermaul_shield_p1_m2 = table_clone_safe(scripts.powermaul_shield_p1_m1)
         scripts.ogryn_powermaul_p1_m2 = table_clone_safe(scripts.ogryn_powermaul_p1_m1)
         scripts.ogryn_powermaul_p1_m3 = table_clone_safe(scripts.ogryn_powermaul_p1_m1)
-        scripts.powersword_2h_p1_m2 = table_clone_safe(scripts.powersword_2h_p1_m1)
         scripts.ogryn_club_p1_m2 = table_clone_safe(scripts.ogryn_club_p1_m1)
         scripts.ogryn_club_p1_m3 = table_clone_safe(scripts.ogryn_club_p1_m1)
         scripts.ogryn_club_p2_m2 = table_clone_safe(scripts.ogryn_club_p2_m1)
         scripts.ogryn_club_p2_m3 = table_clone_safe(scripts.ogryn_club_p2_m1)
-        scripts.powersword_p1_m2 = table_clone_safe(scripts.powersword_p1_m1)
-        scripts.powersword_p1_m3 = table_clone_safe(scripts.powersword_p1_m1)
     --#endregion
     --#region Ogryn ranged
         scripts.ogryn_heavystubber_p1_m2 = table_clone_safe(scripts.ogryn_heavystubber_p1_m1)
@@ -137,8 +135,10 @@ local scripts = {
     --#endregion
     --#region Human melee
         scripts.thunderhammer_2h_p1_m2 = table_clone_safe(scripts.thunderhammer_2h_p1_m1)
+        scripts.powermaul_shield_p1_m2 = table_clone_safe(scripts.powermaul_shield_p1_m1)
         scripts.chainsword_2h_p1_m2 = table_clone_safe(scripts.chainsword_2h_p1_m1)
         scripts.forcesword_2h_p1_m2 = table_clone_safe(scripts.forcesword_2h_p1_m1)
+        scripts.powersword_2h_p1_m2 = table_clone_safe(scripts.powersword_2h_p1_m1)
         scripts.combatknife_p1_m2 = table_clone_safe(scripts.combatknife_p1_m1)
         scripts.combatsword_p1_m2 = table_clone_safe(scripts.combatsword_p1_m1)
         scripts.combatsword_p1_m3 = table_clone_safe(scripts.combatsword_p1_m1)
@@ -149,6 +149,9 @@ local scripts = {
         scripts.chainsword_p1_m2 = table_clone_safe(scripts.chainsword_p1_m1)
         scripts.forcesword_p1_m2 = table_clone_safe(scripts.forcesword_p1_m1)
         scripts.forcesword_p1_m3 = table_clone_safe(scripts.forcesword_p1_m1)
+        scripts.powersword_p1_m2 = table_clone_safe(scripts.powersword_p1_m1)
+        scripts.powersword_p1_m3 = table_clone_safe(scripts.powersword_p1_m1)
+        scripts.powersword_p2_m2 = table_clone_safe(scripts.powersword_p2_m1)
         scripts.combataxe_p1_m2 = table_clone_safe(scripts.combataxe_p1_m1)
         scripts.combataxe_p1_m3 = table_clone_safe(scripts.combataxe_p1_m1)
         scripts.combataxe_p2_m2 = table_clone_safe(scripts.combataxe_p2_m1)
@@ -156,6 +159,7 @@ local scripts = {
         scripts.combataxe_p3_m2 = table_clone_safe(scripts.combataxe_p3_m1)
         scripts.combataxe_p3_m3 = table_clone_safe(scripts.combataxe_p3_m1)
         scripts.powermaul_p1_m2 = table_clone_safe(scripts.powermaul_p1_m1)
+        scripts.chainaxe_p1_m2 = table_clone_safe(scripts.chainaxe_p1_m1)
     --#endregion
     --#region Human ranged
         scripts.stubrevolver_p1_m2 = table_clone_safe(scripts.stubrevolver_p1_m1)

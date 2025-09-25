@@ -36,6 +36,7 @@ local forcesword_p1_m1 = mod:io_dofile(weapons_folder.."forcesword_p1_m1")
 local ogryn_club_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p1_m1")
 local ogryn_club_p2_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p2_m1")
 local powersword_p1_m1 = mod:io_dofile(weapons_folder.."powersword_p1_m1")
+local powersword_p2_m1 = mod:io_dofile(weapons_folder.."powersword_p2_m1")
 local combataxe_p1_m1 = mod:io_dofile(weapons_folder.."combataxe_p1_m1")
 local combataxe_p2_m1 = mod:io_dofile(weapons_folder.."combataxe_p2_m1")
 local combataxe_p3_m1 = mod:io_dofile(weapons_folder.."combataxe_p3_m1")
@@ -105,6 +106,7 @@ local animations = {
     ogryn_club_p1_m1 = ogryn_club_p1_m1.animations,
     ogryn_club_p2_m1 = ogryn_club_p2_m1.animations,
     powersword_p1_m1 = powersword_p1_m1.animations,
+    powersword_p2_m1 = powersword_p2_m1.animations,
     combataxe_p1_m1 = combataxe_p1_m1.animations,
     combataxe_p2_m1 = combataxe_p2_m1.animations,
     combataxe_p3_m1 = combataxe_p3_m1.animations,
@@ -168,16 +170,12 @@ local animations = {
         animations.ogryn_combatblade_p1_m3 = table_clone_safe(animations.ogryn_combatblade_p1_m1)
         animations.ogryn_pickaxe_2h_p1_m2 = table_clone_safe(animations.ogryn_pickaxe_2h_p1_m1)
         animations.ogryn_pickaxe_2h_p1_m3 = table_clone_safe(animations.ogryn_pickaxe_2h_p1_m1)
-        animations.powermaul_shield_p1_m2 = table_clone_safe(animations.powermaul_shield_p1_m1)
         animations.ogryn_powermaul_p1_m2 = table_clone_safe(animations.ogryn_powermaul_p1_m1)
         animations.ogryn_powermaul_p1_m3 = table_clone_safe(animations.ogryn_powermaul_p1_m1)
-        animations.powersword_2h_p1_m2 = table_clone_safe(animations.powersword_2h_p1_m1)
         animations.ogryn_club_p1_m2 = table_clone_safe(animations.ogryn_club_p1_m1)
         animations.ogryn_club_p1_m3 = table_clone_safe(animations.ogryn_club_p1_m1)
         animations.ogryn_club_p2_m2 = table_clone_safe(animations.ogryn_club_p2_m1)
         animations.ogryn_club_p2_m3 = table_clone_safe(animations.ogryn_club_p2_m1)
-        animations.powersword_p1_m2 = table_clone_safe(animations.powersword_p1_m1)
-        animations.powersword_p1_m3 = table_clone_safe(animations.powersword_p1_m1)
     --#endregion
     --#region Ogryn ranged
         animations.ogryn_heavystubber_p1_m2 = table_clone_safe(animations.ogryn_heavystubber_p1_m1)
@@ -190,8 +188,10 @@ local animations = {
     --#endregion
     --#region Human melee
         animations.thunderhammer_2h_p1_m2 = table_clone_safe(animations.thunderhammer_2h_p1_m1)
+        animations.powermaul_shield_p1_m2 = table_clone_safe(animations.powermaul_shield_p1_m1)
         animations.chainsword_2h_p1_m2 = table_clone_safe(animations.chainsword_2h_p1_m1)
         animations.forcesword_2h_p1_m2 = table_clone_safe(animations.forcesword_2h_p1_m1)
+        animations.powersword_2h_p1_m2 = table_clone_safe(animations.powersword_2h_p1_m1)
         animations.combatknife_p1_m2 = table_clone_safe(animations.combatknife_p1_m1)
         animations.combatsword_p1_m2 = table_clone_safe(animations.combatsword_p1_m1)
         animations.combatsword_p1_m3 = table_clone_safe(animations.combatsword_p1_m1)
@@ -202,6 +202,9 @@ local animations = {
         animations.chainsword_p1_m2 = table_clone_safe(animations.chainsword_p1_m1)
         animations.forcesword_p1_m2 = table_clone_safe(animations.forcesword_p1_m1)
         animations.forcesword_p1_m3 = table_clone_safe(animations.forcesword_p1_m1)
+        animations.powersword_p1_m2 = table_clone_safe(animations.powersword_p1_m1)
+        animations.powersword_p1_m3 = table_clone_safe(animations.powersword_p1_m1)
+        animations.powersword_p2_m2 = table_clone_safe(animations.powersword_p2_m1)
         animations.combataxe_p1_m2 = table_clone_safe(animations.combataxe_p1_m1)
         animations.combataxe_p1_m3 = table_clone_safe(animations.combataxe_p1_m1)
         animations.combataxe_p2_m2 = table_clone_safe(animations.combataxe_p2_m1)
@@ -209,10 +212,12 @@ local animations = {
         animations.combataxe_p3_m2 = table_clone_safe(animations.combataxe_p3_m1)
         animations.combataxe_p3_m3 = table_clone_safe(animations.combataxe_p3_m1)
         animations.powermaul_p1_m2 = table_clone_safe(animations.powermaul_p1_m1)
+        animations.chainaxe_p1_m2 = table_clone_safe(animations.chainaxe_p1_m1)
     --#endregion
     --#region Human ranged
         animations.stubrevolver_p1_m2 = table_clone_safe(animations.stubrevolver_p1_m1)
         animations.stubrevolver_p1_m3 = table_clone_safe(animations.stubrevolver_p1_m1)
+        animations.boltpistol_p1_m2 = table_clone_safe(animations.boltpistol_p1_m1)
         animations.forcestaff_p2_m1 = table_clone_safe(animations.forcestaff_p1_m1)
         animations.forcestaff_p3_m1 = table_clone_safe(animations.forcestaff_p1_m1)
         animations.forcestaff_p4_m1 = table_clone_safe(animations.forcestaff_p1_m1)

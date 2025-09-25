@@ -137,6 +137,24 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, 45},
                 icon_render_camera_position_offset = {-.15, -2.75, .25},
             },
+            lasgun_rifle_receiver_01_cinematic_01 = {
+                replacement_path = _item_ranged.."/recievers/lasgun_rifle_receiver_01_cinematic_01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+                hide_from_selection = true,
+            },
+            lasgun_rifle_receiver_01_cinematic_02 = {
+                replacement_path = _item_ranged.."/recievers/lasgun_rifle_receiver_01_cinematic_02",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+                hide_from_selection = true,
+            },
+            lasgun_rifle_receiver_01_cinematic_03 = {
+                replacement_path = _item_ranged.."/recievers/lasgun_rifle_receiver_01_cinematic_03",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+                hide_from_selection = true,
+            },
         },
         magazine = {
             lasgun_rifle_magazine_01 = {

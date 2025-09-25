@@ -55,6 +55,11 @@ return {
                 icon_render_unit_rotation_offset = {90, 20, 90 - 30},
                 icon_render_camera_position_offset = {-.55, -8, .2},
             },
+            stubgun_ogryn_barrel_05 = {
+                replacement_path = _item_ranged.."/barrels/stubgun_ogryn_barrel_05",
+                icon_render_unit_rotation_offset = {90, 20, 90 - 30},
+                icon_render_camera_position_offset = {-.55, -8, .2},
+            },
             stubgun_ogryn_barrel_ml01 = {
                 replacement_path = _item_ranged.."/barrels/stubgun_ogryn_barrel_ml01",
                 icon_render_unit_rotation_offset = {90, 20, 90 - 30},
@@ -114,6 +119,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {-.35, -5.5, -.1},
             },
+            stubgun_ogryn_magazine_05 = {
+                replacement_path = _item_ranged.."/magazines/stubgun_ogryn_magazine_05",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {-.35, -5.5, -.1},
+            },
             stubgun_ogryn_magazine_ml01 = {
                 replacement_path = _item_ranged.."/magazines/stubgun_ogryn_magazine_ml01",
                 icon_render_unit_rotation_offset = {90, -30, 0},
@@ -143,6 +153,11 @@ return {
             },
             stubgun_ogryn_grip_04 = {
                 replacement_path = _item_ranged.."/grips/stubgun_ogryn_grip_04",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {.1, -6.5, .15},
+            },
+            stubgun_ogryn_grip_05 = {
+                replacement_path = _item_ranged.."/grips/stubgun_ogryn_grip_05",
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {.1, -6.5, .15},
             },

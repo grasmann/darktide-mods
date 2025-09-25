@@ -252,6 +252,19 @@ return {
                     "grip",
                 },
             },
+            shovel_head_06 = {
+                replacement_path = _item_melee.."/heads/shovel_head_06",
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.05, -1.5, .5},
+                detach_attachments = {
+                    "krieg_shovel_full_01",
+                    "prologue_shovel_full_01",
+                },
+                validate_attachments = {
+                    "pommel",
+                    "grip",
+                },
+            },
             shovel_head_ml01 = {
                 replacement_path = _item_melee.."/heads/shovel_head_ml01",
                 icon_render_unit_rotation_offset = {90, 30, 0},

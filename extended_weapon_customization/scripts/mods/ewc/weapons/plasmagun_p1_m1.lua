@@ -120,6 +120,11 @@ return {
                 icon_render_camera_position_offset = {-.3, -3, .175},
             },
             plasma_rifle_barrel_07 = {
+                replacement_path = _item_ranged.."/barrels/plasma_rifle_barrel_07",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.3, -3, .175},
+            },
+            plasma_rifle_barrel_08 = {
                 replacement_path = _item_ranged.."/barrels/plasma_rifle_barrel_08",
                 icon_render_unit_rotation_offset = {90, 0, 45},
                 icon_render_camera_position_offset = {-.3, -3, .175},

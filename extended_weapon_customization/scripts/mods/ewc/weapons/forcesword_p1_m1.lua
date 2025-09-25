@@ -58,6 +58,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {-.02, -.5, .05},
             },
+            force_sword_grip_06 = {
+                replacement_path = _item_melee.."/grips/force_sword_grip_06",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {-.02, -.5, .05},
+            },
         },
         blade = {
             force_sword_blade_01 = {
@@ -82,6 +87,11 @@ return {
             },
             force_sword_blade_05 = {
                 replacement_path = _item_melee.."/blades/force_sword_blade_05",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -4, .95},
+            },
+            force_sword_blade_06 = {
+                replacement_path = _item_melee.."/blades/force_sword_blade_06",
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {0, -4, .95},
             },
