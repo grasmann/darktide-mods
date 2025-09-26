@@ -4,9 +4,11 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 --#region local functions
+    local type = type
     local pairs = pairs
     local table = table
     local ipairs = ipairs
+    local select = select
 	local vector3 = Vector3
     local quaternion = Quaternion
     local table_clone = table.clone
@@ -41,5 +43,26 @@ local mod = get_mod("extended_weapon_customization")
     end
     table.clone_instance_safe = function(t)
         return t and table_clone_instance(t)
+    end
+    table.merge_recursive_n = function (dest, ...)
+        local dest = dest or {}
+        local num_args = select('#', ...)
+        local arg = {...}
+        for i = 1, num_args do
+            local source = arg[i]
+            for key, value in pairs(source) do
+                local is_table = type(value) == "table"
+                if value == source then
+                    dest[key] = dest
+                elseif is_table and type(dest[key]) == "table" then
+                    table.merge_recursive_n(dest[key], value)
+                elseif is_table then
+                    dest[key] = table.clone(value)
+                else
+                    dest[key] = value
+                end
+            end
+        end
+        return dest
     end
 --#endregion

@@ -12,16 +12,12 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.CraftingView, "craft", function(func, self, recipe, ingredients, callback, done_callback, additional_context, ...)
-
     -- Check ingredient item
     if ingredients.item then
         -- Delete item from item cache
-        -- local pt = mod:pt()
         local gear_id = mod:gear_id(ingredients.item)
-        -- pt.items[gear_id] = nil
         mod:clear_mod_item(gear_id)
     end
-
     -- Original function
     return func(self, recipe, ingredients, callback, done_callback, additional_context, ...)
 end)

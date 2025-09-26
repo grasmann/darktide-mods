@@ -50,9 +50,8 @@ if not pt.master_item_listener then
         mod:print("master items loaded")
         if debug_master_items then mod:dtf(master_items.get_cached(), "master_items", 20) end
         mod:try_kitbash_load()
-
-        mod:find_missing_items()
-        mod:find_missing_attachments()
+        -- mod:find_missing_items()
+        -- mod:find_missing_attachments()
     end)
 end
 

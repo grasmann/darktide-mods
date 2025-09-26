@@ -15,35 +15,6 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
-local _item_empty_trinket = _item.."/trinkets/unused_trinket"
-
-local invisible_flashlight = {
-    attachments = {
-        flashlight = {
-            item = _item_ranged.."/flashlights/flashlight_01",
-            fix = {
-                offset = {
-                    node = 1,
-                    position = vector3_box(.075, 0, 0),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(.001, .001, .001),
-                },
-            },
-            children = {},
-        },
-    },
-    display_name = "loc_invisible_flashlight",
-    description = "loc_description_invisible_flashlight",
-    attach_node = "ap_flashlight_01",
-    dev_name = "invisible_flashlight",
-    disable_vfx_spawner_exclusion = true,
-}
-
--- if not mod:pt().game_initialized then
---     mod:kitbash_preload(invisible_flashlight.attachments, _item_ranged.."/flashlights/invisible_flashlight", invisible_flashlight.display_name, invisible_flashlight.description, invisible_flashlight.attach_node, invisible_flashlight.dev_name, true)
--- else
---     mod:kitbash_item(invisible_flashlight.attachments, _item_ranged.."/flashlights/invisible_flashlight", invisible_flashlight.display_name, invisible_flashlight.description, invisible_flashlight.attach_node, invisible_flashlight.dev_name, true)
--- end
 
 return {
     invisible_flashlight = {

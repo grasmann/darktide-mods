@@ -41,6 +41,12 @@ local update_requests = function(weapon_icon_ui, request_id, item, prioritized)
     end
 end
 
+mod:hook(CLASS.EndView, "init", function(func, self, settings, context, ...)
+    settings.disable_game_world = true
+    -- Original function
+    func(self, settings, context)
+end)
+
 mod:hook(CLASS.WeaponIconUI, "_spawn_weapon", function(func, self, item, render_context, ...)
     -- Original function
     func(self, item, render_context, ...)

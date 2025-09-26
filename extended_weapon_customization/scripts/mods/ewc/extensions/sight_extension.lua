@@ -5,8 +5,8 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local ScriptViewport = mod:original_require("scripts/foundation/utilities/script_viewport")
+local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_world")
-local ScriptCamera = require("scripts/foundation/utilities/script_camera")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################

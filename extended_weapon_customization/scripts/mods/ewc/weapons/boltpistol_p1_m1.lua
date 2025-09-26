@@ -5,11 +5,8 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
-local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
-local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
-local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
-local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
+local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -28,18 +25,12 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
-local _item_empty_trinket = _item.."/trinkets/unused_trinket"
-
-local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
-local scopes = "scope_01"
 
 return {
     attachments = {
         emblem_left = emblem_left,
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
-        flashlight = flashlights,
-        rail = rails,
         grip = {
             boltgun_pistol_grip_01 = {
                 replacement_path = _item_ranged.."/grips/boltgun_pistol_grip_01",
@@ -133,7 +124,7 @@ return {
                 icon_render_camera_position_offset = {-.08, -.5, .15},
             },
         },
-        sight = table_merge_recursive({
+        sight = {
             boltgun_pistol_sight_01 = {
                 replacement_path = _item_ranged.."/sights/boltgun_pistol_sight_01",
                 icon_render_unit_rotation_offset = {90, 0, -95},
@@ -148,48 +139,6 @@ return {
                 replacement_path = _item_ranged.."/sights/boltgun_pistol_sight_03",
                 icon_render_unit_rotation_offset = {90, 0, -95},
                 icon_render_camera_position_offset = {.035, -.1, .175},
-            },
-        }, sights),
-    },
-    attachment_slots = {
-        flashlight = {
-            parent_slot = "receiver",
-            default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(.04, .12, .065),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-    },
-    fixes = {
-        {attachment_slot = "sight_offset",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.0095),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, .095, -.013),
-                    rotation = vector3_box(0, 0, 0),
-                },
             },
         },
     },

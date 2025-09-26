@@ -7,10 +7,11 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
+local magazine_autogun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun")
+local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
+local muzzle_autogun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
-local muzzle_autogun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun")
-local flashlights = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight")
 -- local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -23,6 +24,7 @@ local flashlights = mod:io_dofile("extended_weapon_customization_base_additions/
     local table_clone = table.clone
     local vector3_zero = vector3.zero
     local table_merge_recursive = table.merge_recursive
+    local table_merge_recursive_n = table.merge_recursive_n
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -40,27 +42,20 @@ local scopes = "scope_01"
 
 local attachments = {
     bolter_p1_m1 = {
-        flashlight = flashlights,
-        -- rail = rails,
-        magazine = table_merge_recursive(
-            table_merge_recursive(
-                magazine_autopistol,
-                magazine_autogun_double
-            ),
-        magazine_autopistol_double),
-        sight = table_merge_recursive(
-            table_merge_recursive({
-                lasgun_rifle_sight_01 = {
-                    replacement_path = _item_ranged.."/sights/lasgun_rifle_sight_01",
-                    icon_render_unit_rotation_offset = {90, 0, -95},
-                    icon_render_camera_position_offset = {.035, -.1, .125},
-                },
-            },
-            sight_reflex),
-        sight_scope),
+        flashlight = flashlight_human,
         muzzle = muzzle_autogun,
+        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun),
+        sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, {
+            lasgun_rifle_sight_01 = {
+                replacement_path = _item_ranged.."/sights/lasgun_rifle_sight_01",
+                icon_render_unit_rotation_offset = {90, 0, -95},
+                icon_render_camera_position_offset = {.035, -.1, .125},
+            },
+        }),
     },
 }
+
+attachments.bolter_p1_m2 = table_clone(attachments.bolter_p1_m1)
 
 local fixes = {
     bolter_p1_m1 = {
@@ -136,6 +131,8 @@ local fixes = {
     },
 }
 
+fixes.bolter_p1_m2 = table_clone(fixes.bolter_p1_m1)
+
 local attachment_slots = {
     bolter_p1_m1 = {
         flashlight = {
@@ -164,6 +161,8 @@ local attachment_slots = {
         },
     },
 }
+
+attachment_slots.bolter_p1_m2 = table_clone(attachment_slots.bolter_p1_m1)
 
 local kitbashs = {}
 

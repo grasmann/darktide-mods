@@ -1,4 +1,4 @@
-local mod = get_mod("extended_weapon_customization_base_additions")
+local mod = get_mod("extended_weapon_customization")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -17,10 +17,22 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
 return {
-    scope_01 = {
-        replacement_path = _item_ranged.."/sights/scope_01",
-        icon_render_unit_rotation_offset = {90, 0, -85},
-        icon_render_camera_position_offset = {0, -.8, .2},
-        crosshair_type = "shotgun",
+    invisible_flashlight_ogryn = {
+        replacement_path = _item_ranged.."/flashlights/invisible_flashlight_ogryn",
+        icon_render_unit_rotation_offset = {0, 0, 0},
+        icon_render_camera_position_offset = {0, 0, 0},
+        flashlight_template = "ogryn_heavy_stubber_p2",
+    },
+    flashlight_ogryn_01 = {
+        replacement_path = _item_ranged.."/flashlights/flashlight_ogryn_01",
+        icon_render_unit_rotation_offset = {90, 0, 90 + 30},
+        icon_render_camera_position_offset = {-.125, -1.75, .15},
+        flashlight_template = "ogryn_heavy_stubber_p2",
+    },
+    flashlight_ogryn_long_01 = {
+        replacement_path = _item_ranged.."/flashlights/flashlight_ogryn_long_01",
+        icon_render_unit_rotation_offset = {90, 0, 90 + 30},
+        icon_render_camera_position_offset = {-.125, -1.75, .15},
+        flashlight_template = "ogryn_heavy_stubber_p2",
     },
 }

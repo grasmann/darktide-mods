@@ -45,6 +45,7 @@ local gear_bundle_size = {ItemPassTemplates.gear_bundle_size[1], ItemPassTemplat
 local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
 local PROCESSED_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
+local WEAPON_OPTIONS_VIEW = "inventory_weapons_view_weapon_options"
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -300,7 +301,7 @@ mod.view_element_grid_valid_grid = function(self, view_element_grid)
     local parent = view_element_grid._parent
     local selected_slot = parent._selected_slot
     local slot_name = selected_slot and selected_slot.name
-    return not parent.item_type and table_contains(PROCESSED_SLOTS, slot_name)
+    return not parent.item_type and table_contains(PROCESSED_SLOTS, slot_name) and view_element_grid._element_view_id == WEAPON_OPTIONS_VIEW
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################

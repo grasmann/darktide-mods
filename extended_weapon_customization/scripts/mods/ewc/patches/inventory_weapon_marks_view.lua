@@ -12,16 +12,12 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.InventoryWeaponMarksView, "_equip_weapon_mark", function(func, self, ...)
-
     -- Check equipped item
     if self._equipped_item then
         -- Delete item from item cache
-        -- local pt = mod:pt()
         local gear_id = mod:gear_id(self._equipped_item)
-        -- pt.items[gear_id] = nil
         mod:clear_mod_item(gear_id)
     end
-
     -- Original function
     func(self, ...)
 end)

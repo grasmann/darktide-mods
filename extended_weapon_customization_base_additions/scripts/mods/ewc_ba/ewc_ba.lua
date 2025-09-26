@@ -12,6 +12,8 @@ local mod = get_mod("extended_weapon_customization_base_additions")
     local table_merge_recursive = table.merge_recursive
 --#endregion
 
+mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/extensions/common")
+
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
@@ -24,6 +26,68 @@ local extended_weapon_customization_plugin = {
     attachment_slots = {},
     fixes = {},
     kitbashs = {
+        [_item_ranged.."/lenses/lense_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/ranged/rippergun_rifle/ammunition/ammunition_01/ammunition_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "ROTATION_ursula"
+            },
+            attach_node = "ap_bullet_01",
+            resource_dependencies = {
+                ["content/weapons/player/ranged/rippergun_rifle/ammunition/ammunition_01/ammunition_01"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    leaf_attach_node_override = "",
+                    link_map_mode_override = "",
+                    item = "",
+                    children = {},
+                    material_overrides = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/lenses/lense_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/scope_bodies/scope_body_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_02/muzzle_02",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "ROTATION_ursula"
+            },
+            attach_node = "ap_bullet_01",
+            resource_dependencies = {
+                ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_02/muzzle_02"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    leaf_attach_node_override = "",
+                    link_map_mode_override = "",
+                    item = "",
+                    children = {},
+                    material_overrides = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/scope_bodies/scope_body_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
         [_item_ranged.."/sights/scope_01"] = {
             attachments = {
                 base = {
@@ -34,8 +98,9 @@ local extended_weapon_customization_plugin = {
                         },
                     },
                     children = {
-                        body = {
-                            item = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_02",
+                        scope = {
+                            -- item = _item_ranged.."/muzzles/lasgun_rifle_krieg_muzzle_02",
+                            item = _item_ranged.."/scope_bodies/scope_body_01",
                             fix = {
                                 offset = {
                                     node = 1,
@@ -46,7 +111,7 @@ local extended_weapon_customization_plugin = {
                             },
                             children = {
                                 lense_1 = {
-                                    item = _item_ranged.."/bullets/rippergun_rifle_bullet_01",
+                                    item = _item_ranged.."/lenses/lense_01",
                                     fix = {
                                         offset = {
                                             node = 1,
@@ -58,7 +123,7 @@ local extended_weapon_customization_plugin = {
                                     },
                                 },
                                 lense_2 = {
-                                    item = _item_ranged.."/bullets/rippergun_rifle_bullet_01",
+                                    item = _item_ranged.."/lenses/lense_01",
                                     fix = {
                                         offset = {
                                             node = 1,
@@ -78,6 +143,7 @@ local extended_weapon_customization_plugin = {
             display_name = "loc_scope_01",
             description = "loc_description_scope_01",
             dev_name = "loc_scope_01",
+            disable_vfx_spawner_exclusion = true,
         },
         [_item_ranged.."/magazines/autogun_rifle_magazine_01_double"] = {
             attachments = {
@@ -124,6 +190,7 @@ local extended_weapon_customization_plugin = {
             description = "loc_description_autogun_rifle_magazine_01_double",
             attach_node = "ap_magazine_01",
             dev_name = "loc_autogun_rifle_magazine_01_double",
+            disable_vfx_spawner_exclusion = true,
         },
         [_item_ranged.."/magazines/autogun_rifle_magazine_02_double"] = {
             attachments = {
@@ -170,6 +237,7 @@ local extended_weapon_customization_plugin = {
             description = "loc_description_autogun_rifle_magazine_02_double",
             attach_node = "ap_magazine_01",
             dev_name = "loc_autogun_rifle_magazine_02_double",
+            disable_vfx_spawner_exclusion = true,
         },
         [_item_ranged.."/magazines/autogun_rifle_magazine_03_double"] = {
             attachments = {
@@ -216,6 +284,7 @@ local extended_weapon_customization_plugin = {
             description = "loc_description_autogun_rifle_magazine_03_double",
             attach_node = "ap_magazine_01",
             dev_name = "loc_autogun_rifle_magazine_03_double",
+            disable_vfx_spawner_exclusion = true,
         },
         [_item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double"] = {
             attachments = {
@@ -262,6 +331,7 @@ local extended_weapon_customization_plugin = {
             description = "loc_description_autogun_rifle_ak_magazine_01_double",
             attach_node = "ap_magazine_01",
             dev_name = "loc_autogun_rifle_ak_magazine_01_double",
+            disable_vfx_spawner_exclusion = true,
         },
         [_item_ranged.."/magazines/autogun_pistol_magazine_01_double"] = {
             attachments = {
@@ -308,6 +378,49 @@ local extended_weapon_customization_plugin = {
             description = "loc_description_autogun_pistol_magazine_01_double",
             attach_node = "ap_magazine_01",
             dev_name = "loc_autogun_pistol_magazine_01_double",
+            disable_vfx_spawner_exclusion = true,
+        },
+        [_item_ranged.."/flashlights/invisible_flashlight"] = {
+            attachments = {
+                flashlight = {
+                    item = _item_ranged.."/flashlights/flashlight_01",
+                    fix = {
+                        offset = {
+                            node = 1,
+                            position = vector3_box(.075, 0, 0),
+                            rotation = vector3_box(0, 0, 0),
+                            scale = vector3_box(.001, .001, .001),
+                        },
+                    },
+                    children = {},
+                },
+            },
+            display_name = "loc_invisible_flashlight",
+            description = "loc_description_invisible_flashlight",
+            attach_node = "ap_flashlight_01",
+            dev_name = "invisible_flashlight",
+            disable_vfx_spawner_exclusion = true,
+        },
+        [_item_ranged.."/flashlights/invisible_flashlight_ogryn"] = {
+            attachments = {
+                flashlight = {
+                    item = _item_ranged.."/flashlights/flashlight_ogryn_01",
+                    fix = {
+                        offset = {
+                            node = 1,
+                            position = vector3_box(.075, 0, 0),
+                            rotation = vector3_box(0, 0, 0),
+                            scale = vector3_box(.001, .001, .001),
+                        },
+                    },
+                    children = {},
+                },
+            },
+            display_name = "loc_invisible_flashlight_ogryn",
+            description = "loc_description_invisible_flashlight_ogryn",
+            attach_node = "ap_flashlight_01",
+            dev_name = "invisible_flashlight_ogryn",
+            disable_vfx_spawner_exclusion = true,
         },
     },
     flashlight_templates = {
@@ -353,10 +466,11 @@ local extended_weapon_customization_plugin = {
 
 local weapons_folder = "extended_weapon_customization_base_additions/scripts/mods/ewc_ba/weapons/"
 local load_weapons = {
-    "autogun_p1_m1",
+    "boltpistol_p1_m1",
     "autopistol_p1_m1",
-    "bolter_p1_m1",
+    "autogun_p1_m1",
     "shotgun_p4_m1",
+    "bolter_p1_m1",
 }
 
 for _, file_name in pairs(load_weapons) do

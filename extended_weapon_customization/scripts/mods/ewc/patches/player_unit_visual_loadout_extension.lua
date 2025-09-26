@@ -20,6 +20,8 @@ local mod = get_mod("extended_weapon_customization")
 local SLOT_SECONDARY = "slot_secondary"
 local SLOT_PRIMARY = "slot_primary"
 local PROCESS_SLOTS = {"WEAPON_MELEE", "WEAPON_RANGED"}
+local sight_extension_update = false
+local flashlight_extension_update = false
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
@@ -86,9 +88,6 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function
     func(self, slot_name, item, optional_existing_unit_3p, ...)
 end)
 
-local sight_extension_update = false
-local flashlight_extension_update = false
-
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)
     -- Original function
     func(self, item, slot_name, optional_existing_unit_3p, t, ...)
@@ -97,8 +96,9 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(
         sight_extension_update = true
         flashlight_extension_update = true
     elseif slot_name == "slot_pocketable" or slot_name == "slot_pocketable_small" then
+        -- Reset timer for flashlight input
+        -- To prevent flashlight toggle when picking up items
         mod.pressed_once_t = nil
-        -- mod.pressed_twice_t = t + 2
         mod.custom_twice_cooldown = 2
         mod.pressed_twice = true
     end
@@ -134,9 +134,11 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
     if script_unit_extension(self._unit, "sight_system") then
         script_unit_remove_extension(self._unit, "sight_system")
     end
+
     if script_unit_extension(self._unit, "sway_system") then
         script_unit_remove_extension(self._unit, "sway_system")
     end
+    
     if script_unit_extension(self._unit, "flashlight_system") then
         script_unit_remove_extension(self._unit, "flashlight_system")
     end

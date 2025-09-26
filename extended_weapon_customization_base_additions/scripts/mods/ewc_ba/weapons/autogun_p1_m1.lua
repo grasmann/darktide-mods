@@ -27,6 +27,7 @@ local rails = mod:io_dofile("extended_weapon_customization_base_additions/script
     local table_clone = table.clone
     local vector3_zero = vector3.zero
     local table_merge_recursive = table.merge_recursive
+    local table_merge_recursive_n = table.merge_recursive_n
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -54,22 +55,14 @@ local attachments = {
         stock = stock_common,
         bayonet = bayonet_common,
         barrel = barrel_common,
-        magazine = table_merge_recursive(
-            table_merge_recursive(
-                magazine_autopistol,
-                magazine_autogun_double
-            ),
-        magazine_autopistol_double),
-        sight = table_merge_recursive(
-            table_merge_recursive({
-                lasgun_rifle_sight_01 = {
-                    replacement_path = _item_ranged.."/sights/lasgun_rifle_sight_01",
-                    icon_render_unit_rotation_offset = {90, 0, -95},
-                    icon_render_camera_position_offset = {.035, -.1, .125},
-                },
+        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double),
+        sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, {
+            lasgun_rifle_sight_01 = {
+                replacement_path = _item_ranged.."/sights/lasgun_rifle_sight_01",
+                icon_render_unit_rotation_offset = {90, 0, -95},
+                icon_render_camera_position_offset = {.035, -.1, .125},
             },
-            sight_reflex),
-        sight_scope),
+        }),
     },
 }
 

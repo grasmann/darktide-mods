@@ -6,6 +6,7 @@ local mod = get_mod("extended_weapon_customization")
 -- #region Performance
     local world = World
     local CLASS = CLASS
+    local tostring = tostring
     local script_unit = ScriptUnit
     local script_unit_extension = script_unit.extension
     local world_update_unit_and_children = world.update_unit_and_children
@@ -25,23 +26,17 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
         -- script_unit_remove_extension(self._unit, "sight_system")
         local sight_extension = script_unit_extension(self._unit, "sight_system")
         if sight_extension then
-
             sight_extension:update(dt, t)
-
         end
 
         local sway_extension = script_unit_extension(self._unit, "sway_system")
         if sway_extension then
-
             sway_extension:update(dt, t)
-
         end
 
         local flashlight_extension = script_unit_extension(self._unit, "flashlight_system")
         if flashlight_extension then
-
             flashlight_extension:update(dt, t)
-
         end
 
         -- Update first person unit

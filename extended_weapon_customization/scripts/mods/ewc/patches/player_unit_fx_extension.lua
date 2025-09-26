@@ -16,8 +16,10 @@ local VisualLoadoutCustomization = mod:original_require("scripts/extension_syste
     local table = table
     local CLASS = CLASS
     local string = string
+	local tonumber = tonumber
     local tostring = tostring
     local unit_node = unit.node
+	local WwiseWorld = WwiseWorld
     local string_format = string.format
     local log_exception = log.exception
     local unit_has_node = unit.has_node
@@ -97,10 +99,6 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, se
 		}
 	end
 end)
-
-local WwiseWorld = WwiseWorld
-local tonumber = tonumber
-
 
 local function _register_sound_source(wwise_source_node_cache, unit, node_name, wwise_world, source_name)
 	if not wwise_source_node_cache[unit] then

@@ -4,17 +4,23 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
+local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
+local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
+local magazine_autogun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun")
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local muzzle_autogun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
-local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local type = type
     local table = table
+    local pairs = pairs
+    local select = select
     local vector3 = Vector3
     local vector3_box = Vector3Box
     local table_clone = table.clone
@@ -31,66 +37,32 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
-local short_receivers = "assault_shotgun_receiver_01|assault_shotgun_receiver_03|assault_shotgun_receiver_deluxe01|assault_shotgun_receiver_ml01"
-local long_receivers = "assault_shotgun_receiver_02"
+local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
+local autogun_magazines = "autogun_rifle_magazine_01|autogun_rifle_magazine_02|autogun_rifle_magazine_03|autogun_rifle_ak_magazine_01"
+local autogun_double_magazines = "autogun_rifle_magazine_01_double|autogun_rifle_magazine_02_double|autogun_rifle_magazine_03_double|autogun_rifle_ak_magazine_01_double"
 
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
 local attachments = {
-    shotgun_p4_m1 = {
-        rail2 = rails,
-        muzzle = muzzle_autogun,
+    boltpistol_p1_m1 = {
         flashlight = flashlight_human,
-        sight = table_merge_recursive_n(nil, sight_reflex, sight_scope),
+        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun),
+        sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, {
+            lasgun_rifle_sight_01 = {
+                replacement_path = _item_ranged.."/sights/lasgun_rifle_sight_01",
+                icon_render_unit_rotation_offset = {90, 0, -95},
+                icon_render_camera_position_offset = {.035, -.1, .125},
+            },
+        }),
+        muzzle = muzzle_autogun,
     },
 }
 
-attachments.shotgun_p4_m2 = table_clone(attachments.shotgun_p4_m1)
-attachments.shotgun_p4_m3 = table_clone(attachments.shotgun_p4_m1)
-
-local attachment_slots = {
-    shotgun_p4_m1 = {
-        flashlight = {
-            parent_slot = "receiver",
-            default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(.075, .8, .3),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-        muzzle = {
-            parent_slot = "receiver",
-            default_path = _item_empty_trinket,
-        },
-        sight = {
-            parent_slot = "rail2",
-            default_path = _item_empty_trinket,
-        },
-        rail2 = {
-            parent_slot = "receiver",
-            default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(-.035, -.25, 0),
-                    rotation = vector3_box(0, -45, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-    },
-}
-
-attachment_slots.shotgun_p4_m2 = table_clone(attachment_slots.shotgun_p4_m1)
-attachment_slots.shotgun_p4_m3 = table_clone(attachment_slots.shotgun_p4_m1)
+attachments.boltpistol_p1_m2 = table_clone(attachments.boltpistol_p1_m1)
 
 local fixes = {
-    shotgun_p4_m1 = {
+    boltpistol_p1_m1 = {
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -99,8 +71,8 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(.0075, -.05, .1535),
-                    rotation = vector3_box(-7.5, 35, 0),
+                    position = vector3_box(0, 0, -.0095),
+                    rotation = vector3_box(0, 0, 0),
                 },
             },
         },
@@ -112,51 +84,24 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(.016, -.05, .1325),
-                    rotation = vector3_box(-7.5, 35, 0),
+                    position = vector3_box(0, -.05, -.0375),
+                    rotation = vector3_box(0, 0, 0),
                     custom_fov = 32.5,
                     aim_scale = .5,
                     fov = 25,
                 },
             },
         },
-        {attachment_slot = "flashlight",
-            fix = {
-                offset = {
-                    position = vector3_box(.0325, .58, .11),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "muzzle",
+        {attachment_slot = "sight",
             requirements = {
-                receiver = {
-                    has = short_receivers,
+                sight = {
+                    has = reflex_sights,
                 },
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, .64, .11),
+                    position = vector3_box(0, .095, -.013),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1.5, 1.5, 1.5),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "muzzle",
-            requirements = {
-                receiver = {
-                    has = long_receivers,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, .755, .11),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1.5, 1.5, 1.5),
-                    node = 1,
                 },
             },
         },
@@ -168,75 +113,95 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, 0, .0235),
+                    position = vector3_box(0, -.025, .014),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
+                },
+            },
+        },
+        {attachment_slot = "magazine",
+            requirements = {
+                magazine = {
+                    has = autopistol_magazines,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1.4, 1),
+                },
+            },
+        },
+        {attachment_slot = "magazine",
+            requirements = {
+                magazine = {
+                    has = autogun_magazines.."|"..autogun_double_magazines,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, .85, 1),
+                },
+            },
+        },
+        {attachment_slot = "muzzle",
+            requirements = {
+                barrel = {
+                    has = "boltgun_pistol_barrel_01|boltgun_pistol_barrel_03",
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .065, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1.35, 1.35, 1.35),
                     node = 1,
-                },
-            },
-        },
-        {attachment_slot = "rail2",
-            requirements = {
-                sight = {
-                    has = reflex_sights,
-                },
-            },
-            fix = {
-                attach = {
-                    rail2 = "lasgun_pistol_rail_01",
-                },
-            },
-        },
-        {attachment_slot = "rail2",
-            requirements = {
-                sight = {
-                    missing = reflex_sights,
-                },
-            },
-            fix = {
-                attach = {
-                    rail2 = "stubgun_pistol_rail_off",
-                },
-            },
-        },
-        {attachment_slot = "rail",
-            requirements = {
-                receiver = {
-                    has = long_receivers,
-                },
-                rail = {
-                    missing = "assault_shotgun_rail_02",
-                }
-            },
-            fix = {
-                attach = {
-                    rail = "assault_shotgun_rail_02",
-                },
-            },
-        },
-        {attachment_slot = "rail",
-            requirements = {
-                receiver = {
-                    has = short_receivers,
-                },
-                rail = {
-                    missing = "assault_shotgun_rail_01",
-                }
-            },
-            fix = {
-                attach = {
-                    rail = "assault_shotgun_rail_01",
                 },
             },
         },
     },
 }
 
-fixes.shotgun_p4_m2 = table_clone(fixes.shotgun_p4_m1)
-fixes.shotgun_p4_m3 = table_clone(fixes.shotgun_p4_m1)
+fixes.boltpistol_p1_m2 = table_clone(fixes.boltpistol_p1_m1)
+
+local attachment_slots = {
+    boltpistol_p1_m1 = {
+        flashlight = {
+            parent_slot = "receiver",
+            default_path = _item_empty_trinket,
+            fix = {
+                offset = {
+                    position = vector3_box(.04, .12, .055),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
+        muzzle = {
+            parent_slot = "barrel",
+            default_path = _item_empty_trinket,
+            fix = {
+                offset = {
+                    position = vector3_box(0, .055, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1.35, 1.35, 1.35),
+                    node = 1,
+                },
+            },
+        },
+    },
+}
+
+attachment_slots.boltpistol_p1_m2 = table_clone(attachment_slots.boltpistol_p1_m1)
+
+local kitbashs = {}
 
 return {
     attachments = attachments,
     attachment_slots = attachment_slots,
     fixes = fixes,
+    kitbashs = kitbashs,
 }

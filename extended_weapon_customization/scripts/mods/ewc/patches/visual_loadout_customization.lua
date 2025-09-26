@@ -4,7 +4,6 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 local master_items = mod:original_require("scripts/backend/master_items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -14,10 +13,14 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local unit = Unit
     local pairs = pairs
     local table = table
+    local string = string
     local tostring = tostring
+    local table_size = table.size
     local unit_alive = unit.alive
     local table_clear = table.clear
+    local string_find = string.find
     local unit_set_data = unit.set_data
+    local table_contains = table.contains
     local table_set_readonly = table.set_readonly
     local table_merge_recursive = table.merge_recursive
 --#endregion
@@ -28,6 +31,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
 
 local empty_overrides_table = table_set_readonly({})
 local temp_children = {}
+local PROCESS_SLOTS = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -47,6 +51,8 @@ mod.recursive_children = function(self, unit, attachment_units_by_unit, children
     end
     return children
 end
+
+--item_data.hide_in_ui_preview 
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -98,12 +104,10 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                 else
 
-                    -- mod:dtf(item_data, "item_data", 20)
-                    
-                    -- local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
                     local item = master_items.get_item(item_path)
 
                     if item and item.attachments then
+
                         -- Collect current attachment names
                         local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                         if kitbash_fixes then
@@ -175,6 +179,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 unit_set_data(attachment_unit, "attachment_name", attachment_name)
 
                 if item and item.attachments then
+
                     -- Collect current attachment names
                     local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                     if kitbash_fixes then
@@ -220,10 +225,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         -- Return
         return item_unit, attachment_units_by_unit, bind_pose, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit
     end)
-    
-    local string = string
-    local table_size = table.size
-    local string_find = string.find
 
     mod:hook(instance, "generate_attachment_overrides_lookup", function(func, item_data, override_item_data, ...)
 

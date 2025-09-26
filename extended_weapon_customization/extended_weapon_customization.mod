@@ -8,5 +8,14 @@ return {
 			mod_localization = "extended_weapon_customization/scripts/mods/ewc/ewc_localization",
 		})
 	end,
+	load_before = {
+        "GoToMastery",
+    },
+	require = {
+		"master_item_community_patch",
+	},
+	load_after = {
+		"master_item_community_patch",
+	},
 	packages = {},
 }

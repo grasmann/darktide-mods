@@ -1,4 +1,4 @@
-local mod = get_mod("visible_equipment")
+local mod = get_mod("extended_weapon_customization_base_additions")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -57,7 +57,7 @@ local mod = get_mod("visible_equipment")
                 elseif is_table and type(dest[key]) == "table" then
                     table.merge_recursive_n(dest[key], value)
                 elseif is_table then
-                    dest[key] = table.clone(value)
+                    dest[key] = table_clone(value)
                 else
                     dest[key] = value
                 end

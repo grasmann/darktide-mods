@@ -151,6 +151,8 @@ end
 mod.item_data = function(self, item_data)
     -- Get correct item data
     local data = item_data and (item_data.__attachment_customization and item_data.__master_item) or (item_data.__is_ui_item_preview and item_data.__data)
+    -- local item = item_data.attachments.slot_trinket_1.item
+    -- data = (data and data.attachments and data.attachments.slot_trinket_1 and data.attachments.slot_trinket_1.item and type(item_data.attachments.slot_trinket_1.item) == "table" and item_data.attachments.slot_trinket_1.item) or data
     -- Return
     return data or item_data
 end

@@ -7,6 +7,7 @@ local mod = get_mod("extended_weapon_customization")
 local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
 local ViewElementTabMenu = mod:original_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
+local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local InputDevice = mod:original_require("scripts/managers/input/input_device")
 local master_items = mod:original_require("scripts/backend/master_items")
@@ -32,9 +33,11 @@ local items = mod:original_require("scripts/utilities/items")
     local tostring = tostring
     local math_lerp = math.lerp
     local math_uuid = math.uuid
+    local unit_alive = unit.alive
     local table_size = table.size
     local utf8_upper = utf8.upper
     local quaternion = Quaternion
+    local vector3_box = Vector3Box
     local script_unit = ScriptUnit
     local table_clear = table.clear
     local string_gsub = string.gsub
@@ -44,18 +47,38 @@ local items = mod:original_require("scripts/utilities/items")
     local string_format = string.format
     local quaternion_box = QuaternionBox
     local table_contains = table.contains
+    local vector3_unbox = vector3_box.unbox
+    local unit_local_position = unit.local_position
+    local unit_world_position = unit.world_position
     local quaternion_identity = quaternion.identity
     local table_clone_instance = table.clone_instance
     local table_merge_recursive = table.merge_recursive
     local script_unit_extension = script_unit.extension
     local quaternion_from_vector = quaternion.from_vector
+    local unit_set_local_position = unit.set_local_position
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local temp_detached, temp_validated = {}, {}
+local temp_detached = {}
+local temp_validated = {}
+local temp_mod_count = {}
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+mod.selectable_attachment_count = function(self, attachment_entries)
+    local count = 0
+    for attachment_name, attachment_data in pairs(attachment_entries) do
+        if not attachment_data.hide_from_selection then
+            count = count + 1
+        end
+    end
+    return count
+end
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -106,16 +129,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         mod:reset_item(self._selected_item, true)
         mod:reset_item(self._presentation_item, true)
 
-        -- managers.ui:item_icon_updated(self._selected_item)
-        -- managers.event:trigger("event_item_icon_updated", self._selected_item)
-        -- managers.event:trigger("event_replace_list_item", self._selected_item)
-
-        -- mod:reevaluate_packages()
-
-        -- -- Redo weapon attachments
-        -- mod:redo_weapon_attachments(self._selected_item)
-
-
         local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
         for attachment_slot, data in pairs(attachment_slots) do
 
@@ -135,33 +148,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         self:update_presentation_item()
 
-        -- if self._presentation_item then
-        --     self:_setup_weapon_preview()
-        --     self:_preview_item(self._presentation_item)
-        --     self._weapon_preview:center_align(0, {
-        --         0,
-        --         0,
-        --         0,
-        --     })
-        -- end
-
-        -- self:present_grid_layout({})
-        -- self:_register_button_callbacks()
-        -- self:_fetch_inventory_items(tabs_content)
-
         mod:pt().items_originating_from_customization_menu[fake_gear_id] = true
 
         self:_preview_item(self._presentation_item)
-        -- self._weapon_preview:center_align(0, {
-        --     -0.2,
-        --     -0.3,
-        --     -0.2,
-        -- })
-        -- self:_setup_menu_tabs(self._tabs_content)
         local index = self._selected_tab_index
         self._selected_tab_index = nil
         self:cb_switch_tab(index)
-        -- self:cb_switch_tab(1)
 
         mod.is_in_customization_menu = true
     end
@@ -178,14 +170,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         mod:gear_settings(gear_id, new_gear_settings, true)
 
         local fake_gear_id = mod:gear_id(self._presentation_item, true)
-        -- mod:gear_settings(gear_id, new_gear_settings, true)
 
         mod:modify_item(self._selected_item, false, new_gear_settings)
         -- Fixes
         mod:apply_attachment_fixes(self._selected_item)
-        -- mod:modify_item(self._presentation_item, true, new_gear_settings)
 
-        -- local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
         for attachment_slot, replacement_path in pairs(new_gear_settings) do
 
             -- local attachment_item_path = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
@@ -203,27 +192,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         self:update_presentation_item()
 
-        -- if self._presentation_item then
-        --     self:_setup_weapon_preview()
-        --     self:_preview_item(self._presentation_item)
-        --     self._weapon_preview:center_align(0, {
-        --         0,
-        --         0,
-        --         0,
-        --     })
-        -- end
-
-        -- self:present_grid_layout({})
-
         mod:pt().items_originating_from_customization_menu[fake_gear_id] = true
 
         self:_preview_item(self._presentation_item)
-        -- self._weapon_preview:center_align(0, {
-        --     -0.2,
-        --     -0.3,
-        --     -0.2,
-        -- })
-        -- self:_setup_menu_tabs(self._tabs_content)
         local index = self._selected_tab_index
         self._selected_tab_index = nil
         self:cb_switch_tab(index)
@@ -247,7 +218,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 
         local weapon_template = self._selected_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
-        -- local attachment_entries = attachments[slot_name]
         if attachments then
             for attachment_slot, attachment_entries in pairs(attachments) do
                 local attachment_item_path = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
@@ -333,15 +303,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
     func(self, content, ...)
 end)
 
-local temp_mod_count = {}
-
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, self, index, ...)
 
     table_clear(temp_mod_count)
 
     if self.customize_attachments then
 
-        -- self._item_grid.wepaon_customization = true
         local pt = mod:pt()
         local weapon_template = self._presentation_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
@@ -352,8 +319,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
             if index ~= self._selected_tab_index then
                 if self._selected_tab_index then
-                    -- local presentation_item = self._presentation_item
-
                     self["_selected_"..slot_name.."_name"] = mod:fetch_attachment(self._selected_item.attachments, slot_name)
 
                     local real_item = master_items.get_item(self["_selected_"..slot_name.."_name"])
@@ -399,7 +364,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                 end
 
                 local attachment_entries = attachments[slot_name]
-                -- if attachment_entries and table_size(attachment_entries) > 1 then
                 if attachment_entries and mod:selectable_attachment_count(attachment_entries) > 1 then
                     for attachment_name, attachment_data in pairs(attachment_entries) do
 
@@ -430,7 +394,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                     end
                 end
 
-                -- local num_mods = table_size(mod_count)
                 for plugin_mod, count in pairs(temp_mod_count) do
                     local localization_name = "loc_"..tostring(plugin_mod:get_name())
 
@@ -452,16 +415,145 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
             end
 
-            -- self._selected_sort_option_index = 2
-            -- self:cb_on_sort_button_pressed(self._sort_options[1])
-            -- self:_sort_grid_layout(self._sort_options[1].sort_function)
-
             return
         end
     end
     -- Original function
     func(self, index, ...)
 end)
+
+-- mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
+
+--     -- -- Focus attachment slot
+--     -- local weapon_spawn_data = self._weapon_spawn_data
+--     -- if self.focus_attachment_unit and unit_alive(self.focus_attachment_unit) and weapon_spawn_data then
+--     --     local attachment_position = unit_world_position(self.focus_attachment_unit, 1)
+--     --     -- local camera = self._camera
+--     --     -- local camera_position = ScriptCamera.position(camera)
+--     --     local default_position = self.link_unit_position and vector3_unbox(self.link_unit_position) or vector3_zero()
+--     --     local difference = attachment_position - default_position
+--     --     -- mod:print("attachment_position "..tostring(attachment_position).." camera_position "..tostring(camera_position).." difference "..tostring(difference))
+--     --     local link_unit = weapon_spawn_data.link_unit
+--     --     -- local link_unit_position = unit_world_position(link_unit, 1)
+        
+--     --     local link_difference = vector3(difference.x, difference.y, difference.z)
+--     --     mod:print("link_unit_position "..tostring(default_position))
+
+--     --     -- unit_set_local_position(link_unit, 1, default_position - link_difference)
+--     --     self:set_position(default_position - link_difference)
+--     --     -- ScriptCamera.set_offset(camera, difference)
+--     -- end
+
+--     -- Original function
+--     func(self, dt, t, input_service, ...)
+-- end)
+
+-- mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link_unit_name, level_link_unit, loader, position, rotation, scale, force_highest_mip, ...)
+--     -- Original function
+--     func(self, item, link_unit_name, level_link_unit, loader, position, rotation, scale, force_highest_mip, ...)
+--     -- Focus attachment slot
+--     if self.focus_attachment_slot then
+--         local weapon_spawn_data = self._weapon_spawn_data
+
+-- 	    if weapon_spawn_data then
+--             local item_unit_3p = weapon_spawn_data.item_unit_3p
+--             local attachment_units_3p = weapon_spawn_data.attachment_units_3p[item_unit_3p]
+
+--             local link_unit = weapon_spawn_data.link_unit
+--             -- self.link_unit_position = vector3_box(unit_world_position(link_unit, 1))
+
+--             if attachment_units_3p then
+--                 for i = 1, #attachment_units_3p do
+--                     local attachment_unit = attachment_units_3p[i]
+
+--                     if attachment_unit and unit_alive(attachment_unit) then
+
+--                         local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
+--                         if attachment_slot == self.focus_attachment_slot then
+--                             mod:echo("weapon_spawner focus attachment unit "..tostring(attachment_unit))
+--                             -- self.focus_attachment_unit = attachment_unit
+
+--                             local world_attachment_position = unit_world_position(attachment_unit, 1)
+--                             -- local camera = self._camera
+--                             -- local camera_position = ScriptCamera.position(camera)
+--                             -- local default_position = self.link_unit_position and vector3_unbox(self.link_unit_position) or vector3_zero()
+--                             local world_link_position = unit_world_position(link_unit, 1)
+--                             local difference = world_attachment_position - world_link_position
+--                             -- mod:print("attachment_position "..tostring(attachment_position).." camera_position "..tostring(camera_position).." difference "..tostring(difference))
+--                             local link_unit = weapon_spawn_data.link_unit
+--                             -- local link_unit_position = unit_world_position(link_unit, 1)
+--                             -- local item_unit_position = unit_world_position(item_unit_3p, 1)
+--                             -- local item_unit_difference = item_unit_position - attachment_position
+
+
+--                             local attachment_position = unit_local_position(attachment_unit, 1)
+--                             mod:print("attachment_position "..tostring(attachment_position))
+
+--                             local angle = 0
+
+--                             -- if attachment_position.y > 0 then
+
+--                             -- end
+                            
+--                             if attachment_position.x > 0 then
+
+--                                 -- self._rotation_angle = .5
+--                                 -- self:_set_rotation(3)
+--                                 angle = 3
+--                                 -- difference = difference * -1
+
+--                             end
+
+--                             angle = angle + difference.y
+
+--                             self:_set_rotation(angle)
+
+--                             -- mod:print("item_unit_difference "..tostring())
+--                             -- if item_unit_difference.y < 0 then
+--                             --     mod:print("rotate attachment slot "..tostring(attachment_slot))
+--                             -- end
+                            
+--                             -- local link_difference = vector3(difference.x, difference.y, difference.z)
+--                             -- mod:print("link_unit_position "..tostring(default_position))
+
+--                             -- unit_set_local_position(link_unit, 1, default_position - link_difference)
+--                             self:set_position(unit_local_position(link_unit, 1) - difference)
+
+--                         end
+
+--                     end
+--                 end
+--             end
+--         end
+--     end
+-- end)
+
+-- mod:hook(CLASS.ViewElementInventoryWeaponPreview, "present_item", function(func, self, item, disable_auto_spin, ...)
+--     -- Original function
+--     func(self, item, disable_auto_spin, ...)
+--     -- Focus attachment slot
+--     if self.focus_attachment_slot and self._ui_weapon_spawner then
+--         mod:print("weapon_spawner focus attachment slot "..tostring(self.focus_attachment_slot))
+--         self._ui_weapon_spawner.focus_attachment_slot = self.focus_attachment_slot
+--     else
+--         mod:print("focus_attachment_slot: "..tostring(self.focus_attachment_slot).." weapon_spawner: "..tostring(self._ui_weapon_spawner))
+--     end
+-- end)
+
+-- mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, self, item, ...)
+--     -- Original function
+--     func(self, item, ...)
+--     -- Modify
+--     if self.customize_attachments and self._weapon_preview and self._tabs_content then
+--         local content = self._tabs_content[self._selected_tab_index]
+--         local slot_name = content and content.slot_name
+--         if slot_name then
+--             mod:print("weapon_preview focus attachment slot "..tostring(slot_name))
+--             self._weapon_preview.focus_attachment_slot = slot_name
+--             self._weapon_preview:present_item(item, false)
+--         end
+--     end
+-- end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_sort_options", function(func, self, ...)
     if self.customize_attachments then
@@ -587,16 +679,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
     -- Original function
     func(self, ...)
 end)
-
-mod.selectable_attachment_count = function(self, attachment_entries)
-    local count = 0
-    for attachment_name, attachment_data in pairs(attachment_entries) do
-        if not attachment_data.hide_from_selection then
-            count = count + 1
-        end
-    end
-    return count
-end
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
     if self.customize_attachments then
@@ -810,7 +892,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
                             mod:modify_item(presentation_item, nil, {
                                 [attachment_slot] = replacement_path
                             })
-                            -- temp_validated[attachment_slot] = true
                             self["_selected_"..attachment_slot.."_name"] = replacement_path
                         end
                     end
@@ -841,7 +922,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
             attachment_name = string_gsub(attachment_name, "%f[%a].", string_upper)
 
             widgets_by_name.sub_display_name.content.text = string_format("%s • %s", items.weapon_card_display_name(self._selected_item), items.weapon_card_sub_display_name(self._selected_item))
-            widgets_by_name.display_name.content.text = attachment_name --real_item and items.display_name(real_item) or localize("loc_weapon_cosmetic_empty")
+            widgets_by_name.display_name.content.text = attachment_name
 
             return
         end
@@ -867,57 +948,25 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
         local attachments = mod.settings.attachments[self._selected_item.weapon_template]
 
         for attachment_slot, attachment_name in pairs(attachments) do
-            -- if attachment_name ~= "content/items/weapons/player/trinkets/unused_trinket" then
-            --     gear_settings[attachment_slot] = attachment_name
-            -- end
             gear_settings[attachment_slot] = self["_selected_"..attachment_slot.."_name"] or "content/items/weapons/player/trinkets/unused_trinket"
-            -- self["_equipped_"..attachment_slot.."_name"] = self["_selected_"..attachment_slot.."_name"]
             self["_equipped_"..attachment_slot.."_name"] = gear_settings[attachment_slot]
         end
 
         mod:gear_settings(gear_id, gear_settings, true)
 
-        -- managers.ui:item_icon_updated(self._selected_item)
-        -- managers.event:trigger("event_item_icon_updated", self._selected_item)
-        -- managers.event:trigger("event_replace_list_item", self._selected_item)
-
-        -- mod:reevaluate_packages()
-
-        -- -- Redo weapon attachments
-        -- mod:redo_weapon_attachments(self._selected_item)
-
         self:update_real_world_item()
-
-        -- self:present_grid_layout({})
 
         mod.is_in_customization_menu = true
 
         local inventory_background_view = mod:get_view("inventory_background_view")
         if inventory_background_view then
-            -- local selected_tab_index = self._selected_tab_index or 1
-            -- local content = self._tabs_content[selected_tab_index]
-            -- local slot_name = content.slot_name
-
             inventory_background_view:event_force_refresh_inventory()
-
-            -- local presentation_loadout = inventory_background_view._preview_profile_equipped_items
-            -- local current_loadout = inventory_background_view._current_profile_equipped_items
-
-            -- presentation_loadout[slot_name] = self._presentation_item
-
-            -- local player_profile = inventory_background_view._presentation_profile
-            -- if player_profile then
-            --     current_loadout[slot_name] = self._presentation_item
-            -- end
-            -- inventory_background_view:_equip_slot_item(slot_name, self._presentation_item)
-            -- inventory_background_view:_equip_local_changes()
         end
 
         return
     else
-        -- local pt = mod:pt()
+        -- Delete item from item cache
         local gear_id = mod:gear_id(self._selected_item)
-        -- pt.items[gear_id] = nil
         mod:clear_mod_item(gear_id)
     end
     -- Original function
@@ -926,9 +975,7 @@ end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_fetch_inventory_items", function(func, self, tabs_content, ...)
 	if self.customize_attachments then
-
         self._items_by_slot = {}
-
         return
     end
     return func(self, tabs_content, ...)

@@ -46,55 +46,65 @@ end
 
 mod.kitbash_item = function(self, name, data)
     if data and type(data) == "table" then
-        -- Get kitbash template
-        local template = table_clone(master_items.get_item("content/items/weapons/player/trinkets/unused_trinket"))
-        if template then
 
-            -- Merge data
-            template = table_merge_recursive(template, data)
+        if not data.is_full_item then
 
-            -- Set attachments
-            template.attachments = data.attachments
+            -- Get kitbash template
+            local template = table_clone(master_items.get_item("content/items/weapons/player/trinkets/unused_trinket"))
+            if template then
 
-            -- Add shared material overrides
-            if not template.attachments.zzz_shared_material_overrides then
-                template.attachments.zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                }
-            end
+                -- Merge data
+                template = table_merge_recursive(template, data)
 
-            -- Add resource dependencies
-            local resource_dependencies = {
-                ["content/characters/empty_item/empty_item"] = true,
-            }
-            local attachment_slots = self:fetch_attachment_slots(template.attachments)
-            for attachment_slot, data in pairs(attachment_slots) do
-                local item = master_items.get_item(data.item)
-                if item then
-                    resource_dependencies = table_merge_recursive(resource_dependencies, item.resource_dependencies)
+                -- Set attachments
+                template.attachments = data.attachments
+
+                -- Add shared material overrides
+                if not template.attachments.zzz_shared_material_overrides then
+                    template.attachments.zzz_shared_material_overrides = {
+                        item = "",
+                        children = {},
+                    }
                 end
-            end
-            template.resource_dependencies = resource_dependencies
 
-            -- Other attributes
-            template.show_in_1p = true
-            template.item_list_faction = "Player"
-            template.material_overrides = nil
-            template.rarity = nil
-            template.slots = nil
-            template.source = nil
-            template.feature_flags = {
-                "FEATURE_item_retained",
-            }
-            template.slots = nil
-            template.item_type = nil --"KITBASH"
-            template.name = name
-            template.is_fallback_item = false
-            template.is_kitbash = true
+                -- Add resource dependencies
+                local resource_dependencies = {
+                    ["content/characters/empty_item/empty_item"] = true,
+                }
+                local attachment_slots = self:fetch_attachment_slots(template.attachments)
+                for attachment_slot, data in pairs(attachment_slots) do
+                    local item = master_items.get_item(data.item)
+                    if item then
+                        resource_dependencies = table_merge_recursive(resource_dependencies, item.resource_dependencies)
+                    end
+                end
+                template.resource_dependencies = resource_dependencies
+
+                -- Other attributes
+                template.show_in_1p = true
+                template.item_list_faction = "Player"
+                template.material_overrides = nil
+                template.rarity = nil
+                template.slots = nil
+                template.source = nil
+                template.feature_flags = {
+                    "FEATURE_item_retained",
+                }
+                template.slots = nil
+                template.item_type = nil --"KITBASH"
+                template.name = name
+                template.is_fallback_item = false
+                template.is_kitbash = true
+
+                -- Inject item into master items
+                master_items.get_cached()[template.name] = template
+
+            end
+
+        else
 
             -- Inject item into master items
-            master_items.get_cached()[template.name] = template
+            master_items.get_cached()[data.name] = data
 
         end
     end
