@@ -33,6 +33,8 @@ mod:persistent_table(REFERENCE, {
     items_originating_from_customization_menu = {},
     game_initialized = false,
     attachment_data_origin = {},
+    loading_packages = {},
+    loaded_packages = {},
 })
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/common")
@@ -51,16 +53,24 @@ mod.pt = function(self)
     return self:persistent_table(REFERENCE)
 end
 
-mod._on_all_mods_loaded = function(self)
-    self.loaded_plugins = self:load_plugins()
+mod.init = function(self)
     local pt = self:pt()
-    -- table_clear(pt.items)
+    -- Clear mod items
     self:clear_mod_items()
+    -- Load plugins
+    self.loaded_plugins = self:load_plugins()
+    -- If game already initialized ( mod reload )
     if pt.game_initialized then
         self:try_kitbash_load()
         -- self:find_missing_items()
         -- self:find_missing_attachments()
     end
+    -- Load packages
+    self:load_packages()
+end
+
+mod._on_all_mods_loaded = function(self)
+    self:init()
     managers.event:trigger("ewc_reloaded")
 end
 
@@ -72,8 +82,8 @@ mod._clear_chat = function(self)
 	managers.event:trigger("event_clear_notifications")
 end
 
-mod._on_game_state_changed = function(status, state_name)
-    local pt = mod:pt()
+mod._on_game_state_changed = function(self, status, state_name)
+    local pt = self:pt()
     if state_name == "StateTitle" and status == "exit" then
         pt.game_initialized = true
     end
@@ -81,7 +91,11 @@ mod._on_game_state_changed = function(status, state_name)
     table_clear(pt.items_originating_from_customization_menu)
 end
 
-mod._on_unload = function(exit_game) end
+mod._on_unload = function(self, exit_game)
+    if exit_game then
+        self:release_packages()
+    end
+end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
 -- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
@@ -117,6 +131,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/gear_set
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/kitbash")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/fixes")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/plugins")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/packages")
 
 mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/settings")
 mod:update_flashlight_templates(mod.settings.flashlight_templates)

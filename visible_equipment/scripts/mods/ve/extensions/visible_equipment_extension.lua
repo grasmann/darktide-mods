@@ -516,6 +516,7 @@ VisibleEquipmentExtension.attach_settings = function(self, slot)
     self.equipment_component:_fill_attach_settings_3p(self.unit, attach_settings, slot)
     attach_settings.from_script_component = true
     attach_settings.skip_link_children = true
+    attach_settings.from_ui_profile_spawner = true
     return attach_settings
 end
 

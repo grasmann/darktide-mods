@@ -16,4 +16,5 @@ return {
     attachment_name_by_item_string = attachments.attachment_name_by_item_string,
     attachment_data_by_attachment_name = attachments.attachment_data_by_attachment_name,
     hide_attachment_slots_in_menu = attachments.hide_attachment_slots_in_menu,
+    packages_to_load = {},
 }

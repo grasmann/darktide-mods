@@ -12,6 +12,8 @@ local mod = get_mod("extended_weapon_customization")
 -- #region Performance
     local CLASS = CLASS
     local tostring = tostring
+    local script_unit = ScriptUnit
+    local script_unit_extension = script_unit.extension
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -44,6 +46,7 @@ mod:hook(CLASS.Flashlight, "init", function(func, self, context, slot, weapon_te
     if flashlight_data then
         -- Get custom flashlight template name
         local custom_flashlight_template = flashlight_data.flashlight_template
+        mod:print("custom template "..tostring(custom_flashlight_template))
         -- Get custom flashlight template
         local flashlight_template = mod.settings.flashlight_templates[custom_flashlight_template] or FlashlightTemplates[custom_flashlight_template]
         -- Check flashlight template
@@ -59,4 +62,20 @@ mod:hook(CLASS.Flashlight, "init", function(func, self, context, slot, weapon_te
         end
     end
 
+end)
+
+mod:hook(CLASS.Flashlight, "update", function(func, self, unit, dt, t, ...)
+    -- Original function
+    func(self, unit, dt, t, ...)
+    -- Update flashlight
+    local flashlight_extension = script_unit_extension(unit, "flashlight_system")
+    if flashlight_extension then
+        local is_special_active = self._inventory_slot_component.special_active
+
+        if is_special_active and not flashlight_extension.on then
+            flashlight_extension:set_light(true)
+        elseif not is_special_active and flashlight_extension.on then
+            flashlight_extension:set_light(false)
+        end
+    end
 end)

@@ -144,6 +144,12 @@ return {
 	mod_option_sway_tooltip = {
 		en = "Weapon sways when you rotate your character.",
 	},
+	mod_option_crouch = {
+		en = "Crouch",
+	},
+	mod_option_crouch_tooltip = {
+		en = "Weapon changes pose when you crouch.",
+	},
 
 	group_flashlight = {
 		en = "Flashlight",
@@ -165,5 +171,14 @@ return {
 	},
 	mod_toggle_flashlight_interact_double_tooltip = {
 		en = "Toggle flashlight by pressing the interact button two times in quick succession when not aiming.",
+	},
+	mod_flashlight_input_reminder = {
+		en = "Flashlight Input Reminder",
+	},
+	mod_flashlight_input_reminder_tooltip = {
+		en = "Flashlight input reminder when using a modded flashlight.",
+	},
+	mod_flashlight_input_reminder_text = {
+		en = " Modded flashlight.\nInteract toggles the flashlight while aiming or double press. Toggle this reminder in options.",
 	},
 }

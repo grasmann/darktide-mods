@@ -47,6 +47,8 @@ end
 mod.kitbash_item = function(self, name, data)
     if data and type(data) == "table" then
 
+        self:print("kitbashing item "..tostring(name))
+
         if not data.is_full_item then
 
             -- Get kitbash template

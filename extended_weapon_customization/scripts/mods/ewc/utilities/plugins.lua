@@ -90,6 +90,11 @@ mod.load_plugins = function(self)
                     self:update_flashlight_templates(self.settings.flashlight_templates)
                 end
 
+                if plugin.packages_to_load then
+                    -- Packages are key based - merge table
+                    self.settings.packages_to_load = table_merge_recursive(self.settings.packages_to_load, plugin.packages_to_load)
+                end
+
             end
             
             mod:print("loaded plugin "..tostring(plugin_mod:localize("mod_title") or plugin_mod:localize("mod_name") or plugin_mod:get_name()))

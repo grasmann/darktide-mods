@@ -33,3 +33,23 @@ mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, u
         sight_extension:on_equip_weapon()
     end
 end)
+
+mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_person_mode, ...)
+    -- Original function
+    func(slot, first_person_mode, ...)
+    -- Update flashlight visibility
+    local flashlight_extension = script_unit_extension(slot.parent_unit_3p, "flashlight_system")
+    if flashlight_extension then
+        flashlight_extension:on_wield(slot.name)
+    end
+end)
+
+mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
+    -- Original function
+    func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
+    -- Update flashlight visibility
+    local flashlight_extension = script_unit_extension(unit_3p, "flashlight_system")
+    if flashlight_extension then
+        flashlight_extension:on_update_item_visibility(wielded_slot)
+    end
+end)

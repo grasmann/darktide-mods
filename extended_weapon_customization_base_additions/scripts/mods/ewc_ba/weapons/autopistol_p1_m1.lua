@@ -6,6 +6,7 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
+local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local magazine_autogun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
@@ -39,6 +40,7 @@ local scopes = "scope_01"
 
 local attachments = {
     autopistol_p1_m1 = {
+        flashlight = flashlight_human,
         magazine = table_merge_recursive_n(nil, magazine_autogun_double, magazine_autopistol_double, magazine_autogun),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, {
             lasgun_rifle_sight_01 = {

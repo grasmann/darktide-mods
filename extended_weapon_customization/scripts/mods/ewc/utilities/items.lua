@@ -324,4 +324,9 @@ mod.redo_weapon_attachments = function(self, item)
     if sight_extension then
         sight_extension:on_equip_weapon()
     end
+    -- Relay weapon reload to sight extension
+    local flashlight_extension = script_unit_extension(me, "flashlight_system")
+    if flashlight_extension then
+        flashlight_extension:on_equip_weapon()
+    end
 end

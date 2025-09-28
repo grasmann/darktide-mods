@@ -6,6 +6,7 @@ local mod = get_mod("extended_weapon_customization")
 -- #region Performance
     local unit = Unit
     local math = math
+    local table = table
     local class = class
     local CLASS = CLASS
     local world = World
@@ -22,6 +23,7 @@ local mod = get_mod("extended_weapon_customization")
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
     local vector3_lerp = vector3.lerp
+    local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local quaternion_multiply = quaternion.multiply
     local unit_local_position = unit.local_position
@@ -43,20 +45,43 @@ local mod = get_mod("extended_weapon_customization")
 
 local SwayExtension = class("SwayExtension")
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local LOCKED_ACTIONS = {
+    "action_reload",
+    "action_inspect",
+    "action_bash",
+    "action_bash_light",
+    "action_bash_heavy",
+    "action_bash_start",
+    "action_bash_right",
+    "action_bash_light_from_block_no_ammo",
+    "action_push",
+    "action_pushfollow",
+    "action_wield",
+    "action_unwield",
+}
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 SwayExtension.init = function(self, extension_init_context, unit, extension_init_data)
     self.unit = unit
+    self.player = extension_init_data.player
 
     self.visual_loadout_extension = extension_init_data.visual_loadout_extension
     self.first_person_extension = script_unit_extension(self.unit, "first_person_system")
     self.unit_data_extension = script_unit_extension(unit, "unit_data_system")
     self.alternate_fire_component = self.unit_data_extension:read_component("alternate_fire")
     -- self.first_person_unit = self.first_person_extension:first_person_unit()
+    self.movement_state_component = self.unit_data_extension:read_component("movement_state")
 
     self.rotation = vector3_box(vector3_zero())
+    self.crouch_rotation = vector3_box(vector3_zero())
+    self.crouch_position = vector3_box(vector3_zero())
     self.momentum_x = 0
     self.momentum_y = 0
 
@@ -68,6 +93,7 @@ end
 
 SwayExtension.on_settings_changed = function(self)
     self.active = mod:get("mod_option_sway")
+    self.crouch = mod:get("mod_option_crouch")
 end
 
 SwayExtension.delete = function(self)
@@ -75,9 +101,19 @@ SwayExtension.delete = function(self)
     self.active = false
 end
 
+SwayExtension.is_ogryn = function(self)
+    local player = self.player
+    local profile = player and player:profile()
+    return profile and profile.archetype.name == "ogryn"
+end
+
+SwayExtension.get_breed = function(self)
+    return self:is_ogryn() and "ogryn" or "human"
+end
+
 SwayExtension.update = function(self, dt, t)
 
-    if self.active and self.first_person_extension and self.first_person_extension:is_in_first_person_mode() then
+    if self.first_person_extension and self.first_person_extension:is_in_first_person_mode() then
 
         local first_person_unit = self.first_person_extension:first_person_unit()
 
@@ -111,8 +147,43 @@ SwayExtension.update = function(self, dt, t)
             local unit_position = unit_local_position(first_person_unit, node)
             local unit_rotation = unit_local_rotation(first_person_unit, node)
 
-            unit_set_local_position(first_person_unit, node, unit_position + vector3(angle_x, 0, self.momentum_y * .05))
-            unit_set_local_rotation(first_person_unit, node, quaternion_multiply(unit_rotation, quaternion_from_vector(vector3(self.momentum_y * .05, -angle_x * 60, angle_x))))
+
+            if self.crouch then
+
+                local unit_data_extension = script_unit_extension(self.unit, "unit_data_system")
+                local weapon_action_component = unit_data_extension:read_component("weapon_action")
+                local current_action_name = weapon_action_component.current_action_name
+
+                local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching and not table_contains(LOCKED_ACTIONS, current_action_name) and not self.alternate_fire_component.is_active
+
+                local is_ogryn = self:is_ogryn()
+                local crouch_rotation = is_crouching and (is_ogryn and vector3(0, -60, 0) or vector3(0, -60, 0)) or vector3_zero()
+                local crouch_position = is_crouching and (is_ogryn and vector3(0, 0, -.35) or vector3(0, 0, -.15)) or vector3_zero()
+
+                local current_crouch_rotation = vector3_unbox(self.crouch_rotation)
+                local new_crouch_rotation = vector3_lerp(current_crouch_rotation, crouch_rotation, dt * 10)
+
+                self.crouch_rotation:store(new_crouch_rotation)
+
+                local current_crouch_position = vector3_unbox(self.crouch_position)
+                local new_crouch_position = vector3_lerp(current_crouch_position, crouch_position, dt * 10)
+
+                self.crouch_position:store(new_crouch_position)
+
+                unit_rotation = quaternion_multiply(unit_rotation, quaternion_from_vector(new_crouch_rotation))
+                unit_position = unit_position + new_crouch_position
+
+            end
+
+            if self.active then
+
+                unit_position = unit_position + vector3(angle_x, 0, self.momentum_y * .05)
+                unit_rotation = quaternion_multiply(unit_rotation, quaternion_from_vector(vector3(self.momentum_y * .05, -angle_x * 60, angle_x)))
+
+            end
+
+            unit_set_local_position(first_person_unit, node, unit_position)
+            unit_set_local_rotation(first_person_unit, node, unit_rotation)
 
             self.rotation:store(rotation)
 

@@ -1,12 +1,17 @@
 local mod = get_mod("extended_weapon_customization_base_additions")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local laser_pointer_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/laser_pointer_human")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
-    local vector3 = Vector3
-    local vector3_box = Vector3Box
-    local vector3_zero = vector3.zero
+    local table = table
+    local table_merge_recursive = table.merge_recursive
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -16,7 +21,7 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
-return {
+return table_merge_recursive({
     invisible_flashlight = {
         replacement_path = _item_ranged.."/flashlights/invisible_flashlight",
         icon_render_unit_rotation_offset = {0, 0, 0},
@@ -47,4 +52,4 @@ return {
         icon_render_camera_position_offset = {-.075, -.75, .15},
         flashlight_template = "autogun_p1",
     },
-}
+}, laser_pointer_human)

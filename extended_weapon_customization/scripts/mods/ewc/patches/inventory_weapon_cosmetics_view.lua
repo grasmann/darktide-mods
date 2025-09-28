@@ -6,6 +6,7 @@ local mod = get_mod("extended_weapon_customization")
 
 local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
 local ViewElementTabMenu = mod:original_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu")
+local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
@@ -210,6 +211,12 @@ end)
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
+    if context.customize_attachments then
+        -- mod:dtf(settings, "settings", 10)
+        settings.shading_environment = "content/shading_environments/ui_default"
+        settings.wwise_states = {options = WwiseGameSyncSettings.state_groups.options.none}
+        settings.world_name = "level_world"
+    end
     -- Original function
     func(self, settings, context, ...)
     -- Custom init
@@ -374,10 +381,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
                             local origin_mod = pt.attachment_data_origin[attachment_data] or mod
 
-                            temp_mod_count[origin_mod] = temp_mod_count[origin_mod] or 0
-                            temp_mod_count[origin_mod] = temp_mod_count[origin_mod] + 1
+                            local group_name = attachment_data.custom_selection_group or origin_mod:get_name()
 
-                            local mod_name = origin_mod:get_name()
+                            temp_mod_count[group_name] = temp_mod_count[group_name] or 0
+                            temp_mod_count[group_name] = temp_mod_count[group_name] + 1
 
                             layout[#layout+1] = {
                                 widget_type = "gear_set",
@@ -385,7 +392,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                                 real_item = attachment_item,
                                 slot_name = slot_name,
                                 sort_data = {
-                                    display_name = origin_mod:get_name().."_"..tostring(temp_mod_count[origin_mod]),
+                                    display_name = group_name.."_"..tostring(temp_mod_count[group_name]),
                                 },
                             }
 
@@ -395,14 +402,15 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                 end
 
                 for plugin_mod, count in pairs(temp_mod_count) do
-                    local localization_name = "loc_"..tostring(plugin_mod:get_name())
+                    local group_name = type(plugin_mod) == "table" and plugin_mod:get_name() or plugin_mod
+                    local localization_name = "loc_"..tostring(group_name)
 
                     layout[#layout+1] = {
                         widget_type = "sub_header",
                         slot_name = slot_name,
                         display_name = localization_name,
                         sort_data = {
-                            display_name = plugin_mod:get_name().."_0",
+                            display_name = group_name.."_0",
                         },
                     }
                 end

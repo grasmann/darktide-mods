@@ -85,7 +85,7 @@ local input_hook = function(func, self, action_name, ...)
             -- Get flashlight extension
             local flashlight_extension = script_unit_extension(player_unit, "flashlight_system")
             -- Check flashlight extension
-            if flashlight_extension and flashlight_extension:is_active() and flashlight_extension:is_modded() then
+            if flashlight_extension and flashlight_extension:is_modded() then
 
                 local interact_aim, interact_aim_double = flashlight_extension:input_settings()
                 local aiming = flashlight_extension.alternate_fire_component.is_active

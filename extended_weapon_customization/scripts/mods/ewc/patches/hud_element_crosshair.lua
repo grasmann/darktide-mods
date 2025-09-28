@@ -53,6 +53,18 @@ mod:hook(CLASS.HudElementCrosshair, "_get_current_crosshair_type", function(func
                         crosshair_type = attachment_data.crosshair_type
                     end
                 end
+                -- Get attachment item string
+                local attachment_item_string = mod:fetch_attachment(item.attachments, "flashlight")
+                -- Get attachment data
+                local attachment_data = mod.settings.attachment_data_by_item_string[attachment_item_string]
+                -- Check attachment data and crosshair type
+                if attachment_data and attachment_data.crosshair_type then
+                    -- Check if can be overwritten
+                    if OVERRIDABLE_CROSSHAIRS[crosshair_type] then
+                        -- Overwrite crosshair type
+                        crosshair_type = attachment_data.crosshair_type
+                    end
+                end
             end
         end
     end

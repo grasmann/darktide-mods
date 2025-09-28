@@ -18,7 +18,7 @@ mod:hook(CLASS.World, "spawn_unit_ex", function(func, ...)
     local unit, a, b, c = func(...)
     -- Catch profile
     local pt = mod:pt()
-    if pt.catch_unit then
+    if pt.catch_unit and unit then
         unit_set_data(unit, "visible_equipment_profile", pt.catch_unit)
         pt.catch_unit = nil
     end

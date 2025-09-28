@@ -58,6 +58,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
             "sway_system",
             {
                 visual_loadout_extension = self,
+                player = self._player,
             }
         )
     end
@@ -65,13 +66,15 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
     if not script_unit_extension(self._unit, "flashlight_system") then
         script_unit_add_extension(
             {
-                world = self._equipment_component._world
+                world = self._equipment_component._world,
             },
             self._unit,
             "FlashlightExtension",
             "flashlight_system",
             {
                 visual_loadout_extension = self,
+                player = self._player,
+                from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
             }
         )
     end
@@ -109,15 +112,6 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "fixed_update", function(func, 
     -- Original function
     func(self, unit, dt, t, frame, ...)
 
-    if sight_extension_update then
-        if self:is_slot_unit_spawned(SLOT_SECONDARY) then
-            local sight_extension = script_unit_extension(self._unit, "sight_system")
-            if sight_extension then
-                sight_extension:on_equip_weapon()
-            end
-            sight_extension_update = nil
-        end
-    end
     if flashlight_extension_update then
         if self:is_slot_unit_spawned(SLOT_SECONDARY) then
             local flashlight_extension = script_unit_extension(self._unit, "flashlight_system")
@@ -127,6 +121,17 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "fixed_update", function(func, 
             flashlight_extension_update = nil
         end
     end
+
+    if sight_extension_update then
+        if self:is_slot_unit_spawned(SLOT_SECONDARY) then
+            local sight_extension = script_unit_extension(self._unit, "sight_system")
+            if sight_extension then
+                sight_extension:on_equip_weapon()
+            end
+            sight_extension_update = nil
+        end
+    end
+    
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self, ...)
