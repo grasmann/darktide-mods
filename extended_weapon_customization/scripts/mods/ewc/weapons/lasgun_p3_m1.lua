@@ -4,12 +4,22 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local magazine_lasgun_recon = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_recon")
+-- local magazine_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun")
+local grip_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_lasgun")
+-- local barrel_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun")
+local barrel_lasgun_recon = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun_recon")
+local barrel_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_common")
+local stock_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/stock_common")
+local grip_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_common")
+local muzzle_laspistol = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_laspistol")
+local muzzle_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun")
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
+local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
+local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
 local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
 local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
-local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
-local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -20,6 +30,7 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
     local table_merge_recursive = table.merge_recursive
+    local table_merge_recursive_n = table.merge_recursive_n
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -44,40 +55,22 @@ return {
                 replacement_path = _item_ranged.."/sights/lasgun_rifle_elysian_sight_01",
                 icon_render_unit_rotation_offset = {90, 0, -95},
                 icon_render_camera_position_offset = {.035, -.1, .175},
+                hide_from_selection = true,
             },
             lasgun_rifle_elysian_sight_02 = {
                 replacement_path = _item_ranged.."/sights/lasgun_rifle_elysian_sight_02",
                 icon_render_unit_rotation_offset = {90, 0, -95},
                 icon_render_camera_position_offset = {.035, -.1, .175},
+                hide_from_selection = true,
             },
             lasgun_rifle_elysian_sight_03 = {
                 replacement_path = _item_ranged.."/sights/lasgun_rifle_elysian_sight_03",
                 icon_render_unit_rotation_offset = {90, 0, -95},
                 icon_render_camera_position_offset = {.035, -.1, .175},
+                hide_from_selection = true,
             },
         }, sights),
-        muzzle = {
-            lasgun_rifle_elysian_muzzle_01 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_elysian_muzzle_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_rifle_elysian_muzzle_02 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_elysian_muzzle_02",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_rifle_elysian_muzzle_03 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_elysian_muzzle_03",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_rifle_elysian_muzzle_ml01 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_elysian_muzzle_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-        },
+        muzzle = table_merge_recursive_n(nil, muzzle_lasgun, muzzle_laspistol),
         receiver = {
             lasgun_rifle_elysian_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/lasgun_rifle_elysian_receiver_01",
@@ -120,45 +113,8 @@ return {
                 icon_render_camera_position_offset = {-.25, -3, .25},
             },
         },
-        magazine = {
-            lasgun_elysian_magazine_01 = {
-                replacement_path = _item_ranged.."/magazines/lasgun_elysian_magazine_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.1, -1.5, -.05},
-            },
-            lasgun_elysian_magazine_ml01 = {
-                replacement_path = _item_ranged.."/magazines/lasgun_elysian_magazine_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.1, -1.5, -.05},
-            },
-        },
-        barrel = {
-            lasgun_rifle_elysian_barrel_01 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_elysian_barrel_01",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.115, -1.5, 0},
-            },
-            lasgun_rifle_elysian_barrel_02 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_elysian_barrel_02",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.115, -1.5, 0},
-            },
-            lasgun_rifle_elysian_barrel_03 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_elysian_barrel_03",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.115, -1.5, 0},
-            },
-            lasgun_rifle_elysian_barrel_04 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_elysian_barrel_04",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.115, -1.5, 0},
-            },
-            lasgun_rifle_elysian_barrel_05 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_elysian_barrel_05",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.115, -1.5, 0},
-            },
-        },
+        magazine = magazine_lasgun_recon,
+        barrel = table_merge_recursive_n(nil, barrel_lasgun_recon, barrel_common),
         stock = {
             lasgun_rifle_elysian_stock_01 = {
                 replacement_path = _item_ranged.."/stocks/lasgun_rifle_elysian_stock_01",
@@ -181,23 +137,7 @@ return {
                 icon_render_camera_position_offset = {.1, -2, .2},
             },
         },
-        grip = {
-            lasgun_rifle_elysian_grip_02 = {
-                replacement_path = _item_ranged.."/grips/lasgun_rifle_elysian_grip_02",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            lasgun_rifle_elysian_grip_03 = {
-                replacement_path = _item_ranged.."/grips/lasgun_rifle_elysian_grip_03",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            lasgun_rifle_elysian_grip_ml01 = {
-                replacement_path = _item_ranged.."/grips/lasgun_rifle_elysian_grip_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-        },
+        grip = table_merge_recursive_n(nil, grip_lasgun, grip_common),
     },
     fixes = {
         {attachment_slot = "sight_offset",

@@ -4,12 +4,23 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local magazine_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_infantry")
+local magazine_lasgun_helbore = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_helbore")
+-- local magazine_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun")
+local grip_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_lasgun")
+-- local barrel_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun")
+local barrel_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun_infantry")
+local barrel_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_common")
+local stock_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/stock_common")
+local grip_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_common")
+local muzzle_laspistol = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_laspistol")
+local muzzle_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun")
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
+local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
+local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
 local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
 local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
-local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
-local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -20,6 +31,7 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
     local table_merge_recursive = table.merge_recursive
+    local table_merge_recursive_n = table.merge_recursive_n
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -40,29 +52,8 @@ return {
         flashlight = flashlights,
         rail = rails,
         sight = sights,
-        grip = {
-            lasgun_rifle_grip_01 = {
-                replacement_path = _item_ranged.."/grips/lasgun_rifle_grip_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            lasgun_rifle_grip_02 = {
-                replacement_path = _item_ranged.."/grips/lasgun_rifle_grip_02",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            lasgun_rifle_grip_03 = {
-                replacement_path = _item_ranged.."/grips/lasgun_rifle_grip_03",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-            lasgun_rifle_grip_04 = {
-                replacement_path = _item_ranged.."/grips/lasgun_rifle_grip_04",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {.075, -1, .05},
-            },
-        },
-        stock = {
+        grip = table_merge_recursive_n(nil, grip_lasgun, grip_common),
+        stock = table_merge_recursive({
             lasgun_rifle_stock_01 = {
                 replacement_path = _item_ranged.."/stocks/lasgun_rifle_stock_01",
                 icon_render_unit_rotation_offset = {90, -10, 30},
@@ -88,34 +79,8 @@ return {
                 icon_render_unit_rotation_offset = {90, -10, 30},
                 icon_render_camera_position_offset = {.1, -1.5, .2},
             },
-        },
-        muzzle = {
-            lasgun_rifle_muzzle_01 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_muzzle_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_rifle_muzzle_02 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_muzzle_02",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_rifle_muzzle_03 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_muzzle_03",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_rifle_muzzle_04 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_muzzle_04",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_rifle_muzzle_ml01 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_rifle_muzzle_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-        },
+        }, stock_common),
+        muzzle = table_merge_recursive_n(nil, muzzle_lasgun, muzzle_laspistol),
         receiver = {
             lasgun_rifle_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/lasgun_rifle_receiver_01",
@@ -156,69 +121,7 @@ return {
                 hide_from_selection = true,
             },
         },
-        magazine = {
-            lasgun_rifle_magazine_01 = {
-                replacement_path = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.1, -1.5, -.05},
-            },
-            lasgun_rifle_magazine_ml01 = {
-                replacement_path = _item_ranged.."/magazines/lasgun_rifle_magazine_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.1, -1.5, -.05},
-            },
-        },
-        barrel = {
-            lasgun_rifle_barrel_01 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_01",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_02 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_02",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_03 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_03",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_04 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_04",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_05 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_05",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_06 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_06",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_07 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_07",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_08 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_08",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_09 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_09",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-            lasgun_rifle_barrel_ml01 = {
-                replacement_path = _item_ranged.."/barrels/lasgun_rifle_barrel_ml01",
-                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
-                icon_render_camera_position_offset = {-.175, -2, 0},
-            },
-        },
+        magazine = table_merge_recursive_n(nil, magazine_lasgun_infantry, magazine_lasgun_helbore),
+        barrel = table_merge_recursive_n(nil, barrel_lasgun_infantry, barrel_common),
     },
 }

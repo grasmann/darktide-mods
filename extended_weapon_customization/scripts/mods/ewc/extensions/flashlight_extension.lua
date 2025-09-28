@@ -119,6 +119,10 @@ FlashlightExtension.is_modded = function(self)
     return not self.original_has_flashlight
 end
 
+FlashlightExtension.is_wielded = function(self)
+    return self.wielded_slot == SLOT_SECONDARY
+end
+
 local unit_light = unit.light
 local unit_num_lights = unit.num_lights
 

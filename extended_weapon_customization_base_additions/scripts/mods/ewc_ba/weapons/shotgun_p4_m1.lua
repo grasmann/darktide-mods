@@ -8,6 +8,7 @@ local flashlight_human = mod:io_dofile("extended_weapon_customization_base_addit
 local muzzle_autogun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
+local grip_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_common")
 local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -33,13 +34,13 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local short_receivers = "assault_shotgun_receiver_01|assault_shotgun_receiver_03|assault_shotgun_receiver_deluxe01|assault_shotgun_receiver_ml01"
 local long_receivers = "assault_shotgun_receiver_02"
-
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
 local attachments = {
     shotgun_p4_m1 = {
         rail2 = rails,
+        grip = grip_common,
         muzzle = muzzle_autogun,
         flashlight = flashlight_human,
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope),

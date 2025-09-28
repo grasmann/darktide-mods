@@ -543,6 +543,62 @@ local extended_weapon_customization_plugin = {
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
+        [_item_ranged.."/laser_pointers/laser_pointer_ogryn_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_flashlight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_01"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/laser_pointers/laser_pointer_ogryn_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/laser_pointers/laser_pointer_ogryn_long_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_long_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_flashlight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_long_01"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/laser_pointers/laser_pointer_ogryn_long_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
     },
     flashlight_templates = {
         laser_pointer_01 = {
@@ -705,6 +761,84 @@ local extended_weapon_customization_plugin = {
             },
             flicker = "incandescent_flicker",
         },
+        laser_pointer_ogryn_01 = {
+            light = {
+                first_person = {
+                    cast_shadows = true,
+                    color_temperature = 4400,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_02",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.1,
+                    color_filter = vector3_box(1, 0, 0),
+                    spot_angle = {
+                        max = 1.2,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 35,
+                        near = 0,
+                    },
+                },
+                third_person = {
+                    cast_shadows = true,
+                    color_temperature = 4400,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_02",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.6,
+                    color_filter = vector3_box(1, 0, 0),
+                    spot_angle = {
+                        max = 0.9,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 20,
+                        near = 0,
+                    },
+                },
+            },
+            flicker = "worn_incandescent_flicker",
+        },
+        laser_pointer_ogryn_long_01 = {
+            light = {
+                first_person = {
+                    cast_shadows = true,
+                    color_temperature = 4400,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_02",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.1,
+                    color_filter = vector3_box(1, 0, 0),
+                    spot_angle = {
+                        max = 1.2,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 35,
+                        near = 0,
+                    },
+                },
+                third_person = {
+                    cast_shadows = true,
+                    color_temperature = 4400,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_02",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.6,
+                    color_filter = vector3_box(1, 0, 0),
+                    spot_angle = {
+                        max = 0.9,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 20,
+                        near = 0,
+                    },
+                },
+            },
+            flicker = "worn_incandescent_flicker",
+        },
     },
     packages_to_load = {
         ["content/fx/particles/enemies/red_glowing_eyes"] = true,
@@ -715,12 +849,19 @@ local extended_weapon_customization_plugin = {
 
 local weapons_folder = "extended_weapon_customization_base_additions/scripts/mods/ewc_ba/weapons/"
 local load_weapons = {
+    "ogryn_heavystubber_p1_m1",
     "boltpistol_p1_m1",
     "autopistol_p1_m1",
+    "laspistol_p1_m1",
     "autogun_p1_m1",
+    "autogun_p2_m1",
+    "autogun_p3_m1",
     "shotgun_p4_m1",
     "bolter_p1_m1",
     "flamer_p1_m1",
+    "lasgun_p1_m1",
+    "lasgun_p2_m1",
+    "lasgun_p3_m1",
 }
 
 for _, file_name in pairs(load_weapons) do

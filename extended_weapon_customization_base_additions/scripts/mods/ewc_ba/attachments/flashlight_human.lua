@@ -4,6 +4,7 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local flashlight_modded_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_modded_human")
 local laser_pointer_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/laser_pointer_human")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -12,6 +13,7 @@ local laser_pointer_human = mod:io_dofile("extended_weapon_customization_base_ad
 -- #region Performance
     local table = table
     local table_merge_recursive = table.merge_recursive
+    local table_merge_recursive_n = table.merge_recursive_n
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -21,13 +23,7 @@ local laser_pointer_human = mod:io_dofile("extended_weapon_customization_base_ad
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
-return table_merge_recursive({
-    invisible_flashlight = {
-        replacement_path = _item_ranged.."/flashlights/invisible_flashlight",
-        icon_render_unit_rotation_offset = {0, 0, 0},
-        icon_render_camera_position_offset = {0, 0, 0},
-        flashlight_template = "autogun_p1",
-    },
+return table_merge_recursive_n({
     flashlight_01 = {
         replacement_path = _item_ranged.."/flashlights/flashlight_01",
         icon_render_unit_rotation_offset = {90, 0, 90 + 30},
@@ -52,4 +48,4 @@ return table_merge_recursive({
         icon_render_camera_position_offset = {-.075, -.75, .15},
         flashlight_template = "autogun_p1",
     },
-}, laser_pointer_human)
+}, laser_pointer_human, flashlight_modded_human)

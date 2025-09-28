@@ -33,7 +33,6 @@ return {
         emblem_left = emblem_left,
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
-        flashlight = flashlights,
         barrel = {
             stubgun_heavy_ogryn_barrel_01 = {
                 replacement_path = _item_ranged.."/barrels/stubgun_heavy_ogryn_barrel_01",

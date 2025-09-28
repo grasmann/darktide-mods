@@ -16,13 +16,14 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴┘└┘┴  └─┘ ┴  ################################################################################################
 
 local interact_pressed = "interact_pressed"
+local pressed_once_timeout = .5
+local pressed_twice_cooldown = .15
+
 mod.pressed = nil
 mod.pressed_once_t = nil
-local pressed_once_timeout = .5
 mod.pressed_twice = nil
 mod.pressed_twice_t = nil
 mod.custom_twice_cooldown = nil
-local pressed_twice_cooldown = .15
 
 mod:hook(CLASS.InputService, "update", function(func, self, dt, t, ...)
 
@@ -85,7 +86,7 @@ local input_hook = function(func, self, action_name, ...)
             -- Get flashlight extension
             local flashlight_extension = script_unit_extension(player_unit, "flashlight_system")
             -- Check flashlight extension
-            if flashlight_extension and flashlight_extension:is_modded() then
+            if flashlight_extension and flashlight_extension:is_modded() and flashlight_extension:is_wielded() then
 
                 local interact_aim, interact_aim_double = flashlight_extension:input_settings()
                 local aiming = flashlight_extension.alternate_fire_component.is_active

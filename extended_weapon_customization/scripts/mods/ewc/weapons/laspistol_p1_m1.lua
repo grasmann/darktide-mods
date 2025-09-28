@@ -4,12 +4,14 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local muzzle_laspistol = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_laspistol")
+local muzzle_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun")
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
+local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
+local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
 local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
 local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
-local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
-local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -20,6 +22,7 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
     local table_merge_recursive = table.merge_recursive
+    local table_merge_recursive_n = table.merge_recursive_n
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -37,7 +40,7 @@ return {
         emblem_left = emblem_left,
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
-        flashlight = flashlights,
+        -- flashlight = flashlights,
         rail = rails,
         sight = sights,
         grip = {
@@ -99,38 +102,7 @@ return {
                 icon_render_camera_position_offset = {.035, .1, .15},
             },
         },
-        muzzle = {
-            lasgun_pistol_muzzle_01 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_pistol_muzzle_01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_pistol_muzzle_02 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_pistol_muzzle_02",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_pistol_muzzle_03 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_pistol_muzzle_03",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_pistol_muzzle_04 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_pistol_muzzle_04",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_pistol_muzzle_05 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_pistol_muzzle_05",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-            lasgun_pistol_muzzle_ml01 = {
-                replacement_path = _item_ranged.."/muzzles/lasgun_pistol_muzzle_ml01",
-                icon_render_unit_rotation_offset = {90, 0, 30},
-                icon_render_camera_position_offset = {-.15, -1, .15},
-            },
-        },
+        muzzle = muzzle_laspistol,
         receiver = {
             lasgun_pistol_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/lasgun_pistol_receiver_01",

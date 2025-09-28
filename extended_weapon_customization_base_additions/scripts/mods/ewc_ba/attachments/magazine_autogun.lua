@@ -4,10 +4,21 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local table = table
     local vector3 = Vector3
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
+    local table_merge_recursive_n = table.merge_recursive_n
 --#endregion
+
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local magazine_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_headhunter")
+local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
+local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
+local magazine_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_braced")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
@@ -16,25 +27,4 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
-return {
-    autogun_rifle_magazine_01 = {
-        replacement_path = _item_ranged.."/magazines/autogun_rifle_magazine_01",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.125, -1.25, -.05},
-    },
-    autogun_rifle_magazine_02 = {
-        replacement_path = _item_ranged.."/magazines/autogun_rifle_magazine_02",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.125, -1.25, -.05},
-    },
-    autogun_rifle_magazine_03 = {
-        replacement_path = _item_ranged.."/magazines/autogun_rifle_magazine_03",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.125, -1.25, -.05},
-    },
-    autogun_rifle_ak_magazine_01 = {
-        replacement_path = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.15, -1.45, -.1},
-    },
-}
+return table_merge_recursive_n(nil, magazine_autogun_infantry, magazine_autogun_braced, magazine_autogun_headhunter, magazine_autogun_double)

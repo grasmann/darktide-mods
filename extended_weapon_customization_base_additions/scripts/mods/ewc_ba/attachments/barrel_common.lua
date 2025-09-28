@@ -19,7 +19,7 @@ local _item_ranged = _item.."/ranged"
 return {
     barrel_01 = {
         replacement_path = _item_ranged.."/barrels/barrel_01",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.15, -2, .05},
+        icon_render_unit_rotation_offset = {90, -20, 90 - 30},
+        icon_render_camera_position_offset = {-.175, -2, 0},
     },
 }

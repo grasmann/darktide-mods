@@ -353,11 +353,13 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
                 local layout = {}
 
+                local mod_name = mod:get_name()
+
                 if get_empty_item_function then
                     local empty_item = get_empty_item_function(self._selected_item, self._presentation_item)
 
-                    temp_mod_count[mod] = temp_mod_count[mod] or 0
-                    temp_mod_count[mod] = temp_mod_count[mod] + 1
+                    temp_mod_count[mod_name] = temp_mod_count[mod_name] or 0
+                    temp_mod_count[mod_name] = temp_mod_count[mod_name] + 1
 
                     layout[#layout + 1] = {
                         is_empty = true,
@@ -401,8 +403,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                     end
                 end
 
-                for plugin_mod, count in pairs(temp_mod_count) do
-                    local group_name = type(plugin_mod) == "table" and plugin_mod:get_name() or plugin_mod
+                for group_name, count in pairs(temp_mod_count) do
+                    -- local group_name = type(plugin_mod) == "table" and plugin_mod:get_name() or plugin_mod
                     local localization_name = "loc_"..tostring(group_name)
 
                     layout[#layout+1] = {
@@ -616,22 +618,21 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_sort_options", function(fun
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "draw", function(func, self, dt, t, input_service, layer, ...)
+    if self.customize_attachments then
+        local item_grid_hovered = self._item_grid and self._item_grid:hovered()
+        local tab_menu_hovered = self._tab_menu_element and self._tab_menu_element:hovered()
+        local equip_button_hovered = self._widgets_by_name.equip_button and self._widgets_by_name.equip_button.content.hotspot.is_hover
+        local reset_button_hovered = self._widgets_by_name.reset_button and self._widgets_by_name.reset_button.content.hotspot.is_hover
+        local random_button_hovered = self._widgets_by_name.random_button and self._widgets_by_name.random_button.content.hotspot.is_hover
 
-    local item_grid_hovered = self._item_grid and self._item_grid:hovered()
-    local tab_menu_hovered = self._tab_menu_element and self._tab_menu_element:hovered()
-    local equip_button_hovered = self._widgets_by_name.equip_button and self._widgets_by_name.equip_button.content.hotspot.is_hover
-    local reset_button_hovered = self._widgets_by_name.reset_button and self._widgets_by_name.reset_button.content.hotspot.is_hover
-    local random_button_hovered = self._widgets_by_name.random_button and self._widgets_by_name.random_button.content.hotspot.is_hover
-
-    if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered and not equip_button_hovered and not reset_button_hovered and not random_button_hovered then
-        self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, .3, dt * 4)
-    else
-        self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, 1, dt * 4)
+        if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered and not equip_button_hovered and not reset_button_hovered and not random_button_hovered then
+            self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, .3, dt * 4)
+        else
+            self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, 1, dt * 4)
+        end
     end
-
     -- Original function
     func(self, dt, t, input_service, layer, ...)
-
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)

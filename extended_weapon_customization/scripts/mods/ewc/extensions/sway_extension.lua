@@ -50,18 +50,21 @@ local SwayExtension = class("SwayExtension")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local LOCKED_ACTIONS = {
-    "action_reload",
-    "action_inspect",
-    "action_bash",
+    "action_bash_light_from_block_no_ammo",
+    "action_reload_shotgun",
+    "action_reload_state",
+    "action_reload_loop",
     "action_bash_light",
     "action_bash_heavy",
     "action_bash_start",
     "action_bash_right",
-    "action_bash_light_from_block_no_ammo",
-    "action_push",
     "action_pushfollow",
-    "action_wield",
     "action_unwield",
+    "action_inspect",
+    "action_reload",
+    "action_wield",
+    "action_bash",
+    "action_push",
 }
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
