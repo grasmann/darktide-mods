@@ -289,7 +289,7 @@ local function update_laser_pointer(flashlight_extension, dt, t)
 
                 aim_position = aim_position - matrix4x4_transform(mat, sight_position)
                 -- aim_rotation = quaternion_multiply(aim_rotation, quaternion_from_vector(sight_rotation))
-                aim_rotation = quaternion_multiply(aim_rotation, quaternion_from_vector(-sight_rotation))
+                aim_rotation = quaternion_multiply(aim_rotation, quaternion_from_vector(sight_rotation * -1))
             end
 
 

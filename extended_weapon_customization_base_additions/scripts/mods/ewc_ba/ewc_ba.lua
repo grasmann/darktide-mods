@@ -850,6 +850,7 @@ local extended_weapon_customization_plugin = {
 local weapons_folder = "extended_weapon_customization_base_additions/scripts/mods/ewc_ba/weapons/"
 local load_weapons = {
     "ogryn_heavystubber_p1_m1",
+    "ogryn_heavystubber_p2_m1",
     "boltpistol_p1_m1",
     "autopistol_p1_m1",
     "laspistol_p1_m1",

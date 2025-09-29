@@ -26,6 +26,7 @@ local items = mod:original_require("scripts/utilities/items")
     local table = table
     local pairs = pairs
     local CLASS = CLASS
+    local color = Color
     local string = string
     local vector3 = Vector3
     local callback = callback
@@ -41,7 +42,9 @@ local items = mod:original_require("scripts/utilities/items")
     local vector3_box = Vector3Box
     local script_unit = ScriptUnit
     local table_clear = table.clear
+    local color_white = color.white
     local string_gsub = string.gsub
+    local table_clone = table.clone
     local string_upper = string.upper
     local vector3_zero = vector3.zero
     local unit_get_data = unit.get_data
@@ -57,6 +60,7 @@ local items = mod:original_require("scripts/utilities/items")
     local script_unit_extension = script_unit.extension
     local quaternion_from_vector = quaternion.from_vector
     local unit_set_local_position = unit.set_local_position
+    local color_terminal_grid_background = color.terminal_grid_background
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -79,6 +83,55 @@ mod.selectable_attachment_count = function(self, attachment_entries)
         end
     end
     return count
+end
+
+mod.inventory_weapon_cosmetics_view_adjust_definitions = function(self, instance)
+
+    instance.scenegraph_definition.item_grid_pivot.position[1] = 320
+	instance.scenegraph_definition.button_pivot.position[1] = -270
+	instance.scenegraph_definition.button_pivot_background.position[1] = 55
+	instance.scenegraph_definition.info_box.position[1] = 0
+	instance.scenegraph_definition.equip_button.position[1] = -100
+
+    instance.widget_definitions.button_pivot_background = UIWidget.create_definition({
+		{
+			pass_type = "texture",
+			style_id = "background",
+			value = "content/ui/materials/backgrounds/terminal_basic",
+			value_id = "background",
+			style = {
+				horizontal_alignment = "center",
+				scale_to_material = true,
+				vertical_alignment = "center",
+				color = color_terminal_grid_background(255, true),
+				size_addition = {170, 20},
+				offset = {0, 0, 0},
+			},
+		},
+		{
+			pass_type = "texture",
+			value = "content/ui/materials/frames/tab_frame_upper",
+			style = {
+				horizontal_alignment = "center",
+				vertical_alignment = "top",
+				color = color_white(255, true),
+				size = {300, 14},
+				offset = {0, -5, 1},
+			},
+		},
+		{
+			pass_type = "texture",
+			value = "content/ui/materials/frames/tab_frame_lower",
+			style = {
+				horizontal_alignment = "center",
+				vertical_alignment = "bottom",
+				color = color_white(255, true),
+				size = {299, 14},
+				offset = {0, 5, 1},
+			},
+		},
+	}, "button_pivot_background")
+
 end
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
@@ -212,16 +265,17 @@ end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
     if context.customize_attachments then
-        -- mod:dtf(settings, "settings", 10)
-        settings.shading_environment = "content/shading_environments/ui_default"
-        settings.wwise_states = {options = WwiseGameSyncSettings.state_groups.options.none}
-        settings.world_name = "level_world"
+        -- settings.shading_environment = "content/shading_environments/ui_default"
+        -- settings.wwise_states = {options = WwiseGameSyncSettings.state_groups.options.none}
+        -- settings.world_name = "level_world"
     end
     -- Original function
     func(self, settings, context, ...)
     -- Custom init
     self.customize_attachments = context.customize_attachments
     if self.customize_attachments then
+
+        mod:inventory_weapon_cosmetics_view_adjust_definitions(self._definitions)
 
         local weapon_template = self._selected_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
