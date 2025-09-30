@@ -55,8 +55,8 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(.11, -.2, .26),
-                    rotation = vector3_box(-5, 5, 0),
+                    position = vector3_box(.06, -.25, .25),
+                    rotation = vector3_box(-3.1, 0, -2.2),
                 },
             },
         },
@@ -68,8 +68,8 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(.11, -.2, .27),
-                    rotation = vector3_box(-5, 5, 0),
+                    position = vector3_box(.06, -.25, .25),
+                    rotation = vector3_box(-3.1, 0, -2.2),
                 },
             },
         },

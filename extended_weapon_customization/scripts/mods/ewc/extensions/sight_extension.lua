@@ -107,6 +107,9 @@ SightExtension.fetch_sight_offset = function(self, item)
     self.lense_2_unit = nil
     self.sight_unit = nil
 
+    local pt = mod:pt()
+    pt.debug_sight = {0, 0, 0, 0, 0, 0}
+
     self.weapon = item or self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
     if self.weapon and self.weapon.attachments then
         self.sight_name = mod:fetch_attachment(self.weapon.attachments, "sight")
@@ -213,9 +216,19 @@ SightExtension.update = function(self, dt, t)
 
     if self.first_person_extension:is_in_first_person_mode() and self.alternate_fire_component.is_active then
         local offset_position = self.offset.position and vector3_unbox(self.offset.position) or vector3_zero()
+
+        local pt = mod:pt()
+        local debug_position_offset = vector3(pt.debug_sight[1], pt.debug_sight[2], pt.debug_sight[3])
+        offset_position = offset_position + debug_position_offset
+
         current_position = vector3_lerp(current_position, offset_position, dt * 10)
 
         local offset_rotation = self.offset.rotation and vector3_unbox(self.offset.rotation) or vector3_zero()
+
+        local pt = mod:pt()
+        local debug_rotation_offset = vector3(pt.debug_sight[4], pt.debug_sight[5], pt.debug_sight[6])
+        offset_rotation = offset_rotation + debug_rotation_offset
+
         current_rotation = vector3_lerp(current_rotation, offset_rotation, dt * 10)
 
         self.lens_transparency = math_lerp(self.lens_transparency, 1, dt * 20)

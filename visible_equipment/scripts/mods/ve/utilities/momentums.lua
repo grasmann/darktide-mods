@@ -37,6 +37,7 @@ local ogryn_club_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p1_m1")
 local ogryn_club_p2_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p2_m1")
 local powersword_p1_m1 = mod:io_dofile(weapons_folder.."powersword_p1_m1")
 local powersword_p2_m1 = mod:io_dofile(weapons_folder.."powersword_p2_m1")
+local autopistol_p1_m1 = mod:io_dofile(weapons_folder.."autopistol_p1_m1")
 local combataxe_p1_m1 = mod:io_dofile(weapons_folder.."combataxe_p1_m1")
 local combataxe_p2_m1 = mod:io_dofile(weapons_folder.."combataxe_p2_m1")
 local combataxe_p3_m1 = mod:io_dofile(weapons_folder.."combataxe_p3_m1")
@@ -76,6 +77,53 @@ local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
 
 local momentum = {
+    ogryn_powermaul_slabshield_p1_m1 = table_clone_safe(ogryn_powermaul_slabshield_p1_m1.momentum),
+    ogryn_heavystubber_p1_m1 = table_clone_safe(ogryn_heavystubber_p1_m1.momentum),
+    ogryn_heavystubber_p2_m1 = table_clone_safe(ogryn_heavystubber_p2_m1.momentum),
+    ogryn_combatblade_p1_m1 = table_clone_safe(ogryn_combatblade_p1_m1.momentum),
+    shotpistol_shield_p1_m1 = table_clone_safe(shotpistol_shield_p1_m1.momentum),
+    ogryn_pickaxe_2h_p1_m1 = table_clone_safe(ogryn_pickaxe_2h_p1_m1.momentum),
+    powermaul_shield_p1_m1 = table_clone_safe(powermaul_shield_p1_m1.momentum),
+    thunderhammer_2h_p1_m1 = table_clone_safe(thunderhammer_2h_p1_m1.momentum),
+    ogryn_powermaul_p1_m1 = table_clone_safe(ogryn_powermaul_p1_m1.momentum),
+    ogryn_rippergun_p1_m1 = table_clone_safe(ogryn_rippergun_p1_m1.momentum),
+    ogryn_gauntlet_p1_m1 = table_clone_safe(ogryn_gauntlet_p1_m1.momentum),
+    chainsword_2h_p1_m1 = table_clone_safe(chainsword_2h_p1_m1.momentum),
+    forcesword_2h_p1_m1 = table_clone_safe(forcesword_2h_p1_m1.momentum),
+    ogryn_thumper_p1_m1 = table_clone_safe(ogryn_thumper_p1_m1.momentum),
+    powersword_2h_p1_m1 = table_clone_safe(powersword_2h_p1_m1.momentum),
+    powermaul_2h_p1_m1 = table_clone_safe(powermaul_2h_p1_m1.momentum),
+    stubrevolver_p1_m1 = table_clone_safe(stubrevolver_p1_m1.momentum),
+    combatknife_p1_m1 = table_clone_safe(combatknife_p1_m1.momentum),
+    combatsword_p1_m1 = table_clone_safe(combatsword_p1_m1.momentum),
+    combatsword_p2_m1 = table_clone_safe(combatsword_p2_m1.momentum),
+    combatsword_p3_m1 = table_clone_safe(combatsword_p3_m1.momentum),
+    boltpistol_p1_m1 = table_clone_safe(boltpistol_p1_m1.momentum),
+    chainsword_p1_m1 = table_clone_safe(chainsword_p1_m1.momentum),
+    forcestaff_p1_m1 = table_clone_safe(forcestaff_p1_m1.momentum),
+    forcesword_p1_m1 = table_clone_safe(forcesword_p1_m1.momentum),
+    ogryn_club_p1_m1 = table_clone_safe(ogryn_club_p1_m1.momentum),
+    ogryn_club_p2_m1 = table_clone_safe(ogryn_club_p2_m1.momentum),
+    powersword_p1_m1 = table_clone_safe(powersword_p1_m1.momentum),
+    powersword_p2_m1 = table_clone_safe(powersword_p2_m1.momentum),
+    autopistol_p1_m1 = table_clone_safe(autopistol_p1_m1.momentum),
+    combataxe_p1_m1 = table_clone_safe(combataxe_p1_m1.momentum),
+    combataxe_p2_m1 = table_clone_safe(combataxe_p2_m1.momentum),
+    combataxe_p3_m1 = table_clone_safe(combataxe_p3_m1.momentum),
+    laspistol_p1_m1 = table_clone_safe(laspistol_p1_m1.momentum),
+    plasmagun_p1_m1 = table_clone_safe(plasmagun_p1_m1.momentum),
+    powermaul_p1_m1 = table_clone_safe(powermaul_p1_m1.momentum),
+    powermaul_p2_m1 = table_clone_safe(powermaul_p2_m1.momentum),
+    chainaxe_p1_m1 = table_clone_safe(chainaxe_p1_m1.momentum),
+    autogun_p1_m1 = table_clone_safe(autogun_p1_m1.momentum),
+    shotgun_p1_m1 = table_clone_safe(shotgun_p1_m1.momentum),
+    shotgun_p2_m1 = table_clone_safe(shotgun_p2_m1.momentum),
+    shotgun_p4_m1 = table_clone_safe(shotgun_p4_m1.momentum),
+    bolter_p1_m1 = table_clone_safe(bolter_p1_m1.momentum),
+    flamer_p1_m1 = table_clone_safe(flamer_p1_m1.momentum),
+    lasgun_p1_m1 = table_clone_safe(lasgun_p1_m1.momentum),
+    lasgun_p2_m1 = table_clone_safe(lasgun_p2_m1.momentum),
+    lasgun_p3_m1 = table_clone_safe(lasgun_p3_m1.momentum),
     [WEAPON_MELEE] = {
         right = {
             momentum = vector3_box(1, 0, -3),
@@ -92,11 +140,6 @@ local momentum = {
             momentum = vector3_box(0, -3, -3),
         },
     },
-    ogryn_pickaxe_2h_p1_m1 = ogryn_pickaxe_2h_p1_m1.momentum,
-    ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.momentum,
-    ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.momentum,
-    ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.momentum,
-    forcestaff_p1_m1 = forcestaff_p1_m1.momentum,
     default = {
         right = {
             momentum = vector3_box(1, 0, -3),
@@ -109,18 +152,83 @@ local momentum = {
 
 --#region Copies
     --#region Ogryn melee
+        momentum.ogryn_combatblade_p1_m2 = table_clone_safe(momentum.ogryn_combatblade_p1_m1)
+        momentum.ogryn_combatblade_p1_m3 = table_clone_safe(momentum.ogryn_combatblade_p1_m1)
         momentum.ogryn_pickaxe_2h_p1_m2 = table_clone_safe(momentum.ogryn_pickaxe_2h_p1_m1)
         momentum.ogryn_pickaxe_2h_p1_m3 = table_clone_safe(momentum.ogryn_pickaxe_2h_p1_m1)
+        momentum.ogryn_powermaul_p1_m2 = table_clone_safe(momentum.ogryn_powermaul_p1_m1)
+		momentum.ogryn_powermaul_p1_m3 = table_clone_safe(momentum.ogryn_powermaul_p1_m1)
+        momentum.ogryn_club_p2_m2 = table_clone_safe(momentum.ogryn_club_p2_m1)
+		momentum.ogryn_club_p1_m3 = table_clone_safe(momentum.ogryn_club_p1_m1)
+		momentum.ogryn_club_p2_m3 = table_clone_safe(momentum.ogryn_club_p2_m1)
+        momentum.ogryn_club_p1_m2 = table_clone_safe(momentum.ogryn_club_p1_m1)
     --#endregion
     --#region Ogryn ranged
+        momentum.ogryn_heavystubber_p1_m2 = table_clone_safe(momentum.ogryn_heavystubber_p1_m1)
+		momentum.ogryn_heavystubber_p1_m3 = table_clone_safe(momentum.ogryn_heavystubber_p1_m1)
+        momentum.ogryn_heavystubber_p2_m2 = table_clone_safe(momentum.ogryn_heavystubber_p2_m1)
+		momentum.ogryn_heavystubber_p2_m3 = table_clone_safe(momentum.ogryn_heavystubber_p2_m1)
         momentum.ogryn_rippergun_p1_m2 = table_clone_safe(momentum.ogryn_rippergun_p1_m1)
 		momentum.ogryn_rippergun_p1_m3 = table_clone_safe(momentum.ogryn_rippergun_p1_m1)
         momentum.ogryn_thumper_p1_m2 = table_clone_safe(momentum.ogryn_thumper_p1_m1)
     --#endregion
+    --#region Human melee
+        momentum.powermaul_shield_p1_m2 = table_clone_safe(momentum.powermaul_shield_p1_m1)
+        momentum.thunderhammer_2h_p1_m2 = table_clone_safe(momentum.thunderhammer_2h_p1_m1)
+        momentum.forcesword_2h_p1_m2 = table_clone_safe(momentum.forcesword_2h_p1_m1)
+        momentum.chainsword_2h_p1_m2 = table_clone_safe(momentum.chainsword_2h_p1_m1)
+        momentum.powersword_2h_p1_m2 = table_clone_safe(momentum.powersword_2h_p1_m1)
+        momentum.combatknife_p1_m2 = table_clone_safe(momentum.combatknife_p1_m1)
+        momentum.combatsword_p1_m2 = table_clone_safe(momentum.combatsword_p1_m1)
+        momentum.combatsword_p2_m2 = table_clone_safe(momentum.combatsword_p2_m1)
+        momentum.combatsword_p3_m2 = table_clone_safe(momentum.combatsword_p3_m1)
+        momentum.combatsword_p1_m3 = table_clone_safe(momentum.combatsword_p1_m1)
+		momentum.combatsword_p2_m3 = table_clone_safe(momentum.combatsword_p2_m1)
+		momentum.combatsword_p3_m3 = table_clone_safe(momentum.combatsword_p3_m1)
+		momentum.forcesword_p1_m3 = table_clone_safe(momentum.forcesword_p1_m1)
+        momentum.powersword_p1_m3 = table_clone_safe(momentum.powersword_p1_m1)
+        momentum.powersword_p1_m2 = table_clone_safe(momentum.powersword_p1_m1)
+        momentum.powersword_p2_m2 = table_clone_safe(momentum.powersword_p2_m1)
+        momentum.chainsword_p1_m2 = table_clone_safe(momentum.chainsword_p1_m1)
+        momentum.forcesword_p1_m2 = table_clone_safe(momentum.forcesword_p1_m1)
+        momentum.combataxe_p1_m2 = table_clone_safe(momentum.combataxe_p1_m1)
+        momentum.combataxe_p2_m2 = table_clone_safe(momentum.combataxe_p2_m1)
+        momentum.combataxe_p2_m3 = table_clone_safe(momentum.combataxe_p2_m1)
+        momentum.combataxe_p3_m2 = table_clone_safe(momentum.combataxe_p3_m1)
+        momentum.combataxe_p3_m3 = table_clone_safe(momentum.combataxe_p3_m1)
+        momentum.powermaul_p1_m2 = table_clone_safe(momentum.powermaul_p1_m1)
+		momentum.combataxe_p1_m3 = table_clone_safe(momentum.combataxe_p1_m1)
+        momentum.chainaxe_p1_m2 = table_clone_safe(momentum.chainaxe_p1_m1)
+    --#endregion
     --#region Human ranged
+        momentum.stubrevolver_p1_m3 = table_clone_safe(momentum.stubrevolver_p1_m1)
+        momentum.stubrevolver_p1_m2 = table_clone_safe(momentum.stubrevolver_p1_m1)
+        momentum.boltpistol_p1_m2 = table_clone_safe(momentum.boltpistol_p1_m1)
         momentum.forcestaff_p2_m1 = table_clone_safe(momentum.forcestaff_p1_m1)
         momentum.forcestaff_p3_m1 = table_clone_safe(momentum.forcestaff_p1_m1)
         momentum.forcestaff_p4_m1 = table_clone_safe(momentum.forcestaff_p1_m1)
+        momentum.laspistol_p1_m2 = table_clone_safe(momentum.laspistol_p1_m1)
+        momentum.laspistol_p1_m3 = table_clone_safe(momentum.laspistol_p1_m1)
+        momentum.autogun_p1_m3 = table_clone_safe(momentum.autogun_p1_m1)
+        momentum.autogun_p2_m1 = table_clone_safe(momentum.autogun_p1_m1)
+        momentum.autogun_p2_m2 = table_clone_safe(momentum.autogun_p1_m1)
+        momentum.autogun_p2_m3 = table_clone_safe(momentum.autogun_p1_m1)
+        momentum.autogun_p3_m1 = table_clone_safe(momentum.autogun_p1_m1)
+        momentum.autogun_p3_m2 = table_clone_safe(momentum.autogun_p1_m1)
+        momentum.autogun_p3_m3 = table_clone_safe(momentum.autogun_p1_m1)
+        momentum.shotgun_p1_m2 = table_clone_safe(momentum.shotgun_p1_m1)
+        momentum.shotgun_p1_m3 = table_clone_safe(momentum.shotgun_p1_m1)
+        momentum.shotgun_p4_m2 = table_clone_safe(momentum.shotgun_p4_m1)
+        momentum.shotgun_p4_m3 = table_clone_safe(momentum.shotgun_p4_m1)
+        momentum.autogun_p1_m2 = table_clone_safe(momentum.autogun_p1_m1)
+        momentum.bolter_p1_m2 = table_clone_safe(momentum.bolter_p1_m1)
+        momentum.lasgun_p1_m2 = table_clone_safe(momentum.lasgun_p1_m1)
+        momentum.lasgun_p2_m2 = table_clone_safe(momentum.lasgun_p2_m1)
+        momentum.lasgun_p2_m3 = table_clone_safe(momentum.lasgun_p2_m1)
+        momentum.lasgun_p3_m2 = table_clone_safe(momentum.lasgun_p3_m1)
+        momentum.lasgun_p3_m3 = table_clone_safe(momentum.lasgun_p3_m1)
+		momentum.bolter_p1_m3 = table_clone_safe(momentum.bolter_p1_m1)
+		momentum.lasgun_p1_m3 = table_clone_safe(momentum.lasgun_p1_m1)
     --#endregion
 --#endregion
 

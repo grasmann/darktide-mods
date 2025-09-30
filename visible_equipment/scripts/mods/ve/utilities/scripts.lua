@@ -34,6 +34,7 @@ local ogryn_club_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p1_m1")
 local ogryn_club_p2_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p2_m1")
 local powersword_p1_m1 = mod:io_dofile(weapons_folder.."powersword_p1_m1")
 local powersword_p2_m1 = mod:io_dofile(weapons_folder.."powersword_p2_m1")
+local autopistol_p1_m1 = mod:io_dofile(weapons_folder.."autopistol_p1_m1")
 local combataxe_p1_m1 = mod:io_dofile(weapons_folder.."combataxe_p1_m1")
 local combataxe_p2_m1 = mod:io_dofile(weapons_folder.."combataxe_p2_m1")
 local combataxe_p3_m1 = mod:io_dofile(weapons_folder.."combataxe_p3_m1")
@@ -94,6 +95,7 @@ local scripts = {
     ogryn_club_p2_m1 = ogryn_club_p2_m1.scripts,
     powersword_p1_m1 = powersword_p1_m1.scripts,
     powersword_p2_m1 = powersword_p2_m1.scripts,
+    autopistol_p1_m1 = autopistol_p1_m1.scripts,
     combataxe_p1_m1 = combataxe_p1_m1.scripts,
     combataxe_p2_m1 = combataxe_p2_m1.scripts,
     combataxe_p3_m1 = combataxe_p3_m1.scripts,
@@ -109,6 +111,8 @@ local scripts = {
     bolter_p1_m1 = bolter_p1_m1.scripts,
     flamer_p1_m1 = flamer_p1_m1.scripts,
     lasgun_p1_m1 = lasgun_p1_m1.scripts,
+    lasgun_p2_m1 = lasgun_p2_m1.scripts,
+    lasgun_p3_m1 = lasgun_p3_m1.scripts,
 }
 
 --#region Copies

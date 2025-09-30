@@ -191,7 +191,12 @@ local function spawn_preview_laser(world, attachment_unit, attachment_data)
 end
 
 local function spawn_laser_pointer(flashlight_extension)
-    if not flashlight_extension.laser_particle_id then
+
+    local player_visibility = script_unit_has_extension(flashlight_extension.unit, "player_visibility_system")
+    local player_invisible = player_visibility and not player_visibility:visible()
+    local inventory_view = mod:get_view("inventory_view")
+
+    if flashlight_extension.on and not flashlight_extension.laser_particle_id and flashlight_extension.wielded_slot == SLOT_SECONDARY and not player_invisible and not inventory_view then
 
         local mission = managers.state.mission:mission()
         local zone_id = mission.zone_id
@@ -219,8 +224,10 @@ local function spawn_laser_pointer(flashlight_extension)
             -- mod:echo("spawned laser "..tostring(flashlight_extension.laser_particle_id))
 
             -- local pose = unit_local_pose(flashlight_unit, laser_node)
-            local pose = matrix4x4_from_quaternion_position(flashlight_rotation, flashlight_position)
+            -- local pose = matrix4x4_from_quaternion_position(flashlight_rotation, flashlight_position)
             -- matrix4x4_set_translation(pose, matrix4x4_transform(mat, laser_offset))
+            local pose = unit_local_pose(flashlight_unit, laser_node)
+            matrix4x4_set_translation(pose, laser_offset)
 
             flashlight_extension.laser_w_dot_id = world_create_particles(flashlight_extension.world, LASER_DOT, flashlight_position)
             world_set_particles_use_custom_fov(flashlight_extension.world, flashlight_extension.laser_w_dot_id, true)
@@ -340,6 +347,10 @@ local function update_laser_pointer(flashlight_extension, dt, t)
 
             if diff[1] > ANGLE_THRESHOLD or diff[1] < -ANGLE_THRESHOLD or diff[2] > ANGLE_THRESHOLD or diff[2] < -ANGLE_THRESHOLD or diff[3] > ANGLE_THRESHOLD or diff[3] < -ANGLE_THRESHOLD then
                 locked = false
+            end
+
+            if flashlight_extension.alternate_fire_component.is_active then
+                locked = true
             end
 
             if not locked then

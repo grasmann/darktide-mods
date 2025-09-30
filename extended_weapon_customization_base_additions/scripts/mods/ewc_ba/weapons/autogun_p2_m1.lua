@@ -183,7 +183,7 @@ local fixes = {
                 receiver = { has = infantry_receivers },
             },
             fix = {
-                offset = { position = vector3_box(0, 0, -.0085) },
+                offset = { position = vector3_box(-.07, 0, .0085) },
             },
         },
         {attachment_slot = "sight_offset",
@@ -197,20 +197,20 @@ local fixes = {
         },
         {attachment_slot = "sight_offset",
             requirements = {
-                sight = { has = "reflex_sight_01|reflex_sight_02" },
+                sight = { has = "reflex_sight_01" },
                 receiver = { has = braced_receivers },
             },
             fix = {
-                offset = { position = vector3_box(0, 0, -.0085) },
+                offset = { position = vector3_box(-.075, 0, .058) },
             },
         },
         {attachment_slot = "sight_offset",
             requirements = {
-                sight = { has = "reflex_sight_03" },
+                sight = { has = "reflex_sight_02|reflex_sight_03" },
                 receiver = { has = braced_receivers },
             },
             fix = {
-                offset = { position = vector3_box(0, 0, -.0075) },
+                offset = { position = vector3_box(-.075, 0, .058) },
             },
         },
         {attachment_slot = "sight_offset",
@@ -261,8 +261,8 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.05, -.034),
-                    rotation = vector3_box(0, 0, 0),
+                    position = vector3_box(-.07, 0, .02),
+                    rotation = vector3_box(2, 0, 0),
                     custom_fov = 32.5,
                     aim_scale = .5,
                     fov = 25,
