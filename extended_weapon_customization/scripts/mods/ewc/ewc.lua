@@ -122,6 +122,15 @@ mod.on_game_state_changed = function(status, state_name)
     mod:_on_game_state_changed(status, state_name)
 end
 
+mod.localize_or_nil = function(self, str, optional_mod)
+    local used_mod = optional_mod or self
+    local used_str = str or ""
+    local localized = used_mod:localize(used_str)
+    if localized == "<"..used_str..">" then
+        return nil
+    end
+    return localized
+end
 
 
 

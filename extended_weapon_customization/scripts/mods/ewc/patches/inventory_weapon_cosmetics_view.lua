@@ -713,7 +713,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
             button_content.hotspot.disabled = not mod:gear_settings(gear_id)
         end
 
-
+    else
+        local widgets_by_name = self._widgets_by_name
+        local reset_button = widgets_by_name and widgets_by_name.reset_button
+        local random_button = widgets_by_name and widgets_by_name.random_button
+        if reset_button then reset_button.visible = false end
+        if random_button then random_button.visible = false end
     end
 end)
 
@@ -812,8 +817,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
                                 visual_item.gear_id = gear_id
                                 visual_item.__attachment_customization = true
-                                attachment_item.icon_render_unit_rotation_offset = attachment_data.icon_render_unit_rotation_offset or {90, 0, 0}
-                                attachment_item.icon_render_camera_position_offset = attachment_data.icon_render_camera_position_offset or {0, -1, 0}
+                                attachment_item.icon_render_unit_rotation_offset = attachment_data and attachment_data.icon_render_unit_rotation_offset or {90, 0, 0}
+                                attachment_item.icon_render_camera_position_offset = attachment_data and attachment_data.icon_render_camera_position_offset or {0, -1, 0}
 
                                 mod:gear_settings(gear_id, {
                                     [slot_name] = real_item and real_item.name or "",
@@ -889,6 +894,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
             self._previewed_item = item
             self._previewed_element = element
 
+            local attachment_name
+
             if real_item then
 
                 local attachment_data = mod.settings.attachment_data_by_item_string[real_item.name]
@@ -960,6 +967,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
                     end
                 end
 
+                if real_item.display_name and real_item.display_name ~= "" and real_item.display_name ~= "n/a" then
+                    attachment_name = localize(real_item.display_name)
+                end
+
             else
 
                 self["_selected_"..slot_name.."_name"] = "content/items/weapons/player/trinkets/unused_trinket"
@@ -980,9 +991,14 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
 
             local widgets_by_name = self._widgets_by_name
 
-            local attachment_name = mod.settings.attachment_name_by_item_string[real_item and real_item.name] or "empty"
-            attachment_name = string_gsub(attachment_name, "_", " ")
-            attachment_name = string_gsub(attachment_name, "%f[%a].", string_upper)
+            -- local pt = mod:pt()
+            -- local origin_mod = pt.attachment_data_origin[attachment_data] or mod
+            -- local attachment_name = mod:localize(real_item and real_item.name or "")
+            if not attachment_name or attachment_name == "" then
+                attachment_name = mod.settings.attachment_name_by_item_string[real_item and real_item.name] or "empty"
+                attachment_name = string_gsub(attachment_name, "_", " ")
+                attachment_name = string_gsub(attachment_name, "%f[%a].", string_upper)
+            end
 
             widgets_by_name.sub_display_name.content.text = string_format("%s • %s", items.weapon_card_display_name(self._selected_item), items.weapon_card_sub_display_name(self._selected_item))
             widgets_by_name.display_name.content.text = attachment_name
@@ -1056,8 +1072,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", funct
     func(self, ...)
     -- Custom
     local widgets_by_name = self._widgets_by_name
-    local reset_button = widgets_by_name.reset_button
-    local random_button = widgets_by_name.random_button
+    local reset_button = widgets_by_name and widgets_by_name.reset_button
+    local random_button = widgets_by_name and widgets_by_name.random_button
     if self.customize_attachments then
         if reset_button then reset_button.content.hotspot.pressed_callback = callback(self, "cb_on_reset_pressed") end
         if random_button then random_button.content.hotspot.pressed_callback = callback(self, "cb_on_random_pressed") end

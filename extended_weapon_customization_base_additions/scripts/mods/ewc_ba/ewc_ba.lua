@@ -30,6 +30,7 @@ end
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
+local _item_melee = _item.."/melee"
 
 local extended_weapon_customization_plugin = {
     attachments = {},
@@ -599,6 +600,34 @@ local extended_weapon_customization_plugin = {
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
+        [_item_melee.."/blades/fire_blade_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/melee/power_falchion/attachments/blade_01/blade_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_blade_01",
+            resource_dependencies = {
+                ["content/weapons/player/melee/power_falchion/attachments/blade_01/blade_01"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_melee.."/blades/fire_blade_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
     },
     flashlight_templates = {
         laser_pointer_01 = {
@@ -844,6 +873,7 @@ local extended_weapon_customization_plugin = {
         ["content/fx/particles/enemies/red_glowing_eyes"] = true,
         ["content/fx/particles/enemies/sniper_laser_sight"] = true,
         ["content/fx/particles/enemies/renegade_sniper/renegade_sniper_beam_outdoors"] = true,
+        ["content/fx/particles/player_buffs/buff_fire_trail_01"] = true,
     },
 }
 
@@ -851,6 +881,7 @@ local weapons_folder = "extended_weapon_customization_base_additions/scripts/mod
 local load_weapons = {
     "ogryn_heavystubber_p1_m1",
     "ogryn_heavystubber_p2_m1",
+    "powersword_p1_m1",
     "boltpistol_p1_m1",
     "autopistol_p1_m1",
     "laspistol_p1_m1",

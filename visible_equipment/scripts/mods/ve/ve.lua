@@ -20,6 +20,8 @@ local mod = get_mod("visible_equipment")
 
 mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/common")
 mod:io_dofile("visible_equipment/scripts/mods/ve/ewc_plugin")
+mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/game")
+mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/gear")
 mod.settings = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/settings")
 mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/plugins")
 mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/save")
@@ -98,8 +100,6 @@ mod:io_dofile("visible_equipment/scripts/mods/ve/patches/material_fx")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/lobby_view")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/ui_manager")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/world")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/game")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/gear")
 
 mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/visible_equipment_extension")
 

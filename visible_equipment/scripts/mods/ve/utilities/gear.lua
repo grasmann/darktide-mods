@@ -17,6 +17,13 @@ local mod = get_mod("visible_equipment")
 mod.gear_id = function(self, item)
     return item and (item.gear_id or item.__gear_id)
 end
+-- mod.gear_id = function(self, item, fake_gear_id)
+--     local gear_id = (item and (item.__is_attachment_selection_item_preview and item.gear_id or item.__gear_id)) or
+--         (item and (item.__is_ui_item_preview and item.__data and self:gear_id(item.__data))) or
+--         (item and (item.gear_id or item.__gear_id)) or
+--         (item and (item.__master_item and (item.__master_item.gear_id or item.__master_item.__gear_id)))
+--     return gear_id
+-- end
 
 mod.gear_placement = function(self, gear_id, placement, file, no_default)
     local pt = self:pt()
