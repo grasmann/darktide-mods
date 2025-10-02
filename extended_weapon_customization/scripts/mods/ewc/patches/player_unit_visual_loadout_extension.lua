@@ -22,6 +22,7 @@ local SLOT_PRIMARY = "slot_primary"
 local PROCESS_SLOTS = {"WEAPON_MELEE", "WEAPON_RANGED"}
 local sight_extension_update = false
 local flashlight_extension_update = false
+local attachment_callback_extension_update = false
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
@@ -79,6 +80,22 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
         )
     end
 
+    if not script_unit_extension(self._unit, "attachment_callback_system") then
+        script_unit_add_extension(
+            {
+                world = self._equipment_component._world,
+            },
+            self._unit,
+            "AttachmentCallbackExtension",
+            "attachment_callback_system",
+            {
+                visual_loadout_extension = self,
+                player = self._player,
+                from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
+            }
+        )
+    end
+
 end)
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function(func, self, slot_name, item, optional_existing_unit_3p, ...)
@@ -98,6 +115,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(
     if slot_name == SLOT_SECONDARY then
         sight_extension_update = true
         flashlight_extension_update = true
+        attachment_callback_extension_update = true
     elseif slot_name == "slot_pocketable" or slot_name == "slot_pocketable_small" then
         -- Reset timer for flashlight input
         -- To prevent flashlight toggle when picking up items
@@ -131,6 +149,24 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "fixed_update", function(func, 
             sight_extension_update = nil
         end
     end
+
+    local attachment_callback_extension = script_unit_extension(self._unit, "attachment_callback_system")
+    if attachment_callback_extension then
+        
+        if attachment_callback_extension_update then
+            if self:is_slot_unit_spawned(SLOT_SECONDARY) and self:is_slot_unit_spawned(SLOT_PRIMARY) then
+                -- local attachment_callback_extension = script_unit_extension(self._unit, "attachment_callback_system")
+                -- if attachment_callback_extension then
+                attachment_callback_extension:on_equip_weapon()
+                -- end
+                attachment_callback_extension_update = nil
+            end
+        end
+
+        -- local attachment_callback_extension = script_unit_extension(self._unit, "attachment_callback_system")
+        -- if attachment_callback_extension then
+        attachment_callback_extension:update(dt, t)
+    end
     
 end)
 
@@ -146,6 +182,10 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
     
     if script_unit_extension(self._unit, "flashlight_system") then
         script_unit_remove_extension(self._unit, "flashlight_system")
+    end
+
+    if script_unit_extension(self._unit, "attachment_callback_system") then
+        script_unit_remove_extension(self._unit, "attachment_callback_system")
     end
 
     -- Original function

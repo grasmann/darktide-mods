@@ -5,10 +5,16 @@ mod:add_global_localize_strings({
 		en = "EWC Base Additions",
 	},
 	loc_laser_pointers = {
-		en = "EWC Base Additions - Laser Pointers",
+		en = "EWC Base Additions - Red Laser Pointers",
 	},
-	loc_fire_blades = {
-		en = "EWC Base Additions - Fire Blades",
+	loc_laser_pointers_green = {
+		en = "EWC Base Additions - Green Laser Pointers",
+	},
+	loc_laser_blades_red = {
+		en = "EWC Base Additions - Red Laser Blades",
+	},
+	loc_laser_blades_green = {
+		en = "EWC Base Additions - Green Laser Blades",
 	},
 	loc_scope_01 = {
 		en = "Ranger's Vigil",

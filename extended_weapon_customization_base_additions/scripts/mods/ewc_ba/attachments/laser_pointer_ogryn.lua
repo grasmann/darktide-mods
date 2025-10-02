@@ -26,6 +26,9 @@ return {
         icon_render_unit_rotation_offset = {90, 0, 90 + 30},
         icon_render_camera_position_offset = {-.125, -1.75, .15},
         flashlight_template = "laser_pointer_ogryn_01",
+        laser_particle_effect = "content/fx/particles/enemies/sniper_laser_sight",
+        dot_particle_effect = "content/fx/particles/enemies/red_glowing_eyes",
+        laser_color = vector3_box(1, 0, 0),
         laser_node = 2,
         laser_offset = vector3_box(0, .02, 0),
         crosshair_type = "ironsight",
@@ -57,10 +60,81 @@ return {
         icon_render_unit_rotation_offset = {90, 0, 90 + 30},
         icon_render_camera_position_offset = {-.075, -1.75, .15},
         flashlight_template = "laser_pointer_ogryn_long_01",
+        laser_particle_effect = "content/fx/particles/enemies/sniper_laser_sight",
+        dot_particle_effect = "content/fx/particles/enemies/red_glowing_eyes",
+        laser_color = vector3_box(1, 0, 0),
         laser_node = 2,
         laser_offset = vector3_box(0, -.65, 0),
         crosshair_type = "ironsight",
         custom_selection_group = "laser_pointers",
+        ui_item_init = function(world, attachment_unit, attachment_data)
+            laser_pointer_functions.spawn_preview_laser(world, attachment_unit, attachment_data)
+        end,
+        ui_item_deinit = function(world, attachment_unit, attachment_data)
+            laser_pointer_functions.despwan_preview_lasers(world, attachment_unit, attachment_data)
+        end,
+        on_flashlight_on = function(flashlight_extension)
+            laser_pointer_functions.spawn_laser_pointer(flashlight_extension)
+        end,
+        on_perspective_change = function(flashlight_extension)
+            laser_pointer_functions.respawn_laser_pointer(flashlight_extension)
+        end,
+        on_flashlight_update = function(flashlight_extension, dt, t)
+            laser_pointer_functions.update_laser_pointer(flashlight_extension, dt, t)
+        end,
+        on_update_item_visibility = function(flashlight_extension, wielded_slot)
+            laser_pointer_functions.update_laser_pointer_visibility(flashlight_extension, wielded_slot)
+        end,
+        on_flashlight_off = function(flashlight_extension)
+            laser_pointer_functions.despawn_laser_pointer(flashlight_extension)
+        end,
+    },
+    laser_pointer_ogryn_green_01 = {
+        replacement_path = _item_ranged.."/laser_pointers/laser_pointer_ogryn_green_01",
+        icon_render_unit_rotation_offset = {90, 0, 90 + 30},
+        icon_render_camera_position_offset = {-.125, -1.75, .15},
+        flashlight_template = "laser_pointer_ogryn_green_01",
+        laser_particle_effect = "content/fx/particles/enemies/plasma_gun_laser_sight",
+        dot_particle_effect = "content/fx/particles/enemies/red_glowing_eyes",
+        laser_color = vector3_box(0, 1, 0),
+        laser_node = 2,
+        laser_offset = vector3_box(0, .02, 0),
+        crosshair_type = "ironsight",
+        custom_selection_group = "laser_pointers_green",
+        ui_item_init = function(world, attachment_unit, attachment_data)
+            laser_pointer_functions.spawn_preview_laser(world, attachment_unit, attachment_data)
+        end,
+        ui_item_deinit = function(world, attachment_unit, attachment_data)
+            laser_pointer_functions.despwan_preview_lasers(world, attachment_unit, attachment_data)
+        end,
+        on_flashlight_on = function(flashlight_extension)
+            laser_pointer_functions.spawn_laser_pointer(flashlight_extension)
+        end,
+        on_perspective_change = function(flashlight_extension)
+            laser_pointer_functions.respawn_laser_pointer(flashlight_extension)
+        end,
+        on_flashlight_update = function(flashlight_extension, dt, t)
+            laser_pointer_functions.update_laser_pointer(flashlight_extension, dt, t)
+        end,
+        on_update_item_visibility = function(flashlight_extension, wielded_slot)
+            laser_pointer_functions.update_laser_pointer_visibility(flashlight_extension, wielded_slot)
+        end,
+        on_flashlight_off = function(flashlight_extension)
+            laser_pointer_functions.despawn_laser_pointer(flashlight_extension)
+        end,
+    },
+    laser_pointer_ogryn_long_green_01 = {
+        replacement_path = _item_ranged.."/laser_pointers/laser_pointer_ogryn_long_green_01",
+        icon_render_unit_rotation_offset = {90, 0, 90 + 30},
+        icon_render_camera_position_offset = {-.075, -1.75, .15},
+        flashlight_template = "laser_pointer_ogryn_long_green_01",
+        laser_particle_effect = "content/fx/particles/enemies/plasma_gun_laser_sight",
+        dot_particle_effect = "content/fx/particles/enemies/red_glowing_eyes",
+        laser_color = vector3_box(0, 1, 0),
+        laser_node = 2,
+        laser_offset = vector3_box(0, -.65, 0),
+        crosshair_type = "ironsight",
+        custom_selection_group = "laser_pointers_green",
         ui_item_init = function(world, attachment_unit, attachment_data)
             laser_pointer_functions.spawn_preview_laser(world, attachment_unit, attachment_data)
         end,

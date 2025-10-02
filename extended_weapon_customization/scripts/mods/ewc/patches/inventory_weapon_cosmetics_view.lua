@@ -52,6 +52,7 @@ local items = mod:original_require("scripts/utilities/items")
     local quaternion_box = QuaternionBox
     local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
+    local has_localization = HasLocalization
     local unit_local_position = unit.local_position
     local unit_world_position = unit.world_position
     local quaternion_identity = quaternion.identity
@@ -968,7 +969,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
                 end
 
                 if real_item.display_name and real_item.display_name ~= "" and real_item.display_name ~= "n/a" then
-                    attachment_name = localize(real_item.display_name)
+                    if HasLocalization(real_item.display_name) then
+                        attachment_name = localize(real_item.display_name)
+                    end
                 end
 
             else

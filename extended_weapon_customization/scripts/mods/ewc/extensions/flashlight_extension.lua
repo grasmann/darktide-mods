@@ -24,6 +24,7 @@ local mod = get_mod("extended_weapon_customization")
     local vector3 = Vector3
     local managers = Managers
     local tostring = tostring
+    local unit_light = unit.light
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
     local vector3_box = Vector3Box
@@ -31,6 +32,7 @@ local mod = get_mod("extended_weapon_customization")
     local vector3_zero = vector3.zero
     local unit_get_data = unit.get_data
     local vector3_unbox = vector3_box.unbox
+    local unit_num_lights = unit.num_lights
     local light_set_enabled = light.set_enabled
     local world_physics_world = world.physics_world
     local light_set_intensity = light.set_intensity
@@ -121,50 +123,6 @@ end
 
 FlashlightExtension.is_wielded = function(self)
     return self.wielded_slot == SLOT_SECONDARY
-end
-
-local unit_light = unit.light
-local unit_num_lights = unit.num_lights
-
-mod.find_in_units = function(self, attachment_units, target_attachment_slot)
-    -- Check
-    if attachment_units then
-        -- Iterate through attachments
-        for i = 1, #attachment_units do
-            -- Get attachment unit
-            local attachment_unit = attachment_units[i]
-            -- Check attachment unit
-            if attachment_unit and unit_alive(attachment_unit) then
-
-                -- Get attachment slot
-                local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
-                -- Shorten to last part
-                local attachment_slot_parts = string_split(attachment_slot_string, ".")
-                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
-
-                -- Check attachment slot and light in attachment unit
-                if attachment_slot == target_attachment_slot then --and unit_num_lights(attachment_unit) > 0 then
-
-                    return attachment_unit
-
-                    -- -- Get flashlight name
-                    -- local flashlight_name = unit_get_data(attachment_unit, "attachment_name")
-                    -- -- local flashlight_unit = attachment_unit
-
-                    -- -- Get attachment data
-                    -- local flashlight_attachment_data = mod.settings.attachments[self.weapon.weapon_template][attachment_slot][flashlight_name]
-                    -- -- Check attachment data
-                    -- if flashlight_attachment_data then
-
-                    --     local template_name = flashlight_attachment_data.flashlight_template or "default"
-                    --     return attachment_unit, flashlight_name, template_name, flashlight_attachment_data
-
-                    -- end
-
-                end
-            end
-        end
-    end
 end
 
 FlashlightExtension.find_in_units = function(self, attachment_units)

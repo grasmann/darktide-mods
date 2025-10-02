@@ -71,10 +71,10 @@ local Sway = mod:original_require("scripts/utilities/sway")
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
-local LASER_PARTICLE_NAME_OUTDOORS = "content/fx/particles/enemies/renegade_sniper/renegade_sniper_beam_outdoors"
 local LOCK_STATES = {"walking", "sliding", "jumping", "falling", "dodging", "ledge_vaulting"}
-local LASER_PARTICLE_NAME = "content/fx/particles/enemies/sniper_laser_sight"
-local LASER_DOT = "content/fx/particles/enemies/red_glowing_eyes"
+local LASER_PARTICLE = "content/fx/particles/enemies/sniper_laser_sight"
+local DOT_PARTICLE = "content/fx/particles/enemies/red_glowing_eyes"
+local LASER_COLOR = vector3_box(1, 0, 0)
 local LASER_LENGTH_VARIABLE_NAME = "hit_distance"
 local SLOT_SECONDARY = "slot_secondary"
 local LASER_X, LASER_Z = 0.05, 0.5
@@ -98,87 +98,11 @@ local LOCKED_ACTIONS = {
     "action_push",
 }
 local context = {
-    preview_laser_particle_id = {},
-    preview_laser_w_dot_id = {},
+    preview_laser_laser_particles = {},
+    preview_laser_wweapon_dot_particles = {},
 }
 
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
-
-local function despwan_preview_lasers(world, attachment_unit, attachment_data)
-        
-    if context.preview_laser_particle_id[attachment_unit] then
-
-        if world_are_particles_playing(world, context.preview_laser_particle_id[attachment_unit]) then
-            world_stop_spawning_particles(world, context.preview_laser_particle_id[attachment_unit])
-        end
-
-        world_destroy_particles(world, context.preview_laser_particle_id[attachment_unit])
-
-        context.preview_laser_particle_id[attachment_unit] = nil
-
-    end
-
-    if context.preview_laser_w_dot_id[attachment_unit] then
-
-        if world_are_particles_playing(world, context.preview_laser_w_dot_id[attachment_unit]) then
-            world_stop_spawning_particles(world, context.preview_laser_w_dot_id[attachment_unit])
-        end
-
-        world_destroy_particles(world, context.preview_laser_w_dot_id[attachment_unit])
-
-        context.preview_laser_w_dot_id[attachment_unit] = nil
-
-    end
-
-end
-
-local function spawn_preview_laser(world, attachment_unit, attachment_data)
-
-    despwan_preview_lasers(world, attachment_unit, attachment_data)
-
-    local laser_node = attachment_data.laser_node or 2
-
-    local flashlight_rotation = unit_world_rotation(attachment_unit, laser_node)
-
-    local flashlight_position = unit_world_position(attachment_unit, laser_node)
-    local particle_id = world_create_particles(world, LASER_PARTICLE_NAME, flashlight_position, flashlight_rotation)
-    -- mod:echo("spawned laser "..tostring(particle_id))
-
-    world_set_particles_use_custom_fov(world, particle_id, false)
-
-    local laser_variable_index = world_find_particles_variable(world, LASER_PARTICLE_NAME, LASER_LENGTH_VARIABLE_NAME)
-
-    world_move_particles(world, particle_id, flashlight_position, flashlight_rotation)
-
-    world_set_particles_variable(world, particle_id, laser_variable_index, vector3(LASER_X, 10, LASER_Z))
-
-    local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, 0)
-
-    local pose = unit_local_pose(attachment_unit, laser_node)
-    matrix4x4_set_translation(pose, laser_offset)
-
-    world_link_particles(world, particle_id, attachment_unit, laser_node, pose, "destroy")
-
-    context.preview_laser_particle_id[attachment_unit] = particle_id
-
-
-
-    local laser_w_dot_id = world_create_particles(world, LASER_DOT, flashlight_position)
-    world_set_particles_use_custom_fov(world, laser_w_dot_id, false)
-    -- mod:echo("spawned laser weapon dot "..tostring(laser_w_dot_id))
-
-    world_link_particles(world, laser_w_dot_id, attachment_unit, laser_node, pose, "destroy")
-
-    world_set_particles_material_vector3(world, laser_w_dot_id, "eye_socket", "material_variable_21872256", vector3(1, 0, 0))
-    world_set_particles_material_vector3(world, laser_w_dot_id, "eye_glow", "trail_color", vector3(0, 0, 0))
-    world_set_particles_material_vector3(world, laser_w_dot_id, "eye_flash_init", "material_variable_21872256", vector3(.01, 0, 0))
-
-    context.preview_laser_w_dot_id[attachment_unit] = laser_w_dot_id
-
-
-
+local function color_light_in_attachment(attachment_unit, attachment_data)
     local light = unit_light(attachment_unit, 1)
     local ewc = get_mod("extended_weapon_customization")
     local flashlight_template_name = attachment_data.flashlight_template or "default"
@@ -187,237 +111,326 @@ local function spawn_preview_laser(world, attachment_unit, attachment_data)
     ewc:set_template_for_light(light, flashlight_template.light.third_person)
     ewc:set_light_color_for_unit(light, attachment_unit)
     ewc:set_light(light, true)
-
 end
 
-local function spawn_laser_pointer(flashlight_extension)
+-- ##### ┌─┐┌─┐┌─┐┬ ┬┌┐┌  ┌─┐┌─┐┬─┐┌┬┐┬┌─┐┬  ┌─┐  ┌─┐┌─┐┌─┐┌─┐┌─┐┌┬┐┌─┐ ###############################################
+-- ##### └─┐├─┘├─┤││││││  ├─┘├─┤├┬┘ │ ││  │  ├┤   ├┤ ├┤ ├┤ ├┤ │   │ └─┐ ###############################################
+-- ##### └─┘┴  ┴ ┴└┴┘┘└┘  ┴  ┴ ┴┴└─ ┴ ┴└─┘┴─┘└─┘  └─┘└  └  └─┘└─┘ ┴ └─┘ ###############################################
 
-    local player_visibility = script_unit_has_extension(flashlight_extension.unit, "player_visibility_system")
-    local player_invisible = player_visibility and not player_visibility:visible()
-    local inventory_view = mod:get_view("inventory_view")
+local function spawn_laser_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, optional_link, optional_custom_fov)
+    local laser_node = attachment_data.laser_node or 2
+    local laser_particle = attachment_data.laser_particle_effect or LASER_PARTICLE
+    local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, 0)
+    local link = not not optional_link
+    local custom_fov = optional_custom_fov or false
+    -- Create laser pointer particle effect
+    local particle_id = world_create_particles(world, laser_particle, flashlight_position, flashlight_rotation)
+    world_set_particles_use_custom_fov(world, particle_id, custom_fov)
+    world_move_particles(world, particle_id, flashlight_position, flashlight_rotation)
+    -- Set laser pointer distance variable
+    local laser_variable_index = world_find_particles_variable(world, laser_particle, LASER_LENGTH_VARIABLE_NAME)
+    world_set_particles_variable(world, particle_id, laser_variable_index, vector3(LASER_X, 10, LASER_Z))
+    -- Link
+    if link then
+        -- Offset pose
+        local pose = unit_local_pose(attachment_unit, laser_node)
+        matrix4x4_set_translation(pose, laser_offset)
+        -- Link to attachment
+        world_link_particles(world, particle_id, attachment_unit, laser_node, pose, "destroy")
+    end
+    -- Save id
+    return particle_id
+end
 
-    if flashlight_extension.on and not flashlight_extension.laser_particle_id and flashlight_extension.wielded_slot == SLOT_SECONDARY and not player_invisible and not inventory_view then
+local function spawn_weapon_dot_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, optional_custom_fov)
+    local laser_node = attachment_data.laser_node or 2
+    local dot_particle = attachment_data.dot_particle_effect or DOT_PARTICLE
+    local laser_color = attachment_data.laser_color and vector3_unbox(attachment_data.laser_color) or vector3_unbox(LASER_COLOR)
+    local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, 0)
+    local custom_fov = optional_custom_fov or false
+    -- Create weapon dot particle effect
+    local laser_pointer_weapon_dot_particle = world_create_particles(world, dot_particle, flashlight_position)
+    world_set_particles_use_custom_fov(world, laser_pointer_weapon_dot_particle, custom_fov)
+    -- Offset pose
+    local pose = unit_local_pose(attachment_unit, laser_node)
+    matrix4x4_set_translation(pose, laser_offset)
+    -- Link to attachment
+    world_link_particles(world, laser_pointer_weapon_dot_particle, attachment_unit, laser_node, pose, "destroy")
+    -- Set colors
+    world_set_particles_material_vector3(world, laser_pointer_weapon_dot_particle, "eye_socket", "material_variable_21872256", vector3(1 * laser_color[1], 1 * laser_color[2], 1 * laser_color[3]))
+    world_set_particles_material_vector3(world, laser_pointer_weapon_dot_particle, "eye_glow", "trail_color", vector3(.01 * laser_color[1], .01 * laser_color[2], .01 * laser_color[3]))
+    world_set_particles_material_vector3(world, laser_pointer_weapon_dot_particle, "eye_flash_init", "material_variable_21872256", vector3(.01 * laser_color[1], .01 * laser_color[2], .01 * laser_color[3]))
+    -- Save id
+    return laser_pointer_weapon_dot_particle
+end
 
-        local mission = managers.state.mission:mission()
-        local zone_id = mission.zone_id
-        local particle_name = LASER_PARTICLE_NAME
+local function spawn_laser_dot_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, optional_custom_fov)
+    local dot_particle = attachment_data.dot_particle_effect or DOT_PARTICLE
+    local laser_color = attachment_data.laser_color and vector3_unbox(attachment_data.laser_color) or vector3_unbox(LASER_COLOR)
+    local custom_fov = optional_custom_fov or false
+    -- Create laser dot particle effect
+    local laser_pointer_laser_dot_particle = world_create_particles(world, dot_particle, flashlight_position)
+    world_set_particles_use_custom_fov(world, laser_pointer_laser_dot_particle, custom_fov)
+    -- Set colors
+    world_set_particles_material_vector3(world, laser_pointer_laser_dot_particle, "eye_socket", "material_variable_21872256", vector3(1 * laser_color[1], 1 * laser_color[2], 1 * laser_color[3]))
+    world_set_particles_material_vector3(world, laser_pointer_laser_dot_particle, "eye_glow", "trail_color", vector3(.01 * laser_color[1], .01 * laser_color[2], .01 * laser_color[3]))
+    world_set_particles_material_vector3(world, laser_pointer_laser_dot_particle, "eye_flash_init", "material_variable_21872256", vector3(.5 * laser_color[1], .5 * laser_color[2], .5 * laser_color[3]))
+    -- Save id
+    return laser_pointer_laser_dot_particle
+end
 
-        if zone_id == "dust" then
-            particle_name = LASER_PARTICLE_NAME_OUTDOORS
+-- ### ┌─┐┬─┐┌─┐┬  ┬┬┌─┐┬ ┬  ┬  ┌─┐┌─┐┌─┐┬─┐       ┬ ┬┬  ┬┌┬┐┌─┐┌┬┐┌─┐   ┌─┐┬─┐┌─┐┌─┐┬┬  ┌─┐  ┌─┐┌─┐┌─┐┬ ┬┌┐┌┌─┐┬─┐ ###
+-- ### ├─┘├┬┘├┤ └┐┌┘│├┤ │││  │  ├─┤└─┐├┤ ├┬┘  ───  │ ││  │ │ ├┤ │││└─┐   ├─┘├┬┘│ │├┤ ││  ├┤   └─┐├─┘├─┤││││││├┤ ├┬┘ ###
+-- ### ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘  ┴─┘┴ ┴└─┘└─┘┴└─       └─┘┴  ┴ ┴ └─┘┴ ┴└─┘┘  ┴  ┴└─└─┘└  ┴┴─┘└─┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─ ###
+
+local function despawn_preview_effect(world, particle_name, attachment_unit)
+    -- Check running effect for unit
+    if context[particle_name] and context[particle_name][attachment_unit] then
+        -- Stop effect
+        if world_are_particles_playing(world, context[particle_name][attachment_unit]) then
+            world_stop_spawning_particles(world, context[particle_name][attachment_unit])
         end
-
-        local flashlight_unit = flashlight_extension:current_flashlight_unit()
-        if flashlight_unit and unit_alive(flashlight_unit) then
-
-            local attachment_data = flashlight_extension.attachment_data
-            local laser_node = attachment_data.laser_node or 2
-
-            local flashlight_rotation = unit_world_rotation(flashlight_unit, laser_node)
-            local mat = quaternion_matrix4x4(flashlight_rotation)
-
-            local laser_offset = flashlight_extension.laser_offset and vector3_unbox(flashlight_extension.laser_offset) or vector3(0, 0, 0)
-            local flashlight_position = unit_world_position(flashlight_unit, laser_node) + matrix4x4_transform(mat, laser_offset)
-
-            flashlight_extension.laser_particle_id = world_create_particles(flashlight_extension.world, particle_name, flashlight_position)
-            world_set_particles_use_custom_fov(flashlight_extension.world, flashlight_extension.laser_particle_id, true)
-            flashlight_extension.laser_variable_index = world_find_particles_variable(flashlight_extension.world, particle_name, LASER_LENGTH_VARIABLE_NAME)
-            -- mod:echo("spawned laser "..tostring(flashlight_extension.laser_particle_id))
-
-            -- local pose = unit_local_pose(flashlight_unit, laser_node)
-            -- local pose = matrix4x4_from_quaternion_position(flashlight_rotation, flashlight_position)
-            -- matrix4x4_set_translation(pose, matrix4x4_transform(mat, laser_offset))
-            local pose = unit_local_pose(flashlight_unit, laser_node)
-            matrix4x4_set_translation(pose, laser_offset)
-
-            flashlight_extension.laser_w_dot_id = world_create_particles(flashlight_extension.world, LASER_DOT, flashlight_position)
-            world_set_particles_use_custom_fov(flashlight_extension.world, flashlight_extension.laser_w_dot_id, true)
-            -- mod:echo("spawned laser weapon dot "..tostring(flashlight_extension.laser_w_dot_id))
-
-            world_link_particles(flashlight_extension.world, flashlight_extension.laser_w_dot_id, flashlight_unit, laser_node, pose, "destroy")
-
-            world_set_particles_material_vector3(flashlight_extension.world, flashlight_extension.laser_w_dot_id, "eye_socket", "material_variable_21872256", vector3(1, 0, 0))
-            world_set_particles_material_vector3(flashlight_extension.world, flashlight_extension.laser_w_dot_id, "eye_glow", "trail_color", vector3(0, 0, 0))
-            world_set_particles_material_vector3(flashlight_extension.world, flashlight_extension.laser_w_dot_id, "eye_flash_init", "material_variable_21872256", vector3(.01, 0, 0))
-
-            flashlight_extension.laser_l_dot_id = world_create_particles(flashlight_extension.world, LASER_DOT, flashlight_position)
-            world_set_particles_use_custom_fov(flashlight_extension.world, flashlight_extension.laser_l_dot_id, true)
-            -- mod:echo("spawned laser weapon dot "..tostring(flashlight_extension.laser_l_dot_id))
-
-            world_set_particles_material_vector3(flashlight_extension.world, flashlight_extension.laser_l_dot_id, "eye_socket", "material_variable_21872256", vector3(1, 0, 0))
-            world_set_particles_material_vector3(flashlight_extension.world, flashlight_extension.laser_l_dot_id, "eye_glow", "trail_color", vector3(0, 0, 0))
-            world_set_particles_material_vector3(flashlight_extension.world, flashlight_extension.laser_l_dot_id, "eye_flash_init", "material_variable_21872256", vector3(.5, 0, 0))
-
-        end
-        
+        -- Destroy
+        world_destroy_particles(world, context[particle_name][attachment_unit])
+        -- Set nil
+        context[particle_name][attachment_unit] = nil
     end
 end
 
+local function despwan_preview_lasers(world, attachment_unit, attachment_data)
+    despawn_preview_effect(world, "preview_laser_laser_particles", attachment_unit)
+    despawn_preview_effect(world, "preview_laser_wweapon_dot_particles", attachment_unit)
+end
+
+local function spawn_preview_laser(world, attachment_unit, attachment_data)
+
+    despwan_preview_lasers(world, attachment_unit, attachment_data)
+
+    -- Attachment data
+    local laser_node = attachment_data.laser_node or 2
+    local laser_particle = attachment_data.laser_particle_effect or LASER_PARTICLE
+    local dot_particle = attachment_data.dot_particle_effect or DOT_PARTICLE
+    local laser_color = attachment_data.laser_color and vector3_unbox(attachment_data.laser_color) or vector3_unbox(LASER_COLOR)
+    local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, 0)
+    local pose = unit_local_pose(attachment_unit, laser_node)
+
+    -- Attachment unit data
+    local flashlight_rotation = unit_world_rotation(attachment_unit, laser_node)
+    local flashlight_position = unit_world_position(attachment_unit, laser_node)
+
+    -- Create laser pointer particle effect
+    context.preview_laser_laser_particles[attachment_unit] = spawn_laser_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, true, false)
+
+    -- Create weapon dot particle effect
+    context.preview_laser_wweapon_dot_particles[attachment_unit] = spawn_weapon_dot_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, false)
+
+    -- Color light in attachment unit
+    color_light_in_attachment(attachment_unit, attachment_data)
+
+end
+
+-- ##### ┌─┐┌─┐ ┬ ┬┬┌─┐┌─┐┌─┐┌┬┐  ┬  ┌─┐┌─┐┌─┐┬─┐ #####################################################################
+-- ##### ├┤ │─┼┐│ ││├─┘├─┘├┤  ││  │  ├─┤└─┐├┤ ├┬┘ #####################################################################
+-- ##### └─┘└─┘└└─┘┴┴  ┴  └─┘─┴┘  ┴─┘┴ ┴└─┘└─┘┴└─ #####################################################################
+
+local function spawn_laser_pointer(flashlight_extension)
+    -- Visibility
+    local player_visibility = script_unit_has_extension(flashlight_extension.unit, "player_visibility_system")
+    local player_invisible = player_visibility and not player_visibility:visible()
+    local inventory_view = mod:get_view("inventory_view")
+    -- Check if laser should be on
+    if flashlight_extension.on and not flashlight_extension.laser_pointer_laser_particle and flashlight_extension:is_wielded() and not player_invisible and not inventory_view then
+        -- Get current attachment unit
+        local flashlight_unit = flashlight_extension:current_flashlight_unit()
+        -- Check unit
+        if flashlight_unit and unit_alive(flashlight_unit) then
+            
+            -- Get attachment data
+            local is_first_person = flashlight_extension.first_person_extension:is_in_first_person_mode()
+            local attachment_data = flashlight_extension.attachment_data
+            local laser_node = attachment_data.laser_node or 2
+            local laser_particle = attachment_data.laser_particle_effect or LASER_PARTICLE
+            local world = flashlight_extension.world
+
+            -- Get position / rotation
+            local flashlight_rotation = unit_world_rotation(flashlight_unit, laser_node)
+            local mat = quaternion_matrix4x4(flashlight_rotation)
+            local laser_offset = flashlight_extension.laser_offset and vector3_unbox(flashlight_extension.laser_offset) or vector3(0, 0, 0)
+            local flashlight_position = unit_world_position(flashlight_unit, laser_node) + matrix4x4_transform(mat, laser_offset)
+            
+            -- Offset pose
+            local pose = unit_local_pose(flashlight_unit, laser_node)
+            matrix4x4_set_translation(pose, laser_offset)
+
+            -- Create laser particle effect
+            flashlight_extension.laser_pointer_laser_particle = spawn_laser_particle_effect(world, flashlight_unit, attachment_data, flashlight_position, flashlight_rotation, false, is_first_person)
+            -- Set laser pointer distance variable
+            flashlight_extension.laser_variable_index = world_find_particles_variable(world, laser_particle, LASER_LENGTH_VARIABLE_NAME)
+            
+            -- Create weapon dot particle effect
+            flashlight_extension.laser_pointer_weapon_dot_particle = spawn_weapon_dot_particle_effect(world, flashlight_unit, attachment_data, flashlight_position, flashlight_rotation, is_first_person)
+            
+            -- Create laser dot particle effect
+            flashlight_extension.laser_pointer_laser_dot_particle = spawn_laser_dot_particle_effect(world, flashlight_unit, attachment_data, flashlight_position, flashlight_rotation, is_first_person)
+
+            -- Color light in attachment unit
+            color_light_in_attachment(flashlight_unit, attachment_data)
+
+        end
+    end
+end
+
+local function despawn_laser_pointer_effect(flashlight_extension, particle_effect)
+    if flashlight_extension[particle_effect] then
+        -- Stop particles
+        if world_are_particles_playing(flashlight_extension.world, flashlight_extension[particle_effect]) then
+            world_stop_spawning_particles(flashlight_extension.world, flashlight_extension[particle_effect])
+        end
+        -- Destroy
+        world_destroy_particles(flashlight_extension.world, flashlight_extension[particle_effect])
+        -- Set nil
+        flashlight_extension[particle_effect] = nil
+    end
+end
+
+local function despawn_laser_pointer(flashlight_extension)
+    despawn_laser_pointer_effect(flashlight_extension, "laser_pointer_laser_particle")
+    despawn_laser_pointer_effect(flashlight_extension, "laser_pointer_weapon_dot_particle")
+    despawn_laser_pointer_effect(flashlight_extension, "laser_pointer_laser_dot_particle")
+end
+
+local function respawn_laser_pointer(flashlight_extension)
+    despawn_laser_pointer(flashlight_extension)
+    spawn_laser_pointer(flashlight_extension)
+end
+
+-- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┌─┐┌─┐┬─┐┌┬┐┬┌─┐┬  ┌─┐  ┌─┐┌─┐┌─┐┌─┐┌─┐┌┬┐┌─┐ ############################################
+-- ##### │ │├─┘ ││├─┤ │ ├┤   ├─┘├─┤├┬┘ │ ││  │  ├┤   ├┤ ├┤ ├┤ ├┤ │   │ └─┐ ############################################
+-- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘  ┴  ┴ ┴┴└─ ┴ ┴└─┘┴─┘└─┘  └─┘└  └  └─┘└─┘ ┴ └─┘ ############################################
+
 local function update_laser_pointer(flashlight_extension, dt, t)
-    if flashlight_extension.laser_particle_id and flashlight_extension.laser_variable_index then
+    if flashlight_extension.laser_pointer_laser_particle and flashlight_extension.laser_variable_index then
 
         local flashlight_unit = flashlight_extension:current_flashlight_unit()
         if flashlight_unit or not unit_alive(flashlight_unit) then
 
-            local attachment_data = flashlight_extension.attachment_data
-            local laser_node = attachment_data.laser_node or 2
-
-            local character_state_extension = script_unit_extension(flashlight_extension.unit, "character_state_machine_system")
-            local character_state = character_state_extension and character_state_extension:current_state()
-            local character_state_name = character_state and character_state.name or ""
-            local locked = table_contains(LOCK_STATES, character_state_name)
-
-            local flashlight_rotation = unit_world_rotation(flashlight_unit, laser_node)
-            local mat = quaternion_matrix4x4(flashlight_rotation)
-
-            local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, 0)
-
-            local flashlight_position = unit_world_position(flashlight_unit, laser_node) + matrix4x4_transform(mat, laser_offset)
-            local laser_aim_direction = vector3_normalize(quaternion_forward(flashlight_rotation))
-
-            local laser_raw_direction = flashlight_position + laser_aim_direction * 1000
-
+            -- First person aim position / rotation
             local first_person_unit = flashlight_extension.first_person_extension:first_person_unit()
             local node = unit_node(first_person_unit, "ap_aim")
             local aim_position = unit_world_position(first_person_unit, node)
             local aim_rotation = unit_world_rotation(first_person_unit, node)
 
+            -- Get attachment data
+            local attachment_data = flashlight_extension.attachment_data
+            local laser_node = attachment_data.laser_node or 2
+            local laser_color = attachment_data.laser_color and vector3_unbox(attachment_data.laser_color) or vector3_unbox(LASER_COLOR)
+            local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, 0)
 
+            -- Character state check
+            local character_state_extension = script_unit_extension(flashlight_extension.unit, "character_state_machine_system")
+            local character_state = character_state_extension and character_state_extension:current_state()
+            local character_state_name = character_state and character_state.name or ""
 
+            -- Flashlight rotation / position
+            local flashlight_rotation = unit_world_rotation(flashlight_unit, laser_node)
+            local mat = quaternion_matrix4x4(flashlight_rotation)
+            local flashlight_position = unit_world_position(flashlight_unit, laser_node) + matrix4x4_transform(mat, laser_offset)
+
+            -- Direction
+            local laser_aim_direction = vector3_normalize(quaternion_forward(flashlight_rotation))
+            local laser_raw_direction = flashlight_position + laser_aim_direction * 1000
+
+            -- Apply sway value
             local sway_extension = script_unit_extension(flashlight_extension.unit, "sway_system")
             if sway_extension then
                 local crouch_position = vector3_unbox(sway_extension.crouch_position)
                 aim_position = aim_position - crouch_position
             end
 
+            -- Apply sight offset
             local sight_extension = script_unit_extension(flashlight_extension.unit, "sight_system")
             if sight_extension then
                 local sight_position = vector3_unbox(sight_extension.current_offset.position)
                 local sight_rotation = vector3_unbox(sight_extension.current_offset.rotation)
-
                 aim_position = aim_position - matrix4x4_transform(mat, sight_position)
-                -- aim_rotation = quaternion_multiply(aim_rotation, quaternion_from_vector(sight_rotation))
                 aim_rotation = quaternion_multiply(aim_rotation, quaternion_from_vector(sight_rotation * -1))
             end
 
-
-
+            -- Weapon data
             local unit_data_extension = script_unit_extension(flashlight_extension.unit, "unit_data_system")
-
             local weapon_extension = script_unit_has_extension(flashlight_extension.unit, "weapon_system")
-            
+            -- Apply recoil
             local recoil_template = weapon_extension:recoil_template()
             local recoil_component = unit_data_extension:read_component("recoil")
             local movement_state_component = unit_data_extension:read_component("movement_state")
             aim_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, movement_state_component, aim_rotation)
-
+            -- Apply game sway
             local sway_component = unit_data_extension:read_component("sway")
             local sway_template = weapon_extension:sway_template()
             aim_rotation = Sway.apply_sway_rotation(sway_template, sway_component, movement_state_component, aim_rotation)
 
-
-
-
-
-
+            -- Aim rotation
             local aim_direction = vector3_normalize(quaternion_forward(aim_rotation))
 
-
-
+            -- Raycast
             local _, laser_aim_position, _, _, hit_actor = physics_world_raycast(flashlight_extension.physics_world, aim_position, aim_direction, 1000, "closest", "types", "both",
                 "collision_filter", "filter_player_character_shooting_projectile", "rewind_ms", LagCompensation.rewind_ms(false, true, flashlight_extension.player))
             
+            -- Resulting aim position
             laser_aim_position = laser_aim_position or laser_raw_direction
 
-
+            -- Resulting aim rotation
             local rotation = quaternion_look(laser_aim_position - flashlight_position)
-
-
-
-            local diff = vector3_normalize(laser_aim_position - flashlight_position) - vector3_normalize(laser_raw_direction - flashlight_position)
             
-
-            local weapon_action_component = unit_data_extension:read_component("weapon_action")
-            local current_action_name = weapon_action_component.current_action_name
-
-
-
-            if table_contains(LOCKED_ACTIONS, current_action_name) then
-                locked = false
-            end
-
+            -- Aim lock
+            local locked = table_contains(LOCK_STATES, character_state_name)
+            -- Aim difference
+            local diff = vector3_normalize(laser_aim_position - flashlight_position) - vector3_normalize(laser_raw_direction - flashlight_position)
             if diff[1] > ANGLE_THRESHOLD or diff[1] < -ANGLE_THRESHOLD or diff[2] > ANGLE_THRESHOLD or diff[2] < -ANGLE_THRESHOLD or diff[3] > ANGLE_THRESHOLD or diff[3] < -ANGLE_THRESHOLD then
                 locked = false
             end
-
+            -- Weapon action
+            local weapon_action_component = unit_data_extension:read_component("weapon_action")
+            local current_action_name = weapon_action_component.current_action_name
+            if table_contains(LOCKED_ACTIONS, current_action_name) then
+                locked = false
+            end
+            -- Aiming
             if flashlight_extension.alternate_fire_component.is_active then
                 locked = true
             end
-
+            -- If locked then apply raw laser pointer position / rotation
             if not locked then
-                -- rotation = flashlight_rotation
                 laser_aim_position = laser_raw_direction
                 rotation = quaternion_look(laser_aim_position - flashlight_position)
-
             end
 
-            world_move_particles(flashlight_extension.world, flashlight_extension.laser_particle_id, flashlight_position, rotation)
+            -- Move particles to flashlight position and rotate towards aim point
+            world_move_particles(flashlight_extension.world, flashlight_extension.laser_pointer_laser_particle, flashlight_position, rotation)
 
+            -- Get distance to aim point
             local distance = vector3_distance(flashlight_position, laser_aim_position)
 
-            world_set_particles_variable(flashlight_extension.world, flashlight_extension.laser_particle_id, flashlight_extension.laser_variable_index, vector3(LASER_X, distance, LASER_Z))
+            -- Set laser pointer distance variable
+            world_set_particles_variable(flashlight_extension.world, flashlight_extension.laser_pointer_laser_particle, flashlight_extension.laser_variable_index, vector3(LASER_X, distance, LASER_Z))
 
-            if flashlight_extension.laser_l_dot_id then
-
-                world_set_particles_material_vector3(flashlight_extension.world, flashlight_extension.laser_l_dot_id, "eye_socket", "material_variable_21872256", vector3(100 / distance, 0, 0))
-                world_move_particles(flashlight_extension.world, flashlight_extension.laser_l_dot_id, laser_aim_position, rotation)
-
+            -- Update laser dot
+            if flashlight_extension.laser_pointer_laser_dot_particle then
+                -- Get distance dot size
+                local dot_size = vector3((100 / distance) * laser_color[1], (100 / distance) * laser_color[2], (100 / distance) * laser_color[3])
+                -- Set dot size
+                world_set_particles_material_vector3(flashlight_extension.world, flashlight_extension.laser_pointer_laser_dot_particle, "eye_socket", "material_variable_21872256", dot_size)
+                -- Move to aim point
+                world_move_particles(flashlight_extension.world, flashlight_extension.laser_pointer_laser_dot_particle, laser_aim_position, rotation)
             end
 
-            if flashlight_extension.laser_w_dot_id then
-
-                world_move_particles(flashlight_extension.world, flashlight_extension.laser_w_dot_id, flashlight_position, rotation)
-
+            -- Update weapon dot
+            if flashlight_extension.laser_pointer_weapon_dot_particle then
+                -- Move to flashlight position
+                world_move_particles(flashlight_extension.world, flashlight_extension.laser_pointer_weapon_dot_particle, flashlight_position, rotation)
             end
 
         end
-
-    end
-end
-
-local function despawn_laser_pointer(flashlight_extension)
-    if flashlight_extension.laser_particle_id then
-
-        if world_are_particles_playing(flashlight_extension.world, flashlight_extension.laser_particle_id) then
-            world_stop_spawning_particles(flashlight_extension.world, flashlight_extension.laser_particle_id)
-        end
-
-        world_destroy_particles(flashlight_extension.world, flashlight_extension.laser_particle_id)
-
-        flashlight_extension.laser_particle_id = nil
-
-    end
-
-    if flashlight_extension.laser_w_dot_id then
-
-        if world_are_particles_playing(flashlight_extension.world, flashlight_extension.laser_w_dot_id) then
-            world_stop_spawning_particles(flashlight_extension.world, flashlight_extension.laser_w_dot_id)
-        end
-        
-        world_destroy_particles(flashlight_extension.world, flashlight_extension.laser_w_dot_id)
-
-        flashlight_extension.laser_w_dot_id = nil
-
-    end
-
-    if flashlight_extension.laser_l_dot_id then
-
-        if world_are_particles_playing(flashlight_extension.world, flashlight_extension.laser_l_dot_id) then
-            world_stop_spawning_particles(flashlight_extension.world, flashlight_extension.laser_l_dot_id)
-        end
-        
-        world_destroy_particles(flashlight_extension.world, flashlight_extension.laser_l_dot_id)
-
-        flashlight_extension.laser_l_dot_id = nil
 
     end
 end
@@ -431,11 +444,6 @@ local function update_laser_pointer_visibility(flashlight_extension, wielded_slo
     elseif flashlight_extension.on then
         spawn_laser_pointer(flashlight_extension)
     end
-end
-
-local function respawn_laser_pointer(flashlight_extension)
-    despawn_laser_pointer(flashlight_extension)
-    update_laser_pointer_visibility(flashlight_extension, flashlight_extension.wielded_slot)
 end
 
 return {

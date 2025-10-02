@@ -206,6 +206,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_uni
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/hud_element_crosshair")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/equipment_component")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_icon_loader_ui")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_profile_spawner")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_element_grid")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/weapon_icon_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/crafting_view")
@@ -213,6 +214,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/input_serv
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_package")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/flashlight")
 
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/attachment_callback_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/flashlight_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/sight_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/sway_extension")

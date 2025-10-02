@@ -11,17 +11,22 @@ local master_items = mod:original_require("scripts/backend/master_items")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local unit = Unit
     local type = type
     local math = math
     local pairs = pairs
     local table = table
+    local string = string
     local tostring = tostring
     local managers = Managers
+    local unit_alive = unit.alive
     local table_size = table.size
     local table_find = table.find
     local script_unit = ScriptUnit
     local table_clear = table.clear
     local math_random = math.random
+    local string_split = string.split
+    local unit_get_data = unit.get_data
     local table_contains = table.contains
     local table_clone_safe = table.clone_safe
     local script_unit_extension = script_unit.extension
@@ -284,6 +289,33 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
             end
         end
 
+    end
+end
+
+mod.find_in_units = function(self, attachment_units, target_attachment_slot)
+    -- Check
+    if attachment_units then
+        -- Iterate through attachments
+        for i = 1, #attachment_units do
+            -- Get attachment unit
+            local attachment_unit = attachment_units[i]
+            -- Check attachment unit
+            if attachment_unit and unit_alive(attachment_unit) then
+
+                -- Get attachment slot
+                local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
+                -- Shorten to last part
+                local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+
+                -- Check attachment slot and light in attachment unit
+                if attachment_slot == target_attachment_slot then --and unit_num_lights(attachment_unit) > 0 then
+
+                    return attachment_unit
+
+                end
+            end
+        end
     end
 end
 

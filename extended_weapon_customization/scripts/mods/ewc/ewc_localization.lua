@@ -1,5 +1,23 @@
 local mod = get_mod("extended_weapon_customization")
 
+local managers = Managers
+
+mod:hook_require("scripts/managers/localization/localization_manager", function(instance)
+
+	instance.has_localization = function(self, key)
+		local raw_str = self:_lookup(key)
+		if not raw_str then
+			return false
+		end
+		return true
+	end
+
+end)
+
+HasLocalization = function(key)
+	return managers.localization:has_localization(key)
+end
+
 mod:add_global_localize_strings({
 	loc_extended_weapon_customization = {
 		en = "Extended Weapon Customization",

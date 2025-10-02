@@ -544,6 +544,118 @@ local extended_weapon_customization_plugin = {
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
+        [_item_ranged.."/laser_pointers/laser_pointer_green_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_flashlight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/laser_pointers/laser_pointer_green_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/laser_pointers/laser_pointer_green_02"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_flashlight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/laser_pointers/laser_pointer_green_02",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/laser_pointers/laser_pointer_green_03"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_flashlight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/laser_pointers/laser_pointer_green_03",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/laser_pointers/laser_pointer_green_05"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_flashlight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/laser_pointers/laser_pointer_green_05",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
         [_item_ranged.."/laser_pointers/laser_pointer_ogryn_01"] = {
             is_fallback_item = false,
             show_in_1p = true,
@@ -600,10 +712,10 @@ local extended_weapon_customization_plugin = {
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
-        [_item_melee.."/blades/fire_blade_01"] = {
+        [_item_ranged.."/laser_pointers/laser_pointer_ogryn_green_01"] = {
             is_fallback_item = false,
             show_in_1p = true,
-            base_unit = "content/weapons/player/melee/power_falchion/attachments/blade_01/blade_01",
+            base_unit = "content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_01",
             item_list_faction = "Player",
             tags = {
             },
@@ -611,9 +723,9 @@ local extended_weapon_customization_plugin = {
             feature_flags = {
                 "FEATURE_item_retained",
             },
-            attach_node = "ap_blade_01",
+            attach_node = "ap_flashlight_01",
             resource_dependencies = {
-                ["content/weapons/player/melee/power_falchion/attachments/blade_01/blade_01"] = true,
+                ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_01"] = true,
             },
             attachments = {
                 zzz_shared_material_overrides = {
@@ -624,7 +736,171 @@ local extended_weapon_customization_plugin = {
             workflow_checklist = {
             },
             display_name = "n/a",
-            name = _item_melee.."/blades/fire_blade_01",
+            name = _item_ranged.."/laser_pointers/laser_pointer_ogryn_green_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/laser_pointers/laser_pointer_ogryn_long_green_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_long_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_flashlight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_long_01"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/laser_pointers/laser_pointer_ogryn_long_green_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_melee.."/tanks/laser_blade_tank_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/ranged/flamer_rifle/attachments/magazine_01/magazine_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_blade_01",
+            resource_dependencies = {
+                ["content/weapons/player/ranged/flamer_rifle/attachments/magazine_01/magazine_01"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_melee.."/tanks/laser_blade_tank_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_melee.."/tanks/laser_blade_tank_02"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/ranged/flamer_rifle/attachments/magazine_02/magazine_02",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_blade_01",
+            resource_dependencies = {
+                ["content/weapons/player/ranged/flamer_rifle/attachments/magazine_02/magazine_02"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_melee.."/tanks/laser_blade_tank_02",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_melee.."/blades/laser_blade_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/melee/power_sword/attachments/blade_06/blade_06",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_blade_01",
+            resource_dependencies = {
+                ["content/weapons/player/melee/power_sword/attachments/blade_06/blade_06"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+                tank = {
+                    item = _item_melee.."/tanks/laser_blade_tank_01",
+                    fix = {
+                        offset = {
+                            node = 1,
+                            position = vector3_box(0, -.02, .08),
+                            rotation = vector3_box(90, 180, 180),
+                            scale = vector3_box(.65, .65, .65),
+                        },
+                    },
+                    children = {},
+                }
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_melee.."/blades/laser_blade_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_melee.."/blades/laser_blade_green_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/melee/power_sword/attachments/blade_06/blade_06",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_blade_01",
+            resource_dependencies = {
+                ["content/weapons/player/melee/power_sword/attachments/blade_06/blade_06"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+                tank = {
+                    item = _item_melee.."/tanks/laser_blade_tank_02",
+                    fix = {
+                        offset = {
+                            node = 1,
+                            position = vector3_box(0, -.02, .08),
+                            rotation = vector3_box(90, 180, 180),
+                            scale = vector3_box(.65, .65, .65),
+                        },
+                    },
+                    children = {},
+                }
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_melee.."/blades/laser_blade_green_01",
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
@@ -790,6 +1066,166 @@ local extended_weapon_customization_plugin = {
             },
             flicker = "incandescent_flicker",
         },
+        laser_pointer_green_01 = {
+            light = {
+                first_person = {
+                    cast_shadows = true,
+                    color_temperature = 7300,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_01",
+                    -- intensity = 8,
+                    intensity = 2,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.1,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 1.3,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 70,
+                        near = 0,
+                    },
+                },
+                third_person = {
+                    cast_shadows = true,
+                    color_temperature = 7000,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_01",
+                    intensity = 2,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.6,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 0.9,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 30,
+                        near = 0,
+                    },
+                },
+            },
+            flicker = "led_flicker",
+        },
+        laser_pointer_green_02 = {
+            light = {
+                first_person = {
+                    cast_shadows = true,
+                    color_temperature = 5900,
+                    ies_profile = "content/environment/ies_profiles/narrow/narrow_05",
+                    -- intensity = 16,
+                    intensity = 4,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.1,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 0.8,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 45,
+                        near = 0,
+                    },
+                },
+                third_person = {
+                    cast_shadows = true,
+                    color_temperature = 5900,
+                    ies_profile = "content/environment/ies_profiles/narrow/narrow_05",
+                    intensity = 4,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.6,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 0.6,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 25,
+                        near = 0,
+                    },
+                },
+            },
+            flicker = "incandescent_flicker",
+        },
+        laser_pointer_green_03 = {
+            light = {
+                first_person = {
+                    cast_shadows = true,
+                    color_temperature = 7900,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_01",
+                    -- intensity = 10,
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.1,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 1.2,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 70,
+                        near = 0,
+                    },
+                },
+                third_person = {
+                    cast_shadows = true,
+                    color_temperature = 7500,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_01",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.6,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 0.8,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 30,
+                        near = 0,
+                    },
+                },
+            },
+            flicker = "led_flicker",
+        },
+        laser_pointer_green_05 = {
+            light = {
+                first_person = {
+                    cast_shadows = true,
+                    color_temperature = 6200,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_03",
+                    -- intensity = 18,
+                    intensity = 4.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.1,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 1.1,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 45,
+                        near = 0,
+                    },
+                },
+                third_person = {
+                    cast_shadows = true,
+                    color_temperature = 6200,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_03",
+                    intensity = 4.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.6,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 0.8,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 25,
+                        near = 0,
+                    },
+                },
+            },
+            flicker = "incandescent_flicker",
+        },
         laser_pointer_ogryn_01 = {
             light = {
                 first_person = {
@@ -868,12 +1304,103 @@ local extended_weapon_customization_plugin = {
             },
             flicker = "worn_incandescent_flicker",
         },
+        laser_pointer_ogryn_green_01 = {
+            light = {
+                first_person = {
+                    cast_shadows = true,
+                    color_temperature = 4400,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_02",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.1,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 1.2,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 35,
+                        near = 0,
+                    },
+                },
+                third_person = {
+                    cast_shadows = true,
+                    color_temperature = 4400,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_02",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.6,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 0.9,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 20,
+                        near = 0,
+                    },
+                },
+            },
+            flicker = "worn_incandescent_flicker",
+        },
+        laser_pointer_ogryn_long_green_01 = {
+            light = {
+                first_person = {
+                    cast_shadows = true,
+                    color_temperature = 4400,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_02",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.1,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 1.2,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 35,
+                        near = 0,
+                    },
+                },
+                third_person = {
+                    cast_shadows = true,
+                    color_temperature = 4400,
+                    ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_02",
+                    intensity = 2.5,
+                    spot_reflector = false,
+                    volumetric_intensity = 0.6,
+                    color_filter = vector3_box(0, 1, 0),
+                    spot_angle = {
+                        max = 0.9,
+                        min = 0,
+                    },
+                    falloff = {
+                        far = 20,
+                        near = 0,
+                    },
+                },
+            },
+            flicker = "worn_incandescent_flicker",
+        },
     },
     packages_to_load = {
         ["content/fx/particles/enemies/red_glowing_eyes"] = true,
         ["content/fx/particles/enemies/sniper_laser_sight"] = true,
         ["content/fx/particles/enemies/renegade_sniper/renegade_sniper_beam_outdoors"] = true,
-        ["content/fx/particles/player_buffs/buff_fire_trail_01"] = true,
+        ["content/fx/particles/weapons/rifles/plasma_gun/plasma_gun_charge"] = true,
+        ["content/fx/particles/enemies/buff_taunted_1p"] = true,
+        ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
+        ["content/fx/particles/enemies/renegade_flamer/renegade_flamer_fuse_loop"] = true,
+        ["content/fx/particles/weapons/rifles/player_flamer/flamer_code_control"] = true,
+        ["wwise/events/weapon/play_flametrower_alt_fire_on"] = true,
+        ["wwise/events/weapon/play_flametrower_alt_fire_off"] = true,
+        ["wwise/events/weapon/play_aoe_liquid_fire_green_loop"] = true,
+        ["wwise/events/weapon/stop_aoe_liquid_fire_green_loop"] = true,
+        ["wwise/events/weapon/play_flamethrower_interrupt"] = true,
+        ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
+        ["wwise/events/minions/play_traitor_captain_shield_bullet_hits"] = true,
+        ["wwise/events/weapon/play_shockmaul_1h_p2_swing"] = true,
+        ["content/fx/particles/weapons/rifles/plasma_gun/plasma_vent_valve"] = true,
     },
 }
 

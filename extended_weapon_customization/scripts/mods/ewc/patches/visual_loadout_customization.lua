@@ -53,122 +53,9 @@ mod.recursive_children = function(self, unit, attachment_units_by_unit, children
     return children
 end
 
---item_data.hide_in_ui_preview 
-
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
-
-local script_unit = ScriptUnit
-local script_unit_extension = script_unit.extension
-
--- mod:hook(CLASS.InventoryBackgroundView, "_update_presentation_wield_item", function(func, self, ...)
-mod:hook(CLASS.UIProfileSpawner, "wield_slot", function(func, self, slot_id, ...)
-	-- if not self._profile_spawner then
-	-- 	return
-	-- end
-
-	local character_spawn_data = self._character_spawn_data
-    if character_spawn_data then
-
-        local wielded_slot = character_spawn_data.wielded_slot
-	    local slot_id = wielded_slot and wielded_slot.name
-        local slots = character_spawn_data.slots
-	    local slot = slot_id and slots[slot_id]
-        local equipped_items = character_spawn_data.equipped_items
-        local slot_item = equipped_items and equipped_items[slot_id]
-        -- mod:echo("slot_item: "..tostring(slot_item))
-        -- if not attach_settings.from_ui_profile_spawner then
-        local item_path = slot_item and mod:fetch_attachment(slot_item.attachments, "flashlight")
-        -- mod:echo("item_path: "..tostring(item_path))
-        local attachment_data = item_path and mod.settings.attachment_data_by_item_string[item_path]
-        if slot and attachment_data and attachment_data.ui_item_deinit then
-            local world = self._world
-
-            local player_unit = character_spawn_data.unit_3p
-            -- mod:echo("player_unit: "..tostring(player_unit))
-
-            -- local slot = character_spawn_data.slots[slot_id]
-
-            -- if slot then
-            --     local unit = slot.unit_3p
-
-            -- local visual_loadout_extension = player_unit and script_unit_extension(player_unit, "visual_loadout_system")
-            -- mod:echo("visual_loadout_extension: "..tostring(visual_loadout_extension))
-            -- local _, item_unit, _, attachment_units = visual_loadout_extension and visual_loadout_extension:unit_and_attachments_from_slot(slot_id)
-            local item_unit = slot.unit_3p
-            local attachment_units = item_unit and slot.attachments_by_unit_3p[item_unit]
-            -- mod:echo("attachment_units: "..tostring(attachment_units))
-
-            if attachment_units then
-                local attachment_unit = mod:find_in_units(attachment_units, "flashlight")
-                if attachment_unit and unit_alive(attachment_unit) then
-                    -- mod:echo("ui_item_deinit: "..tostring(attachment_unit))
-                    attachment_data.ui_item_deinit(world, attachment_unit, attachment_data)
-                end
-            end
-        end
-
-    end
-
-	-- self._profile_spawner:wield_slot(slot_id)
-
-	-- local item_inventory_animation_event = slot_item and slot_item.inventory_animation_event or "inventory_idle_default"
-
-	-- if item_inventory_animation_event then
-	-- 	self._profile_spawner:assign_animation_event(item_inventory_animation_event)
-	-- end
-
-    -- Original function
-    func(self, slot_id, ...)
-
-    -- local slot_id = self._preview_wield_slot_id
-	-- local preview_profile_equipped_items = self._preview_profile_equipped_items
-	-- local presentation_inventory = preview_profile_equipped_items
-	-- local slot_item = presentation_inventory[slot_id]
-
-    local character_spawn_data = self._character_spawn_data
-    if character_spawn_data then
-
-        local slots = character_spawn_data.slots
-	    local slot = slots[slot_id]
-        local equipped_items = character_spawn_data.equipped_items
-        local slot_item = equipped_items[slot_id]
-        -- mod:echo("slot_item: "..tostring(slot_item))
-        -- if not attach_settings.from_ui_profile_spawner then
-        local item_path = slot_item and mod:fetch_attachment(slot_item.attachments, "flashlight")
-        -- mod:echo("item_path: "..tostring(item_path))
-        local attachment_data = item_path and mod.settings.attachment_data_by_item_string[item_path]
-        if attachment_data and attachment_data.ui_item_init then
-            local world = self._world
-
-            local player_unit = character_spawn_data.unit_3p
-            -- mod:echo("player_unit: "..tostring(player_unit))
-
-            -- local slot = character_spawn_data.slots[slot_id]
-
-            -- if slot then
-            --     local unit = slot.unit_3p
-
-            -- local visual_loadout_extension = player_unit and script_unit_extension(player_unit, "visual_loadout_system")
-            -- mod:echo("visual_loadout_extension: "..tostring(visual_loadout_extension))
-            -- local _, item_unit, _, attachment_units = visual_loadout_extension and visual_loadout_extension:unit_and_attachments_from_slot(slot_id)
-            local item_unit = slot.unit_3p
-            local attachment_units = item_unit and slot.attachments_by_unit_3p[item_unit]
-            -- mod:echo("attachment_units: "..tostring(attachment_units))
-
-            if attachment_units then
-                local attachment_unit = mod:find_in_units(attachment_units, "flashlight")
-                if attachment_unit and unit_alive(attachment_unit) then
-                    -- mod:echo("ui_item_init: "..tostring(attachment_unit))
-                    attachment_data.ui_item_init(world, attachment_unit, attachment_data)
-                end
-            end
-        end
-
-    end
-
-end)
 
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
@@ -185,7 +72,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
         if attachment_id_lookup and item_data.attachments then
 
-            -- Collect current attachment names
+            -- Collect attachment fixes
             local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
             if kitbash_fixes then
                 fixes = table_merge_recursive(fixes, kitbash_fixes)
@@ -193,46 +80,50 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
 
+                -- Set attachment slot
                 local attachment_slot = attachment_id_lookup[attachment_unit]
                 unit_set_data(attachment_unit, "attachment_slot", attachment_slot)
 
+                -- Get item path
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
 
+                -- Set attachment name
                 local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
                 unit_set_data(attachment_unit, "attachment_name", attachment_name)
 
-                -- local attachment_data = mod.settings.attachment_data_by_item_string[item_path]
-                -- if attachment_data and attachment_data.ui_item_init then
-                --     local world = attach_settings.world
-                --     attachment_data.ui_item_init(world, attachment_unit, attachment_data)
-                -- end
-
                 if item_data.attachments.slot_trinket_1 and item_data.attachments.slot_trinket_1.item then
+                    -- This is a preview item in attachment customization menu
 
                     is_ui_item_preview = true
 
+                    -- Get item path
                     local item = item_data.attachments.slot_trinket_1.item
                     local item_path = item.name
 
+                    -- Execute ui item init function for attachment
                     local attachment_data = mod.settings.attachment_data_by_item_string[item_path]
                     if attachment_data and attachment_data.ui_item_init then
                         local world = attach_settings.world
                         attachment_data.ui_item_init(world, attachment_unit, attachment_data)
                     end
 
+                    -- Collect attachment fixes
                     if item and item.attachments then
-                        -- Collect current attachment names
                         local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                         if kitbash_fixes then
                             fixes = table_merge_recursive(fixes, kitbash_fixes)
                         end
                     end
 
-                else
+                else -- This is a normal item
 
+                    -- Get master item
                     local item = master_items.get_item(item_path)
 
+                    -- Execute ui item init function for attachment
+                    -- Only execute if not from ui profile spawner or ui item preview
                     if is_ui_item_preview and not attach_settings.from_ui_profile_spawner then
+                        -- Get attachment data
                         local attachment_data = mod.settings.attachment_data_by_item_string[item_path]
                         if attachment_data and attachment_data.ui_item_init then
                             local world = attach_settings.world
@@ -248,6 +139,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                             fixes = table_merge_recursive(fixes, kitbash_fixes)
                         end
 
+                        -- Exlcude from vfx spawner
                         if item.is_kitbash and not item.disable_vfx_spawner_exclusion then
                             
                             local pt = mod:pt()
@@ -303,18 +195,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
 
+                -- Set attachment slot
                 local attachment_slot = attachment_id_lookup[attachment_unit]
                 unit_set_data(attachment_unit, "attachment_slot", attachment_slot)
                 
+                -- Get master item
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
                 local item = master_items.get_item(item_path)
 
-                -- local attachment_data = mod.settings.attachment_data_by_item_string[item_path]
-                -- if attachment_data and attachment_data.ui_item_init then
-                --     local world = attach_settings.world
-                --     attachment_data.ui_item_init(world, attachment_unit, attachment_data)
-                -- end
-
+                -- Set attachment name
                 local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
                 unit_set_data(attachment_unit, "attachment_name", attachment_name)
 
