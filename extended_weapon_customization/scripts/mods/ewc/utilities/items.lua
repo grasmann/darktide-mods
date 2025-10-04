@@ -235,6 +235,7 @@ end
 
 mod.sweep_gear_id = function(self, gear_id)
     self:clear_mod_item(gear_id)
+    self:clear_husk_item(gear_id)
     self:delete_gear_settings(gear_id)
     self:delete_gear_id_relays(gear_id)
 end
@@ -345,6 +346,11 @@ end
 mod.create_husk_item = function(self, gear_id, item)
     local pt = mod:pt()
     pt.husk_weapon_templates[gear_id] = item
+end
+
+mod.clear_husk_item = function(self, gear_id)
+    local pt = mod:pt()
+    pt.husk_weapon_templates[gear_id] = nil
 end
 
 mod.husk_item = function(self, gear_id)
