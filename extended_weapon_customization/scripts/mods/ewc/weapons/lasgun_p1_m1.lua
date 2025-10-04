@@ -5,16 +5,18 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local magazine_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_infantry")
-local magazine_lasgun_helbore = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_helbore")
+-- local magazine_lasgun_helbore = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_helbore")
 -- local magazine_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun")
 local grip_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_lasgun")
+-- local grip_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_lasgun_infantry")
 -- local barrel_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun")
 local barrel_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun_infantry")
 local barrel_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_common")
 local stock_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/stock_common")
 local grip_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_common")
-local muzzle_laspistol = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_laspistol")
-local muzzle_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun")
+-- local muzzle_laspistol = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_laspistol")
+-- local muzzle_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun")
+local muzzle_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun_infantry")
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
 local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
 local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
@@ -80,7 +82,7 @@ return {
                 icon_render_camera_position_offset = {.1, -1.5, .2},
             },
         }, stock_common),
-        muzzle = table_merge_recursive_n(nil, muzzle_lasgun, muzzle_laspistol),
+        muzzle = muzzle_lasgun_infantry,
         receiver = {
             lasgun_rifle_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/lasgun_rifle_receiver_01",
@@ -121,7 +123,7 @@ return {
                 hide_from_selection = true,
             },
         },
-        magazine = table_merge_recursive_n(nil, magazine_lasgun_infantry, magazine_lasgun_helbore),
+        magazine = magazine_lasgun_infantry,
         barrel = table_merge_recursive_n(nil, barrel_lasgun_infantry, barrel_common),
     },
 }

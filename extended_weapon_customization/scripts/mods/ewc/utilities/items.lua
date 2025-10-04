@@ -37,7 +37,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local PROCESS_SLOTS = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
+local PROCESS_ITEM_TYPES = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
 local _item = "content/items/weapons/player"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
@@ -233,6 +233,12 @@ mod.clear_mod_item = function(self, gear_id)
     end
 end
 
+mod.sweep_gear_id = function(self, gear_id)
+    self:clear_mod_item(gear_id)
+    self:delete_gear_settings(gear_id)
+    self:delete_gear_id_relays(gear_id)
+end
+
 mod.mod_item = function(self, gear_id, item_data)
     local pt = self:pt()
     -- Check gear id and mod item
@@ -241,7 +247,7 @@ mod.mod_item = function(self, gear_id, item_data)
         local item = self:item_data(item_data)
         local item_type = item_data and item_data.item_type or "unknown"
         -- Check supported item type
-        if table_contains(PROCESS_SLOTS, item_type) then
+        if table_contains(PROCESS_ITEM_TYPES, item_type) then
             mod:print("cloning item "..tostring(gear_id))
             -- Clone item to mod items
             pt.items[gear_id] = table_clone_instance_safe(item_data)
@@ -261,7 +267,7 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     local item = self:item_data(item_data)
     local item_type = item_data and item_data.item_type
     -- Check supported item type
-    if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
+    if table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
         local pt = mod:pt()
 
         -- Inject custom attachments
@@ -292,6 +298,8 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     end
 end
 
+
+
 mod.find_in_units = function(self, attachment_units, target_attachment_slot)
     -- Check
     if attachment_units then
@@ -319,19 +327,87 @@ mod.find_in_units = function(self, attachment_units, target_attachment_slot)
     end
 end
 
+-- ##### ┬ ┬┬ ┬┌─┐┬┌─  ┬┌┬┐┌─┐┌┬┐┌─┐ ##################################################################################
+-- ##### ├─┤│ │└─┐├┴┐  │ │ ├┤ │││└─┐ ##################################################################################
+-- ##### ┴ ┴└─┘└─┘┴ ┴  ┴ ┴ └─┘┴ ┴└─┘ ##################################################################################
+
+mod.husk_item_exists = function(self, gear_id)
+    local pt = mod:pt()
+    return pt.husk_weapon_templates[gear_id]
+end
+
+mod.husk_item_changed = function(self, gear_id, real_item)
+    local pt = mod:pt()
+    local husk_item = pt.husk_weapon_templates[gear_id]
+    return real_item.weapon_template ~= husk_item.weapon_template
+end
+
+mod.create_husk_item = function(self, gear_id, item)
+    local pt = mod:pt()
+    pt.husk_weapon_templates[gear_id] = item
+end
+
+mod.husk_item = function(self, gear_id)
+    local pt = mod:pt()
+    return pt.husk_weapon_templates[gear_id]
+end
+
+mod.handle_husk_item = function(self, item)
+    -- Check if slot is supported, random players is enabled and item is valid
+    local item = self:item_data(item)
+    local item_type = item and item.item_type or "unknown"
+    if table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_players") and item and item.attachments then
+        -- Get gear id
+        local gear_id = mod:gear_id(item)
+        -- Check if mark of husk item was changed
+        if mod:husk_item_exists() and mod:husk_item_changed(gear_id, item) then
+            mod:print("changed husk item "..tostring(gear_id))
+            -- Delete mod item, gear settings and relays
+            mod:sweep_gear_id(gear_id)
+        end
+        -- Check if husk item exists
+        if not mod:husk_item_exists() then
+            -- Mod item
+            mod:print("cloning husk item "..tostring(gear_id))
+            local mod_item = mod:mod_item(gear_id, item)
+            -- Randomize item
+            mod:print("randomizing husk item "..tostring(gear_id))
+            local random_gear_settings = mod:randomize_item(item)
+            -- Set gear settings
+            mod:gear_settings(gear_id, random_gear_settings)
+            -- Set husk item
+            mod:create_husk_item(gear_id, mod_item)
+            -- Return mod item
+            return mod_item
+        else
+            return mod:husk_item(gear_id)
+        end
+    end
+    return item
+end
+
+-- ##### ┬─┐┌─┐┬  ┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┬┌─┌─┐┌─┐┌─┐┌─┐ #################################################################
+-- ##### ├┬┘├┤ │  │ │├─┤ ││  ├─┘├─┤│  ├┴┐├─┤│ ┬├┤ └─┐ #################################################################
+-- ##### ┴└─└─┘┴─┘└─┘┴ ┴─┴┘  ┴  ┴ ┴└─┘┴ ┴┴ ┴└─┘└─┘└─┘ #################################################################
+
 -- Reevaluate packages (when new attachments are added)
-mod.reevaluate_packages = function(self)
+mod.reevaluate_packages = function(self, optional_player)
     -- Get package synchronizer client
     local package_synchronizer_client = managers.package_synchronization:synchronizer_client()
     -- Reevaluate all profile packages
     if package_synchronizer_client then
-        local player = managers.player:local_player(1)
+        local player = optional_player or managers.player:local_player(1)
         local peer_id = player:peer_id()
+        local local_player_id = player:local_player_id()
         if package_synchronizer_client:peer_enabled(peer_id) then
-            package_synchronizer_client:player_profile_packages_changed(peer_id, 1)
+            package_synchronizer_client:player_profile_packages_changed(peer_id, local_player_id)
         end
     end
 end
+
+-- ##### ┬─┐┌─┐┬  ┌─┐┌─┐┌┬┐  ┬ ┬┌─┐┌─┐┌─┐┌─┐┌┐┌ #######################################################################
+-- ##### ├┬┘├┤ │  │ │├─┤ ││  │││├┤ ├─┤├─┘│ ││││ #######################################################################
+-- ##### ┴└─└─┘┴─┘└─┘┴ ┴─┴┘  └┴┘└─┘┴ ┴┴  └─┘┘└┘ #######################################################################
 
 -- Redo weapon attachments by unequipping and reequipping weapon
 mod.redo_weapon_attachments = function(self, item)
@@ -360,5 +436,10 @@ mod.redo_weapon_attachments = function(self, item)
     local flashlight_extension = script_unit_extension(me, "flashlight_system")
     if flashlight_extension then
         flashlight_extension:on_equip_weapon()
+    end
+    -- Relay weapon reload to attachment callback extension
+    local attachment_callback_extension = script_unit_extension(me, "attachment_callback_system")
+    if attachment_callback_extension then
+        attachment_callback_extension:on_equip_weapon()
     end
 end

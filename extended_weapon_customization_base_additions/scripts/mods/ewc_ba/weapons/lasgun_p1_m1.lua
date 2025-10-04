@@ -4,11 +4,23 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local flashlight_modded_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_modded_human")
 local barrel_lasgun_helbore = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_lasgun_helbore")
+mod:modify_customization_groups(barrel_lasgun_helbore, "lasgun_helbore")
+local muzzle_lasgun_helbore = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_helbore")
+mod:modify_customization_groups(muzzle_lasgun_helbore, "lasgun_helbore")
+
 local barrel_lasgun_recon = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_lasgun_recon")
-local laser_pointer_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/laser_pointer_human")
+mod:modify_customization_groups(barrel_lasgun_recon, "lasgun_recon")
+local muzzle_lasgun_recon = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_recon")
+mod:modify_customization_groups(muzzle_lasgun_recon, "lasgun_recon")
+
 local magazine_laspistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laspistol")
+mod:modify_customization_groups(magazine_laspistol, "laspistol")
+local muzzle_laspistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_laspistol")
+mod:modify_customization_groups(muzzle_laspistol, "laspistol")
+
+local flashlight_modded_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_modded_human")
+local laser_pointer_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/laser_pointer_human")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
 local grip_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_common")
 
@@ -40,6 +52,7 @@ local attachments = {
         grip = grip_common,
         sight = sight_scope,
         magazine = magazine_laspistol,
+        muzzle = table_merge_recursive_n(nil, muzzle_lasgun_helbore, muzzle_lasgun_recon, muzzle_laspistol),
         flashlight = table_merge_recursive_n(nil, laser_pointer_human, flashlight_modded_human),
         barrel = table_merge_recursive_n(nil, barrel_lasgun_recon, barrel_lasgun_helbore),
     },

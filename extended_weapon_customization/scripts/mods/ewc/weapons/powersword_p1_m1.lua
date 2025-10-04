@@ -78,13 +78,6 @@ return {
                 icon_render_unit_rotation_offset = {90, 30, 0},
                 icon_render_camera_position_offset = {-.025, -2.5, .7},
             },
-            -- custom
-            power_sword_blade_01_no_light = {
-                replacement_path = _item_npc.."/power_sword_blade_01_no_light",
-                icon_render_unit_rotation_offset = {90, 30, 0},
-                icon_render_camera_position_offset = {-.025, -2.5, .7},
-            },
-            --
             power_sword_blade_02 = {
                 replacement_path = _item_melee.."/blades/power_sword_blade_02",
                 icon_render_unit_rotation_offset = {90, 30, 0},

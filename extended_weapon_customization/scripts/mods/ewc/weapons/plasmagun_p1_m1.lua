@@ -5,7 +5,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
-local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
+-- local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
 local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
 local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
 local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
@@ -38,7 +38,7 @@ return {
         emblem_left = emblem_left,
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
-        flashlight = flashlights,
+        -- flashlight = flashlights,
         receiver = {
             plasma_rifle_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/plasma_rifle_receiver_01",
@@ -205,18 +205,18 @@ return {
             },
         },
     },
-    attachment_slots = {
-        flashlight = {
-            parent_slot = "barrel",
-            default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(.04, .27, 0),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-    },
+    -- attachment_slots = {
+    --     flashlight = {
+    --         parent_slot = "barrel",
+    --         default_path = _item_empty_trinket,
+    --         fix = {
+    --             offset = {
+    --                 position = vector3_box(.04, .27, 0),
+    --                 rotation = vector3_box(0, 0, 0),
+    --                 scale = vector3_box(1, 1, 1),
+    --                 node = 1,
+    --             },
+    --         },
+    --     },
+    -- },
 }

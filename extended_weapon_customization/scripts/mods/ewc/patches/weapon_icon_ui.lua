@@ -10,6 +10,7 @@ local mod = get_mod("extended_weapon_customization")
     local pairs = pairs
     local level = Level
     local Camera = Camera
+    local managers = Managers
     local tostring = tostring
     local unit_light = unit.light
     local level_units = level.units

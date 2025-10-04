@@ -104,7 +104,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     local attachment_data = mod.settings.attachment_data_by_item_string[item_path]
                     if attachment_data and attachment_data.ui_item_init then
                         local world = attach_settings.world
-                        attachment_data.ui_item_init(world, attachment_unit, attachment_data)
+                        attachment_data.ui_item_init(world, attachment_unit, attachment_data, true)
                     end
 
                     -- Collect attachment fixes

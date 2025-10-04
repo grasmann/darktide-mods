@@ -5,17 +5,23 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local magazine_lasgun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_lasgun_infantry")
+mod:modify_customization_groups(magazine_lasgun_infantry, "lasgun_infantry")
+local muzzle_lasgun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_infantry")
+mod:modify_customization_groups(muzzle_lasgun_infantry, "lasgun_infantry")
+
 local magazine_lasgun_helbore = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_lasgun_helbore")
+mod:modify_customization_groups(magazine_lasgun_helbore, "lasgun_helbore")
+local muzzle_lasgun_helbore = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_helbore")
+mod:modify_customization_groups(muzzle_lasgun_helbore, "lasgun_helbore")
+
+local muzzle_lasgun_recon = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_recon")
+mod:modify_customization_groups(muzzle_lasgun_helbore, "lasgun_recon")
+
 local muzzle_laspistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_laspistol")
-local muzzle_lasgun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun")
+mod:modify_customization_groups(magazine_lasgun_helbore, "laspistol")
+
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
--- local trinket_hooks = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/trinket_hook")
--- local emblem_right = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/emblem_right")
--- local emblem_left = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/emblem_left")
--- local flashlights = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight")
--- local sights = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight")
--- local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -42,7 +48,7 @@ local scopes = "scope_01"
 
 local attachments = {
     laspistol_p1_m1 = {
-        muzzle = muzzle_lasgun,
+        muzzle = table_merge_recursive_n(nil, muzzle_laspistol, muzzle_lasgun_infantry, muzzle_lasgun_helbore),
         sight = sight_scope,
         flashlight = flashlight_human,
         magazine = table_merge_recursive_n(nil, magazine_lasgun_infantry, magazine_lasgun_helbore),
@@ -121,7 +127,7 @@ local fixes = {
             },
             fix = {
                 attach = {
-                    rail = "lasgun_rifle_rail_01",
+                    rail = "lasgun_pistol_rail_01",
                 },
                 offset = {
                     position = vector3_box(0, 0, 0),
@@ -131,18 +137,18 @@ local fixes = {
                 },
             },
         },
-        {attachment_slot = "receiver",
-            requirements = {
-                sight = {
-                    has = scopes,
-                },
-            },
-            fix = {
-                hide = {
-                    mesh = {5},
-                },
-            },
-        },
+        -- {attachment_slot = "receiver",
+        --     requirements = {
+        --         sight = {
+        --             has = scopes,
+        --         },
+        --     },
+        --     fix = {
+        --         hide = {
+        --             mesh = {5},
+        --         },
+        --     },
+        -- },
     },
 }
 

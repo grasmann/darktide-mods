@@ -1408,6 +1408,12 @@ VisibleEquipmentExtension.unset_pt_tables = function(self)
 end
 
 VisibleEquipmentExtension.set_pt_tables = function(self, slot, item_unit, attachment_units, attachment_ids, attachment_names, item_name)
+    -- Check validity
+    -- This check fixes a campaign crashs
+    if not self.pt.item_units_by_equipment_component[self.equipment_component] then
+        -- Reset tables
+        self:reset_pt_tables() 
+    end
     self.pt.item_units_by_equipment_component[self.equipment_component][slot.name] = item_unit
     self.pt.attachment_units_by_equipment_component[self.equipment_component][slot.name] = attachment_units
     self.pt.unit_attachment_ids_by_equipment_component[self.equipment_component][slot.name] = attachment_ids

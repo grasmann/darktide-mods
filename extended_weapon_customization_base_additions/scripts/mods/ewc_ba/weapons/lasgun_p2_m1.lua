@@ -5,8 +5,20 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local barrel_lasgun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_lasgun_infantry")
+mod:modify_customization_groups(barrel_lasgun_infantry, "lasgun_infantry")
+local muzzle_lasgun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_infantry")
+mod:modify_customization_groups(muzzle_lasgun_infantry, "lasgun_infantry")
+
 local barrel_lasgun_recon = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_lasgun_recon")
+mod:modify_customization_groups(barrel_lasgun_recon, "lasgun_recon")
+local muzzle_lasgun_recon = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_recon")
+mod:modify_customization_groups(muzzle_lasgun_recon, "lasgun_recon")
+
 local magazine_laspistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laspistol")
+mod:modify_customization_groups(magazine_laspistol, "laspistol")
+local muzzle_laspistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_laspistol")
+mod:modify_customization_groups(muzzle_laspistol, "laspistol")
+
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
@@ -34,6 +46,9 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
+local laspistol_muzzles = "lasgun_pistol_muzzle_01|lasgun_pistol_muzzle_02|lasgun_pistol_muzzle_03|lasgun_pistol_muzzle_04|lasgun_pistol_muzzle_05|lasgun_pistol_muzzle_ml01"
+local lasgun_recon_muzzles = "lasgun_rifle_elysian_muzzle_01|lasgun_rifle_elysian_muzzle_02|lasgun_rifle_elysian_muzzle_03|lasgun_rifle_elysian_muzzle_ml01"
+
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
@@ -43,6 +58,7 @@ local attachments = {
         grip = grip_common,
         magazine = magazine_laspistol,
         flashlight = flashlight_human,
+        muzzle = table_merge_recursive_n(nil, muzzle_lasgun_infantry, muzzle_lasgun_recon, muzzle_laspistol),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope),
         barrel = table_merge_recursive_n(nil, barrel_lasgun_recon, barrel_lasgun_infantry),
     },
@@ -107,6 +123,21 @@ local fixes = {
                     custom_fov = 32.5,
                     aim_scale = .5,
                     fov = 25,
+                },
+            },
+        },
+        {attachment_slot = "bayonet",
+            requirements = {
+                muzzle = {
+                    has = laspistol_muzzles.."|"..lasgun_recon_muzzles,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .075, -.0325),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
                 },
             },
         },

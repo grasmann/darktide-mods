@@ -36,6 +36,7 @@ mod:persistent_table(REFERENCE, {
     loading_packages = {},
     loaded_packages = {},
     debug_sight = {0, 0, 0, 0, 0, 0},
+    husk_weapon_templates = {},
 })
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/common")
@@ -197,8 +198,10 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/master_ite
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_cosmetics_view_definitions")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_unit_visual_loadout_extension")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_husk_visual_loadout_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_character_profile_package_loader")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_unit_first_person_extension")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_husk_first_person_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_cosmetics_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/visual_loadout_customization")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_marks_view")

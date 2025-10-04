@@ -439,6 +439,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                             local origin_mod = pt.attachment_data_origin[attachment_data] or mod
 
                             local group_name = attachment_data.custom_selection_group or origin_mod:get_name()
+                            -- local prefix = ""
+                            if origin_mod ~= mod then group_name = "z_"..group_name end
 
                             temp_mod_count[group_name] = temp_mod_count[group_name] or 0
                             temp_mod_count[group_name] = temp_mod_count[group_name] + 1
@@ -460,7 +462,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
                 for group_name, count in pairs(temp_mod_count) do
                     -- local group_name = type(plugin_mod) == "table" and plugin_mod:get_name() or plugin_mod
-                    local localization_name = "loc_"..tostring(group_name)
+                    local localization_name = "loc_ewc_"..string_gsub(tostring(group_name), "z_", "")
 
                     layout[#layout+1] = {
                         widget_type = "sub_header",

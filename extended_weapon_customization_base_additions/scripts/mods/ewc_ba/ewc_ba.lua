@@ -24,6 +24,21 @@ mod.get_view = function(self, view_name)
     return ui_manager:view_active(view_name) and ui_manager:view_instance(view_name) or nil
 end
 
+mod.modify_customization_groups = function(self, attachments, group_name)
+    for attachment_name, attachment_data in pairs(attachments) do
+        attachment_data.custom_selection_group = group_name
+    end
+end
+
+mod.merge_attachment_data = function(self, merge_attachment_data, ...)
+    local attachment_collections = {...}
+    for _, attachment_collection in pairs(attachment_collections) do
+        for attachment_name, attachment_data in pairs(attachment_collection) do
+            attachment_data = table_merge_recursive(attachment_data, merge_attachment_data)
+        end
+    end
+end
+
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
@@ -99,6 +114,37 @@ local extended_weapon_customization_plugin = {
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
+        [_item_ranged.."/scope_bodies/scope_body_02"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_04/muzzle_04",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "ROTATION_ursula"
+            },
+            attach_node = "ap_bullet_01",
+            resource_dependencies = {
+                ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_04/muzzle_04"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    leaf_attach_node_override = "",
+                    link_map_mode_override = "",
+                    item = "",
+                    children = {},
+                    material_overrides = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/scope_bodies/scope_body_02",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
         [_item_ranged.."/sights/scope_01"] = {
             attachments = {
                 base = {
@@ -155,241 +201,241 @@ local extended_weapon_customization_plugin = {
             dev_name = "loc_scope_01",
             disable_vfx_spawner_exclusion = true,
         },
-        [_item_ranged.."/magazines/autogun_rifle_magazine_01_double"] = {
-            attachments = {
-                double_magazine_1 = {
-                    item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
-                    fix = {
-                        offset = {
-                            node = 1,
-                            position = vector3_box(0, 0, 0),
-                            rotation = vector3_box(0, 0, 0),
-                            scale = vector3_box(1, 1, 1),
-                        },
-                    },
-                    children = {
-                        double_magazine_clip = {
-                            item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                            fix = {
-                                offset = {
-                                    node = 1,
-                                    position = vector3_box(.0325, -.01, -.15),
-                                    rotation = vector3_box(0, 90, 0),
-                                    scale = vector3_box(1, 1.2, .75),
-                                },
-                            },
-                            children = {
-                                double_magazine_2 = {
-                                    item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
-                                    fix = {
-                                        offset = {
-                                            node = 1,
-                                            position = vector3_box(.15, .005, -.125),
-                                            rotation = vector3_box(0, 90, 0),
-                                            scale = vector3_box(1.3, .85, 1),
-                                        },
-                                    },
-                                    children = {},
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            display_name = "loc_autogun_rifle_magazine_01_double",
-            description = "loc_description_autogun_rifle_magazine_01_double",
-            attach_node = "ap_magazine_01",
-            dev_name = "loc_autogun_rifle_magazine_01_double",
-            disable_vfx_spawner_exclusion = true,
-        },
-        [_item_ranged.."/magazines/autogun_rifle_magazine_02_double"] = {
-            attachments = {
-                double_magazine_1 = {
-                    item = _item_ranged.."/magazines/autogun_rifle_magazine_02",
-                    fix = {
-                        offset = {
-                            node = 1,
-                            position = vector3_box(0, 0, 0),
-                            rotation = vector3_box(0, 0, 0),
-                            scale = vector3_box(1, 1, 1),
-                        },
-                    },
-                    children = {
-                        double_magazine_clip = {
-                            item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                            fix = {
-                                offset = {
-                                    node = 1,
-                                    position = vector3_box(.0325, -.01, -.15),
-                                    rotation = vector3_box(0, 90, 0),
-                                    scale = vector3_box(1, 1.2, .75),
-                                },
-                            },
-                            children = {
-                                double_magazine_2 = {
-                                    item = _item_ranged.."/magazines/autogun_rifle_magazine_02",
-                                    fix = {
-                                        offset = {
-                                            node = 1,
-                                            position = vector3_box(.15, .005, -.125),
-                                            rotation = vector3_box(0, 90, 0),
-                                            scale = vector3_box(1.3, .85, 1),
-                                        },
-                                    },
-                                    children = {},
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            display_name = "loc_autogun_rifle_magazine_02_double",
-            description = "loc_description_autogun_rifle_magazine_02_double",
-            attach_node = "ap_magazine_01",
-            dev_name = "loc_autogun_rifle_magazine_02_double",
-            disable_vfx_spawner_exclusion = true,
-        },
-        [_item_ranged.."/magazines/autogun_rifle_magazine_03_double"] = {
-            attachments = {
-                double_magazine_1 = {
-                    item = _item_ranged.."/magazines/autogun_rifle_magazine_03",
-                    fix = {
-                        offset = {
-                            node = 1,
-                            position = vector3_box(0, 0, 0),
-                            rotation = vector3_box(0, 0, 0),
-                            scale = vector3_box(1, 1, 1),
-                        },
-                    },
-                    children = {
-                        double_magazine_clip = {
-                            item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                            fix = {
-                                offset = {
-                                    node = 1,
-                                    position = vector3_box(.0325, -.01, -.15),
-                                    rotation = vector3_box(0, 90, 0),
-                                    scale = vector3_box(1, 1.2, .75),
-                                },
-                            },
-                            children = {
-                                double_magazine_2 = {
-                                    item = _item_ranged.."/magazines/autogun_rifle_magazine_03",
-                                    fix = {
-                                        offset = {
-                                            node = 1,
-                                            position = vector3_box(.15, .005, -.125),
-                                            rotation = vector3_box(0, 90, 0),
-                                            scale = vector3_box(1.3, .85, 1),
-                                        },
-                                    },
-                                    children = {},
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            display_name = "loc_autogun_rifle_magazine_03_double",
-            description = "loc_description_autogun_rifle_magazine_03_double",
-            attach_node = "ap_magazine_01",
-            dev_name = "loc_autogun_rifle_magazine_03_double",
-            disable_vfx_spawner_exclusion = true,
-        },
-        [_item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double"] = {
-            attachments = {
-                double_magazine_1 = {
-                    item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
-                    fix = {
-                        offset = {
-                            node = 1,
-                            position = vector3_box(0, 0, 0),
-                            rotation = vector3_box(0, 0, 0),
-                            scale = vector3_box(1, 1, 1),
-                        },
-                    },
-                    children = {
-                        double_magazine_clip = {
-                            item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                            fix = {
-                                offset = {
-                                    node = 1,
-                                    position = vector3_box(.0325, 0, -.16),
-                                    rotation = vector3_box(10, 90, 0),
-                                    scale = vector3_box(1, 1.2, .75),
-                                },
-                            },
-                            children = {
-                                double_magazine_2 = {
-                                    item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
-                                    fix = {
-                                        offset = {
-                                            node = 1,
-                                            position = vector3_box(.15, .1, -.125),
-                                            rotation = vector3_box(0, 90, 180),
-                                            scale = vector3_box(1.3, .85, 1),
-                                        },
-                                    },
-                                    children = {},
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            display_name = "loc_autogun_rifle_ak_magazine_01_double",
-            description = "loc_description_autogun_rifle_ak_magazine_01_double",
-            attach_node = "ap_magazine_01",
-            dev_name = "loc_autogun_rifle_ak_magazine_01_double",
-            disable_vfx_spawner_exclusion = true,
-        },
-        [_item_ranged.."/magazines/autogun_pistol_magazine_01_double"] = {
-            attachments = {
-                double_magazine_1 = {
-                    item = _item_ranged.."/magazines/autogun_pistol_magazine_01",
-                    fix = {
-                        offset = {
-                            node = 1,
-                            position = vector3_box(0, 0, 0),
-                            rotation = vector3_box(0, 0, 0),
-                            scale = vector3_box(1, 1, 1),
-                        },
-                    },
-                    children = {
-                        double_magazine_clip = {
-                            item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
-                            fix = {
-                                offset = {
-                                    node = 1,
-                                    position = vector3_box(.0325, -.01, -.15),
-                                    rotation = vector3_box(0, 90, 0),
-                                    scale = vector3_box(1, .8, .75),
-                                },
-                            },
-                            children = {
-                                double_magazine_2 = {
-                                    item = _item_ranged.."/magazines/autogun_pistol_magazine_01",
-                                    fix = {
-                                        offset = {
-                                            node = 1,
-                                            position = vector3_box(.15, .005, -.125),
-                                            rotation = vector3_box(0, 90, 0),
-                                            scale = vector3_box(1.3, 1.3, 1),
-                                        },
-                                    },
-                                    children = {},
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            display_name = "loc_autogun_pistol_magazine_01_double",
-            description = "loc_description_autogun_pistol_magazine_01_double",
-            attach_node = "ap_magazine_01",
-            dev_name = "loc_autogun_pistol_magazine_01_double",
-            disable_vfx_spawner_exclusion = true,
-        },
+        -- [_item_ranged.."/magazines/autogun_rifle_magazine_01_double"] = {
+        --     attachments = {
+        --         double_magazine_1 = {
+        --             item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
+        --             fix = {
+        --                 offset = {
+        --                     node = 1,
+        --                     position = vector3_box(0, 0, 0),
+        --                     rotation = vector3_box(0, 0, 0),
+        --                     scale = vector3_box(1, 1, 1),
+        --                 },
+        --             },
+        --             children = {
+        --                 double_magazine_clip = {
+        --                     item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
+        --                     fix = {
+        --                         offset = {
+        --                             node = 1,
+        --                             position = vector3_box(.0325, -.01, -.15),
+        --                             rotation = vector3_box(0, 90, 0),
+        --                             scale = vector3_box(1, 1.2, .75),
+        --                         },
+        --                     },
+        --                     children = {
+        --                         double_magazine_2 = {
+        --                             item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
+        --                             fix = {
+        --                                 offset = {
+        --                                     node = 1,
+        --                                     position = vector3_box(.15, .005, -.125),
+        --                                     rotation = vector3_box(0, 90, 0),
+        --                                     scale = vector3_box(1.3, .85, 1),
+        --                                 },
+        --                             },
+        --                             children = {},
+        --                         },
+        --                     },
+        --                 },
+        --             },
+        --         },
+        --     },
+        --     display_name = "loc_autogun_rifle_magazine_01_double",
+        --     description = "loc_description_autogun_rifle_magazine_01_double",
+        --     attach_node = "ap_magazine_01",
+        --     dev_name = "loc_autogun_rifle_magazine_01_double",
+        --     disable_vfx_spawner_exclusion = true,
+        -- },
+        -- [_item_ranged.."/magazines/autogun_rifle_magazine_02_double"] = {
+        --     attachments = {
+        --         double_magazine_1 = {
+        --             item = _item_ranged.."/magazines/autogun_rifle_magazine_02",
+        --             fix = {
+        --                 offset = {
+        --                     node = 1,
+        --                     position = vector3_box(0, 0, 0),
+        --                     rotation = vector3_box(0, 0, 0),
+        --                     scale = vector3_box(1, 1, 1),
+        --                 },
+        --             },
+        --             children = {
+        --                 double_magazine_clip = {
+        --                     item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
+        --                     fix = {
+        --                         offset = {
+        --                             node = 1,
+        --                             position = vector3_box(.0325, -.01, -.15),
+        --                             rotation = vector3_box(0, 90, 0),
+        --                             scale = vector3_box(1, 1.2, .75),
+        --                         },
+        --                     },
+        --                     children = {
+        --                         double_magazine_2 = {
+        --                             item = _item_ranged.."/magazines/autogun_rifle_magazine_02",
+        --                             fix = {
+        --                                 offset = {
+        --                                     node = 1,
+        --                                     position = vector3_box(.15, .005, -.125),
+        --                                     rotation = vector3_box(0, 90, 0),
+        --                                     scale = vector3_box(1.3, .85, 1),
+        --                                 },
+        --                             },
+        --                             children = {},
+        --                         },
+        --                     },
+        --                 },
+        --             },
+        --         },
+        --     },
+        --     display_name = "loc_autogun_rifle_magazine_02_double",
+        --     description = "loc_description_autogun_rifle_magazine_02_double",
+        --     attach_node = "ap_magazine_01",
+        --     dev_name = "loc_autogun_rifle_magazine_02_double",
+        --     disable_vfx_spawner_exclusion = true,
+        -- },
+        -- [_item_ranged.."/magazines/autogun_rifle_magazine_03_double"] = {
+        --     attachments = {
+        --         double_magazine_1 = {
+        --             item = _item_ranged.."/magazines/autogun_rifle_magazine_03",
+        --             fix = {
+        --                 offset = {
+        --                     node = 1,
+        --                     position = vector3_box(0, 0, 0),
+        --                     rotation = vector3_box(0, 0, 0),
+        --                     scale = vector3_box(1, 1, 1),
+        --                 },
+        --             },
+        --             children = {
+        --                 double_magazine_clip = {
+        --                     item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
+        --                     fix = {
+        --                         offset = {
+        --                             node = 1,
+        --                             position = vector3_box(.0325, -.01, -.15),
+        --                             rotation = vector3_box(0, 90, 0),
+        --                             scale = vector3_box(1, 1.2, .75),
+        --                         },
+        --                     },
+        --                     children = {
+        --                         double_magazine_2 = {
+        --                             item = _item_ranged.."/magazines/autogun_rifle_magazine_03",
+        --                             fix = {
+        --                                 offset = {
+        --                                     node = 1,
+        --                                     position = vector3_box(.15, .005, -.125),
+        --                                     rotation = vector3_box(0, 90, 0),
+        --                                     scale = vector3_box(1.3, .85, 1),
+        --                                 },
+        --                             },
+        --                             children = {},
+        --                         },
+        --                     },
+        --                 },
+        --             },
+        --         },
+        --     },
+        --     display_name = "loc_autogun_rifle_magazine_03_double",
+        --     description = "loc_description_autogun_rifle_magazine_03_double",
+        --     attach_node = "ap_magazine_01",
+        --     dev_name = "loc_autogun_rifle_magazine_03_double",
+        --     disable_vfx_spawner_exclusion = true,
+        -- },
+        -- [_item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double"] = {
+        --     attachments = {
+        --         double_magazine_1 = {
+        --             item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
+        --             fix = {
+        --                 offset = {
+        --                     node = 1,
+        --                     position = vector3_box(0, 0, 0),
+        --                     rotation = vector3_box(0, 0, 0),
+        --                     scale = vector3_box(1, 1, 1),
+        --                 },
+        --             },
+        --             children = {
+        --                 double_magazine_clip = {
+        --                     item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
+        --                     fix = {
+        --                         offset = {
+        --                             node = 1,
+        --                             position = vector3_box(.0325, 0, -.16),
+        --                             rotation = vector3_box(10, 90, 0),
+        --                             scale = vector3_box(1, 1.2, .75),
+        --                         },
+        --                     },
+        --                     children = {
+        --                         double_magazine_2 = {
+        --                             item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
+        --                             fix = {
+        --                                 offset = {
+        --                                     node = 1,
+        --                                     position = vector3_box(.15, .1, -.125),
+        --                                     rotation = vector3_box(0, 90, 180),
+        --                                     scale = vector3_box(1.3, .85, 1),
+        --                                 },
+        --                             },
+        --                             children = {},
+        --                         },
+        --                     },
+        --                 },
+        --             },
+        --         },
+        --     },
+        --     display_name = "loc_autogun_rifle_ak_magazine_01_double",
+        --     description = "loc_description_autogun_rifle_ak_magazine_01_double",
+        --     attach_node = "ap_magazine_01",
+        --     dev_name = "loc_autogun_rifle_ak_magazine_01_double",
+        --     disable_vfx_spawner_exclusion = true,
+        -- },
+        -- [_item_ranged.."/magazines/autogun_pistol_magazine_01_double"] = {
+        --     attachments = {
+        --         double_magazine_1 = {
+        --             item = _item_ranged.."/magazines/autogun_pistol_magazine_01",
+        --             fix = {
+        --                 offset = {
+        --                     node = 1,
+        --                     position = vector3_box(0, 0, 0),
+        --                     rotation = vector3_box(0, 0, 0),
+        --                     scale = vector3_box(1, 1, 1),
+        --                 },
+        --             },
+        --             children = {
+        --                 double_magazine_clip = {
+        --                     item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
+        --                     fix = {
+        --                         offset = {
+        --                             node = 1,
+        --                             position = vector3_box(.0325, -.01, -.15),
+        --                             rotation = vector3_box(0, 90, 0),
+        --                             scale = vector3_box(1, .8, .75),
+        --                         },
+        --                     },
+        --                     children = {
+        --                         double_magazine_2 = {
+        --                             item = _item_ranged.."/magazines/autogun_pistol_magazine_01",
+        --                             fix = {
+        --                                 offset = {
+        --                                     node = 1,
+        --                                     position = vector3_box(.15, .005, -.125),
+        --                                     rotation = vector3_box(0, 90, 0),
+        --                                     scale = vector3_box(1.3, 1.3, 1),
+        --                                 },
+        --                             },
+        --                             children = {},
+        --                         },
+        --                     },
+        --                 },
+        --             },
+        --         },
+        --     },
+        --     display_name = "loc_autogun_pistol_magazine_01_double",
+        --     description = "loc_description_autogun_pistol_magazine_01_double",
+        --     attach_node = "ap_magazine_01",
+        --     dev_name = "loc_autogun_pistol_magazine_01_double",
+        --     disable_vfx_spawner_exclusion = true,
+        -- },
         [_item_ranged.."/flashlights/invisible_flashlight"] = {
             attachments = {
                 flashlight = {
@@ -799,7 +845,7 @@ local extended_weapon_customization_plugin = {
         [_item_melee.."/tanks/laser_blade_tank_02"] = {
             is_fallback_item = false,
             show_in_1p = true,
-            base_unit = "content/weapons/player/ranged/flamer_rifle/attachments/magazine_02/magazine_02",
+            base_unit = "content/weapons/player/ranged/flamer_rifle/attachments/magazine_03/magazine_03",
             item_list_faction = "Player",
             tags = {
             },
@@ -809,7 +855,7 @@ local extended_weapon_customization_plugin = {
             },
             attach_node = "ap_blade_01",
             resource_dependencies = {
-                ["content/weapons/player/ranged/flamer_rifle/attachments/magazine_02/magazine_02"] = true,
+                ["content/weapons/player/ranged/flamer_rifle/attachments/magazine_03/magazine_03"] = true,
             },
             attachments = {
                 zzz_shared_material_overrides = {
@@ -821,86 +867,6 @@ local extended_weapon_customization_plugin = {
             },
             display_name = "n/a",
             name = _item_melee.."/tanks/laser_blade_tank_02",
-            workflow_state = "RELEASABLE",
-            is_full_item = true,
-        },
-        [_item_melee.."/blades/laser_blade_01"] = {
-            is_fallback_item = false,
-            show_in_1p = true,
-            base_unit = "content/weapons/player/melee/power_sword/attachments/blade_06/blade_06",
-            item_list_faction = "Player",
-            tags = {
-            },
-            only_show_in_1p = false,
-            feature_flags = {
-                "FEATURE_item_retained",
-            },
-            attach_node = "ap_blade_01",
-            resource_dependencies = {
-                ["content/weapons/player/melee/power_sword/attachments/blade_06/blade_06"] = true,
-            },
-            attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
-                tank = {
-                    item = _item_melee.."/tanks/laser_blade_tank_01",
-                    fix = {
-                        offset = {
-                            node = 1,
-                            position = vector3_box(0, -.02, .08),
-                            rotation = vector3_box(90, 180, 180),
-                            scale = vector3_box(.65, .65, .65),
-                        },
-                    },
-                    children = {},
-                }
-            },
-            workflow_checklist = {
-            },
-            display_name = "n/a",
-            name = _item_melee.."/blades/laser_blade_01",
-            workflow_state = "RELEASABLE",
-            is_full_item = true,
-        },
-        [_item_melee.."/blades/laser_blade_green_01"] = {
-            is_fallback_item = false,
-            show_in_1p = true,
-            base_unit = "content/weapons/player/melee/power_sword/attachments/blade_06/blade_06",
-            item_list_faction = "Player",
-            tags = {
-            },
-            only_show_in_1p = false,
-            feature_flags = {
-                "FEATURE_item_retained",
-            },
-            attach_node = "ap_blade_01",
-            resource_dependencies = {
-                ["content/weapons/player/melee/power_sword/attachments/blade_06/blade_06"] = true,
-            },
-            attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
-                tank = {
-                    item = _item_melee.."/tanks/laser_blade_tank_02",
-                    fix = {
-                        offset = {
-                            node = 1,
-                            position = vector3_box(0, -.02, .08),
-                            rotation = vector3_box(90, 180, 180),
-                            scale = vector3_box(.65, .65, .65),
-                        },
-                    },
-                    children = {},
-                }
-            },
-            workflow_checklist = {
-            },
-            display_name = "n/a",
-            name = _item_melee.."/blades/laser_blade_green_01",
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
@@ -1384,23 +1350,24 @@ local extended_weapon_customization_plugin = {
         },
     },
     packages_to_load = {
-        ["content/fx/particles/enemies/red_glowing_eyes"] = true,
-        ["content/fx/particles/enemies/sniper_laser_sight"] = true,
+        ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
         ["content/fx/particles/enemies/renegade_sniper/renegade_sniper_beam_outdoors"] = true,
-        ["content/fx/particles/weapons/rifles/plasma_gun/plasma_gun_charge"] = true,
-        ["content/fx/particles/enemies/buff_taunted_1p"] = true,
-        ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
         ["content/fx/particles/enemies/renegade_flamer/renegade_flamer_fuse_loop"] = true,
         ["content/fx/particles/weapons/rifles/player_flamer/flamer_code_control"] = true,
-        ["wwise/events/weapon/play_flametrower_alt_fire_on"] = true,
-        ["wwise/events/weapon/play_flametrower_alt_fire_off"] = true,
+        ["content/fx/particles/weapons/rifles/plasma_gun/plasma_vent_valve"] = true,
+        ["content/fx/particles/weapons/rifles/plasma_gun/plasma_gun_charge"] = true,
+        ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
+        ["content/fx/particles/enemies/sniper_laser_sight"] = true,
+        ["content/fx/particles/enemies/red_glowing_eyes"] = true,
+        ["content/fx/particles/enemies/buff_taunted_1p"] = true,
+        ["wwise/events/minions/play_traitor_captain_shield_bullet_hits"] = true,
         ["wwise/events/weapon/play_aoe_liquid_fire_green_loop"] = true,
         ["wwise/events/weapon/stop_aoe_liquid_fire_green_loop"] = true,
+        ["wwise/events/weapon/play_flametrower_alt_fire_off"] = true,
+        ["wwise/events/weapon/play_flametrower_alt_fire_on"] = true,
         ["wwise/events/weapon/play_flamethrower_interrupt"] = true,
-        ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
-        ["wwise/events/minions/play_traitor_captain_shield_bullet_hits"] = true,
         ["wwise/events/weapon/play_shockmaul_1h_p2_swing"] = true,
-        ["content/fx/particles/weapons/rifles/plasma_gun/plasma_vent_valve"] = true,
+        
     },
 }
 
@@ -1408,10 +1375,17 @@ local weapons_folder = "extended_weapon_customization_base_additions/scripts/mod
 local load_weapons = {
     "ogryn_heavystubber_p1_m1",
     "ogryn_heavystubber_p2_m1",
+    "forcesword_2h_p1_m1",
+    "powersword_2h_p1_m1",
+    "combatsword_p1_m1",
+    "combatsword_p2_m1",
+    "combatsword_p3_m1",
     "powersword_p1_m1",
+    "powersword_p2_m1",
     "boltpistol_p1_m1",
     "autopistol_p1_m1",
     "laspistol_p1_m1",
+    "plasmagun_p1_m1",
     "autogun_p1_m1",
     "autogun_p2_m1",
     "autogun_p3_m1",

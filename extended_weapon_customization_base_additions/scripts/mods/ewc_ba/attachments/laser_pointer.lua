@@ -68,9 +68,6 @@ local Sway = mod:original_require("scripts/utilities/sway")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
-
 local LOCK_STATES = {"walking", "sliding", "jumping", "falling", "dodging", "ledge_vaulting"}
 local LASER_PARTICLE = "content/fx/particles/enemies/sniper_laser_sight"
 local DOT_PARTICLE = "content/fx/particles/enemies/red_glowing_eyes"
@@ -103,14 +100,17 @@ local context = {
 }
 
 local function color_light_in_attachment(attachment_unit, attachment_data)
-    local light = unit_light(attachment_unit, 1)
-    local ewc = get_mod("extended_weapon_customization")
-    local flashlight_template_name = attachment_data.flashlight_template or "default"
-    local flashlight_template = ewc.settings.flashlight_templates[flashlight_template_name] or FlashlightTemplates[flashlight_template_name] or FlashlightTemplates.default
+    -- Check unit
+    if attachment_unit and unit_alive(attachment_unit) then
+        local light = unit_light(attachment_unit, 1)
+        local ewc = get_mod("extended_weapon_customization")
+        local flashlight_template_name = attachment_data.flashlight_template or "default"
+        local flashlight_template = ewc.settings.flashlight_templates[flashlight_template_name] or FlashlightTemplates[flashlight_template_name] or FlashlightTemplates.default
 
-    ewc:set_template_for_light(light, flashlight_template.light.third_person)
-    ewc:set_light_color_for_unit(light, attachment_unit)
-    ewc:set_light(light, true)
+        ewc:set_template_for_light(light, flashlight_template.light.third_person)
+        ewc:set_light_color_for_unit(light, attachment_unit)
+        ewc:set_light(light, true)
+    end
 end
 
 -- ##### ┌─┐┌─┐┌─┐┬ ┬┌┐┌  ┌─┐┌─┐┬─┐┌┬┐┬┌─┐┬  ┌─┐  ┌─┐┌─┐┌─┐┌─┐┌─┐┌┬┐┌─┐ ###############################################
@@ -184,49 +184,56 @@ end
 -- ### ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘  ┴─┘┴ ┴└─┘└─┘┴└─       └─┘┴  ┴ ┴ └─┘┴ ┴└─┘┘  ┴  ┴└─└─┘└  ┴┴─┘└─┘  └─┘┴  ┴ ┴└┴┘┘└┘└─┘┴└─ ###
 
 local function despawn_preview_effect(world, particle_name, attachment_unit)
-    -- Check running effect for unit
-    if context[particle_name] and context[particle_name][attachment_unit] then
-        -- Stop effect
-        if world_are_particles_playing(world, context[particle_name][attachment_unit]) then
-            world_stop_spawning_particles(world, context[particle_name][attachment_unit])
+    -- Check unit
+    if attachment_unit and unit_alive(attachment_unit) then
+        -- Check running effect for unit
+        if context[particle_name] and context[particle_name][attachment_unit] then
+            -- Stop effect
+            if world_are_particles_playing(world, context[particle_name][attachment_unit]) then
+                world_stop_spawning_particles(world, context[particle_name][attachment_unit])
+            end
+            -- Destroy
+            world_destroy_particles(world, context[particle_name][attachment_unit])
+            -- Set nil
+            context[particle_name][attachment_unit] = nil
         end
-        -- Destroy
-        world_destroy_particles(world, context[particle_name][attachment_unit])
-        -- Set nil
-        context[particle_name][attachment_unit] = nil
     end
 end
 
 local function despwan_preview_lasers(world, attachment_unit, attachment_data)
-    despawn_preview_effect(world, "preview_laser_laser_particles", attachment_unit)
-    despawn_preview_effect(world, "preview_laser_wweapon_dot_particles", attachment_unit)
+    -- Check unit
+    if attachment_unit and unit_alive(attachment_unit) then
+        despawn_preview_effect(world, "preview_laser_laser_particles", attachment_unit)
+        despawn_preview_effect(world, "preview_laser_wweapon_dot_particles", attachment_unit)
+    end
 end
 
 local function spawn_preview_laser(world, attachment_unit, attachment_data)
+    -- Check unit
+    if attachment_unit and unit_alive(attachment_unit) then
+        despwan_preview_lasers(world, attachment_unit, attachment_data)
 
-    despwan_preview_lasers(world, attachment_unit, attachment_data)
+        -- Attachment data
+        local laser_node = attachment_data.laser_node or 2
+        local laser_particle = attachment_data.laser_particle_effect or LASER_PARTICLE
+        local dot_particle = attachment_data.dot_particle_effect or DOT_PARTICLE
+        local laser_color = attachment_data.laser_color and vector3_unbox(attachment_data.laser_color) or vector3_unbox(LASER_COLOR)
+        local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, 0)
+        local pose = unit_local_pose(attachment_unit, laser_node)
 
-    -- Attachment data
-    local laser_node = attachment_data.laser_node or 2
-    local laser_particle = attachment_data.laser_particle_effect or LASER_PARTICLE
-    local dot_particle = attachment_data.dot_particle_effect or DOT_PARTICLE
-    local laser_color = attachment_data.laser_color and vector3_unbox(attachment_data.laser_color) or vector3_unbox(LASER_COLOR)
-    local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, 0)
-    local pose = unit_local_pose(attachment_unit, laser_node)
+        -- Attachment unit data
+        local flashlight_rotation = unit_world_rotation(attachment_unit, laser_node)
+        local flashlight_position = unit_world_position(attachment_unit, laser_node)
 
-    -- Attachment unit data
-    local flashlight_rotation = unit_world_rotation(attachment_unit, laser_node)
-    local flashlight_position = unit_world_position(attachment_unit, laser_node)
+        -- Create laser pointer particle effect
+        context.preview_laser_laser_particles[attachment_unit] = spawn_laser_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, true, false)
 
-    -- Create laser pointer particle effect
-    context.preview_laser_laser_particles[attachment_unit] = spawn_laser_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, true, false)
+        -- Create weapon dot particle effect
+        context.preview_laser_wweapon_dot_particles[attachment_unit] = spawn_weapon_dot_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, false)
 
-    -- Create weapon dot particle effect
-    context.preview_laser_wweapon_dot_particles[attachment_unit] = spawn_weapon_dot_particle_effect(world, attachment_unit, attachment_data, flashlight_position, flashlight_rotation, false)
-
-    -- Color light in attachment unit
-    color_light_in_attachment(attachment_unit, attachment_data)
-
+        -- Color light in attachment unit
+        color_light_in_attachment(attachment_unit, attachment_data)
+    end
 end
 
 -- ##### ┌─┐┌─┐ ┬ ┬┬┌─┐┌─┐┌─┐┌┬┐  ┬  ┌─┐┌─┐┌─┐┬─┐ #####################################################################

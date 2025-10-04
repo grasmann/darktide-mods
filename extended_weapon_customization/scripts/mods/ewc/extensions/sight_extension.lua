@@ -35,6 +35,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local vector3_zero = vector3.zero
     local vector3_lerp = vector3.lerp
     local unit_get_data = unit.get_data
+    local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local camera_vertical_fov = Camera.vertical_fov
     local unit_set_local_scale = unit.set_local_scale
@@ -61,6 +62,10 @@ local empty_offset = {
     position = vector3_box(vector3_zero()),
     rotation = vector3_box(vector3_zero()),
 }
+local AIM_ACTIONS = {
+    "action_charge",
+    "action_overload_charge",
+}
 
 -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #################################################################
 -- ##### └─┐││ ┬├─┤ │ └─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ #################################################################
@@ -80,6 +85,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
     self.first_person_extension = script_unit_extension(self.unit, "first_person_system")
     self.unit_data_extension = script_unit_extension(unit, "unit_data_system")
     self.alternate_fire_component = self.unit_data_extension:read_component("alternate_fire")
+    self.weapon_action_component = self.unit_data_extension:read_component("weapon_action")
     self.first_person_unit = self.first_person_extension:first_person_unit()
 
     self.lens_transparency = 0
@@ -171,6 +177,14 @@ SightExtension.on_equip_weapon = function(self, item)
     self:fetch_sight_offset(item)
 end
 
+SightExtension.on_wield = function(self, slot_name)
+    self.wielded_slot = slot_name
+end
+
+SightExtension.is_wielded = function(self)
+    return self.wielded_slot == SLOT_SECONDARY
+end
+
 mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewport_name, ...)
     -- Original function
     func(self, dt, t, viewport_name, ...)
@@ -214,7 +228,11 @@ SightExtension.update = function(self, dt, t)
     local fov = self.offset.fov and math_rad(self.offset.fov)
     local min_scale = self.offset.aim_scale or 1
 
-    if self.first_person_extension:is_in_first_person_mode() and self.alternate_fire_component.is_active then
+    local is_aiming = self.alternate_fire_component and self.alternate_fire_component.is_active
+    local weapon_action = self.weapon_action_component and self.weapon_action_component.current_action_name
+    local is_charging = weapon_action and table_contains(AIM_ACTIONS, weapon_action)
+
+    if self:is_wielded() and self.first_person_extension:is_in_first_person_mode() and (is_aiming or is_charging) then
         local offset_position = self.offset.position and vector3_unbox(self.offset.position) or vector3_zero()
 
         local pt = mod:pt()
@@ -225,7 +243,7 @@ SightExtension.update = function(self, dt, t)
 
         local offset_rotation = self.offset.rotation and vector3_unbox(self.offset.rotation) or vector3_zero()
 
-        local pt = mod:pt()
+        -- local pt = mod:pt()
         local debug_rotation_offset = vector3(pt.debug_sight[4], pt.debug_sight[5], pt.debug_sight[6])
         offset_rotation = offset_rotation + debug_rotation_offset
 

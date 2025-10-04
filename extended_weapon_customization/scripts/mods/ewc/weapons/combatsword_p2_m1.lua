@@ -68,21 +68,6 @@ return {
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {-.025, -2.5, .2},
             },
-            power_falchion_grip_01 = {
-                replacement_path = _item_melee.."/grips/power_falchion_grip_01",
-                icon_render_unit_rotation_offset = {90, -30, 0},
-                icon_render_camera_position_offset = {-.025, -2.5, .2},
-            },
-            power_falchion_grip_02 = {
-                replacement_path = _item_melee.."/grips/power_falchion_grip_02",
-                icon_render_unit_rotation_offset = {90, -30, 0},
-                icon_render_camera_position_offset = {-.025, -2.5, .2},
-            },
-            power_falchion_grip_03 = {
-                replacement_path = _item_melee.."/grips/power_falchion_grip_03",
-                icon_render_unit_rotation_offset = {90, -30, 0},
-                icon_render_camera_position_offset = {-.025, -2.5, .2},
-            },
         },
         body = {
             falchion_blade_01 = {

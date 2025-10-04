@@ -5,22 +5,40 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local receiver_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/receiver_autogun_headhunter")
+mod:modify_customization_groups(receiver_autogun_headhunter, "autogun_headhunter")
 local magazine_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_headhunter")
-local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
-local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
+mod:modify_customization_groups(magazine_autogun_headhunter, "autogun_headhunter")
 local barrel_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_autogun_headhunter")
+mod:modify_customization_groups(barrel_autogun_headhunter, "autogun_headhunter")
 local muzzle_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_headhunter")
-local receiver_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/receiver_autogun_infantry")
+mod:modify_customization_groups(muzzle_autogun_headhunter, "autogun_headhunter")
 local sight_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_autogun_headhunter")
+mod:modify_customization_groups(sight_autogun_headhunter, "autogun_headhunter")
 local stock_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/stock_autogun_headhunter")
+mod:modify_customization_groups(stock_autogun_headhunter, "autogun_headhunter")
 local grip_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_autogun_headhunter")
+mod:modify_customization_groups(grip_autogun_headhunter, "autogun_headhunter")
+
+local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
+mod:modify_customization_groups(magazine_autogun_infantry, "autogun_infantry")
+local receiver_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/receiver_autogun_infantry")
+mod:modify_customization_groups(receiver_autogun_infantry, "autogun_infantry")
 local barrel_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_autogun_infantry")
+mod:modify_customization_groups(barrel_autogun_infantry, "autogun_infantry")
 local muzzle_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_infantry")
-local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
+mod:modify_customization_groups(muzzle_autogun_infantry, "autogun_infantry")
 local sight_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_autogun_infantry")
+mod:modify_customization_groups(sight_autogun_infantry, "autogun_infantry")
 local stock_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/stock_autogun_infantry")
+mod:modify_customization_groups(stock_autogun_infantry, "autogun_infantry")
 local grip_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_autogun_infantry")
+mod:modify_customization_groups(grip_autogun_infantry, "autogun_infantry")
+
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
+mod:modify_customization_groups(magazine_autopistol, "autopistol")
+
+local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
+local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local bayonet_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/bayonet_common")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
@@ -463,7 +481,55 @@ local fixes = {
 fixes.autogun_p2_m2 = table_clone(fixes.autogun_p2_m1)
 fixes.autogun_p2_m3 = table_clone(fixes.autogun_p2_m1)
 
-local kitbashs = {}
+local kitbashs = {
+    [_item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double"] = {
+        attachments = {
+            double_magazine_1 = {
+                item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
+                fix = {
+                    offset = {
+                        node = 1,
+                        position = vector3_box(0, 0, 0),
+                        rotation = vector3_box(0, 0, 0),
+                        scale = vector3_box(1, 1, 1),
+                    },
+                },
+                children = {
+                    double_magazine_clip = {
+                        item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
+                        fix = {
+                            offset = {
+                                node = 1,
+                                position = vector3_box(.0325, 0, -.16),
+                                rotation = vector3_box(10, 90, 0),
+                                scale = vector3_box(1, 1.2, .75),
+                            },
+                        },
+                        children = {
+                            double_magazine_2 = {
+                                item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
+                                fix = {
+                                    offset = {
+                                        node = 1,
+                                        position = vector3_box(.15, .1, -.125),
+                                        rotation = vector3_box(0, 90, 180),
+                                        scale = vector3_box(1.3, .85, 1),
+                                    },
+                                },
+                                children = {},
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        display_name = "loc_autogun_rifle_ak_magazine_01_double",
+        description = "loc_description_autogun_rifle_ak_magazine_01_double",
+        attach_node = "ap_magazine_01",
+        dev_name = "loc_autogun_rifle_ak_magazine_01_double",
+        disable_vfx_spawner_exclusion = true,
+    },
+}
 
 return {
     attachments = attachments,

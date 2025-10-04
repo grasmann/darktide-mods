@@ -134,6 +134,10 @@ mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_pers
     if flashlight_extension then
         flashlight_extension:on_wield(slot.name)
     end
+    local sight_extension = script_unit_extension(slot.parent_unit_3p, "sight_system")
+    if sight_extension then
+        sight_extension:on_wield(slot.name)
+    end
     local attachment_callback_extension = script_unit_extension(slot.parent_unit_3p, "attachment_callback_system")
     if attachment_callback_extension then
         attachment_callback_extension:on_wield(slot.name)

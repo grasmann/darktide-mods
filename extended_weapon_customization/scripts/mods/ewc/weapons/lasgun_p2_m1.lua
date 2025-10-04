@@ -4,13 +4,15 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local muzzle_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun_infantry")
+-- local muzzle_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun_infantry")
 local muzzle_lasgun_helbore = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun_helbore")
 -- local magazine_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun")
-local magazine_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_infantry")
+-- local magazine_lasgun_infantry = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_infantry")
 local magazine_lasgun_helbore = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_helbore")
 -- local barrel_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun")
 local barrel_lasgun_helbore = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun_helbore")
+
+local bayonet_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/bayonet_common")
 local barrel_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_common")
 local stock_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/stock_common")
 local grip_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_common")
@@ -44,6 +46,7 @@ return {
         emblem_left = emblem_left,
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
+        bayonet = bayonet_common,
         sight = {
             lasgun_rifle_krieg_sight_01 = {
                 replacement_path = _item_ranged.."/sights/lasgun_rifle_krieg_sight_01",
@@ -57,7 +60,7 @@ return {
                 hide_from_selection = true,
             },
         },
-        muzzle = table_merge_recursive_n(nil, muzzle_lasgun_infantry, muzzle_lasgun_helbore),
+        muzzle = muzzle_lasgun_helbore,
         receiver = {
             lasgun_rifle_krieg_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/lasgun_rifle_krieg_receiver_01",
@@ -90,8 +93,8 @@ return {
                 icon_render_camera_position_offset = {-.15, -1.75, .25},
             },
         },
-        magazine = table_merge_recursive_n(nil, magazine_lasgun_infantry, magazine_lasgun_helbore),
-        barrel = table_merge_recursive_n(nil, barrel_lasgun_helbore, barrel_common),
+        magazine = magazine_lasgun_helbore,
+        barrel = barrel_lasgun_helbore,
         stock = {
             lasgun_rifle_krieg_stock_01 = {
                 replacement_path = _item_ranged.."/stocks/lasgun_rifle_krieg_stock_01",

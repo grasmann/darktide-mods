@@ -7,19 +7,21 @@ local mod = get_mod("extended_weapon_customization")
 local magazine_lasgun_recon = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun_recon")
 -- local magazine_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/magazine_lasgun")
 local grip_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_lasgun")
+-- local grip_lasgun_recon = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_lasgun_recon")
 -- local barrel_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun")
 local barrel_lasgun_recon = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_lasgun_recon")
 local barrel_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/barrel_common")
 local stock_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/stock_common")
 local grip_common = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/grip_common")
-local muzzle_laspistol = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_laspistol")
-local muzzle_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun")
+-- local muzzle_laspistol = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_laspistol")
+local muzzle_lasgun_recon = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun_recon")
+-- local muzzle_lasgun = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/muzzle_lasgun")
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
 local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
 local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/flashlight")
-local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
-local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
+-- local sights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/sight")
+-- local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/rail")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -40,8 +42,8 @@ local rails = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/atta
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
-local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
-local scopes = "scope_01"
+-- local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
+-- local scopes = "scope_01"
 
 return {
     attachments = {
@@ -49,8 +51,8 @@ return {
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
         flashlight = flashlights,
-        rail = rails,
-        sight = table_merge_recursive({
+        -- rail = rails,
+        sight = {
             lasgun_rifle_elysian_sight_01 = {
                 replacement_path = _item_ranged.."/sights/lasgun_rifle_elysian_sight_01",
                 icon_render_unit_rotation_offset = {90, 0, -95},
@@ -69,8 +71,8 @@ return {
                 icon_render_camera_position_offset = {.035, -.1, .175},
                 hide_from_selection = true,
             },
-        }, sights),
-        muzzle = table_merge_recursive_n(nil, muzzle_lasgun, muzzle_laspistol),
+        },
+        muzzle = muzzle_lasgun_recon,
         receiver = {
             lasgun_rifle_elysian_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/lasgun_rifle_elysian_receiver_01",
@@ -139,50 +141,50 @@ return {
         },
         grip = table_merge_recursive_n(nil, grip_lasgun, grip_common),
     },
-    fixes = {
-        {attachment_slot = "sight_offset",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.0335),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, .05, .0075),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "rail",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..scopes,
-                },
-            },
-            fix = {
-                attach = {
-                    rail = "lasgun_rifle_rail_01",
-                },
-                offset = {
-                    position = vector3_box(0, .0185, .0075),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, .9, 1),
-                    node = 1,
-                },
-            },
-        },
-    },
+    -- fixes = {
+    --     {attachment_slot = "sight_offset",
+    --         requirements = {
+    --             sight = {
+    --                 has = reflex_sights.."|"..scopes,
+    --             },
+    --         },
+    --         fix = {
+    --             offset = {
+    --                 position = vector3_box(0, 0, -.0335),
+    --                 rotation = vector3_box(0, 0, 0),
+    --             },
+    --         },
+    --     },
+    --     {attachment_slot = "sight",
+    --         requirements = {
+    --             sight = {
+    --                 has = reflex_sights.."|"..scopes,
+    --             },
+    --         },
+    --         fix = {
+    --             offset = {
+    --                 position = vector3_box(0, .05, .0075),
+    --                 rotation = vector3_box(0, 0, 0),
+    --             },
+    --         },
+    --     },
+    --     {attachment_slot = "rail",
+    --         requirements = {
+    --             sight = {
+    --                 has = reflex_sights.."|"..scopes,
+    --             },
+    --         },
+    --         fix = {
+    --             attach = {
+    --                 rail = "lasgun_rifle_rail_01",
+    --             },
+    --             offset = {
+    --                 position = vector3_box(0, .0185, .0075),
+    --                 rotation = vector3_box(0, 0, 0),
+    --                 scale = vector3_box(1, .9, 1),
+    --                 node = 1,
+    --             },
+    --         },
+    --     },
+    -- },
 }

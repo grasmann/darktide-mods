@@ -19,7 +19,7 @@ HasLocalization = function(key)
 end
 
 mod:add_global_localize_strings({
-	loc_extended_weapon_customization = {
+	loc_ewc_extended_weapon_customization = {
 		en = "Extended Weapon Customization",
 		["zh-cn"] = "扩展武器自定义",
 	},
@@ -167,6 +167,12 @@ return {
 	},
 	mod_option_crouch_tooltip = {
 		en = "Weapon changes pose when you crouch.",
+	},
+	mod_option_randomize_players = {
+		en = "Randomize Players",
+	},
+	mod_option_randomize_players_tooltip = {
+		en = "Randomize weapons of other players.",
 	},
 
 	group_flashlight = {
