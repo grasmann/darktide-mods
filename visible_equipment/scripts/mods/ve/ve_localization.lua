@@ -3,6 +3,7 @@ local mod = get_mod("visible_equipment")
 mod:add_global_localize_strings({
 	attachment_slot_scabbard = {
 		en = "Scabbard",
+		["zh-cn"] = "刀鞘",
 	},
 	loc_visible_equipment = {
 		en = "Visible Equipment",

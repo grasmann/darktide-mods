@@ -29,8 +29,10 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local table_remove = table.remove
     local vector3_zero = vector3.zero
     local physics_world = PhysicsWorld
+    local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local world_unlink_unit = world.unlink_unit
+    local unit_local_rotation = unit.local_rotation
     local quaternion_identity = quaternion.identity
     local unit_world_position = unit.world_position
     local unit_world_rotation = unit.world_rotation
@@ -48,6 +50,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 
 local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
+local PROCESS_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -159,6 +162,20 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
         end
     end
 
+    -- instance.replace_state_machine_equipment = function(self)
+    --     local spawn_data = self._loading_profile_data --or self._character_spawn_data
+    --     if spawn_data then
+    --         if not spawn_data.state_machine or string_find(spawn_data.state_machine, "end_of_round") then
+    --             if (not spawn_data.profile.loadout[SLOT_SECONDARY] or not spawn_data.profile.loadout[SLOT_SECONDARY].__master_item) and spawn_data.profile.visual_loadout and spawn_data.profile.visual_loadout[SLOT_SECONDARY] then
+    --                 self:_change_slot_item(SLOT_SECONDARY, spawn_data.profile.visual_loadout[SLOT_SECONDARY])
+    --             end
+    --             if (not spawn_data.profile.loadout[SLOT_PRIMARY] or not spawn_data.profile.loadout[SLOT_PRIMARY].__master_item) and spawn_data.profile.visual_loadout and spawn_data.profile.visual_loadout[SLOT_PRIMARY] then
+    --                 self:_change_slot_item(SLOT_PRIMARY, spawn_data.profile.visual_loadout[SLOT_PRIMARY])
+    --             end
+    --         end
+    --     end
+    -- end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -199,6 +216,37 @@ mod:hook(CLASS.UIProfileSpawner, "update", function(func, self, dt, t, input_ser
     end
 end)
 
+
+-- mod:hook(CLASS.UIProfileSpawner, "_change_slot_item", function(func, self, slot_id, item, loadout, visual_loadout, ...)
+
+--     -- if self:valid_instance() and table_contains(PROCESS_SLOTS, slot_id) then
+        
+--         -- local data = self._loading_profile_data or self._character_spawn_data
+--         -- local profile = data and data.profile
+--         -- item = data and data.profile.visual_loadout and data.profile.visual_loadout[slot_id] or item
+
+--     -- end
+
+--     -- Original function
+--     func(self, slot_id, item, loadout, visual_loadout, ...)
+-- end)
+
+-- mod:hook(CLASS.UIProfileSpawner, "wield_slot", function(func, self, slot_id, ...)
+
+-- 	-- Original function
+-- 	func(self, slot_id, ...)
+
+-- 	local data = self._loading_profile_data or self._character_spawn_data
+-- 	if data then
+-- 		if not data.state_machine or string_find(data.state_machine, "end_of_round") then
+-- 			if data.profile.visual_loadout and data.profile.visual_loadout[slot_id] then
+-- 				self:_change_slot_item(slot_id, data.profile.visual_loadout[slot_id])
+-- 			end
+-- 		end
+-- 	end
+
+-- end)
+
 mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, unit_3p, timeout, ...)
     -- Original function
     func(self, unit_3p, timeout, ...)
@@ -209,6 +257,7 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
     end
     local character_spawn_data = self._character_spawn_data
     local equipment_component = character_spawn_data and character_spawn_data.equipment_component
+
     -- Update placement
     if self._placement_name and self._slot_name then
         -- local character_spawn_data = self._character_spawn_data
@@ -226,7 +275,59 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
         end
     end
 
+    -- self:replace_state_machine_equipment()
+
 end)
+
+-- mod:hook(CLASS.UIProfileSpawner, "_sync_profile_changes", function(func, self, ...)
+--     -- Ignore slots
+--     self._ignored_slots[SLOT_SECONDARY] = nil
+--     self._ignored_slots[SLOT_PRIMARY] = nil
+--     -- Original function
+--     func(self, ...)
+
+--     local data = self._loading_profile_data or self._character_spawn_data
+--     local profile = data and data.profile
+--     if data then
+--         data.loading_items[SLOT_PRIMARY] = data and data.profile.visual_loadout and data.profile.visual_loadout[SLOT_PRIMARY] or data.loading_items[SLOT_PRIMARY]
+--         data.loading_items[SLOT_SECONDARY] = data and data.profile.visual_loadout and data.profile.visual_loadout[SLOT_SECONDARY] or data.loading_items[SLOT_SECONDARY]
+--     end
+-- end)
+
+-- mod:hook(CLASS.UIProfileSpawner, "_update_ingore_slots", function(func, self, ...)
+-- 	-- local slot_configuration = PlayerCharacterConstants.slot_configuration
+-- 	-- local gear_slots = {}
+-- 	-- local ignored_slots = self._ignored_slots
+
+-- 	-- for slot_id, config in pairs(slot_configuration) do
+-- 	-- 	local settings = ItemSlotSettings[slot_id]
+
+-- 	-- 	if not ignored_slots[slot_id] and not settings.ignore_character_spawning then
+-- 	-- 		gear_slots[slot_id] = config
+-- 	-- 	end
+-- 	-- end
+
+--     -- Original function
+--     func(self, ...)
+--     -- Ignore slots
+--     self._ignored_slots[SLOT_SECONDARY] = nil
+--     self._ignored_slots[SLOT_PRIMARY] = nil
+-- 	if self._visible then
+-- 		self:_update_items_visibility()
+-- 	end
+-- end)
+
+-- Get player from player_unit
+-- mod.player_from_unit = function(self, unit)
+--     if unit then
+--         local player_manager = managers.player
+--         for _, player in pairs(player_manager:players()) do
+--             if player.player_unit == unit then
+--                 return player
+--             end
+--         end
+--     end
+-- end
 
 mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
     -- Catch profile
@@ -236,6 +337,14 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
     -- Ignore slots
     self._ignored_slots[SLOT_SECONDARY] = nil
     self._ignored_slots[SLOT_PRIMARY] = nil
+
+    local data = self._loading_profile_data or self._character_spawn_data
+    local profile = data and data.profile
+    -- local player = managers.player:player_by_unit(data.unit_3p)
+    -- local player_profile = player and player:profile() or profile
+    
+    profile.loadout[SLOT_PRIMARY] = profile.visual_loadout and profile.visual_loadout[SLOT_PRIMARY] or profile.loadout[SLOT_PRIMARY]
+    profile.loadout[SLOT_SECONDARY] = profile.visual_loadout and profile.visual_loadout[SLOT_SECONDARY] or profile.loadout[SLOT_SECONDARY]
 
     if self._placement_name and self._slot_name then
 
@@ -293,7 +402,7 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_companion", function(func, self, unit_3
     -- Unlink companion
     world_unlink_unit(self._world, companion_unit_3p)
     unit_set_local_position(companion_unit_3p, 1, unit_world_position(unit_3p, 1) + vector3(-.55, .65, 0))
-    unit_set_local_rotation(companion_unit_3p, 1, quaternion_from_vector(vector3(0, 0, 160)))
+    unit_set_local_rotation(companion_unit_3p, 1, unit_local_rotation(unit_3p, 1))
     -- Return companion
     return companion_unit_3p
 end)

@@ -25,9 +25,11 @@ mod:add_global_localize_strings({
 	},
 	loc_weapon_inventory_reset_button = {
 		en = "Reset",
+		["zh-cn"] = "重置",
 	},
 	loc_weapon_inventory_random_button = {
 		en = "Random",
+		["zh-cn"] = "随机",
 	},
 
 	attachment_slot_pommel = {
@@ -72,54 +74,71 @@ mod:add_global_localize_strings({
 	},
 	attachment_slot_trinket_hook = {
 		en = "Trinket Hook",
+		["zh-cn"] = "饰品挂钩",
 	},
 	attachment_slot_underbarrel = {
 		en = "Underbarrel",
+		["zh-cn"] = "下挂",
 	},
 	attachment_slot_shaft = {
 		en = "Shaft",
+		["zh-cn"] = "杆身",
 	},
 	attachment_slot_blade = {
 		en = "Blade",
+		["zh-cn"] = "刀刃",
 	},
 	attachment_slot_teeth = {
 		en = "Chain",
+		["zh-cn"] = "链齿",
 	},
 	attachment_slot_chain = {
 		en = "Chain",
+		["zh-cn"] = "链条",
 	},
 	attachment_slot_body = {
 		en = "Body",
+		["zh-cn"] = "主体",
 	},
 	attachment_slot_shaft_upper = {
 		en = "Upper Shaft",
+		["zh-cn"] = "上杆身",
 	},
 	attachment_slot_shaft_lower = {
 		en = "Lower Shaft",
+		["zh-cn"] = "下杆身",
 	},
 	attachment_slot_hilt = {
 		en = "Hilt",
+		["zh-cn"] = "剑柄",
 	},
 	attachment_slot_emblem_left = {
 		en = "Left Emblem",
+		["zh-cn"] = "左徽章",
 	},
 	attachment_slot_emblem_right = {
 		en = "Right Emblem",
+		["zh-cn"] = "右徽章",
 	},
 	attachment_slot_connector = {
 		en = "Connector",
+		["zh-cn"] = "连接器",
 	},
 	attachment_slot_left = {
 		en = "Shield",
+		["zh-cn"] = "盾牌",
 	},
 	attachment_slot_handle = {
 		en = "Handle",
+		["zh-cn"] = "手柄",
 	},
 	attachment_slot_bayonet = {
 		en = "Bayonet",
+		["zh-cn"] = "刺刀",
 	},
 	attachment_slot_rail = {
 		en = "Rail",
+		["zh-cn"] = "导轨",
 	}
 })
 
@@ -139,70 +158,92 @@ return {
 
 	group_debug = {
 		en = "Debug",
+		["zh-cn"] = "调试",
 	},
 	debug_mode = {
 		en = "Debug Mode",
+		["zh-cn"] = "调试模式",
 	},
 	debug_mode_tooltip = {
 		en = "Debug Mode outputs some debug info.",
+		["zh-cn"] = "调试模式会输出一些调试信息",
 	},
 	clear_chat = {
 		en = "Clear Chat",
+		["zh-cn"] = "清空聊天",
 	},
 	clear_chat_tooltip = {
 		en = "Clears the chat.",
+		["zh-cn"] = "清空聊天记录",
 	},
 
 	group_misc = {
 		en = "Misc",
+		["zh-cn"] = "杂项",
 	},
 	mod_option_sway = {
 		en = "Sway",
+		["zh-cn"] = "晃动效果",
 	},
 	mod_option_sway_tooltip = {
 		en = "Weapon sways when you rotate your character.",
+		["zh-cn"] = "角色旋转时武器会晃动",
 	},
 	mod_option_crouch = {
 		en = "Crouch",
+		["zh-cn"] = "下蹲姿势",
 	},
 	mod_option_crouch_tooltip = {
 		en = "Weapon changes pose when you crouch.",
+		["zh-cn"] = "下蹲时武器姿势会改变",
 	},
 	mod_option_randomize_players = {
 		en = "Randomize Players",
+		["zh-cn"] = "随机玩家",
 	},
 	mod_option_randomize_players_tooltip = {
 		en = "Randomize weapons of other players.",
+		["zh-cn"] = "其他玩家的武器随机化",
 	},
 
 	group_flashlight = {
 		en = "Flashlight",
+		["zh-cn"] = "手电筒",
 	},
 	mod_option_flashlight_shadows = {
 		en = "Cast Shadows",
+		["zh-cn"] = "投射阴影",
 	},
 	mod_option_flashlight_shadows_tooltip = {
 		en = "Flashlight casts shadows.",
+		["zh-cn"] = "手电筒会投射阴影",
 	},
 	mod_toggle_flashlight_interact_aim = {
 		en = "Toggle on Aiming Interact",
+		["zh-cn"] = "瞄准时交互切换",
 	},
 	mod_toggle_flashlight_interact_aim_tooltip = {
 		en = "Toggle flashlight by pressing the interact button when aiming.",
+		["zh-cn"] = "瞄准时按下交互键切换手电筒",
 	},
 	mod_toggle_flashlight_interact_double = {
 		en = "Toggle on Double Interact",
+		["zh-cn"] = "双击交互切换",
 	},
 	mod_toggle_flashlight_interact_double_tooltip = {
 		en = "Toggle flashlight by pressing the interact button two times in quick succession when not aiming.",
+		["zh-cn"] = "非瞄准状态下快速连续按两次交互键切换手电筒",
 	},
 	mod_flashlight_input_reminder = {
 		en = "Flashlight Input Reminder",
+		["zh-cn"] = "手电筒输入提醒",
 	},
 	mod_flashlight_input_reminder_tooltip = {
 		en = "Flashlight input reminder when using a modded flashlight.",
+		["zh-cn"] = "使用改装手电筒时显示输入提醒",
 	},
 	mod_flashlight_input_reminder_text = {
 		en = " Modded flashlight.\nInteract toggles the flashlight while aiming or double press. Toggle this reminder in options.",
+		["zh-cn"] = " 改装手电筒\n瞄准时按交互键或双击交互键切换手电筒。可在选项中关闭此提醒",
 	},
 }

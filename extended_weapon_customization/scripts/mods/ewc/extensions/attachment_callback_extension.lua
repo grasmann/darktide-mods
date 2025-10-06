@@ -57,7 +57,7 @@ AttachmentCallbackExtension.init = function(self, extension_init_context, unit, 
     self.attachments = {}
     self.attachment_slots = {}
     -- Fetch attachment callbacks
-    self:fetch_attachments_with_callbacks()
+    -- self:fetch_attachments_with_callbacks()
     -- Register events
     managers.event:register(self, "ewc_reloaded", "on_mod_reload")
     managers.event:register(self, "ewc_settings_changed", "on_settings_changed")

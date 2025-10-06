@@ -170,4 +170,30 @@ return {
             },
         },
     },
+    fixes = {
+        {attachment_slot = "barrel",
+            requirements = {
+                receiver = {
+                    has = "flamer_rifle_receiver_07",
+                },
+            },
+            fix = {
+                attach = {
+                    barrel = "flamer_rifle_barrel_07",
+                },
+            },
+        },
+        {attachment_slot = "receiver",
+            requirements = {
+                barrel = {
+                    has = "flamer_rifle_barrel_07",
+                },
+            },
+            fix = {
+                attach = {
+                    receiver = "flamer_rifle_receiver_07",
+                },
+            },
+        },
+    },
 }

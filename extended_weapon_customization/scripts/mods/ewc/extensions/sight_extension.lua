@@ -98,7 +98,7 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
         rotation = vector3_box(vector3_zero()),
     }
 
-    self:fetch_sight_offset()
+    -- self:fetch_sight_offset()
 
     managers.event:register(self, "ewc_reloaded", "on_mod_reload")
 

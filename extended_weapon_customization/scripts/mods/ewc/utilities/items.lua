@@ -345,7 +345,8 @@ end
 
 mod.create_husk_item = function(self, gear_id, item)
     local pt = mod:pt()
-    pt.husk_weapon_templates[gear_id] = item
+    pt.husk_weapon_templates[gear_id] = table_clone_instance_safe(item)
+    return pt.husk_weapon_templates[gear_id]
 end
 
 mod.clear_husk_item = function(self, gear_id)
@@ -366,28 +367,18 @@ mod.handle_husk_item = function(self, item)
         -- Get gear id
         local gear_id = mod:gear_id(item)
         -- Check if mark of husk item was changed
-        if mod:husk_item_exists() and mod:husk_item_changed(gear_id, item) then
-            mod:print("changed husk item "..tostring(gear_id))
-            -- Delete mod item, gear settings and relays
-            mod:sweep_gear_id(gear_id)
-        end
-        -- Check if husk item exists
-        if not mod:husk_item_exists() then
-            -- Mod item
-            mod:print("cloning husk item "..tostring(gear_id))
-            local mod_item = mod:mod_item(gear_id, item)
-            -- Randomize item
-            mod:print("randomizing husk item "..tostring(gear_id))
-            local random_gear_settings = mod:randomize_item(item)
-            -- Set gear settings
-            mod:gear_settings(gear_id, random_gear_settings)
-            -- Set husk item
-            mod:create_husk_item(gear_id, mod_item)
-            -- Return mod item
-            return mod_item
-        else
-            return mod:husk_item(gear_id)
-        end
+        mod:sweep_gear_id(gear_id)
+        -- Create husk item
+        mod:print("cloning husk item "..tostring(gear_id))
+        local mod_item = mod:create_husk_item(gear_id, item)
+        -- Randomize item
+        mod:print("randomizing husk item "..tostring(gear_id))
+        -- Use existing gear settings, when the weapon was already randomized
+        local random_gear_settings = mod:gear_settings(gear_id) or mod:randomize_item(mod_item)
+        -- Set gear settings
+        mod:gear_settings(gear_id, random_gear_settings)
+        -- Return mod item
+        return mod_item
     end
     return item
 end

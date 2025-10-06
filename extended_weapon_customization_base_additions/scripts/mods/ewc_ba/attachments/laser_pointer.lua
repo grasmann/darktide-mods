@@ -366,15 +366,17 @@ local function update_laser_pointer(flashlight_extension, dt, t)
             -- Weapon data
             local unit_data_extension = script_unit_extension(flashlight_extension.unit, "unit_data_system")
             local weapon_extension = script_unit_has_extension(flashlight_extension.unit, "weapon_system")
-            -- Apply recoil
-            local recoil_template = weapon_extension:recoil_template()
-            local recoil_component = unit_data_extension:read_component("recoil")
-            local movement_state_component = unit_data_extension:read_component("movement_state")
-            aim_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, movement_state_component, aim_rotation)
-            -- Apply game sway
-            local sway_component = unit_data_extension:read_component("sway")
-            local sway_template = weapon_extension:sway_template()
-            aim_rotation = Sway.apply_sway_rotation(sway_template, sway_component, movement_state_component, aim_rotation)
+            if weapon_extension then
+                -- Apply recoil
+                local recoil_template = weapon_extension:recoil_template()
+                local recoil_component = unit_data_extension:read_component("recoil")
+                local movement_state_component = unit_data_extension:read_component("movement_state")
+                aim_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, movement_state_component, aim_rotation)
+                -- Apply game sway
+                local sway_component = unit_data_extension:read_component("sway")
+                local sway_template = weapon_extension:sway_template()
+                aim_rotation = Sway.apply_sway_rotation(sway_template, sway_component, movement_state_component, aim_rotation)
+            end
 
             -- Aim rotation
             local aim_direction = vector3_normalize(quaternion_forward(aim_rotation))

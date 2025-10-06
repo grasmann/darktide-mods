@@ -38,6 +38,71 @@ local PROCESS_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, ...)
+
+    local world = extension_init_context.world
+
+    if not script_unit_extension(unit, "sight_system") then
+        script_unit_add_extension(
+            {
+                world = world
+            },
+            unit,
+            "SightExtension",
+            "sight_system",
+            {
+                visual_loadout_extension = self,
+            }
+        )
+    end
+
+    if not script_unit_extension(unit, "sway_system") then
+        script_unit_add_extension(
+            {
+                world = world
+            },
+            unit,
+            "SwayExtension",
+            "sway_system",
+            {
+                visual_loadout_extension = self,
+                player = extension_init_data.player,
+            }
+        )
+    end
+
+    if not script_unit_extension(unit, "flashlight_system") then
+        script_unit_add_extension(
+            {
+                world = world,
+            },
+            unit,
+            "FlashlightExtension",
+            "flashlight_system",
+            {
+                is_local_unit = true,
+                visual_loadout_extension = self,
+                player = extension_init_data.player,
+                -- from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
+            }
+        )
+    end
+
+    if not script_unit_extension(unit, "attachment_callback_system") then
+        script_unit_add_extension(
+            {
+                world = world,
+            },
+            unit,
+            "AttachmentCallbackExtension",
+            "attachment_callback_system",
+            {
+                visual_loadout_extension = self,
+                player = extension_init_data.player,
+                -- from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
+            }
+        )
+    end
+
     -- Original function
     func(self, extension_init_context, unit, extension_init_data, ...)
 
@@ -48,66 +113,67 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
     -- Destroy mispredict handler
     self._mispredict_package_handler = nil
 
-    if not script_unit_extension(self._unit, "sight_system") then
-        script_unit_add_extension(
-            {
-                world = self._equipment_component._world
-            },
-            self._unit,
-            "SightExtension",
-            "sight_system",
-            {
-                visual_loadout_extension = self,
-            }
-        )
-    end
+    -- if not script_unit_extension(self._unit, "sight_system") then
+    --     script_unit_add_extension(
+    --         {
+    --             world = self._equipment_component._world
+    --         },
+    --         self._unit,
+    --         "SightExtension",
+    --         "sight_system",
+    --         {
+    --             visual_loadout_extension = self,
+    --         }
+    --     )
+    -- end
 
-    if not script_unit_extension(self._unit, "sway_system") then
-        script_unit_add_extension(
-            {
-                world = self._equipment_component._world
-            },
-            self._unit,
-            "SwayExtension",
-            "sway_system",
-            {
-                visual_loadout_extension = self,
-                player = self._player,
-            }
-        )
-    end
+    -- if not script_unit_extension(self._unit, "sway_system") then
+    --     script_unit_add_extension(
+    --         {
+    --             world = self._equipment_component._world
+    --         },
+    --         self._unit,
+    --         "SwayExtension",
+    --         "sway_system",
+    --         {
+    --             visual_loadout_extension = self,
+    --             player = self._player,
+    --         }
+    --     )
+    -- end
 
-    if not script_unit_extension(self._unit, "flashlight_system") then
-        script_unit_add_extension(
-            {
-                world = self._equipment_component._world,
-            },
-            self._unit,
-            "FlashlightExtension",
-            "flashlight_system",
-            {
-                visual_loadout_extension = self,
-                player = self._player,
-                from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
-            }
-        )
-    end
+    -- if not script_unit_extension(self._unit, "flashlight_system") then
+    --     script_unit_add_extension(
+    --         {
+    --             world = self._equipment_component._world,
+    --         },
+    --         self._unit,
+    --         "FlashlightExtension",
+    --         "flashlight_system",
+    --         {
+    --             is_local_unit = true,
+    --             visual_loadout_extension = self,
+    --             player = self._player,
+    --             from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
+    --         }
+    --     )
+    -- end
 
-    if not script_unit_extension(self._unit, "attachment_callback_system") then
-        script_unit_add_extension(
-            {
-                world = self._equipment_component._world,
-            },
-            self._unit,
-            "AttachmentCallbackExtension",
-            "attachment_callback_system",
-            {
-                visual_loadout_extension = self,
-                player = self._player,
-                from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
-            }
-        )
-    end
+    -- if not script_unit_extension(self._unit, "attachment_callback_system") then
+    --     script_unit_add_extension(
+    --         {
+    --             world = self._equipment_component._world,
+    --         },
+    --         self._unit,
+    --         "AttachmentCallbackExtension",
+    --         "attachment_callback_system",
+    --         {
+    --             visual_loadout_extension = self,
+    --             player = self._player,
+    --             from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
+    --         }
+    --     )
+    -- end
 
 end)
 

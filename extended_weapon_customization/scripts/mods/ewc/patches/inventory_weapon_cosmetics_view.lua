@@ -71,6 +71,7 @@ local items = mod:original_require("scripts/utilities/items")
 local temp_detached = {}
 local temp_validated = {}
 local temp_mod_count = {}
+local empty_position = {0, 0, 0}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -371,6 +372,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
     if self.customize_attachments then
 
+        -- self.attachment_selection_rotation_offset = 0
+        -- self.current_default_rotation_angle = 0
+
         local pt = mod:pt()
         local weapon_template = self._presentation_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
@@ -410,7 +414,11 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
                 local mod_name = mod:get_name()
 
-                if get_empty_item_function then
+                local original_item = master_items.get_item(self._selected_item.name)
+                local original_attachment = original_item and original_item.attachments and mod:fetch_attachment(original_item.attachments, slot_name)
+                local original_attachment_is_empty = original_attachment == "content/items/weapons/player/trinkets/unused_trinket" or original_attachment == ""
+
+                if original_attachment_is_empty and get_empty_item_function then
                     local empty_item = get_empty_item_function(self._selected_item, self._presentation_item)
 
                     temp_mod_count[mod_name] = temp_mod_count[mod_name] or 0
@@ -488,139 +496,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
     -- Original function
     func(self, index, ...)
 end)
-
--- mod:hook(CLASS.UIWeaponSpawner, "update", function(func, self, dt, t, input_service, ...)
-
---     -- -- Focus attachment slot
---     -- local weapon_spawn_data = self._weapon_spawn_data
---     -- if self.focus_attachment_unit and unit_alive(self.focus_attachment_unit) and weapon_spawn_data then
---     --     local attachment_position = unit_world_position(self.focus_attachment_unit, 1)
---     --     -- local camera = self._camera
---     --     -- local camera_position = ScriptCamera.position(camera)
---     --     local default_position = self.link_unit_position and vector3_unbox(self.link_unit_position) or vector3_zero()
---     --     local difference = attachment_position - default_position
---     --     -- mod:print("attachment_position "..tostring(attachment_position).." camera_position "..tostring(camera_position).." difference "..tostring(difference))
---     --     local link_unit = weapon_spawn_data.link_unit
---     --     -- local link_unit_position = unit_world_position(link_unit, 1)
-        
---     --     local link_difference = vector3(difference.x, difference.y, difference.z)
---     --     mod:print("link_unit_position "..tostring(default_position))
-
---     --     -- unit_set_local_position(link_unit, 1, default_position - link_difference)
---     --     self:set_position(default_position - link_difference)
---     --     -- ScriptCamera.set_offset(camera, difference)
---     -- end
-
---     -- Original function
---     func(self, dt, t, input_service, ...)
--- end)
-
--- mod:hook(CLASS.UIWeaponSpawner, "_spawn_weapon", function(func, self, item, link_unit_name, level_link_unit, loader, position, rotation, scale, force_highest_mip, ...)
---     -- Original function
---     func(self, item, link_unit_name, level_link_unit, loader, position, rotation, scale, force_highest_mip, ...)
---     -- Focus attachment slot
---     if self.focus_attachment_slot then
---         local weapon_spawn_data = self._weapon_spawn_data
-
--- 	    if weapon_spawn_data then
---             local item_unit_3p = weapon_spawn_data.item_unit_3p
---             local attachment_units_3p = weapon_spawn_data.attachment_units_3p[item_unit_3p]
-
---             local link_unit = weapon_spawn_data.link_unit
---             -- self.link_unit_position = vector3_box(unit_world_position(link_unit, 1))
-
---             if attachment_units_3p then
---                 for i = 1, #attachment_units_3p do
---                     local attachment_unit = attachment_units_3p[i]
-
---                     if attachment_unit and unit_alive(attachment_unit) then
-
---                         local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
---                         if attachment_slot == self.focus_attachment_slot then
---                             mod:echo("weapon_spawner focus attachment unit "..tostring(attachment_unit))
---                             -- self.focus_attachment_unit = attachment_unit
-
---                             local world_attachment_position = unit_world_position(attachment_unit, 1)
---                             -- local camera = self._camera
---                             -- local camera_position = ScriptCamera.position(camera)
---                             -- local default_position = self.link_unit_position and vector3_unbox(self.link_unit_position) or vector3_zero()
---                             local world_link_position = unit_world_position(link_unit, 1)
---                             local difference = world_attachment_position - world_link_position
---                             -- mod:print("attachment_position "..tostring(attachment_position).." camera_position "..tostring(camera_position).." difference "..tostring(difference))
---                             local link_unit = weapon_spawn_data.link_unit
---                             -- local link_unit_position = unit_world_position(link_unit, 1)
---                             -- local item_unit_position = unit_world_position(item_unit_3p, 1)
---                             -- local item_unit_difference = item_unit_position - attachment_position
-
-
---                             local attachment_position = unit_local_position(attachment_unit, 1)
---                             mod:print("attachment_position "..tostring(attachment_position))
-
---                             local angle = 0
-
---                             -- if attachment_position.y > 0 then
-
---                             -- end
-                            
---                             if attachment_position.x > 0 then
-
---                                 -- self._rotation_angle = .5
---                                 -- self:_set_rotation(3)
---                                 angle = 3
---                                 -- difference = difference * -1
-
---                             end
-
---                             angle = angle + difference.y
-
---                             self:_set_rotation(angle)
-
---                             -- mod:print("item_unit_difference "..tostring())
---                             -- if item_unit_difference.y < 0 then
---                             --     mod:print("rotate attachment slot "..tostring(attachment_slot))
---                             -- end
-                            
---                             -- local link_difference = vector3(difference.x, difference.y, difference.z)
---                             -- mod:print("link_unit_position "..tostring(default_position))
-
---                             -- unit_set_local_position(link_unit, 1, default_position - link_difference)
---                             self:set_position(unit_local_position(link_unit, 1) - difference)
-
---                         end
-
---                     end
---                 end
---             end
---         end
---     end
--- end)
-
--- mod:hook(CLASS.ViewElementInventoryWeaponPreview, "present_item", function(func, self, item, disable_auto_spin, ...)
---     -- Original function
---     func(self, item, disable_auto_spin, ...)
---     -- Focus attachment slot
---     if self.focus_attachment_slot and self._ui_weapon_spawner then
---         mod:print("weapon_spawner focus attachment slot "..tostring(self.focus_attachment_slot))
---         self._ui_weapon_spawner.focus_attachment_slot = self.focus_attachment_slot
---     else
---         mod:print("focus_attachment_slot: "..tostring(self.focus_attachment_slot).." weapon_spawner: "..tostring(self._ui_weapon_spawner))
---     end
--- end)
-
--- mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, self, item, ...)
---     -- Original function
---     func(self, item, ...)
---     -- Modify
---     if self.customize_attachments and self._weapon_preview and self._tabs_content then
---         local content = self._tabs_content[self._selected_tab_index]
---         local slot_name = content and content.slot_name
---         if slot_name then
---             mod:print("weapon_preview focus attachment slot "..tostring(slot_name))
---             self._weapon_preview.focus_attachment_slot = slot_name
---             self._weapon_preview:present_item(item, false)
---         end
---     end
--- end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_sort_options", function(func, self, ...)
     if self.customize_attachments then
@@ -716,6 +591,17 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
             button_content.hotspot.disabled = not mod:gear_settings(gear_id)
         end
 
+        local weapon_preview = self._weapon_preview
+        local ui_weapon_spawner = weapon_preview and weapon_preview._ui_weapon_spawner
+        if ui_weapon_spawner then
+            if self.current_default_rotation_angle ~= ui_weapon_spawner._default_rotation_angle then
+                ui_weapon_spawner._default_rotation_angle = math_lerp(ui_weapon_spawner._default_rotation_angle, self.current_default_rotation_angle, dt)
+            end
+            if ui_weapon_spawner._rotation_angle ~= ui_weapon_spawner._default_rotation_angle and not ui_weapon_spawner._is_rotating then
+                ui_weapon_spawner._rotation_angle = math_lerp(ui_weapon_spawner._rotation_angle, ui_weapon_spawner._default_rotation_angle, dt)
+            end
+        end
+
     else
         local widgets_by_name = self._widgets_by_name
         local reset_button = widgets_by_name and widgets_by_name.reset_button
@@ -784,6 +670,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             self._presentation_item.__original_gear_id = gear_id
             self._presentation_item.__attachment_customization = true
 
+            mod:pt().items_originating_from_customization_menu[gear_id] = true
+
             local weapon_template = self._presentation_item.weapon_template
             local attachments = weapon_template and mod.settings.attachments[weapon_template]
             if attachments then
@@ -850,6 +738,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             self._on_enter_anim_id = self:_start_animation("on_enter", self._widgets_by_name, self)
         end
 
+        self.attachment_selection_rotation_offset = 0
+        self.current_default_rotation_angle = 0
+
         if self._presentation_item then
             self:_setup_weapon_preview()
 
@@ -857,11 +748,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             mod:pt().items_originating_from_customization_menu[gear_id] = true
 
             self:_preview_item(self._presentation_item)
-            self._weapon_preview:center_align(0, {
-                -0.2,
-                -0.3,
-                -0.2,
-            })
+            self._weapon_preview:center_align(0, {-.3, 0, -.2})
         end
 
         self:present_grid_layout({})
@@ -907,6 +794,13 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
                 -- local detached, validated = {}, {}
                 table_clear(temp_detached)
                 table_clear(temp_validated)
+
+                -- Offsets
+                if attachment_data then
+                    -- self.attachment_selection_position_offset = attachment_data.attachment_selection_position_offset or empty_position
+                    self.attachment_selection_rotation_offset = attachment_data.attachment_selection_rotation_offset
+                    -- self.attachment_selection_zoom_offset = attachment_data.attachment_selection_zoom_offset or 0
+                end
 
                 -- Detach attachments
                 if attachment_data and attachment_data.detach_attachments then
@@ -971,7 +865,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
                 end
 
                 if real_item.display_name and real_item.display_name ~= "" and real_item.display_name ~= "n/a" then
-                    if HasLocalization(real_item.display_name) then
+                    if has_localization(real_item.display_name) then
                         attachment_name = localize(real_item.display_name)
                     end
                 end
@@ -1016,6 +910,71 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
     end
     -- Original function
     func(self, element, ...)
+end)
+
+-- mod:hook(CLASS.UIWeaponSpawner, "_mouse_rotation_input", function(func, self, input_service, dt, ...)
+--     -- Original function
+--     func(self, input_service, dt, ...)
+
+--     if self.customize_attachments then
+--         if input_service:get("right_pressed") then
+--             self:_set_rotation(self._default_rotation_angle)
+--         end
+--     end
+-- end)
+
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, self, item, ...)
+    -- Original function
+    func(self, item, ...)
+
+    if self.customize_attachments then
+
+        local weapon_preview = self._weapon_preview
+        local ui_weapon_spawner = weapon_preview and weapon_preview._ui_weapon_spawner
+
+        -- if weapon_preview then
+        --     local ui_weapon_spawner = weapon_preview._ui_weapon_spawner
+
+            if ui_weapon_spawner then
+
+                -- local offset_position = self.attachment_selection_position_offset or empty_position
+                -- weapon_preview:center_align(1, {
+                --     -0.3 + position[1],
+                --     0 + position[2],
+                --     -0.2 + position[3],
+                -- })
+
+                -- local rotation = self.attachment_selection_rotation_offset or 0
+                -- local ui_weapon_spawner = weapon_preview._ui_weapon_spawner
+                -- if ui_weapon_spawner then
+
+                if self.current_default_rotation_angle then
+                    ui_weapon_spawner._default_rotation_angle = self.current_default_rotation_angle
+                    ui_weapon_spawner._rotation_angle = self.current_default_rotation_angle
+                end
+
+                self.current_default_rotation_angle = self.attachment_selection_rotation_offset or 0
+
+                -- ui_weapon_spawner._default_rotation_angle = current_rotation
+
+                -- if self.current_default_rotation_angle then
+                --     ui_weapon_spawner._rotation_angle = current_rotation
+                -- end
+
+                -- self.current_default_rotation_angle = current_rotation
+                    -- ui_weapon_spawner:_set_rotation(rotation)
+                -- end
+
+                -- local zoom = self.attachment_selection_zoom_offset or 0
+                -- local fraction = weapon_preview._weapon_zoom_fraction or 1
+                -- self:_set_weapon_zoom(fraction + zoom)
+
+            end
+
+        -- end
+
+    end
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)

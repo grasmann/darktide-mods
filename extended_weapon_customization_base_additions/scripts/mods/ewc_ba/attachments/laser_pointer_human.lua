@@ -25,6 +25,9 @@ return {
         replacement_path = _item_ranged.."/laser_pointers/laser_pointer_01",
         icon_render_unit_rotation_offset = {90, 0, 90 + 30},
         icon_render_camera_position_offset = {-.125, -.75, .15},
+        attachment_selection_position_offset = {0, 0, 0},
+        attachment_selection_rotation_offset = 3,
+
         flashlight_template = "laser_pointer_01",
         laser_particle_effect = "content/fx/particles/enemies/sniper_laser_sight",
         dot_particle_effect = "content/fx/particles/enemies/red_glowing_eyes",

@@ -71,6 +71,7 @@ local FlashlightExtension = class("FlashlightExtension")
 
 FlashlightExtension.init = function(self, extension_init_context, unit, extension_init_data)
     self.unit = unit
+    self.is_local_unit = extension_init_data.is_local_unit
     self.player = extension_init_data.player
     self.world = extension_init_context.world
     self.physics_world = world_physics_world(self.world)
@@ -85,7 +86,7 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
 
     self.on = false
 
-    self:fetch_flashlight()
+    -- self:fetch_flashlight()
 
     managers.event:register(self, "ewc_reloaded", "on_mod_reload")
     managers.event:register(self, "ewc_settings_changed", "on_settings_changed")
@@ -227,7 +228,7 @@ FlashlightExtension.fetch_flashlight = function(self, item)
                 -- Set original has flashlight
                 self.original_has_flashlight = original_flashlight and original_flashlight ~= "" and original_flashlight ~= _item_empty_trinket
 
-                if not self.original_has_flashlight then
+                if self.is_local_unit and not self.original_has_flashlight then
                     if self.modded_reminder then
                         mod:echo(mod:localize("mod_flashlight_input_reminder_text"))
                     end

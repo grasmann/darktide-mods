@@ -30,6 +30,7 @@ local mod = get_mod("extended_weapon_customization")
     local unit_world_rotation = unit.world_rotation
     local unit_local_rotation = unit.local_rotation
     local quaternion_to_vector = quaternion.to_vector
+    local unit_set_local_scale = unit.set_local_scale
     local script_unit_extension = script_unit.extension
     local quaternion_from_vector = quaternion.from_vector
     local unit_set_local_position = unit.set_local_position
@@ -187,6 +188,8 @@ SwayExtension.update = function(self, dt, t)
 
             unit_set_local_position(first_person_unit, node, unit_position)
             unit_set_local_rotation(first_person_unit, node, unit_rotation)
+
+            -- unit_set_local_scale(first_person_unit, node, vector3(-1, 1, 1))
 
             self.rotation:store(rotation)
 
