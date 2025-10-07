@@ -37,6 +37,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local temp_random_attachment_list = {}
 local PROCESS_ITEM_TYPES = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
 local _item = "content/items/weapons/player"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
@@ -155,7 +156,7 @@ end
 
 mod.item_data = function(self, item_data)
     -- Get correct item data
-    local data = item_data and (item_data.__attachment_customization and item_data.__master_item) or (item_data.__is_ui_item_preview and item_data.__data)
+    local data = item_data and ((item_data.__attachment_customization and item_data.__master_item) or (item_data.__is_ui_item_preview and item_data.__data))
     -- local item = item_data.attachments.slot_trinket_1.item
     -- data = (data and data.attachments and data.attachments.slot_trinket_1 and data.attachments.slot_trinket_1.item and type(item_data.attachments.slot_trinket_1.item) == "table" and item_data.attachments.slot_trinket_1.item) or data
     -- Return
@@ -163,6 +164,7 @@ mod.item_data = function(self, item_data)
 end
 
 mod.reset_item = function(self, item_data)
+    if not item_data then return end
     -- Get item info
     local item = self:item_data(item_data)
     -- Get attachment slots
@@ -178,7 +180,64 @@ mod.reset_item = function(self, item_data)
     end
 end
 
+mod.generate_random_attachment_list = function(self, item_data, target_slot)
+    if not item_data then return end
+    -- Get item info
+    local item = self:item_data(item_data)
+    -- Create new gear settings
+    -- local new_gear_settings = {}
+    table_clear(temp_random_attachment_list)
+    -- Get attachment slots
+    -- local attachment_slots = self:fetch_attachment_slots(item.attachments)
+    -- Iterate through attachment slots
+    -- for attachment_slot, data in pairs(attachment_slots) do
+        -- Get slot attachments
+        local attachments = self.settings.attachments[item.weapon_template]
+        local slot_attachments = attachments and attachments[target_slot]
+        -- Check slot attachments
+        if slot_attachments then
+            -- -- Get random slot attachment
+            -- local num_attachments = table_size(slot_attachments)
+            -- local rnd = math_random(1, num_attachments)
+            -- -- Get nth attachment
+            -- local i, selected_data = 1, nil
+            for attachment_name, attachment_data in pairs(slot_attachments) do
+
+                local add_to_list = true
+
+                if attachment_data.randomization_requirement then
+                    local attachment_data_origin = mod:pt().attachment_data_origin
+                    local origin_mod = attachment_data_origin[attachment_data] or mod
+                    add_to_list = origin_mod:get(attachment_data.randomization_requirement)
+                end
+
+                if add_to_list then
+                    temp_random_attachment_list[attachment_name] = attachment_data
+                end
+
+                -- if i == rnd then
+                --     selected_data = attachment_data
+                --     break
+                -- end
+                -- i = i + 1
+
+            end
+            -- Check selected attachment
+            -- if selected_data then
+            --     -- Overwrite attachment
+            --     self:overwrite_attachment(item.attachments, attachment_slot, selected_data.replacement_path)
+            --     -- Set attachment in gear settings
+            --     new_gear_settings[attachment_slot] = selected_data.replacement_path
+            -- end
+
+        end
+    -- end
+    -- Return new gear settings
+    return temp_random_attachment_list
+end
+
 mod.randomize_item = function(self, item_data)
+    if not item_data then return end
     -- Get item info
     local item = self:item_data(item_data)
     -- Create new gear settings
@@ -187,24 +246,22 @@ mod.randomize_item = function(self, item_data)
     local attachment_slots = self:fetch_attachment_slots(item.attachments)
     -- Iterate through attachment slots
     for attachment_slot, data in pairs(attachment_slots) do
-        -- Get slot attachments
-        local attachments = self.settings.attachments[item.weapon_template]
-        local slot_attachments = attachments and attachments[attachment_slot]
-        -- Check slot attachments
-        if slot_attachments then
-            -- Get random slot attachment
-            local num_attachments = table_size(slot_attachments)
+
+        local possible_attachments = self:generate_random_attachment_list(item_data, attachment_slot)
+        local num_attachments = table_size(possible_attachments)
+
+        if num_attachments > 0 then
             local rnd = math_random(1, num_attachments)
-            -- Get nth attachment
             local i, selected_data = 1, nil
-            for attachment_name, attachment_data in pairs(slot_attachments) do
+
+            for attachment_name, attachment_data in pairs(possible_attachments) do
                 if i == rnd then
                     selected_data = attachment_data
                     break
                 end
                 i = i + 1
             end
-            -- Check selected attachment
+
             if selected_data then
                 -- Overwrite attachment
                 self:overwrite_attachment(item.attachments, attachment_slot, selected_data.replacement_path)
@@ -213,6 +270,33 @@ mod.randomize_item = function(self, item_data)
             end
 
         end
+
+        -- -- Get slot attachments
+        -- local attachments = self.settings.attachments[item.weapon_template]
+        -- local slot_attachments = attachments and attachments[attachment_slot]
+        -- -- Check slot attachments
+        -- if slot_attachments then
+        --     -- Get random slot attachment
+        --     local num_attachments = table_size(slot_attachments)
+        --     local rnd = math_random(1, num_attachments)
+        --     -- Get nth attachment
+        --     local i, selected_data = 1, nil
+        --     for attachment_name, attachment_data in pairs(slot_attachments) do
+        --         if i == rnd then
+        --             selected_data = attachment_data
+        --             break
+        --         end
+        --         i = i + 1
+        --     end
+        --     -- Check selected attachment
+        --     if selected_data then
+        --         -- Overwrite attachment
+        --         self:overwrite_attachment(item.attachments, attachment_slot, selected_data.replacement_path)
+        --         -- Set attachment in gear settings
+        --         new_gear_settings[attachment_slot] = selected_data.replacement_path
+        --     end
+
+        -- end
     end
     -- Return new gear settings
     return new_gear_settings
@@ -246,7 +330,7 @@ mod.mod_item = function(self, gear_id, item_data)
     if gear_id and not pt.items[gear_id] then
         -- Get item info
         local item = self:item_data(item_data)
-        local item_type = item_data and item_data.item_type or "unknown"
+        local item_type = item and item.item_type or "unknown"
         -- Check supported item type
         if table_contains(PROCESS_ITEM_TYPES, item_type) then
             mod:print("cloning item "..tostring(gear_id))
@@ -266,7 +350,7 @@ end
 mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     -- Get item info
     local item = self:item_data(item_data)
-    local item_type = item_data and item_data.item_type
+    local item_type = item and item.item_type
     -- Check supported item type
     if table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
         local pt = mod:pt()
@@ -359,7 +443,7 @@ mod.husk_item = function(self, gear_id)
     return pt.husk_weapon_templates[gear_id]
 end
 
-mod.handle_husk_item = function(self, item)
+mod.handle_husk_item = function(self, item, player)
     -- Check if slot is supported, random players is enabled and item is valid
     local item = self:item_data(item)
     local item_type = item and item.item_type or "unknown"
@@ -374,9 +458,19 @@ mod.handle_husk_item = function(self, item)
         -- Randomize item
         mod:print("randomizing husk item "..tostring(gear_id))
         -- Use existing gear settings, when the weapon was already randomized
-        local random_gear_settings = mod:gear_settings(gear_id) or mod:randomize_item(mod_item)
+        local old_gear_settings = mod:gear_settings(gear_id)
+        local random_gear_settings = old_gear_settings or mod:randomize_item(mod_item)
         -- Set gear settings
         mod:gear_settings(gear_id, random_gear_settings)
+        -- Modify item
+        mod:modify_item(mod_item, random_gear_settings)
+        -- Attachment fixes
+        mod:apply_attachment_fixes(mod_item)
+        -- Reevaluate packages
+        if not old_gear_settings then
+            mod:print("reevaluate_packages "..tostring(player))
+            mod:reevaluate_packages(player)
+        end
         -- Return mod item
         return mod_item
     end

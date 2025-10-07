@@ -59,6 +59,7 @@ mod.init = function(self)
     local pt = self:pt()
     -- Clear mod items
     self:clear_mod_items()
+    self:clear_all_alternate_fire_overrides()
     -- Load plugins
     self.loaded_plugins = self:load_plugins()
     -- If game already initialized ( mod reload )
@@ -213,6 +214,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_profile
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_element_grid")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_weapon_spawner")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/weapon_icon_ui")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/alternate_fire")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/crafting_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/input_service")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_package")

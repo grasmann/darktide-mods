@@ -137,9 +137,9 @@ local fixes = {
                 },
             },
             fix = {
-                -- hide = {
-                --     mesh = {5},
-                -- },
+                hide = {
+                    mesh = {5},
+                },
             },
         },
     },

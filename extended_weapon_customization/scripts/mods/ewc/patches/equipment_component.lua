@@ -115,6 +115,8 @@ end)
 mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, optional_equipment, optional_companion_unit_3p, ...)
     -- Original function
     func(self, unit_3p, unit_1p, slot, item, optional_existing_unit_3p, deform_overrides, optional_breed_name, optional_mission_template, optional_equipment, optional_companion_unit_3p, ...)
+    -- Clear alternate fire override
+    mod:clear_alternate_fire_override(unit_3p)
     -- Update sight offset
     local sight_extension = script_unit_extension(unit_3p, "sight_system")
     if sight_extension then

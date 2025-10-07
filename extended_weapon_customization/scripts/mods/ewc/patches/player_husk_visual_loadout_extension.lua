@@ -43,7 +43,7 @@ local PROCESS_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod.player_husk_visual_loadout_extension_randomize = function(self, player, item, slot_name) --, player, slot_name, visual_loadout)
-    local husk_item = mod:handle_husk_item(item)
+    local husk_item = mod:handle_husk_item(item, player)
     if husk_item then
         -- local player = player_husk_visual_loadout_extension._player
         -- local profile = player:profile()
@@ -51,8 +51,8 @@ mod.player_husk_visual_loadout_extension_randomize = function(self, player, item
         -- Set modded item in profile
         -- visual_loadout[slot_name] = husk_item
         -- Reevaluate packages
-        mod:print("reevaluate_packages "..tostring(player))
-        mod:reevaluate_packages(player)
+        -- mod:print("reevaluate_packages "..tostring(player))
+        -- mod:reevaluate_packages(player)
     end
     return item
 end

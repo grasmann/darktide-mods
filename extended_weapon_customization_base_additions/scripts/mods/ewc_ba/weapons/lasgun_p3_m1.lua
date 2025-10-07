@@ -80,7 +80,7 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.05, -.047),
+                    position = vector3_box(0, -.05, -.046),
                     rotation = vector3_box(0, 0, 0),
                     custom_fov = 32.5,
                     aim_scale = .5,
@@ -168,6 +168,10 @@ local fixes = {
             fix = {
                 attach = {
                     rail = "lasgun_pistol_rail_01",
+                },
+                offset = {
+                    position = vector3_box(0, .05, .0075),
+                    rotation = vector3_box(0, 0, 0),
                 },
             },
         },

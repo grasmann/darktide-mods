@@ -97,8 +97,8 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(-.045, -.05, .1175),
-                    rotation = vector3_box(-2, 10, -2),
+                    position = vector3_box(0, 0, -.0075),
+                    rotation = vector3_box(0, 0, 0),
                 },
             },
         },
@@ -110,8 +110,8 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(-.0275, -.1, .1),
-                    rotation = vector3_box(-2, 10, -2),
+                    position = vector3_box(0, -.05, -.03),
+                    rotation = vector3_box(0, 0, 0),
                     custom_fov = 32.5,
                     aim_scale = .5,
                     fov = 25,

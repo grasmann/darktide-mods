@@ -46,7 +46,7 @@ local split_cache = {}
 mod.collect_fixes = function(self, item_data, target_slot)
     -- Get item data
     local item = self:item_data(item_data)
-    local item_type = item.item_type
+    local item_type = item and item.item_type
     -- Clear temp
     table_clear(temp_fixes)
     -- Check item type
@@ -132,7 +132,7 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
     local item = self:item_data(item_data)
     local is_ui_item_preview = is_ui_item_preview or (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
     -- Check data
-    if item.attachments and attachment_name_lookup then
+    if item and item.attachments and attachment_name_lookup then
         -- Get fixes
         local fixes = optional_fixes or self:collect_fixes(item)
         if fixes then
@@ -205,7 +205,7 @@ mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
     local item = self:item_data(item_data)
     --item = item and item.__master_item or item_data.__master_item or item
     local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
-    local item_type = item.item_type
+    local item_type = item and item.item_type
     -- Check data
     if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
         -- Get fixes

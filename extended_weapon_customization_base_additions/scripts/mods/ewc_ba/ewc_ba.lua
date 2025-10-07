@@ -149,9 +149,9 @@ local extended_weapon_customization_plugin = {
                 base = {
                     item = _item_ranged.."/sights/reflex_sight_03",
                     fix = {
-                        -- hide = {
-                        --     mesh = {5},
-                        -- },
+                        hide = {
+                            mesh = {5},
+                        },
                     },
                     children = {
                         scope = {
@@ -1141,6 +1141,7 @@ local load_weapons = {
     "ogryn_heavystubber_p2_m1",
     "forcesword_2h_p1_m1",
     "powersword_2h_p1_m1",
+    "stubrevolver_p1_m1",
     "combatsword_p1_m1",
     "combatsword_p2_m1",
     "combatsword_p3_m1",

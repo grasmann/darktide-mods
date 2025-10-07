@@ -17,11 +17,24 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
 return {
-    scope_01 = {
-        replacement_path = _item_ranged.."/sights/scope_01",
-        icon_render_unit_rotation_offset = {90, 0, -85},
-        icon_render_camera_position_offset = {0, -.8, .2},
-        alternate_fire_override = "ironsight",
-        crosshair_type = "shotgun",
+    shotgun_double_barrel_stock_01 = {
+        replacement_path = _item_ranged.."/stocks/shotgun_double_barrel_stock_01",
+        icon_render_unit_rotation_offset = {90, -10, 30},
+        icon_render_camera_position_offset = {.15, -2, .2},
+    },
+    shotgun_double_barrel_stock_02 = {
+        replacement_path = _item_ranged.."/stocks/shotgun_double_barrel_stock_02",
+        icon_render_unit_rotation_offset = {90, -10, 30},
+        icon_render_camera_position_offset = {.15, -2, .2},
+    },
+    shotgun_double_barrel_stock_03 = {
+        replacement_path = _item_ranged.."/stocks/shotgun_double_barrel_stock_03",
+        icon_render_unit_rotation_offset = {90, -10, 30},
+        icon_render_camera_position_offset = {.15, -2, .2},
+    },
+    shotgun_double_barrel_stock_ml01 = {
+        replacement_path = _item_ranged.."/stocks/shotgun_double_barrel_stock_ml01",
+        icon_render_unit_rotation_offset = {90, -10, 30},
+        icon_render_camera_position_offset = {.15, -2, .2},
     },
 }
