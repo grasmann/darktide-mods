@@ -25,6 +25,7 @@ local FlashlightTemplates = mod:original_require("scripts/settings/equipment/fla
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local pt = mod:pt()
 local extract_flicker = {
     default = "default",
     led_flicker = "lasgun_p1",
@@ -42,7 +43,7 @@ mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_s
     local attachment_data_by_item_string = attachment_data_by_item_string or self.settings.attachment_data_by_item_string
     local attachment_name_by_item_string = attachment_name_by_item_string or self.settings.attachment_name_by_item_string
     local attachment_data_by_attachment_name = attachment_data_by_attachment_name or self.settings.attachment_data_by_attachment_name
-    local attachment_data_origin = mod:pt().attachment_data_origin
+    local attachment_data_origin = pt.attachment_data_origin
 
     for weapon_template, weapon_attachments in pairs(attachments) do
         for attachment_slot, attachment_entires in pairs(weapon_attachments) do

@@ -4,17 +4,25 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local autogun_headhunter_group = {custom_selection_group = "autogun_headhunter"}
+local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
+local autogun_braced_group = {custom_selection_group = "autogun_braced"}
+local autopistol_group = {custom_selection_group = "autopistol"}
+
 local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
-mod:modify_customization_groups(magazine_autogun_infantry, "autogun_infantry")
+local muzzle_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_infantry")
+mod:merge_attachment_data(autogun_infantry_group, magazine_autogun_infantry, muzzle_autogun_infantry)
 
 local magazine_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_braced")
-mod:modify_customization_groups(magazine_autogun_braced, "autogun_braced")
+local muzzle_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_braced")
+mod:merge_attachment_data(autogun_braced_group, magazine_autogun_braced, muzzle_autogun_braced)
 
 local magazine_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_headhunter")
-mod:modify_customization_groups(magazine_autogun_headhunter, "autogun_headhunter")
+local muzzle_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_headhunter")
+mod:merge_attachment_data(autogun_headhunter_group, muzzle_autogun_headhunter, magazine_autogun_headhunter)
 
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
-mod:modify_customization_groups(magazine_autopistol, "autopistol")
+mod:merge_attachment_data(autopistol_group, magazine_autopistol)
 
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")

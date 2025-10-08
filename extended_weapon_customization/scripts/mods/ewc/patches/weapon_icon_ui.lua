@@ -9,12 +9,9 @@ local mod = get_mod("extended_weapon_customization")
     local CLASS = CLASS
     local pairs = pairs
     local level = Level
-    local Camera = Camera
-    local managers = Managers
     local tostring = tostring
     local unit_light = unit.light
     local level_units = level.units
-    local unit_has_light = unit.has_light
     local unit_num_lights = unit.num_lights
     local light_set_intensity = light.set_intensity
     local light_set_ies_profile = light.set_ies_profile
@@ -41,12 +38,6 @@ local update_requests = function(weapon_icon_ui, request_id, item, prioritized)
         end
     end
 end
-
-mod:hook(CLASS.EndView, "init", function(func, self, settings, context, ...)
-    settings.disable_game_world = true
-    -- Original function
-    func(self, settings, context)
-end)
 
 mod:hook(CLASS.WeaponIconUI, "_spawn_weapon", function(func, self, item, render_context, ...)
     -- Original function

@@ -7,7 +7,6 @@ local mod = get_mod("visible_equipment")
     local unit = Unit
     local CLASS = CLASS
     local managers = Managers
-    local quaternion = Quaternion
     local unit_set_data = unit.set_data
 --#endregion
 
@@ -51,8 +50,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/player_unit_visual_lo
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, game_object_data_or_game_session, unit_spawn_parameter_or_game_object_id, ...)
-    -- Set pt variable
-    self.pt = mod:pt()
     -- Create equipment component tables
     unit_set_data(unit, "visible_equipment_profile", extension_init_data.player:profile())
     -- Events

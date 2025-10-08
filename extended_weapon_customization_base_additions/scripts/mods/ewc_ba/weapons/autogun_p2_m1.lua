@@ -4,47 +4,44 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local autogun_headhunter_group = {custom_selection_group = "autogun_headhunter"}
+local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
+local autopistol_group = {custom_selection_group = "autopistol"}
+local sight_show = {custom_selection_group = "sight_show"}
+
 local receiver_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/receiver_autogun_headhunter")
-mod:modify_customization_groups(receiver_autogun_headhunter, "autogun_headhunter")
 local magazine_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_headhunter")
-mod:modify_customization_groups(magazine_autogun_headhunter, "autogun_headhunter")
 local barrel_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_autogun_headhunter")
-mod:modify_customization_groups(barrel_autogun_headhunter, "autogun_headhunter")
 local muzzle_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_headhunter")
-mod:modify_customization_groups(muzzle_autogun_headhunter, "autogun_headhunter")
 local sight_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_autogun_headhunter")
-mod:modify_customization_groups(sight_autogun_headhunter, "autogun_headhunter")
 local stock_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/stock_autogun_headhunter")
-mod:modify_customization_groups(stock_autogun_headhunter, "autogun_headhunter")
 local grip_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_autogun_headhunter")
-mod:modify_customization_groups(grip_autogun_headhunter, "autogun_headhunter")
+mod:merge_attachment_data(autogun_headhunter_group, receiver_autogun_headhunter, magazine_autogun_headhunter, barrel_autogun_headhunter, muzzle_autogun_headhunter, stock_autogun_headhunter, sight_autogun_headhunter, grip_autogun_headhunter)
 
 local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
-mod:modify_customization_groups(magazine_autogun_infantry, "autogun_infantry")
 local receiver_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/receiver_autogun_infantry")
-mod:modify_customization_groups(receiver_autogun_infantry, "autogun_infantry")
 local barrel_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_autogun_infantry")
-mod:modify_customization_groups(barrel_autogun_infantry, "autogun_infantry")
 local muzzle_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_infantry")
-mod:modify_customization_groups(muzzle_autogun_infantry, "autogun_infantry")
 local sight_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_autogun_infantry")
-mod:modify_customization_groups(sight_autogun_infantry, "autogun_infantry")
 local stock_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/stock_autogun_infantry")
-mod:modify_customization_groups(stock_autogun_infantry, "autogun_infantry")
 local grip_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_autogun_infantry")
-mod:modify_customization_groups(grip_autogun_infantry, "autogun_infantry")
+mod:merge_attachment_data(autogun_infantry_group, receiver_autogun_infantry, magazine_autogun_infantry, barrel_autogun_infantry, muzzle_autogun_infantry, stock_autogun_infantry, sight_autogun_infantry, grip_autogun_infantry)
 
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
-mod:modify_customization_groups(magazine_autopistol, "autopistol")
+mod:merge_attachment_data(autopistol_group, magazine_autopistol)
 
+local sight_scope_show = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope_show")
+local sight_reflex_show = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex_show")
+mod:merge_attachment_data(sight_show, sight_scope_show, sight_reflex_show)
+
+local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
+local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local bayonet_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/bayonet_common")
-local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local stock_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/stock_common")
 local decals_right = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/decal_right")
-local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
 local grip_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_common")
 local decals_left = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/decal_left")
 local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
@@ -75,6 +72,7 @@ local headhunter_receivers = "autogun_rifle_killshot_receiver_01|autogun_rifle_k
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
+local reflex_sights_show = "reflex_sight_show_01|reflex_sight_show_02|reflex_sight_show_03"
 local scopes = "scope_01"
 
 local attachments = {
@@ -90,7 +88,7 @@ local attachments = {
         grip = table_merge_recursive_n(nil, grip_common, grip_autogun_infantry, grip_autogun_headhunter),
         stock = table_merge_recursive_n(nil, stock_common, stock_autogun_infantry, stock_autogun_headhunter),
         magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry),
-        sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, sight_autogun_infantry, sight_autogun_headhunter),
+        sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, sight_autogun_infantry, sight_autogun_headhunter, sight_scope_show, sight_reflex_show),
     },
 }
 
@@ -195,228 +193,6 @@ local fixes = {
                 },
             },
         },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_01|reflex_sight_02" },
-        --         receiver = { has = infantry_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(-.07, 0, .0085) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_03" },
-        --         receiver = { has = infantry_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0075) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_01" },
-        --         receiver = { has = braced_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(-.075, 0, .058) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_02|reflex_sight_03" },
-        --         receiver = { has = braced_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(-.075, 0, .058) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_01|reflex_sight_02" },
-        --         receiver = { has = headhunter_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.011) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_03" },
-        --         receiver = { has = headhunter_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0085) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = {
-        --             has = scopes,
-        --         },
-        --         receiver = {
-        --             has = infantry_receivers,
-        --         }
-        --     },
-        --     fix = {
-        --         offset = {
-        --             position = vector3_box(0, -.05, -.036),
-        --             rotation = vector3_box(0, 0, 0),
-        --             custom_fov = 32.5,
-        --             aim_scale = .5,
-        --             fov = 25,
-        --         },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = {
-        --             has = scopes,
-        --         },
-        --         receiver = {
-        --             has = braced_receivers,
-        --         }
-        --     },
-        --     fix = {
-        --         offset = {
-        --             position = vector3_box(-.07, 0, .02),
-        --             rotation = vector3_box(2, 0, 0),
-        --             custom_fov = 32.5,
-        --             aim_scale = .5,
-        --             fov = 25,
-        --         },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = {
-        --             has = scopes,
-        --         },
-        --         receiver = {
-        --             has = headhunter_receivers,
-        --         }
-        --     },
-        --     fix = {
-        --         offset = {
-        --             position = vector3_box(0, -.05, -.036),
-        --             rotation = vector3_box(0, 0, 0),
-        --             custom_fov = 32.5,
-        --             aim_scale = .5,
-        --             fov = 25,
-        --         },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_01|reflex_sight_02" },
-        --         receiver = { has = infantry_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0085) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_03" },
-        --         receiver = { has = infantry_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0075) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_01|reflex_sight_02" },
-        --         receiver = { has = braced_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0085) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_03" },
-        --         receiver = { has = braced_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0075) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_01|reflex_sight_02" },
-        --         receiver = { has = headhunter_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.011) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_03" },
-        --         receiver = { has = headhunter_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0085) },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = {
-        --             has = scopes,
-        --         },
-        --         receiver = {
-        --             has = infantry_receivers,
-        --         }
-        --     },
-        --     fix = {
-        --         offset = {
-        --             position = vector3_box(0, -.05, -.036),
-        --             rotation = vector3_box(0, 0, 0),
-        --             custom_fov = 32.5,
-        --             aim_scale = .5,
-        --             fov = 25,
-        --         },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = {
-        --             has = scopes,
-        --         },
-        --         receiver = {
-        --             has = braced_receivers,
-        --         }
-        --     },
-        --     fix = {
-        --         offset = {
-        --             position = vector3_box(0, -.05, -.034),
-        --             rotation = vector3_box(0, 0, 0),
-        --             custom_fov = 32.5,
-        --             aim_scale = .5,
-        --             fov = 25,
-        --         },
-        --     },
-        -- },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = {
-        --             has = scopes,
-        --         },
-        --         receiver = {
-        --             has = headhunter_receivers,
-        --         }
-        --     },
-        --     fix = {
-        --         offset = {
-        --             position = vector3_box(0, -.05, -.036),
-        --             rotation = vector3_box(0, 0, 0),
-        --             custom_fov = 32.5,
-        --             aim_scale = .5,
-        --             fov = 25,
-        --         },
-        --     },
-        -- },
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = { has = reflex_sights },
@@ -426,15 +202,6 @@ local fixes = {
                 offset = { position = vector3_box(0, 0, -.0085) },
             },
         },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_03" },
-        --         receiver = { has = infantry_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0085) },
-        --     },
-        -- },
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = { has = reflex_sights },
@@ -444,15 +211,6 @@ local fixes = {
                 offset = { position = vector3_box(0, 0, -.0085) },
             },
         },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_03" },
-        --         receiver = { has = braced_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.0085) },
-        --     },
-        -- },
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = { has = reflex_sights },
@@ -462,15 +220,6 @@ local fixes = {
                 offset = { position = vector3_box(0, 0, -.011) },
             },
         },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = { has = "reflex_sight_03" },
-        --         receiver = { has = headhunter_receivers },
-        --     },
-        --     fix = {
-        --         offset = { position = vector3_box(0, 0, -.011) },
-        --     },
-        -- },
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -490,25 +239,6 @@ local fixes = {
                 },
             },
         },
-        -- {attachment_slot = "sight_offset",
-        --     requirements = {
-        --         sight = {
-        --             has = scopes,
-        --         },
-        --         receiver = {
-        --             has = braced_receivers,
-        --         }
-        --     },
-        --     fix = {
-        --         offset = {
-        --             position = vector3_box(0, -.05, -.034),
-        --             rotation = vector3_box(0, 0, 0),
-        --             custom_fov = 32.5,
-        --             aim_scale = .5,
-        --             fov = 25,
-        --         },
-        --     },
-        -- },
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -531,7 +261,7 @@ local fixes = {
         {attachment_slot = "sight",
             requirements = {
                 sight = {
-                    has = reflex_sights,
+                    has = reflex_sights.."|"..reflex_sights_show,
                 },
                 receiver = {
                     has = braced_receivers,
@@ -547,7 +277,7 @@ local fixes = {
         {attachment_slot = "sight",
             requirements = {
                 sight = {
-                    has = reflex_sights,
+                    has = reflex_sights.."|"..reflex_sights_show,
                 },
                 receiver = {
                     has = headhunter_receivers,
@@ -664,7 +394,7 @@ local fixes = {
                     has = infantry_receivers,
                 },
                 sight = {
-                    has = reflex_sights.."|autogun_rifle_killshot_sight_01|autogun_rifle_ak_sight_01",
+                    has = reflex_sights.."|autogun_rifle_killshot_sight_01|autogun_rifle_ak_sight_01|"..reflex_sights_show,
                 },
             },
             fix = {

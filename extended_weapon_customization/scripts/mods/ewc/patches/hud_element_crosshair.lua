@@ -5,7 +5,6 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local CLASS = CLASS
-    local camera_set_near_range = Camera.set_near_range
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -26,18 +25,6 @@ local OVERRIDABLE_CROSSHAIRS = {
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
-
--- mod:hook(CLASS.CameraManager, "_update_camera_properties", function(func, self, camera, shadow_cull_camera, camera_nodes, camera_data, viewport_name, ...)
---     -- Original function
---     func(self, camera, shadow_cull_camera, camera_nodes, camera_data, viewport_name, ...)
-
---     camera_set_near_range(camera, .001)
--- 	camera_set_near_range(shadow_cull_camera, .001)
--- end)
-
--- mod:hook(CLASS.CameraManager, "set_node_tree_root_near_range", function(func, self, viewport_name, tree_id, near_range, ...)
---     return func(self, viewport_name, tree_id, .0001, ...)
--- end)
 
 mod:hook(CLASS.HudElementCrosshair, "_get_current_crosshair_type", function(func, self, crosshair_settings, ...)
     -- Original function

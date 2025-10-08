@@ -14,9 +14,8 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 -- #region Performance
     local unit = Unit
     local math = math
+    local table = table
     local class = class
-    local CLASS = CLASS
-    local world = World
     local pairs = pairs
     local Camera = Camera
     local string = string
@@ -24,7 +23,6 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local math_rad = math.rad
     local managers = Managers
     local tostring = tostring
-    local viewport = Viewport
     local math_lerp = math.lerp
     local unit_node = unit.node
     local quaternion = Quaternion
@@ -37,19 +35,14 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local unit_get_data = unit.get_data
     local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
-    local camera_vertical_fov = Camera.vertical_fov
     local unit_set_local_scale = unit.set_local_scale
     local script_unit_extension = script_unit.extension
     local quaternion_from_vector = quaternion.from_vector
     local camera_set_vertical_fov = Camera.set_vertical_fov
     local unit_set_local_position = unit.set_local_position
     local unit_set_local_rotation = unit.set_local_rotation
-    local script_unit_add_extension = script_unit.add_extension
-    local camera_custom_vertical_fov = Camera.custom_vertical_fov
-    local script_unit_remove_extension = script_unit.remove_extension
     local unit_set_scalar_for_materials = unit.set_scalar_for_materials
     local camera_set_custom_vertical_fov = Camera.set_custom_vertical_fov
-    local world_update_unit_and_children = world.update_unit_and_children
     local unit_set_shader_pass_flag_for_meshes = unit.set_shader_pass_flag_for_meshes
 --#endregion
 
@@ -57,6 +50,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local pt = mod:pt()
 local SLOT_SECONDARY = "slot_secondary"
 local empty_offset = {
     position = vector3_box(vector3_zero()),
@@ -113,7 +107,6 @@ SightExtension.fetch_sight_offset = function(self, item)
     self.lense_2_unit = nil
     self.sight_unit = nil
 
-    local pt = mod:pt()
     pt.debug_sight = {0, 0, 0, 0, 0, 0}
 
     self.weapon = item or self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
@@ -185,25 +178,6 @@ SightExtension.is_wielded = function(self)
     return self.wielded_slot == SLOT_SECONDARY
 end
 
-mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewport_name, ...)
-    -- Original function
-    func(self, dt, t, viewport_name, ...)
-    -- Get unit
-    local camera_nodes = self._camera_nodes[viewport_name]
-    local current_node = self:_current_node(camera_nodes)
-    local root_unit = current_node:root_unit()
-    if root_unit and unit_alive(root_unit) then
-        local viewport = ScriptWorld.viewport(self._world, viewport_name)
-        local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[viewport.get_data(viewport, "overridden_viewport")]
-        -- Sights
-        -- mod:execute_extension(root_unit, "sight_system", "update_zoom", viewport_name)
-        local sight_extension = script_unit_extension(root_unit, "sight_system")
-        if sight_extension and camera_data then
-            sight_extension:update_zoom(viewport_name, camera_data.vertical_fov, camera_data.custom_vertical_fov)
-        end
-    end
-end)
-
 SightExtension.update_zoom = function(self, viewport_name, default_vertical_fov, default_custom_vertical_fov)
     self.default_vertical_fov = default_vertical_fov
     self.default_custom_vertical_fov = default_custom_vertical_fov
@@ -235,7 +209,6 @@ SightExtension.update = function(self, dt, t)
     if self:is_wielded() and self.first_person_extension:is_in_first_person_mode() and (is_aiming or is_charging) then
         local offset_position = self.offset.position and vector3_unbox(self.offset.position) or vector3_zero()
 
-        local pt = mod:pt()
         local debug_position_offset = vector3(pt.debug_sight[1], pt.debug_sight[2], pt.debug_sight[3])
         offset_position = offset_position + debug_position_offset
 
@@ -243,7 +216,6 @@ SightExtension.update = function(self, dt, t)
 
         local offset_rotation = self.offset.rotation and vector3_unbox(self.offset.rotation) or vector3_zero()
 
-        -- local pt = mod:pt()
         local debug_rotation_offset = vector3(pt.debug_sight[4], pt.debug_sight[5], pt.debug_sight[6])
         offset_rotation = offset_rotation + debug_rotation_offset
 

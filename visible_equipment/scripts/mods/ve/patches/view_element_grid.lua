@@ -10,14 +10,12 @@ local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_setting
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local ItemPassTemplates = mod:original_require("scripts/ui/pass_templates/item_pass_templates")
 local MasterItems = mod:original_require("scripts/backend/master_items")
-local gear_bundle_size = {ItemPassTemplates.gear_bundle_size[1], ItemPassTemplates.gear_bundle_size[2] - 30}
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local math = math
-    local utf8 = Utf8
     local pairs = pairs
     local CLASS = CLASS
     local table = table
@@ -26,16 +24,12 @@ local gear_bundle_size = {ItemPassTemplates.gear_bundle_size[1], ItemPassTemplat
     local math_max = math.max
     local callback = callback
     local managers = Managers
-    local localize = Localize
     local math_uuid = math.uuid
-    local utf8_upper = utf8.upper
-    local script_unit = ScriptUnit
     local table_clone = table.clone
     local color_white = color.white
     local table_contains = table.contains
     local math_easeInCubic = math.easeInCubic
     local color_ui_terminal = color.ui_terminal
-    local script_unit_extension = script_unit.extension
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -46,6 +40,7 @@ local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
 local PROCESSED_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 local INVENTORY_COSMETICS_VIEW = "inventory_cosmetics_view_item_grid"
+local GEAR_BUNDLE_SIZE = {ItemPassTemplates.gear_bundle_size[1], ItemPassTemplates.gear_bundle_size[2] - 30}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -53,7 +48,7 @@ local INVENTORY_COSMETICS_VIEW = "inventory_cosmetics_view_item_grid"
 
 mod.view_element_grid_inject_blueprint = function(self, view_element_grid, content_blueprints, preview_profile)
     if not content_blueprints.cosmetic_gear_icon then
-        local grid_size = gear_bundle_size
+        local grid_size = GEAR_BUNDLE_SIZE
         local grid_width = grid_size[1]
 
         local function _apply_live_item_icon_cb_func(widget, grid_index, rows, columns, render_target)
@@ -156,7 +151,7 @@ mod.view_element_grid_inject_blueprint = function(self, view_element_grid, conte
                         horizontal_alignment = "center",
                         scale_to_material = true,
                         vertical_alignment = "center",
-                        color = Color.ui_terminal(nil, true),
+                        color = color_ui_terminal(nil, true),
                         size_addition = {23, 24},
                         offset = {0, 0, -1},
                     },
@@ -266,7 +261,7 @@ mod.view_element_grid_inject_blueprint = function(self, view_element_grid, conte
                                 companion_state_machine = companion_item_state_machine,
                                 companion_animation_event = companion_item_animation_event,
                                 custom_slot_name = slot_name.."_placement",
-                                size = {gear_bundle_size[1], gear_bundle_size[2]},
+                                size = {GEAR_BUNDLE_SIZE[1], GEAR_BUNDLE_SIZE[2]},
                                 placement_name = element.placement_name,
                                 placement = true,
                                 slot_name = slot_name,

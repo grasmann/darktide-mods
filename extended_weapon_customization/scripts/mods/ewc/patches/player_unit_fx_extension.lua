@@ -10,21 +10,23 @@ local VisualLoadoutCustomization = mod:original_require("scripts/extension_syste
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
-    local log = Log
     local unit = Unit
     local pairs = pairs
     local table = table
     local CLASS = CLASS
-    local string = string
 	local tonumber = tonumber
-    local tostring = tostring
     local unit_node = unit.node
-	local WwiseWorld = WwiseWorld
-    local string_format = string.format
-    local log_exception = log.exception
+	local wwise_world = WwiseWorld
     local unit_has_node = unit.has_node
     local table_is_empty = table.is_empty
+	local wwise_world_make_manual_source = wwise_world.make_manual_source
 --#endregion
+
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local pt = mod:pt()
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -32,7 +34,7 @@ local VisualLoadoutCustomization = mod:original_require("scripts/extension_syste
 
 local function _register_vfx_spawner_from_attachments(parent_unit, attachments_by_unit, attachment_name_lookup, node_name, spawner_name)
 	local spawners = {}
-	local exclude_from_vfx_spawner = mod:pt().exclude_from_vfx_spawner
+	local exclude_from_vfx_spawner = pt.exclude_from_vfx_spawner
 
 	for unit, attachments in pairs(attachments_by_unit) do
 		for i = 1, #attachments do
@@ -109,7 +111,7 @@ local function _register_sound_source(wwise_source_node_cache, unit, node_name, 
 
 	if not unit_cache[node_name] then
 		local node = tonumber(node_name) or unit_node(unit, node_name)
-		local source = WwiseWorld.make_manual_source(wwise_world, unit, node)
+		local source = wwise_world_make_manual_source(wwise_world, unit, node)
 
 		unit_cache[node_name] = {
 			num_registered_sources = 0,

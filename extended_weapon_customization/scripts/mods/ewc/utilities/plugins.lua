@@ -19,6 +19,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "extended_weapon_customization"
+local pt = mod:pt()
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -27,8 +28,6 @@ local REFERENCE = "extended_weapon_customization"
 mod.load_plugins = function(self)
     local DMF = get_mod("DMF")
     local plugins = {}
-
-    local pt = self:pt()
 
     -- Iterate through all mods
     for _, plugin_mod in pairs(DMF.mods) do

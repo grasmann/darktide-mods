@@ -1,32 +1,13 @@
 local mod = get_mod("visible_equipment")
 
--- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
--- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
--- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
-
-local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
-
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
     local CLASS = CLASS
-    local pairs = pairs
-    local world = World
-    local table = table
-    local tostring = tostring
-    local unit_node = unit.node
-    local unit_alive = unit.alive
     local script_unit = ScriptUnit
-    local unit_has_node = unit.has_node
-    local table_combine = table.combine
     local unit_set_data = unit.set_data
-    local unit_get_data = unit.get_data
-    local table_contains = table.contains
-    local world_link_unit = world.link_unit
-    local world_unlink_unit = world.unlink_unit
-    local world_destroy_unit = world.destroy_unit
     local script_unit_extension = script_unit.extension
     local script_unit_add_extension = script_unit.add_extension
 --#endregion
@@ -35,7 +16,7 @@ local VisualLoadoutCustomization = mod:original_require("scripts/extension_syste
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local process_slots = {"slot_primary", "slot_secondary"}
+local pt = mod:pt()
 local catch_equipment = nil
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
@@ -51,7 +32,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
             self.visible_equipment_system:destroy()
         end
         -- Clear equipment component tables
-        mod:pt().equipment_components[self] = nil
+        pt.equipment_components[self] = nil
     end
 
     instance.footstep = function(self)
@@ -83,7 +64,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         if self.visible_equipment_system then
             -- Update visible equipment
             self.visible_equipment_system:position_objects(apply_center_mass_offset)
-            local equipment = mod:pt().equipment_by_equipment_component[self]
+            local equipment = pt.equipment_by_equipment_component[self]
             self.visible_equipment_system:update_item_visibility(equipment)
         end
     end
@@ -121,10 +102,8 @@ end)
 mod:hook(CLASS.EquipmentComponent, "init", function(func, self, world, item_definitions, unit_spawner, unit_3p, optional_extension_manager, optional_item_streaming_settings, optional_force_highest_lod_step, optional_from_ui_profile_spawner, ...)
     -- Original function
     func(self, world, item_definitions, unit_spawner, unit_3p, optional_extension_manager, optional_item_streaming_settings, optional_force_highest_lod_step, optional_from_ui_profile_spawner, ...)
-    -- Set pt variable
-    -- self.pt = mod:pt()
     -- Create equipment component table
-    mod:pt().equipment_components[self] = unit_3p
+    pt.equipment_components[self] = unit_3p
     -- Catch equipment
     catch_equipment = self
     -- Set equipment component
@@ -158,7 +137,7 @@ mod:hook(CLASS.EquipmentComponent, "initialize_equipment", function(func, slot_c
     local equipment = func(slot_configuration, breed_settings, optional_slot_options, ...)
     -- Catch equipment
     if catch_equipment then
-        mod:pt().equipment_by_equipment_component[catch_equipment] = equipment
+        pt.equipment_by_equipment_component[catch_equipment] = equipment
         catch_equipment = nil
     end
     -- Return equipment

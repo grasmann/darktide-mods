@@ -19,8 +19,6 @@ local items = mod:original_require("scripts/utilities/items")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
-    local unit = Unit
-    local type = type
     local utf8 = Utf8
     local math = math
     local table = table
@@ -28,39 +26,20 @@ local items = mod:original_require("scripts/utilities/items")
     local CLASS = CLASS
     local color = Color
     local string = string
-    local vector3 = Vector3
     local callback = callback
     local managers = Managers
     local localize = Localize
     local tostring = tostring
     local math_lerp = math.lerp
     local math_uuid = math.uuid
-    local unit_alive = unit.alive
-    local table_size = table.size
     local utf8_upper = utf8.upper
-    local quaternion = Quaternion
-    local vector3_box = Vector3Box
-    local script_unit = ScriptUnit
     local table_clear = table.clear
     local color_white = color.white
     local string_gsub = string.gsub
-    local table_clone = table.clone
     local string_upper = string.upper
-    local vector3_zero = vector3.zero
-    local unit_get_data = unit.get_data
     local string_format = string.format
-    local quaternion_box = QuaternionBox
     local table_contains = table.contains
-    local vector3_unbox = vector3_box.unbox
     local has_localization = HasLocalization
-    local unit_local_position = unit.local_position
-    local unit_world_position = unit.world_position
-    local quaternion_identity = quaternion.identity
-    local table_clone_instance = table.clone_instance
-    local table_merge_recursive = table.merge_recursive
-    local script_unit_extension = script_unit.extension
-    local quaternion_from_vector = quaternion.from_vector
-    local unit_set_local_position = unit.set_local_position
     local color_terminal_grid_background = color.terminal_grid_background
 --#endregion
 
@@ -68,6 +47,7 @@ local items = mod:original_require("scripts/utilities/items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local pt = mod:pt()
 local temp_detached = {}
 local temp_validated = {}
 local temp_mod_count = {}
@@ -154,7 +134,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         self._presentation_item.__original_gear_id = gear_id
         self._presentation_item.__attachment_customization = true
 
-        mod:pt().items_originating_from_customization_menu[gear_id] = true
+        pt.items_originating_from_customization_menu[gear_id] = true
 
         self:_preview_item(self._presentation_item)
         self:cb_switch_tab(1)
@@ -174,7 +154,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
-        table_clear(mod:pt().items_originating_from_customization_menu)
+        table_clear(pt.items_originating_from_customization_menu)
 
         local gear_id = mod:gear_id(self._selected_item)
         mod:delete_gear_settings(gear_id, true)
@@ -204,7 +184,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         self:update_presentation_item()
 
-        mod:pt().items_originating_from_customization_menu[fake_gear_id] = true
+        pt.items_originating_from_customization_menu[fake_gear_id] = true
 
         self:_preview_item(self._presentation_item)
         local index = self._selected_tab_index
@@ -218,7 +198,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
-        table_clear(mod:pt().items_originating_from_customization_menu)
+        table_clear(pt.items_originating_from_customization_menu)
 
         local new_gear_settings = mod:randomize_item(self._selected_item)
 
@@ -248,7 +228,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         self:update_presentation_item()
 
-        mod:pt().items_originating_from_customization_menu[fake_gear_id] = true
+        pt.items_originating_from_customization_menu[fake_gear_id] = true
 
         self:_preview_item(self._presentation_item)
         local index = self._selected_tab_index
@@ -257,6 +237,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         mod.is_in_customization_menu = true
 
+    end
+
+    instance.cb_on_grid_entry_right_pressed = function(self, widget, element)
+        instance.super.cb_on_grid_entry_left_pressed(self, widget, element)
+        -- self._previewed_element = element
+        self:_preview_element(element)
+        self:cb_on_equip_pressed()
     end
 
 end)
@@ -375,7 +362,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
         -- self.attachment_selection_rotation_offset = 0
         -- self.current_default_rotation_angle = 0
 
-        local pt = mod:pt()
         local weapon_template = self._presentation_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
         local content = self._tabs_content[index]
@@ -392,7 +378,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                     self._tabs_content[self._selected_tab_index].apply_on_preview(real_item, self._presentation_item)
 
                     local gear_id = mod:gear_id(self._presentation_item, true)
-                    mod:pt().items_originating_from_customization_menu[gear_id] = true
+                    pt.items_originating_from_customization_menu[gear_id] = true
 
                     self:_preview_item(self._presentation_item)
                 end
@@ -458,6 +444,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                                 item = item,
                                 real_item = attachment_item,
                                 slot_name = slot_name,
+                                -- new_item_marker = attachment_data.replacement_path == self["_equipped_"..slot_name.."_name"],
+                                -- offer = {
+                                --     price = {
+                                --         amount = {
+                                --             type = "credits",
+                                --             amount = 0,
+                                --         }
+                                --     },
+                                --     state = attachment_data.replacement_path == self["_equipped_"..slot_name.."_name"] and "owned",
+                                -- },
                                 sort_data = {
                                     display_name = group_name.."_"..tostring(temp_mod_count[group_name]),
                                 },
@@ -602,6 +598,27 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
             end
         end
 
+        local grid_widgets = self._item_grid:widgets()
+        if grid_widgets then
+            for i = 1, #grid_widgets do
+                local widget = grid_widgets[i]
+
+                if widget then
+                    local content = widget.content
+                    local element = content and content.element
+                    local real_item = element and element.real_item
+                    local item_path = real_item and real_item.name
+                    local attachment_data = mod.settings.attachment_data_by_item_string[item_path]
+                    if attachment_data and attachment_data.replacement_path == self["_equipped_"..slot_name.."_name"] then
+                        content.owned = ""
+                    else
+                        content.owned = nil
+                    end
+
+                end
+            end
+        end
+
     else
         local widgets_by_name = self._widgets_by_name
         local reset_button = widgets_by_name and widgets_by_name.reset_button
@@ -631,7 +648,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...
     if self.customize_attachments then
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
-        table_clear(mod:pt().items_originating_from_customization_menu)
+        table_clear(pt.items_originating_from_customization_menu)
     end
     -- Original function
     func(self, ...)
@@ -670,13 +687,13 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             self._presentation_item.__original_gear_id = gear_id
             self._presentation_item.__attachment_customization = true
 
-            mod:pt().items_originating_from_customization_menu[gear_id] = true
+            pt.items_originating_from_customization_menu[gear_id] = true
 
             local weapon_template = self._presentation_item.weapon_template
             local attachments = weapon_template and mod.settings.attachments[weapon_template]
             if attachments then
                 for attachment_slot, attachment_entries in pairs(attachments) do
-                    -- if table_size(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
+                    
                     if mod:selectable_attachment_count(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
                         tabs_content[#tabs_content+1] = {
                             display_name = attachment_slot,
@@ -745,7 +762,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             self:_setup_weapon_preview()
 
             local gear_id = mod:gear_id(self._presentation_item, true)
-            mod:pt().items_originating_from_customization_menu[gear_id] = true
+            pt.items_originating_from_customization_menu[gear_id] = true
 
             self:_preview_item(self._presentation_item)
             self._weapon_preview:center_align(0, {-.3, 0, -.2})
@@ -884,13 +901,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
             apply_on_preview(real_item, presentation_item)
 
             local gear_id = mod:gear_id(presentation_item, true)
-            mod:pt().items_originating_from_customization_menu[gear_id] = true
+            pt.items_originating_from_customization_menu[gear_id] = true
 
             self:_preview_item(presentation_item)
 
             local widgets_by_name = self._widgets_by_name
 
-            -- local pt = mod:pt()
             -- local origin_mod = pt.attachment_data_origin[attachment_data] or mod
             -- local attachment_name = mod:localize(real_item and real_item.name or "")
             if not attachment_name or attachment_name == "" then
@@ -982,7 +998,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
-        table_clear(mod:pt().items_originating_from_customization_menu)
+        table_clear(pt.items_originating_from_customization_menu)
 
         local gear_id = mod:gear_id(self._selected_item)
 
@@ -999,12 +1015,14 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 
         self:update_real_world_item()
 
-        mod.is_in_customization_menu = true
-
         local inventory_background_view = mod:get_view("inventory_background_view")
         if inventory_background_view then
             inventory_background_view:event_force_refresh_inventory()
         end
+
+        mod.is_in_customization_menu = true
+
+        self:cb_switch_tab(self._selected_tab_index)
 
         return
     else

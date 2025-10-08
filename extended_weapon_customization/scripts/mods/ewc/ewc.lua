@@ -12,6 +12,7 @@ local mod = get_mod("extended_weapon_customization")
     local table_find = table.find
     local script_unit = ScriptUnit
     local table_clear = table.clear
+    local string_format = string.format
     local table_contains = table.contains
     local script_unit_extension = script_unit.extension
 --#endregion
@@ -55,8 +56,9 @@ mod.pt = function(self)
     return self:persistent_table(REFERENCE)
 end
 
+local pt = mod:pt()
+
 mod.init = function(self)
-    local pt = self:pt()
     -- Clear mod items
     self:clear_mod_items()
     self:clear_all_alternate_fire_overrides()
@@ -86,7 +88,6 @@ mod._clear_chat = function(self)
 end
 
 mod._on_game_state_changed = function(self, status, state_name)
-    local pt = self:pt()
     if state_name == "StateTitle" and status == "exit" then
         pt.game_initialized = true
     end
@@ -98,6 +99,16 @@ mod._on_unload = function(self, exit_game)
     if exit_game then
         self:release_packages()
     end
+end
+
+mod.localize_or_nil = function(self, str, optional_mod)
+    local used_mod = optional_mod or self
+    local used_str = str or ""
+    local localized = used_mod:localize(used_str)
+    if localized == "<"..used_str..">" then
+        return nil
+    end
+    return localized
 end
 
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
@@ -124,62 +135,6 @@ mod.on_game_state_changed = function(status, state_name)
     mod:_on_game_state_changed(status, state_name)
 end
 
-mod.localize_or_nil = function(self, str, optional_mod)
-    local used_mod = optional_mod or self
-    local used_str = str or ""
-    local localized = used_mod:localize(used_str)
-    if localized == "<"..used_str..">" then
-        return nil
-    end
-    return localized
-end
-
-
-
-
-
-
-
-
-
-
-
-mod.debug_sight_clear = function(self)
-    local pt = self:pt()
-    pt.debug_sight = {0, 0, 0, 0, 0, 0}
-end
-
-mod.debug_sight_set = function(self, px, py, pz, rx, ry, rz)
-    local pt = self:pt()
-    if not pt.debug_sight then
-        self:debug_sight_clear()
-    end
-    pt.debug_sight = {pt.debug_sight[1] + px, pt.debug_sight[2] + py, pt.debug_sight[3] + pz, pt.debug_sight[4] + rx, pt.debug_sight[5] + ry, pt.debug_sight[6] + rz}
-    mod:echo(string.format("px: %f, py: %f, pz: %f, rx: %f, ry: %f, rz: %f", pt.debug_sight[1], pt.debug_sight[2], pt.debug_sight[3], pt.debug_sight[4], pt.debug_sight[5], pt.debug_sight[6]))
-end
-
-local rotation_step = .1
-local position_step = .01
-
-mod.rotate_x = function() mod:debug_sight_set(0, 0, 0, rotation_step, 0, 0) end
-mod.rotate_x_2 = function() mod:debug_sight_set(0, 0, 0, -rotation_step, 0, 0) end
-
-mod.rotate_y = function() mod:debug_sight_set(0, 0, 0, 0, rotation_step, 0) end
-mod.rotate_y_2 = function() mod:debug_sight_set(0, 0, 0, 0, -rotation_step, 0) end
-
-mod.rotate_z = function() mod:debug_sight_set(0, 0, 0, 0, 0, rotation_step) end
-mod.rotate_z_2 = function() mod:debug_sight_set(0, 0, 0, 0, 0, -rotation_step) end
-
-mod.move_x = function() mod:debug_sight_set(position_step, 0, 0, 0, 0, 0) end
-mod.move_x_2 = function() mod:debug_sight_set(-position_step, 0, 0, 0, 0, 0) end
-
-mod.move_y = function() mod:debug_sight_set(0, position_step, 0, 0, 0, 0) end
-mod.move_y_2 = function() mod:debug_sight_set(0, -position_step, 0, 0, 0, 0) end
-
-mod.move_z = function() mod:debug_sight_set(0, 0, position_step, 0, 0, 0) end
-mod.move_z_2 = function() mod:debug_sight_set(0, 0, -position_step, 0, 0, 0) end
-
-
 -- ##### ┌─┐┌─┐┌┬┐┌─┐┬ ┬┌─┐┌─┐ ########################################################################################
 -- ##### ├─┘├─┤ │ │  ├─┤├┤ └─┐ ########################################################################################
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
@@ -191,6 +146,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/kitbash"
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/fixes")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/plugins")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/packages")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/debug")
 
 mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/settings")
 mod:update_flashlight_templates(mod.settings.flashlight_templates)
@@ -208,6 +164,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/visual_loa
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_marks_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_unit_fx_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/hud_element_crosshair")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/attack_report_manager")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/equipment_component")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_icon_loader_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_profile_spawner")
@@ -215,8 +172,10 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_eleme
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_weapon_spawner")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/weapon_icon_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/alternate_fire")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/camera_manager")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/crafting_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/input_service")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/action_sweep")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_package")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/flashlight")
 

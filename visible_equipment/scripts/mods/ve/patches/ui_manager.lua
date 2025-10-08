@@ -14,14 +14,9 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local CLASS = CLASS
     local table = table
     local string = string
-	local vector3 = Vector3
     local managers = Managers
-	local table_clone = table.clone
-	local vector3_box = Vector3Box
-	local vector3_zero = vector3.zero
     local string_format = string.format
     local table_is_empty = table.is_empty
-	local vector3_unbox = vector3_box.unbox
     local table_clone_instance = table.clone_instance
 --#endregion
 
@@ -31,7 +26,6 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
 
 mod:hook(CLASS.UIManager, "item_icon_updated", function(func, self, item, ...)
     local me = mod:me()
-    -- local equipemt_component = mod:equipment_component_from_unit(me)
 
 	-- Get equipment component
     local equipment_component = mod:equipment_component_from_unit(me)

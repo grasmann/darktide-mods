@@ -6,7 +6,6 @@ local mod = get_mod("extended_weapon_customization")
 -- #region Performance
     local world = World
     local CLASS = CLASS
-    local tostring = tostring
     local script_unit = ScriptUnit
     local script_unit_extension = script_unit.extension
     local world_update_unit_and_children = world.update_unit_and_children

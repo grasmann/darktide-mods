@@ -20,9 +20,7 @@ local ItemSlotSettings = mod:original_require("scripts/settings/item/item_slot_s
     local quaternion = Quaternion
     local vector3_box = Vector3Box
     local table_clone = table.clone
-    local vector3_zero = vector3.zero
     local vector3_unbox = vector3_box.unbox
-    local vector3_to_array = vector3.to_array
     local vector3_from_array = vector3.from_array
     local unit_world_position = unit.world_position
     local unit_world_rotation = unit.world_rotation
@@ -108,8 +106,8 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
         local slot_name = render_context.slot_name
         local item = profile.loadout[slot_name]
-        local gear_id = mod:gear_id(item, true)
-        local placement = render_context.placement_name or (slot_name and mod:gear_placement(gear_id))
+        -- local gear_id = mod:gear_id(item, true)
+        local placement = render_context.placement_name --or (slot_name and mod:gear_placement(gear_id))
         -- placement = render_context.placement_name or placement or "default"
         self._profile_spawner:set_placement_name(placement)
         self._profile_spawner:set_slot_name(slot_name)

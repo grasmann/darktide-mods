@@ -10,6 +10,12 @@ local mod = get_mod("visible_equipment")
     local table_contains = table.contains
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local pt = mod:pt()
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
@@ -26,8 +32,9 @@ end
 -- end
 
 mod.gear_placement = function(self, gear_id, placement, file, no_default)
-    local pt = self:pt()
+
     if placement and gear_id then
+
         pt.gear_placements[gear_id] = pt.gear_placements[gear_id] or {}
         local data = pt.gear_placements[gear_id]
 
@@ -36,7 +43,9 @@ mod.gear_placement = function(self, gear_id, placement, file, no_default)
         end
 
         data.placement = placement
+
     elseif gear_id then
+
         local data = pt.gear_placements[gear_id]
 
         if (not data or file) and table_contains(pt.cache, gear_id..".lua") then
@@ -45,7 +54,9 @@ mod.gear_placement = function(self, gear_id, placement, file, no_default)
         end
 
         return (data and data.placement) or (not no_default and "default")
+        
     end
+
 end
 
 mod.fetch_attachment = function(self, attachments, target_slot)

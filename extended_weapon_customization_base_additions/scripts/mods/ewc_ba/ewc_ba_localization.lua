@@ -77,8 +77,11 @@ mod:add_global_localize_strings({
 		en = "EWC:BA - 2H Power Sword",
 		["zh-cn"] = "扩展武器自定义：基础增补 - 双手动力剑",
 	},
-	local_ewc_shotgun_double_barrel = {
+	loc_ewc_shotgun_double_barrel = {
 		en = "EWC:BA - Double Barrel Shotgun",
+	},
+	loc_ewc_sight_show = {
+		en = "EWC:BA - Sight just for show",
 	},
 
 	loc_scope_01 = {
@@ -99,5 +102,21 @@ return {
 	mod_description = {
 		en = "Basic custom additions for extended weapon customization.",
 		["zh-cn"] = "为扩展武器自定义功能提供的基础自定义增补内容。",
+	},
+
+	group_misc = {
+		en = "Misc",
+	},
+	mod_option_laser_blade_randomization = {
+		en = "Randomize Laser Blades",
+	},
+	mod_option_laser_blade_randomization_tooltip = {
+		en = "Allows randomized weapons to have laser blades.",
+	},
+	mod_option_laser_pointer_randomization = {
+		en = "Randomize Laser Pointer",
+	},
+	mod_option_laser_pointer_randomization_tooltip = {
+		en = "Allows randomized weapons to have laser pointers.",
 	},
 }

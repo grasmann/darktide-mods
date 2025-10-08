@@ -16,6 +16,12 @@ local mod = get_mod("extended_weapon_customization")
     local script_unit_extension = script_unit.extension
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local pt = mod:pt()
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
@@ -36,8 +42,7 @@ mod:hook(CLASS.Flashlight, "init", function(func, self, context, slot, weapon_te
 
     -- Original function
     func(self, context, slot, weapon_template, fx_sources, item, unit_1p, unit_3p, ...)
-
-    local pt = mod:pt()
+    
     -- Get attached flashlight item string
     local flashlight_item_string = mod:fetch_attachment(item.attachments, "flashlight")
     -- Get attachment data

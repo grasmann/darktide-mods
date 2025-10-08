@@ -9,12 +9,18 @@ local mod = get_mod("extended_weapon_customization")
     local table_contains = table.contains
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local pt = mod:pt()
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.gear_id = function(self, item, fake_gear_id)
-    local pt, gear_id = self:pt(), nil
+    local gear_id = nil
     -- Check fake gear id
     if not fake_gear_id then
         -- Get real gear id from item
@@ -32,13 +38,11 @@ mod.gear_id = function(self, item, fake_gear_id)
 end
 
 mod.gear_id_relay = function(self, gear_id, real_gear_id)
-    local pt = self:pt()
     -- Set gear id relay
     pt.gear_id_relays[gear_id] = real_gear_id
 end
 
 mod.delete_gear_id_relays = function(self, gear_id)
-    local pt = self:pt()
     -- Iterate through gear id relays
     for fake_gear_id, real_gear_id in pairs(pt.gear_id_relays) do
         -- Check gear ids
@@ -50,7 +54,6 @@ mod.delete_gear_id_relays = function(self, gear_id)
 end
 
 mod.gear_settings = function(self, gear_id, settings, file)
-    local pt = self:pt()
     -- Check settings and gear id
     if settings and gear_id then
         -- Set gear settings
@@ -79,7 +82,6 @@ mod.gear_settings = function(self, gear_id, settings, file)
 end
 
 mod.delete_gear_settings = function(self, gear_id, file)
-    local pt = self:pt()
     -- Delete gear settings
     pt.gear_settings[gear_id] = nil
     -- Delete gear id relays

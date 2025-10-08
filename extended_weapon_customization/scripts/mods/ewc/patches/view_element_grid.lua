@@ -4,7 +4,6 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
--- local UIWorkspaceSettings = mod:original_require("scripts/settings/ui/ui_workspace_settings")
 local ViewElementTabMenuSettings = mod:original_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu_settings")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 

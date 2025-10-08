@@ -200,6 +200,148 @@ local extended_weapon_customization_plugin = {
             dev_name = "loc_scope_01",
             disable_vfx_spawner_exclusion = true,
         },
+
+        [_item_ranged.."/sights/reflex_sight_show_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/sights/sight_reflex_01/sight_reflex_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained"
+            },
+            attach_node = "ap_sight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/sights/sight_reflex_01/sight_reflex_01"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/sights/reflex_sight_show_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/sights/reflex_sight_show_02"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/sights/sight_reflex_02/sight_reflex_02",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained"
+            },
+            attach_node = "ap_sight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/sights/sight_reflex_02/sight_reflex_02"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/sights/reflex_sight_show_02",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/sights/reflex_sight_show_03"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/attachments/sights/sight_reflex_03/sight_reflex_03",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained"
+            },
+            attach_node = "ap_sight_01",
+            resource_dependencies = {
+                ["content/weapons/player/attachments/sights/sight_reflex_03/sight_reflex_03"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/sights/reflex_sight_show_03",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
+        [_item_ranged.."/sights/scope_show_01"] = {
+            attachments = {
+                base = {
+                    item = _item_ranged.."/sights/reflex_sight_03",
+                    fix = {
+                        hide = {
+                            mesh = {5},
+                        },
+                    },
+                    children = {
+                        scope = {
+                            item = _item_ranged.."/scope_bodies/scope_body_01",
+                            fix = {
+                                offset = {
+                                    node = 1,
+                                    position = vector3_box(0, -.04, .035),
+                                    rotation = vector3_box(0, 0, 0),
+                                    scale = vector3_box(1.5, 1.5, 1.5),
+                                },
+                            },
+                            children = {
+                                lense_1 = {
+                                    item = _item_ranged.."/lenses/lense_01",
+                                    fix = {
+                                        offset = {
+                                            node = 1,
+                                            position = vector3_box(0, .085, 0),
+                                            rotation = vector3_box(0, 0, 0),
+                                            scale = vector3_box(1, .35, 1),
+                                        },
+                                        alpha = .25,
+                                    },
+                                },
+                                lense_2 = {
+                                    item = _item_ranged.."/lenses/lense_01",
+                                    fix = {
+                                        offset = {
+                                            node = 1,
+                                            position = vector3_box(0, .075, 0),
+                                            rotation = vector3_box(180, 0, 0),
+                                            scale = vector3_box(1, .35, 1),
+                                        },
+                                        alpha = .25,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            attach_node = "ap_sight_01",
+            display_name = "loc_scope_show_01",
+            description = "loc_description_scope_show_01",
+            dev_name = "loc_scope_show_01",
+            disable_vfx_spawner_exclusion = true,
+        },
+
         [_item_ranged.."/flashlights/invisible_flashlight"] = {
             attachments = {
                 flashlight = {
@@ -242,6 +384,7 @@ local extended_weapon_customization_plugin = {
             dev_name = "invisible_flashlight_ogryn",
             disable_vfx_spawner_exclusion = true,
         },
+
         [_item_ranged.."/laser_pointers/laser_pointer_01"] = {
             is_fallback_item = false,
             show_in_1p = true,
@@ -578,6 +721,7 @@ local extended_weapon_customization_plugin = {
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
+
         [_item_melee.."/tanks/laser_blade_tank_01"] = {
             is_fallback_item = false,
             show_in_1p = true,
@@ -1115,15 +1259,13 @@ local extended_weapon_customization_plugin = {
     },
     packages_to_load = {
         ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
+        ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering"] = true,
         ["content/fx/particles/enemies/renegade_sniper/renegade_sniper_beam_outdoors"] = true,
-        ["content/fx/particles/enemies/renegade_flamer/renegade_flamer_fuse_loop"] = true,
-        ["content/fx/particles/weapons/rifles/player_flamer/flamer_code_control"] = true,
         ["content/fx/particles/weapons/rifles/plasma_gun/plasma_vent_valve"] = true,
         ["content/fx/particles/weapons/rifles/plasma_gun/plasma_gun_charge"] = true,
         ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
         ["content/fx/particles/enemies/sniper_laser_sight"] = true,
         ["content/fx/particles/enemies/red_glowing_eyes"] = true,
-        ["content/fx/particles/enemies/buff_taunted_1p"] = true,
         ["wwise/events/minions/play_traitor_captain_shield_bullet_hits"] = true,
         ["wwise/events/weapon/play_aoe_liquid_fire_green_loop"] = true,
         ["wwise/events/weapon/stop_aoe_liquid_fire_green_loop"] = true,

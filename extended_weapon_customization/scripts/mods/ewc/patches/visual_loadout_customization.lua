@@ -11,7 +11,6 @@ local master_items = mod:original_require("scripts/backend/master_items")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
-    local CLASS = CLASS
     local pairs = pairs
     local table = table
     local string = string
@@ -21,7 +20,6 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table_clear = table.clear
     local string_find = string.find
     local unit_set_data = unit.set_data
-    local table_contains = table.contains
     local table_set_readonly = table.set_readonly
     local table_merge_recursive = table.merge_recursive
 --#endregion
@@ -30,6 +28,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local pt = mod:pt()
 local empty_overrides_table = table_set_readonly({})
 local temp_children = {}
 local PROCESS_SLOTS = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
@@ -141,8 +140,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                         -- Exlcude from vfx spawner
                         if item.is_kitbash and not item.disable_vfx_spawner_exclusion then
-                            
-                            local pt = mod:pt()
 
                             for unit, _ in pairs(pt.exclude_from_vfx_spawner) do
                                 if not unit or not unit_alive(unit) then
@@ -216,8 +213,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     end
 
                     if item.is_kitbash and not item.disable_vfx_spawner_exclusion then
-                            
-                        local pt = mod:pt()
 
                         local deleted = 0
                         for unit, _ in pairs(pt.exclude_from_vfx_spawner) do

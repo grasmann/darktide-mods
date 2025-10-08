@@ -6,6 +6,7 @@ local mod = get_mod("extended_weapon_customization")
 -- #region Performance
     local unit = Unit
     local pairs = pairs
+    local class = class
     local managers = Managers
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
@@ -56,8 +57,6 @@ AttachmentCallbackExtension.init = function(self, extension_init_context, unit, 
     self.wielded_slot = nil
     self.attachments = {}
     self.attachment_slots = {}
-    -- Fetch attachment callbacks
-    -- self:fetch_attachments_with_callbacks()
     -- Register events
     managers.event:register(self, "ewc_reloaded", "on_mod_reload")
     managers.event:register(self, "ewc_settings_changed", "on_settings_changed")
@@ -195,16 +194,6 @@ AttachmentCallbackExtension.update = function(self, dt, t)
     -- Execute "on_update" for attachments
     self:attachment_callback("on_update", dt, t)
 end
-
-mod:hook(CLASS.ActionSweep, "start", function(func, self, action_settings, t, time_scale, action_start_params, ...)
-    -- Original function
-    func(self, action_settings, t, time_scale, action_start_params, ...)
-
-    local attachment_callback_extension = script_unit_extension(self._player_unit, "attachment_callback_system")
-    if attachment_callback_extension then
-        attachment_callback_extension:on_attack(self._hit_units)
-    end
-end)
 
 mod.execute_attachment_callbacks_in_item = function(self, item, world, attachment_units, function_name, ...)
     if item and item.attachments then

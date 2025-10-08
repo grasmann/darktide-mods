@@ -167,6 +167,7 @@ end
 
 SaveLua._set_cache = function(self, entries)
     mod:set("gear_files", entries)
+	mod:pt().cache = mod:get("gear_files")
 end
 
 SaveLua._read_file = function(self, path)

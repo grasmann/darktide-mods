@@ -8,12 +8,8 @@ local mod = get_mod("extended_weapon_customization")
     local math = math
     local table = table
     local class = class
-    local CLASS = CLASS
-    local world = World
-    local pairs = pairs
     local vector3 = Vector3
     local managers = Managers
-    local tostring = tostring
     local unit_node = unit.node
     local math_lerp = math.lerp
     local unit_alive = unit.alive
@@ -27,7 +23,6 @@ local mod = get_mod("extended_weapon_customization")
     local vector3_unbox = vector3_box.unbox
     local quaternion_multiply = quaternion.multiply
     local unit_local_position = unit.local_position
-    local unit_world_rotation = unit.world_rotation
     local unit_local_rotation = unit.local_rotation
     local quaternion_to_vector = quaternion.to_vector
     local unit_set_local_scale = unit.set_local_scale
@@ -35,9 +30,6 @@ local mod = get_mod("extended_weapon_customization")
     local quaternion_from_vector = quaternion.from_vector
     local unit_set_local_position = unit.set_local_position
     local unit_set_local_rotation = unit.set_local_rotation
-    local script_unit_add_extension = script_unit.add_extension
-    local script_unit_remove_extension = script_unit.remove_extension
-    local world_update_unit_and_children = world.update_unit_and_children
 --#endregion
 
 -- ##### ┌─┐┬┌─┐┬ ┬┌┬┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ #################################################################
@@ -96,13 +88,13 @@ SwayExtension.init = function(self, extension_init_context, unit, extension_init
 end
 
 SwayExtension.on_settings_changed = function(self)
-    self.active = mod:get("mod_option_sway")
+    self.sway = mod:get("mod_option_sway")
     self.crouch = mod:get("mod_option_crouch")
 end
 
 SwayExtension.delete = function(self)
     managers.event:unregister(self, "ewc_settings_changed")
-    self.active = false
+    self.sway = false
 end
 
 SwayExtension.is_ogryn = function(self)
@@ -179,7 +171,7 @@ SwayExtension.update = function(self, dt, t)
 
             end
 
-            if self.active then
+            if self.sway then
 
                 unit_position = unit_position + vector3(angle_x, 0, self.momentum_y * .05)
                 unit_rotation = quaternion_multiply(unit_rotation, quaternion_from_vector(vector3(self.momentum_y * .05, -angle_x * 60, angle_x)))

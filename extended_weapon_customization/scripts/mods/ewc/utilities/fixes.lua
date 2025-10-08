@@ -18,6 +18,7 @@ local mod = get_mod("extended_weapon_customization")
     local string_split = string.split
     local unit_has_node = unit.has_node
     local table_contains = table.contains
+    local unit_num_meshes = unit.num_meshes
     local vector3_unbox = vector3_box.unbox
     local unit_set_local_scale = unit.set_local_scale
     local quaternion_from_vector = quaternion.from_vector
@@ -33,6 +34,7 @@ local mod = get_mod("extended_weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local pt = mod:pt()
 local PROCESS_SLOTS = {"WEAPON_MELEE", "WEAPON_RANGED", "KITBASH"}
 local temp_fixes = {}
 local temp_attachments = {}
@@ -107,7 +109,7 @@ mod.collect_fixes = function(self, item_data, target_slot)
                             end
                         elseif fix_entry.active_function then
                             local gear_id = mod:gear_id(item, true)
-                            local is_customization_menu = mod:pt().items_originating_from_customization_menu[gear_id]
+                            local is_customization_menu = pt.items_originating_from_customization_menu[gear_id]
                             requirements_met = fix_entry.active_function(item_data, item_data.__is_ui_item_preview, item_data.__is_preview_item, is_customization_menu, self.customization_menu_slot_name)
                         end
                         -- Check if requirements are met
@@ -142,7 +144,7 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                 local active = true
                 if fix.active_function then
                     local gear_id = mod:gear_id(item, true)
-                    local is_customization_menu = mod:pt().items_originating_from_customization_menu[gear_id]
+                    local is_customization_menu = pt.items_originating_from_customization_menu[gear_id]
                     active = fix.active_function(item, item_data.__is_ui_item_preview, item_data.__is_preview_item, is_customization_menu, self.customization_menu_slot_name)
                 end
                 if active and (not fix.disable_in_ui or not is_ui_item_preview) and (not fix.only_in_ui or is_ui_item_preview) then
@@ -172,23 +174,33 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                             -- mod:print("fix hide "..tostring(attachment_slot))
                             local node = hide.node
                             if type(node) == "string" then
-                                node = unit_has_node(attachment_unit, node) and unit_node(attachment_unit, node) or 1
+                                node = unit_has_node(attachment_unit, node) and unit_node(attachment_unit, node)
                             end
                             if type(node) == "table" then
                                 for i = 1, #node do
-                                    unit_set_local_scale(attachment_unit, node[i], vector3(0, 0, 0))
+                                    local table_node = node[i]
+                                    -- unit_set_local_scale(attachment_unit, node[i], vector3(0, 0, 0))
+                                    if type(table_node) == "string" then
+                                        local node_id = unit_has_node(attachment_unit, table_node) and unit_node(attachment_unit, table_node)
+                                        if node_id then unit_set_local_scale(attachment_unit, node_id, vector3(0, 0, 0)) end
+                                    else
+                                        unit_set_local_scale(attachment_unit, table_node, vector3(0, 0, 0))
+                                    end
                                 end
-                            else
+                            elseif node then
                                 unit_set_local_scale(attachment_unit, node, vector3(0, 0, 0))
                             end
                         end
                         if hide.mesh then
                             local mesh = hide.mesh
+                            local num_meshes = unit_num_meshes(attachment_unit)
                             if type(mesh) == "table" then
                                 for i = 1, #mesh do
-                                    unit_set_mesh_visibility(attachment_unit, mesh[i], false)
+                                    if num_meshes >= mesh[i] then
+                                        unit_set_mesh_visibility(attachment_unit, mesh[i], false)
+                                    end
                                 end
-                            else
+                            elseif num_meshes >= mesh then
                                 unit_set_mesh_visibility(attachment_unit, mesh, false)
                             end
                         end
@@ -219,7 +231,7 @@ mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
                 local active = true
                 if fix.active_function then
                     local gear_id = mod:gear_id(item, true)
-                    local is_customization_menu = mod:pt().items_originating_from_customization_menu[gear_id]
+                    local is_customization_menu = pt.items_originating_from_customization_menu[gear_id]
                     active = fix.active_function(item, item_data.__is_ui_item_preview, item_data.__is_preview_item, is_customization_menu, self.customization_menu_slot_name)
                 end
                 -- Check active

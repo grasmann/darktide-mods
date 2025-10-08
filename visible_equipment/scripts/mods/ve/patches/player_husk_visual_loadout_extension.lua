@@ -14,8 +14,6 @@ local mod = get_mod("visible_equipment")
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, game_session, game_object_id, ...)
-    -- Set pt variable
-    self.pt = mod:pt()
     -- Create equipment component tables
     unit_set_data(unit, "visible_equipment_profile", extension_init_data.player:profile())
     -- Original function

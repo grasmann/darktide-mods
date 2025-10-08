@@ -4,11 +4,14 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
+local autogun_braced_group = {custom_selection_group = "autogun_braced"}
+
 local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
-mod:modify_customization_groups(magazine_autogun_infantry, "autogun_infantry")
+mod:merge_attachment_data(autogun_infantry_group, magazine_autogun_infantry)
 
 local magazine_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_braced")
-mod:modify_customization_groups(magazine_autogun_braced, "autogun_braced")
+mod:merge_attachment_data(autogun_braced_group, magazine_autogun_braced)
 
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")

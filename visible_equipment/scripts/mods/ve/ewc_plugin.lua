@@ -4,7 +4,6 @@ local mod = get_mod("visible_equipment")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
-    -- local unit = Unit
     local pairs = pairs
     local table = table
     local vector3_box = Vector3Box

@@ -19,12 +19,17 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table_merge_recursive = table.merge_recursive
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local pt = mod:pt()
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.load_kitbash_collection = function(self, kitbash_collection)
-    local pt = self:pt()
     local preload = not pt.game_initialized
     -- Iterate through kitbash collection
     for kitbash_name, data in pairs(kitbash_collection) do
@@ -41,7 +46,7 @@ end
 
 mod.kitbash_preload = function(self, name, data)
     -- Add kitbash entry to preload table
-    self:pt().kitbash_entries[name] = data
+    pt.kitbash_entries[name] = data
 end
 
 mod.kitbash_item = function(self, name, data)
@@ -118,7 +123,7 @@ mod.try_kitbash_load = function(self)
 
         self:print("loading kitbash items")
 
-        local kitbash_entries = self:pt().kitbash_entries
+        local kitbash_entries = pt.kitbash_entries
         if kitbash_entries then
             -- Iterate through kitbash entries
             for kitbash_name, data in pairs(kitbash_entries) do

@@ -4,11 +4,16 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local lasgun_infantry_group = {custom_selection_group = "lasgun_infantry"}
+local lasgun_helbore_group = {custom_selection_group = "lasgun_helbore"}
+
 local barrel_lasgun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_lasgun_infantry")
-mod:modify_customization_groups(barrel_lasgun_infantry, "lasgun_infantry")
+local muzzle_lasgun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_infantry")
+mod:merge_attachment_data(lasgun_infantry_group, barrel_lasgun_infantry, muzzle_lasgun_infantry)
 
 local barrel_lasgun_helbore = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_lasgun_helbore")
-mod:modify_customization_groups(barrel_lasgun_helbore, "lasgun_helbore")
+local muzzle_lasgun_helbore = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_helbore")
+mod:merge_attachment_data(lasgun_helbore_group, barrel_lasgun_helbore, muzzle_lasgun_helbore)
 
 local flashlight_modded_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_modded_human")
 local laser_pointer_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/laser_pointer_human")

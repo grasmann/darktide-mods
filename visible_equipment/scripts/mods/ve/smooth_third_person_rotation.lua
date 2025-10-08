@@ -5,15 +5,10 @@ local mod = get_mod("visible_equipment")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
-    local math = math
     local CLASS = CLASS
-    local math_pi = math.pi
-    local managers = Managers
     local quaternion = Quaternion
     local game_session = GameSession
-    local unit_set_data = unit.set_data
     local quaternion_lerp = quaternion.lerp
-    local quaternion_angle = quaternion.angle
     local quaternion_forward = quaternion.forward
     local unit_local_rotation = unit.local_rotation
     local unit_set_local_rotation = unit.set_local_rotation
@@ -28,7 +23,6 @@ mod:hook(CLASS.PlayerUnitAimExtension, "fixed_update", function(func, self, unit
 		local aim_direction = quaternion_forward(self._first_person_component.rotation)
 		game_session_set_game_object_field(self._game_session_id, self._game_object_id, "aim_direction", aim_direction)
 	end
-
     self._aim_animation_control:update(dt, t)
 	self._idle_fullbody_animation_control:update(dt, t)
 	self._look_delta_animation_control:update(dt, t)
@@ -37,7 +31,6 @@ end)
 -- Third person animation fix
 -- Fixes weird jittery character when playing in third person
 mod:hook(CLASS.PlayerUnitLocomotionExtension, "update", function(func, self, unit, dt, t, ...)
-    local current_rotation = unit_local_rotation(unit, 1)
     local remainder_t = t - self._last_fixed_t
     local locomotion_component = self._locomotion_component
     local look_rotation = self._first_person_extension:extrapolated_rotation()
@@ -50,5 +43,4 @@ mod:hook(CLASS.PlayerUnitLocomotionExtension, "update", function(func, self, uni
     if not mod:is_in_hub() then
         unit_set_local_rotation(unit, 1, quaternion_lerp(current_rotation, extrapolated_rot, dt))
     end
-
 end)

@@ -17,13 +17,13 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "extended_weapon_customization"
+local pt = mod:pt()
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.load_packages = function(self)
-    local pt = self:pt()
     for package_name, _ in pairs(self.settings.packages_to_load) do
         -- Debug
         self:print("loading package "..tostring(package_name))
@@ -35,7 +35,6 @@ mod.load_packages = function(self)
 end
 
 mod.package_loaded = function(self, package_name)
-    local pt = self:pt()
     -- Set loaded package id
     pt.loaded_packages[package_name] = pt.loading_packages[package_name]
     -- Unset loading package id
@@ -45,7 +44,6 @@ mod.package_loaded = function(self, package_name)
 end
 
 mod.release_packages = function(self)
-    local pt = self:pt()
     -- Debug
     self:print("releasing all packages")
     -- Iterate through packages
@@ -58,7 +56,6 @@ mod.release_packages = function(self)
 end
 
 mod.release_package = function(self, package_id, package_name)
-    local pt = self:pt()
     -- Debug
     self:print("releasing package "..tostring(package_name).." - "..tostring(package_id))
     -- Unset loaded package id

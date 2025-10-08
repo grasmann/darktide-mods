@@ -4,27 +4,12 @@ local mod = get_mod("visible_equipment")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
-    local unit = Unit
-    local type = type
-    local pairs = pairs
-    local table = table
     local managers = Managers
-    local unit_alive = unit.alive
-    local unit_get_data = unit.get_data
-    local table_contains = table.contains
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
-
-mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/common")
-mod:io_dofile("visible_equipment/scripts/mods/ve/ewc_plugin")
-mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/game")
-mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/gear")
-mod.settings = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/settings")
-mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/plugins")
-mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/save")
 
 local REFERENCE = "visible_equipment"
 
@@ -59,18 +44,29 @@ mod._on_setting_changed = function(self, setting_id)
     managers.event:trigger("visible_equipment_settings_changed")
 end
 
+-- Load extensions
+mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/common")
+mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/visible_equipment_extension")
+
+-- Load utilities
+mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/game")
+mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/gear")
+mod.settings = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/settings")
+mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/plugins")
+mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/save")
+
+-- Load extended weapon customization plugin
+mod:io_dofile("visible_equipment/scripts/mods/ve/ewc_plugin")
+
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
 -- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 mod.on_all_mods_loaded = function()
-    -- mod.loaded_plugins = mod:load_plugins()
-    -- managers.event:trigger("visible_equipment_mods_loaded")
     mod:_on_all_mods_loaded()
 end
 
 mod.on_setting_changed = function(setting_id)
-    -- managers.event:trigger("visible_equipment_settings_changed")
     mod:_on_setting_changed(setting_id)
 end
 
@@ -100,8 +96,6 @@ mod:io_dofile("visible_equipment/scripts/mods/ve/patches/material_fx")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/lobby_view")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/ui_manager")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/world")
-
-mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/visible_equipment_extension")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐┌─┐┬─┐┌─┐┬─┐┬ ┬ ##################################################################################
 -- #####  │ ├┤ │││├─┘│ │├┬┘├─┤├┬┘└┬┘ ##################################################################################

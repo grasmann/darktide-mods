@@ -13,8 +13,6 @@ local Promise = mod:original_require("scripts/foundation/utilities/promise")
 -- #region Performance
     local table = table
     local CLASS = CLASS
-    local tostring = tostring
-    local managers = Managers
     local script_unit = ScriptUnit
     local table_contains = table.contains
     local script_unit_extension = script_unit.extension
@@ -29,9 +27,6 @@ local Promise = mod:original_require("scripts/foundation/utilities/promise")
 local SLOT_SECONDARY = "slot_secondary"
 local SLOT_PRIMARY = "slot_primary"
 local PROCESS_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
--- local sight_extension_update = false
--- local flashlight_extension_update = false
--- local attachment_callback_extension_update = false
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
@@ -113,68 +108,6 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
     -- Destroy mispredict handler
     self._mispredict_package_handler = nil
 
-    -- if not script_unit_extension(self._unit, "sight_system") then
-    --     script_unit_add_extension(
-    --         {
-    --             world = self._equipment_component._world
-    --         },
-    --         self._unit,
-    --         "SightExtension",
-    --         "sight_system",
-    --         {
-    --             visual_loadout_extension = self,
-    --         }
-    --     )
-    -- end
-
-    -- if not script_unit_extension(self._unit, "sway_system") then
-    --     script_unit_add_extension(
-    --         {
-    --             world = self._equipment_component._world
-    --         },
-    --         self._unit,
-    --         "SwayExtension",
-    --         "sway_system",
-    --         {
-    --             visual_loadout_extension = self,
-    --             player = self._player,
-    --         }
-    --     )
-    -- end
-
-    -- if not script_unit_extension(self._unit, "flashlight_system") then
-    --     script_unit_add_extension(
-    --         {
-    --             world = self._equipment_component._world,
-    --         },
-    --         self._unit,
-    --         "FlashlightExtension",
-    --         "flashlight_system",
-    --         {
-    --             is_local_unit = true,
-    --             visual_loadout_extension = self,
-    --             player = self._player,
-    --             from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
-    --         }
-    --     )
-    -- end
-
-    -- if not script_unit_extension(self._unit, "attachment_callback_system") then
-    --     script_unit_add_extension(
-    --         {
-    --             world = self._equipment_component._world,
-    --         },
-    --         self._unit,
-    --         "AttachmentCallbackExtension",
-    --         "attachment_callback_system",
-    --         {
-    --             visual_loadout_extension = self,
-    --             player = self._player,
-    --             from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
-    --         }
-    --     )
-    -- end
-
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)
@@ -227,16 +160,11 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "fixed_update", function(func, 
         
         if self.attachment_callback_extension_update then
             if self:is_slot_unit_spawned(SLOT_SECONDARY) and self:is_slot_unit_spawned(SLOT_PRIMARY) then
-                -- local attachment_callback_extension = script_unit_extension(self._unit, "attachment_callback_system")
-                -- if attachment_callback_extension then
                 attachment_callback_extension:on_equip_weapon()
-                -- end
                 self.attachment_callback_extension_update = nil
             end
         end
 
-        -- local attachment_callback_extension = script_unit_extension(self._unit, "attachment_callback_system")
-        -- if attachment_callback_extension then
         attachment_callback_extension:update(dt, t)
     end
     

@@ -10,20 +10,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
-    local unit = Unit
     local CLASS = CLASS
-    local pairs = pairs
-    local table = table
-    local string = string
-    local tostring = tostring
-    local table_size = table.size
-    local unit_alive = unit.alive
-    local table_clear = table.clear
-    local string_find = string.find
-    local unit_set_data = unit.set_data
-    local table_contains = table.contains
-    local table_set_readonly = table.set_readonly
-    local table_merge_recursive = table.merge_recursive
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
