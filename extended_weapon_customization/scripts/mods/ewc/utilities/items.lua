@@ -39,7 +39,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
 
 local pt = mod:pt()
 local temp_random_attachment_list = {}
-local PROCESS_ITEM_TYPES = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
+local PROCESS_ITEM_TYPES = {"WEAPON_MELEE", "WEAPON_RANGED"}
 local _item = "content/items/weapons/player"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
@@ -385,16 +385,16 @@ end
 
 mod.handle_husk_item = function(self, item, player)
     -- Check if slot is supported, random players is enabled and item is valid
-    local item_data = self:item_data(item)
-    local item_type = item_data and item_data.item_type or "unknown"
-    if table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_players") and item_data and item_data.attachments then
+    -- local item_data = self:item_data(item)
+    local item_type = item and item.item_type or "unknown"
+    if table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_players") and item and item.attachments then
         -- Get gear id
-        local gear_id = mod:gear_id(item_data)
+        local gear_id = mod:gear_id(item)
         -- Check if mark of husk item was changed
         mod:sweep_gear_id(gear_id)
         -- Create husk item
         mod:print("cloning husk item "..tostring(gear_id))
-        local mod_item = mod:create_husk_item(gear_id, item_data)
+        local mod_item = mod:create_husk_item(gear_id, item)
         -- Randomize item
         mod:print("randomizing husk item "..tostring(gear_id))
         -- Use existing gear settings, when the weapon was already randomized
@@ -407,10 +407,12 @@ mod.handle_husk_item = function(self, item, player)
         -- Attachment fixes
         mod:apply_attachment_fixes(mod_item)
         -- Reevaluate packages
-        if not old_gear_settings then
-            mod:print("reevaluate_packages "..tostring(player))
-            mod:reevaluate_packages(player)
-        end
+        -- if not old_gear_settings then
+        --     mod:print("reevaluate_packages "..tostring(player))
+        --     mod:reevaluate_packages(player)
+        -- end
+        -- mod:print("reevaluate_packages "..tostring(player))
+        -- mod:reevaluate_packages(player)
         -- Return mod item
         return mod_item
     end

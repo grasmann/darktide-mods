@@ -29,6 +29,7 @@ local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 
 local supported_slot_names = {"slot_primary", "slot_secondary"}
 local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
+local SLOT_ANIMATION_END_OF_ROUND = "slot_animation_end_of_round"
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
@@ -107,6 +108,13 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_enter", function(func, self, ...)
     end
 end)
 
+-- mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, profile, initial_rotation, disable_rotation_input, ...)
+
+    
+--     func(self, profile, initial_rotation, disable_rotation_input, ...)
+
+-- end)
+
 mod:hook(CLASS.InventoryCosmeticsView, "_register_button_callbacks", function(func, self, ...)
     -- Original function
     func(self, ...)
@@ -171,12 +179,17 @@ mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, sel
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, profile, initial_rotation, disable_rotation_input, ...)
+    -- Replace weapons
+    local profile = mod:profile()
     -- Original function
     func(self, profile, initial_rotation, disable_rotation_input, ...)
     -- Set custom camera
     local slot_name = self._selected_slot and self._selected_slot.name
     if self:is_valid_slot(slot_name) then
         self:update_rotation(self._presentation_profile, slot_name)
+    elseif slot_name == SLOT_ANIMATION_END_OF_ROUND then
+        local profile_spawner = self._profile_spawner
+        profile_spawner:_set_auto_rotation_return(true)
     end
 end)
 

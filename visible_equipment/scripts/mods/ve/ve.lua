@@ -25,6 +25,7 @@ mod:persistent_table(REFERENCE, {
     gear_placements = {},
     cache = mod:get("visible_equipment_entries") or {},
     cache_files = {},
+    cutscene_playing = false,
 })
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -90,6 +91,7 @@ mod:io_dofile("visible_equipment/scripts/mods/ve/patches/ui_profile_spawner")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/view_element_grid")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/main_menu_view")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_view")
+mod:io_dofile("visible_equipment/scripts/mods/ve/patches/cutscene_view")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/result_view")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/portrait_ui")
 mod:io_dofile("visible_equipment/scripts/mods/ve/patches/material_fx")

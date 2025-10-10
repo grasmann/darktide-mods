@@ -73,6 +73,7 @@ local attack_settings = mod:original_require("scripts/settings/damage/attack_set
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local pt = mod:pt()
 local attack_types = attack_settings.attack_types
 local IMPACT_SOUND = "wwise/events/minions/play_traitor_captain_shield_bullet_hits"
 local IMPACT_EFFECT = "content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"
@@ -364,13 +365,22 @@ local function despawn_blade(attachment_callback_extension, attachment_slot_data
 
 end
 
-local function spawn_blade(attachment_callback_extension, attachment_slot_data, optional_no_sound, optional_no_animation)
-    local no_sound = not not optional_no_sound
-    local no_animation = not not optional_no_animation
+local function can_spawn_blade(attachment_callback_extension, attachment_slot_data, optional_wielded_slot)
     local player_visibility = script_unit_has_extension(attachment_callback_extension.unit, "player_visibility_system")
     local player_invisible = player_visibility and not player_visibility:visible()
     local inventory_view = mod:get_view("inventory_view")
-    if not attachment_callback_extension.laser_blade_distortion_particle and attachment_callback_extension.wielded_slot == attachment_slot_data.slot_name and not player_invisible and not inventory_view then
+    local wielded_slot = optional_wielded_slot or attachment_callback_extension.wielded_slot
+    return wielded_slot == attachment_slot_data.slot_name and not player_invisible and not inventory_view and not pt.cutscene_playing
+end
+
+local function spawn_blade(attachment_callback_extension, attachment_slot_data, optional_no_sound, optional_no_animation)
+    local no_sound = not not optional_no_sound
+    local no_animation = not not optional_no_animation
+    -- local player_visibility = script_unit_has_extension(attachment_callback_extension.unit, "player_visibility_system")
+    -- local player_invisible = player_visibility and not player_visibility:visible()
+    -- local inventory_view = mod:get_view("inventory_view")
+    -- if not attachment_callback_extension.laser_blade_distortion_particle and attachment_callback_extension.wielded_slot == attachment_slot_data.slot_name and not player_invisible and not inventory_view then
+    if not attachment_callback_extension.laser_blade_distortion_particle and can_spawn_blade(attachment_callback_extension, attachment_slot_data) then
 
         local attachment_unit = attachment_callback_extension:current_attachment_unit(attachment_slot_data.attachment_slot)
         if attachment_unit and unit_alive(attachment_unit) then
@@ -452,13 +462,14 @@ local function update_blade(attachment_callback_extension, attachment_slot_data,
 end
 
 local function update_blade_visibility(attachment_callback_extension, attachment_slot_data, wielded_slot)
-    local player_visibility = script_unit_has_extension(attachment_callback_extension.unit, "player_visibility_system")
-    local player_invisible = player_visibility and not player_visibility:visible()
-    local inventory_view = mod:get_view("inventory_view")
-    if wielded_slot ~= attachment_slot_data.slot_name or player_invisible or inventory_view then
-        despawn_blade(attachment_callback_extension, attachment_slot_data)
-    else
+    -- local player_visibility = script_unit_has_extension(attachment_callback_extension.unit, "player_visibility_system")
+    -- local player_invisible = player_visibility and not player_visibility:visible()
+    -- local inventory_view = mod:get_view("inventory_view")
+    -- if wielded_slot ~= attachment_slot_data.slot_name or player_invisible or inventory_view then
+    if can_spawn_blade(attachment_callback_extension, attachment_slot_data, wielded_slot) then
         spawn_blade(attachment_callback_extension, attachment_slot_data)
+    else
+        despawn_blade(attachment_callback_extension, attachment_slot_data)
     end
 end
 

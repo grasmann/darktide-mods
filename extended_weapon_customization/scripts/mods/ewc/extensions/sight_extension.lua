@@ -82,6 +82,8 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
     self.weapon_action_component = self.unit_data_extension:read_component("weapon_action")
     self.first_person_unit = self.first_person_extension:first_person_unit()
 
+    self.wielded_slot = extension_init_data.wielded_slot
+
     self.lens_transparency = 0
     self.fov = 0
     self.custom_fov = 0
@@ -95,6 +97,8 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
     -- self:fetch_sight_offset()
 
     managers.event:register(self, "ewc_reloaded", "on_mod_reload")
+    managers.event:register(self, "ewc_settings_changed", "on_settings_changed")
+    managers.event:register(self, "ewc_cutscene", "on_cutscene")
 
 end
 
@@ -157,9 +161,19 @@ SightExtension.fetch_sight_offset = function(self, item)
 end
 
 SightExtension.delete = function(self)
-    
     managers.event:unregister(self, "ewc_reloaded")
+    managers.event:unregister(self, "ewc_settings_changed")
+    managers.event:unregister(self, "ewc_cutscene")
+end
 
+SightExtension.on_settings_changed = function(self)
+end
+
+SightExtension.on_cutscene = function(self, cutscene_playing)
+    if not cutscene_playing then
+        -- Execute "on_wield"
+        self:on_wield(self.wielded_slot)
+    end
 end
 
 SightExtension.on_mod_reload = function(self)

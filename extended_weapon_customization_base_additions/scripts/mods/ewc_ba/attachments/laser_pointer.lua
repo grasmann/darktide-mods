@@ -68,6 +68,7 @@ local Sway = mod:original_require("scripts/utilities/sway")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local pt = mod:pt()
 local LOCK_STATES = {"walking", "sliding", "jumping", "falling", "dodging", "ledge_vaulting"}
 local LASER_PARTICLE = "content/fx/particles/enemies/sniper_laser_sight"
 local DOT_PARTICLE = "content/fx/particles/enemies/red_glowing_eyes"
@@ -240,13 +241,21 @@ end
 -- ##### ├┤ │─┼┐│ ││├─┘├─┘├┤  ││  │  ├─┤└─┐├┤ ├┬┘ #####################################################################
 -- ##### └─┘└─┘└└─┘┴┴  ┴  └─┘─┴┘  ┴─┘┴ ┴└─┘└─┘┴└─ #####################################################################
 
-local function spawn_laser_pointer(flashlight_extension)
-    -- Visibility
+local function can_spawn_laser_pointer(flashlight_extension)
     local player_visibility = script_unit_has_extension(flashlight_extension.unit, "player_visibility_system")
     local player_invisible = player_visibility and not player_visibility:visible()
     local inventory_view = mod:get_view("inventory_view")
+    return flashlight_extension:is_wielded() and not player_invisible and not inventory_view and not pt.cutscene_playing
+end
+
+local function spawn_laser_pointer(flashlight_extension)
+    -- Visibility
+    -- local player_visibility = script_unit_has_extension(flashlight_extension.unit, "player_visibility_system")
+    -- local player_invisible = player_visibility and not player_visibility:visible()
+    -- local inventory_view = mod:get_view("inventory_view")
     -- Check if laser should be on
-    if flashlight_extension.on and not flashlight_extension.laser_pointer_laser_particle and flashlight_extension:is_wielded() and not player_invisible and not inventory_view then
+    -- if flashlight_extension.on and not flashlight_extension.laser_pointer_laser_particle and flashlight_extension:is_wielded() and not player_invisible and not inventory_view then
+    if flashlight_extension.on and not flashlight_extension.laser_pointer_laser_particle and can_spawn_laser_pointer(flashlight_extension) then
         -- Get current attachment unit
         local flashlight_unit = flashlight_extension:current_flashlight_unit()
         -- Check unit
@@ -445,13 +454,14 @@ local function update_laser_pointer(flashlight_extension, dt, t)
 end
 
 local function update_laser_pointer_visibility(flashlight_extension, wielded_slot)
-    local player_visibility = script_unit_has_extension(flashlight_extension.unit, "player_visibility_system")
-    local player_invisible = player_visibility and not player_visibility:visible()
-    local inventory_view = mod:get_view("inventory_view")
-    if wielded_slot ~= SLOT_SECONDARY or player_invisible or inventory_view then
-        despawn_laser_pointer(flashlight_extension)
-    elseif flashlight_extension.on then
+    -- local player_visibility = script_unit_has_extension(flashlight_extension.unit, "player_visibility_system")
+    -- local player_invisible = player_visibility and not player_visibility:visible()
+    -- local inventory_view = mod:get_view("inventory_view")
+    -- if wielded_slot ~= SLOT_SECONDARY or player_invisible or inventory_view then
+    if flashlight_extension.on and can_spawn_laser_pointer(flashlight_extension) then
         spawn_laser_pointer(flashlight_extension)
+    else
+        despawn_laser_pointer(flashlight_extension)
     end
 end
 

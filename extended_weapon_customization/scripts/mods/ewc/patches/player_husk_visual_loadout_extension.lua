@@ -52,6 +52,9 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, ex
 
     local world = extension_init_context.world
 
+    -- Original function
+    func(self, extension_init_context, unit, extension_init_data, ...)
+
     if not script_unit_extension(unit, "sight_system") then
         script_unit_add_extension(
             {
@@ -62,6 +65,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, ex
             "sight_system",
             {
                 visual_loadout_extension = self,
+                wielded_slot = self._wielded_slot,
             }
         )
     end
@@ -77,6 +81,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, ex
             {
                 visual_loadout_extension = self,
                 player = extension_init_data.player,
+                wielded_slot = self._wielded_slot,
             }
         )
     end
@@ -93,6 +98,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, ex
                 is_local_unit = false,
                 visual_loadout_extension = self,
                 player = extension_init_data.player,
+                wielded_slot = self._wielded_slot,
                 -- from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
             }
         )
@@ -109,13 +115,11 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, ex
             {
                 visual_loadout_extension = self,
                 player = extension_init_data.player,
+                wielded_slot = self._wielded_slot,
                 -- from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
             }
         )
     end
-
-    -- Original function
-    func(self, extension_init_context, unit, extension_init_data, ...)
 
     self.flashlight_extension_update = true
     self.sight_extension_update = true
@@ -223,8 +227,12 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_equip_item_from_pro
 	local item = visual_loadout[slot_name]
 
     -- Randomize weapon for other player
-    -- item = 
+    -- item = mod:player_husk_visual_loadout_extension_randomize(player, item, slot_name)
+    -- visual_loadout[slot_name] = item
     mod:player_husk_visual_loadout_extension_randomize(player, item, slot_name)
+
+    mod:print("reevaluate_packages "..tostring(player))
+    mod:reevaluate_packages(player)
 
 	self:_equip_item_to_slot(slot_name, item)
 

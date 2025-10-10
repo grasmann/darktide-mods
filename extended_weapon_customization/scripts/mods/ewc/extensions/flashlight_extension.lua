@@ -80,10 +80,12 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     self.alternate_fire_component = self.unit_data_extension:read_component("alternate_fire")
     self.fx_extension = script_unit_extension(unit, "fx_system")
     -- Settings
+    self.wielded_slot = extension_init_data.wielded_slot
     self.on = false
     -- Events
     managers.event:register(self, "ewc_reloaded", "on_mod_reload")
     managers.event:register(self, "ewc_settings_changed", "on_settings_changed")
+    managers.event:register(self, "ewc_cutscene", "on_cutscene")
     -- Set initial values
     self:on_settings_changed()
 end
@@ -91,6 +93,7 @@ end
 FlashlightExtension.delete = function(self)
     managers.event:unregister(self, "ewc_reloaded")
     managers.event:unregister(self, "ewc_settings_changed")
+    managers.event:unregister(self, "ewc_cutscene")
 end
 
 FlashlightExtension.on_settings_changed = function(self)
@@ -99,6 +102,13 @@ FlashlightExtension.on_settings_changed = function(self)
     self.interact_double = mod:get("mod_toggle_flashlight_interact_double")
     self.modded_reminder = mod:get("mod_flashlight_input_reminder")
     self:init_light()
+end
+
+FlashlightExtension.on_cutscene = function(self, cutscene_playing)
+    if not cutscene_playing then
+        -- Execute "on_wield"
+        self:on_wield(self.wielded_slot)
+    end
 end
 
 FlashlightExtension.input_settings = function(self)

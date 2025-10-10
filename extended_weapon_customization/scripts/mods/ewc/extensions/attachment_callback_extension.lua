@@ -54,12 +54,13 @@ AttachmentCallbackExtension.init = function(self, extension_init_context, unit, 
     self.alternate_fire_component = self.unit_data_extension:read_component("alternate_fire")
     self.movement_state_component = self.unit_data_extension:read_component("movement_state")
     -- Set null data
-    self.wielded_slot = nil
+    self.wielded_slot = extension_init_data.wielded_slot
     self.attachments = {}
     self.attachment_slots = {}
     -- Register events
     managers.event:register(self, "ewc_reloaded", "on_mod_reload")
     managers.event:register(self, "ewc_settings_changed", "on_settings_changed")
+    managers.event:register(self, "ewc_cutscene", "on_cutscene")
     -- Set initial values
     self:on_settings_changed()
 end
@@ -68,6 +69,7 @@ AttachmentCallbackExtension.delete = function(self)
     -- Unregister events
     managers.event:unregister(self, "ewc_reloaded")
     managers.event:unregister(self, "ewc_settings_changed")
+    managers.event:unregister(self, "ewc_cutscene")
 end
 
 AttachmentCallbackExtension.fetch_attachments_with_callbacks = function(self)
@@ -141,6 +143,13 @@ AttachmentCallbackExtension.attachment_callback = function(self, callback_name, 
             -- Call callback
             attachment_data[callback_name](self, attachment_slot_data, ...) -- Forward arguments
         end
+    end
+end
+
+AttachmentCallbackExtension.on_cutscene = function(self, cutscene_playing)
+    if not cutscene_playing then
+        -- Execute "on_wield" for attachments
+        self:on_wield(self.wielded_slot)
     end
 end
 

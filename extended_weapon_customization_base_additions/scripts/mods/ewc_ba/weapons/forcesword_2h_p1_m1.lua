@@ -55,7 +55,7 @@ local attachments = {
         grip = table_merge_recursive_n(nil, grip_2h_power_sword),
         hilt_2 = {
             power_sword_hilt_empty_01 = {
-                replacement_path = _item_empty_trinket,
+                replacement_path = _item_melee.."/hilts/power_sword_hilt_empty_01",
                 icon_render_unit_rotation_offset = {90, 45, 0},
                 icon_render_camera_position_offset = {-.025, -.75, .275},
                 hide_from_selection = true,
@@ -223,12 +223,12 @@ local fixes = {
                 attach = {
                     hilt_2 = "power_sword_hilt_01",
                 },
-                -- offset = {
-                --     position = vector3_box(0, 0, .045),
-                --     rotation = vector3_box(0, 0, 0),
-                --     scale = vector3_box(1.2, 1.2, 1.2),
-                --     node = 1,
-                -- },
+                offset = {
+                    position = vector3_box(0, 0, .045),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1.2, 1.2, 1.2),
+                    node = 1,
+                },
             },
         },
         -- When not using 2h power sword hilt - unset hilt 2
@@ -242,12 +242,12 @@ local fixes = {
                 attach = {
                     hilt_2 = "power_sword_hilt_empty_01",
                 },
-                -- offset = {
-                --     position = vector3_box(0, 0, 0),
-                --     rotation = vector3_box(0, 0, 0),
-                --     scale = vector3_box(1, 1, 1),
-                --     node = 1,
-                -- },
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
             },
         },
     },
@@ -271,11 +271,11 @@ local kitbashs = {
         attach_node = "ap_blade_01",
         resource_dependencies = {
             ["content/weapons/player/melee/2h_force_sword/attachments/blade_04/blade_04"] = true,
-            ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
+            -- ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
             ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering"] = true,
             ["content/fx/particles/weapons/rifles/plasma_gun/plasma_vent_valve"] = true,
             ["content/fx/particles/weapons/rifles/plasma_gun/plasma_gun_charge"] = true,
-            ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
+            -- ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
             ["content/fx/particles/enemies/sniper_laser_sight"] = true,
             ["wwise/events/minions/play_traitor_captain_shield_bullet_hits"] = true,
             ["wwise/events/weapon/play_aoe_liquid_fire_green_loop"] = true,
@@ -324,11 +324,11 @@ local kitbashs = {
         attach_node = "ap_blade_01",
         resource_dependencies = {
             ["content/weapons/player/melee/2h_force_sword/attachments/blade_05/blade_05"] = true,
-            ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
+            -- ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
             ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering"] = true,
             ["content/fx/particles/weapons/rifles/plasma_gun/plasma_vent_valve"] = true,
             ["content/fx/particles/weapons/rifles/plasma_gun/plasma_gun_charge"] = true,
-            ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
+            -- ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
             ["content/fx/particles/enemies/sniper_laser_sight"] = true,
             ["wwise/events/minions/play_traitor_captain_shield_bullet_hits"] = true,
             ["wwise/events/weapon/play_aoe_liquid_fire_green_loop"] = true,
@@ -378,11 +378,11 @@ local kitbashs = {
         resource_dependencies = {
             ["content/weapons/player/melee/2h_force_sword/attachments/blade_04/blade_04"] = true,
             ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
-            ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering"] = true,
+            -- ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering"] = true,
             ["content/fx/particles/weapons/rifles/plasma_gun/plasma_vent_valve"] = true,
             ["content/fx/particles/weapons/rifles/plasma_gun/plasma_gun_charge"] = true,
             ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
-            ["content/fx/particles/enemies/sniper_laser_sight"] = true,
+            -- ["content/fx/particles/enemies/sniper_laser_sight"] = true,
             ["wwise/events/minions/play_traitor_captain_shield_bullet_hits"] = true,
             ["wwise/events/weapon/play_aoe_liquid_fire_green_loop"] = true,
             ["wwise/events/weapon/stop_aoe_liquid_fire_green_loop"] = true,
@@ -431,11 +431,11 @@ local kitbashs = {
         resource_dependencies = {
             ["content/weapons/player/melee/2h_force_sword/attachments/blade_05/blade_05"] = true,
             ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering_green"] = true,
-            ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering"] = true,
+            -- ["content/fx/particles/weapons/grenades/flame_grenade_hostile_fire_lingering"] = true,
             ["content/fx/particles/weapons/rifles/plasma_gun/plasma_vent_valve"] = true,
             ["content/fx/particles/weapons/rifles/plasma_gun/plasma_gun_charge"] = true,
             ["content/fx/particles/enemies/plasma_gun_laser_sight"] = true,
-            ["content/fx/particles/enemies/sniper_laser_sight"] = true,
+            -- ["content/fx/particles/enemies/sniper_laser_sight"] = true,
             ["wwise/events/minions/play_traitor_captain_shield_bullet_hits"] = true,
             ["wwise/events/weapon/play_aoe_liquid_fire_green_loop"] = true,
             ["wwise/events/weapon/stop_aoe_liquid_fire_green_loop"] = true,

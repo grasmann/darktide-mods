@@ -438,7 +438,7 @@ mod:hook_require("scripts/backend/master_items", function(instance)
 
     mod:hook(instance, "get_item_instance", function(func, gear, gear_id, ...)
         local item_instance = func(gear, gear_id, ...)
-        return mod:gear_settings(gear_id) and mod:mod_item(gear_id, item_instance) or item_instance
+        return mod:gear_settings(gear_id) and (mod:husk_item(gear_id) or mod:mod_item(gear_id, item_instance)) or item_instance
     end)
 
     mod:hook(instance, "create_preview_item_instance", function(func, item, ...)

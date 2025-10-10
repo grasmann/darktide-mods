@@ -36,6 +36,9 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
 
     local world = extension_init_context.world
 
+    -- Original function
+    func(self, extension_init_context, unit, extension_init_data, ...)
+
     if not script_unit_extension(unit, "sight_system") then
         script_unit_add_extension(
             {
@@ -46,6 +49,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
             "sight_system",
             {
                 visual_loadout_extension = self,
+                wielded_slot = self._inventory_component.wielded_slot,
             }
         )
     end
@@ -61,6 +65,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
             {
                 visual_loadout_extension = self,
                 player = extension_init_data.player,
+                wielded_slot = self._inventory_component.wielded_slot,
             }
         )
     end
@@ -77,6 +82,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
                 is_local_unit = true,
                 visual_loadout_extension = self,
                 player = extension_init_data.player,
+                wielded_slot = self._inventory_component.wielded_slot,
                 -- from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
             }
         )
@@ -93,13 +99,11 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
             {
                 visual_loadout_extension = self,
                 player = extension_init_data.player,
+                wielded_slot = self._inventory_component.wielded_slot,
                 -- from_ui_profile_spawner = self._equipment_component._from_ui_profile_spawner,
             }
         )
     end
-
-    -- Original function
-    func(self, extension_init_context, unit, extension_init_data, ...)
 
     self.flashlight_extension_update = true
     self.sight_extension_update = true

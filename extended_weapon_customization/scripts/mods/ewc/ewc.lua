@@ -38,6 +38,7 @@ mod:persistent_table(REFERENCE, {
     loaded_packages = {},
     debug_sight = {0, 0, 0, 0, 0, 0},
     husk_weapon_templates = {},
+    cutscene_playing = false,
 })
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/common")
@@ -93,6 +94,7 @@ mod._on_game_state_changed = function(self, status, state_name)
     end
     table_clear(pt.exclude_from_vfx_spawner)
     table_clear(pt.items_originating_from_customization_menu)
+    pt.cutscene_playing = false
 end
 
 mod._on_unload = function(self, exit_game)
@@ -173,6 +175,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_weapon_
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/weapon_icon_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/alternate_fire")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/camera_manager")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/cutscene_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/crafting_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/input_service")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/action_sweep")

@@ -171,6 +171,10 @@ local fixes = {
 local kitbashs = {
     [_item_ranged.."/magazines/autogun_pistol_magazine_01_double"] = {
         attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/autogun_pistol_magazine_01",
                 fix = {
@@ -214,6 +218,26 @@ local kitbashs = {
         description = "loc_description_autogun_pistol_magazine_01_double",
         attach_node = "ap_magazine_01",
         dev_name = "loc_autogun_pistol_magazine_01_double",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/characters/empty_item/empty_item",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/characters/empty_item/empty_item"] = true,
+            ["content/weapons/player/ranged/autogun_pistol/attachments/magazine_01/magazine_01"] = true,
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/magazine_01/magazine_01"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/magazines/autogun_pistol_magazine_01_double",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
         disable_vfx_spawner_exclusion = true,
     },
 }

@@ -5,7 +5,9 @@ local mod = get_mod("visible_equipment")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
+    local table = table
     local CLASS = CLASS
+    local table_enum = table.enum
     local script_unit = ScriptUnit
     local unit_set_data = unit.set_data
     local script_unit_extension = script_unit.extension
@@ -18,6 +20,7 @@ local mod = get_mod("visible_equipment")
 
 local pt = mod:pt()
 local catch_equipment = nil
+local ATTACHMENT_SPAWN_STATUS = table_enum("waiting_for_companion_unit_spawn", "waiting_for_load", "fully_spawned")
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
@@ -171,8 +174,8 @@ end)
 mod:hook(CLASS.EquipmentComponent, "_spawn_player_item_units", function(func, self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, optional_equipment, ...)
     -- Original function
     func(self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, optional_equipment, ...)
-    -- Check visible equipment system
-    if slot.item_loaded and self.visible_equipment_system then
+    -- Check visible equipment system and slot loaded
+    if self.visible_equipment_system and slot.item_loaded then
         -- Load slot
         self.visible_equipment_system:load_slot(slot, optional_mission_template)
     end

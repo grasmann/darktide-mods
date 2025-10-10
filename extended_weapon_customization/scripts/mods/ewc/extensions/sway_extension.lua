@@ -75,13 +75,17 @@ SwayExtension.init = function(self, extension_init_context, unit, extension_init
     -- self.first_person_unit = self.first_person_extension:first_person_unit()
     self.movement_state_component = self.unit_data_extension:read_component("movement_state")
 
+    self.wielded_slot = extension_init_data.wielded_slot
+
     self.rotation = vector3_box(vector3_zero())
     self.crouch_rotation = vector3_box(vector3_zero())
     self.crouch_position = vector3_box(vector3_zero())
     self.momentum_x = 0
     self.momentum_y = 0
 
+    managers.event:register(self, "ewc_reloaded", "on_mod_reload")
     managers.event:register(self, "ewc_settings_changed", "on_settings_changed")
+    managers.event:register(self, "ewc_cutscene", "on_cutscene")
 
     self:on_settings_changed()
 
@@ -92,9 +96,21 @@ SwayExtension.on_settings_changed = function(self)
     self.crouch = mod:get("mod_option_crouch")
 end
 
+SwayExtension.on_cutscene = function(self, cutscene_playing)
+    if not cutscene_playing then
+        -- Execute "on_wield"
+        self:on_wield(self.wielded_slot)
+    end
+end
+
+SwayExtension.on_wield = function(self, wielded_slot)
+    self.wielded_slot = wielded_slot
+end
+
 SwayExtension.delete = function(self)
+    managers.event:unregister(self, "ewc_reloaded")
     managers.event:unregister(self, "ewc_settings_changed")
-    self.sway = false
+    managers.event:unregister(self, "ewc_cutscene")
 end
 
 SwayExtension.is_ogryn = function(self)

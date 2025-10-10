@@ -228,6 +228,14 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
 	-- 	end
 	-- end
 
+    -- if character_spawn_data then
+    --     local profile = character_spawn_data.profile
+
+    --     self:_change_slot_item(SLOT_SECONDARY, profile.visual_loadout and profile.visual_loadout[SLOT_SECONDARY] or profile.loadout[SLOT_SECONDARY], profile.loadout, profile.visual_loadout)
+
+    --     self:_change_slot_item(SLOT_PRIMARY, profile.visual_loadout and profile.visual_loadout[SLOT_PRIMARY] or profile.loadout[SLOT_PRIMARY], profile.loadout, profile.visual_loadout)
+    -- end
+
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "spawn_profile", function(func, self, profile, position, rotation, scale, state_machine_or_nil, animation_event_or_nil, face_state_machine_key_or_nil, face_animation_event_or_nil, force_highest_mip_or_nil, disable_hair_state_machine_or_nil, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
@@ -240,8 +248,10 @@ mod:hook(CLASS.UIProfileSpawner, "spawn_profile", function(func, self, profile, 
         self._ignored_slots[SLOT_SECONDARY] = nil
         self._ignored_slots[SLOT_PRIMARY] = nil
     end
-    -- -- Replace equipment
+    -- Replace equipment
     -- profile.loadout[SLOT_PRIMARY] = profile.visual_loadout and profile.visual_loadout[SLOT_PRIMARY] or profile.loadout[SLOT_PRIMARY]
+    -- self:_change_slot_item(SLOT_SECONDARY, profile.visual_loadout[SLOT_SECONDARY], profile.loadout, profile.visual_loadout)
+    -- self:_change_slot_item(SLOT_PRIMARY, profile.visual_loadout[SLOT_PRIMARY], profile.loadout, profile.visual_loadout)
     -- profile.loadout[SLOT_SECONDARY] = profile.visual_loadout and profile.visual_loadout[SLOT_SECONDARY] or profile.loadout[SLOT_SECONDARY]
     -- Original function
     func(self, profile, position, rotation, scale, state_machine_or_nil, animation_event_or_nil, face_state_machine_key_or_nil, face_animation_event_or_nil, force_highest_mip_or_nil, disable_hair_state_machine_or_nil, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
