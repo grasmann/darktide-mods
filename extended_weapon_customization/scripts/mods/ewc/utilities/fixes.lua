@@ -90,17 +90,37 @@ mod.collect_fixes = function(self, item_data, target_slot)
                             for requirement_slot, requirement_data in pairs(fix_entry.requirements) do
                                 local requirement_met = true
                                 -- Fix data
-                                local positive = requirement_data.has and true or false
-                                local requirement_string = positive and requirement_data.has or requirement_data.missing
-                                local cache = split_cache[requirement_string]
-                                temp_requirement_parts = cache or string_split(requirement_string, "|")
-                                split_cache[requirement_string] = temp_requirement_parts
-                                -- Check validity
-                                if positive and not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
-                                    requirement_met = false
-                                elseif not positive and table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
-                                    requirement_met = false
+                                -- local positive = requirement_data.has and true or false
+                                -- local check_has = requirement_data.has
+                                -- local check_missing = requirement_data.missing
+
+                                if requirement_data.has then
+                                    local requirement_string = requirement_data.has
+                                    local cache = split_cache[requirement_string]
+                                    temp_requirement_parts = cache or string_split(requirement_string, "|")
+                                    split_cache[requirement_string] = temp_requirement_parts
+                                    -- Check validity
+                                    if not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                        requirement_met = false
+                                    -- elseif not positive and table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                    --     requirement_met = false
+                                    end
                                 end
+
+                                if requirement_data.missing then
+                                    local requirement_string = requirement_data.missing
+                                    local cache = split_cache[requirement_string]
+                                    temp_requirement_parts = cache or string_split(requirement_string, "|")
+                                    split_cache[requirement_string] = temp_requirement_parts
+                                    -- Check validity
+                                    -- if positive and not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                    --     requirement_met = false
+                                    -- else
+                                    if table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                        requirement_met = false
+                                    end
+                                end
+
                                 -- Break if not met
                                 if not requirement_met then
                                     requirements_met = false

@@ -248,6 +248,9 @@ local attachments = {
         attachments.combataxe_p3_m3 = table_clone_safe(attachments.combataxe_p3_m1)
         attachments.powermaul_p1_m2 = table_clone_safe(attachments.powermaul_p1_m1)
         attachments.chainaxe_p1_m2 = table_clone_safe(attachments.chainaxe_p1_m1)
+            attachments.bot_combataxe_linesman = table_clone_safe(attachments.combataxe_p1_m1)
+            attachments.bot_combatsword_linesman_p1 = table_clone_safe(attachments.combatsword_p1_m1)
+            attachments.bot_combatsword_linesman_p2 = table_clone_safe(attachments.combatsword_p2_m1)
     --#endregion
     --#region Human ranged
         attachments.stubrevolver_p1_m3 = table_clone_safe(attachments.stubrevolver_p1_m1)
@@ -278,6 +281,12 @@ local attachments = {
         attachments.lasgun_p2_m3 = table_clone_safe(attachments.lasgun_p2_m1)
         attachments.lasgun_p3_m2 = table_clone_safe(attachments.lasgun_p3_m1)
         attachments.lasgun_p3_m3 = table_clone_safe(attachments.lasgun_p3_m1)
+            attachments.bot_laspistol_killshot = table_clone_safe(attachments.laspistol_p1_m1)
+            attachments.bot_zola_laspistol = table_clone_safe(attachments.laspistol_p1_m1)
+            attachments.high_bot_lasgun_killshot = table_clone_safe(attachments.lasgun_p1_m1)
+            attachments.bot_lasgun_killshot = table_clone_safe(attachments.lasgun_p1_m1)
+            attachments.high_bot_autogun_killshot = table_clone_safe(attachments.autogun_p3_m1)
+            attachments.bot_autogun_killshot = table_clone_safe(attachments.autogun_p3_m1)
     --#endregion
 --#endregion
 
@@ -382,6 +391,9 @@ local fixes = {
         fixes.combataxe_p3_m3 = table_clone_safe(fixes.combataxe_p3_m1)
         fixes.powermaul_p1_m2 = table_clone_safe(fixes.powermaul_p1_m1)
         fixes.chainaxe_p1_m2 = table_clone_safe(fixes.chainaxe_p1_m1)
+            fixes.bot_combataxe_linesman = table_clone_safe(fixes.combataxe_p1_m1)
+            fixes.bot_combatsword_linesman_p1 = table_clone_safe(fixes.combatsword_p1_m1)
+            fixes.bot_combatsword_linesman_p2 = table_clone_safe(fixes.combatsword_p2_m1)
     --#endregion
     --#region Human ranged
         fixes.stubrevolver_p1_m3 = table_clone_safe(fixes.stubrevolver_p1_m1)
@@ -412,6 +424,12 @@ local fixes = {
         fixes.lasgun_p3_m2 = table_clone_safe(fixes.lasgun_p3_m1)
         fixes.lasgun_p3_m3 = table_clone_safe(fixes.lasgun_p3_m1)
 		fixes.lasgun_p1_m3 = table_clone_safe(fixes.lasgun_p1_m1)
+            fixes.bot_laspistol_killshot = table_clone_safe(fixes.laspistol_p1_m1)
+            fixes.bot_zola_laspistol = table_clone_safe(fixes.laspistol_p1_m1)
+            fixes.high_bot_lasgun_killshot = table_clone_safe(fixes.lasgun_p1_m1)
+            fixes.bot_lasgun_killshot = table_clone_safe(fixes.lasgun_p1_m1)
+            fixes.high_bot_autogun_killshot = table_clone_safe(fixes.autogun_p3_m1)
+            fixes.bot_autogun_killshot = table_clone_safe(fixes.autogun_p3_m1)
     --#endregion
 --#endregion
 
@@ -516,6 +534,9 @@ local attachment_slots = {
         attachment_slots.combataxe_p3_m3 = table_clone_safe(attachment_slots.combataxe_p3_m1)
         attachment_slots.powermaul_p1_m2 = table_clone_safe(attachment_slots.powermaul_p1_m1)
         attachment_slots.chainaxe_p1_m2 = table_clone_safe(attachment_slots.chainaxe_p1_m1)
+            attachment_slots.bot_combataxe_linesman = table_clone_safe(attachment_slots.combataxe_p1_m1)
+            attachment_slots.bot_combatsword_linesman_p1 = table_clone_safe(attachment_slots.combatsword_p1_m1)
+            attachment_slots.bot_combatsword_linesman_p2 = table_clone_safe(attachment_slots.combatsword_p2_m1)
     --#endregion
     --#region Human ranged
         attachment_slots.stubrevolver_p1_m3 = table_clone_safe(attachment_slots.stubrevolver_p1_m1)
@@ -546,6 +567,12 @@ local attachment_slots = {
         attachment_slots.lasgun_p3_m2 = table_clone_safe(attachment_slots.lasgun_p3_m1)
         attachment_slots.lasgun_p3_m3 = table_clone_safe(attachment_slots.lasgun_p3_m1)
 		attachment_slots.lasgun_p1_m3 = table_clone_safe(attachment_slots.lasgun_p1_m1)
+            attachment_slots.bot_laspistol_killshot = table_clone_safe(attachment_slots.laspistol_p1_m1)
+            attachment_slots.bot_zola_laspistol = table_clone_safe(attachment_slots.laspistol_p1_m1)
+            attachment_slots.high_bot_lasgun_killshot = table_clone_safe(attachment_slots.lasgun_p1_m1)
+            attachment_slots.bot_lasgun_killshot = table_clone_safe(attachment_slots.lasgun_p1_m1)
+            attachment_slots.high_bot_autogun_killshot = table_clone_safe(attachment_slots.autogun_p3_m1)
+            attachment_slots.bot_autogun_killshot = table_clone_safe(attachment_slots.autogun_p3_m1)
     --#endregion
 --#endregion
 
@@ -717,6 +744,9 @@ local flashlight_templates = {
         flashlight_templates.combataxe_p3_m3 = table_clone_safe(flashlight_templates.combataxe_p3_m1)
         flashlight_templates.powermaul_p1_m2 = table_clone_safe(flashlight_templates.powermaul_p1_m1)
         flashlight_templates.chainaxe_p1_m2 = table_clone_safe(flashlight_templates.chainaxe_p1_m1)
+            flashlight_templates.bot_combataxe_linesman = table_clone_safe(flashlight_templates.combataxe_p1_m1)
+            flashlight_templates.bot_combatsword_linesman_p1 = table_clone_safe(flashlight_templates.combatsword_p1_m1)
+            flashlight_templates.bot_combatsword_linesman_p2 = table_clone_safe(flashlight_templates.combatsword_p2_m1)
     --#endregion
     --#region Human ranged
         flashlight_templates.stubrevolver_p1_m3 = table_clone_safe(flashlight_templates.stubrevolver_p1_m1)
@@ -747,6 +777,12 @@ local flashlight_templates = {
         flashlight_templates.lasgun_p3_m2 = table_clone_safe(flashlight_templates.lasgun_p3_m1)
         flashlight_templates.lasgun_p3_m3 = table_clone_safe(flashlight_templates.lasgun_p3_m1)
 		flashlight_templates.lasgun_p1_m3 = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+            flashlight_templates.bot_laspistol_killshot = table_clone_safe(flashlight_templates.laspistol_p1_m1)
+            flashlight_templates.bot_zola_laspistol = table_clone_safe(flashlight_templates.laspistol_p1_m1)
+            flashlight_templates.high_bot_lasgun_killshot = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+            flashlight_templates.bot_lasgun_killshot = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+            flashlight_templates.high_bot_autogun_killshot = table_clone_safe(flashlight_templates.autogun_p3_m1)
+            flashlight_templates.bot_autogun_killshot = table_clone_safe(flashlight_templates.autogun_p3_m1)
     --#endregion
 --#endregion
 

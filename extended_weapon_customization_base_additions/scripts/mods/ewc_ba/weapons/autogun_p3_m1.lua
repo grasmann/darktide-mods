@@ -88,6 +88,8 @@ local attachments = {
 
 attachments.autogun_p3_m2 = table_clone(attachments.autogun_p3_m1)
 attachments.autogun_p3_m3 = table_clone(attachments.autogun_p3_m1)
+attachments.high_bot_autogun_killshot = table_clone(attachments.autogun_p3_m1)
+attachments.bot_autogun_killshot = table_clone(attachments.autogun_p3_m1)
 
 local fixes = {
     autogun_p3_m1 = {
@@ -583,6 +585,8 @@ local fixes = {
 
 fixes.autogun_p3_m2 = table_clone(fixes.autogun_p3_m1)
 fixes.autogun_p3_m3 = table_clone(fixes.autogun_p3_m1)
+fixes.high_bot_autogun_killshot = table_clone(fixes.autogun_p3_m1)
+fixes.bot_autogun_killshot = table_clone(fixes.autogun_p3_m1)
 
 local kitbashs = {}
 

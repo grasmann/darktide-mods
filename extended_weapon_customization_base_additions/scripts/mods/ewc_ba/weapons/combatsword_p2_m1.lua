@@ -51,6 +51,7 @@ local attachments = {
 
 attachments.combatsword_p2_m3 = table_clone_safe(attachments.combatsword_p2_m1)
 attachments.combatsword_p2_m2 = table_clone_safe(attachments.combatsword_p2_m1)
+attachments.bot_combatsword_linesman_p2 = table_clone_safe(attachments.combatsword_p2_m1)
 
 local fixes = {
     combatsword_p2_m1 = {
@@ -93,6 +94,7 @@ local fixes = {
 
 fixes.combatsword_p2_m3 = table_clone_safe(fixes.combatsword_p2_m1)
 fixes.combatsword_p2_m2 = table_clone_safe(fixes.combatsword_p2_m1)
+fixes.bot_combatsword_linesman_p2 = table_clone_safe(fixes.combatsword_p2_m1)
 
 local kitbashs = {
     [_item_melee.."/blades/laser_blade_combat_sword_p2_01"] = {

@@ -4,7 +4,15 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local unit = Unit
+    local math = math
+    local pairs = pairs
+    local vector3 = Vector3
+    local tostring = tostring
     local managers = Managers
+    local math_max = math.max
+    local unit_alive = unit.alive
+    local vector3_distance_squared = vector3.distance_squared
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -63,4 +71,49 @@ end
 mod.get_view = function(self, view_name)
     local ui_manager = managers.ui
     return ui_manager:view_active(view_name) and ui_manager:view_instance(view_name) or nil
+end
+
+mod.update_cutscene = function(self)
+    -- Old value
+    local old_value = self.cutscene_playing
+    -- New value
+    local is_playing = self:is_cutscene_active()
+    -- Value change?
+    if old_value ~= is_playing then
+        -- Cutscene is now playing
+        managers.event:trigger("ewc_cutscene", is_playing)
+    end
+    -- Save value
+    self.cutscene_playing = is_playing
+end
+
+mod.is_cutscene_active = function (self)
+	local extension_manager = managers.state.extension
+	local cinematic_scene_system = extension_manager and extension_manager:system("cinematic_scene_system")
+	local cinematic_scene_system_active = cinematic_scene_system and cinematic_scene_system:is_active()
+	local cinematic_manager = managers.state.cinematic
+	local cinematic_manager_active = cinematic_manager and cinematic_manager:cinematic_active()
+	return cinematic_scene_system_active or cinematic_manager_active
+end
+
+mod.calculate_light_value = function(self, darkness_system, position)
+	local light_value = 0
+	for unit, data in pairs(darkness_system._light_source_data) do
+        if unit and unit_alive(unit) then
+            local pos = POSITION_LOOKUP[unit] or position
+            local dist_sq = math_max(vector3_distance_squared(position, pos), 1)
+            local intensity = data.intensity
+            light_value = light_value + intensity * (1 / dist_sq)
+        end
+	end
+	return light_value
+end
+
+mod.is_in_darkness = function(self, position)
+    local darkness_system = managers.state.extension:system("darkness_system")
+    if darkness_system and position then
+        local is_in_darkness = darkness_system:is_in_darkness(position)
+        local light_value = self:calculate_light_value(darkness_system, position)
+        return is_in_darkness or light_value < 0.0025
+    end
 end

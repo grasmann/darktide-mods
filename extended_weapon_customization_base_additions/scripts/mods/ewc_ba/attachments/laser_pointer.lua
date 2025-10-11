@@ -245,7 +245,7 @@ local function can_spawn_laser_pointer(flashlight_extension)
     local player_visibility = script_unit_has_extension(flashlight_extension.unit, "player_visibility_system")
     local player_invisible = player_visibility and not player_visibility:visible()
     local inventory_view = mod:get_view("inventory_view")
-    return flashlight_extension:is_wielded() and not player_invisible and not inventory_view and not pt.cutscene_playing
+    return flashlight_extension:is_wielded() and not player_invisible and not inventory_view and not mod:is_cutscene_active()
 end
 
 local function spawn_laser_pointer(flashlight_extension)
@@ -325,7 +325,7 @@ end
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘  ┴  ┴ ┴┴└─ ┴ ┴└─┘┴─┘└─┘  └─┘└  └  └─┘└─┘ ┴ └─┘ ############################################
 
 local function update_laser_pointer(flashlight_extension, dt, t)
-    if flashlight_extension.laser_pointer_laser_particle and flashlight_extension.laser_variable_index then
+    if flashlight_extension.laser_pointer_laser_particle and flashlight_extension.laser_variable_index and can_spawn_laser_pointer(flashlight_extension) then
 
         local flashlight_unit = flashlight_extension:current_flashlight_unit()
         if flashlight_unit or not unit_alive(flashlight_unit) then
@@ -449,7 +449,8 @@ local function update_laser_pointer(flashlight_extension, dt, t)
             end
 
         end
-
+    elseif not can_spawn_laser_pointer(flashlight_extension) then
+        despawn_laser_pointer(flashlight_extension)
     end
 end
 

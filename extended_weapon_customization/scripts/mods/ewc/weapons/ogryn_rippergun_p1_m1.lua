@@ -7,7 +7,6 @@ local mod = get_mod("extended_weapon_customization")
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
 local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
-local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/ogryn_flashlight")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -33,7 +32,6 @@ return {
         emblem_left = emblem_left,
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
-        flashlight = flashlights,
         bayonet = {
             rippergun_rifle_bayonet_01 = {
                 replacement_path = _item_ranged.."/bayonets/rippergun_rifle_bayonet_01",

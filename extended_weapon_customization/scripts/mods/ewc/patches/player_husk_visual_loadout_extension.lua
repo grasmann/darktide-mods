@@ -225,15 +225,16 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_equip_item_from_pro
 	local profile = player:profile()
 	local visual_loadout = profile.visual_loadout
 	local item = visual_loadout[slot_name]
+    local optional_existing_unit_3p
 
     -- Randomize weapon for other player
+    item = mod:player_husk_visual_loadout_extension_randomize(player, item, slot_name)
+    visual_loadout[slot_name] = item
     -- item = mod:player_husk_visual_loadout_extension_randomize(player, item, slot_name)
-    -- visual_loadout[slot_name] = item
-    mod:player_husk_visual_loadout_extension_randomize(player, item, slot_name)
 
     mod:print("reevaluate_packages "..tostring(player))
     mod:reevaluate_packages(player)
 
-	self:_equip_item_to_slot(slot_name, item)
+	self:_equip_item_to_slot(slot_name, item, optional_existing_unit_3p)
 
 end)

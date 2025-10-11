@@ -81,3 +81,12 @@ mod.equipment_component_from_unit = function(self, unit)
         return unit_get_data(unit, "visible_equipment_component")
     end
 end
+
+mod.is_cutscene_active = function (self)
+	local extension_manager = managers.state.extension
+	local cinematic_scene_system = extension_manager:system("cinematic_scene_system")
+	local cinematic_scene_system_active = cinematic_scene_system:is_active()
+	local cinematic_manager = managers.state.cinematic
+	local cinematic_manager_active = cinematic_manager:cinematic_active()
+	return cinematic_scene_system_active or cinematic_manager_active
+end

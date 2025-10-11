@@ -61,6 +61,8 @@ local attachments = {
 
 attachments.laspistol_p1_m2 = table_clone(attachments.laspistol_p1_m1)
 attachments.laspistol_p1_m3 = table_clone(attachments.laspistol_p1_m1)
+attachments.bot_laspistol_killshot = table_clone(attachments.laspistol_p1_m1)
+attachments.bot_zola_laspistol = table_clone(attachments.laspistol_p1_m1)
 
 local fixes = {
     laspistol_p1_m1 = {
@@ -158,6 +160,8 @@ local fixes = {
 
 fixes.laspistol_p1_m2 = table_clone(fixes.laspistol_p1_m1)
 fixes.laspistol_p1_m3 = table_clone(fixes.laspistol_p1_m1)
+fixes.bot_laspistol_killshot = table_clone(fixes.laspistol_p1_m1)
+fixes.bot_zola_laspistol = table_clone(fixes.laspistol_p1_m1)
 
 return {
     attachments = attachments,

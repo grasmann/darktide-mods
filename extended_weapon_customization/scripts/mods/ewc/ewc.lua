@@ -49,10 +49,6 @@ mod.save_lua = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/uti
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod.print = function(self, message)
-    if self:get("debug_mode") then self:echo(message) end
-end
-
 mod.pt = function(self)
     return self:persistent_table(REFERENCE)
 end
@@ -94,7 +90,6 @@ mod._on_game_state_changed = function(self, status, state_name)
     end
     table_clear(pt.exclude_from_vfx_spawner)
     table_clear(pt.items_originating_from_customization_menu)
-    pt.cutscene_playing = false
 end
 
 mod._on_unload = function(self, exit_game)
@@ -113,9 +108,17 @@ mod.localize_or_nil = function(self, str, optional_mod)
     return localized
 end
 
+mod._update = function(self, dt)
+    self:update_cutscene()
+end
+
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
 -- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
+
+mod.update = function(dt)
+    mod:_update(dt)
+end
 
 mod.on_all_mods_loaded = function()
     mod:_on_all_mods_loaded()
@@ -175,7 +178,6 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_weapon_
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/weapon_icon_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/alternate_fire")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/camera_manager")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/cutscene_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/crafting_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/input_service")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/action_sweep")

@@ -87,6 +87,10 @@ mod:add_global_localize_strings({
 		en = "EWC:BA - Sight just for show",
 	},
 
+	attachment_slot_sight_2 = {
+		en = "Sight",
+	},
+
 	loc_scope_01 = {
 		en = "Ranger's Vigil",
 		["zh-cn"] = "游侠警戒",

@@ -264,10 +264,10 @@ mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self
         pt.catch_unit = profile
     end
 
-    local data = self._loading_profile_data or self._character_spawn_data
-    local profile = data and data.profile
-
     if self._placement_name and self._slot_name then
+
+        local data = self._loading_profile_data or self._character_spawn_data
+        local profile = data and data.profile
 
         force_highest_mip = false
         self._force_highest_lod_step = false

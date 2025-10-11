@@ -12,10 +12,22 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 -- local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
 
+local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
+local autogun_braced_group = {custom_selection_group = "autogun_braced"}
+local autogun_headhunter_group = {custom_selection_group = "autogun_headhunter"}
 local shotgun_double_barrel_group = {custom_selection_group = "shotgun_double_barrel"}
 
 local stock_shotgun_double_barrel = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/stock_shotgun_double_barrel")
 mod:merge_attachment_data(shotgun_double_barrel_group, stock_shotgun_double_barrel)
+
+local muzzle_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_infantry")
+mod:merge_attachment_data(autogun_infantry_group, muzzle_autogun_infantry)
+
+local muzzle_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_braced")
+mod:merge_attachment_data(autogun_braced_group, muzzle_autogun_braced)
+
+local muzzle_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_headhunter")
+mod:merge_attachment_data(autogun_headhunter_group, muzzle_autogun_headhunter)
 
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
@@ -49,10 +61,11 @@ local scopes = "scope_01"
 
 local attachments = {
     stubrevolver_p1_m1 = {
+        rail = rails,
         flashlight = flashlight_human,
         stock = stock_shotgun_double_barrel,
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope),
-        rail = rails,
+        muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_braced, muzzle_autogun_headhunter),
     },
 }
 
@@ -149,6 +162,12 @@ local fixes = {
             fix = {
                 attach = {
                     rail = "stubgun_pistol_rail_off",
+                },
+                offset = {
+                    position = vector3_box(0, -.07, .01),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
                 },
             },
         },

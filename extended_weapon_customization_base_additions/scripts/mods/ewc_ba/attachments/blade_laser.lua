@@ -370,7 +370,7 @@ local function can_spawn_blade(attachment_callback_extension, attachment_slot_da
     local player_invisible = player_visibility and not player_visibility:visible()
     local inventory_view = mod:get_view("inventory_view")
     local wielded_slot = optional_wielded_slot or attachment_callback_extension.wielded_slot
-    return wielded_slot == attachment_slot_data.slot_name and not player_invisible and not inventory_view and not pt.cutscene_playing
+    return wielded_slot == attachment_slot_data.slot_name and not player_invisible and not inventory_view and not mod:is_cutscene_active()
 end
 
 local function spawn_blade(attachment_callback_extension, attachment_slot_data, optional_no_sound, optional_no_animation)

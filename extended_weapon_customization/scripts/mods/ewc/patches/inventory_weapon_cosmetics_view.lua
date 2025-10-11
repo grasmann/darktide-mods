@@ -289,7 +289,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, self, content, ...)
-    if self.customize_attachments then
+    if self.customize_attachments and content then
         self._tabs_content = content
 
         local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
@@ -357,7 +357,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
     table_clear(temp_mod_count)
 
-    if self.customize_attachments then
+    if self.customize_attachments and self._tabs_content then
 
         -- self.attachment_selection_rotation_offset = 0
         -- self.current_default_rotation_angle = 0
@@ -567,7 +567,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
     -- Original function
     func(self, dt, t, input_service, ...)
 
-    if self.customize_attachments then
+    if self.customize_attachments and self._tabs_content then
         local content = self._tabs_content[self._selected_tab_index]
         local slot_name = content.slot_name
         local disable_button = true
@@ -787,7 +787,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, self, element, ...)
-    if self.customize_attachments then
+    if self.customize_attachments and self._tabs_content then
         if element then
             local selected_tab_index = self._selected_tab_index
             local content = self._tabs_content[selected_tab_index]

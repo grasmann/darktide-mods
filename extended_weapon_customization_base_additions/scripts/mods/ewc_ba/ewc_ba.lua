@@ -31,8 +31,6 @@ end
 
 local pt = mod:pt()
 
-mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/patches/cutscene_view")
-
 mod.get_view = function(self, view_name)
     local ui_manager = managers.ui
     return ui_manager:view_active(view_name) and ui_manager:view_instance(view_name) or nil
@@ -51,6 +49,15 @@ mod.merge_attachment_data = function(self, merge_attachment_data, ...)
             attachment_data = table_merge_recursive(attachment_data, merge_attachment_data)
         end
     end
+end
+
+mod.is_cutscene_active = function (self)
+	local extension_manager = managers.state.extension
+	local cinematic_scene_system = extension_manager:system("cinematic_scene_system")
+	local cinematic_scene_system_active = cinematic_scene_system:is_active()
+	local cinematic_manager = managers.state.cinematic
+	local cinematic_manager_active = cinematic_manager:cinematic_active()
+	return cinematic_scene_system_active or cinematic_manager_active
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -236,6 +243,65 @@ local extended_weapon_customization_plugin = {
             },
             display_name = "loc_scope_01",
             name = _item_ranged.."/sights/scope_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+            disable_vfx_spawner_exclusion = true,
+        },
+        -- ##### Invisible sights #####################################################################################
+        [_item_ranged.."/sights/shotgun_rifle_sight_invisible_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/characters/empty_item/empty_item",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_sight_01",
+            resource_dependencies = {
+                ["content/characters/empty_item/empty_item"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "loc_shotgun_rifle_sight_invisible_01",
+            name = _item_ranged.."/sights/shotgun_rifle_sight_invisible_01",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+            disable_vfx_spawner_exclusion = true,
+        },
+        [_item_ranged.."/sights/shotgun_double_barrel_sight_invisible_01"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/characters/empty_item/empty_item",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_sight_01",
+            resource_dependencies = {
+                ["content/characters/empty_item/empty_item"] = true,
+            },
+            attachments = {
+                zzz_shared_material_overrides = {
+                    item = "",
+                    children = {},
+                },
+            },
+            workflow_checklist = {
+            },
+            display_name = "loc_shotgun_double_barrel_sight_invisible_01",
+            name = _item_ranged.."/sights/shotgun_double_barrel_sight_invisible_01",
             workflow_state = "RELEASABLE",
             is_full_item = true,
             disable_vfx_spawner_exclusion = true,
@@ -1396,12 +1462,16 @@ local weapons_folder = "extended_weapon_customization_base_additions/scripts/mod
 local load_weapons = {
     "ogryn_heavystubber_p1_m1",
     "ogryn_heavystubber_p2_m1",
+    "ogryn_rippergun_p1_m1",
+    "ogryn_gauntlet_p1_m1",
+    "ogryn_thumper_p1_m1",
     "forcesword_2h_p1_m1",
     "powersword_2h_p1_m1",
     "stubrevolver_p1_m1",
     "combatsword_p1_m1",
     "combatsword_p2_m1",
     "combatsword_p3_m1",
+    "combatknife_p1_m1",
     "powersword_p1_m1",
     "powersword_p2_m1",
     "boltpistol_p1_m1",
@@ -1411,6 +1481,8 @@ local load_weapons = {
     "autogun_p1_m1",
     "autogun_p2_m1",
     "autogun_p3_m1",
+    "shotgun_p1_m1",
+    "shotgun_p2_m1",
     "shotgun_p4_m1",
     "bolter_p1_m1",
     "flamer_p1_m1",

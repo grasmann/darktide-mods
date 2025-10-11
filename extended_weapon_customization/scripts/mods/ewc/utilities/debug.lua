@@ -4,6 +4,8 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local string = string
+    local get_mod = get_mod
     local string_format = string.format
 --#endregion
 
@@ -17,6 +19,17 @@ local pt = mod:pt()
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+mod.print = function(self, message, echo)
+    if self:get("debug_mode") then
+        local modding_tools = get_mod("modding_tools")
+        if not echo and modding_tools then
+            modding_tools:console_print(message)
+        else
+            self:echo(message)
+        end
+    end
+end
+
 mod.debug_sight_clear = function(self)
     pt.debug_sight = {0, 0, 0, 0, 0, 0}
 end
@@ -26,7 +39,7 @@ mod.debug_sight_set = function(self, px, py, pz, rx, ry, rz)
         self:debug_sight_clear()
     end
     pt.debug_sight = {pt.debug_sight[1] + px, pt.debug_sight[2] + py, pt.debug_sight[3] + pz, pt.debug_sight[4] + rx, pt.debug_sight[5] + ry, pt.debug_sight[6] + rz}
-    mod:echo(string_format("px: %f, py: %f, pz: %f, rx: %f, ry: %f, rz: %f", pt.debug_sight[1], pt.debug_sight[2], pt.debug_sight[3], pt.debug_sight[4], pt.debug_sight[5], pt.debug_sight[6]))
+    mod:print(string_format("px: %f, py: %f, pz: %f, rx: %f, ry: %f, rz: %f", pt.debug_sight[1], pt.debug_sight[2], pt.debug_sight[3], pt.debug_sight[4], pt.debug_sight[5], pt.debug_sight[6]))
 end
 
 local rotation_step = .1

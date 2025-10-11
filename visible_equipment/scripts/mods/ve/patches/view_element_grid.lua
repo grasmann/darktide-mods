@@ -296,7 +296,6 @@ mod.view_element_grid_valid_grid = function(self, view_element_grid)
     local parent = view_element_grid._parent
     local selected_slot = parent._selected_slot
     local slot_name = selected_slot and selected_slot.name
-    -- mod:echo(view_element_grid._element_view_id)
     return not parent.item_type and table_contains(PROCESSED_SLOTS, slot_name) and view_element_grid._element_view_id == INVENTORY_COSMETICS_VIEW
 end
 

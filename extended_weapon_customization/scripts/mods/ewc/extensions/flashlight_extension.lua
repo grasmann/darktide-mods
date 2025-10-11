@@ -6,12 +6,14 @@ local mod = get_mod("extended_weapon_customization")
 
 local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
 local master_items = mod:original_require("scripts/backend/master_items")
+local LagCompensation = mod:original_require("scripts/utilities/lag_compensation")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
+    local math = math
     local world = World
     local class = class
     local CLASS = CLASS
@@ -21,23 +23,33 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local vector3 = Vector3
     local managers = Managers
     local tostring = tostring
+    local math_max = math.max
+    local unit_node = unit.node
+    local quaternion = Quaternion
     local unit_light = unit.light
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
     local vector3_box = Vector3Box
     local string_split = string.split
+    local physics_world = PhysicsWorld
     local unit_get_data = unit.get_data
     local vector3_unbox = vector3_box.unbox
     local unit_num_lights = unit.num_lights
+    local vector3_normalize = vector3.normalize
     local light_set_enabled = light.set_enabled
+    local quaternion_forward = quaternion.forward
+    local unit_world_position = unit.world_position
+    local unit_world_rotation = unit.world_rotation
     local world_physics_world = world.physics_world
     local light_set_intensity = light.set_intensity
+    local physics_world_raycast = physics_world.raycast
     local light_set_ies_profile = light.set_ies_profile
     local light_set_falloff_end = light.set_falloff_end
     local script_unit_extension = script_unit.extension
     local light_set_color_filter = light.set_color_filter
     local light_set_falloff_start = light.set_falloff_start
     local light_set_casts_shadows = light.set_casts_shadows
+    local vector3_distance_squared = vector3.distance_squared
     local light_set_spot_angle_end = light.set_spot_angle_end
     local light_set_spot_reflector = light.set_spot_reflector
     local light_color_with_intensity = light.color_with_intensity
@@ -61,9 +73,9 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local FlashlightExtension = class("FlashlightExtension")
 
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+-- ##### ┬┌┐┌┬┌┬┐┬┌─┐┬  ┬┌─┐┌─┐┌┬┐┬┌─┐┌┐┌ #############################################################################
+-- ##### │││││ │ │├─┤│  │┌─┘├─┤ │ ││ ││││ #############################################################################
+-- ##### ┴┘└┘┴ ┴ ┴┴ ┴┴─┘┴└─┘┴ ┴ ┴ ┴└─┘┘└┘ #############################################################################
 
 FlashlightExtension.init = function(self, extension_init_context, unit, extension_init_data)
     -- Init
@@ -82,6 +94,9 @@ FlashlightExtension.init = function(self, extension_init_context, unit, extensio
     -- Settings
     self.wielded_slot = extension_init_data.wielded_slot
     self.on = false
+    self.old_on = false
+    self.auto_timer = 0
+    self.auto_timeout = .1
     -- Events
     managers.event:register(self, "ewc_reloaded", "on_mod_reload")
     managers.event:register(self, "ewc_settings_changed", "on_settings_changed")
@@ -95,6 +110,10 @@ FlashlightExtension.delete = function(self)
     managers.event:unregister(self, "ewc_settings_changed")
     managers.event:unregister(self, "ewc_cutscene")
 end
+
+-- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
+-- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
+-- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 FlashlightExtension.on_settings_changed = function(self)
     self.flashlight_shadows = mod:get("mod_option_flashlight_shadows")
@@ -111,8 +130,34 @@ FlashlightExtension.on_cutscene = function(self, cutscene_playing)
     end
 end
 
+FlashlightExtension.on_wield = function(self, wielded_slot)
+    self.wielded_slot = wielded_slot
+end
+
+FlashlightExtension.on_update_item_visibility = function(self, wielded_slot)
+    if self.attachment_data and self.attachment_data.on_update_item_visibility then
+        self.attachment_data.on_update_item_visibility(self, wielded_slot)
+    end
+end
+
+FlashlightExtension.on_mod_reload = function(self)
+    self:fetch_flashlight()
+end
+
+FlashlightExtension.on_equip_weapon = function(self, item)
+    self:fetch_flashlight(item)
+end
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
 FlashlightExtension.input_settings = function(self)
     return self.interact_aim, self.interact_double
+end
+
+FlashlightExtension.first_person_unit = function(self)
+    return self.first_person_extension and self.first_person_extension:first_person_unit()
 end
 
 FlashlightExtension.is_active = function(self)
@@ -125,6 +170,14 @@ end
 
 FlashlightExtension.is_wielded = function(self)
     return self.wielded_slot == SLOT_SECONDARY
+end
+
+FlashlightExtension.is_in_first_person_mode = function(self)
+    return self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+end
+
+FlashlightExtension.is_in_hub = function(self)
+    return mod:is_in_hub()
 end
 
 FlashlightExtension.find_in_units = function(self, attachment_units)
@@ -160,12 +213,53 @@ FlashlightExtension.find_in_units = function(self, attachment_units)
 end
 
 FlashlightExtension.current_flashlight_unit = function(self)
-    return self.first_person_extension:is_in_first_person_mode() and self.flashlight_unit_1p or self.flashlight_unit_3p
+    return self:is_in_first_person_mode() and self.flashlight_unit_1p or self.flashlight_unit_3p
 end
 
 FlashlightExtension.current_flashlight = function(self)
-    return self.first_person_extension:is_in_first_person_mode() and self.flashlight_1p or self.flashlight_3p
+    return self:is_in_first_person_mode() and self.flashlight_1p or self.flashlight_3p
 end
+
+FlashlightExtension.update = function(self, dt, t)
+
+    if not self.is_local_unit and self:is_modded() and self:is_wielded() then
+    -- if self:is_wielded() then
+        local on = self:is_in_darkness()
+        if on ~= self.old_on then
+
+            if self.auto_timer > t + self.auto_timeout then
+                self.auto_timer = t + self.auto_timeout
+            end
+
+            if t > self.auto_timer then
+
+                self:set_light(on, true)
+
+                self.old_on = on
+                self.auto_timer = t + self.auto_timeout
+
+            end
+        end
+    end
+
+    local first_person = self:is_in_first_person_mode()
+    local perspective_change = first_person ~= self.last_first_person
+    self.last_first_person = first_person
+
+    if self.on and self.attachment_data then
+        if perspective_change and self.attachment_data.on_perspective_change then
+            self.attachment_data.on_perspective_change(self)
+        end
+        if self.attachment_data.on_flashlight_update then
+            self.attachment_data.on_flashlight_update(self, dt, t)
+        end
+    end
+
+end
+
+-- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
+-- ##### │││├┤  │ ├─┤│ │ ││└─┐ ########################################################################################
+-- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
 
 FlashlightExtension.fetch_flashlight = function(self, item)
     -- Unset flashlight data
@@ -233,50 +327,7 @@ FlashlightExtension.fetch_flashlight = function(self, item)
     end
 end
 
-FlashlightExtension.on_wield = function(self, wielded_slot)
-    self.wielded_slot = wielded_slot
-end
-
-FlashlightExtension.on_update_item_visibility = function(self, wielded_slot)
-    if self.attachment_data and self.attachment_data.on_update_item_visibility then
-        self.attachment_data.on_update_item_visibility(self, wielded_slot)
-    end
-end
-
-FlashlightExtension.current_flashlight_unit = function(self)
-    if self.first_person_extension:is_in_first_person_mode() then
-        return self.flashlight_unit_1p
-    else
-        return self.flashlight_unit_3p
-    end
-end
-
-FlashlightExtension.update = function(self, dt, t)
-
-    local first_person = self.first_person_extension:is_in_first_person_mode()
-    local perspective_change = first_person ~= self.last_first_person
-    self.last_first_person = first_person
-
-    if self.on and self.attachment_data then
-        if perspective_change and self.attachment_data.on_perspective_change then
-            self.attachment_data.on_perspective_change(self)
-        end
-        if self.attachment_data.on_flashlight_update then
-            self.attachment_data.on_flashlight_update(self, dt, t)
-        end
-    end
-
-end
-
-FlashlightExtension.on_mod_reload = function(self)
-    self:fetch_flashlight()
-end
-
-FlashlightExtension.on_equip_weapon = function(self, item)
-    self:fetch_flashlight(item)
-end
-
-FlashlightExtension.set_light = function(self, value)
+FlashlightExtension.set_light = function(self, value, optional_no_sound)
 
     self.on = value or not self.on
 
@@ -288,15 +339,15 @@ FlashlightExtension.set_light = function(self, value)
         end
     end
 
-    if not mod:is_in_hub() then
+    if not self:is_in_hub() then
 
-        if self.flashlight_1p then self:_set_light(self.flashlight_unit_1p, self.flashlight_1p, self.on) end
-        if self.flashlight_3p then self:_set_light(self.flashlight_unit_3p, self.flashlight_3p, self.on) end
+        if self.flashlight_1p then self:_set_light(self.flashlight_unit_1p, self.flashlight_1p, self.on, optional_no_sound) end
+        if self.flashlight_3p then self:_set_light(self.flashlight_unit_3p, self.flashlight_3p, self.on, optional_no_sound) end
 
     end
 end
 
-FlashlightExtension._set_light = function(self, flashlight_unit, flashlight, value)
+FlashlightExtension._set_light = function(self, flashlight_unit, flashlight, value, optional_no_sound)
     -- Check flashlight and flashlight unit
     if flashlight and flashlight_unit and unit_alive(flashlight_unit) then
         -- Set attachment light color
@@ -304,7 +355,8 @@ FlashlightExtension._set_light = function(self, flashlight_unit, flashlight, val
         -- Set light
         mod:set_light(flashlight, self.on)
         -- Play sound
-        if self:is_modded() then
+        local no_sound = optional_no_sound or false
+        if not no_sound and self:is_modded() then
             if self.fx_extension and self.on then
                 -- Switch on
                 self.fx_extension:trigger_wwise_event("wwise/events/player/play_foley_gear_flashlight_on", false, self.unit, 1)
@@ -317,7 +369,7 @@ FlashlightExtension._set_light = function(self, flashlight_unit, flashlight, val
 end
 
 FlashlightExtension.init_light = function(self, light)
-    if not mod:is_in_hub() then
+    if not self:is_in_hub() then
         if self.flashlight_1p then self:_init_light(self.flashlight_1p) end
         if self.flashlight_3p then self:_init_light(self.flashlight_3p) end
     end
@@ -326,11 +378,53 @@ end
 FlashlightExtension._init_light = function(self, light)
     if self.flashlight_template and light then
         local template = self.flashlight_template.light.third_person
-        if self.first_person_extension:is_in_first_person_mode() then
+        if self:is_in_first_person_mode() then
             template = self.flashlight_template.light.first_person
         end
         mod:set_template_for_light(light, template)
     end
+end
+
+-- ##### ┌┬┐┌─┐┬─┐┬┌─┌┐┌┌─┐┌─┐┌─┐ #####################################################################################
+-- #####  ││├─┤├┬┘├┴┐│││├┤ └─┐└─┐ #####################################################################################
+-- ##### ─┴┘┴ ┴┴└─┴ ┴┘└┘└─┘└─┘└─┘ #####################################################################################
+
+FlashlightExtension.aim_position = function(self)
+    local flashlight_unit = self:current_flashlight_unit()
+
+    if flashlight_unit and unit_alive(flashlight_unit) then
+        
+        -- Flashlight rotation / position
+        local flashlight_rotation = unit_world_rotation(flashlight_unit, 2)
+        local flashlight_position = unit_world_position(flashlight_unit, 2)
+
+        local first_person_unit = self:first_person_unit()
+
+        if first_person_unit and unit_alive(first_person_unit) then
+
+            local node = unit_node(first_person_unit, "ap_aim")
+
+            local aim_position = unit_world_position(first_person_unit, node)
+            local aim_rotation = unit_world_rotation(first_person_unit, node)
+            local aim_direction = vector3_normalize(quaternion_forward(aim_rotation))
+
+            local _, laser_aim_position, _, _, hit_actor = physics_world_raycast(self.physics_world, aim_position, aim_direction, 1000, "closest", "types", "both",
+                "collision_filter", "filter_player_character_shooting_projectile", "rewind_ms", LagCompensation.rewind_ms(false, true, self.player))
+
+            -- Resulting aim position
+            return laser_aim_position or flashlight_position
+
+        end
+
+        -- Resulting aim position
+        return flashlight_position
+
+    end
+end
+
+FlashlightExtension.is_in_darkness = function(self, optional_position)
+    local position = optional_position or self:aim_position()
+    return position and mod:is_in_darkness(position)
 end
 
 -- ##### ┌─┐┬  ┌─┐┌┐ ┌─┐┬    ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ################################################################

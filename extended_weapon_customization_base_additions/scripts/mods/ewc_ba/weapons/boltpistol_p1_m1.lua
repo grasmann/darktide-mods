@@ -59,6 +59,7 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
 local autogun_magazines = "autogun_rifle_magazine_01|autogun_rifle_magazine_02|autogun_rifle_magazine_03|autogun_rifle_ak_magazine_01"
 local autogun_double_magazines = "autogun_rifle_magazine_01_double|autogun_rifle_magazine_02_double|autogun_rifle_magazine_03_double|autogun_rifle_ak_magazine_01_double"
+
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
@@ -66,6 +67,18 @@ local attachments = {
     boltpistol_p1_m1 = {
         grip = grip_common,
         flashlight = flashlight_human,
+        -- magazine = table_merge_recursive_n({
+        --     boltgun_pistol_magazine_01_double = {
+        --         replacement_path = _item_ranged.."/magazines/boltgun_pistol_magazine_01_double",
+        --         icon_render_unit_rotation_offset = {90, 0, 30},
+        --         icon_render_camera_position_offset = {-.125, -1.25, -.05},
+        --     },
+        --     boltgun_pistol_magazine_02_double = {
+        --         replacement_path = _item_ranged.."/magazines/boltgun_pistol_magazine_02_double",
+        --         icon_render_unit_rotation_offset = {90, 0, 30},
+        --         icon_render_camera_position_offset = {-.125, -1.25, -.05},
+        --     },
+        -- }, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry, magazine_autogun_braced, magazine_autogun_headhunter),
         magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry, magazine_autogun_braced, magazine_autogun_headhunter),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, {
             lasgun_rifle_sight_01 = {
@@ -216,7 +229,150 @@ local attachment_slots = {
 
 attachment_slots.boltpistol_p1_m2 = table_clone(attachment_slots.boltpistol_p1_m1)
 
-local kitbashs = {}
+local kitbashs = {
+    [_item_ranged.."/magazines/boltgun_pistol_magazine_01_double"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+            double_magazine_1 = {
+                item = _item_ranged.."/magazines/boltgun_pistol_magazine_01",
+                fix = {
+                    offset = {
+                        node = 1,
+                        position = vector3_box(0, 0, 0),
+                        rotation = vector3_box(0, 0, 0),
+                        scale = vector3_box(1, 1, 1),
+                    },
+                },
+                children = {
+                    double_magazine_clip = {
+                        item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
+                        fix = {
+                            offset = {
+                                node = 1,
+                                position = vector3_box(.0325, -.01, -.15),
+                                rotation = vector3_box(0, 90, 0),
+                                scale = vector3_box(1, .8, .75),
+                            },
+                        },
+                        children = {
+                            double_magazine_2 = {
+                                item = _item_ranged.."/magazines/boltgun_pistol_magazine_01",
+                                fix = {
+                                    offset = {
+                                        node = 1,
+                                        position = vector3_box(.15, .005, -.125),
+                                        rotation = vector3_box(0, 90, 0),
+                                        scale = vector3_box(1.3, 1.3, 1),
+                                    },
+                                },
+                                children = {},
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        display_name = "loc_boltgun_pistol_magazine_01_double",
+        description = "loc_description_boltgun_pistol_magazine_01_double",
+        attach_node = "ap_magazine_01",
+        dev_name = "loc_boltgun_pistol_magazine_01_double",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/characters/empty_item/empty_item",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/characters/empty_item/empty_item"] = true,
+            ["content/weapons/player/ranged/bolt_pistol/attachments/magazine_01/magazine_01"] = true,
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/magazine_01/magazine_01"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/magazines/boltgun_pistol_magazine_01_double",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+    [_item_ranged.."/magazines/boltgun_pistol_magazine_02_double"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+            double_magazine_1 = {
+                item = _item_ranged.."/magazines/boltgun_pistol_magazine_02",
+                fix = {
+                    offset = {
+                        node = 1,
+                        position = vector3_box(0, 0, 0),
+                        rotation = vector3_box(0, 0, 0),
+                        scale = vector3_box(1, 1, 1),
+                    },
+                },
+                children = {
+                    double_magazine_clip = {
+                        item = _item_ranged.."/magazines/lasgun_rifle_magazine_01",
+                        fix = {
+                            offset = {
+                                node = 1,
+                                position = vector3_box(.0325, -.01, -.15),
+                                rotation = vector3_box(0, 90, 0),
+                                scale = vector3_box(1, .8, .75),
+                            },
+                        },
+                        children = {
+                            double_magazine_2 = {
+                                item = _item_ranged.."/magazines/boltgun_pistol_magazine_02",
+                                fix = {
+                                    offset = {
+                                        node = 1,
+                                        position = vector3_box(.15, .005, -.125),
+                                        rotation = vector3_box(0, 90, 0),
+                                        scale = vector3_box(1.3, 1.3, 1),
+                                    },
+                                },
+                                children = {},
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        display_name = "loc_boltgun_pistol_magazine_02_double",
+        description = "loc_description_boltgun_pistol_magazine_02_double",
+        attach_node = "ap_magazine_01",
+        dev_name = "loc_boltgun_pistol_magazine_02_double",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/characters/empty_item/empty_item",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/characters/empty_item/empty_item"] = true,
+            ["content/weapons/player/ranged/bolt_pistol/attachments/magazine_02/magazine_02"] = true,
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/magazine_01/magazine_01"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/magazines/boltgun_pistol_magazine_02_double",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+}
 
 return {
     attachments = attachments,

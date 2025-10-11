@@ -7,7 +7,6 @@ local mod = get_mod("extended_weapon_customization")
 local trinket_hooks = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/trinket_hook")
 local emblem_left = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_left")
 local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/emblem_right")
-local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/attachments/ogryn_flashlight")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -27,14 +26,12 @@ local flashlights = mod:io_dofile("extended_weapon_customization/scripts/mods/ew
 local _item = "content/items/weapons/player"
 local _item_melee = _item.."/melee"
 local _item_ranged = _item.."/ranged"
-local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 return {
     attachments = {
         emblem_left = emblem_left,
         emblem_right = emblem_right,
         trinket_hook = trinket_hooks,
-        flashlight = flashlights,
         barrel = {
             gauntlet_basic_barrel_01 = {
                 replacement_path = _item_ranged.."/barrels/gauntlet_basic_barrel_01",
@@ -109,20 +106,6 @@ return {
                 replacement_path = _item_ranged.."/magazines/gauntlet_basic_magazine_02",
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {-.35, -5, .25},
-            },
-        },
-    },
-    attachment_slots = {
-        flashlight = {
-            parent_slot = "body",
-            default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(.2, .25, -.25),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
             },
         },
     },
