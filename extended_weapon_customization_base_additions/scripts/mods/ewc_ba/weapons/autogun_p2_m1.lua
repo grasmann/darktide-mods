@@ -94,6 +94,8 @@ local attachments = {
 
 attachments.autogun_p2_m2 = table_clone(attachments.autogun_p2_m1)
 attachments.autogun_p2_m3 = table_clone(attachments.autogun_p2_m1)
+attachments.autogun_npc_04 = table_clone(attachments.autogun_p2_m1)
+attachments.autogun_npc_05 = table_clone(attachments.autogun_p2_m1)
 
 local fixes = {
     autogun_p2_m1 = {
@@ -150,7 +152,6 @@ local fixes = {
                 },
             },
         },
-
         {attachment_slot = "muzzle",
             requirements = {
                 barrel = {
@@ -432,6 +433,8 @@ local fixes = {
 
 fixes.autogun_p2_m2 = table_clone(fixes.autogun_p2_m1)
 fixes.autogun_p2_m3 = table_clone(fixes.autogun_p2_m1)
+fixes.autogun_npc_04 = table_clone(fixes.autogun_p2_m1)
+fixes.autogun_npc_05 = table_clone(fixes.autogun_p2_m1)
 
 local kitbashs = {
     [_item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double"] = {

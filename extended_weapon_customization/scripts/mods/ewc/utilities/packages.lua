@@ -24,13 +24,16 @@ local pt = mod:pt()
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.load_packages = function(self)
-    for package_name, _ in pairs(self.settings.packages_to_load) do
-        -- Debug
-        self:print("loading package "..tostring(package_name))
-        -- Create callback
-        local callback = callback(self, "package_loaded", package_name)
-        -- Load package
-        pt.loading_packages[package_name] = managers.package:load(package_name, REFERENCE, callback, true)
+    local package_manager = managers.package
+    if package_manager then
+        for package_name, _ in pairs(self.settings.packages_to_load) do
+            -- Debug
+            self:print("loading package "..tostring(package_name))
+            -- Create callback
+            local callback = callback(self, "package_loaded", package_name)
+            -- Load package
+            pt.loading_packages[package_name] = package_manager:load(package_name, REFERENCE, callback, true)
+        end
     end
 end
 
@@ -56,10 +59,13 @@ mod.release_packages = function(self)
 end
 
 mod.release_package = function(self, package_id, package_name)
-    -- Debug
-    self:print("releasing package "..tostring(package_name).." - "..tostring(package_id))
-    -- Unset loaded package id
-    pt.loaded_packages[package_name] = nil
-    -- Release package
-    managers.package:release(package_id)
+    local package_manager = managers.package
+    if package_manager then
+        -- Debug
+        self:print("releasing package "..tostring(package_name).." - "..tostring(package_id))
+        -- Unset loaded package id
+        pt.loaded_packages[package_name] = nil
+        -- Release package
+        package_manager:release(package_id)
+    end
 end

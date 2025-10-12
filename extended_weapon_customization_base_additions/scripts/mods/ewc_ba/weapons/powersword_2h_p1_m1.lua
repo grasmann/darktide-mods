@@ -72,6 +72,7 @@ local attachments = {
 
 attachments.powersword_2h_p1_m2 = table_clone_safe(attachments.powersword_2h_p1_m1)
 attachments.powersword_2h_p1_m3 = table_clone_safe(attachments.powersword_2h_p1_m1)
+attachments.powersword_2h_npc_01 = table_clone_safe(attachments.powersword_2h_p1_m1)
 
 local attachment_slots = {
     powersword_2h_p1_m1 = {
@@ -92,6 +93,7 @@ local attachment_slots = {
 
 attachment_slots.powersword_2h_p1_m2 = table_clone_safe(attachment_slots.powersword_2h_p1_m1)
 attachment_slots.powersword_2h_p1_m3 = table_clone_safe(attachment_slots.powersword_2h_p1_m1)
+attachment_slots.powersword_2h_npc_01 = table_clone_safe(attachment_slots.powersword_2h_p1_m1)
 
 local fixes = {
     powersword_2h_p1_m1 = {
@@ -255,6 +257,7 @@ local fixes = {
 
 fixes.powersword_2h_p1_m2 = table_clone_safe(fixes.powersword_2h_p1_m1)
 fixes.powersword_2h_p1_m3 = table_clone_safe(fixes.powersword_2h_p1_m1)
+fixes.powersword_2h_npc_01 = table_clone_safe(fixes.powersword_2h_p1_m1)
 
 local kitbashs = {
     [_item_melee.."/blades/laser_blade_2h_power_sword_p1_01"] = {

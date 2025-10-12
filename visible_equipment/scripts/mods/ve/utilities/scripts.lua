@@ -127,6 +127,8 @@ local scripts = {
         scripts.ogryn_club_p1_m3 = table_clone_safe(scripts.ogryn_club_p1_m1)
         scripts.ogryn_club_p2_m2 = table_clone_safe(scripts.ogryn_club_p2_m1)
         scripts.ogryn_club_p2_m3 = table_clone_safe(scripts.ogryn_club_p2_m1)
+                scripts.ogryn_combatblade_npc_01 = table_clone_safe(scripts.ogryn_combatblade_p1_m1)
+                scripts.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(scripts.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         scripts.ogryn_heavystubber_p1_m2 = table_clone_safe(scripts.ogryn_heavystubber_p1_m1)
@@ -136,6 +138,9 @@ local scripts = {
         scripts.ogryn_rippergun_p1_m2 = table_clone_safe(scripts.ogryn_rippergun_p1_m1)
 		scripts.ogryn_rippergun_p1_m3 = table_clone_safe(scripts.ogryn_rippergun_p1_m1)
         scripts.ogryn_thumper_p1_m2 = table_clone_safe(scripts.ogryn_thumper_p1_m1)
+                scripts.ogryn_rippergun_npc_01 = table_clone_safe(scripts.ogryn_rippergun_p1_m1)
+                scripts.ogryn_thumper_npc_01 = table_clone_safe(scripts.ogryn_thumper_p1_m1)
+                scripts.ogryn_gauntlet_npc_01 = table_clone_safe(scripts.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         scripts.thunderhammer_2h_p1_m2 = table_clone_safe(scripts.thunderhammer_2h_p1_m1)
@@ -164,6 +169,13 @@ local scripts = {
         scripts.combataxe_p3_m3 = table_clone_safe(scripts.combataxe_p3_m1)
         scripts.powermaul_p1_m2 = table_clone_safe(scripts.powermaul_p1_m1)
         scripts.chainaxe_p1_m2 = table_clone_safe(scripts.chainaxe_p1_m1)
+            scripts.bot_combataxe_linesman = table_clone_safe(scripts.combataxe_p1_m1)
+            scripts.bot_combatsword_linesman_p1 = table_clone_safe(scripts.combatsword_p1_m1)
+            scripts.bot_combatsword_linesman_p2 = table_clone_safe(scripts.combatsword_p2_m1)
+                scripts.thunderhammer_d7_zealot_f = table_clone_safe(scripts.thunderhammer_2h_p1_m1)
+                scripts.forcesword_npc_01 = table_clone_safe(scripts.forcesword_p1_m1)
+                scripts.powersword_2h_npc_01 = table_clone_safe(scripts.powersword_p1_m1)
+                scripts.chainsword_npc_01 = table_clone_safe(scripts.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         scripts.stubrevolver_p1_m2 = table_clone_safe(scripts.stubrevolver_p1_m1)
@@ -193,6 +205,25 @@ local scripts = {
         scripts.lasgun_p2_m3 = table_clone_safe(scripts.lasgun_p2_m1)
         scripts.lasgun_p3_m2 = table_clone_safe(scripts.lasgun_p3_m1)
         scripts.lasgun_p3_m3 = table_clone_safe(scripts.lasgun_p3_m1)
+            scripts.bot_laspistol_killshot = table_clone_safe(scripts.laspistol_p1_m1)
+            scripts.bot_zola_laspistol = table_clone_safe(scripts.laspistol_p1_m1)
+            scripts.high_bot_lasgun_killshot = table_clone_safe(scripts.lasgun_p1_m1)
+            scripts.bot_lasgun_killshot = table_clone_safe(scripts.lasgun_p1_m1)
+            scripts.high_bot_autogun_killshot = table_clone_safe(scripts.autogun_p3_m1)
+            scripts.bot_autogun_killshot = table_clone_safe(scripts.autogun_p3_m1)
+                scripts.laspistol_npc_01 = table_clone_safe(scripts.laspistol_p1_m1)
+                scripts.lasgun_npc_01 = table_clone_safe(scripts.lasgun_p1_m1)
+                scripts.lasgun_npc_02 = table_clone_safe(scripts.lasgun_p1_m1)
+                scripts.lasgun_npc_03 = table_clone_safe(scripts.lasgun_p1_m1)
+                scripts.lasgun_npc_04 = table_clone_safe(scripts.lasgun_p1_m1)
+                scripts.lasgun_npc_05 = table_clone_safe(scripts.lasgun_p1_m1)
+                scripts.lasgun_d7_veteran_m = table_clone_safe(scripts.lasgun_p1_m1)
+                scripts.autogun_npc_01 = table_clone_safe(scripts.autogun_p1_m1)
+                scripts.autogun_npc_02 = table_clone_safe(scripts.autogun_p1_m1)
+                scripts.autogun_npc_03 = table_clone_safe(scripts.autogun_p1_m1)
+                scripts.autogun_npc_04 = table_clone_safe(scripts.autogun_p2_m1)
+                scripts.autogun_npc_05 = table_clone_safe(scripts.autogun_p2_m1)
+                scripts.flamer_npc_01 = table_clone_safe(scripts.flamer_p1_m1)
     --#endregion
 --#endregion
 

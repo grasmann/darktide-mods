@@ -185,6 +185,8 @@ local sounds = {
         sounds.ogryn_club_p1_m3 = table_clone_safe(sounds.ogryn_club_p1_m1)
         sounds.ogryn_club_p2_m2 = table_clone_safe(sounds.ogryn_club_p2_m1)
         sounds.ogryn_club_p2_m3 = table_clone_safe(sounds.ogryn_club_p2_m1)
+                sounds.ogryn_combatblade_npc_01 = table_clone_safe(sounds.ogryn_combatblade_p1_m1)
+                sounds.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(sounds.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         sounds.ogryn_heavystubber_p1_m2 = table_clone_safe(sounds.ogryn_heavystubber_p1_m1)
@@ -194,6 +196,9 @@ local sounds = {
         sounds.ogryn_rippergun_p1_m2 = table_clone_safe(sounds.ogryn_rippergun_p1_m1)
 		sounds.ogryn_rippergun_p1_m3 = table_clone_safe(sounds.ogryn_rippergun_p1_m1)
         sounds.ogryn_thumper_p1_m2 = table_clone_safe(sounds.ogryn_thumper_p1_m1)
+                sounds.ogryn_rippergun_npc_01 = table_clone_safe(sounds.ogryn_rippergun_p1_m1)
+                sounds.ogryn_thumper_npc_01 = table_clone_safe(sounds.ogryn_thumper_p1_m1)
+                sounds.ogryn_gauntlet_npc_01 = table_clone_safe(sounds.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         sounds.powermaul_shield_p1_m2 = table_clone_safe(sounds.powermaul_shield_p1_m1)
@@ -222,6 +227,13 @@ local sounds = {
         sounds.powermaul_p1_m2 = table_clone_safe(sounds.powermaul_p1_m1)
 		sounds.combataxe_p1_m3 = table_clone_safe(sounds.combataxe_p1_m1)
         sounds.chainaxe_p1_m2 = table_clone_safe(sounds.chainaxe_p1_m1)
+            sounds.bot_combataxe_linesman = table_clone_safe(sounds.combataxe_p1_m1)
+            sounds.bot_combatsword_linesman_p1 = table_clone_safe(sounds.combatsword_p1_m1)
+            sounds.bot_combatsword_linesman_p2 = table_clone_safe(sounds.combatsword_p2_m1)
+                sounds.thunderhammer_d7_zealot_f = table_clone_safe(sounds.thunderhammer_2h_p1_m1)
+                sounds.forcesword_npc_01 = table_clone_safe(sounds.forcesword_p1_m1)
+                sounds.powersword_2h_npc_01 = table_clone_safe(sounds.powersword_p1_m1)
+                sounds.chainsword_npc_01 = table_clone_safe(sounds.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         sounds.stubrevolver_p1_m3 = table_clone_safe(sounds.stubrevolver_p1_m1)
@@ -252,6 +264,25 @@ local sounds = {
         sounds.lasgun_p3_m3 = table_clone_safe(sounds.lasgun_p3_m1)
 		sounds.bolter_p1_m3 = table_clone_safe(sounds.bolter_p1_m1)
 		sounds.lasgun_p1_m3 = table_clone_safe(sounds.lasgun_p1_m1)
+            sounds.bot_laspistol_killshot = table_clone_safe(sounds.laspistol_p1_m1)
+            sounds.bot_zola_laspistol = table_clone_safe(sounds.laspistol_p1_m1)
+            sounds.high_bot_lasgun_killshot = table_clone_safe(sounds.lasgun_p1_m1)
+            sounds.bot_lasgun_killshot = table_clone_safe(sounds.lasgun_p1_m1)
+            sounds.high_bot_autogun_killshot = table_clone_safe(sounds.autogun_p3_m1)
+            sounds.bot_autogun_killshot = table_clone_safe(sounds.autogun_p3_m1)
+                sounds.laspistol_npc_01 = table_clone_safe(sounds.laspistol_p1_m1)
+                sounds.lasgun_npc_01 = table_clone_safe(sounds.lasgun_p1_m1)
+                sounds.lasgun_npc_02 = table_clone_safe(sounds.lasgun_p1_m1)
+                sounds.lasgun_npc_03 = table_clone_safe(sounds.lasgun_p1_m1)
+                sounds.lasgun_npc_04 = table_clone_safe(sounds.lasgun_p1_m1)
+                sounds.lasgun_npc_05 = table_clone_safe(sounds.lasgun_p1_m1)
+                sounds.lasgun_d7_veteran_m = table_clone_safe(sounds.lasgun_p1_m1)
+                sounds.autogun_npc_01 = table_clone_safe(sounds.autogun_p1_m1)
+                sounds.autogun_npc_02 = table_clone_safe(sounds.autogun_p1_m1)
+                sounds.autogun_npc_03 = table_clone_safe(sounds.autogun_p1_m1)
+                sounds.autogun_npc_04 = table_clone_safe(sounds.autogun_p2_m1)
+                sounds.autogun_npc_05 = table_clone_safe(sounds.autogun_p2_m1)
+                sounds.flamer_npc_01 = table_clone_safe(sounds.flamer_p1_m1)
     --#endregion
 --#endregion
 

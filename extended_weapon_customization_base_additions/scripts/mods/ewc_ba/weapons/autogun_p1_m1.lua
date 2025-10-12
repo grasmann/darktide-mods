@@ -94,6 +94,9 @@ local attachments = {
 
 attachments.autogun_p1_m2 = table_clone(attachments.autogun_p1_m1)
 attachments.autogun_p1_m3 = table_clone(attachments.autogun_p1_m1)
+attachments.autogun_npc_01 = table_clone(attachments.autogun_p1_m1)
+attachments.autogun_npc_02 = table_clone(attachments.autogun_p1_m1)
+attachments.autogun_npc_03 = table_clone(attachments.autogun_p1_m1)
 
 local fixes = {
     autogun_p1_m1 = {
@@ -438,6 +441,9 @@ local fixes = {
 
 fixes.autogun_p1_m2 = table_clone(fixes.autogun_p1_m1)
 fixes.autogun_p1_m3 = table_clone(fixes.autogun_p1_m1)
+fixes.autogun_npc_01 = table_clone(fixes.autogun_p1_m1)
+fixes.autogun_npc_02 = table_clone(fixes.autogun_p1_m1)
+fixes.autogun_npc_03 = table_clone(fixes.autogun_p1_m1)
 
 local attachment_slots = {
     autogun_p1_m1 = {
@@ -446,6 +452,9 @@ local attachment_slots = {
 
 attachment_slots.autogun_p1_m2 = table_clone(attachment_slots.autogun_p1_m1)
 attachment_slots.autogun_p1_m3 = table_clone(attachment_slots.autogun_p1_m1)
+attachment_slots.autogun_npc_01 = table_clone(attachment_slots.autogun_p1_m1)
+attachment_slots.autogun_npc_02 = table_clone(attachment_slots.autogun_p1_m1)
+attachment_slots.autogun_npc_03 = table_clone(attachment_slots.autogun_p1_m1)
 
 local kitbashs = {
     [_item_ranged.."/magazines/autogun_rifle_magazine_01_double"] = {

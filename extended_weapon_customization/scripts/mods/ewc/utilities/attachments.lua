@@ -211,6 +211,8 @@ local attachments = {
 		attachments.ogryn_club_p1_m3 = table_clone_safe(attachments.ogryn_club_p1_m1)
 		attachments.ogryn_club_p2_m3 = table_clone_safe(attachments.ogryn_club_p2_m1)
         attachments.ogryn_club_p1_m2 = table_clone_safe(attachments.ogryn_club_p1_m1)
+                attachments.ogryn_combatblade_npc_01 = table_clone_safe(attachments.ogryn_combatblade_p1_m1)
+                attachments.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(attachments.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         attachments.ogryn_heavystubber_p1_m2 = table_clone_safe(attachments.ogryn_heavystubber_p1_m1)
@@ -220,6 +222,9 @@ local attachments = {
         attachments.ogryn_rippergun_p1_m2 = table_clone_safe(attachments.ogryn_rippergun_p1_m1)
 		attachments.ogryn_rippergun_p1_m3 = table_clone_safe(attachments.ogryn_rippergun_p1_m1)
         attachments.ogryn_thumper_p1_m2 = table_clone_safe(attachments.ogryn_thumper_p1_m1)
+                attachments.ogryn_rippergun_npc_01 = table_clone_safe(attachments.ogryn_rippergun_p1_m1)
+                attachments.ogryn_thumper_npc_01 = table_clone_safe(attachments.ogryn_thumper_p1_m1)
+                attachments.ogryn_gauntlet_npc_01 = table_clone_safe(attachments.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         attachments.powermaul_shield_p1_m2 = table_clone_safe(attachments.powermaul_shield_p1_m1)
@@ -251,6 +256,10 @@ local attachments = {
             attachments.bot_combataxe_linesman = table_clone_safe(attachments.combataxe_p1_m1)
             attachments.bot_combatsword_linesman_p1 = table_clone_safe(attachments.combatsword_p1_m1)
             attachments.bot_combatsword_linesman_p2 = table_clone_safe(attachments.combatsword_p2_m1)
+                attachments.thunderhammer_d7_zealot_f = table_clone_safe(attachments.thunderhammer_2h_p1_m1)
+                attachments.forcesword_npc_01 = table_clone_safe(attachments.forcesword_p1_m1)
+                attachments.powersword_2h_npc_01 = table_clone_safe(attachments.powersword_p1_m1)
+                attachments.chainsword_npc_01 = table_clone_safe(attachments.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         attachments.stubrevolver_p1_m3 = table_clone_safe(attachments.stubrevolver_p1_m1)
@@ -287,6 +296,19 @@ local attachments = {
             attachments.bot_lasgun_killshot = table_clone_safe(attachments.lasgun_p1_m1)
             attachments.high_bot_autogun_killshot = table_clone_safe(attachments.autogun_p3_m1)
             attachments.bot_autogun_killshot = table_clone_safe(attachments.autogun_p3_m1)
+                attachments.laspistol_npc_01 = table_clone_safe(attachments.laspistol_p1_m1)
+                attachments.lasgun_npc_01 = table_clone_safe(attachments.lasgun_p1_m1)
+                attachments.lasgun_npc_02 = table_clone_safe(attachments.lasgun_p1_m1)
+                attachments.lasgun_npc_03 = table_clone_safe(attachments.lasgun_p1_m1)
+                attachments.lasgun_npc_04 = table_clone_safe(attachments.lasgun_p1_m1)
+                attachments.lasgun_npc_05 = table_clone_safe(attachments.lasgun_p1_m1)
+                attachments.lasgun_d7_veteran_m = table_clone_safe(attachments.lasgun_p1_m1)
+                attachments.autogun_npc_01 = table_clone_safe(attachments.autogun_p1_m1)
+                attachments.autogun_npc_02 = table_clone_safe(attachments.autogun_p1_m1)
+                attachments.autogun_npc_03 = table_clone_safe(attachments.autogun_p1_m1)
+                attachments.autogun_npc_04 = table_clone_safe(attachments.autogun_p2_m1)
+                attachments.autogun_npc_05 = table_clone_safe(attachments.autogun_p2_m1)
+                attachments.flamer_npc_01 = table_clone_safe(attachments.flamer_p1_m1)
     --#endregion
 --#endregion
 
@@ -354,6 +376,8 @@ local fixes = {
 		fixes.ogryn_club_p1_m3 = table_clone_safe(fixes.ogryn_club_p1_m1)
 		fixes.ogryn_club_p2_m3 = table_clone_safe(fixes.ogryn_club_p2_m1)
         fixes.ogryn_club_p1_m2 = table_clone_safe(fixes.ogryn_club_p1_m1)
+                fixes.ogryn_combatblade_npc_01 = table_clone_safe(fixes.ogryn_combatblade_p1_m1)
+                fixes.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(fixes.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         fixes.ogryn_heavystubber_p1_m2 = table_clone_safe(fixes.ogryn_heavystubber_p1_m1)
@@ -363,6 +387,9 @@ local fixes = {
         fixes.ogryn_rippergun_p1_m2 = table_clone_safe(fixes.ogryn_rippergun_p1_m1)
 		fixes.ogryn_rippergun_p1_m3 = table_clone_safe(fixes.ogryn_rippergun_p1_m1)
         fixes.ogryn_thumper_p1_m2 = table_clone_safe(fixes.ogryn_thumper_p1_m1)
+                fixes.ogryn_rippergun_npc_01 = table_clone_safe(fixes.ogryn_rippergun_p1_m1)
+                fixes.ogryn_thumper_npc_01 = table_clone_safe(fixes.ogryn_thumper_p1_m1)
+                fixes.ogryn_gauntlet_npc_01 = table_clone_safe(fixes.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         fixes.powermaul_shield_p1_m2 = table_clone_safe(fixes.powermaul_shield_p1_m1)
@@ -394,6 +421,10 @@ local fixes = {
             fixes.bot_combataxe_linesman = table_clone_safe(fixes.combataxe_p1_m1)
             fixes.bot_combatsword_linesman_p1 = table_clone_safe(fixes.combatsword_p1_m1)
             fixes.bot_combatsword_linesman_p2 = table_clone_safe(fixes.combatsword_p2_m1)
+                fixes.thunderhammer_d7_zealot_f = table_clone_safe(fixes.thunderhammer_2h_p1_m1)
+                fixes.forcesword_npc_01 = table_clone_safe(fixes.forcesword_p1_m1)
+                fixes.powersword_2h_npc_01 = table_clone_safe(fixes.powersword_p1_m1)
+                fixes.chainsword_npc_01 = table_clone_safe(fixes.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         fixes.stubrevolver_p1_m3 = table_clone_safe(fixes.stubrevolver_p1_m1)
@@ -430,6 +461,19 @@ local fixes = {
             fixes.bot_lasgun_killshot = table_clone_safe(fixes.lasgun_p1_m1)
             fixes.high_bot_autogun_killshot = table_clone_safe(fixes.autogun_p3_m1)
             fixes.bot_autogun_killshot = table_clone_safe(fixes.autogun_p3_m1)
+                fixes.laspistol_npc_01 = table_clone_safe(fixes.laspistol_p1_m1)
+                fixes.lasgun_npc_01 = table_clone_safe(fixes.lasgun_p1_m1)
+                fixes.lasgun_npc_02 = table_clone_safe(fixes.lasgun_p1_m1)
+                fixes.lasgun_npc_03 = table_clone_safe(fixes.lasgun_p1_m1)
+                fixes.lasgun_npc_04 = table_clone_safe(fixes.lasgun_p1_m1)
+                fixes.lasgun_npc_05 = table_clone_safe(fixes.lasgun_p1_m1)
+                fixes.lasgun_d7_veteran_m = table_clone_safe(fixes.lasgun_p1_m1)
+                fixes.autogun_npc_01 = table_clone_safe(fixes.autogun_p1_m1)
+                fixes.autogun_npc_02 = table_clone_safe(fixes.autogun_p1_m1)
+                fixes.autogun_npc_03 = table_clone_safe(fixes.autogun_p1_m1)
+                fixes.autogun_npc_04 = table_clone_safe(fixes.autogun_p2_m1)
+                fixes.autogun_npc_05 = table_clone_safe(fixes.autogun_p2_m1)
+                fixes.flamer_npc_01 = table_clone_safe(fixes.flamer_p1_m1)
     --#endregion
 --#endregion
 
@@ -497,6 +541,8 @@ local attachment_slots = {
 		attachment_slots.ogryn_club_p1_m3 = table_clone_safe(attachment_slots.ogryn_club_p1_m1)
 		attachment_slots.ogryn_club_p2_m3 = table_clone_safe(attachment_slots.ogryn_club_p2_m1)
         attachment_slots.ogryn_club_p1_m2 = table_clone_safe(attachment_slots.ogryn_club_p1_m1)
+                attachment_slots.ogryn_combatblade_npc_01 = table_clone_safe(attachment_slots.ogryn_combatblade_p1_m1)
+                attachment_slots.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(attachment_slots.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         attachment_slots.ogryn_heavystubber_p1_m2 = table_clone_safe(attachment_slots.ogryn_heavystubber_p1_m1)
@@ -506,6 +552,9 @@ local attachment_slots = {
         attachment_slots.ogryn_rippergun_p1_m2 = table_clone_safe(attachment_slots.ogryn_rippergun_p1_m1)
 		attachment_slots.ogryn_rippergun_p1_m3 = table_clone_safe(attachment_slots.ogryn_rippergun_p1_m1)
         attachment_slots.ogryn_thumper_p1_m2 = table_clone_safe(attachment_slots.ogryn_thumper_p1_m1)
+                attachment_slots.ogryn_rippergun_npc_01 = table_clone_safe(attachment_slots.ogryn_rippergun_p1_m1)
+                attachment_slots.ogryn_thumper_npc_01 = table_clone_safe(attachment_slots.ogryn_thumper_p1_m1)
+                attachment_slots.ogryn_gauntlet_npc_01 = table_clone_safe(attachment_slots.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         attachment_slots.powermaul_shield_p1_m2 = table_clone_safe(attachment_slots.powermaul_shield_p1_m1)
@@ -537,6 +586,10 @@ local attachment_slots = {
             attachment_slots.bot_combataxe_linesman = table_clone_safe(attachment_slots.combataxe_p1_m1)
             attachment_slots.bot_combatsword_linesman_p1 = table_clone_safe(attachment_slots.combatsword_p1_m1)
             attachment_slots.bot_combatsword_linesman_p2 = table_clone_safe(attachment_slots.combatsword_p2_m1)
+                attachment_slots.thunderhammer_d7_zealot_f = table_clone_safe(attachment_slots.thunderhammer_2h_p1_m1)
+                attachment_slots.forcesword_npc_01 = table_clone_safe(attachment_slots.forcesword_p1_m1)
+                attachment_slots.powersword_2h_npc_01 = table_clone_safe(attachment_slots.powersword_p1_m1)
+                attachment_slots.chainsword_npc_01 = table_clone_safe(attachment_slots.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         attachment_slots.stubrevolver_p1_m3 = table_clone_safe(attachment_slots.stubrevolver_p1_m1)
@@ -573,6 +626,19 @@ local attachment_slots = {
             attachment_slots.bot_lasgun_killshot = table_clone_safe(attachment_slots.lasgun_p1_m1)
             attachment_slots.high_bot_autogun_killshot = table_clone_safe(attachment_slots.autogun_p3_m1)
             attachment_slots.bot_autogun_killshot = table_clone_safe(attachment_slots.autogun_p3_m1)
+                attachment_slots.laspistol_npc_01 = table_clone_safe(attachment_slots.laspistol_p1_m1)
+                attachment_slots.lasgun_npc_01 = table_clone_safe(attachment_slots.lasgun_p1_m1)
+                attachment_slots.lasgun_npc_02 = table_clone_safe(attachment_slots.lasgun_p1_m1)
+                attachment_slots.lasgun_npc_03 = table_clone_safe(attachment_slots.lasgun_p1_m1)
+                attachment_slots.lasgun_npc_04 = table_clone_safe(attachment_slots.lasgun_p1_m1)
+                attachment_slots.lasgun_npc_05 = table_clone_safe(attachment_slots.lasgun_p1_m1)
+                attachment_slots.lasgun_d7_veteran_m = table_clone_safe(attachment_slots.lasgun_p1_m1)
+                attachment_slots.autogun_npc_01 = table_clone_safe(attachment_slots.autogun_p1_m1)
+                attachment_slots.autogun_npc_02 = table_clone_safe(attachment_slots.autogun_p1_m1)
+                attachment_slots.autogun_npc_03 = table_clone_safe(attachment_slots.autogun_p1_m1)
+                attachment_slots.autogun_npc_04 = table_clone_safe(attachment_slots.autogun_p2_m1)
+                attachment_slots.autogun_npc_05 = table_clone_safe(attachment_slots.autogun_p2_m1)
+                attachment_slots.flamer_npc_01 = table_clone_safe(attachment_slots.flamer_p1_m1)
     --#endregion
 --#endregion
 
@@ -707,6 +773,8 @@ local flashlight_templates = {
 		flashlight_templates.ogryn_club_p1_m3 = table_clone_safe(flashlight_templates.ogryn_club_p1_m1)
 		flashlight_templates.ogryn_club_p2_m3 = table_clone_safe(flashlight_templates.ogryn_club_p2_m1)
         flashlight_templates.ogryn_club_p1_m2 = table_clone_safe(flashlight_templates.ogryn_club_p1_m1)
+                flashlight_templates.ogryn_combatblade_npc_01 = table_clone_safe(flashlight_templates.ogryn_combatblade_p1_m1)
+                flashlight_templates.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(flashlight_templates.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         flashlight_templates.ogryn_heavystubber_p1_m2 = table_clone_safe(flashlight_templates.ogryn_heavystubber_p1_m1)
@@ -716,6 +784,9 @@ local flashlight_templates = {
         flashlight_templates.ogryn_rippergun_p1_m2 = table_clone_safe(flashlight_templates.ogryn_rippergun_p1_m1)
 		flashlight_templates.ogryn_rippergun_p1_m3 = table_clone_safe(flashlight_templates.ogryn_rippergun_p1_m1)
         flashlight_templates.ogryn_thumper_p1_m2 = table_clone_safe(flashlight_templates.ogryn_thumper_p1_m1)
+                flashlight_templates.ogryn_rippergun_npc_01 = table_clone_safe(flashlight_templates.ogryn_rippergun_p1_m1)
+                flashlight_templates.ogryn_thumper_npc_01 = table_clone_safe(flashlight_templates.ogryn_thumper_p1_m1)
+                flashlight_templates.ogryn_gauntlet_npc_01 = table_clone_safe(flashlight_templates.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         flashlight_templates.powermaul_shield_p1_m2 = table_clone_safe(flashlight_templates.powermaul_shield_p1_m1)
@@ -747,6 +818,10 @@ local flashlight_templates = {
             flashlight_templates.bot_combataxe_linesman = table_clone_safe(flashlight_templates.combataxe_p1_m1)
             flashlight_templates.bot_combatsword_linesman_p1 = table_clone_safe(flashlight_templates.combatsword_p1_m1)
             flashlight_templates.bot_combatsword_linesman_p2 = table_clone_safe(flashlight_templates.combatsword_p2_m1)
+                flashlight_templates.thunderhammer_d7_zealot_f = table_clone_safe(flashlight_templates.thunderhammer_2h_p1_m1)
+                flashlight_templates.forcesword_npc_01 = table_clone_safe(flashlight_templates.forcesword_p1_m1)
+                flashlight_templates.powersword_2h_npc_01 = table_clone_safe(flashlight_templates.powersword_p1_m1)
+                flashlight_templates.chainsword_npc_01 = table_clone_safe(flashlight_templates.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         flashlight_templates.stubrevolver_p1_m3 = table_clone_safe(flashlight_templates.stubrevolver_p1_m1)
@@ -783,6 +858,19 @@ local flashlight_templates = {
             flashlight_templates.bot_lasgun_killshot = table_clone_safe(flashlight_templates.lasgun_p1_m1)
             flashlight_templates.high_bot_autogun_killshot = table_clone_safe(flashlight_templates.autogun_p3_m1)
             flashlight_templates.bot_autogun_killshot = table_clone_safe(flashlight_templates.autogun_p3_m1)
+                flashlight_templates.laspistol_npc_01 = table_clone_safe(flashlight_templates.laspistol_p1_m1)
+                flashlight_templates.lasgun_npc_01 = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+                flashlight_templates.lasgun_npc_02 = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+                flashlight_templates.lasgun_npc_03 = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+                flashlight_templates.lasgun_npc_04 = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+                flashlight_templates.lasgun_npc_05 = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+                flashlight_templates.lasgun_d7_veteran_m = table_clone_safe(flashlight_templates.lasgun_p1_m1)
+                flashlight_templates.autogun_npc_01 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+                flashlight_templates.autogun_npc_02 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+                flashlight_templates.autogun_npc_03 = table_clone_safe(flashlight_templates.autogun_p1_m1)
+                flashlight_templates.autogun_npc_04 = table_clone_safe(flashlight_templates.autogun_p2_m1)
+                flashlight_templates.autogun_npc_05 = table_clone_safe(flashlight_templates.autogun_p2_m1)
+                flashlight_templates.flamer_npc_01 = table_clone_safe(flashlight_templates.flamer_p1_m1)
     --#endregion
 --#endregion
 

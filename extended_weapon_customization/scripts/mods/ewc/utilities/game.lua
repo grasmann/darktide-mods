@@ -68,6 +68,15 @@ mod.me = function(self)
     return player and player.player_unit
 end
 
+mod.player = function(self)
+    return managers.player:local_player_safe(1)
+end
+
+mod.profile = function(self, player)
+    local player = player or self:player()
+    return player and player:profile()
+end
+
 mod.get_view = function(self, view_name)
     local ui_manager = managers.ui
     return ui_manager:view_active(view_name) and ui_manager:view_instance(view_name) or nil

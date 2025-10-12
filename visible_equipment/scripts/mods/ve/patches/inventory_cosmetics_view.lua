@@ -110,13 +110,6 @@ mod:hook(CLASS.InventoryCosmeticsView, "on_enter", function(func, self, ...)
     end
 end)
 
--- mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, profile, initial_rotation, disable_rotation_input, ...)
-
-    
---     func(self, profile, initial_rotation, disable_rotation_input, ...)
-
--- end)
-
 mod:hook(CLASS.InventoryCosmeticsView, "_register_button_callbacks", function(func, self, ...)
     -- Original function
     func(self, ...)

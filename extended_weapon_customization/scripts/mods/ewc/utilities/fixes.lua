@@ -89,11 +89,7 @@ mod.collect_fixes = function(self, item_data, target_slot)
                             -- Iterate through fix requirements
                             for requirement_slot, requirement_data in pairs(fix_entry.requirements) do
                                 local requirement_met = true
-                                -- Fix data
-                                -- local positive = requirement_data.has and true or false
-                                -- local check_has = requirement_data.has
-                                -- local check_missing = requirement_data.missing
-
+                                
                                 if requirement_data.has then
                                     local requirement_string = requirement_data.has
                                     local cache = split_cache[requirement_string]
@@ -102,8 +98,6 @@ mod.collect_fixes = function(self, item_data, target_slot)
                                     -- Check validity
                                     if not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                         requirement_met = false
-                                    -- elseif not positive and table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
-                                    --     requirement_met = false
                                     end
                                 end
 
@@ -113,9 +107,6 @@ mod.collect_fixes = function(self, item_data, target_slot)
                                     temp_requirement_parts = cache or string_split(requirement_string, "|")
                                     split_cache[requirement_string] = temp_requirement_parts
                                     -- Check validity
-                                    -- if positive and not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
-                                    --     requirement_met = false
-                                    -- else
                                     if table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                         requirement_met = false
                                     end
@@ -191,7 +182,6 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                     if fix.hide and attachment_unit and unit_alive(attachment_unit) then
                         local hide = fix.hide
                         if hide.node then
-                            -- mod:print("fix hide "..tostring(attachment_slot))
                             local node = hide.node
                             if type(node) == "string" then
                                 node = unit_has_node(attachment_unit, node) and unit_node(attachment_unit, node)
@@ -199,7 +189,6 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                             if type(node) == "table" then
                                 for i = 1, #node do
                                     local table_node = node[i]
-                                    -- unit_set_local_scale(attachment_unit, node[i], vector3(0, 0, 0))
                                     if type(table_node) == "string" then
                                         local node_id = unit_has_node(attachment_unit, table_node) and unit_node(attachment_unit, table_node)
                                         if node_id then unit_set_local_scale(attachment_unit, node_id, vector3(0, 0, 0)) end
@@ -233,9 +222,7 @@ end
 
 mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
     -- Item data
-    -- local item = item_data and (item_data.__is_ui_item_preview and item_data.__data) or item_data
     local item = self:item_data(item_data)
-    --item = item and item.__master_item or item_data.__master_item or item
     local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
     local item_type = item and item.item_type
     -- Check data

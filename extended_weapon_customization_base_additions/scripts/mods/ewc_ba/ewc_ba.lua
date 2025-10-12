@@ -13,11 +13,13 @@ local mod = get_mod("extended_weapon_customization_base_additions")
     local table_merge_recursive = table.merge_recursive
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
 local REFERENCE = "extended_weapon_customization_base_additions"
 
-mod:persistent_table(REFERENCE, {
-    cutscene_playing = false,
-})
+mod:persistent_table(REFERENCE, {})
 
 mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/extensions/common")
 

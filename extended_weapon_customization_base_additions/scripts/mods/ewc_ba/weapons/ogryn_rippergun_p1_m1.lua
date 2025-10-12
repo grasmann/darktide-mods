@@ -35,6 +35,7 @@ local attachments = {
 
 attachments.ogryn_rippergun_p1_m2 = table_clone_safe(attachments.ogryn_rippergun_p1_m1)
 attachments.ogryn_rippergun_p1_m3 = table_clone_safe(attachments.ogryn_rippergun_p1_m1)
+attachments.ogryn_rippergun_npc_01 = table_clone_safe(attachments.ogryn_rippergun_p1_m1)
 
 return {
     attachments = attachments,

@@ -14,6 +14,7 @@ local grip_common = mod:io_dofile("extended_weapon_customization_base_additions/
     local table = table
     local vector3 = Vector3
     local vector3_box = Vector3Box
+    local table_clone = table.clone
     local vector3_zero = vector3.zero
     local table_merge_recursive = table.merge_recursive
 --#endregion
@@ -33,6 +34,8 @@ local attachments = {
     },
 }
 
+attachments.flamer_npc_01 = table_clone(attachments.flamer_p1_m1)
+
 local attachment_slots = {
     flamer_p1_m1 = {
         flashlight = {
@@ -50,7 +53,14 @@ local attachment_slots = {
     },
 }
 
-local fixes = {}
+attachment_slots.flamer_npc_01 = table_clone(attachment_slots.flamer_p1_m1)
+
+local fixes = {
+    flamer_p1_m1 = {
+    },
+}
+
+fixes.flamer_npc_01 = table_clone(fixes.flamer_p1_m1)
 
 local kitbashs = {}
 

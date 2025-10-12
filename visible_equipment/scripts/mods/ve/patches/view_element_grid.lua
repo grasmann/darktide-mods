@@ -81,15 +81,8 @@ mod.view_element_grid_inject_blueprint = function(self, view_element_grid, conte
         cosmetic_item_display_name_text_style.text_vertical_alignment = "center"
         cosmetic_item_display_name_text_style.horizontal_alignment = "left"
         cosmetic_item_display_name_text_style.vertical_alignment = "top"
-        cosmetic_item_display_name_text_style.offset = {
-            10,
-            0,
-            5,
-        }
-        cosmetic_item_display_name_text_style.size = {
-            grid_width - 20,
-            50,
-        }
+        cosmetic_item_display_name_text_style.offset = {10, 0, 5}
+        cosmetic_item_display_name_text_style.size = {grid_width - 20, 50}
 
         content_blueprints.cosmetic_gear_icon = {
             pass_template = {

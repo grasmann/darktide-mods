@@ -162,6 +162,8 @@ local momentum = {
 		momentum.ogryn_club_p1_m3 = table_clone_safe(momentum.ogryn_club_p1_m1)
 		momentum.ogryn_club_p2_m3 = table_clone_safe(momentum.ogryn_club_p2_m1)
         momentum.ogryn_club_p1_m2 = table_clone_safe(momentum.ogryn_club_p1_m1)
+                momentum.ogryn_combatblade_npc_01 = table_clone_safe(momentum.ogryn_combatblade_p1_m1)
+                momentum.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(momentum.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         momentum.ogryn_heavystubber_p1_m2 = table_clone_safe(momentum.ogryn_heavystubber_p1_m1)
@@ -171,6 +173,9 @@ local momentum = {
         momentum.ogryn_rippergun_p1_m2 = table_clone_safe(momentum.ogryn_rippergun_p1_m1)
 		momentum.ogryn_rippergun_p1_m3 = table_clone_safe(momentum.ogryn_rippergun_p1_m1)
         momentum.ogryn_thumper_p1_m2 = table_clone_safe(momentum.ogryn_thumper_p1_m1)
+                momentum.ogryn_rippergun_npc_01 = table_clone_safe(momentum.ogryn_rippergun_p1_m1)
+                momentum.ogryn_thumper_npc_01 = table_clone_safe(momentum.ogryn_thumper_p1_m1)
+                momentum.ogryn_gauntlet_npc_01 = table_clone_safe(momentum.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         momentum.powermaul_shield_p1_m2 = table_clone_safe(momentum.powermaul_shield_p1_m1)
@@ -199,6 +204,13 @@ local momentum = {
         momentum.powermaul_p1_m2 = table_clone_safe(momentum.powermaul_p1_m1)
 		momentum.combataxe_p1_m3 = table_clone_safe(momentum.combataxe_p1_m1)
         momentum.chainaxe_p1_m2 = table_clone_safe(momentum.chainaxe_p1_m1)
+            momentum.bot_combataxe_linesman = table_clone_safe(momentum.combataxe_p1_m1)
+            momentum.bot_combatsword_linesman_p1 = table_clone_safe(momentum.combatsword_p1_m1)
+            momentum.bot_combatsword_linesman_p2 = table_clone_safe(momentum.combatsword_p2_m1)
+                momentum.thunderhammer_d7_zealot_f = table_clone_safe(momentum.thunderhammer_2h_p1_m1)
+                momentum.forcesword_npc_01 = table_clone_safe(momentum.forcesword_p1_m1)
+                momentum.powersword_2h_npc_01 = table_clone_safe(momentum.powersword_p1_m1)
+                momentum.chainsword_npc_01 = table_clone_safe(momentum.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         momentum.stubrevolver_p1_m3 = table_clone_safe(momentum.stubrevolver_p1_m1)
@@ -229,6 +241,25 @@ local momentum = {
         momentum.lasgun_p3_m3 = table_clone_safe(momentum.lasgun_p3_m1)
 		momentum.bolter_p1_m3 = table_clone_safe(momentum.bolter_p1_m1)
 		momentum.lasgun_p1_m3 = table_clone_safe(momentum.lasgun_p1_m1)
+            momentum.bot_laspistol_killshot = table_clone_safe(momentum.laspistol_p1_m1)
+            momentum.bot_zola_laspistol = table_clone_safe(momentum.laspistol_p1_m1)
+            momentum.high_bot_lasgun_killshot = table_clone_safe(momentum.lasgun_p1_m1)
+            momentum.bot_lasgun_killshot = table_clone_safe(momentum.lasgun_p1_m1)
+            momentum.high_bot_autogun_killshot = table_clone_safe(momentum.autogun_p3_m1)
+            momentum.bot_autogun_killshot = table_clone_safe(momentum.autogun_p3_m1)
+                momentum.laspistol_npc_01 = table_clone_safe(momentum.laspistol_p1_m1)
+                momentum.lasgun_npc_01 = table_clone_safe(momentum.lasgun_p1_m1)
+                momentum.lasgun_npc_02 = table_clone_safe(momentum.lasgun_p1_m1)
+                momentum.lasgun_npc_03 = table_clone_safe(momentum.lasgun_p1_m1)
+                momentum.lasgun_npc_04 = table_clone_safe(momentum.lasgun_p1_m1)
+                momentum.lasgun_npc_05 = table_clone_safe(momentum.lasgun_p1_m1)
+                momentum.lasgun_d7_veteran_m = table_clone_safe(momentum.lasgun_p1_m1)
+                momentum.autogun_npc_01 = table_clone_safe(momentum.autogun_p1_m1)
+                momentum.autogun_npc_02 = table_clone_safe(momentum.autogun_p1_m1)
+                momentum.autogun_npc_03 = table_clone_safe(momentum.autogun_p1_m1)
+                momentum.autogun_npc_04 = table_clone_safe(momentum.autogun_p2_m1)
+                momentum.autogun_npc_05 = table_clone_safe(momentum.autogun_p2_m1)
+                momentum.flamer_npc_01 = table_clone_safe(momentum.flamer_p1_m1)
     --#endregion
 --#endregion
 

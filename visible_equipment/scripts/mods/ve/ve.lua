@@ -25,7 +25,6 @@ mod:persistent_table(REFERENCE, {
     gear_placements = {},
     cache = mod:get("visible_equipment_entries") or {},
     cache_files = {},
-    cutscene_playing = false,
 })
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################

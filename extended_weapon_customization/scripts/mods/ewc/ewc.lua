@@ -38,7 +38,6 @@ mod:persistent_table(REFERENCE, {
     loaded_packages = {},
     debug_sight = {0, 0, 0, 0, 0, 0},
     husk_weapon_templates = {},
-    cutscene_playing = false,
 })
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/common")
@@ -64,8 +63,8 @@ mod.init = function(self)
     -- If game already initialized ( mod reload )
     if pt.game_initialized then
         self:try_kitbash_load()
-        -- self:find_missing_items()
-        -- self:find_missing_attachments()
+        self:find_missing_items()
+        self:find_missing_attachments()
     end
     -- Load packages
     self:load_packages()
@@ -167,6 +166,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_hus
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_cosmetics_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/visual_loadout_customization")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_marks_view")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/mispredict_package_handler")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_unit_fx_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/hud_element_crosshair")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/attack_report_manager")
@@ -183,6 +183,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/input_serv
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/action_sweep")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_package")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/flashlight")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/lobby_view")
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/attachment_callback_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/flashlight_extension")

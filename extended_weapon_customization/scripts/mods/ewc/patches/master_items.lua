@@ -13,6 +13,7 @@ local mod = get_mod("extended_weapon_customization")
     local string = string
     local rawget = rawget
     local rawset = rawset
+    local managers = Managers
     local tostring = tostring
     local math_uuid = math.uuid
     local log_error = log.error

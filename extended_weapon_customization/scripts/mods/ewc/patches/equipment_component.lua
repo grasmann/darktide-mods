@@ -5,6 +5,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local CLASS = CLASS
+    local managers = Managers
     local script_unit = ScriptUnit
     local script_unit_extension = script_unit.extension
 --#endregion

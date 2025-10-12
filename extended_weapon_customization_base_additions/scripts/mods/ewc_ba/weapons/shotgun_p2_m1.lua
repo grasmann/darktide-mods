@@ -45,40 +45,13 @@ local attachments = {
     },
 }
 
--- local attachment_slots = {
---     shotgun_p2_m1 = {
---         sight_2 = {
---             parent_slot = "sight",
---             default_path = _item_empty_trinket,
---             -- fix = {
---             --     offset = {
---             --         position = vector3_box(.2, .25, -.25),
---             --         rotation = vector3_box(0, 0, 0),
---             --         scale = vector3_box(1, 1, 1),
---             --         node = 1,
---             --     },
---             -- },
---         },
---     },
--- }
+local attachment_slots = {
+    shotgun_p2_m1 = {
+    },
+}
 
 local fixes = {
     shotgun_p2_m1 = {
-        -- {attachment_slot = "sight_2",
-        --     requirements = {
-        --         sight_2 = {
-        --             has = reflex_sights,
-        --         },
-        --     },
-        --     fix = {
-        --         offset = {
-        --             position = vector3_box(0, 0, .0235),
-        --             rotation = vector3_box(0, 0, 0),
-        --             scale = vector3_box(1, 1, 1),
-        --             node = 1,
-        --         },
-        --     },
-        -- },
         {attachment_slot = "sight",
             requirements = {
                 sight = {
@@ -94,21 +67,6 @@ local fixes = {
                 },
             },
         },
-        -- {attachment_slot = "sight",
-        --     requirements = {
-        --         sight_2 = {
-        --             has = scopes,
-        --         },
-        --         sight = {
-        --             missing = "shotgun_rifle_sight_invisible_01",
-        --         }
-        --     },
-        --     fix = {
-        --         attach = {
-        --             sight = "shotgun_rifle_sight_invisible_01",
-        --         },
-        --     },
-        -- },
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = { has = reflex_sights },
@@ -131,31 +89,11 @@ local fixes = {
                 },
             },
         },
-        -- {attachment_slot = "sight",
-        --     requirements = {
-        --         sight_2 = { has = reflex_sights },
-        --     },
-        --     fix = {
-        --         attach = {
-        --             sight = "shotgun_double_barrel_sight_01",
-        --         },
-        --     },
-        -- },
-        -- {attachment_slot = "sight",
-        --     requirements = {
-        --         sight_2 = { has = scopes },
-        --     },
-        --     fix = {
-        --         attach = {
-        --             sight = "shotgun_double_barrel_sight_invisible_01",
-        --         },
-        --     },
-        -- },
     },
 }
 
 return {
-    -- attachment_slots = attachment_slots,
+    attachment_slots = attachment_slots,
     attachments = attachments,
     fixes = fixes,
 }

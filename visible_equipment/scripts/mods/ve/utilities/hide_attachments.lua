@@ -130,6 +130,8 @@ local hide_attachments = {
 		hide_attachments.ogryn_club_p1_m3 = table_clone_safe(hide_attachments.ogryn_club_p1_m1)
 		hide_attachments.ogryn_club_p2_m3 = table_clone_safe(hide_attachments.ogryn_club_p2_m1)
         hide_attachments.ogryn_club_p1_m2 = table_clone_safe(hide_attachments.ogryn_club_p1_m1)
+                hide_attachments.ogryn_combatblade_npc_01 = table_clone_safe(hide_attachments.ogryn_combatblade_p1_m1)
+                hide_attachments.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(hide_attachments.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         hide_attachments.ogryn_heavystubber_p1_m2 = table_clone_safe(hide_attachments.ogryn_heavystubber_p1_m1)
@@ -139,6 +141,9 @@ local hide_attachments = {
         hide_attachments.ogryn_rippergun_p1_m2 = table_clone_safe(hide_attachments.ogryn_rippergun_p1_m1)
 		hide_attachments.ogryn_rippergun_p1_m3 = table_clone_safe(hide_attachments.ogryn_rippergun_p1_m1)
         hide_attachments.ogryn_thumper_p1_m2 = table_clone_safe(hide_attachments.ogryn_thumper_p1_m1)
+                hide_attachments.ogryn_rippergun_npc_01 = table_clone_safe(hide_attachments.ogryn_rippergun_p1_m1)
+                hide_attachments.ogryn_thumper_npc_01 = table_clone_safe(hide_attachments.ogryn_thumper_p1_m1)
+                hide_attachments.ogryn_gauntlet_npc_01 = table_clone_safe(hide_attachments.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         hide_attachments.powermaul_shield_p1_m2 = table_clone_safe(hide_attachments.powermaul_shield_p1_m1)
@@ -167,6 +172,13 @@ local hide_attachments = {
         hide_attachments.powermaul_p1_m2 = table_clone_safe(hide_attachments.powermaul_p1_m1)
 		hide_attachments.combataxe_p1_m3 = table_clone_safe(hide_attachments.combataxe_p1_m1)
         hide_attachments.chainaxe_p1_m2 = table_clone_safe(hide_attachments.chainaxe_p1_m1)
+            hide_attachments.bot_combataxe_linesman = table_clone_safe(hide_attachments.combataxe_p1_m1)
+            hide_attachments.bot_combatsword_linesman_p1 = table_clone_safe(hide_attachments.combatsword_p1_m1)
+            hide_attachments.bot_combatsword_linesman_p2 = table_clone_safe(hide_attachments.combatsword_p2_m1)
+                hide_attachments.thunderhammer_d7_zealot_f = table_clone_safe(hide_attachments.thunderhammer_2h_p1_m1)
+                hide_attachments.forcesword_npc_01 = table_clone_safe(hide_attachments.forcesword_p1_m1)
+                hide_attachments.powersword_2h_npc_01 = table_clone_safe(hide_attachments.powersword_p1_m1)
+                hide_attachments.chainsword_npc_01 = table_clone_safe(hide_attachments.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         hide_attachments.stubrevolver_p1_m3 = table_clone_safe(hide_attachments.stubrevolver_p1_m1)
@@ -197,6 +209,25 @@ local hide_attachments = {
         hide_attachments.lasgun_p3_m3 = table_clone_safe(hide_attachments.lasgun_p3_m1)
 		hide_attachments.bolter_p1_m3 = table_clone_safe(hide_attachments.bolter_p1_m1)
 		hide_attachments.lasgun_p1_m3 = table_clone_safe(hide_attachments.lasgun_p1_m1)
+            hide_attachments.bot_laspistol_killshot = table_clone_safe(hide_attachments.laspistol_p1_m1)
+            hide_attachments.bot_zola_laspistol = table_clone_safe(hide_attachments.laspistol_p1_m1)
+            hide_attachments.high_bot_lasgun_killshot = table_clone_safe(hide_attachments.lasgun_p1_m1)
+            hide_attachments.bot_lasgun_killshot = table_clone_safe(hide_attachments.lasgun_p1_m1)
+            hide_attachments.high_bot_autogun_killshot = table_clone_safe(hide_attachments.autogun_p3_m1)
+            hide_attachments.bot_autogun_killshot = table_clone_safe(hide_attachments.autogun_p3_m1)
+                hide_attachments.laspistol_npc_01 = table_clone_safe(hide_attachments.laspistol_p1_m1)
+                hide_attachments.lasgun_npc_01 = table_clone_safe(hide_attachments.lasgun_p1_m1)
+                hide_attachments.lasgun_npc_02 = table_clone_safe(hide_attachments.lasgun_p1_m1)
+                hide_attachments.lasgun_npc_03 = table_clone_safe(hide_attachments.lasgun_p1_m1)
+                hide_attachments.lasgun_npc_04 = table_clone_safe(hide_attachments.lasgun_p1_m1)
+                hide_attachments.lasgun_npc_05 = table_clone_safe(hide_attachments.lasgun_p1_m1)
+                hide_attachments.lasgun_d7_veteran_m = table_clone_safe(hide_attachments.lasgun_p1_m1)
+                hide_attachments.autogun_npc_01 = table_clone_safe(hide_attachments.autogun_p1_m1)
+                hide_attachments.autogun_npc_02 = table_clone_safe(hide_attachments.autogun_p1_m1)
+                hide_attachments.autogun_npc_03 = table_clone_safe(hide_attachments.autogun_p1_m1)
+                hide_attachments.autogun_npc_04 = table_clone_safe(hide_attachments.autogun_p2_m1)
+                hide_attachments.autogun_npc_05 = table_clone_safe(hide_attachments.autogun_p2_m1)
+                hide_attachments.flamer_npc_01 = table_clone_safe(hide_attachments.flamer_p1_m1)
     --#endregion
 --#endregion
 

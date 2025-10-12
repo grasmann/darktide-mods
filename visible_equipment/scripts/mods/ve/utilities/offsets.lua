@@ -141,6 +141,8 @@ local offsets = {
 		offsets.ogryn_club_p1_m3 = table_clone_safe(offsets.ogryn_club_p1_m1)
 		offsets.ogryn_club_p2_m3 = table_clone_safe(offsets.ogryn_club_p2_m1)
         offsets.ogryn_club_p1_m2 = table_clone_safe(offsets.ogryn_club_p1_m1)
+                offsets.ogryn_combatblade_npc_01 = table_clone_safe(offsets.ogryn_combatblade_p1_m1)
+                offsets.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(offsets.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         offsets.ogryn_heavystubber_p1_m2 = table_clone_safe(offsets.ogryn_heavystubber_p1_m1)
@@ -150,6 +152,9 @@ local offsets = {
         offsets.ogryn_rippergun_p1_m2 = table_clone_safe(offsets.ogryn_rippergun_p1_m1)
 		offsets.ogryn_rippergun_p1_m3 = table_clone_safe(offsets.ogryn_rippergun_p1_m1)
         offsets.ogryn_thumper_p1_m2 = table_clone_safe(offsets.ogryn_thumper_p1_m1)
+                offsets.ogryn_rippergun_npc_01 = table_clone_safe(offsets.ogryn_rippergun_p1_m1)
+                offsets.ogryn_thumper_npc_01 = table_clone_safe(offsets.ogryn_thumper_p1_m1)
+                offsets.ogryn_gauntlet_npc_01 = table_clone_safe(offsets.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         offsets.powermaul_shield_p1_m2 = table_clone_safe(offsets.powermaul_shield_p1_m1)
@@ -178,6 +183,13 @@ local offsets = {
         offsets.powermaul_p1_m2 = table_clone_safe(offsets.powermaul_p1_m1)
 		offsets.combataxe_p1_m3 = table_clone_safe(offsets.combataxe_p1_m1)
         offsets.chainaxe_p1_m2 = table_clone_safe(offsets.chainaxe_p1_m1)
+            offsets.bot_combataxe_linesman = table_clone_safe(offsets.combataxe_p1_m1)
+            offsets.bot_combatsword_linesman_p1 = table_clone_safe(offsets.combatsword_p1_m1)
+            offsets.bot_combatsword_linesman_p2 = table_clone_safe(offsets.combatsword_p2_m1)
+                offsets.thunderhammer_d7_zealot_f = table_clone_safe(offsets.thunderhammer_2h_p1_m1)
+                offsets.forcesword_npc_01 = table_clone_safe(offsets.forcesword_p1_m1)
+                offsets.powersword_2h_npc_01 = table_clone_safe(offsets.powersword_p1_m1)
+                offsets.chainsword_npc_01 = table_clone_safe(offsets.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         offsets.stubrevolver_p1_m3 = table_clone_safe(offsets.stubrevolver_p1_m1)
@@ -208,6 +220,25 @@ local offsets = {
         offsets.lasgun_p3_m3 = table_clone_safe(offsets.lasgun_p3_m1)
 		offsets.bolter_p1_m3 = table_clone_safe(offsets.bolter_p1_m1)
 		offsets.lasgun_p1_m3 = table_clone_safe(offsets.lasgun_p1_m1)
+            offsets.bot_laspistol_killshot = table_clone_safe(offsets.laspistol_p1_m1)
+            offsets.bot_zola_laspistol = table_clone_safe(offsets.laspistol_p1_m1)
+            offsets.high_bot_lasgun_killshot = table_clone_safe(offsets.lasgun_p1_m1)
+            offsets.bot_lasgun_killshot = table_clone_safe(offsets.lasgun_p1_m1)
+            offsets.high_bot_autogun_killshot = table_clone_safe(offsets.autogun_p3_m1)
+            offsets.bot_autogun_killshot = table_clone_safe(offsets.autogun_p3_m1)
+                offsets.laspistol_npc_01 = table_clone_safe(offsets.laspistol_p1_m1)
+                offsets.lasgun_npc_01 = table_clone_safe(offsets.lasgun_p1_m1)
+                offsets.lasgun_npc_02 = table_clone_safe(offsets.lasgun_p1_m1)
+                offsets.lasgun_npc_03 = table_clone_safe(offsets.lasgun_p1_m1)
+                offsets.lasgun_npc_04 = table_clone_safe(offsets.lasgun_p1_m1)
+                offsets.lasgun_npc_05 = table_clone_safe(offsets.lasgun_p1_m1)
+                offsets.lasgun_d7_veteran_m = table_clone_safe(offsets.lasgun_p1_m1)
+                offsets.autogun_npc_01 = table_clone_safe(offsets.autogun_p1_m1)
+                offsets.autogun_npc_02 = table_clone_safe(offsets.autogun_p1_m1)
+                offsets.autogun_npc_03 = table_clone_safe(offsets.autogun_p1_m1)
+                offsets.autogun_npc_04 = table_clone_safe(offsets.autogun_p2_m1)
+                offsets.autogun_npc_05 = table_clone_safe(offsets.autogun_p2_m1)
+                offsets.flamer_npc_01 = table_clone_safe(offsets.flamer_p1_m1)
     --#endregion
 --#endregion
 

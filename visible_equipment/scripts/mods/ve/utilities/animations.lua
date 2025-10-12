@@ -180,6 +180,8 @@ local animations = {
         animations.ogryn_club_p1_m3 = table_clone_safe(animations.ogryn_club_p1_m1)
         animations.ogryn_club_p2_m2 = table_clone_safe(animations.ogryn_club_p2_m1)
         animations.ogryn_club_p2_m3 = table_clone_safe(animations.ogryn_club_p2_m1)
+                animations.ogryn_combatblade_npc_01 = table_clone_safe(animations.ogryn_combatblade_p1_m1)
+                animations.ogryn_powermaul_slabshield_npc_01 = table_clone_safe(animations.ogryn_powermaul_slabshield_p1_m1)
     --#endregion
     --#region Ogryn ranged
         animations.ogryn_heavystubber_p1_m2 = table_clone_safe(animations.ogryn_heavystubber_p1_m1)
@@ -189,6 +191,9 @@ local animations = {
         animations.ogryn_rippergun_p1_m2 = table_clone_safe(animations.ogryn_rippergun_p1_m1)
 		animations.ogryn_rippergun_p1_m3 = table_clone_safe(animations.ogryn_rippergun_p1_m1)
         animations.ogryn_thumper_p1_m2 = table_clone_safe(animations.ogryn_thumper_p1_m1)
+                animations.ogryn_rippergun_npc_01 = table_clone_safe(animations.ogryn_rippergun_p1_m1)
+                animations.ogryn_thumper_npc_01 = table_clone_safe(animations.ogryn_thumper_p1_m1)
+                animations.ogryn_gauntlet_npc_01 = table_clone_safe(animations.ogryn_gauntlet_p1_m1)
     --#endregion
     --#region Human melee
         animations.thunderhammer_2h_p1_m2 = table_clone_safe(animations.thunderhammer_2h_p1_m1)
@@ -217,6 +222,13 @@ local animations = {
         animations.combataxe_p3_m3 = table_clone_safe(animations.combataxe_p3_m1)
         animations.powermaul_p1_m2 = table_clone_safe(animations.powermaul_p1_m1)
         animations.chainaxe_p1_m2 = table_clone_safe(animations.chainaxe_p1_m1)
+            animations.bot_combataxe_linesman = table_clone_safe(animations.combataxe_p1_m1)
+            animations.bot_combatsword_linesman_p1 = table_clone_safe(animations.combatsword_p1_m1)
+            animations.bot_combatsword_linesman_p2 = table_clone_safe(animations.combatsword_p2_m1)
+                animations.thunderhammer_d7_zealot_f = table_clone_safe(animations.thunderhammer_2h_p1_m1)
+                animations.forcesword_npc_01 = table_clone_safe(animations.forcesword_p1_m1)
+                animations.powersword_2h_npc_01 = table_clone_safe(animations.powersword_p1_m1)
+                animations.chainsword_npc_01 = table_clone_safe(animations.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
         animations.stubrevolver_p1_m2 = table_clone_safe(animations.stubrevolver_p1_m1)
@@ -247,6 +259,25 @@ local animations = {
         animations.lasgun_p2_m3 = table_clone_safe(animations.lasgun_p2_m1)
         animations.lasgun_p3_m2 = table_clone_safe(animations.lasgun_p3_m1)
         animations.lasgun_p3_m3 = table_clone_safe(animations.lasgun_p3_m1)
+            animations.bot_laspistol_killshot = table_clone_safe(animations.laspistol_p1_m1)
+            animations.bot_zola_laspistol = table_clone_safe(animations.laspistol_p1_m1)
+            animations.high_bot_lasgun_killshot = table_clone_safe(animations.lasgun_p1_m1)
+            animations.bot_lasgun_killshot = table_clone_safe(animations.lasgun_p1_m1)
+            animations.high_bot_autogun_killshot = table_clone_safe(animations.autogun_p3_m1)
+            animations.bot_autogun_killshot = table_clone_safe(animations.autogun_p3_m1)
+                animations.laspistol_npc_01 = table_clone_safe(animations.laspistol_p1_m1)
+                animations.lasgun_npc_01 = table_clone_safe(animations.lasgun_p1_m1)
+                animations.lasgun_npc_02 = table_clone_safe(animations.lasgun_p1_m1)
+                animations.lasgun_npc_03 = table_clone_safe(animations.lasgun_p1_m1)
+                animations.lasgun_npc_04 = table_clone_safe(animations.lasgun_p1_m1)
+                animations.lasgun_npc_05 = table_clone_safe(animations.lasgun_p1_m1)
+                animations.lasgun_d7_veteran_m = table_clone_safe(animations.lasgun_p1_m1)
+                animations.autogun_npc_01 = table_clone_safe(animations.autogun_p1_m1)
+                animations.autogun_npc_02 = table_clone_safe(animations.autogun_p1_m1)
+                animations.autogun_npc_03 = table_clone_safe(animations.autogun_p1_m1)
+                animations.autogun_npc_04 = table_clone_safe(animations.autogun_p2_m1)
+                animations.autogun_npc_05 = table_clone_safe(animations.autogun_p2_m1)
+                animations.flamer_npc_01 = table_clone_safe(animations.flamer_p1_m1)
     --#endregion
 --#endregion
 

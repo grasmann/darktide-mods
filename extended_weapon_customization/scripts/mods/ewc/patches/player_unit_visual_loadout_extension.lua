@@ -109,9 +109,6 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
     self.sight_extension_update = true
     self.attachment_callback_extension_update = true
 
-    -- Destroy mispredict handler
-    self._mispredict_package_handler = nil
-
 end)
 
 mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(func, self, item, slot_name, optional_existing_unit_3p, t, ...)

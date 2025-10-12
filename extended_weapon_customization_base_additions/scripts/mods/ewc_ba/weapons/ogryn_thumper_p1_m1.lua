@@ -34,6 +34,7 @@ local attachments = {
 }
 
 attachments.ogryn_thumper_p1_m2 = table_clone_safe(attachments.ogryn_thumper_p1_m1)
+attachments.ogryn_thumper_npc_01 = table_clone_safe(attachments.ogryn_thumper_p1_m1)
 
 local attachment_slots = {
     ogryn_thumper_p1_m1 = {
@@ -52,7 +53,8 @@ local attachment_slots = {
     },
 }
 
-attachments.ogryn_thumper_p1_m2 = table_clone_safe(attachments.ogryn_thumper_p1_m1)
+attachment_slots.ogryn_thumper_p1_m2 = table_clone_safe(attachment_slots.ogryn_thumper_p1_m1)
+attachment_slots.ogryn_thumper_npc_01 = table_clone_safe(attachment_slots.ogryn_thumper_p1_m1)
 
 return {
     attachments = attachments,

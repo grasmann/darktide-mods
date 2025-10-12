@@ -32,20 +32,8 @@ local PROCESS_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
-mod.player_husk_visual_loadout_extension_randomize = function(self, player, item, slot_name) --, player, slot_name, visual_loadout)
-    -- local husk_item = mod:handle_husk_item(item, player)
-    -- if husk_item then
-    --     -- local player = player_husk_visual_loadout_extension._player
-    --     -- local profile = player:profile()
-    --     -- local visual_loadout = profile.visual_loadout
-    --     -- Set modded item in profile
-    --     -- visual_loadout[slot_name] = husk_item
-    --     -- Reevaluate packages
-    --     -- mod:print("reevaluate_packages "..tostring(player))
-    --     -- mod:reevaluate_packages(player)
-    -- end
-    -- return item
-    return mod:handle_husk_item(item, player)
+mod.player_husk_visual_loadout_extension_randomize = function(self, item)
+    return mod:handle_husk_item(item)
 end
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, extension_init_context, unit, extension_init_data, ...)
@@ -124,9 +112,6 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, ex
     self.flashlight_extension_update = true
     self.sight_extension_update = true
     self.attachment_callback_extension_update = true
-
-    -- Destroy mispredict handler
-    self._mispredict_package_handler = nil
 
 end)
 
@@ -228,9 +213,8 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_equip_item_from_pro
     local optional_existing_unit_3p
 
     -- Randomize weapon for other player
-    item = mod:player_husk_visual_loadout_extension_randomize(player, item, slot_name)
+    item = mod:player_husk_visual_loadout_extension_randomize(item, slot_name)
     visual_loadout[slot_name] = item
-    -- item = mod:player_husk_visual_loadout_extension_randomize(player, item, slot_name)
 
     mod:print("reevaluate_packages "..tostring(player))
     mod:reevaluate_packages(player)

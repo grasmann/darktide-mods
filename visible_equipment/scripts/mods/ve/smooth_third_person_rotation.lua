@@ -10,7 +10,6 @@ local mod = get_mod("visible_equipment")
     local game_session = GameSession
     local quaternion_lerp = quaternion.lerp
     local quaternion_forward = quaternion.forward
-    local unit_local_rotation = unit.local_rotation
     local unit_set_local_rotation = unit.set_local_rotation
     local game_session_set_game_object_field = game_session.set_game_object_field
 --#endregion
