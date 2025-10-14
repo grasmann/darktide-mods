@@ -82,6 +82,16 @@ mod.get_view = function(self, view_name)
     return ui_manager:view_active(view_name) and ui_manager:view_instance(view_name) or nil
 end
 
+mod.localize_or_nil = function(self, str, optional_mod)
+    local used_mod = optional_mod or self
+    local used_str = str or ""
+    local localized = used_mod:localize(used_str)
+    if localized == "<"..used_str..">" then
+        return nil
+    end
+    return localized
+end
+
 mod.update_cutscene = function(self)
     -- Old value
     local old_value = self.cutscene_playing

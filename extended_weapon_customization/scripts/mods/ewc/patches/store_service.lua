@@ -4,6 +4,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local pairs = pairs
     local CLASS = CLASS
     local tostring = tostring
 --#endregion
@@ -12,35 +13,55 @@ local mod = get_mod("extended_weapon_customization")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
-local SLOT_PRIMARY = "slot_primary"
-local SLOT_SECONDARY = "slot_secondary"
+local pt = mod:pt()
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod.lobby_view_randomize = function(self, item)
-    return mod:handle_husk_item(item)
+mod.link_offer_id_to_gear_id = function(self, offer_id, gear_id)
+    mod:print("offer id "..tostring(offer_id).." linked to gear id "..tostring(gear_id))
+    pt.gear_id_to_offer_id[gear_id] = offer_id
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
-mod:hook(CLASS.LobbyView, "_assign_player_to_slot", function(func, self, player, slot, ...)
-    if player ~= mod:player() then
-        local profile = player:profile()
-        -- Replace equipment
-        mod:lobby_view_randomize(profile.loadout[SLOT_PRIMARY])
-        mod:lobby_view_randomize(profile.loadout[SLOT_SECONDARY])
-        -- profile.loadout[SLOT_PRIMARY] = mod:lobby_view_randomize(profile.loadout[SLOT_PRIMARY])
-        -- profile.visual_loadout[SLOT_PRIMARY] = profile.loadout[SLOT_PRIMARY]
-        -- profile.loadout[SLOT_SECONDARY] = mod:lobby_view_randomize(profile.loadout[SLOT_SECONDARY])
-        -- profile.visual_loadout[SLOT_SECONDARY] = profile.loadout[SLOT_SECONDARY]
+mod:hook(CLASS.StoreService, "get_credits_store", function(func, self, ignore_event_trigger, ...)
+    local promise = func(self, ignore_event_trigger, ...)
+    promise:next(function(store_catalogue)
+        for _, item_offer in pairs(store_catalogue.offers) do
+            mod:link_offer_id_to_gear_id(item_offer.offerId, item_offer.description.gear_id)
+        end
+    end)
+    return promise
+end)
 
-        mod:print("reevaluate_packages "..tostring(player))
-        mod:reevaluate_packages(player)
-    end
+mod:hook(CLASS.StoreService, "get_marks_store", function(func, self, ignore_event_trigger, ...)
+    local promise = func(self, ignore_event_trigger, ...)
+    promise:next(function(store_catalogue)
+        for _, item_offer in pairs(store_catalogue.offers) do
+            mod:link_offer_id_to_gear_id(item_offer.offerId, item_offer.description.gear_id)
+        end
+    end)
+    return promise
+end)
+
+mod:hook(CLASS.StoreService, "get_marks_store_temporary", function(func, self, ignore_event_trigger, ...)
+    local promise = func(self, ignore_event_trigger, ...)
+    promise:next(function(store_catalogue)
+        for _, item_offer in pairs(store_catalogue.offers) do
+            mod:link_offer_id_to_gear_id(item_offer.offerId, item_offer.description.gear_id)
+        end
+    end)
+    return promise
+end)
+
+mod:hook(CLASS.StoreService, "purchase_item", function(func, self, offer, ...)
+    -- Save offer id
+    mod.offer_id = offer.offerId
+    mod:print("purchased offer id "..tostring(mod.offer_id))
     -- Original function
-    func(self, player, slot, ...)
+    return func(self, offer, ...)
 end)

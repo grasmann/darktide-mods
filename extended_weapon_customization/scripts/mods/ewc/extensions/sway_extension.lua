@@ -42,6 +42,8 @@ local SwayExtension = class("SwayExtension")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local SLOT_PRIMARY = "slot_primary"
+local SLOT_SECONDARY = "slot_secondary"
 local LOCKED_ACTIONS = {
     "action_bash_light_from_block_no_ammo",
     "action_reload_shotgun",
@@ -104,6 +106,7 @@ end
 SwayExtension.on_settings_changed = function(self)
     self.sway = mod:get("mod_option_sway")
     self.crouch = mod:get("mod_option_crouch")
+    self.crouch_melee = mod:get("mod_option_crouch_melee")
 end
 
 SwayExtension.on_cutscene = function(self, cutscene_playing)
@@ -172,7 +175,7 @@ SwayExtension.update = function(self, dt, t)
             local unit_rotation = unit_local_rotation(first_person_unit, node)
 
             -- Update crouch
-            if self.crouch then
+            if self.crouch and (self.wielded_slot ~= SLOT_PRIMARY or self.crouch_melee) then
 
                 local apply_crouching = self:is_crouching() and self:weapon_action_allowed() and not self:is_aiming()
 

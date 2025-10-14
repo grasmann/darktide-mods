@@ -177,6 +177,24 @@ return {
 		["zh-cn"] = "清空聊天记录",
 	},
 
+	group_randomize = {
+		en = "Randomize",
+	},
+	mod_option_randomize_players = {
+		en = "Randomize Players",
+		["zh-cn"] = "随机玩家",
+	},
+	mod_option_randomize_players_tooltip = {
+		en = "Randomize weapons of other players.",
+		["zh-cn"] = "其他玩家的武器随机化",
+	},
+	mod_option_randomize_store = {
+		en = "Randomize Store",
+	},
+	mod_option_randomize_store_tooltip = {
+		en = "Randomize weapons in the store.",
+	},
+
 	group_misc = {
 		en = "Misc",
 		["zh-cn"] = "杂项",
@@ -197,13 +215,17 @@ return {
 		en = "Weapon changes pose when you crouch.",
 		["zh-cn"] = "下蹲时武器姿势会改变",
 	},
-	mod_option_randomize_players = {
-		en = "Randomize Players",
-		["zh-cn"] = "随机玩家",
+	mod_option_crouch_melee = {
+		en = "Crouch Melee",
 	},
-	mod_option_randomize_players_tooltip = {
-		en = "Randomize weapons of other players.",
-		["zh-cn"] = "其他玩家的武器随机化",
+	mod_option_crouch_melee_tooltip = {
+		en = "Weapon changes pose when you crouch and attack.",
+	},
+	mod_weapon_dof_strength = {
+		en = "Weapon DOF Strength",
+	},
+	mod_weapon_dof_strength_tooltip = {
+		en = "DOF strength on the weapon.",
 	},
 
 	group_flashlight = {

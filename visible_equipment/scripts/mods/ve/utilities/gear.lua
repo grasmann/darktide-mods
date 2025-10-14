@@ -20,16 +20,28 @@ local pt = mod:pt()
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod.gear_id = function(self, item)
-    return item and (item.gear_id or item.__gear_id)
-end
--- mod.gear_id = function(self, item, fake_gear_id)
---     local gear_id = (item and (item.__is_attachment_selection_item_preview and item.gear_id or item.__gear_id)) or
---         (item and (item.__is_ui_item_preview and item.__data and self:gear_id(item.__data))) or
---         (item and (item.gear_id or item.__gear_id)) or
---         (item and (item.__master_item and (item.__master_item.gear_id or item.__master_item.__gear_id)))
---     return gear_id
+-- mod.gear_id = function(self, item)
+--     return item and (item.gear_id or item.__gear_id)
 -- end
+mod.gear_id = function(self, item, fake_gear_id)
+    local gear_id = nil
+    -- local fake_gear_id = fake_gear_id or true
+    -- Check fake gear id
+    if not fake_gear_id then
+        -- Get real gear id from item
+        gear_id = (item and item.__original_gear_id) or
+            (item and (item.__is_attachment_selection_item_preview and item.__gear_id or item.gear_id)) or
+            (item and (item.__is_ui_item_preview and item.__data and self:gear_id(item.__data))) or
+            (item and (item.__gear_id or item.gear_id)) or
+            (item and (item.__master_item and (item.__master_item.__gear_id or item.__master_item.gear_id)))
+    else
+        -- Get fake gear id from item
+        gear_id = item and (item.__gear_id or item.gear_id)
+    end
+    -- Return gear id relay or gear id
+    -- return pt.gear_id_relays[gear_id] or gear_id
+    return gear_id
+end
 
 mod.gear_placement = function(self, gear_id, placement, file, no_default)
 

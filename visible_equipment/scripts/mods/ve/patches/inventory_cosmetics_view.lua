@@ -31,7 +31,7 @@ local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
 local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
 local SLOT_ANIMATION_END_OF_ROUND = "slot_animation_end_of_round"
-local supported_slot_names = {SLOT_PRIMARY, SLOT_SECONDARY, SLOT_ANIMATION_END_OF_ROUND}
+local SUPPORTED_SLOT_NAMES = {SLOT_PRIMARY, SLOT_SECONDARY, SLOT_ANIMATION_END_OF_ROUND}
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
@@ -52,12 +52,18 @@ mod:hook_require("scripts/ui/views/inventory_cosmetics_view/inventory_cosmetics_
 	end
 
     instance.reset_real_placement = function(self)
-        local profile = mod:profile()
         local slot_name = self._selected_slot and self._selected_slot.name
-        local equipped_item = slot_name and profile.loadout[slot_name]
-        local gear_id = equipped_item and mod:gear_id(equipped_item)
-        if gear_id then
-            mod:gear_placement(gear_id, self.original_placement)
+        if self:is_valid_slot(slot_name) or slot_name == SLOT_GEAR_EXTRA_COSMETIC then
+            -- Reset gear_id equipment position
+            local profile = mod:profile()
+            local slot_name = self._selected_slot and self._selected_slot.name
+            local equipped_item = slot_name and profile.loadout[slot_name]
+            local gear_id = equipped_item and mod:gear_id(equipped_item)
+            if gear_id then
+                mod:gear_placement(gear_id, self.original_placement)
+            end
+            -- Relay event to main menu background, inventory background, player
+            managers.event:trigger("visible_equipment_placement_saved", slot_name, self.original_placement)
         end
     end
 
@@ -68,7 +74,7 @@ mod:hook_require("scripts/ui/views/inventory_cosmetics_view/inventory_cosmetics_
     end
 
     instance.is_valid_slot = function(self, slot_name)
-        return table_contains(supported_slot_names, slot_name)
+        return table_contains(SUPPORTED_SLOT_NAMES, slot_name)
     end
 
     instance.cb_on_save_script_pressed = function(self)
@@ -128,7 +134,8 @@ end)
 mod:hook(CLASS.InventoryCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
     if self.selected_placement then
         local slot_name = self._selected_slot and self._selected_slot.name
-        if self:is_valid_slot(slot_name) or slot_name == SLOT_GEAR_EXTRA_COSMETIC then
+        -- if self:is_valid_slot(slot_name) or slot_name == SLOT_GEAR_EXTRA_COSMETIC then
+        if self:is_valid_slot(slot_name) then
             local item = self._presentation_profile.loadout[slot_name]
             local gear_id = item and mod:gear_id(item)
             if gear_id then
@@ -211,14 +218,15 @@ mod:hook(CLASS.InventoryCosmeticsView, "_update_equip_button_status", function(f
 end)
 
 mod:hook(CLASS.InventoryCosmeticsView, "on_exit", function(func, self, ...)
-    -- local slot = self._selected_slot
-    local slot_name = self._selected_slot and self._selected_slot.name
-    if self:is_valid_slot(slot_name) or slot_name == SLOT_GEAR_EXTRA_COSMETIC then
-        -- Reset gear_id equipment position
-        self:reset_real_placement()
-    end
-    -- Relay event to main menu background, inventory background, player
-    managers.event:trigger("visible_equipment_placement_saved", slot_name, self.original_placement)
+    -- Reset gear id equipment position
+    self:reset_real_placement()
+    -- Original function
+    func(self, ...)
+end)
+
+mod:hook(CLASS.InventoryCosmeticsView, "_handle_back_pressed", function(func, self, ...)
+    -- Reset gear id equipment position
+    self:reset_real_placement()
     -- Original function
     func(self, ...)
 end)

@@ -25,6 +25,14 @@ mod.pressed_twice = nil
 mod.pressed_twice_t = nil
 mod.custom_twice_cooldown = nil
 
+mod.reset_flashlight_input_timer = function(self)
+    -- Reset timer for flashlight input
+    -- To prevent flashlight toggle when picking up items
+    self.pressed_once_t = nil
+    self.custom_twice_cooldown = 2
+    self.pressed_twice = true
+end
+
 mod:hook(CLASS.InputService, "update", function(func, self, dt, t, ...)
 
     -- Has been pressed twice and cooldown is running?

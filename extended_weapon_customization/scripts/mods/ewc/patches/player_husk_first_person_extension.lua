@@ -4,10 +4,14 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local unit = Unit
     local world = World
     local CLASS = CLASS
     local script_unit = ScriptUnit
+    local unit_sway_callback = unit.sway_callback
+    local unit_sight_callback = unit.sight_callback
     local script_unit_extension = script_unit.extension
+    local unit_flashlight_callback = unit.flashlight_callback
     local world_update_unit_and_children = world.update_unit_and_children
 --#endregion
 
@@ -23,24 +27,16 @@ mod:hook(CLASS.PlayerHuskFirstPersonExtension, "update_unit_position_and_rotatio
 
         local dt, t = mod:delta_time(), mod:time()
 
-        -- script_unit_remove_extension(self._unit, "sight_system")
-        local sight_extension = script_unit_extension(self._unit, "sight_system")
-        if sight_extension then
-            sight_extension:update(dt, t)
-        end
-
-        local sway_extension = script_unit_extension(self._unit, "sway_system")
-        if sway_extension then
-            sway_extension:update(dt, t)
-        end
+        -- Sight update callback
+        unit_sight_callback(self._unit, "update", dt, t)
+        -- Sway update callback
+        unit_sway_callback(self._unit, "update", dt, t)
 
         -- Update first person unit
         world_update_unit_and_children(self._world, self._first_person_unit)
 
-        local flashlight_extension = script_unit_extension(self._unit, "flashlight_system")
-        if flashlight_extension then
-            flashlight_extension:update(dt, t)
-        end
+        -- Flashlight update callback
+        unit_flashlight_callback(self._unit, "update", dt, t)
 
     end
     

@@ -28,6 +28,7 @@ mod.print = function(self, message, echo)
             self:echo(message)
         end
     end
+    mod:info(message)
 end
 
 mod.debug_sight_clear = function(self)

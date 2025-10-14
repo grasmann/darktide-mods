@@ -4,17 +4,40 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 --#region local functions
+    local unit = Unit
     local type = type
     local pairs = pairs
     local table = table
     local ipairs = ipairs
     local select = select
 	local vector3 = Vector3
+    local unit_alive = unit.alive
     local quaternion = Quaternion
+    local script_unit = ScriptUnit
     local table_clone = table.clone
     local table_clone_instance = table.clone_instance
+    local script_unit_extension = script_unit.extension
 	local quaternion_to_euler_angles_xyz = quaternion.to_euler_angles_xyz
 	local quaternion_from_euler_angles_xyz = quaternion.from_euler_angles_xyz
+--#endregion
+
+--#region Unit
+    unit.extension_callback = function(player_unit, system_name, function_name, ...)
+        local callback_extension = player_unit and unit_alive(player_unit) and script_unit_extension(player_unit, system_name)
+        if callback_extension and callback_extension[function_name] then
+            return callback_extension[function_name](callback_extension, ...)
+        end
+	end
+	unit.attachment_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "attachment_callback_system", function_name, ...) end
+    unit.sight_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "sight_system", function_name, ...) end
+    unit.sway_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "sway_system", function_name, ...) end
+    unit.flashlight_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "flashlight_system", function_name, ...) end
+    unit.callback = function(player_unit, function_name, ...)
+        unit.attachment_callback(player_unit, function_name, ...)
+        unit.sight_callback(player_unit, function_name, ...)
+        unit.sway_callback(player_unit, function_name, ...)
+        unit.flashlight_callback(player_unit, function_name, ...)
+    end
 --#endregion
 
 --#region Quaternion

@@ -35,6 +35,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local unit_get_data = unit.get_data
     local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
+    local shading_environment = ShadingEnvironment
     local unit_set_local_scale = unit.set_local_scale
     local script_unit_extension = script_unit.extension
     local quaternion_from_vector = quaternion.from_vector
@@ -42,6 +43,7 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local unit_set_local_position = unit.set_local_position
     local unit_set_local_rotation = unit.set_local_rotation
     local unit_set_scalar_for_materials = unit.set_scalar_for_materials
+    local shading_environment_set_scalar = shading_environment.set_scalar
     local camera_set_custom_vertical_fov = Camera.set_custom_vertical_fov
     local unit_set_shader_pass_flag_for_meshes = unit.set_shader_pass_flag_for_meshes
 --#endregion
@@ -51,7 +53,12 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local pt = mod:pt()
+local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
+local SLOT_POCKETABLE = "slot_pocketable"
+local SLOT_POCKETABLE_SMALL = "slot_pocketable_small"
+local SLOT_GRENADE_ABILITY = "slot_grenade_ability"
+local DOF_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY, SLOT_POCKETABLE, SLOT_POCKETABLE_SMALL, SLOT_GRENADE_ABILITY}
 local empty_offset = {
     position = vector3_box(vector3_zero()),
     rotation = vector3_box(vector3_zero()),
@@ -84,6 +91,11 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
 
     self.wielded_slot = extension_init_data.wielded_slot
 
+    self.dof_strength = .5
+    self.dof_target = 10
+    self.dof_aim_target = 5
+    self.dof_near_scale = 0
+
     self.lens_transparency = 0
     self.fov = 0
     self.custom_fov = 0
@@ -98,6 +110,8 @@ SightExtension.init = function(self, extension_init_context, unit, extension_ini
     managers.event:register(self, "ewc_settings_changed", "on_settings_changed")
     managers.event:register(self, "ewc_cutscene", "on_cutscene")
 
+    self:on_settings_changed()
+
 end
 
 SightExtension.delete = function(self)
@@ -111,6 +125,7 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 SightExtension.on_settings_changed = function(self)
+    self.dof_strength = mod:get("mod_weapon_dof_strength")
 end
 
 SightExtension.on_cutscene = function(self, cutscene_playing)
@@ -254,6 +269,25 @@ SightExtension.update = function(self, dt, t)
 
     end
 
+    -- Dof
+    if table_contains(DOF_SLOTS, self.wielded_slot) then
+        local target_dof = self:is_aiming() and self.dof_aim_target or self.dof_target
+        self.dof_near_scale = math_lerp(self.dof_near_scale, target_dof, dt * 10) * (.8 + self.dof_strength / 4)
+    else
+        self.dof_near_scale = math_lerp(self.dof_near_scale, 0, dt * 10)
+    end
+
+end
+
+SightExtension.apply_weapon_dof = function(self, shading_env)
+    -- Set depth of field
+    shading_environment_set_scalar(shading_env, "dof_enabled", 1)
+    shading_environment_set_scalar(shading_env, "dof_focal_distance", .5)
+    shading_environment_set_scalar(shading_env, "dof_focal_region", 50)
+    shading_environment_set_scalar(shading_env, "dof_focal_region_start", -1)
+    shading_environment_set_scalar(shading_env, "dof_focal_region_end", 49)
+    shading_environment_set_scalar(shading_env, "dof_focal_near_scale", self.dof_near_scale)
+    shading_environment_set_scalar(shading_env, "dof_focal_far_scale", .5)
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################

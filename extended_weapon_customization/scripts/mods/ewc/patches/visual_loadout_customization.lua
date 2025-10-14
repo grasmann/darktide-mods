@@ -20,6 +20,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table_clear = table.clear
     local string_find = string.find
     local unit_set_data = unit.set_data
+    local table_contains = table.contains
     local table_set_readonly = table.set_readonly
     local table_merge_recursive = table.merge_recursive
 --#endregion
@@ -32,6 +33,7 @@ local pt = mod:pt()
 local empty_overrides_table = table_set_readonly({})
 local temp_children = {}
 local PROCESS_SLOTS = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
+local PROCESS_ITEM_TYPES = {"WEAPON_MELEE", "WEAPON_RANGED"}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -255,12 +257,16 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         -- Original function
         local override_lookup = func(item_data, override_item_data, ...)
         
-        if override_lookup and table_size(override_lookup) > 0 then
-            for attachment_slot, replacement_path in pairs(override_lookup) do
-                if not string_find(replacement_path, "skins") then
-                    override_lookup[attachment_slot] = nil
+        if item_data.__gear_id and table_contains(PROCESS_ITEM_TYPES, item_data.item_type) then
+
+            if override_lookup and table_size(override_lookup) > 0 then
+                for attachment_slot, replacement_path in pairs(override_lookup) do
+                    if not string_find(replacement_path, "skins") then
+                        override_lookup[attachment_slot] = nil
+                    end
                 end
             end
+
         end
 
         -- Return

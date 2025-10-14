@@ -1474,6 +1474,7 @@ local load_weapons = {
     "combatsword_p2_m1",
     "combatsword_p3_m1",
     "combatknife_p1_m1",
+    "forcesword_p1_m1",
     "powersword_p1_m1",
     "powersword_p2_m1",
     "boltpistol_p1_m1",

@@ -4,39 +4,33 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
-    local unit = Unit
-    local world = World
     local CLASS = CLASS
-    local script_unit = ScriptUnit
-    local unit_sway_callback = unit.sway_callback
-    local unit_sight_callback = unit.sight_callback
-    local script_unit_extension = script_unit.extension
-    local unit_flashlight_callback = unit.flashlight_callback
-    local world_update_unit_and_children = world.update_unit_and_children
+    local tostring = tostring
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
--- mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update", function(func, self, unit, dt, t, ...)
-mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(func, self, unit, dt, t, ...)
-    -- Original function
-    func(self, unit, dt, t, ...)
-
-    if self._first_person_unit then
-
-        -- Sight update callback
-        unit_sight_callback(self._unit, "update", dt, t)
-        -- Sway update callback
-        unit_sway_callback(self._unit, "update", dt, t)
-
-        -- Update first person unit
-        world_update_unit_and_children(self._world, self._first_person_unit)
-
-        -- Flashlight update callback
-        unit_flashlight_callback(self._unit, "update", dt, t)
-
+mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gear, ...)
+    local gear_settings = nil
+    -- Get created id
+    local create_id = mod.offer_id or gear_id
+    mod:print("created gear for offer id "..tostring(create_id).." and gear id "..tostring(gear_id))
+    -- Get temp settings
+    if create_id and mod:gear_settings(create_id) then
+        -- Get clone of temp settings
+        gear_settings = mod:gear_settings(create_id)
+        mod:print("gear settings for offer id "..tostring(create_id).." found")
     end
-    
+    -- Check attachments
+    if gear_settings then
+        -- Save gear settings
+        mod:print("gear settings for offer id "..tostring(create_id).." saving")
+        mod:gear_settings(gear_id, gear_settings, true)
+    end
+    -- Reset offer id
+    mod.offer_id = nil
+    -- Original function
+    func(self, gear_id, gear, ...)
 end)

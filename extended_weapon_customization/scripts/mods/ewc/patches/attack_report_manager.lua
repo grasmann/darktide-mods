@@ -10,11 +10,13 @@ local damage_profile_templates = mod:original_require("scripts/settings/damage/d
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local unit = Unit
     local CLASS = CLASS
     local managers = Managers
     local script_unit = ScriptUnit
     local network_lookup = NetworkLookup
     local script_unit_extension = script_unit.extension
+    local unit_attachment_callback = unit.attachment_callback
 --#endregion
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -34,10 +36,7 @@ mod:hook(CLASS.AttackReportManager, "rpc_add_attack_result", function(func, self
     local damage_profile_name = network_lookup.damage_profile_templates[damage_profile_id]
 	local damage_profile = damage_profile_templates[damage_profile_name]
 
-    local attachment_callback_extension = script_unit_extension(attacking_unit, "attachment_callback_system")
-    if attachment_callback_extension then
-        attachment_callback_extension:on_impact(hit_world_position, attacked_unit, attack_type, damage_profile)
-    end
+    unit_attachment_callback(attacking_unit, "on_impact", hit_world_position, attacked_unit, attack_type, damage_profile)
 
 end)
 
@@ -53,9 +52,6 @@ mod:hook(CLASS.AttackReportManager, "_process_attack_result", function(func, sel
     local attack_type = buffer_data.attack_type
     local damage_profile = buffer_data.damage_profile
 
-    local attachment_callback_extension = script_unit_extension(attacking_unit, "attachment_callback_system")
-    if attachment_callback_extension then
-        attachment_callback_extension:on_impact(hit_world_position, attacked_unit, attack_type, damage_profile)
-    end
+    unit_attachment_callback(attacking_unit, "on_impact", hit_world_position, attacked_unit, attack_type, damage_profile)
 
 end)
