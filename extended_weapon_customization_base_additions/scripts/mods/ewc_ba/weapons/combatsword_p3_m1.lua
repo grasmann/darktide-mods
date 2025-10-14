@@ -95,7 +95,7 @@ fixes.combatsword_p3_m3 = table_clone_safe(fixes.combatsword_p3_m1)
 fixes.combatsword_p3_m2 = table_clone_safe(fixes.combatsword_p3_m1)
 
 local kitbashs = {
-    [_item_melee.."/blades/laser_blade_sabre_p3_01"] = {
+    [_item_melee.."/blades/laser_blade_combat_sword_p3_01"] = {
         is_fallback_item = false,
         show_in_1p = true,
         base_unit = "content/weapons/player/melee/sabre/attachments/blade_06/blade_06",
@@ -144,11 +144,11 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_sabre_p3_01",
+        name = _item_melee.."/blades/laser_blade_combat_sword_p3_01",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
-    [_item_melee.."/blades/laser_blade_sabre_p3_02"] = {
+    [_item_melee.."/blades/laser_blade_combat_sword_p3_02"] = {
         is_fallback_item = false,
         show_in_1p = true,
         base_unit = "content/weapons/player/melee/sabre/attachments/blade_07/blade_07",
@@ -197,11 +197,11 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_sabre_p3_02",
+        name = _item_melee.."/blades/laser_blade_combat_sword_p3_02",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
-    [_item_melee.."/blades/laser_blade_green_sabre_p3_01"] = {
+    [_item_melee.."/blades/laser_blade_green_combat_sword_p3_01"] = {
         is_fallback_item = false,
         show_in_1p = true,
         base_unit = "content/weapons/player/melee/sabre/attachments/blade_06/blade_06",
@@ -250,11 +250,11 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_sabre_p3_01",
+        name = _item_melee.."/blades/laser_blade_green_combat_sword_p3_01",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
-    [_item_melee.."/blades/laser_blade_green_sabre_p3_02"] = {
+    [_item_melee.."/blades/laser_blade_green_combat_sword_p3_02"] = {
         is_fallback_item = false,
         show_in_1p = true,
         base_unit = "content/weapons/player/melee/sabre/attachments/blade_07/blade_07",
@@ -303,7 +303,7 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_sabre_p3_02",
+        name = _item_melee.."/blades/laser_blade_green_combat_sword_p3_02",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },

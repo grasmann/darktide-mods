@@ -256,7 +256,7 @@ mod.find_master_item_entries = function(self, identifications)
     end
 end
 
-mod.master_items_randomize = function(self, item, offer_id)
+mod.master_items_randomize_store = function(self, item, offer_id)
     return mod:handle_store_item(item, offer_id)
 end
 
@@ -488,7 +488,22 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         local gear_id = mod:gear_id(item_instance)
         local offer_id = pt.gear_id_to_offer_id[gear_id]
         -- Return randomized
-        return mod:master_items_randomize(item_instance, offer_id)
+        return mod:master_items_randomize_store(item_instance, offer_id)
     end)
 
+end)
+
+mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...)
+    local item, item_group, rarity, item_level = func(self, card_reward, ...)
+    if item and card_reward.gear_id and mod:get("mod_option_randomize_reward") then
+        -- Save gear id
+        item.gear_id = card_reward.gear_id
+        -- Randomize item
+        item = mod:master_items_randomize_store(item, card_reward.gear_id)
+        -- Get attachments
+        local random_attachments = mod:gear_settings(card_reward.gear_id)
+        -- Save to file
+        mod:gear_settings(card_reward.gear_id, random_attachments, true)
+    end
+    return item, item_group, rarity, item_level
 end)
