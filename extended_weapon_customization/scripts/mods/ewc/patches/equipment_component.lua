@@ -10,6 +10,7 @@ local mod = get_mod("extended_weapon_customization")
     local script_unit = ScriptUnit
     local unit_sway_callback = unit.sway_callback
     local unit_sight_callback = unit.sight_callback
+    local unit_shield_callback = unit.shield_callback
     local script_unit_extension = script_unit.extension
     local unit_attachment_callback = unit.attachment_callback
     local unit_flashlight_callback = unit.flashlight_callback
@@ -43,6 +44,8 @@ mod:hook(CLASS.EquipmentComponent, "equip_item", function(func, self, unit_3p, u
     unit_sight_callback(unit_3p, "on_equip_weapon")
     -- Equip attachment callback
     unit_attachment_callback(unit_3p, "on_equip_weapon")
+    -- Equip shield callback
+    unit_shield_callback(unit_3p, "on_equip_weapon")
 end)
 
 mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_person_mode, ...)
@@ -56,6 +59,8 @@ mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_pers
     unit_attachment_callback(slot.parent_unit_3p, "on_wield", slot.name)
     -- Wield sway callback
     unit_sway_callback(slot.parent_unit_3p, "on_wield", slot.name)
+    -- Wield shield callback
+    unit_shield_callback(slot.parent_unit_3p, "on_wield", slot.name)
 end)
 
 mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)

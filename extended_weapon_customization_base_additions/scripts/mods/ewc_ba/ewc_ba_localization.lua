@@ -77,18 +77,25 @@ mod:add_global_localize_strings({
 		en = "EWC:BA - 2H Power Sword",
 		["zh-cn"] = "扩展武器自定义：基础增补 - 双手动力剑",
 	},
+	loc_ewc_force_sword = {
+		en = "EWC:BA - Force Sword",
+	},
 	loc_ewc_2h_force_sword = {
 		en = "EWC:BA - 2H Force Sword",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 双手力场剑",
 	},
 	loc_ewc_shotgun_double_barrel = {
 		en = "EWC:BA - Double Barrel Shotgun",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 双管霰弹枪",
 	},
 	loc_ewc_sight_show = {
 		en = "EWC:BA - Sight just for show",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 装饰用瞄具",
 	},
 
 	attachment_slot_sight_2 = {
 		en = "Sight",
+		["zh-cn"] = "瞄具",
 	},
 
 	loc_scope_01 = {
@@ -113,17 +120,22 @@ return {
 
 	group_misc = {
 		en = "Misc",
+		["zh-cn"] = "杂项",
 	},
 	mod_option_laser_blade_randomization = {
 		en = "Randomize Laser Blades",
+		["zh-cn"] = "随机化激光剑刃",
 	},
 	mod_option_laser_blade_randomization_tooltip = {
 		en = "Allows randomized weapons to have laser blades.",
+		["zh-cn"] = "允许随机生成的武器带有激光剑刃",
 	},
 	mod_option_laser_pointer_randomization = {
 		en = "Randomize Laser Pointer",
+		["zh-cn"] = "随机化激光指针",
 	},
 	mod_option_laser_pointer_randomization_tooltip = {
 		en = "Allows randomized weapons to have laser pointers.",
+		["zh-cn"] = "允许随机生成的武器带有激光指针",
 	},
 }

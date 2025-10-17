@@ -50,8 +50,7 @@ if not pt.master_item_listener then
         mod:print("master items loaded")
         if debug_master_items then mod:dtf(master_items.get_cached(), "master_items", 20) end
         mod:try_kitbash_load()
-        -- mod:find_missing_items()
-        -- mod:find_missing_attachments()
+        mod:find_missing_entries()
     end)
 end
 
@@ -60,6 +59,13 @@ end
 -- ##### └  ┴┘└┘─┴┘  ┴ ┴┴ ┴└─┘ ┴ └─┘┴└─  ┴ ┴ └─┘┴ ┴  └─┘┘└┘ ┴ ┴└─┴└─┘└─┘ ##############################################
 
 local _temp_names = {}
+
+mod.find_missing_entries = function(self)
+    if self:get("debug_mode") then
+        self:find_missing_items()
+        self:find_missing_attachments()
+    end
+end
 
 mod.find_missing_items = function(self)
 
@@ -491,19 +497,4 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         return mod:master_items_randomize_store(item_instance, offer_id)
     end)
 
-end)
-
-mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...)
-    local item, item_group, rarity, item_level = func(self, card_reward, ...)
-    if item and card_reward.gear_id and mod:get("mod_option_randomize_reward") then
-        -- Save gear id
-        item.gear_id = card_reward.gear_id
-        -- Randomize item
-        item = mod:master_items_randomize_store(item, card_reward.gear_id)
-        -- Get attachments
-        local random_attachments = mod:gear_settings(card_reward.gear_id)
-        -- Save to file
-        mod:gear_settings(card_reward.gear_id, random_attachments, true)
-    end
-    return item, item_group, rarity, item_level
 end)

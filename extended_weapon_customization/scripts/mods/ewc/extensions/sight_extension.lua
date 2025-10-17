@@ -42,6 +42,8 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local camera_set_vertical_fov = Camera.set_vertical_fov
     local unit_set_local_position = unit.set_local_position
     local unit_set_local_rotation = unit.set_local_rotation
+    local shading_environment_apply = shading_environment.apply
+    local shading_environment_scalar = shading_environment.scalar
     local unit_set_scalar_for_materials = unit.set_scalar_for_materials
     local shading_environment_set_scalar = shading_environment.set_scalar
     local camera_set_custom_vertical_fov = Camera.set_custom_vertical_fov
@@ -280,14 +282,22 @@ SightExtension.update = function(self, dt, t)
 end
 
 SightExtension.apply_weapon_dof = function(self, shading_env)
-    -- Set depth of field
-    shading_environment_set_scalar(shading_env, "dof_enabled", 1)
-    shading_environment_set_scalar(shading_env, "dof_focal_distance", .5)
-    shading_environment_set_scalar(shading_env, "dof_focal_region", 50)
-    shading_environment_set_scalar(shading_env, "dof_focal_region_start", -1)
-    shading_environment_set_scalar(shading_env, "dof_focal_region_end", 49)
-    shading_environment_set_scalar(shading_env, "dof_focal_near_scale", self.dof_near_scale)
-    shading_environment_set_scalar(shading_env, "dof_focal_far_scale", .5)
+
+    -- Check if depth of field is on
+    if shading_environment_scalar(shading_env, "dof_enabled") then
+
+        -- Set depth of field
+        shading_environment_set_scalar(shading_env, "dof_focal_distance", .5)
+        shading_environment_set_scalar(shading_env, "dof_focal_region", 75)
+        shading_environment_set_scalar(shading_env, "dof_focal_region_start", -1)
+        shading_environment_set_scalar(shading_env, "dof_focal_region_end", 76)
+        shading_environment_set_scalar(shading_env, "dof_focal_near_scale", self.dof_near_scale)
+        shading_environment_set_scalar(shading_env, "dof_focal_far_scale", 1)
+
+		shading_environment_apply(shading_env)
+
+	end
+
 end
 
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################

@@ -30,6 +30,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table_contains = table.contains
     local table_clone_safe = table.clone_safe
     local unit_sight_callback = unit.sight_callback
+    local unit_shield_callback = unit.shield_callback
     local script_unit_extension = script_unit.extension
     local unit_attachment_callback = unit.attachment_callback
     local unit_flashlight_callback = unit.flashlight_callback
@@ -193,24 +194,30 @@ mod.generate_random_attachment_list = function(self, item_data, target_slot)
     local slot_attachments = attachments and attachments[target_slot]
     -- Check slot attachments
     if slot_attachments then
+
         -- Get possible random slot attachments
         for attachment_name, attachment_data in pairs(slot_attachments) do
             local add_to_list = true
             -- Check requirement
             if attachment_data.randomization_requirement then
                 local attachment_data_origin = pt.attachment_data_origin
-                local origin_mod = attachment_data_origin[attachment_data] or mod
+                local origin_mod = attachment_data_origin[attachment_data] or self
                 local requirement_value = origin_mod:get(attachment_data.randomization_requirement)
                 add_to_list = requirement_value
                 if not add_to_list then
                     self:print(tostring(attachment_name).." skipped in randomization: "..tostring(attachment_data.randomization_requirement).." == "..tostring(requirement_value))
                 end
             end
+            -- Hide from selection
+            if attachment_data.hide_from_selection then
+                add_to_list = false
+            end
             -- Add to list
             if add_to_list then
                 temp_random_attachment_list[attachment_name] = attachment_data
             end
         end
+
     end
     -- Return new gear settings
     return temp_random_attachment_list
@@ -220,6 +227,8 @@ mod.randomize_item = function(self, item_data)
     if not item_data then return end
     -- Get item info
     local item = self:item_data(item_data)
+    -- -- Original item
+    -- local original_item = item and master_items.get_item(item.name)
     -- Create new gear settings
     local new_gear_settings = {}
     -- Get attachment slots
@@ -491,4 +500,6 @@ mod.redo_weapon_attachments = function(self, item)
     unit_flashlight_callback(me, "on_equip_weapon")
     -- Relay weapon reload to attachment callback extension
     unit_attachment_callback(me, "on_equip_weapon")
+    -- Relay weapon reload to shield extension
+    unit_shield_callback(me, "on_equip_weapon")
 end

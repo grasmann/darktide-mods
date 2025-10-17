@@ -86,15 +86,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                 local slot_name = slot.name
                 local equipped_item = parent:equipped_item_in_slot(slot_name)
 
-                -- local preview_item = MasterItems.create_preview_item_instance(equipped_item)
-
-                -- local new_gear_id = math_uuid()
-                -- preview_item.gear_id = new_gear_id
-                -- preview_item.__gear_id = new_gear_id
-                -- preview_item.__original_gear_id = new_gear_id
-                -- preview_item.inventory_placement_icon = true
-                -- mod:gear_placement(new_gear_id, mod:gear_placement(mod:gear_id(equipped_item)))
-
                 content.item = equipped_item
 
                 local display_name = equipped_item and equipped_item.display_name
@@ -118,7 +109,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
 						companion_animation_event = companion_item_animation_event,
                         custom_slot_name = slot_name.."_placement",
                         size = gear_icon_size,
-                        -- placement_name = element.placement_name or "default",
                         placement_name = mod:gear_placement(mod:gear_id(equipped_item)),
                         slot_name = slot_name,
 					}
@@ -157,18 +147,7 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
 
                 if update then
 
-                    -- local preview_item = MasterItems.create_preview_item_instance(equipped_item)
-
-                    -- local new_gear_id = math_uuid()
-                    -- preview_item.gear_id = new_gear_id
-                    -- preview_item.__gear_id = new_gear_id
-                    -- preview_item.__original_gear_id = new_gear_id
-                    -- preview_item.inventory_placement_icon = true
-                    -- mod:gear_placement(new_gear_id, mod:gear_placement(mod:gear_id(equipped_item)))
-
                     content.item = equipped_item
-
-                    -- content.item = equipped_item
 
                     local display_name = equipped_item and equipped_item.display_name
 
@@ -210,7 +189,6 @@ mod:hook_require("scripts/ui/views/inventory_view/inventory_view_content_bluepri
                             companion_animation_event = companion_item_animation_event,
                             custom_slot_name = slot_name.."_placement",
                             size = gear_icon_size,
-                            -- placement_name = element.placement_name or "default",
                             placement_name = mod:gear_placement(mod:gear_id(equipped_item)),
                             slot_name = slot_name,
                         }

@@ -17,6 +17,7 @@ local Promise = mod:original_require("scripts/foundation/utilities/promise")
     local script_unit = ScriptUnit
     local table_contains = table.contains
     local unit_sight_callback = unit.sight_callback
+    local unit_shield_callback = unit.shield_callback
     local script_unit_extension = script_unit.extension
     local unit_attachment_callback = unit.attachment_callback
     local unit_flashlight_callback = unit.flashlight_callback
@@ -107,9 +108,26 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "init", function(func, self, ex
         )
     end
 
+    if not script_unit_extension(unit, "shield_transparency_system") then
+        script_unit_add_extension(
+            {
+                world = world,
+            },
+            unit,
+            "ShieldTransparencyExtension",
+            "shield_transparency_system",
+            {
+                visual_loadout_extension = self,
+                player = extension_init_data.player,
+                wielded_slot = self._inventory_component.wielded_slot,
+            }
+        )
+    end
+
     self.flashlight_extension_update = true
     self.sight_extension_update = true
     self.attachment_callback_extension_update = true
+    self.shield_extension_update = true
 
 end)
 
@@ -128,6 +146,7 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(
 
     if table_contains(PROCESS_SLOTS, slot_name) then
         self.attachment_callback_extension_update = true
+        self.shield_extension_update = true
     end
 
 end)
@@ -150,6 +169,13 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "fixed_update", function(func, 
         end
     end
 
+    if self.shield_extension_update then
+        if self:is_slot_unit_spawned(SLOT_SECONDARY) and self:is_slot_unit_spawned(SLOT_PRIMARY) then
+            unit_shield_callback(self._unit, "on_equip_weapon")
+            self.shield_extension_update = nil
+        end
+    end
+
     if self.attachment_callback_extension_update then
         if self:is_slot_unit_spawned(SLOT_SECONDARY) and self:is_slot_unit_spawned(SLOT_PRIMARY) then
             unit_attachment_callback(self._unit, "on_equip_weapon")
@@ -165,6 +191,10 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
 
     if script_unit_extension(self._unit, "sight_system") then
         script_unit_remove_extension(self._unit, "sight_system")
+    end
+
+    if script_unit_extension(self._unit, "shield_transparency_system") then
+        script_unit_remove_extension(self._unit, "shield_transparency_system")
     end
 
     if script_unit_extension(self._unit, "sway_system") then

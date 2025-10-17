@@ -179,20 +179,31 @@ return {
 
 	group_randomize = {
 		en = "Randomize",
+		["zh-cn"] = "随机化",
 	},
 	mod_option_randomize_players = {
 		en = "Randomize Players",
-		["zh-cn"] = "随机玩家",
+		["zh-cn"] = "玩家装备随机化",
 	},
 	mod_option_randomize_players_tooltip = {
 		en = "Randomize weapons of other players.",
-		["zh-cn"] = "其他玩家的武器随机化",
+		["zh-cn"] = "其他玩家的武器配件随机化",
 	},
 	mod_option_randomize_store = {
 		en = "Randomize Store",
+		["zh-cn"] = "商店装备随机化",
 	},
 	mod_option_randomize_store_tooltip = {
 		en = "Randomize weapons in the store.",
+		["zh-cn"] = "商店中的武器配件随机化",
+	},
+	mod_option_randomize_reward = {
+		en = "Randomize Reward",
+		["zh-cn"] = "帝皇之礼随机化",
+	},
+	mod_option_randomize_reward_tooltip = {
+		en = "Randomize weapons that are mission rewards.",
+		["zh-cn"] = "任务获得的奖励武器，配件随机化",
 	},
 
 	group_misc = {
@@ -213,19 +224,28 @@ return {
 	},
 	mod_option_crouch_tooltip = {
 		en = "Weapon changes pose when you crouch.",
-		["zh-cn"] = "下蹲时武器姿势会改变",
+		["zh-cn"] = "下蹲时持有武器的姿势会发生改变",
 	},
 	mod_option_crouch_melee = {
 		en = "Crouch Melee",
+		["zh-cn"] = "下蹲近战",
 	},
 	mod_option_crouch_melee_tooltip = {
 		en = "Weapon changes pose when you crouch and attack.",
+		["zh-cn"] = "下蹲并攻击时持有武器的姿势会改变",
 	},
 	mod_weapon_dof_strength = {
 		en = "Weapon DOF Strength",
+		["zh-cn"] = "武器景深强度",
 	},
 	mod_weapon_dof_strength_tooltip = {
 		en = "DOF strength on the weapon.",
+	},
+	mod_option_shield_transparency = {
+		en = "Shield Transparency",
+	},
+	mod_option_shield_transparency_tooltip = {
+		en = "Transparency of shields when aiming / blocking.",
 	},
 
 	group_flashlight = {

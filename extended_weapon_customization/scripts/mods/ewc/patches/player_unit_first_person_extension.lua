@@ -10,6 +10,7 @@ local mod = get_mod("extended_weapon_customization")
     local script_unit = ScriptUnit
     local unit_sway_callback = unit.sway_callback
     local unit_sight_callback = unit.sight_callback
+    local unit_shield_callback = unit.shield_callback
     local script_unit_extension = script_unit.extension
     local unit_flashlight_callback = unit.flashlight_callback
     local world_update_unit_and_children = world.update_unit_and_children
@@ -36,6 +37,8 @@ mod:hook(CLASS.PlayerUnitFirstPersonExtension, "update_unit_position", function(
 
         -- Flashlight update callback
         unit_flashlight_callback(self._unit, "update", dt, t)
+        -- Shield update callback
+        unit_shield_callback(self._unit, "update", dt, t)
 
     end
     

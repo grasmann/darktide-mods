@@ -214,26 +214,6 @@ mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(fu
         end
     end
 
-	-- if character_spawn_data then
-    --     local profile = character_spawn_data.profile
-	-- 	if not character_spawn_data.state_machine or string_find(character_spawn_data.state_machine, "end_of_round") then
-	-- 		if profile.visual_loadout and profile.visual_loadout[SLOT_SECONDARY] then
-	-- 			self:_change_slot_item(SLOT_SECONDARY, profile.visual_loadout[SLOT_SECONDARY], profile.loadout, profile.visual_loadout)
-	-- 		end
-	-- 		if profile.visual_loadout and profile.visual_loadout[SLOT_PRIMARY] then
-	-- 			self:_change_slot_item(SLOT_PRIMARY, profile.visual_loadout[SLOT_PRIMARY], profile.loadout, profile.visual_loadout)
-	-- 		end
-	-- 	end
-	-- end
-
-    -- if character_spawn_data then
-    --     local profile = character_spawn_data.profile
-
-    --     self:_change_slot_item(SLOT_SECONDARY, profile.visual_loadout and profile.visual_loadout[SLOT_SECONDARY] or profile.loadout[SLOT_SECONDARY], profile.loadout, profile.visual_loadout)
-
-    --     self:_change_slot_item(SLOT_PRIMARY, profile.visual_loadout and profile.visual_loadout[SLOT_PRIMARY] or profile.loadout[SLOT_PRIMARY], profile.loadout, profile.visual_loadout)
-    -- end
-
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "spawn_profile", function(func, self, profile, position, rotation, scale, state_machine_or_nil, animation_event_or_nil, face_state_machine_key_or_nil, face_animation_event_or_nil, force_highest_mip_or_nil, disable_hair_state_machine_or_nil, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
@@ -312,7 +292,6 @@ end)
 mod:hook(CLASS.UIProfileSpawner, "_spawn_companion", function(func, self, unit_3p, breed_name, position, rotation, attach_to_character, ...)
     -- Original function
     local companion_unit_3p = func(self, unit_3p, breed_name, position, rotation, attach_to_character, ...)
-    -- local companion_attach_index = Unit.has_node(unit_3p, "ap_companion") and Unit.node(unit_3p, "ap_companion") or 1
     -- Unlink companion
     world_unlink_unit(self._world, companion_unit_3p)
     unit_set_local_position(companion_unit_3p, 1, unit_world_position(unit_3p, 1) + vector3(-.55, .65, 0))

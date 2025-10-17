@@ -23,8 +23,6 @@ mod:merge_attachment_data(laspistol_group, magazine_laspistol, muzzle_laspistol)
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
-local grip_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_common")
-local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -55,8 +53,6 @@ local scopes = "scope_01"
 
 local attachments = {
     lasgun_p2_m1 = {
-        rail = rails,
-        grip = grip_common,
         magazine = magazine_laspistol,
         flashlight = flashlight_human,
         muzzle = table_merge_recursive_n(nil, muzzle_lasgun_infantry, muzzle_lasgun_recon, muzzle_laspistol),

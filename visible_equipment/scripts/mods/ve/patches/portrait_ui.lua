@@ -106,9 +106,7 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
         local slot_name = render_context.slot_name
         local item = profile.loadout[slot_name]
-        -- local gear_id = mod:gear_id(item, true)
-        local placement = render_context.placement_name --or (slot_name and mod:gear_placement(gear_id))
-        -- placement = render_context.placement_name or placement or "default"
+        local placement = render_context.placement_name
         self._profile_spawner:set_placement_name(placement)
         self._profile_spawner:set_slot_name(slot_name)
 
@@ -140,8 +138,6 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
         local camera_position = vector3_from_array(camera_settings.boxed_camera_start_position)
         local camera_rotation = camera_settings.boxed_camera_start_rotation:unbox()
-
-        -- camera_position = vector3(-1.4683889865875244, 1.039409065246582, 2.0318360567092896)
 
         if render_context then
             local wield_slot = render_context.wield_slot

@@ -4,24 +4,27 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local autogun_headhunter_group = {custom_selection_group = "autogun_headhunter"}
 local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
-local autogun_braced_group = {custom_selection_group = "autogun_braced"}
-local autopistol_group = {custom_selection_group = "autopistol"}
-
 local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
 local muzzle_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_infantry")
 mod:merge_attachment_data(autogun_infantry_group, magazine_autogun_infantry, muzzle_autogun_infantry)
 
+local autogun_braced_group = {custom_selection_group = "autogun_braced"}
 local magazine_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_braced")
 local muzzle_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_braced")
 mod:merge_attachment_data(autogun_braced_group, magazine_autogun_braced, muzzle_autogun_braced)
 
+local autogun_headhunter_group = {custom_selection_group = "autogun_headhunter"}
 local muzzle_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_headhunter")
 mod:merge_attachment_data(autogun_headhunter_group, muzzle_autogun_headhunter)
 
+local autopistol_group = {custom_selection_group = "autopistol"}
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
 mod:merge_attachment_data(autopistol_group, magazine_autopistol)
+
+local bayonet_group = {custom_selection_group = "rippergun"}
+local bayonet_rippergun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/bayonet_rippergun")
+mod:merge_attachment_data(autogun_headhunter_group, muzzle_autogun_headhunter)
 
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
@@ -51,6 +54,7 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
+local rippergun_bayonets = "rippergun_rifle_bayonet_01|rippergun_rifle_bayonet_02|rippergun_rifle_bayonet_03|rippergun_rifle_bayonet_04|rippergun_rifle_bayonet_05|rippergun_rifle_bayonet_ml01"
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
@@ -60,18 +64,6 @@ local attachments = {
         grip = grip_common,
         flashlight = flashlight_human,
         muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_braced, muzzle_autogun_headhunter),
-        -- magazine = table_merge_recursive_n({
-        --     boltgun_rifle_magazine_01_double = {
-        --         replacement_path = _item_ranged.."/magazines/boltgun_rifle_magazine_01_double",
-        --         icon_render_unit_rotation_offset = {90, 0, 30},
-        --         icon_render_camera_position_offset = {-.125, -1.25, -.05},
-        --     },
-        --     boltgun_rifle_magazine_02_double = {
-        --         replacement_path = _item_ranged.."/magazines/boltgun_rifle_magazine_02_double",
-        --         icon_render_unit_rotation_offset = {90, 0, 30},
-        --         icon_render_camera_position_offset = {-.125, -1.25, -.05},
-        --     },
-        -- }, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry, magazine_autogun_braced),
         magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry, magazine_autogun_braced),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, {
             lasgun_rifle_sight_01 = {
@@ -80,6 +72,7 @@ local attachments = {
                 icon_render_camera_position_offset = {.035, -.1, .125},
             },
         }),
+        bayonet = table_merge_recursive_n(nil, bayonet_rippergun),
     },
 }
 
@@ -156,6 +149,21 @@ local fixes = {
                 },
             },
         },
+        {attachment_slot = "bayonet",
+            requirements = {
+                bayonet = {
+                    has = rippergun_bayonets,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .28, .01),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.4, .4, .4),
+                    node = 1,
+                },
+            },
+        },
     },
 }
 
@@ -186,6 +194,18 @@ local attachment_slots = {
                     node = 1,
                 },
             },
+        },
+        bayonet = {
+            parent_slot = "receiver",
+            default_path = _item_empty_trinket,
+            -- fix = {
+            --     offset = {
+            --         position = vector3_box(0, .13, 0),
+            --         rotation = vector3_box(0, 0, 0),
+            --         scale = vector3_box(1.75, 1.75, 1.75),
+            --         node = 1,
+            --     },
+            -- },
         },
     },
 }

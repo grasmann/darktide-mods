@@ -31,7 +31,7 @@ local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
 local SLOT_GEAR_EXTRA_COSMETIC = "slot_gear_extra_cosmetic"
 local SLOT_ANIMATION_END_OF_ROUND = "slot_animation_end_of_round"
-local SUPPORTED_SLOT_NAMES = {SLOT_PRIMARY, SLOT_SECONDARY, SLOT_ANIMATION_END_OF_ROUND}
+local SUPPORTED_SLOT_NAMES = {SLOT_PRIMARY, SLOT_SECONDARY}
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
@@ -183,7 +183,7 @@ end)
 mod:hook(CLASS.InventoryCosmeticsView, "_spawn_profile", function(func, self, profile, initial_rotation, disable_rotation_input, ...)
     local slot_name = self._selected_slot and self._selected_slot.name
     -- Replace weapons
-    local profile = self:is_valid_slot(slot_name) and mod:profile() or profile
+    local profile = (self:is_valid_slot(slot_name) or slot_name == SLOT_ANIMATION_END_OF_ROUND) and mod:profile() or profile
     -- Original function
     func(self, profile, initial_rotation, disable_rotation_input, ...)
     -- Set custom camera

@@ -119,6 +119,27 @@ return {
 		["zh-cn"] = "只显示一个",
 	},
 
+	group_debug = {
+		en = "Debug",
+		["zh-cn"] = "调试",
+	},
+	debug_mode = {
+		en = "Debug Mode",
+		["zh-cn"] = "调试模式",
+	},
+	debug_mode_tooltip = {
+		en = "Debug Mode outputs some debug info.",
+		["zh-cn"] = "调试模式会输出一些调试信息",
+	},
+	clear_chat = {
+		en = "Clear Chat",
+		["zh-cn"] = "清空聊天",
+	},
+	clear_chat_tooltip = {
+		en = "Clears the chat.",
+		["zh-cn"] = "清空聊天记录",
+	},
+
 	slot_primary_placement = {
 		en = "Primary Placement",
 		de = "Primäre Platzierung",

@@ -42,6 +42,7 @@ local DMF = get_mod("DMF")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 --#region Data
+	local pt = mod:pt()
 	local REFERENCE = "extended_weapon_customization"
 	local DEBUG = false
 --#endregion
@@ -167,7 +168,7 @@ end
 
 SaveLua._set_cache = function(self, entries)
     mod:set("gear_files", entries)
-	mod:pt().cache = mod:get("gear_files")
+	pt.cache = mod:get("gear_files")
 end
 
 SaveLua._read_file = function(self, path)

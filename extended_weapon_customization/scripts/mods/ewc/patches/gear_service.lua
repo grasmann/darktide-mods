@@ -23,6 +23,8 @@ mod:hook(CLASS.GearService, "on_gear_created", function(func, self, gear_id, gea
         gear_settings = mod:gear_settings(create_id)
         mod:print("gear settings for offer id "..tostring(create_id).." found")
     end
+    -- Delete cache
+    mod:sweep_gear_id(gear_id)
     -- Check attachments
     if gear_settings then
         -- Save gear settings

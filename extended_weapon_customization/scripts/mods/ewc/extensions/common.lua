@@ -30,11 +30,13 @@ local mod = get_mod("extended_weapon_customization")
 	end
 	unit.attachment_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "attachment_callback_system", function_name, ...) end
     unit.sight_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "sight_system", function_name, ...) end
+    unit.shield_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "shield_transparency_system", function_name, ...) end
     unit.sway_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "sway_system", function_name, ...) end
     unit.flashlight_callback = function(player_unit, function_name, ...) return unit.extension_callback(player_unit, "flashlight_system", function_name, ...) end
     unit.callback = function(player_unit, function_name, ...)
         unit.attachment_callback(player_unit, function_name, ...)
         unit.sight_callback(player_unit, function_name, ...)
+        unit.shield_callback(player_unit, function_name, ...)
         unit.sway_callback(player_unit, function_name, ...)
         unit.flashlight_callback(player_unit, function_name, ...)
     end

@@ -20,6 +20,8 @@ local mod = get_mod("visible_equipment")
 
 local pt = mod:pt()
 local catch_equipment = nil
+local SLOT_PRIMARY = "slot_primary"
+local SLOT_SECONDARY = "slot_secondary"
 local ATTACHMENT_SPAWN_STATUS = table_enum("waiting_for_companion_unit_spawn", "waiting_for_load", "fully_spawned")
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
@@ -51,6 +53,22 @@ mod:hook_require("scripts/extension_systems/visual_loadout/equipment_component",
         if self.visible_equipment_system then
             -- Update visible equipment
             self.visible_equipment_system:update(dt, t)
+            -- Fixed update
+            if self.visible_equipment_update then
+                -- Get player unit
+                local unit_3p = pt.equipment_components[self]
+                -- Get visual loadout extension
+                local visual_loadout_extension = unit_3p and script_unit_extension(unit_3p, "visual_loadout_system")
+                -- Check if both slots are spawned
+                if visual_loadout_extension and visual_loadout_extension:is_slot_unit_spawned(SLOT_SECONDARY) and visual_loadout_extension:is_slot_unit_spawned(SLOT_PRIMARY) then
+                    -- Get equipment
+                    local equipment = pt.equipment_by_equipment_component[self]
+                    -- Update visibility
+                    self.visible_equipment_system:update_item_visibility(equipment)
+                    -- Unset fixed update
+                    self.visible_equipment_update = nil
+                end
+            end
         end
     end
 
@@ -123,6 +141,8 @@ mod:hook(CLASS.EquipmentComponent, "init", function(func, self, world, item_defi
     elseif not self.visible_equipment_system and script_unit_extension(unit_3p, "visible_equipment_system") then
         self.visible_equipment_system = script_unit_extension(unit_3p, "visible_equipment_system")
     end
+
+    self.visible_equipment_update = true
 end)
 
 mod:hook(CLASS.EquipmentComponent, "unequip_item", function(func, self, slot, ...)

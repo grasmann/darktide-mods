@@ -17,6 +17,11 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
 return {
+    emblemleft_invisible = {
+        replacement_path = _item_ranged.."/emblems/emblemleft_invisible",
+        icon_render_unit_rotation_offset = {-90, 180, 10},
+        icon_render_camera_position_offset = {.0075, 0, .15},
+    },
     emblemleft_01 = {
         replacement_path = _item_ranged.."/emblems/emblemleft_01",
         icon_render_unit_rotation_offset = {-90, 180, 10},

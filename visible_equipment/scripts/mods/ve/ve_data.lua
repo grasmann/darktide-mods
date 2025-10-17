@@ -60,6 +60,23 @@ return {
 					},
 				},
 			},
+			{["setting_id"] = "group_debug",
+  				["type"] = "group",
+				["sub_widgets"] = {
+					{["setting_id"] = "clear_chat",
+						["type"] = "keybind",
+						["default_value"] = {},
+						["keybind_trigger"] = "pressed",
+						["keybind_type"] = "function_call",
+						["function_name"] = "clear_chat",
+					},
+					{["setting_id"] = "debug_mode",
+						["type"] = "checkbox",
+						["default_value"] = false,
+						["tooltip"] = "debug_mode_tooltip",
+					},
+				},
+			},
 		},
 	}
 }
