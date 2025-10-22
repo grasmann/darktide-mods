@@ -27,6 +27,18 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "extensions_ready", function(fu
     self._equipment_component:extensions_ready()
 end)
 
+mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "wield_slot", function(func, self, slot_name, ...)
+
+    -- Original function
+    func(self, slot_name, ...)
+
+    local equipment = self._equipment
+    local equipment_component = self._equipment_component
+    local first_person_mode = self._first_person_extension:is_in_first_person_mode()
+    equipment_component.wield_slot(equipment[slot_name], first_person_mode)
+
+end)
+
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, unit, dt, t, ...)
     -- Original function
     func(self, unit, dt, t, ...)

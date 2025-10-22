@@ -43,6 +43,22 @@ mod.gear_id = function(self, item, fake_gear_id)
     return gear_id
 end
 
+mod.gear_id_relay = function(self, gear_id, real_gear_id)
+    -- Set gear id relay
+    pt.gear_id_relays[gear_id] = real_gear_id
+end
+
+mod.delete_gear_id_relays = function(self, gear_id)
+    -- Iterate through gear id relays
+    for fake_gear_id, real_gear_id in pairs(pt.gear_id_relays) do
+        -- Check gear ids
+        if fake_gear_id == gear_id or real_gear_id == gear_id then
+            -- Delete relay
+            pt.gear_id_relays[fake_gear_id] = nil
+        end
+    end
+end
+
 mod.gear_placement = function(self, gear_id, placement, file, no_default)
 
     if placement and gear_id then

@@ -24,32 +24,30 @@ local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
 local PROCESS_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
--- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
 
-mod.ui_profile_spawner_change_equipment = function(self, ui_profile_spawner)
-    if not ui_profile_spawner.ewc_equipment_changed then
-        local loading_profile_data = ui_profile_spawner._loading_profile_data
-        -- local character_spawn_data = ui_profile_spawner._character_spawn_data
-        local data = loading_profile_data --character_spawn_data or loading_profile_data
-        local data_profile = data and data.profile
-        if data_profile and data_profile.visual_loadout then
-            mod:print("attempting to change equipment for character "..tostring(data_profile.name))
+mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 
-            mod:print("changing primary item")
-            -- ui_profile_spawner:_change_slot_item(SLOT_PRIMARY, data_profile.loadout[SLOT_PRIMARY], data_profile.loadout, data_profile.visual_loadout)
-            data_profile.visual_loadout[SLOT_PRIMARY] = data_profile.loadout[SLOT_PRIMARY]
-            mod:print("changing secondary item")
-            -- ui_profile_spawner:_change_slot_item(SLOT_SECONDARY, data_profile.loadout[SLOT_SECONDARY], data_profile.loadout, data_profile.visual_loadout)
-            data_profile.visual_loadout[SLOT_SECONDARY] = data_profile.loadout[SLOT_SECONDARY]
+    instance.change_equipment = function(self)
+        self:change_item(SLOT_SECONDARY)
+        self:change_item(SLOT_PRIMARY)
+        self:_sync_profile_changes()
+    end
 
-            ui_profile_spawner:_sync_profile_changes()
-
-            ui_profile_spawner.ewc_equipment_changed = true
+    instance.change_item = function(self, slot_name)
+        local data = self._loading_profile_data or self._character_spawn_data
+        local loadout_item = data and data.profile.loadout and data.profile.loadout[slot_name]
+        local visual_item = data and data.profile.visual_loadout and data.profile.visual_loadout[slot_name]
+        if (not loadout_item or not loadout_item.__master_item) and visual_item then
+            data.profile.loadout[slot_name] = visual_item
+            -- if data.equipped_items then data.equipped_items[slot_name] = visual_item end
+            -- if data.loading_items then data.loading_items[slot_name] = visual_item and visual_item.name end
         end
     end
-end
+
+end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
@@ -64,21 +62,30 @@ mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ..
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "spawn_profile", function(func, self, profile, position, rotation, scale, state_machine_or_nil, animation_event_or_nil, face_state_machine_key_or_nil, face_animation_event_or_nil, force_highest_mip_or_nil, disable_hair_state_machine_or_nil, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
-    self.ewc_equipment_changed = nil
     -- Unset ignore slots
     -- So that the real equipped items are loaded
     if not self._placement_name then
         self._ignored_slots[SLOT_SECONDARY] = nil
         self._ignored_slots[SLOT_PRIMARY] = nil
     end
+    
     -- Original function
     func(self, profile, position, rotation, scale, state_machine_or_nil, animation_event_or_nil, face_state_machine_key_or_nil, face_animation_event_or_nil, force_highest_mip_or_nil, disable_hair_state_machine_or_nil, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
+
+    -- Real equipment
+    self:change_equipment()
+
 end)
 
--- mod:hook(CLASS.UIProfileSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, unit_3p, timeout, ...)
---     -- Original function
---     func(self, unit_3p, timeout, ...)
--- end)
+mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
+    
+    -- Original function
+    func(self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
+
+    -- Real equipment
+    self:change_equipment()
+
+end)
 
 mod:hook(CLASS.UIProfileSpawner, "wield_slot", function(func, self, slot_id, ...)
 

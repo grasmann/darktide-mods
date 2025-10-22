@@ -63,7 +63,7 @@ end
 
 mod.me = function(self)
     -- Get player
-    local player = managers.player and managers.player:local_player_safe(1)
+    local player = self:player()
     -- Return player unit
     return player and player.player_unit
 end

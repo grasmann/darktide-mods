@@ -22,6 +22,7 @@ mod:persistent_table(REFERENCE, {
     unit_attachment_ids_by_equipment_component = {},
     unit_attachment_names_by_equipment_component = {},
     item_names_by_equipment_component = {},
+    gear_id_relays = {},
     spawned_units = {},
     gear_placements = {},
     cache = mod:get("visible_equipment_entries") or {},

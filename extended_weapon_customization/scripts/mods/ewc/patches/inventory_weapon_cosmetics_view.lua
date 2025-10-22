@@ -567,7 +567,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
     -- Original function
     func(self, dt, t, input_service, ...)
 
-    if self.customize_attachments and self._tabs_content then
+    if self.customize_attachments and self._tabs_content and self._selected_tab_index and self._tabs_content[self._selected_tab_index] then
         local content = self._tabs_content[self._selected_tab_index]
         local slot_name = content.slot_name
         local disable_button = true

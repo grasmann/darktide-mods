@@ -334,7 +334,9 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
             local scabbard = mod:fetch_attachment(slot.item.attachments, "scabbard")
             if scabbard then
                 local attachment_unit = unit_attachment_name_3p[item_unit_3p]["scabbard"]
-                self.always_visible[slot][attachment_unit] = true
+                if attachment_unit then
+                    self.always_visible[slot][attachment_unit] = true
+                end
             end
         end
         -- Hide attachments

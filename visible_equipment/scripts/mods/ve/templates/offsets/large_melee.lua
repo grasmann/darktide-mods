@@ -25,7 +25,7 @@ return {
     hip_back = {
         right = {
             node = "j_hips",
-            position = vector3_box(-.004, -0.15, 0.05),
+            position = vector3_box(-.004, -0.15, 0.15),
             rotation = vector3_box(0, -120, 90),
             center_mass = vector3_box(0, 0, -.25),
         },
@@ -33,7 +33,7 @@ return {
     hip_front = {
         right = {
             node = "j_hips",
-            position = vector3_box(-.004, 0.185, 0.05),
+            position = vector3_box(-.004, 0.185, 0.1),
             rotation = vector3_box(0, -140, 90),
             center_mass = vector3_box(0, 0, -.25),
         },
@@ -42,7 +42,7 @@ return {
         right = {
             node = "j_hips",
             position = vector3_box(-.2, 0, 0.1),
-            rotation = vector3_box(-40, 180, -30),
+            rotation = vector3_box(-40, 190, 0),
             center_mass = vector3_box(0, 0, -.15),
         },
     },
@@ -50,7 +50,7 @@ return {
         right = {
             node = "j_hips",
             position = vector3_box(.2, 0, 0.1),
-            rotation = vector3_box(-40, 180, 30),
+            rotation = vector3_box(-40, 170, 30),
             center_mass = vector3_box(0, 0, -.15),
         },
     },
