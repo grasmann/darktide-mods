@@ -69,7 +69,6 @@ end
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _empty_item = "content/items/weapons/player/trinkets/unused_trinket"
 
 local extended_weapon_customization_plugin = {
     attachments = {},
@@ -481,7 +480,7 @@ local extended_weapon_customization_plugin = {
                     item = "",
                     children = {},
                 },
-                flashlight = {
+                flashlight_light = {
                     item = _item_ranged.."/flashlights/flashlight_01",
                     fix = {
                         offset = {
@@ -500,7 +499,7 @@ local extended_weapon_customization_plugin = {
             dev_name = "invisible_flashlight",
             is_fallback_item = false,
             show_in_1p = true,
-            base_unit = "content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01",
+            base_unit = "content/characters/empty_item/empty_item",
             item_list_faction = "Player",
             tags = {
             },
@@ -509,6 +508,7 @@ local extended_weapon_customization_plugin = {
                 "FEATURE_item_retained",
             },
             resource_dependencies = {
+                ["content/characters/empty_item/empty_item"] = true,
                 ["content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01"] = true,
             },
             workflow_checklist = {
@@ -524,7 +524,7 @@ local extended_weapon_customization_plugin = {
                     item = "",
                     children = {},
                 },
-                flashlight = {
+                flashlight_light = {
                     item = _item_ranged.."/flashlights/flashlight_ogryn_01",
                     fix = {
                         offset = {
@@ -543,7 +543,7 @@ local extended_weapon_customization_plugin = {
             dev_name = "invisible_flashlight_ogryn",
             is_fallback_item = false,
             show_in_1p = true,
-            base_unit = "content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_01",
+            base_unit = "content/characters/empty_item/empty_item",
             item_list_faction = "Player",
             tags = {
             },
@@ -552,6 +552,7 @@ local extended_weapon_customization_plugin = {
                 "FEATURE_item_retained",
             },
             resource_dependencies = {
+                ["content/characters/empty_item/empty_item"] = true,
                 ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_01"] = true,
             },
             workflow_checklist = {

@@ -19,7 +19,10 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local unit_alive = unit.alive
     local table_clear = table.clear
     local string_find = string.find
+    local string_split = string.split
     local unit_set_data = unit.set_data
+    local table_combine = table.combine
+    local table_icombine = table.icombine
     local table_contains = table.contains
     local table_set_readonly = table.set_readonly
     local table_merge_recursive = table.merge_recursive
@@ -114,6 +117,30 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                         if kitbash_fixes then
                             fixes = table_merge_recursive(fixes, kitbash_fixes)
                         end
+
+                        if attachment_units_by_unit[attachment_unit] then
+
+                            for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
+
+                                -- Set attachment slot
+                                local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
+                                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                                -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
+                                unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
+
+                                -- Get master item
+                                local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+                                local item = master_items.get_item(item_path)
+
+                                -- Set attachment name
+                                local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                                unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
+
+                                mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
+
+                            end
+                        end
+
                     end
 
                 else -- This is a normal item
@@ -160,6 +187,29 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                             mod:print("disable_vfx_spawner_exclusion: "..tostring(item.name))
 
+                        end
+
+                        if attachment_units_by_unit[attachment_unit] then
+
+                            for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
+
+                                -- Set attachment slot
+                                local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
+                                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                                -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
+                                unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
+
+                                -- Get master item
+                                local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+                                local item = master_items.get_item(item_path)
+
+                                -- Set attachment name
+                                local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                                unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
+
+                                mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
+
+                            end
                         end
 
                     end
@@ -238,6 +288,29 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                         mod:print("disable_vfx_spawner_exclusion: "..tostring(item.name))
 
+                    end
+
+                    if attachment_units_by_unit[attachment_unit] then
+
+                        for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
+
+                            -- Set attachment slot
+                            local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
+                            local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                            -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
+                            unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
+
+                            -- Get master item
+                            local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+                            local item = master_items.get_item(item_path)
+
+                            -- Set attachment name
+                            local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                            unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
+
+                            mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
+
+                        end
                     end
 
                 end

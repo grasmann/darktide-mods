@@ -27,5 +27,6 @@ return {
         icon_render_unit_rotation_offset = {0, 0, 0},
         icon_render_camera_position_offset = {0, 0, 0},
         flashlight_template = "ogryn_heavy_stubber_p2",
+        flashlight_attachment_slot = "flashlight_light",
     },
 }

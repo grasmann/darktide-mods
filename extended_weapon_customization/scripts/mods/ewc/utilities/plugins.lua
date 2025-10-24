@@ -60,7 +60,7 @@ mod.load_plugins = function(self)
                     -- Attachments are key based - merge table
                     self.settings.attachments = table_merge_recursive(self.settings.attachments, plugin.attachments)
                     -- Update lookup tables
-                    mod:update_lookup_tables(plugin.attachments, nil, nil, nil, plugin_mod)
+                    self:update_lookup_tables(plugin.attachments, nil, nil, nil, plugin_mod)
                 end
 
                 -- Load plugin attachment slots

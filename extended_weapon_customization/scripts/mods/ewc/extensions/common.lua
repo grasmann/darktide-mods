@@ -63,6 +63,16 @@ local mod = get_mod("extended_weapon_customization")
         end
         return combined
     end
+    table.icombine = function(...)
+        local arg = {...}
+        local combined = {}
+        for _, t in ipairs(arg) do
+            for _, value in pairs(t) do
+                combined[#combined+1] = value
+            end
+        end
+        return combined
+    end
     table.clone_safe = function(t)
         return t and table_clone(t)
     end

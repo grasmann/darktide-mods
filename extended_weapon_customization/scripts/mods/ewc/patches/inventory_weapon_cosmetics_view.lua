@@ -882,8 +882,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
                 end
 
                 if real_item.display_name and real_item.display_name ~= "" and real_item.display_name ~= "n/a" then
-                    if has_localization(real_item.display_name) then
-                        attachment_name = localize(real_item.display_name)
+                    local test_localize = localize(real_item.display_name)
+                    -- if has_localization(real_item.display_name) then
+                    if test_localize ~= "<"..real_item.display_name..">" then
+                        attachment_name = test_localize
                     end
                 end
 

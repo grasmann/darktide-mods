@@ -180,7 +180,8 @@ FlashlightExtension.is_in_hub = function(self)
     return mod:is_in_hub()
 end
 
-FlashlightExtension.find_in_units = function(self, attachment_units)
+FlashlightExtension.find_in_units = function(self, attachment_units, optional_target_slot, optional_settings_slot, optional_flashlight_name)
+    local target_slot = optional_target_slot or "flashlight"
     -- Check
     if attachment_units then
         -- Iterate through attachments
@@ -195,16 +196,26 @@ FlashlightExtension.find_in_units = function(self, attachment_units)
                 local attachment_slot_parts = string_split(attachment_slot_string, ".")
                 local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
                 -- Check attachment slot and light in attachment unit
-                if attachment_slot == "flashlight" and unit_num_lights(attachment_unit) > 0 then
+                if attachment_slot == target_slot then
                     -- Get flashlight name
-                    local flashlight_name = unit_get_data(attachment_unit, "attachment_name")
+                    local flashlight_name = optional_flashlight_name or unit_get_data(attachment_unit, "attachment_name")
                     -- Get attachment data
-                    local flashlight_attachment_data = mod.settings.attachments[self.weapon.weapon_template][attachment_slot][flashlight_name]
+                    local weapon_attachments = mod.settings.attachments[self.weapon.weapon_template]
+                    local slot_attachments = weapon_attachments and weapon_attachments[optional_settings_slot or attachment_slot]
+                    local flashlight_attachment_data = slot_attachments and slot_attachments[flashlight_name]
                     -- Check attachment data
-                    if flashlight_attachment_data then
+                    if flashlight_attachment_data and unit_num_lights(attachment_unit) > 0 then
+
                         -- Return data
                         local template_name = flashlight_attachment_data.flashlight_template or "default"
                         return attachment_unit, flashlight_name, template_name, flashlight_attachment_data
+
+                    elseif flashlight_attachment_data and flashlight_attachment_data.flashlight_attachment_slot then
+
+                        mod:print("flashlight has internal attachment slot: "..tostring(flashlight_attachment_data.flashlight_attachment_slot))
+                        -- Return func
+                        return self:find_in_units(attachment_units, flashlight_attachment_data.flashlight_attachment_slot, attachment_slot, flashlight_name)
+
                     end
                 end
             end

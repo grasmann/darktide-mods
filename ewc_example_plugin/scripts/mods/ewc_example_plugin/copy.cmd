@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\ewc_example_plugin\scripts\mods\ewc_example_plugin" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\ewc_example_plugin\scripts\mods\ewc_example_plugin"
