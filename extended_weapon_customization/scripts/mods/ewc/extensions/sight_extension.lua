@@ -274,7 +274,7 @@ SightExtension.update = function(self, dt, t)
     -- Dof
     if table_contains(DOF_SLOTS, self.wielded_slot) then
         local target_dof = self:is_aiming() and self.dof_aim_target or self.dof_target
-        self.dof_near_scale = math_lerp(self.dof_near_scale, target_dof, dt * 10) * (.8 + self.dof_strength / 4)
+        self.dof_near_scale = math_lerp(self.dof_near_scale, target_dof, dt * 10) * (0 + self.dof_strength / 2)
     else
         self.dof_near_scale = math_lerp(self.dof_near_scale, 0, dt * 10)
     end
@@ -306,6 +306,10 @@ end
 
 SightExtension.fetch_sight_offset = function(self, item)
 
+    self.offset = nil
+    self.sight_name = nil
+    self.sight_fix = nil
+
     self.default_vertical_fov = nil
     self.default_custom_vertical_fov = nil
 
@@ -316,9 +320,9 @@ SightExtension.fetch_sight_offset = function(self, item)
     pt.debug_sight = {0, 0, 0, 0, 0, 0}
 
     self.weapon = item or self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
+    
     if self.weapon and self.weapon.attachments then
         self.sight_name = mod:fetch_attachment(self.weapon.attachments, "sight_2") or mod:fetch_attachment(self.weapon.attachments, "sight")
-        self.sight_fix = nil
 
         local sight_offset_fixes = mod:collect_fixes(self.weapon, "sight_offset")
         if sight_offset_fixes then

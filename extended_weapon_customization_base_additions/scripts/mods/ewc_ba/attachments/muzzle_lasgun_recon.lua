@@ -32,6 +32,11 @@ return {
         icon_render_unit_rotation_offset = {90, 0, 30},
         icon_render_camera_position_offset = {-.15, -1, .15},
     },
+    lasgun_rifle_elysian_muzzle_04 = {
+        replacement_path = _item_ranged.."/muzzles/lasgun_rifle_elysian_muzzle_04",
+        icon_render_unit_rotation_offset = {90, 0, 30},
+        icon_render_camera_position_offset = {-.15, -1, .15},
+    },
     lasgun_rifle_elysian_muzzle_ml01 = {
         replacement_path = _item_ranged.."/muzzles/lasgun_rifle_elysian_muzzle_ml01",
         icon_render_unit_rotation_offset = {90, 0, 30},

@@ -95,7 +95,7 @@ mod.find_missing_items = function(self)
             end
         end
 
-        if template_ok and not self.settings.attachments[item.weapon_template] and filter_ok then
+        if template_ok and not self.settings.attachments[item.weapon_template] and filter_ok and not item.is_kitbash then
 
             _temp_names[#_temp_names+1] = item.weapon_template
 
@@ -169,7 +169,7 @@ mod.find_missing_attachments = function(self)
             search_ok = string_find(item_name, search)
         end
 
-        if search_ok and filter_ok and not attachment_found then
+        if search_ok and filter_ok and not attachment_found and not item.is_kitbash then
 
             _temp_names[#_temp_names+1] = item_name
 

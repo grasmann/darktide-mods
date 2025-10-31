@@ -31,6 +31,12 @@ mod:add_global_localize_strings({
 		en = "Random",
 		["zh-cn"] = "随机",
 	},
+	loc_weapon_inventory_alternate_fire_toggle = {
+		en = "Alternate Fire Override",
+	},
+	loc_weapon_inventory_crosshair_toggle = {
+		en = "Crosshair Override",
+	},
 
 	attachment_slot_pommel = {
 		en = "Pommel",
@@ -204,6 +210,22 @@ return {
 	mod_option_randomize_reward_tooltip = {
 		en = "Randomize weapons that are mission rewards.",
 		["zh-cn"] = "任务获得的奖励武器，配件随机化",
+	},
+
+	group_overrides = {
+		en = "Allow Overrides",
+	},
+	mod_allow_crosshair_type_override = {
+		en = "Crosshair",
+	},
+	mod_allow_crosshair_type_override_tooltip = {
+		en = "Allow attachments to override the crosshair of a weapon.",
+	},
+	mod_allow_alternate_fire_override = {
+		en = "Alternate Fire",
+	},
+	mod_allow_alternate_fire_override_tooltip = {
+		en = "Allow attachments to override the alternate fire animations of a weapon.",
 	},
 
 	group_misc = {

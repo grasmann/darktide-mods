@@ -46,7 +46,7 @@ local _item_ranged = _item.."/ranged"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local laspistol_muzzles = "lasgun_pistol_muzzle_01|lasgun_pistol_muzzle_02|lasgun_pistol_muzzle_03|lasgun_pistol_muzzle_04|lasgun_pistol_muzzle_05|lasgun_pistol_muzzle_ml01"
-local lasgun_recon_muzzles = "lasgun_rifle_elysian_muzzle_01|lasgun_rifle_elysian_muzzle_02|lasgun_rifle_elysian_muzzle_03|lasgun_rifle_elysian_muzzle_ml01"
+local lasgun_recon_muzzles = "lasgun_rifle_elysian_muzzle_01|lasgun_rifle_elysian_muzzle_02|lasgun_rifle_elysian_muzzle_03|lasgun_rifle_elysian_muzzle_04|lasgun_rifle_elysian_muzzle_ml01"
 
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"

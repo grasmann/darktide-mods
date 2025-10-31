@@ -171,6 +171,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/attack_rep
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/interactee_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/equipment_component")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_icon_loader_ui")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_pass_templates")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_profile_spawner")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/mission_intro_view")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_element_grid")

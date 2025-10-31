@@ -968,7 +968,6 @@ local extended_weapon_customization_plugin = {
                     cast_shadows = true,
                     color_temperature = 7300,
                     ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_01",
-                    -- intensity = 8,
                     intensity = 2,
                     spot_reflector = false,
                     volumetric_intensity = 0.1,

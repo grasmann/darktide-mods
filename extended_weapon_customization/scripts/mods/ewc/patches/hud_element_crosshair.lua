@@ -34,13 +34,21 @@ mod:hook(CLASS.HudElementCrosshair, "_get_current_crosshair_type", function(func
     local player_extensions = parent:player_extensions()
 
 	if player_extensions then
+
         local unit_data_extension = player_extensions.unit_data
         local inventory_component = unit_data_extension and unit_data_extension:read_component("inventory")
         local wielded_slot = inventory_component and inventory_component.wielded_slot
+
         if wielded_slot == SLOT_SECONDARY then
+
             local visual_loadout_extension = player_extensions.visual_loadout
             local item = visual_loadout_extension and visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
-            if item and item.attachments then
+            local gear_id = mod:gear_id(item)
+            local crosshair_list = mod:get("crosshair")
+            local use_crosshair = crosshair_list and crosshair_list[gear_id]
+            if use_crosshair == nil then use_crosshair = true end
+
+            if item and item.attachments and use_crosshair then
                 -- Get attachment item string
                 local attachment_item_string = mod:fetch_attachment(item.attachments, "sight")
                 -- Get attachment data

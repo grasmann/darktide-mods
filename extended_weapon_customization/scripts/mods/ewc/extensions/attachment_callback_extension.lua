@@ -209,9 +209,9 @@ AttachmentCallbackExtension.fetch_attachments_with_callbacks = function(self)
                 local attachments_1p = attachments_by_unit_1p and attachments_by_unit_1p[unit_1p]
                 local attachments_3p = attachments_by_unit_3p and attachments_by_unit_3p[unit_3p]
                 -- Get attachment slots
-                self.attachment_slots = mod:fetch_attachment_slots(item.attachments)
+                self.attachment_slots[item] = mod:fetch_attachment_slots(item.attachments)
                 -- Iterate through attachments slots
-                for attachment_slot, data in pairs(self.attachment_slots) do
+                for attachment_slot, data in pairs(self.attachment_slots[item]) do
                     -- Get attachment data
                     local attachment_data = mod.settings.attachment_data_by_item_string[data.item]
                     if attachment_data then

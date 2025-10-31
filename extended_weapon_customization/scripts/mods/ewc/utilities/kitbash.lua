@@ -110,6 +110,7 @@ mod.kitbash_item = function(self, name, data)
 
         else
 
+            data.is_kitbash = true
             -- Inject item into master items
             master_items.get_cached()[data.name] = data
 

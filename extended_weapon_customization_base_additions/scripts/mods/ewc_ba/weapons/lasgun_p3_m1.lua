@@ -42,7 +42,7 @@ local rails = mod:io_dofile("extended_weapon_customization_base_additions/script
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
-local short_receivers = "lasgun_rifle_elysian_receiver_01|lasgun_rifle_elysian_receiver_04|lasgun_rifle_elysian_receiver_05|lasgun_rifle_elysian_receiver_06|lasgun_rifle_elysian_receiver_07"
+local short_receivers = "lasgun_rifle_elysian_receiver_01|lasgun_rifle_elysian_receiver_04|lasgun_rifle_elysian_receiver_05|lasgun_rifle_elysian_receiver_06|lasgun_rifle_elysian_receiver_07|lasgun_rifle_elysian_receiver_08"
 local medium_receivers = "lasgun_rifle_elysian_receiver_03"
 local long_receivers = "lasgun_rifle_elysian_receiver_02|lasgun_rifle_elysian_receiver_ml01"
 local sights = "lasgun_rifle_elysian_sight_01|lasgun_rifle_elysian_sight_02|lasgun_rifle_elysian_sight_03"

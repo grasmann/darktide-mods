@@ -52,6 +52,8 @@ local temp_detached = {}
 local temp_validated = {}
 local temp_mod_count = {}
 local empty_position = {0, 0, 0}
+local alternate_fire_setting = "alternate_fire"
+local crosshair_list_setting = "crosshair"
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -237,6 +239,20 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         mod.is_in_customization_menu = true
 
+    end
+
+    instance.cb_on_alternate_fire_toggle_pressed = function(self)
+        local gear_id = mod:gear_id(self._selected_item)
+        local alternate_fire_list = mod:get(alternate_fire_setting) or {}
+        alternate_fire_list[gear_id] = not alternate_fire_list[gear_id]
+        mod:set(alternate_fire_setting, alternate_fire_list)
+    end
+
+    instance.cb_on_crosshair_toggle_pressed = function(self)
+        local gear_id = mod:gear_id(self._selected_item)
+        local crosshair_list = mod:get(crosshair_list_setting) or {}
+        crosshair_list[gear_id] = not crosshair_list[gear_id]
+        mod:set(crosshair_list_setting, crosshair_list)
     end
 
     instance.cb_on_grid_entry_right_pressed = function(self, widget, element)
@@ -552,8 +568,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "draw", function(func, self, dt, t,
         local equip_button_hovered = self._widgets_by_name.equip_button and self._widgets_by_name.equip_button.content.hotspot.is_hover
         local reset_button_hovered = self._widgets_by_name.reset_button and self._widgets_by_name.reset_button.content.hotspot.is_hover
         local random_button_hovered = self._widgets_by_name.random_button and self._widgets_by_name.random_button.content.hotspot.is_hover
+        local alternate_fire_toggle_hovered = self._widgets_by_name.alternate_fire_toggle and self._widgets_by_name.alternate_fire_toggle.content.hotspot.is_hover
+        local crosshair_toggle_hovered = self._widgets_by_name.crosshair_toggle and self._widgets_by_name.crosshair_toggle.content.hotspot.is_hover
 
-        if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered and not equip_button_hovered and not reset_button_hovered and not random_button_hovered then
+        if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered and not equip_button_hovered and not reset_button_hovered and not random_button_hovered and not alternate_fire_toggle_hovered and not crosshair_toggle_hovered then
             self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, .3, dt * 4)
         else
             self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, 1, dt * 4)
@@ -619,12 +637,44 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
             end
         end
 
+        local has_alternate_fire = mod:item_has(self._selected_item, "alternate_fire_override")
+        local alternate_fire_toggle = self._widgets_by_name.alternate_fire_toggle
+        if has_alternate_fire and alternate_fire_toggle then
+            local gear_id = mod:gear_id(self._selected_item)
+            local alternate_fire_list = mod:get(alternate_fire_setting)
+            local alternate_fire_value = alternate_fire_list and alternate_fire_list[gear_id]
+            if alternate_fire_value == nil then alternate_fire_value = true end
+            local text_color = not alternate_fire_value and {255, 0, 0} or {255, 255, 255}
+            alternate_fire_toggle.content.text = string_format("{#color(%d,%d,%d)}%s{#reset()}", text_color[1], text_color[2], text_color[3], localize("loc_weapon_inventory_alternate_fire_toggle"))
+        end
+        local widgets_by_name = self._widgets_by_name
+        local alternate_fire_toggle_widget = widgets_by_name and widgets_by_name.alternate_fire_toggle
+        if alternate_fire_toggle then alternate_fire_toggle.visible = has_alternate_fire end
+
+        local has_crosshair = mod:item_has(self._selected_item, "crosshair_type")
+        local crosshair_toggle = self._widgets_by_name.crosshair_toggle
+        if has_crosshair and crosshair_toggle then
+            local gear_id = mod:gear_id(self._selected_item)
+            local crosshair_list = mod:get(crosshair_list_setting)
+            local crosshair_value = crosshair_list and crosshair_list[gear_id]
+            if crosshair_value == nil then crosshair_value = true end
+            local text_color = not crosshair_value and {255, 0, 0} or {255, 255, 255}
+            crosshair_toggle.content.text = string_format("{#color(%d,%d,%d)}%s{#reset()}", text_color[1], text_color[2], text_color[3], localize("loc_weapon_inventory_crosshair_toggle"))
+        end
+        local widgets_by_name = self._widgets_by_name
+        local crosshair_toggle_widget = widgets_by_name and widgets_by_name.crosshair_toggle
+        if crosshair_toggle_widget then crosshair_toggle_widget.visible = has_crosshair end
+
     else
         local widgets_by_name = self._widgets_by_name
         local reset_button = widgets_by_name and widgets_by_name.reset_button
         local random_button = widgets_by_name and widgets_by_name.random_button
+        local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
+        local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
         if reset_button then reset_button.visible = false end
         if random_button then random_button.visible = false end
+        if alternate_fire_toggle then alternate_fire_toggle.visible = false end
+        if crosshair_toggle then crosshair_toggle.visible = false end
     end
 end)
 
@@ -1058,11 +1108,17 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", funct
     local widgets_by_name = self._widgets_by_name
     local reset_button = widgets_by_name and widgets_by_name.reset_button
     local random_button = widgets_by_name and widgets_by_name.random_button
+    local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
+    local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
     if self.customize_attachments then
         if reset_button then reset_button.content.hotspot.pressed_callback = callback(self, "cb_on_reset_pressed") end
         if random_button then random_button.content.hotspot.pressed_callback = callback(self, "cb_on_random_pressed") end
+        if alternate_fire_toggle then alternate_fire_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_alternate_fire_toggle_pressed") end
+        if crosshair_toggle then crosshair_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_crosshair_toggle_pressed") end
     else
         if reset_button then reset_button.visible = false end
         if random_button then random_button.visible = false end
+        if alternate_fire_toggle then alternate_fire_toggle.visible = false end
+        if crosshair_toggle then crosshair_toggle.visible = false end
     end
 end)

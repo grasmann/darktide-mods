@@ -172,6 +172,11 @@ mod.alternate_fire_wielded_slot = function(self, unit)
     return visual_loadout_extension and (visual_loadout_extension._inventory_component and visual_loadout_extension._inventory_component.wielded_slot or visual_loadout_extension._wielded_slot) or "slot_unarmed"
 end
 
+mod.alternate_fire_wielded_item = function(self, unit)
+    local visual_loadout_extension = script_unit_extension(unit, "visual_loadout_system")
+    return visual_loadout_extension and visual_loadout_extension:item_from_slot(mod:alternate_fire_wielded_slot(unit))
+end
+
 mod:hook_require("scripts/utilities/look_delta", function(instance)
 
     instance.look_delta_template = function (weapon_action_component, alternate_fire_component, unit)
@@ -179,12 +184,20 @@ mod:hook_require("scripts/utilities/look_delta", function(instance)
         local weapon_template = WeaponTemplate.current_weapon_template(weapon_action_component)
         local alternate_fire_settings = weapon_template and weapon_template.alternate_fire_settings
 
-        if mod:alternate_fire_wielded_slot(unit) == SLOT_SECONDARY then
-            -- ##### Sight extension ######################################################################################
+        -- ##### Sight extension ######################################################################################
+        local item = mod:alternate_fire_wielded_item(unit)
+        local gear_id = mod:gear_id(item)
+        local alternate_fire_list = mod:get("alternate_fire")
+        local use_alternate_fire = alternate_fire_list and alternate_fire_list[gear_id]
+        if use_alternate_fire == nil then use_alternate_fire = true end
+
+        if mod:alternate_fire_wielded_slot(unit) == SLOT_SECONDARY and use_alternate_fire then
+            
             local override = mod:alternate_fire_override(unit, "look_delta_template")
             if override then return LookDeltaTemplates[override] end
-            -- ##### Sight extension ######################################################################################
+            
         end
+        -- ##### Sight extension ######################################################################################
 
         if alternate_fire_component.is_active then
             look_delta_template_name = alternate_fire_settings and alternate_fire_settings.look_delta_template or "default_aiming"
@@ -230,15 +243,23 @@ mod:hook_require("scripts/utilities/alternate_fire", function(instance)
 
         camera_settings = alternate_fire_settings.camera
 
-        if mod:alternate_fire_wielded_slot(camera_variable_unit) == SLOT_SECONDARY then
-            -- ##### Sight extension ######################################################################################
+        -- ##### Sight extension ######################################################################################
+        local item = mod:alternate_fire_wielded_item(camera_variable_unit)
+        local gear_id = mod:gear_id(item)
+        local alternate_fire_list = mod:get("alternate_fire")
+        local use_alternate_fire = alternate_fire_list and alternate_fire_list[gear_id]
+        if use_alternate_fire == nil then use_alternate_fire = true end
+
+        if mod:alternate_fire_wielded_slot(camera_variable_unit) == SLOT_SECONDARY and use_alternate_fire then
+            
             if camera_variable_unit then
                 local override = mod:alternate_fire_override(camera_variable_unit, "camera")
                 if override == false then return nil, nil, nil
                 elseif override then camera_settings = override end
             end
-            -- ##### Sight extension ######################################################################################
+            
         end
+        -- ##### Sight extension ######################################################################################
 
         if not camera_settings then
             return nil, nil, nil
@@ -273,14 +294,22 @@ mod:hook_require("scripts/utilities/alternate_fire", function(instance)
         start_anim_event = alternate_fire_settings.start_anim_event
         start_anim_event_3p = alternate_fire_settings.start_anime_event_3p or start_anim_event
 
-        if mod:alternate_fire_wielded_slot(player_unit) == SLOT_SECONDARY then
-            -- ##### Sight extension ######################################################################################
+        -- ##### Sight extension ######################################################################################
+        local item = mod:alternate_fire_wielded_item(player_unit)
+        local gear_id = mod:gear_id(item)
+        local alternate_fire_list = mod:get("alternate_fire")
+        local use_alternate_fire = alternate_fire_list and alternate_fire_list[gear_id]
+        if use_alternate_fire == nil then use_alternate_fire = true end
+
+        if mod:alternate_fire_wielded_slot(player_unit) == SLOT_SECONDARY and use_alternate_fire then
+
             local override = mod:alternate_fire_override(player_unit, "aim_animation")
             if override then start_anim_event = override end
             local override = mod:alternate_fire_override(player_unit, "aim_animation_3p")
             if override then start_anim_event_3p = override end
-            -- ##### Sight extension ######################################################################################
+            
         end
+        -- ##### Sight extension ######################################################################################
 
         if start_anim_event and start_anim_event_3p then
             animation_extension:anim_event_1p(start_anim_event)
@@ -340,14 +369,22 @@ mod:hook_require("scripts/utilities/alternate_fire", function(instance)
         stop_anim_event = alternate_fire_settings.stop_anim_event
         stop_anim_event_3p = alternate_fire_settings.stop_anim_event_3p or stop_anim_event
 
-        if mod:alternate_fire_wielded_slot(player_unit) == SLOT_SECONDARY then
-            -- ##### Sight extension ######################################################################################
+        -- ##### Sight extension ######################################################################################
+        local item = mod:alternate_fire_wielded_item(player_unit)
+        local gear_id = mod:gear_id(item)
+        local alternate_fire_list = mod:get("alternate_fire")
+        local use_alternate_fire = alternate_fire_list and alternate_fire_list[gear_id]
+        if use_alternate_fire == nil then use_alternate_fire = true end
+
+        if mod:alternate_fire_wielded_slot(player_unit) == SLOT_SECONDARY and use_alternate_fire then
+            
             local override = mod:alternate_fire_override(player_unit, "unaim_animation")
             if override then stop_anim_event = override end
             local override = mod:alternate_fire_override(player_unit, "unaim_animation_3p")
             if override then stop_anim_event_3p = override end
-            -- ##### Sight extension ######################################################################################
+            
         end
+        -- ##### Sight extension ######################################################################################
 
         if stop_anim_event and stop_anim_event_3p then
             animation_extension:anim_event_1p(stop_anim_event)

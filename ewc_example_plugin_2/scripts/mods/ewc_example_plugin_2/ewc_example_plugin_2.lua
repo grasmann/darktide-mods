@@ -181,10 +181,8 @@ mod.extended_weapon_customization_plugin = {
             -- Item list faction - Who can use the item?
             item_list_faction = "Player",
             -- Unknown
-            tags = {
-            },
-            workflow_checklist = {
-            },
+            tags = {},
+            workflow_checklist = {},
             workflow_state = "RELEASABLE",
             feature_flags = {"ROTATION_ursula"},
             -- Attach node in the unit - can be removed, in which case it will probably use node 1 of the parent slot unit
@@ -193,10 +191,9 @@ mod.extended_weapon_customization_plugin = {
             resource_dependencies = {
                 ["content/weapons/player/ranged/rippergun_rifle/ammunition/ammunition_01/ammunition_01"] = true,
             },
+            -- Attachments - This describes the structure of the item
             attachments = {
                 zzz_shared_material_overrides = {
-                    leaf_attach_node_override = "",
-                    link_map_mode_override = "",
                     item = "",
                     children = {},
                     material_overrides = {},
@@ -205,59 +202,75 @@ mod.extended_weapon_customization_plugin = {
             -- Display name - Attachment names can be localized
             -- The localizations must be global - see the localization file.
             display_name = "n/a",
+            -- Name - This needs to be set - should be the same as the key in master item table
             name = _item_ranged.."/lenses/exmaple_lense_01",
             -- This tells the main mod it is a complete item.
             is_full_item = true,
         },
         [_item_ranged.."/scope_bodies/example_scope_body_01"] = {
+            -- Fallback item - not tested might be interesting for custom slots
             is_fallback_item = false,
-            show_in_1p = true,
-            base_unit = "content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_05/muzzle_05",
-            item_list_faction = "Player",
-            tags = {
-            },
+            -- Show in first person / only in first person
             only_show_in_1p = false,
-            feature_flags = {
-                "ROTATION_ursula"
-            },
+            show_in_1p = true,
+            -- Base unit that is loaded for the attachment
+            -- Here it is the empty item, so it's kind of a dummy and only the attachments show.
+            base_unit = "content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_05/muzzle_05",
+            -- Item list faction - Who can use the item?
+            item_list_faction = "Player",
+            -- Unknown
+            tags = {},
+            feature_flags = {"ROTATION_ursula"},
+            workflow_checklist = {},
+            workflow_state = "RELEASABLE",
+            -- Attach node in the unit - can be removed, in which case it will probably use node 1 of the parent slot unit
             attach_node = "ap_bullet_01",
+            -- Resource packages to load - I recommend adding all resources needed by the different attachments
             resource_dependencies = {
                 ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_05/muzzle_05"] = true,
             },
+            -- Attachments - This describes the structure of the item
             attachments = {
                 zzz_shared_material_overrides = {
-                    leaf_attach_node_override = "",
-                    link_map_mode_override = "",
                     item = "",
                     children = {},
                     material_overrides = {},
                 },
             },
-            workflow_checklist = {
-            },
+            -- Display name - Attachment names can be localized
+            -- The localizations must be global - see the localization file.
             display_name = "n/a",
+            -- Name - This needs to be set - should be the same as the key in master item table
             name = _item_ranged.."/scope_bodies/example_scope_body_01",
-            workflow_state = "RELEASABLE",
+            -- This tells the main mod it is a complete item.
             is_full_item = true,
         },
         [_item_ranged.."/sights/example_scope_01"] = {
+            -- Fallback item - not tested might be interesting for custom slots
             is_fallback_item = false,
+            -- Show in first person / only in first person
             show_in_1p = true,
-            base_unit = "content/characters/empty_item/empty_item",
-            item_list_faction = "Player",
-            tags = {
-            },
             only_show_in_1p = false,
-            feature_flags = {
-                "FEATURE_item_retained",
-            },
+            -- Base unit that is loaded for the attachment
+            -- Here it is the empty item, so it's kind of a dummy and only the attachments show.
+            base_unit = "content/characters/empty_item/empty_item",
+            -- Item list faction - Who can use the item?
+            item_list_faction = "Player",
+            -- Unknown
+            tags = {},
+            feature_flags = {"FEATURE_item_retained"},
+            workflow_state = "RELEASABLE",
+            workflow_checklist = {},
+            -- Attach node in the unit - can be removed, in which case it will probably use node 1 of the parent slot unit
             attach_node = "ap_sight_01",
+            -- Resource packages to load - I recommend adding all resources needed by the different attachments
             resource_dependencies = {
                 ["content/characters/empty_item/empty_item"] = true,
                 ["content/weapons/player/attachments/sights/sight_reflex_02/sight_reflex_02"] = true,
                 ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_05/muzzle_05"] = true,
                 ["content/weapons/player/ranged/rippergun_rifle/ammunition/ammunition_01/ammunition_01"] = true,
             },
+            -- Attachments - This describes the structure of the item
             attachments = {
                 zzz_shared_material_overrides = {
                     item = "",
@@ -319,12 +332,16 @@ mod.extended_weapon_customization_plugin = {
                     },
                 },
             },
-            workflow_checklist = {
-            },
+            -- Display name - Attachment names can be localized
+            -- The localizations must be global - see the localization file.
             display_name = "loc_example_scope_01",
+            -- Name - This needs to be set - should be the same as the key in master item table
             name = _item_ranged.."/sights/example_scope_01",
-            workflow_state = "RELEASABLE",
+            -- This tells the main mod it is a complete item.
             is_full_item = true,
+            -- This allows the attachment to be used for fx source spawning.
+            -- By default kitbash items are ignored when the game wants to spawn fx sources.
+            -- This is done to prevent muzzle flashes coming from a scope that uses a muzzle for example.
             disable_vfx_spawner_exclusion = true,
         },
     },

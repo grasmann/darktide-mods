@@ -159,6 +159,21 @@ end
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+mod.item_has = function(self, item, attribute_name)
+    if item and item.attachments then
+        local attachment_slots = self:fetch_attachment_slots(item.attachments)
+        if attachment_slots then
+            for attachment_slot, data in pairs(attachment_slots) do
+                local replacement_path = data.item
+                local attachment_data = self.settings.attachment_data_by_item_string[replacement_path]
+                if attachment_data and attachment_data[attribute_name] then
+                    return true
+                end
+            end
+        end
+    end
+end
+
 mod.item_data = function(self, item_data)
     -- Get correct item data
     local data = item_data and ((item_data.__attachment_customization and item_data.__master_item) or (item_data.__is_ui_item_preview and item_data.__data))
