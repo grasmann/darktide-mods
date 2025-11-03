@@ -47,7 +47,7 @@ mod.extended_weapon_customization_plugin = {
                     -- This overwrites aim animations
                     -- More info can be found in mod file
                     -- scripts\mods\ewc\patches\alternate_fire.lua
-                    alternate_fire_override = "ironsight",
+                    alternate_fire = "ironsight",
                     -- This overwrites the crosshair
                     -- More info on crosshairs can be found in game file
                     -- scripts/ui/hud/elements/crosshair/hud_element_crosshair_settings

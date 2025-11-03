@@ -156,7 +156,7 @@ mod.alternate_fire_override = function(self, unit, value_name)
     if visual_loadout_extension then
         local sight_attachment = mod:alternate_fire_find_sight_attachment(unit)
         if sight_attachment then
-            local alternate_fire_override = sight_attachment and sight_attachment.alternate_fire_override and alternate_fire_overrides[sight_attachment.alternate_fire_override]
+            local alternate_fire_override = sight_attachment and sight_attachment.alternate_fire and alternate_fire_overrides[sight_attachment.alternate_fire]
             if alternate_fire_override and alternate_fire_override[value_name] then
                 local item = visual_loadout_extension:item_from_slot("slot_secondary")
                 if item and not table_contains(alternate_fire_override.exclude_weapons, item.weapon_template) then

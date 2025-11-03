@@ -28,7 +28,7 @@ local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 
 local WEAPON_OPTIONS_VIEW = "inventory_weapons_view_weapon_options"
 local equip_button_size = {374, 76}
-local default_button_size = {374, 38}
+local default_button_size = {200, 38}
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -65,6 +65,13 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		size = default_button_size,
 		position = {-120 - default_button_size[1], -default_button_size[2], 1},
 	}
+	instance.scenegraph_definition.damage_type_toggle = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = default_button_size,
+		position = {-140 - default_button_size[1] * 2, -default_button_size[2], 1},
+	}
 
 	instance.widget_definitions.reset_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.default_button), "reset_button", {
 		gamepad_action = "secondary_action_pressed",
@@ -93,6 +100,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.widget_definitions.crosshair_toggle = UIWidget.create_definition(table_clone(ButtonPassTemplates.terminal_button_small), "crosshair_toggle", {
 		gamepad_action = "secondary_action_pressed",
 		text = utf8_upper(localize("loc_weapon_inventory_crosshair_toggle")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+	instance.widget_definitions.damage_type_toggle = UIWidget.create_definition(table_clone(ButtonPassTemplates.terminal_button_small), "damage_type_toggle", {
+		gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_damage_type_toggle")),
 		hotspot = {
 			on_pressed_sound = UISoundEvents.system_popup_enter,
 		},

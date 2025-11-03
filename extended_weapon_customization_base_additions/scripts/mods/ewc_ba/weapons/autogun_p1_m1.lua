@@ -29,6 +29,10 @@ mod:merge_attachment_data(autogun_braced_group, receiver_autogun_braced, magazin
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
 mod:merge_attachment_data(autopistol_group, magazine_autopistol)
 
+local magazine_laser_group = {custom_selection_group = "magazine_laser"}
+local magazine_laser = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laser")
+mod:merge_attachment_data(magazine_laser_group, magazine_laser)
+
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local flashlight_modded_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_modded_human")
@@ -65,13 +69,10 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local braced_barrels = "autogun_rifle_barrel_ak_01|autogun_rifle_barrel_ak_02|autogun_rifle_barrel_ak_03|autogun_rifle_barrel_ak_04|autogun_rifle_barrel_ak_05|autogun_rifle_barrel_ak_06|autogun_rifle_barrel_ak_07|autogun_rifle_barrel_ak_08|autogun_rifle_barrel_ak_ml01"
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
-
 local infantry_receivers = "autogun_rifle_receiver_01|autogun_rifle_receiver_ml01"
-
 local headhunter_receivers = "autogun_rifle_killshot_receiver_01|autogun_rifle_killshot_receiver_02|autogun_rifle_killshot_receiver_03|autogun_rifle_killshot_receiver_04|autogun_rifle_killshot_receiver_ml01"
-
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
-
+local laser_magazines = "autogun_rifle_laser_magazine_01|autogun_rifle_laser_magazine_02|autogun_rifle_laser_magazine_03"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
@@ -87,7 +88,7 @@ local attachments = {
         receiver = table_merge_recursive_n(nil, receiver_autogun_braced, receiver_autogun_headhunter),
         grip = table_merge_recursive_n(nil, grip_common, grip_autogun_braced, grip_autogun_headhunter),
         stock = table_merge_recursive_n(nil, stock_common, stock_autogun_braced, stock_autogun_headhunter),
-        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_braced),
+        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_braced, magazine_laser),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, sight_autogun_braced, sight_autogun_headhunter),
     },
 }
@@ -192,6 +193,20 @@ local fixes = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(1, 1.8, 1),
+                },
+            },
+        },
+        {attachment_slot = "magazine",
+            requirements = {
+                magazine = {
+                    has = laser_magazines,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1.15, 1.15, 1.15),
                 },
             },
         },
@@ -446,8 +461,7 @@ fixes.autogun_npc_02 = table_clone(fixes.autogun_p1_m1)
 fixes.autogun_npc_03 = table_clone(fixes.autogun_p1_m1)
 
 local attachment_slots = {
-    autogun_p1_m1 = {
-    },
+    autogun_p1_m1 = {},
 }
 
 attachment_slots.autogun_p1_m2 = table_clone(attachment_slots.autogun_p1_m1)
@@ -502,10 +516,10 @@ local kitbashs = {
                 },
             },
         },
-        display_name = "loc_autogun_rifle_magazine_01_double",
+        display_name = "",
         description = "loc_description_autogun_rifle_magazine_01_double",
         attach_node = "ap_magazine_01",
-        dev_name = "loc_autogun_rifle_magazine_01_double",
+        -- dev_name = "loc_autogun_rifle_magazine_01_double",
 
         is_fallback_item = false,
         show_in_1p = true,
@@ -574,10 +588,10 @@ local kitbashs = {
                 },
             },
         },
-        display_name = "loc_autogun_rifle_magazine_02_double",
+        display_name = "",
         description = "loc_description_autogun_rifle_magazine_02_double",
         attach_node = "ap_magazine_01",
-        dev_name = "loc_autogun_rifle_magazine_02_double",
+        -- dev_name = "loc_autogun_rifle_magazine_02_double",
         is_fallback_item = false,
         show_in_1p = true,
         base_unit = "content/characters/empty_item/empty_item",
@@ -645,10 +659,10 @@ local kitbashs = {
                 },
             },
         },
-        display_name = "loc_autogun_rifle_magazine_03_double",
+        display_name = "",
         description = "loc_description_autogun_rifle_magazine_03_double",
         attach_node = "ap_magazine_01",
-        dev_name = "loc_autogun_rifle_magazine_03_double",
+        -- dev_name = "loc_autogun_rifle_magazine_03_double",
         is_fallback_item = false,
         show_in_1p = true,
         base_unit = "content/characters/empty_item/empty_item",
@@ -667,6 +681,138 @@ local kitbashs = {
         workflow_checklist = {
         },
         name = _item_ranged.."/magazines/autogun_rifle_magazine_03_double",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+    [_item_ranged.."/magazines/autogun_rifle_laser_magazine_01"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+        },
+        display_name = "",
+        description = "loc_description_autogun_rifle_laser_magazine_01",
+        attach_node = "ap_magazine_01",
+        -- dev_name = "loc_autogun_rifle_laser_magazine_01",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/weapons/player/ranged/lasgun_rifle/attachments/magazine_ml01/magazine_ml01",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/magazine_ml01/magazine_ml01"] = true,
+            -- Muzzle flash
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_muzzle_elysian"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_muzzle_02"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_muzzle_crit"] = true,
+            -- Line effect
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_elysian"] = true,
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_crit"] = true,
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_standard_linger"] = true,
+            -- Sounds
+            ["wwise/events/weapon/play_weapon_lasgun_crack_beam_nearby"] = true,
+            ["wwise/events/weapon/play_lasgun_p3_m2_fire_auto"] = true,
+            ["wwise/events/weapon/stop_lasgun_p3_m2_fire_auto"] = true,
+            ["wwise/events/weapon/play_lasgun_p3_m3_fire_single"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/magazines/autogun_rifle_laser_magazine_01",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+    [_item_ranged.."/magazines/autogun_rifle_laser_magazine_02"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+        },
+        display_name = "",
+        description = "loc_description_autogun_rifle_laser_magazine_01",
+        attach_node = "ap_magazine_01",
+        -- dev_name = "loc_autogun_rifle_laser_magazine_01",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/weapons/player/ranged/lasgun_rifle/attachments/magazine_01/magazine_01",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/magazine_01/magazine_01"] = true,
+            -- Muzzle flash
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_muzzle_elysian"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_muzzle_02"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_muzzle_crit"] = true,
+            -- Line effect
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_elysian"] = true,
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_crit"] = true,
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_standard_linger"] = true,
+            -- Sounds
+            ["wwise/events/weapon/play_weapon_lasgun_crack_beam_nearby"] = true,
+            ["wwise/events/weapon/play_lasgun_p3_m2_fire_auto"] = true,
+            ["wwise/events/weapon/stop_lasgun_p3_m2_fire_auto"] = true,
+            ["wwise/events/weapon/play_lasgun_p3_m3_fire_single"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/magazines/autogun_rifle_laser_magazine_02",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+    [_item_ranged.."/magazines/autogun_rifle_laser_magazine_03"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+        },
+        display_name = "",
+        description = "loc_description_autogun_rifle_laser_magazine_01",
+        attach_node = "ap_magazine_01",
+        -- dev_name = "loc_autogun_rifle_laser_magazine_01",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/weapons/player/ranged/lasgun_rifle_krieg/attachments/magazine_01/magazine_01",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/magazine_01/magazine_01"] = true,
+            -- Muzzle flash
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_muzzle_elysian"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_muzzle_02"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_muzzle_crit"] = true,
+            -- Line effect
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_elysian"] = true,
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_crit"] = true,
+            ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_standard_linger"] = true,
+            -- Sounds
+            ["wwise/events/weapon/play_weapon_lasgun_crack_beam_nearby"] = true,
+            ["wwise/events/weapon/play_lasgun_p3_m2_fire_auto"] = true,
+            ["wwise/events/weapon/stop_lasgun_p3_m2_fire_auto"] = true,
+            ["wwise/events/weapon/play_lasgun_p3_m3_fire_single"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/magazines/autogun_rifle_laser_magazine_03",
         workflow_state = "RELEASABLE",
         is_full_item = true,
         disable_vfx_spawner_exclusion = true,

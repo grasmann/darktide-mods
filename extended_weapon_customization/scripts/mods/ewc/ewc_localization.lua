@@ -32,10 +32,13 @@ mod:add_global_localize_strings({
 		["zh-cn"] = "随机",
 	},
 	loc_weapon_inventory_alternate_fire_toggle = {
-		en = "Alternate Fire Override",
+		en = "Alternate Fire",
 	},
 	loc_weapon_inventory_crosshair_toggle = {
-		en = "Crosshair Override",
+		en = "Crosshair",
+	},
+	loc_weapon_inventory_damage_type_toggle = {
+		en = "Damage Type",
 	},
 
 	attachment_slot_pommel = {

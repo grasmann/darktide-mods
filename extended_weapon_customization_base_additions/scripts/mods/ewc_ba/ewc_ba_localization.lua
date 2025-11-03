@@ -92,6 +92,9 @@ mod:add_global_localize_strings({
 		en = "EWC:BA - Sight just for show",
 		["zh-cn"] = "扩展武器自定义：基础增补 - 装饰用瞄具",
 	},
+	loc_ewc_magazine_laser = {
+		en = "EWC:BA - Laser Magazines",
+	},
 
 	attachment_slot_sight_2 = {
 		en = "Sight",
@@ -103,10 +106,6 @@ mod:add_global_localize_strings({
 		["zh-cn"] = "游侠警戒",
 	},
 })
-
-local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
-local _item_melee = _item.."/melee"
 
 return {
 	mod_title = {
@@ -131,11 +130,15 @@ return {
 		["zh-cn"] = "允许随机生成的武器带有激光剑刃",
 	},
 	mod_option_laser_pointer_randomization = {
-		en = "Randomize Laser Pointer",
-		["zh-cn"] = "随机化激光指针",
+		en = "Randomize Red Laser Pointer",
 	},
 	mod_option_laser_pointer_randomization_tooltip = {
-		en = "Allows randomized weapons to have laser pointers.",
-		["zh-cn"] = "允许随机生成的武器带有激光指针",
+		en = "Allows randomized weapons to have red laser pointers.",
+	},
+	mod_option_laser_pointer_randomization_green = {
+		en = "Randomize Green Laser Pointer",
+	},
+	mod_option_laser_pointer_randomization_green_tooltip = {
+		en = "Allows randomized weapons to have green laser pointers.",
 	},
 }

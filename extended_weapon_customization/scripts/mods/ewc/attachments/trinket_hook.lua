@@ -17,6 +17,11 @@ local _item = "content/items/weapons/player"
 local _item_melee = _item.."/melee"
 
 return {
+    trinket_hook_empty = {
+        replacement_path = _item.."/trinkets/trinket_hook_empty",
+        icon_render_unit_rotation_offset = {90, 45, 90 + 30},
+        icon_render_camera_position_offset = {-.04, .3, .15},
+    },
     trinket_hook_05_steel_v = {
         replacement_path = _item.."/trinkets/trinket_hook_05_steel_v",
         icon_render_unit_rotation_offset = {90, 45, 90 + 30},

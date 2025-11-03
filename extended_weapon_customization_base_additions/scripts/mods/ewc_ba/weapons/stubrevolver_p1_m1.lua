@@ -91,9 +91,9 @@ local attachment_slots = {
             default_path = _item_empty_trinket,
             fix = {
                 offset = {
-                    position = vector3_box(.02, .03, .01),
+                    position = vector3_box(.02, .095, -.07),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
+                    scale = vector3_box(.5, .5, .5),
                     node = 1,
                 },
             },

@@ -21,18 +21,18 @@ return {
         replacement_path = _item_ranged.."/sights/reflex_sight_01",
         icon_render_unit_rotation_offset = {90, 0, -95},
         icon_render_camera_position_offset = {.035, -.1, .175},
-        alternate_fire_override = "ironsight",
+        alternate_fire = "ironsight",
     },
     reflex_sight_02 = {
         replacement_path = _item_ranged.."/sights/reflex_sight_02",
         icon_render_unit_rotation_offset = {90, 0, -95},
         icon_render_camera_position_offset = {.035, -.1, .175},
-        alternate_fire_override = "ironsight",
+        alternate_fire = "ironsight",
     },
     reflex_sight_03 = {
         replacement_path = _item_ranged.."/sights/reflex_sight_03",
         icon_render_unit_rotation_offset = {90, 0, -95},
         icon_render_camera_position_offset = {.035, -.1, .175},
-        alternate_fire_override = "ironsight",
+        alternate_fire = "ironsight",
     },
 }

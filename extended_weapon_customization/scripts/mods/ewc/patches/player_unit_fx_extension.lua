@@ -16,15 +16,20 @@ local VisualLoadoutCustomization = mod:original_require("scripts/extension_syste
     local CLASS = CLASS
 	local tonumber = tonumber
     local unit_node = unit.node
+	local table_size = table.size
 	local wwise_world = WwiseWorld
+	local script_unit = ScriptUnit
     local unit_has_node = unit.has_node
     local table_is_empty = table.is_empty
+	local script_unit_extension = script_unit.extension
 	local wwise_world_make_manual_source = wwise_world.make_manual_source
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+mod.fx_overrides = {}
 
 local pt = mod:pt()
 
@@ -178,4 +183,34 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, s
 	local source_by_attachment = _register_sound_sources(wwise_source_node_cache, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name or 1, wwise_world, source_name)
 
 	sources[source_name] = source_by_attachment
+end)
+
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "resolve_gear_sound", function(func, self, sound_alias, optional_external_properties, ...)
+	local allow_default, event, has_husk_events = func(self, sound_alias, optional_external_properties, ...)
+	local inventory_component = self._inventory_component
+	local current_wielded_slot = inventory_component.wielded_slot
+	local item = self:item_from_slot(current_wielded_slot)
+	local gear_id = mod:gear_id(item)
+
+	if gear_id and mod.fx_overrides[gear_id] and mod.fx_overrides[gear_id][sound_alias] then
+		event = mod.fx_overrides[gear_id][sound_alias]
+	end
+
+	return allow_default, event, has_husk_events
+end)
+
+mod:hook(CLASS.PlayerUnitFxExtension, "spawn_unit_particles", function(func, self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, all_clients, create_network_index, optional_attachment_name, ...)
+
+	local unit_data_extension = self._unit_data_extension
+	local inventory_component = unit_data_extension:read_component("inventory")
+	local current_wielded_slot = inventory_component.wielded_slot
+	local item = self._visual_loadout_extension:item_from_slot(current_wielded_slot)
+	local gear_id = mod:gear_id(item)
+
+	if gear_id and mod.fx_overrides[gear_id] and mod.fx_overrides[gear_id][particle_name] then
+		particle_name = mod.fx_overrides[gear_id][particle_name] or particle_name
+	end
+
+	-- Original function
+	return func(self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, all_clients, create_network_index, optional_attachment_name, ...)
 end)

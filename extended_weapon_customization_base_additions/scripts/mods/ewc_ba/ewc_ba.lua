@@ -1464,6 +1464,7 @@ local weapons_folder = "extended_weapon_customization_base_additions/scripts/mod
 local load_weapons = {
     "ogryn_heavystubber_p1_m1",
     "ogryn_heavystubber_p2_m1",
+    "thunderhammer_2h_p1_m1",
     "ogryn_rippergun_p1_m1",
     "ogryn_gauntlet_p1_m1",
     "ogryn_thumper_p1_m1",

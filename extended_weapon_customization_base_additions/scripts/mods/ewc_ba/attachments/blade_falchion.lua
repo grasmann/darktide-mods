@@ -22,35 +22,42 @@ return {
         replacement_path = _item_melee.."/blades/falchion_blade_01",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {0, -2.5, .8},
+        damage_type = "metal_slashing_medium",
     },
     falchion_blade_02 = {
         replacement_path = _item_melee.."/blades/falchion_blade_02",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {0, -2.5, .8},
+        damage_type = "metal_slashing_medium",
     },
     falchion_blade_03 = {
         replacement_path = _item_melee.."/blades/falchion_blade_03",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {0, -2.5, .8},
+        damage_type = "metal_slashing_medium",
     },
     falchion_blade_04 = {
         replacement_path = _item_melee.."/blades/falchion_blade_04",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {0, -2.5, .8},
+        damage_type = "metal_slashing_medium",
     },
     falchion_blade_05 = {
         replacement_path = _item_melee.."/blades/falchion_blade_05",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {0, -2.5, .8},
+        damage_type = "metal_slashing_medium",
     },
     falchion_blade_06 = {
         replacement_path = _item_melee.."/blades/falchion_blade_06",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {0, -2.5, .8},
+        damage_type = "metal_slashing_medium",
     },
     falchion_blade_ml01 = {
         replacement_path = _item_melee.."/blades/falchion_blade_ml01",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {0, -2.5, .8},
+        damage_type = "metal_slashing_medium",
     },
 }

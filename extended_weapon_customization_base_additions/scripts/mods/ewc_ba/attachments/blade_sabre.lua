@@ -22,40 +22,48 @@ return {
         replacement_path = _item_melee.."/blades/sabre_blade_01",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {.05, -3, .8},
+        damage_type = "metal_slashing_medium",
     },
     sabre_blade_02 = {
         replacement_path = _item_melee.."/blades/sabre_blade_02",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {.05, -3, .8},
+        damage_type = "metal_slashing_medium",
     },
     sabre_blade_03 = {
         replacement_path = _item_melee.."/blades/sabre_blade_03",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {.05, -3, .8},
+        damage_type = "metal_slashing_medium",
     },
     sabre_blade_04 = {
         replacement_path = _item_melee.."/blades/sabre_blade_04",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {.05, -3, .8},
+        damage_type = "metal_slashing_medium",
     },
     sabre_blade_05 = {
         replacement_path = _item_melee.."/blades/sabre_blade_05",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {.05, -3, .8},
+        damage_type = "metal_slashing_medium",
     },
     sabre_blade_06 = {
         replacement_path = _item_melee.."/blades/sabre_blade_06",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {.05, -3, .8},
+        damage_type = "metal_slashing_medium",
     },
     sabre_blade_07 = {
         replacement_path = _item_melee.."/blades/sabre_blade_07",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {.05, -3, .8},
+        damage_type = "metal_slashing_medium",
     },
     sabre_blade_ml01 = {
         replacement_path = _item_melee.."/blades/sabre_blade_ml01",
         icon_render_unit_rotation_offset = {90, -30, 0},
         icon_render_camera_position_offset = {.05, -3, .8},
+        damage_type = "metal_slashing_medium",
     },
 }

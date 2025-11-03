@@ -34,6 +34,10 @@ local sight_scope_show = mod:io_dofile("extended_weapon_customization_base_addit
 local sight_reflex_show = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex_show")
 mod:merge_attachment_data(sight_show, sight_scope_show, sight_reflex_show)
 
+local magazine_laser_group = {custom_selection_group = "magazine_laser"}
+local magazine_laser = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laser")
+mod:merge_attachment_data(magazine_laser_group, magazine_laser)
+
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
@@ -71,6 +75,7 @@ local braced_barrels = "autogun_rifle_barrel_ak_01|autogun_rifle_barrel_ak_02|au
 local headhunter_receivers = "autogun_rifle_killshot_receiver_01|autogun_rifle_killshot_receiver_02|autogun_rifle_killshot_receiver_03|autogun_rifle_killshot_receiver_04|autogun_rifle_killshot_receiver_ml01"
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
+local laser_magazines = "autogun_rifle_laser_magazine_01|autogun_rifle_laser_magazine_02|autogun_rifle_laser_magazine_03"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local reflex_sights_show = "reflex_sight_show_01|reflex_sight_show_02|reflex_sight_show_03"
 local scopes = "scope_01"
@@ -87,7 +92,7 @@ local attachments = {
         receiver = table_merge_recursive_n(nil, receiver_autogun_infantry, receiver_autogun_headhunter),
         grip = table_merge_recursive_n(nil, grip_common, grip_autogun_infantry, grip_autogun_headhunter),
         stock = table_merge_recursive_n(nil, stock_common, stock_autogun_infantry, stock_autogun_headhunter),
-        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry),
+        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry, magazine_laser),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, sight_autogun_infantry, sight_autogun_headhunter, sight_scope_show, sight_reflex_show),
     },
 }
@@ -191,6 +196,20 @@ local fixes = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(1, 1.8, 1),
+                },
+            },
+        },
+        {attachment_slot = "magazine",
+            requirements = {
+                magazine = {
+                    has = laser_magazines,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1.15, 1.15, 1.15),
                 },
             },
         },
@@ -482,10 +501,10 @@ local kitbashs = {
                 },
             },
         },
-        display_name = "loc_autogun_rifle_ak_magazine_01_double",
+        display_name = "",
         description = "loc_description_autogun_rifle_ak_magazine_01_double",
         attach_node = "ap_magazine_01",
-        dev_name = "loc_autogun_rifle_ak_magazine_01_double",
+        -- dev_name = "loc_autogun_rifle_ak_magazine_01_double",
         is_fallback_item = false,
         show_in_1p = true,
         base_unit = "content/characters/empty_item/empty_item",

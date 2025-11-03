@@ -29,6 +29,10 @@ mod:merge_attachment_data(autogun_braced_group, magazine_autogun_braced, receive
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
 mod:merge_attachment_data(autopistol_group, magazine_autopistol)
 
+local magazine_laser_group = {custom_selection_group = "magazine_laser"}
+local magazine_laser = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laser")
+mod:merge_attachment_data(magazine_laser_group, magazine_laser)
+
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
@@ -66,6 +70,7 @@ local braced_barrels = "autogun_rifle_barrel_ak_01|autogun_rifle_barrel_ak_02|au
 local headhunter_receivers = "autogun_rifle_killshot_receiver_01|autogun_rifle_killshot_receiver_02|autogun_rifle_killshot_receiver_03|autogun_rifle_killshot_receiver_04|autogun_rifle_killshot_receiver_ml01"
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
+local laser_magazines = "autogun_rifle_laser_magazine_01|autogun_rifle_laser_magazine_02|autogun_rifle_laser_magazine_03"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
@@ -81,7 +86,7 @@ local attachments = {
         receiver = table_merge_recursive_n(nil, receiver_autogun_braced, receiver_autogun_infantry),
         grip = table_merge_recursive_n(nil, grip_common, grip_autogun_infantry, grip_autogun_braced),
         stock = table_merge_recursive_n(nil, stock_common, stock_autogun_infantry, stock_autogun_braced),
-        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_braced),
+        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_braced, magazine_laser),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, sight_autogun_braced, sight_autogun_infantry),
     },
 }
@@ -185,6 +190,20 @@ local fixes = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(1, 1.8, 1),
+                },
+            },
+        },
+        {attachment_slot = "magazine",
+            requirements = {
+                magazine = {
+                    has = laser_magazines,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1.15, 1.15, 1.15),
                 },
             },
         },

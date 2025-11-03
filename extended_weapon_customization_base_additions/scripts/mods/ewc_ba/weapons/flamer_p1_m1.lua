@@ -56,8 +56,7 @@ local attachment_slots = {
 attachment_slots.flamer_npc_01 = table_clone(attachment_slots.flamer_p1_m1)
 
 local fixes = {
-    flamer_p1_m1 = {
-    },
+    flamer_p1_m1 = {},
 }
 
 fixes.flamer_npc_01 = table_clone(fixes.flamer_p1_m1)

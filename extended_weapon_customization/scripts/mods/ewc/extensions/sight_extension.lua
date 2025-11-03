@@ -202,7 +202,7 @@ SightExtension.update = function(self, dt, t)
     local current_position = vector3_unbox(self.current_offset.position) or vector3_zero()
     local current_rotation = vector3_unbox(self.current_offset.rotation) or vector3_zero()
 
-    local offset = self.offset
+    local offset = self.offset or empty_offset
     local custom_fov = offset.custom_fov and math_rad(offset.custom_fov)
     local fov = offset.fov and math_rad(offset.fov)
     local min_scale = offset.aim_scale or 1
