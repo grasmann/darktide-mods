@@ -17,9 +17,9 @@ local HitScan = mod:original_require("scripts/utilities/attack/hit_scan")
     local CLASS = CLASS
     local table = table
     local tostring = tostring
-    local script_unit = ScriptUnit
     local quaternion = Quaternion
     local table_sort = table.sort
+    local script_unit = ScriptUnit
     local table_clear = table.clear
     local table_append = table.append
     local quaternion_forward = quaternion.forward
@@ -55,58 +55,61 @@ end
 
 local shoot_hook = function(func, self, position, rotation, power_level, charge_level, t, fire_config, ...)
 
-    local debug_drawer = self._debug_drawer
-	local is_local_unit = self._is_local_unit
-	local is_server = self._is_server
-	local physics_world = self._physics_world
-	local player = self._player
-	local player_unit = self._player_unit
-	local world = self._world
-	local weapon_item = self._weapon.item
-	local wielded_slot = self._inventory_component.wielded_slot
-	local action_settings = self._action_settings
-	local hit_scan_template = fire_config.hit_scan_template
-	local max_distance = hit_scan_template.range
-	local is_critical_strike = self._critical_strike_component.is_active
-	local direction = quaternion_forward(rotation)
-	local instakill = false
-	local end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units
-	local rewind_ms = self:_rewind_ms(is_local_unit, player, position, direction, max_distance)
-    local collision_tests = hit_scan_template.collision_tests
+    local hit_minion = nil
+    local hit_scan_template = fire_config.hit_scan_template
+    if hit_scan_template then
+        local debug_drawer = self._debug_drawer
+        local is_local_unit = self._is_local_unit
+        local is_server = self._is_server
+        local physics_world = self._physics_world
+        local player = self._player
+        local player_unit = self._player_unit
+        local world = self._world
+        local weapon_item = self._weapon.item
+        local wielded_slot = self._inventory_component.wielded_slot
+        local action_settings = self._action_settings
+        local max_distance = hit_scan_template.range
+        local is_critical_strike = self._critical_strike_component.is_active
+        local direction = quaternion_forward(rotation)
+        local instakill = false
+        local end_position, hit_weakspot, killing_blow, num_hit_units
+        local rewind_ms = self:_rewind_ms(is_local_unit, player, position, direction, max_distance)
+        local collision_tests = hit_scan_template.collision_tests
 
-	if collision_tests then
-		table_clear(ALL_HITS)
+        if collision_tests then
+            table_clear(ALL_HITS)
 
-		for i = 1, #collision_tests do
-			local config = collision_tests[i]
-			local test = config.test
-			local against = config.against
-			local collision_filter = config.collision_filter
-			local radius = config.radius
+            for i = 1, #collision_tests do
+                local config = collision_tests[i]
+                local test = config.test
+                local against = config.against
+                local collision_filter = config.collision_filter
+                local radius = config.radius
 
-			if test == "ray" then
-				local hits = HitScan.raycast(physics_world, position, direction, max_distance, against, collision_filter, rewind_ms, is_local_unit, player, is_server)
+                if test == "ray" then
+                    local hits = HitScan.raycast(physics_world, position, direction, max_distance, against, collision_filter, rewind_ms, is_local_unit, player, is_server)
 
-				if hits then
-					table_append(ALL_HITS, hits)
-				end
-			elseif test == "sphere" then
-				local hits = HitScan.sphere_sweep(physics_world, position, direction, max_distance, against, collision_filter, rewind_ms, radius)
+                    if hits then
+                        table_append(ALL_HITS, hits)
+                    end
+                elseif test == "sphere" then
+                    local hits = HitScan.sphere_sweep(physics_world, position, direction, max_distance, against, collision_filter, rewind_ms, radius)
 
-				if hits then
-					table_append(ALL_HITS, hits)
-				end
-			end
-		end
+                    if hits then
+                        table_append(ALL_HITS, hits)
+                    end
+                end
+            end
 
-		table_sort(ALL_HITS, _hit_sort_function)
+            table_sort(ALL_HITS, _hit_sort_function)
 
-		end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, ALL_HITS, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
-	else
-		local hits = HitScan.raycast(physics_world, position, direction, max_distance, nil, nil, rewind_ms, is_local_unit, player, is_server)
+            end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, ALL_HITS, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
+        else
+            local hits = HitScan.raycast(physics_world, position, direction, max_distance, nil, nil, rewind_ms, is_local_unit, player, is_server)
 
-		end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, hits, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
-	end
+            end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, hits, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
+        end
+    end
 
     -- Get weapon item
     local item = self._weapon.item
@@ -125,25 +128,6 @@ local shoot_hook = function(func, self, position, rotation, power_level, charge_
 
     -- Original function
     func(self, position, rotation, power_level, charge_level, t, fire_config, ...)
-
-    -- local unit_data_extension = script_unit_extension(player_unit, "unit_data_system")
-    -- local alternate_fire_component = unit_data_extension and unit_data_extension:read_component("alternate_fire")
-    -- local aiming = alternate_fire_component and alternate_fire_component.is_active
-
-    -- -- Check item and damage type
-    -- if gear_id and use_damage_type and mod.damage_types[use_damage_type] then
-    --     -- Override damage type
-    --     local line_effect
-    --     if aiming and mod.damage_types[use_damage_type].line_effect_aiming then
-    --         line_effect = mod.damage_types[use_damage_type].line_effect_aiming
-    --     elseif mod.damage_types[use_damage_type].line_effect then
-    --         line_effect = mod.damage_types[use_damage_type].line_effect
-    --     end
-    --     -- Play line fx
-    --     if line_effect and position and end_position then
-    --         self:_play_line_fx(line_effect, position, end_position, self:_reference_attachment_id(fire_config))
-    --     end
-    -- end
 
 end
 
@@ -190,9 +174,6 @@ mod:hook(CLASS.ActionShootHitScan, "_play_line_fx", line_fx_hook)
 mod:hook(CLASS.ActionShootPellets, "_play_line_fx", line_fx_hook)
 
 local shoot_sound_hook = function(func, self, fire_config, ...)
-
-    -- local action_settings = self._action_settings
-    -- local fx_settings = action_settings.fx or EMPTY_TABLE
 
     local player_unit = self._player_unit
     local unit_data_extension = script_unit_extension(player_unit, "unit_data_system")
@@ -248,15 +229,8 @@ local shoot_sound_hook = function(func, self, fire_config, ...)
         end
     end
 
-    -- mod:set_fx_overrides(self._player_unit, self._weapon.item, "play_ranged_shooting", "stop_ranged_shooting", "ranged_pre_loop_shot")
-
     -- Original function
     func(self, fire_config, ...)
-
-    -- Unset override
-    -- mod:clear_fx_override(gear_id, "play_ranged_shooting")
-    -- mod:clear_fx_override(gear_id, "stop_ranged_shooting")
-    -- mod:clear_fx_override(gear_id, "ranged_pre_loop_shot")
 
 end
 
@@ -289,61 +263,11 @@ local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, char
 
             local fx = self._action_settings.fx
             if fx then
-                -- local is_critical_strike = self._critical_strike_component.is_active
                 local effect_name = fx.muzzle_flash_effect
-                -- local effect_name_secondary = fx.muzzle_flash_effect_secondary
+                local effect_name_secondary = fx.muzzle_flash_effect_secondary
                 local crit_effect_name = fx.muzzle_flash_crit_effect
-                -- local weapon_special_effect_name = fx.weapon_special_muzzle_flash_effect
-                -- local weapon_special_crit_effect_name = fx.weapon_special_muzzle_flash_crit_effect
-                -- local inventory_slot_component = self._inventory_slot_component
-                -- local special_active = false
-
-                -- if special_active then
-                --     effect_to_play = is_critical_strike and weapon_special_crit_effect_name or weapon_special_effect_name
-                -- end
-
-                -- effect_to_play = effect_to_play or is_critical_strike and crit_effect_name or effect_name
-                -- effect_to_play = effect_to_play or effect_name
-
-                -- local is_charge_dependant = effect_to_play and type(effect_to_play) == "table"
-
-                -- if is_charge_dependant then
-                --     local effect_to_play_table = effect_to_play
-
-                --     effect_to_play = nil
-
-                --     for i = 1, #effect_to_play_table do
-                --         local entry = effect_to_play_table[i]
-                --         local required_charge = entry.charge_level
-                --         local effect = entry.effect
-
-                --         if required_charge <= charge_level then
-                --             effect_to_play = effect
-                --         end
-                --     end
-                -- end
-
-                -- if effect_to_play then
-
-                --     local player_unit = self._player_unit
-                --     local unit_data_extension = script_unit_extension(player_unit, "unit_data_system")
-                --     local alternate_fire_component = unit_data_extension and unit_data_extension:read_component("alternate_fire")
-                --     local aiming = alternate_fire_component and alternate_fire_component.is_active
-
-                --     if is_critical_strike then
-                --         if aiming and damage_type.muzzle_flash_crit_aiming then
-                --             mod:set_fx_override(gear_id, effect_to_play, damage_type.muzzle_flash_crit_aiming)
-                --         elseif damage_type.muzzle_flash_crit then
-                --             mod:set_fx_override(gear_id, effect_to_play, damage_type.muzzle_flash_crit)
-                --         end
-                --     else
-                --         if aiming and damage_type.muzzle_flash_aiming then
-                --             mod:set_fx_override(gear_id, effect_to_play, damage_type.muzzle_flash_aiming)
-                --         elseif damage_type.muzzle_flash then
-                --             mod:set_fx_override(gear_id, effect_to_play, damage_type.muzzle_flash)
-                --         end
-                --     end
-                -- end
+                local weapon_special_effect_name = fx.weapon_special_muzzle_flash_effect
+                local weapon_special_crit_effect_name = fx.weapon_special_muzzle_flash_crit_effect
 
                 local player_unit = self._player_unit
                 local unit_data_extension = script_unit_extension(player_unit, "unit_data_system")
@@ -352,6 +276,9 @@ local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, char
 
                 mod:clear_fx_override(gear_id, crit_effect_name)
                 mod:clear_fx_override(gear_id, effect_name)
+                mod:clear_fx_override(gear_id, effect_name_secondary)
+                mod:clear_fx_override(gear_id, weapon_special_effect_name)
+                mod:clear_fx_override(gear_id, weapon_special_crit_effect_name)
 
                 if aiming and damage_type.muzzle_flash_crit_aiming then
                     mod:set_fx_override(gear_id, crit_effect_name, damage_type.muzzle_flash_crit_aiming)
@@ -359,10 +286,28 @@ local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, char
                     mod:set_fx_override(gear_id, crit_effect_name, damage_type.muzzle_flash_crit)
                 end
 
+                if aiming and damage_type.muzzle_flash_secondary_aiming then
+                    mod:set_fx_override(gear_id, effect_name_secondary, damage_type.muzzle_flash_secondary_aiming)
+                elseif damage_type.muzzle_flash_secondary then
+                    mod:set_fx_override(gear_id, effect_name_secondary, damage_type.muzzle_flash_secondary)
+                end
+
                 if aiming and damage_type.muzzle_flash_aiming then
                     mod:set_fx_override(gear_id, effect_name, damage_type.muzzle_flash_aiming)
                 elseif damage_type.muzzle_flash then
                     mod:set_fx_override(gear_id, effect_name, damage_type.muzzle_flash)
+                end
+
+                if aiming and damage_type.muzzle_flash_special_aiming then
+                    mod:set_fx_override(gear_id, weapon_special_effect_name, damage_type.muzzle_flash_special_aiming)
+                elseif damage_type.muzzle_flash_special then
+                    mod:set_fx_override(gear_id, weapon_special_effect_name, damage_type.muzzle_flash_special)
+                end
+
+                if aiming and damage_type.muzzle_flash_special_crit_aiming then
+                    mod:set_fx_override(gear_id, weapon_special_crit_effect_name, damage_type.muzzle_flash_special_crit_aiming)
+                elseif damage_type.muzzle_flash_special_crit then
+                    mod:set_fx_override(gear_id, weapon_special_crit_effect_name, damage_type.muzzle_flash_special_crit)
                 end
 
             end
@@ -372,9 +317,6 @@ local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, char
     end
     -- Original function
     func(self, fire_config, shoot_rotation, charge_level, ...)
-
-    -- Unset override
-    -- if effect_to_play then mod:clear_fx_override(gear_id, effect_to_play) end
 
 end
 

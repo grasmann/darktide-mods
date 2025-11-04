@@ -26,6 +26,7 @@ local damage_type_active_setting = "damage_type_active"
 local gibbing_types = GibbingSettings.gibbing_types
 local gibbing_power = GibbingSettings.gibbing_power
 
+mod.fx_overrides = {}
 mod.enemy_unit_damage_type_override = {}
 mod.damage_types = {
     default = {
@@ -78,6 +79,19 @@ mod.damage_types = {
         -- Muzzle flash
         muzzle_flash = "content/fx/particles/weapons/rifles/lasgun/lasgun_muzzle_elysian",
         muzzle_flash_crit = "content/fx/particles/weapons/rifles/lasgun/lasgun_muzzle_elysian",
+    },
+    plasma = {
+        game_damage_type = "plasma",
+        -- Gibbing settings
+        gibbing_type = gibbing_types.plasma,
+        gibbing_power = gibbing_power.infinite,
+        -- Line effect
+        line_effect = LineEffects.plasma_beam,
+        -- Sounds
+        ranged_single_shot = "wwise/events/weapon/play_weapon_plasmagun",
+        -- Muzzle flash
+        muzzle_flash = "content/fx/particles/weapons/rifles/plasma_gun/plasma_muzzle_ks",
+        muzzle_flash_crit = "content/fx/particles/weapons/rifles/plasma_gun/plasma_muzzle_bfg",
     },
     auto_bullet_infantry = {
         game_damage_type = "auto_bullet",
@@ -133,41 +147,11 @@ mod.damage_types = {
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
--- mod.set_fx_overrides = function(self, player_unit, item, ...)
-
---     -- Aiming
---     local unit_data_extension = player_unit and script_unit_extension(player_unit, "unit_data_system")
---     local alternate_fire_component = unit_data_extension and unit_data_extension:read_component("alternate_fire")
---     local aiming = alternate_fire_component and alternate_fire_component.is_active
-
---     local gear_id = item and mod:gear_id(item)
-
---     if gear_id then
---         local damage_type_name = mod:damage_type(gear_id)
---         if damage_type_name and mod.damage_types[damage_type_name] then
-
---             local damage_type = mod.damage_types[damage_type_name]
-
---             local attributes = {...}
---             for i = 1, #attributes do
---                 local attribute = attributes[i]
-
---                 if aiming and damage_type[attribute.."_aiming"] then
---                     mod:set_fx_override(gear_id, attribute, damage_type[attribute.."_aiming"])
---                 elseif damage_type[attribute] then
---                     mod:set_fx_override(gear_id, attribute, damage_type[attribute])
---                 end
-
---             end
-
---         end
---     end
-
--- end
-
 mod.set_fx_override = function(self, gear_id, sound_alias, override)
-	self.fx_overrides[gear_id] = self.fx_overrides[gear_id] or {}
-	self.fx_overrides[gear_id][sound_alias] = override
+    if sound_alias and override then
+        self.fx_overrides[gear_id] = self.fx_overrides[gear_id] or {}
+        self.fx_overrides[gear_id][sound_alias] = override
+    end
 end
 
 mod.clear_fx_overrides = function(self, gear_id)
@@ -177,7 +161,7 @@ mod.clear_fx_overrides = function(self, gear_id)
 end
 
 mod.clear_fx_override = function(self, gear_id, sound_alias)
-	if self.fx_overrides[gear_id] then
+	if sound_alias and self.fx_overrides[gear_id] then
 		self.fx_overrides[gear_id][sound_alias] = nil
 	end
 	if self.fx_overrides[gear_id] and table_size(self.fx_overrides[gear_id]) == 0 then

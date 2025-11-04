@@ -26,6 +26,10 @@ local bayonet_group = {custom_selection_group = "rippergun"}
 local bayonet_rippergun = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/bayonet_rippergun")
 mod:merge_attachment_data(autogun_headhunter_group, muzzle_autogun_headhunter)
 
+local magazine_plasma_group = {custom_selection_group = "magazine_plasma"}
+local magazine_plasma = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_plasma")
+mod:merge_attachment_data(magazine_plasma_group, magazine_plasma)
+
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
@@ -56,6 +60,7 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local rippergun_bayonets = "rippergun_rifle_bayonet_01|rippergun_rifle_bayonet_02|rippergun_rifle_bayonet_03|rippergun_rifle_bayonet_04|rippergun_rifle_bayonet_05|rippergun_rifle_bayonet_ml01"
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
+local plasma_magazines = "bolter_plasma_magazine_01"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
@@ -64,7 +69,7 @@ local attachments = {
         grip = grip_common,
         flashlight = flashlight_human,
         muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_braced, muzzle_autogun_headhunter),
-        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry, magazine_autogun_braced),
+        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry, magazine_autogun_braced, magazine_plasma),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, {
             lasgun_rifle_sight_01 = {
                 replacement_path = _item_ranged.."/sights/lasgun_rifle_sight_01",
@@ -146,6 +151,20 @@ local fixes = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(1, 1.8, 1),
+                },
+            },
+        },
+        {attachment_slot = "magazine",
+            requirements = {
+                magazine = {
+                    has = plasma_magazines,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1.5, 1, 1.2),
                 },
             },
         },
@@ -351,6 +370,45 @@ local kitbashs = {
         workflow_checklist = {
         },
         name = _item_ranged.."/magazines/boltgun_rifle_magazine_02_double",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+    [_item_ranged.."/magazines/bolter_plasma_magazine_01"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+        },
+        display_name = "",
+        description = "loc_description_bolter_plasma_magazine_01",
+        attach_node = "ap_magazine_01",
+        -- dev_name = "loc_bolter_plasma_magazine_01",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/weapons/player/ranged/lasgun_rifle/attachments/magazine_ml01/magazine_ml01",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/magazine_ml01/magazine_ml01"] = true,
+            -- Muzzle flash
+            ["content/fx/particles/weapons/rifles/plasma_gun/plasma_muzzle_ks"] = true,
+            ["content/fx/particles/weapons/rifles/plasma_gun/plasma_muzzle_bfg"] = true,
+            -- Line effect
+            ["content/fx/particles/weapons/rifles/plasma_gun/plasma_beam"] = true,
+            ["content/fx/particles/weapons/rifles/plasma_gun/plasma_beam_linger"] = true,
+            -- Sounds
+            ["wwise/events/weapon/play_weapon_plasmagun"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/magazines/bolter_plasma_magazine_01",
         workflow_state = "RELEASABLE",
         is_full_item = true,
         disable_vfx_spawner_exclusion = true,

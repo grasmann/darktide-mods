@@ -53,6 +53,7 @@ local pt = mod:pt()
 local temp_detached = {}
 local temp_validated = {}
 local temp_mod_count = {}
+local damage_type_slots = {"magazine", "head", "blade"}
 local empty_position = {0, 0, 0}
 local alternate_fire_setting = "alternate_fire"
 local crosshair_list_setting = "crosshair"
@@ -288,7 +289,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         local content = selected_tab_index and self._tabs_content[selected_tab_index]
         local slot_name = content and content.slot_name
 
-        if slot_name == "magazine" and attachment_data and attachment_data.damage_type then
+        if table_contains(damage_type_slots, slot_name) and attachment_data and attachment_data.damage_type then
             mod:damage_type(gear_id, attachment_data.damage_type)
 
             local damage_type_active_list = mod:get(damage_type_active_setting) or {}
@@ -296,7 +297,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
                 damage_type_active_list[gear_id] = true
                 mod:set(damage_type_active_setting, damage_type_active_list)
             end
-        elseif slot_name == "magazine" then
+        elseif table_contains(damage_type_slots, slot_name) then
             mod:damage_type(gear_id, false)
         end
     end
