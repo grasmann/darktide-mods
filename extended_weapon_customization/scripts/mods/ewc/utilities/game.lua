@@ -61,6 +61,10 @@ mod.is_in_prologue_hub = function()
 	return game_mode_name == "prologue_hub"
 end
 
+mod.world = function(self)
+    return managers.world:world("level_world")
+end
+
 mod.me = function(self)
     -- Get player
     local player = self:player()

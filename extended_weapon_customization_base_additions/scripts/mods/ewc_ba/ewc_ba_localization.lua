@@ -80,6 +80,9 @@ mod:add_global_localize_strings({
 	loc_ewc_force_sword = {
 		en = "EWC:BA - Force Sword",
 	},
+	loc_ewc_slab_shield = {
+		en = "EWC:BA - Slab Shield",
+	},
 	loc_ewc_2h_force_sword = {
 		en = "EWC:BA - 2H Force Sword",
 		["zh-cn"] = "扩展武器自定义：基础增补 - 双手力场剑",
@@ -94,6 +97,9 @@ mod:add_global_localize_strings({
 	},
 	loc_ewc_magazine_laser = {
 		en = "EWC:BA - Laser Magazines",
+	},
+	loc_ewc_bolter = {
+		en = "EWC:BA - Bolter",
 	},
 
 	attachment_slot_sight_2 = {

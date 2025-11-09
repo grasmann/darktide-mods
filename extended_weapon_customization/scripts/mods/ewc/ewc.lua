@@ -198,6 +198,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/lobby_view
 
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/attachment_callback_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/flashlight_extension")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/damage_type_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/shield_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/sight_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/sway_extension")

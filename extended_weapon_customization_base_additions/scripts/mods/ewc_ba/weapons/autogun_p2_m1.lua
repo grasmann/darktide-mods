@@ -5,10 +5,6 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local autogun_headhunter_group = {custom_selection_group = "autogun_headhunter"}
-local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
-local autopistol_group = {custom_selection_group = "autopistol"}
-local sight_show = {custom_selection_group = "sight_show"}
-
 local receiver_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/receiver_autogun_headhunter")
 local magazine_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_headhunter")
 local barrel_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_autogun_headhunter")
@@ -18,6 +14,7 @@ local stock_autogun_headhunter = mod:io_dofile("extended_weapon_customization_ba
 local grip_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_autogun_headhunter")
 mod:merge_attachment_data(autogun_headhunter_group, receiver_autogun_headhunter, magazine_autogun_headhunter, barrel_autogun_headhunter, muzzle_autogun_headhunter, stock_autogun_headhunter, sight_autogun_headhunter, grip_autogun_headhunter)
 
+local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
 local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
 local receiver_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/receiver_autogun_infantry")
 local barrel_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/barrel_autogun_infantry")
@@ -27,15 +24,17 @@ local stock_autogun_infantry = mod:io_dofile("extended_weapon_customization_base
 local grip_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_autogun_infantry")
 mod:merge_attachment_data(autogun_infantry_group, receiver_autogun_infantry, magazine_autogun_infantry, barrel_autogun_infantry, muzzle_autogun_infantry, stock_autogun_infantry, sight_autogun_infantry, grip_autogun_infantry)
 
+local autopistol_group = {custom_selection_group = "autopistol"}
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
 mod:merge_attachment_data(autopistol_group, magazine_autopistol)
 
+local sight_show = {custom_selection_group = "sight_show"}
 local sight_scope_show = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope_show")
 local sight_reflex_show = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex_show")
 mod:merge_attachment_data(sight_show, sight_scope_show, sight_reflex_show)
 
 local magazine_laser_group = {custom_selection_group = "magazine_laser"}
-local magazine_laser = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laser")
+local magazine_laser = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laser_autogun")
 mod:merge_attachment_data(magazine_laser_group, magazine_laser)
 
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
@@ -104,23 +103,7 @@ attachments.autogun_npc_05 = table_clone(attachments.autogun_p2_m1)
 
 local fixes = {
     autogun_p2_m1 = {
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = "autogun_rifle_sight_01",
-                },
-                receiver = {
-                    has = braced_receivers,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, .03, 0),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                },
-            },
-        },
+        -- Adjust barrel position when mixing braced and non-braced receivers and barrels
         {attachment_slot = "barrel",
             requirements = {
                 receiver = {
@@ -157,6 +140,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust muzzle position when using barrel_01
         {attachment_slot = "muzzle",
             requirements = {
                 barrel = {
@@ -171,6 +155,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust flashlight position when using barrel_01
         {attachment_slot = "flashlight",
             requirements = {
                 barrel = {
@@ -185,6 +170,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust magazine scale when using autopistol magazines
         {attachment_slot = "magazine",
             requirements = {
                 magazine = {
@@ -199,6 +185,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust magazine scale when using laser magazines
         {attachment_slot = "magazine",
             requirements = {
                 magazine = {
@@ -213,6 +200,7 @@ local fixes = {
                 },
             },
         },
+        -- Sight offset when using reflex sights on infantry receivers
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = { has = reflex_sights },
@@ -222,6 +210,7 @@ local fixes = {
                 offset = { position = vector3_box(0, 0, -.0085) },
             },
         },
+        -- Sight offset when using reflex sights on braced receivers
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = { has = reflex_sights },
@@ -231,6 +220,7 @@ local fixes = {
                 offset = { position = vector3_box(0, 0, -.0085) },
             },
         },
+        -- Sight offset when using reflex sights on headhunter receivers
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = { has = reflex_sights },
@@ -240,6 +230,7 @@ local fixes = {
                 offset = { position = vector3_box(0, 0, -.011) },
             },
         },
+        -- Sight offset when using scopes on infantry or braced receivers
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -259,6 +250,7 @@ local fixes = {
                 },
             },
         },
+        -- Sight offset when using scopes on headhunter receivers
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -278,119 +270,7 @@ local fixes = {
                 },
             },
         },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..reflex_sights_show,
-                },
-                receiver = {
-                    has = braced_receivers,
-                }
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.025, 0),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = reflex_sights.."|"..reflex_sights_show,
-                },
-                receiver = {
-                    has = headhunter_receivers,
-                }
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.05, 0),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = scopes,
-                },
-                receiver = {
-                    has = braced_receivers,
-                }
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.025, .025),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = scopes,
-                },
-                receiver = {
-                    has = headhunter_receivers,
-                }
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.05, .025),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = scopes,
-                },
-                receiver = {
-                    has = infantry_receivers,
-                }
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.05, .025),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = "lasgun_rifle_sight_01",
-                },
-                receiver = {
-                    has = infantry_receivers,
-                }
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.0225, .025),
-                    rotation = vector3_box(0, 0, 0),
-                },
-            },
-        },
-        {attachment_slot = "sight",
-            requirements = {
-                sight = {
-                    has = "lasgun_rifle_sight_01",
-                },
-                receiver = {
-                    has = braced_receivers,
-                }
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.0125, .025),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, .65, 1),
-                },
-            },
-        },
+        -- Adjust sight position when using infantry autogun ironsight braced receiver
         {attachment_slot = "sight",
             requirements = {
                 sight = {
@@ -408,6 +288,163 @@ local fixes = {
                 },
             },
         },
+        -- Adjust sight position when using infantry autogun ironsight braced receiver
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = "autogun_rifle_sight_01",
+                },
+                receiver = {
+                    has = braced_receivers,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .03, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                },
+            },
+        },
+        -- Adjust sight position when reflex sights on braced receiver
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = reflex_sights.."|"..reflex_sights_show,
+                },
+                receiver = {
+                    has = braced_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.025, 0),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        -- Adjust sight position when reflex sights on headhunter receiver
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = reflex_sights.."|"..reflex_sights_show,
+                },
+                receiver = {
+                    has = headhunter_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, 0),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        -- Adjust sight position when using scopes on braced receivers
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = braced_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.025, .025),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        -- Adjust sight position when using scopes on headhunter receivers
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = headhunter_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, .025),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        -- Adjust sight position when using scopes on infantry receivers
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = scopes,
+                },
+                receiver = {
+                    has = infantry_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.05, .025),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        -- Adjust sight position when using lasgun sight on infantry receivers
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = "lasgun_rifle_sight_01",
+                },
+                receiver = {
+                    has = infantry_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.0225, .025),
+                    rotation = vector3_box(0, 0, 0),
+                },
+            },
+        },
+        -- Adjust sight position when using lasgun sight on braced receivers
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = "lasgun_rifle_sight_01",
+                },
+                receiver = {
+                    has = braced_receivers,
+                }
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.0125, .025),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, .65, 1),
+                },
+            },
+        },
+        -- Adjust sight position when using lasgun sight on braced receivers
+        {attachment_slot = "sight",
+            requirements = {
+                sight = {
+                    has = "autogun_rifle_sight_01",
+                },
+                receiver = {
+                    has = braced_receivers,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .03, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                },
+            },
+        },
+        -- Attach rail and adjust rail position when using infantry autogun receiver
         {attachment_slot = "rail",
             requirements = {
                 receiver = {
@@ -429,6 +466,7 @@ local fixes = {
                 },
             },
         },
+        -- Attach empty rail when not using infantry autogun receiver
         {attachment_slot = "rail",
             requirements = {
                 receiver = {
@@ -454,6 +492,15 @@ fixes.autogun_p2_m2 = table_clone(fixes.autogun_p2_m1)
 fixes.autogun_p2_m3 = table_clone(fixes.autogun_p2_m1)
 fixes.autogun_npc_04 = table_clone(fixes.autogun_p2_m1)
 fixes.autogun_npc_05 = table_clone(fixes.autogun_p2_m1)
+
+local attachment_slots = {
+    autogun_p2_m1 = {},
+}
+
+attachment_slots.autogun_p2_m2 = table_clone(attachment_slots.autogun_p2_m1)
+attachment_slots.autogun_p2_m3 = table_clone(attachment_slots.autogun_p2_m1)
+attachment_slots.autogun_npc_04 = table_clone(attachment_slots.autogun_p2_m1)
+attachment_slots.autogun_npc_05 = table_clone(attachment_slots.autogun_p2_m1)
 
 local kitbashs = {
     [_item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double"] = {
@@ -530,7 +577,8 @@ local kitbashs = {
 }
 
 return {
+    attachment_slots = attachment_slots,
     attachments = attachments,
-    fixes = fixes,
     kitbashs = kitbashs,
+    fixes = fixes,
 }

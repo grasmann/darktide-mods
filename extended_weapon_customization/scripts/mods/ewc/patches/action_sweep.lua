@@ -13,7 +13,17 @@ local damage_settings = mod:original_require("scripts/settings/damage/damage_set
     local unit = Unit
     local CLASS = CLASS
     local unit_attachment_callback = unit.attachment_callback
+    local unit_damage_type_callback = unit.damage_type_callback
 --#endregion
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+local function _damage_type(action)
+    local wielded_slot = action._inventory_component.wielded_slot
+    return unit_damage_type_callback(action._player_unit, "damage_type", wielded_slot)
+end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
@@ -25,15 +35,13 @@ mod:hook(CLASS.ActionSweep, "_do_damage_to_unit", function(func, self, damage_pr
     -- Check item and attachments
     if item and item.attachments then
         -- Get damage type
-        local gear_id = mod:gear_id(item)
-        local damage_type_list = mod:get("damage_type")
-        local use_damage_type = damage_type_list and damage_type_list[gear_id]
+        local damage_type_t = _damage_type(self)
         -- Check damage type
-        if use_damage_type and mod.damage_types[use_damage_type] then
+        if damage_type_t then --and mod.damage_types[damage_type] then
             -- Override damage type
-            damage_type = damage_type.game_damage_type or use_damage_type
+            damage_type = damage_type_t.game_damage_type or damage_type
             -- Set unit override
-            mod.enemy_unit_damage_type_override[hit_unit] = use_damage_type
+            mod.enemy_unit_damage_type_override[hit_unit] = damage_type_t.game_damage_type or damage_type
         end
     end
     -- Original function

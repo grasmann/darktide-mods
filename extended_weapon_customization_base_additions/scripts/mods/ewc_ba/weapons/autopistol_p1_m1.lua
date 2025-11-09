@@ -5,16 +5,15 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
-local autogun_braced_group = {custom_selection_group = "autogun_braced"}
-
 local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
 mod:merge_attachment_data(autogun_infantry_group, magazine_autogun_infantry)
 
+local autogun_braced_group = {custom_selection_group = "autogun_braced"}
 local magazine_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_braced")
 mod:merge_attachment_data(autogun_braced_group, magazine_autogun_braced)
 
 local magazine_laser_group = {custom_selection_group = "magazine_laser"}
-local magazine_laser = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laser")
+local magazine_laser = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laser_autogun")
 mod:merge_attachment_data(magazine_laser_group, magazine_laser)
 
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
@@ -69,6 +68,7 @@ local attachments = {
 
 local fixes = {
     autopistol_p1_m1 = {
+        -- Adjust magazine scale when using autogun magazines
         {attachment_slot = "magazine",
             requirements = {
                 magazine = {
@@ -83,6 +83,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust magazine scale when using braced autogun magazines
         {attachment_slot = "magazine",
             requirements = {
                 magazine = {
@@ -97,6 +98,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust magazine scale when using laser magazines
         {attachment_slot = "magazine",
             requirements = {
                 magazine = {
@@ -111,6 +113,7 @@ local fixes = {
                 },
             },
         },
+        -- Sight offset when using reflex sights
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -124,6 +127,7 @@ local fixes = {
                 },
             },
         },
+        -- Sight offset when using scopes
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -140,6 +144,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust sight position when using reflex sights
         {attachment_slot = "sight",
             requirements = {
                 sight = {
@@ -153,6 +158,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust sight position when using scopes
         {attachment_slot = "sight",
             requirements = {
                 sight = {
@@ -166,6 +172,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust rail position when using reflex sights or scopes
         {attachment_slot = "rail",
             requirements = {
                 sight = {

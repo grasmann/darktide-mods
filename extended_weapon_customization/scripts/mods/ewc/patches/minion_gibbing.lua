@@ -15,12 +15,13 @@ mod:hook(CLASS.MinionGibbing, "gib", function(func, self, hit_zone_name_or_nil, 
     local minion_unit = self._unit
     local reset_gibbing_type, reset_gibbing_power = nil, nil
     -- Check if unit has an override
-    if minion_unit and mod.enemy_unit_damage_type_override[minion_unit] then
+    if minion_unit and mod.enemy_unit_damage_type_override[minion_unit] and damage_profile.name ~= "havoc_self_gib" then
         -- Get gibbing values
         local damage_type = mod.enemy_unit_damage_type_override[minion_unit]
         local gibbing = mod.damage_types[damage_type] or mod.damage_types.default
         -- Override gibbing values
         reset_gibbing_power = damage_profile.gibbing_power
+        reset_gibbing_type = damage_profile.gibbing_type
         damage_profile.gibbing_type = gibbing and gibbing.gibbing_type or override_gib_type
         damage_profile.gibbing_power = gibbing and gibbing.gibbing_power or damage_profile.gibbing_power
         override_gib_type = gibbing and gibbing.gibbing_type or override_gib_type

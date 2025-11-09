@@ -88,10 +88,30 @@ mod.damage_types = {
         -- Line effect
         line_effect = LineEffects.plasma_beam,
         -- Sounds
+        play_ranged_shooting = "wwise/events/weapon/play_weapon_silence",
+        stop_ranged_shooting = "wwise/events/weapon/stop_weapon_silence",
+        ranged_pre_loop_shot = "wwise/events/weapon/play_weapon_plasmagun",
         ranged_single_shot = "wwise/events/weapon/play_weapon_plasmagun",
         -- Muzzle flash
         muzzle_flash = "content/fx/particles/weapons/rifles/plasma_gun/plasma_muzzle_ks",
         muzzle_flash_crit = "content/fx/particles/weapons/rifles/plasma_gun/plasma_muzzle_bfg",
+    },
+    boltshell = {
+        game_damage_type = "boltshell",
+        -- Gibbing settings
+        gibbing_type = gibbing_types.boltshell,
+        gibbing_power = gibbing_power.infinite,
+        -- Line effect
+        line_effect = LineEffects.boltshell,
+        -- Sounds
+        play_ranged_shooting = "wwise/events/weapon/play_weapon_silence",
+        stop_ranged_shooting = "wwise/events/weapon/stop_weapon_silence",
+        ranged_pre_loop_shot = "wwise/events/weapon/play_weapon_bolter",
+        ranged_single_shot = "wwise/events/weapon/play_weapon_bolter",
+        -- Muzzle flash
+        muzzle_flash = "content/fx/particles/weapons/rifles/bolter/bolter_muzzle_ignite",
+        muzzle_flash_secondary = "content/fx/particles/weapons/rifles/bolter/bolter_muzzle_secondary",
+        muzzle_flash_crit = "content/fx/particles/weapons/rifles/bolter/bolter_muzzle_secondary",
     },
     auto_bullet_infantry = {
         game_damage_type = "auto_bullet",
@@ -104,7 +124,7 @@ mod.damage_types = {
         play_ranged_shooting = "wwise/events/weapon/play_autogun_p1_m1_auto",
         stop_ranged_shooting = "wwise/events/weapon/stop_autogun_p1_m1_auto",
         ranged_pre_loop_shot = "wwise/events/weapon/play_autogun_p1_m1_first",
-        ranged_single_shot = "wwise/events/weapon/play_autogun_p2_m1_first",
+        ranged_single_shot = "wwise/events/weapon/play_autogun_p1_m1_first",
         -- Muzzle flash
         muzzle_flash = "content/fx/particles/weapons/rifles/autogun/autogun_muzzle",
         muzzle_flash_crit = "content/fx/particles/weapons/rifles/autogun/autogun_muzzle_crit",

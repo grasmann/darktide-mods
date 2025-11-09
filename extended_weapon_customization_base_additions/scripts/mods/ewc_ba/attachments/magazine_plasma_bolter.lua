@@ -23,4 +23,16 @@ return {
         icon_render_camera_position_offset = {-.1, -1.5, -.05},
         damage_type = "plasma",
     },
+    bolter_plasma_magazine_02 = {
+        replacement_path = _item_ranged.."/magazines/bolter_plasma_magazine_02",
+        icon_render_unit_rotation_offset = {90, 0, 30},
+        icon_render_camera_position_offset = {-.1, -1.5, -.05},
+        damage_type = "plasma",
+    },
+    bolter_plasma_magazine_03 = {
+        replacement_path = _item_ranged.."/magazines/bolter_plasma_magazine_03",
+        icon_render_unit_rotation_offset = {90, 0, 30},
+        icon_render_camera_position_offset = {-.1, -1.5, -.05},
+        damage_type = "plasma",
+    },
 }

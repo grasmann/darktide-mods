@@ -4,6 +4,8 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
+local MultiFireModes = mod:original_require("scripts/settings/equipment/weapon_templates/multi_fire_modes")
 local damage_settings = mod:original_require("scripts/settings/damage/damage_settings")
 local HitScan = mod:original_require("scripts/utilities/attack/hit_scan")
 
@@ -25,6 +27,7 @@ local HitScan = mod:original_require("scripts/utilities/attack/hit_scan")
     local quaternion_forward = quaternion.forward
     local script_unit_extension = script_unit.extension
     local unit_attachment_callback = unit.attachment_callback
+    local unit_damage_type_callback = unit.damage_type_callback
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -39,19 +42,41 @@ local INDEX_ACTOR = 4
 local IMPACT_FX_DATA = {
 	will_be_predicted = true,
 }
-local damage_type_setting = "damage_type"
+local EXTERNAL_PROPERTIES = {}
 local damage_type_active_setting = "damage_type_active"
 
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
--- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 local function _hit_sort_function(entry_1, entry_2)
 	local distance_1 = entry_1.distance or entry_1[INDEX_DISTANCE]
 	local distance_2 = entry_2.distance or entry_2[INDEX_DISTANCE]
-
 	return distance_1 < distance_2
 end
+
+local function _get_aiming(action)
+    local player_unit = action._player_unit
+    local unit_data_extension = script_unit_extension(player_unit, "unit_data_system")
+    local alternate_fire_component = unit_data_extension and unit_data_extension:read_component("alternate_fire")
+    return alternate_fire_component and alternate_fire_component.is_active
+end
+
+local function _damage_type(action)
+    local wielded_slot = action._inventory_component.wielded_slot
+    return unit_damage_type_callback(action._player_unit, "damage_type", wielded_slot)
+end
+
+local function _damage_type_active(action)
+    local item = action._weapon.item
+    local gear_id = item and mod:gear_id(item)
+    local damage_type_active_list = mod:get(damage_type_active_setting)
+    local use_damage_type = damage_type_active_list and gear_id and damage_type_active_list[gear_id]
+end
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 local shoot_hook = function(func, self, position, rotation, power_level, charge_level, t, fire_config, ...)
 
@@ -111,19 +136,14 @@ local shoot_hook = function(func, self, position, rotation, power_level, charge_
         end
     end
 
-    -- Get weapon item
-    local item = self._weapon.item
-    local gear_id = item and mod:gear_id(item)
     -- Get damage type
-    local damage_type_list = mod:get(damage_type_setting)
-    local damage_type = damage_type_list and gear_id and damage_type_list[gear_id]
-    local damage_type_active_list = mod:get(damage_type_active_setting)
-    local use_damage_type = damage_type_active_list and gear_id and damage_type_active_list[gear_id]
+    local damage_type = _damage_type(self)
+    local use_damage_type = _damage_type_active(self)
 
     -- Check item and damage type
     if hit_minion and use_damage_type and damage_type then
         -- Override damage type
-        mod.enemy_unit_damage_type_override[hit_minion] = damage_type
+        mod.enemy_unit_damage_type_override[hit_minion] = damage_type.game_damage_type
     end
 
     -- Original function
@@ -138,32 +158,23 @@ mod:hook(CLASS.ActionShootProjectile, "_shoot", shoot_hook)
 
 local line_fx_hook = function(func, self, line_effect, position, end_position, optional_attachment_id, ...)
 
-    local player_unit = self._player_unit
-    local unit_data_extension = script_unit_extension(player_unit, "unit_data_system")
-    local alternate_fire_component = unit_data_extension and unit_data_extension:read_component("alternate_fire")
-    local aiming = alternate_fire_component and alternate_fire_component.is_active
-
-    -- Get weapon item
-    local item = self._weapon.item
-    -- Check item and attachments
-    if item and item.attachments then
-        -- Get damage type
-        local gear_id = mod:gear_id(item)
-        local damage_type_list = mod:get(damage_type_setting)
-        local damage_type = damage_type_list and gear_id and damage_type_list[gear_id]
-        local damage_type_active_list = mod:get(damage_type_active_setting)
-        local use_damage_type = damage_type_active_list and gear_id and damage_type_active_list[gear_id]
-        -- Check damage type
-        if damage_type and use_damage_type then
-            -- Override damage type
-            local new_effect
-            if aiming and mod.damage_types[damage_type].line_effect_aiming then
-                new_effect = mod.damage_types[damage_type].line_effect_aiming
-            elseif mod.damage_types[damage_type].line_effect then
-                new_effect = mod.damage_types[damage_type].line_effect
-            end
-            line_effect = new_effect or line_effect
+    -- Get aiming
+    local aiming = _get_aiming(self)
+    -- Get damage type
+    local damage_type = _damage_type(self)
+    local use_damage_type = _damage_type_active(self)
+    -- Check damage type
+    if damage_type and use_damage_type then
+        
+        local new_effect
+        if aiming and damage_type.line_effect_aiming then
+            new_effect = damage_type.line_effect_aiming
+        elseif damage_type.line_effect then
+            new_effect = damage_type.line_effect
         end
+
+        line_effect = new_effect or line_effect
+
     end
 
     -- Original function
@@ -175,11 +186,8 @@ mod:hook(CLASS.ActionShootPellets, "_play_line_fx", line_fx_hook)
 
 local shoot_sound_hook = function(func, self, fire_config, ...)
 
-    local player_unit = self._player_unit
-    local unit_data_extension = script_unit_extension(player_unit, "unit_data_system")
-    local alternate_fire_component = unit_data_extension and unit_data_extension:read_component("alternate_fire")
-    local aiming = alternate_fire_component and alternate_fire_component.is_active
-
+    -- Get aiming
+    local aiming = _get_aiming(self)
     -- Get weapon item
     local item = self._weapon.item
     local gear_id = item and mod:gear_id(item)
@@ -187,14 +195,10 @@ local shoot_sound_hook = function(func, self, fire_config, ...)
     -- Check item and attachments
     if gear_id then
         -- Get damage type
-        local damage_type_list = mod:get(damage_type_setting)
-        local damage_type = damage_type_list and gear_id and damage_type_list[gear_id]
-        local damage_type_active_list = mod:get(damage_type_active_setting)
-        local use_damage_type = damage_type_active_list and gear_id and damage_type_active_list[gear_id]
+        local damage_type = _damage_type(self)
+        local use_damage_type = _damage_type_active(self)
         -- Check damage type
-        if use_damage_type and damage_type and mod.damage_types[damage_type] then
-            -- Override damage type
-            local damage_type = mod.damage_types[damage_type]
+        if use_damage_type and damage_type then
 
             mod:clear_fx_override(gear_id, "ranged_single_shot")
             mod:clear_fx_override(gear_id, "play_ranged_shooting")
@@ -224,6 +228,15 @@ local shoot_sound_hook = function(func, self, fire_config, ...)
             elseif damage_type.ranged_pre_loop_shot then
                 mod:set_fx_override(gear_id, "ranged_pre_loop_shot", damage_type.ranged_pre_loop_shot)
             end
+
+            local action_settings = self._action_settings
+            local fx_settings = action_settings.fx
+            local default_looping_sound = fx_settings and fx_settings.looping_shoot_sfx_alias
+            local no_play_loop_or_silence = (not damage_type.play_ranged_shooting_aiming and not damage_type.play_ranged_shooting) or
+                (damage_type.play_ranged_shooting_aiming == "wwise/events/weapon/play_weapon_silence" or damage_type.play_ranged_shooting == "wwise/events/weapon/play_weapon_silence")
+
+            self.fake_looping_shoot_sfx_alias = default_looping_sound and no_play_loop_or_silence and (damage_type.ranged_single_shot_aiming or damage_type.ranged_single_shot)
+
         else
             mod:clear_fx_overrides(gear_id)
         end
@@ -239,10 +252,92 @@ mod:hook(CLASS.ActionShootHitScan, "_play_shoot_sound", shoot_sound_hook)
 mod:hook(CLASS.ActionShootPellets, "_play_shoot_sound", shoot_sound_hook)
 mod:hook(CLASS.ActionShootProjectile, "_play_shoot_sound", shoot_sound_hook)
 
-mod:hook(CLASS.ActionShoot, "_update_looping_shoot_sound", shoot_sound_hook)
-mod:hook(CLASS.ActionShootHitScan, "_update_looping_shoot_sound", shoot_sound_hook)
-mod:hook(CLASS.ActionShootPellets, "_update_looping_shoot_sound", shoot_sound_hook)
-mod:hook(CLASS.ActionShootProjectile, "_update_looping_shoot_sound", shoot_sound_hook)
+local update_sound_hook = function(func, self, fire_config, ...)
+
+    -- Get time
+    local t = mod:time()
+    -- Get damage type
+    local damage_type = _damage_type(self)
+    local use_damage_type = _damage_type_active(self)
+    -- Get aiming
+    local aiming = _get_aiming(self)
+
+    if self.fake_looping_shoot_sfx_alias and use_damage_type and damage_type then
+
+        local action_component = self._action_component
+        local fx_extension = self._fx_extension
+        local action_settings = self._action_settings
+        local muzzle_fx_source_name = self:_muzzle_fx_source()
+        local fx_settings = action_settings.fx or EMPTY_TABLE
+        local post_loop_tail_alias = fx_settings.post_loop_shoot_tail_sfx_alias
+        local num_pre_loop_events = fx_settings.num_pre_loop_events or 0
+        local reference_attachment_id, has_ammo
+
+        if self._multi_fire_mode == MultiFireModes.simultaneous then
+            reference_attachment_id = VisualLoadoutCustomization.ROOT_ATTACH_NAME
+
+            for i = 1, #self._fire_configurations do
+                if self:_has_ammo(self._fire_configurations[i]) then
+                    has_ammo = true
+
+                    break
+                end
+            end
+        else
+            reference_attachment_id = self:_reference_attachment_id(fire_config)
+            has_ammo = self:_has_ammo(fire_config)
+        end
+
+        local fire_state = action_component.fire_state
+        local is_looping_shoot_sfx_playing = self._run_looping_sound
+        local automatic_fire = is_looping_shoot_sfx_playing and (fire_state == "waiting_to_shoot" or fire_state == "shooting" or fire_state == "prepare_shooting" or fire_state == "prepare_simultaneous_shot")
+        local shooting = fire_state == "start_shooting" or fire_state == "shooting" or automatic_fire
+        local num_shots_fired = action_component.num_shots_fired
+        local started_shooting = shooting and has_ammo
+
+        if started_shooting then
+
+            self.fake_timer = self.fake_timer or t
+
+            local fire_rate_settings = self:_fire_rate_settings()
+            local auto_fire_time = fire_rate_settings.auto_fire_time
+            local parameter_name = fx_settings.auto_fire_time_parameter_name
+
+            if auto_fire_time then
+
+                local shoot_sfx = aiming and (damage_type.ranged_single_shot_aiming or damage_type.ranged_pre_loop_shot_aiming) or damage_type.ranged_single_shot or damage_type.ranged_pre_loop_shot
+
+                table.clear(EXTERNAL_PROPERTIES)
+                local action_module_charge_component = self._action_module_charge_component
+                if action_module_charge_component then
+                    local charge_level = action_module_charge_component.charge_level
+                    EXTERNAL_PROPERTIES.charge_level = charge_level >= 1 and "fully_charged"
+                end
+
+                if shoot_sfx and t - self.fake_timer >= auto_fire_time then
+
+                    self.fake_timer = t
+
+                    fx_extension:trigger_wwise_event_with_source(shoot_sfx, muzzle_fx_source_name, true, false, reference_attachment_id)
+                end
+
+            end
+
+        else
+            self.fake_timer = nil
+        end
+
+    end
+
+    -- Original function
+    func(self, fire_config, ...)
+
+end
+
+mod:hook(CLASS.ActionShoot, "_update_looping_shoot_sound", update_sound_hook)
+mod:hook(CLASS.ActionShootHitScan, "_update_looping_shoot_sound", update_sound_hook)
+mod:hook(CLASS.ActionShootPellets, "_update_looping_shoot_sound", update_sound_hook)
+mod:hook(CLASS.ActionShootProjectile, "_update_looping_shoot_sound", update_sound_hook)
 
 local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, charge_level, ...)
     -- Get weapon item
@@ -252,14 +347,12 @@ local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, char
     -- Check item and attachments
     if gear_id then
         -- Get damage type
-        local damage_type_list = mod:get(damage_type_setting)
-        local damage_type = damage_type_list and gear_id and damage_type_list[gear_id]
-        local damage_type_active_list = mod:get(damage_type_active_setting)
-        local use_damage_type = damage_type_active_list and gear_id and damage_type_active_list[gear_id]
+        local damage_type = _damage_type(self)
+        local use_damage_type = _damage_type_active(self)
+        -- Get aiming
+        local aiming = _get_aiming(self)
         -- Check damage type
-        if use_damage_type and damage_type and mod.damage_types[damage_type] then
-            -- Override damage type
-            local damage_type = mod.damage_types[damage_type]
+        if use_damage_type and damage_type then
 
             local fx = self._action_settings.fx
             if fx then
@@ -268,11 +361,6 @@ local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, char
                 local crit_effect_name = fx.muzzle_flash_crit_effect
                 local weapon_special_effect_name = fx.weapon_special_muzzle_flash_effect
                 local weapon_special_crit_effect_name = fx.weapon_special_muzzle_flash_crit_effect
-
-                local player_unit = self._player_unit
-                local unit_data_extension = script_unit_extension(player_unit, "unit_data_system")
-                local alternate_fire_component = unit_data_extension and unit_data_extension:read_component("alternate_fire")
-                local aiming = alternate_fire_component and alternate_fire_component.is_active
 
                 mod:clear_fx_override(gear_id, crit_effect_name)
                 mod:clear_fx_override(gear_id, effect_name)

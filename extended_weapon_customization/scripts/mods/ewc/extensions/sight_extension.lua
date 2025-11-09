@@ -128,6 +128,7 @@ end
 
 SightExtension.on_settings_changed = function(self)
     self.dof_strength = mod:get("mod_weapon_dof_strength")
+    self.lense_completely_transparent = mod:get("mod_lense_completely_transparent")
 end
 
 SightExtension.on_cutscene = function(self, cutscene_playing)
@@ -250,7 +251,8 @@ SightExtension.update = function(self, dt, t)
     end
     
     if self.lense_2_unit and unit_alive(self.lense_2_unit) then
-        unit_set_scalar_for_materials(self.lense_2_unit, "inv_jitter_alpha", self.lens_transparency - .1, true)
+        local max_transparency = self.lense_completely_transparent and self.lens_transparency or self.lens_transparency - .1
+        unit_set_scalar_for_materials(self.lense_2_unit, "inv_jitter_alpha", max_transparency, true)
     end
 
     if self.sight_unit and unit_alive(self.sight_unit) then

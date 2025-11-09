@@ -4,23 +4,22 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local autogun_headhunter_group = {custom_selection_group = "autogun_headhunter"}
 local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
-local autogun_braced_group = {custom_selection_group = "autogun_braced"}
-local autopistol_group = {custom_selection_group = "autopistol"}
-
 local magazine_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_infantry")
 local muzzle_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_infantry")
 mod:merge_attachment_data(autogun_infantry_group, magazine_autogun_infantry, muzzle_autogun_infantry)
 
+local autogun_braced_group = {custom_selection_group = "autogun_braced"}
 local magazine_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_braced")
 local muzzle_autogun_braced = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_braced")
 mod:merge_attachment_data(autogun_braced_group, magazine_autogun_braced, muzzle_autogun_braced)
 
+local autogun_headhunter_group = {custom_selection_group = "autogun_headhunter"}
 local magazine_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_headhunter")
 local muzzle_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_headhunter")
 mod:merge_attachment_data(autogun_headhunter_group, muzzle_autogun_headhunter, magazine_autogun_headhunter)
 
+local autopistol_group = {custom_selection_group = "autopistol"}
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
 mod:merge_attachment_data(autopistol_group, magazine_autopistol)
 
@@ -95,6 +94,7 @@ attachments.boltpistol_p1_m2 = table_clone(attachments.boltpistol_p1_m1)
 
 local fixes = {
     boltpistol_p1_m1 = {
+        -- Sight offset when using reflex sights
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -108,6 +108,7 @@ local fixes = {
                 },
             },
         },
+        -- Sight offset when using scopes
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {
@@ -124,6 +125,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust sight position when using reflex sights
         {attachment_slot = "sight",
             requirements = {
                 sight = {
@@ -137,6 +139,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust sight position when using scopes
         {attachment_slot = "sight",
             requirements = {
                 sight = {
@@ -150,6 +153,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust magazine scale when using autopistol magazines
         {attachment_slot = "magazine",
             requirements = {
                 magazine = {
@@ -164,6 +168,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust magazine scale when using autogun magazines
         {attachment_slot = "magazine",
             requirements = {
                 magazine = {
@@ -178,6 +183,7 @@ local fixes = {
                 },
             },
         },
+        -- Adjust muzzle when using boltgun_pistol_barrel_01|boltgun_pistol_barrel_03
         {attachment_slot = "muzzle",
             requirements = {
                 barrel = {

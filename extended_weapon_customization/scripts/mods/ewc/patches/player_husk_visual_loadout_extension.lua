@@ -30,6 +30,7 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local unit_attachment_callback = unit.attachment_callback
     local unit_flashlight_callback = unit.flashlight_callback
     local script_unit_add_extension = script_unit.add_extension
+    local unit_damage_type_callback = unit.damage_type_callback
     local script_unit_remove_extension = script_unit.remove_extension
 --#endregion
 
@@ -136,10 +137,27 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "init", function(func, self, ex
         )
     end
 
+    if not script_unit_extension(unit, "damage_type_system") then
+        script_unit_add_extension(
+            {
+                world = world,
+            },
+            unit,
+            "DamageTypeExtension",
+            "damage_type_system",
+            {
+                visual_loadout_extension = self,
+                player = extension_init_data.player,
+                wielded_slot = self._wielded_slot,
+            }
+        )
+    end
+
     self.flashlight_extension_update = true
     self.sight_extension_update = true
     self.attachment_callback_extension_update = true
     self.shield_extension_update = true
+    self.damage_type_extension_update = true
 
 end)
 
@@ -155,6 +173,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function
     if table_contains(PROCESS_SLOTS, slot_name) then
         self.attachment_callback_extension_update = true
         self.shield_extension_update = true
+        self.damage_type_extension_update = true
     end
 
 end)
@@ -189,6 +208,13 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "update", function(func, self, 
         end
     end
 
+    if self.damage_type_extension_update then
+        if self:is_slot_unit_spawned(SLOT_SECONDARY) and self:is_slot_unit_spawned(SLOT_PRIMARY) then
+            unit_damage_type_callback(self._unit, "on_equip_weapon")
+            self.damage_type_extension_update = nil
+        end
+    end
+
     if self.shield_extension_update then
         if self:is_slot_unit_spawned(SLOT_SECONDARY) and self:is_slot_unit_spawned(SLOT_PRIMARY) then
             unit_shield_callback(self._unit, "on_equip_weapon")
@@ -215,6 +241,10 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "destroy", function(func, self,
 
     if script_unit_extension(self._unit, "shield_transparency_system") then
         script_unit_remove_extension(self._unit, "shield_transparency_system")
+    end
+
+    if script_unit_extension(self._unit, "damage_type_system") then
+        script_unit_remove_extension(self._unit, "damage_type_system")
     end
 
     if script_unit_extension(self._unit, "sway_system") then

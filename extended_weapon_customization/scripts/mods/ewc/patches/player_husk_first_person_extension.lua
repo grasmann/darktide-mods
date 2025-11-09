@@ -13,6 +13,7 @@ local mod = get_mod("extended_weapon_customization")
     local unit_shield_callback = unit.shield_callback
     local script_unit_extension = script_unit.extension
     local unit_flashlight_callback = unit.flashlight_callback
+    local unit_damage_type_callback = unit.damage_type_callback
     local world_update_unit_and_children = world.update_unit_and_children
 --#endregion
 
@@ -30,6 +31,8 @@ mod:hook(CLASS.PlayerHuskFirstPersonExtension, "update_unit_position_and_rotatio
 
         -- Sight update callback
         unit_sight_callback(self._unit, "update", dt, t)
+        -- Damage type update callback
+        unit_damage_type_callback(self._unit, "update", dt, t)
         -- Sway update callback
         unit_sway_callback(self._unit, "update", dt, t)
 

@@ -57,7 +57,7 @@ local damage_type_slots = {"magazine", "head", "blade"}
 local empty_position = {0, 0, 0}
 local alternate_fire_setting = "alternate_fire"
 local crosshair_list_setting = "crosshair"
-local damage_type_setting = "damage_type"
+-- local damage_type_setting = "damage_type"
 local damage_type_active_setting = "damage_type_active"
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -184,10 +184,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
             self["_equipped_"..attachment_slot] = attachment_item
             self["_selected_"..attachment_slot] = attachment_item
 
-            if attachment_slot == "magazine" then
-                local attachment_data = mod.settings.attachment_data_by_item_string[attachment_item_path]
-                self:save_damage_type(gear_id, attachment_data)
-            end
+            -- if attachment_slot == "magazine" then
+            --     local attachment_data = mod.settings.attachment_data_by_item_string[attachment_item_path]
+            --     self:save_damage_type(gear_id, attachment_data)
+            -- end
 
         end
 
@@ -234,10 +234,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
             self["_equipped_"..attachment_slot] = attachment_item
             self["_selected_"..attachment_slot] = attachment_item
 
-            if attachment_slot == "magazine" then
-                local attachment_data = mod.settings.attachment_data_by_item_string[replacement_path]
-                self:save_damage_type(gear_id, attachment_data)
-            end
+            -- if attachment_slot == "magazine" then
+            --     local attachment_data = mod.settings.attachment_data_by_item_string[replacement_path]
+            --     self:save_damage_type(gear_id, attachment_data)
+            -- end
 
         end
 
@@ -284,23 +284,23 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         self:cb_on_equip_pressed()
     end
 
-    instance.save_damage_type = function(self, gear_id, attachment_data)
-        local selected_tab_index = self._selected_tab_index
-        local content = selected_tab_index and self._tabs_content[selected_tab_index]
-        local slot_name = content and content.slot_name
+    -- instance.save_damage_type = function(self, gear_id, attachment_data)
+    --     local selected_tab_index = self._selected_tab_index
+    --     local content = selected_tab_index and self._tabs_content[selected_tab_index]
+    --     local slot_name = content and content.slot_name
 
-        if table_contains(damage_type_slots, slot_name) and attachment_data and attachment_data.damage_type then
-            mod:damage_type(gear_id, attachment_data.damage_type)
+    --     if table_contains(damage_type_slots, slot_name) and attachment_data and attachment_data.damage_type then
+    --         mod:damage_type(gear_id, attachment_data.damage_type)
 
-            local damage_type_active_list = mod:get(damage_type_active_setting) or {}
-            if not damage_type_active_list[gear_id] then
-                damage_type_active_list[gear_id] = true
-                mod:set(damage_type_active_setting, damage_type_active_list)
-            end
-        elseif table_contains(damage_type_slots, slot_name) then
-            mod:damage_type(gear_id, false)
-        end
-    end
+    --         local damage_type_active_list = mod:get(damage_type_active_setting) or {}
+    --         if not damage_type_active_list[gear_id] then
+    --             damage_type_active_list[gear_id] = true
+    --             mod:set(damage_type_active_setting, damage_type_active_list)
+    --         end
+    --     elseif table_contains(damage_type_slots, slot_name) then
+    --         mod:damage_type(gear_id, false)
+    --     end
+    -- end
 
 end)
 
@@ -492,7 +492,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
                             local group_name = attachment_data.custom_selection_group or origin_mod:get_name()
                             -- local prefix = ""
-                            if origin_mod ~= mod then group_name = "z_"..group_name end
+                            if origin_mod ~= mod then group_name = "_z_"..group_name..tostring(origin_mod:get_name()) end
 
                             temp_mod_count[group_name] = temp_mod_count[group_name] or 0
                             temp_mod_count[group_name] = temp_mod_count[group_name] + 1
@@ -525,7 +525,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
                 for group_name, count in pairs(temp_mod_count) do
                     -- local group_name = type(plugin_mod) == "table" and plugin_mod:get_name() or plugin_mod
-                    local custom_sort = string_sub(group_name, 1, 2) == "z_" and "_999" or "_000"
+                    -- local custom_sort = string_sub(group_name, 1, 2) == "z_" and "_99999" or "_00000"
                     local localization_name = "loc_ewc_"..string_gsub(tostring(group_name), "z_", "")
 
                     layout[#layout+1] = {
@@ -533,7 +533,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                         slot_name = slot_name,
                         display_name = localization_name,
                         sort_data = {
-                            display_name = group_name.."_0"..custom_sort,
+                            display_name = group_name.."_0"..group_name,
                         },
                     }
                 end
@@ -1127,9 +1127,9 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
             self["_equipped_"..attachment_slot.."_name"] = gear_settings[attachment_slot]
         end
 
-        local element = self._previewed_element
+        -- local element = self._previewed_element
         -- local real_item = element and element.real_item
-        local attachment_data = element.attachment_data
+        -- local attachment_data = element.attachment_data
 
         -- local damage_type = nil
 
@@ -1152,7 +1152,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
 
         -- mod:clear_fx_overrides(gear_id)
 
-        self:save_damage_type(gear_id, attachment_data)
+        -- self:save_damage_type(gear_id, attachment_data)
 
         -- local attachment_slots = mod:fetch_attachment_slots(item.attachments)
         

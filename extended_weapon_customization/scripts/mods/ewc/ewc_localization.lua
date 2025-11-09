@@ -272,6 +272,12 @@ return {
 	mod_option_shield_transparency_tooltip = {
 		en = "Transparency of shields when aiming / blocking.",
 	},
+	mod_lense_completely_transparent = {
+		en = "Lense Transparent",
+	},
+	mod_lense_completely_transparent_tooltip = {
+		en = "Makes scope lenses completely transparent when aiming.",
+	},
 
 	group_flashlight = {
 		en = "Flashlight",

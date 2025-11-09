@@ -34,6 +34,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local script_unit_extension = script_unit.extension
     local unit_attachment_callback = unit.attachment_callback
     local unit_flashlight_callback = unit.flashlight_callback
+    local unit_damage_type_callback = unit.damage_type_callback
     local table_clone_instance_safe = table.clone_instance_safe
 --#endregion
 
@@ -511,6 +512,8 @@ mod.redo_weapon_attachments = function(self, item)
     end
     -- Relay weapon reload to sight extension
     unit_sight_callback(me, "on_equip_weapon")
+    -- Relay weapon reload to damage type extension
+    unit_damage_type_callback(me, "on_equip_weapon")
     -- Relay weapon reload to flashlight extension
     unit_flashlight_callback(me, "on_equip_weapon")
     -- Relay weapon reload to attachment callback extension

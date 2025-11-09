@@ -263,6 +263,8 @@ local attachments = {
                 attachments.chainsword_npc_01 = table_clone_safe(attachments.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
+        attachments.shotpistol_shield_p1_m2 = table_clone_safe(attachments.shotpistol_shield_p1_m1)
+        attachments.shotpistol_shield_p1_m3 = table_clone_safe(attachments.shotpistol_shield_p1_m1)
         attachments.stubrevolver_p1_m3 = table_clone_safe(attachments.stubrevolver_p1_m1)
         attachments.stubrevolver_p1_m2 = table_clone_safe(attachments.stubrevolver_p1_m1)
         attachments.forcestaff_p2_m1 = table_clone_safe(attachments.forcestaff_p1_m1)
@@ -428,6 +430,8 @@ local fixes = {
                 fixes.chainsword_npc_01 = table_clone_safe(fixes.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
+        fixes.shotpistol_shield_p1_m2 = table_clone_safe(fixes.shotpistol_shield_p1_m1)
+        fixes.shotpistol_shield_p1_m3 = table_clone_safe(fixes.shotpistol_shield_p1_m1)
         fixes.stubrevolver_p1_m3 = table_clone_safe(fixes.stubrevolver_p1_m1)
         fixes.stubrevolver_p1_m2 = table_clone_safe(fixes.stubrevolver_p1_m1)
         fixes.forcestaff_p2_m1 = table_clone_safe(fixes.forcestaff_p1_m1)
@@ -593,6 +597,8 @@ local attachment_slots = {
                 attachment_slots.chainsword_npc_01 = table_clone_safe(attachment_slots.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
+        attachment_slots.shotpistol_shield_p1_m2 = table_clone_safe(attachment_slots.shotpistol_shield_p1_m1)
+        attachment_slots.shotpistol_shield_p1_m3 = table_clone_safe(attachment_slots.shotpistol_shield_p1_m1)
         attachment_slots.stubrevolver_p1_m3 = table_clone_safe(attachment_slots.stubrevolver_p1_m1)
         attachment_slots.stubrevolver_p1_m2 = table_clone_safe(attachment_slots.stubrevolver_p1_m1)
         attachment_slots.forcestaff_p2_m1 = table_clone_safe(attachment_slots.forcestaff_p1_m1)
@@ -825,6 +831,8 @@ local flashlight_templates = {
                 flashlight_templates.chainsword_npc_01 = table_clone_safe(flashlight_templates.chainsword_p1_m1)
     --#endregion
     --#region Human ranged
+        flashlight_templates.shotpistol_shield_p1_m2 = table_clone_safe(flashlight_templates.shotpistol_shield_p1_m1)
+        flashlight_templates.shotpistol_shield_p1_m3 = table_clone_safe(flashlight_templates.shotpistol_shield_p1_m1)
         flashlight_templates.stubrevolver_p1_m3 = table_clone_safe(flashlight_templates.stubrevolver_p1_m1)
         flashlight_templates.stubrevolver_p1_m2 = table_clone_safe(flashlight_templates.stubrevolver_p1_m1)
         flashlight_templates.forcestaff_p2_m1 = table_clone_safe(flashlight_templates.forcestaff_p1_m1)
