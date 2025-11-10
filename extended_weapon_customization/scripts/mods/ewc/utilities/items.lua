@@ -66,10 +66,20 @@ end
 mod.inject_attachment = function(self, attachments, slot_name, inject_data)
     for slot, attachment_data in pairs(attachments) do
         if slot == inject_data.parent_slot then
+
             attachment_data.children = attachment_data.children or {}
-            attachment_data.children[slot_name] = attachment_data.children[slot_name] or {
-                item = inject_data.default_path,
-                children = {},
+
+            local existing_children = attachment_data.children[slot_name] and attachment_data.children[slot_name].children and table_clone_safe(attachment_data.children[slot_name].children) or {}
+            local existing_item = attachment_data.children and attachment_data.children[slot_name] and attachment_data.children[slot_name].item or inject_data.default_path
+            -- attachment_data.children[slot_name] = attachment_data.children[slot_name] or {
+            --     item = inject_data.default_path,
+            --     children = {},
+            --     fix = inject_data.fix,
+            -- }
+
+            attachment_data.children[slot_name] = {
+                item = existing_item,
+                children = existing_children,
                 fix = inject_data.fix,
             }
             break
@@ -332,17 +342,32 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     -- Check supported item type
     if table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
 
+        -- Get gear settings
+        -- local gear_id = mod:gear_id(item, fake_gear_id)
+        -- local gear_settings = optional_settings or gear_id and mod:gear_settings(gear_id)
+
         -- Inject custom attachments
         local weapon_template = item.weapon_template
         local custom_attachment_slots = weapon_template and self.settings.attachment_slots[weapon_template]
         if custom_attachment_slots then
             -- Iterate through custom attachment slots
             for slot_name, inject_data in pairs(custom_attachment_slots) do
-                -- Check if attachment slot exists
-                if not self:fetch_attachment(item.attachments, slot_name) then
-                    -- Inject attachment
-                    self:inject_attachment(item.attachments, slot_name, inject_data)
+                -- Get - mod of origin - weapon - slot - specific attachment slot definition
+                local attachment_string = mod:fetch_attachment(item.attachments, slot_name)
+                local attachment_data = attachment_string and self.settings.attachment_data_by_item_string[attachment_string]
+                local mod_of_origin = attachment_data and pt.attachment_data_origin[attachment_data]
+                local attachment_slot_by_mod_by_weapon_by_name = self.settings.attachment_slot_by_mod_by_weapon_by_name
+                local weapon_attachment_slots = mod_of_origin and attachment_slot_by_mod_by_weapon_by_name[mod_of_origin] and attachment_slot_by_mod_by_weapon_by_name[mod_of_origin][weapon_template]
+                local mod_inject_data = weapon_attachment_slots and weapon_attachment_slots[slot_name] --or inject_data
+                if mod_inject_data then
+                    -- If an attachment slot was found use it
+                    inject_data = mod_inject_data
+                else
+                    -- If no attachment slot was found delete fix
+                    inject_data.fix = nil
                 end
+                -- Inject attachment
+                self:inject_attachment(item.attachments, slot_name, inject_data)
             end
         end
 

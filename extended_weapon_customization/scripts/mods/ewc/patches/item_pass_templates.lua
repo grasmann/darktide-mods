@@ -9,9 +9,9 @@ local mod = get_mod("extended_weapon_customization")
     local color_ui_veteran = color.ui_veteran
 --#endregion
 
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
--- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 local function find_in_table(t, key, value)
     for i, v in pairs(t) do
@@ -27,7 +27,7 @@ mod.item_pass_templates_damage_type_visible = function(self, content, style)
     local replacement_path = real_item and real_item.name
     local attachment_data = self.settings.attachment_data_by_item_string[replacement_path]
     local hotspot = content.hotspot
-    return attachment_data and attachment_data.damage_type --and ((hotspot and (hotspot.cursor_hover or hotspot.is_selected)) or content.owned == "")
+    return attachment_data and attachment_data.damage_type
 end
 
 mod.item_pass_templates_alternate_fire_visible = function(self, content, style)
@@ -36,7 +36,7 @@ mod.item_pass_templates_alternate_fire_visible = function(self, content, style)
     local replacement_path = real_item and real_item.name
     local attachment_data = self.settings.attachment_data_by_item_string[replacement_path]
     local hotspot = content.hotspot
-    return attachment_data and attachment_data.alternate_fire --and ((hotspot and (hotspot.cursor_hover or hotspot.is_selected)) or content.owned == "")
+    return attachment_data and attachment_data.alternate_fire
 end
 
 mod.item_pass_templates_crosshair_visible = function(self, content, style)
@@ -45,8 +45,12 @@ mod.item_pass_templates_crosshair_visible = function(self, content, style)
     local replacement_path = real_item and real_item.name
     local attachment_data = self.settings.attachment_data_by_item_string[replacement_path]
     local hotspot = content.hotspot
-    return attachment_data and attachment_data.crosshair_type --and ((hotspot and (hotspot.cursor_hover or hotspot.is_selected)) or content.owned == "")
+    return attachment_data and attachment_data.crosshair_type
 end
+
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
 
 mod:hook_require("scripts/ui/pass_templates/item_pass_templates", function(instance)
 

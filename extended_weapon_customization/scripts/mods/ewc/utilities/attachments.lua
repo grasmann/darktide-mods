@@ -66,6 +66,25 @@ mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_s
 
 end
 
+mod.update_attachment_slot_lookup_tables = function(self, attachment_slots, attachment_slot_by_mod_by_weapon_by_name, mod_of_origin)
+
+    local attachment_slot_by_mod_by_weapon_by_name = attachment_slot_by_mod_by_weapon_by_name or self.settings.attachment_slot_by_mod_by_weapon_by_name
+    local attachment_slot_origin = pt.attachment_slot_origin
+
+    for weapon_template, weapon_attachments in pairs(attachment_slots) do
+        for attachment_slot, attachment_slot_data in pairs(weapon_attachments) do
+
+            attachment_slot_by_mod_by_weapon_by_name[mod_of_origin] = attachment_slot_by_mod_by_weapon_by_name[mod_of_origin] or {}
+            attachment_slot_by_mod_by_weapon_by_name[mod_of_origin][weapon_template] = attachment_slot_by_mod_by_weapon_by_name[mod_of_origin][weapon_template] or {}
+            attachment_slot_by_mod_by_weapon_by_name[mod_of_origin][weapon_template][attachment_slot] = attachment_slot_data
+
+            attachment_slot_origin[attachment_slot_data] = mod_of_origin
+
+        end
+    end
+
+end
+
 mod.update_flashlight_templates = function(self, flashlight_templates)
 
     for name, template in pairs(flashlight_templates) do
@@ -709,9 +728,13 @@ end
 local attachment_data_by_item_string = {}
 local attachment_name_by_item_string = {}
 local attachment_data_by_attachment_name = {}
+local attachment_slot_by_mod_by_weapon_by_name = {}
 
 -- Update lookup tables
 mod:update_lookup_tables(attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name)
+
+-- Update attachment slots
+mod:update_attachment_slot_lookup_tables(attachment_slots, attachment_slot_by_mod_by_weapon_by_name, mod)
 
 -- Hide attachment slots
 local hide_attachment_slots_in_menu = {}
@@ -893,4 +916,5 @@ return {
     attachment_data_by_item_string = attachment_data_by_item_string,
     attachment_name_by_item_string = attachment_name_by_item_string,
     attachment_data_by_attachment_name = attachment_data_by_attachment_name,
+    attachment_slot_by_mod_by_weapon_by_name = attachment_slot_by_mod_by_weapon_by_name,
 }

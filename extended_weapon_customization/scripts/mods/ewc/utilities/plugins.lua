@@ -67,6 +67,8 @@ mod.load_plugins = function(self)
                 if plugin.attachment_slots then
                     -- Attachment slots are key based - merge table
                     self.settings.attachment_slots = table_merge_recursive(self.settings.attachment_slots, plugin.attachment_slots)
+                    -- Update attachment slots
+                    mod:update_attachment_slot_lookup_tables(plugin.attachment_slots, nil, plugin_mod)
                 end
 
                 -- Load plugin kitbashs

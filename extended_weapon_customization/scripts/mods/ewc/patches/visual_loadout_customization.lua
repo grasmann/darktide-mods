@@ -43,12 +43,10 @@ local PROCESS_ITEM_TYPES = {"WEAPON_MELEE", "WEAPON_RANGED"}
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.recursive_children = function(self, unit, attachment_units_by_unit, children)
-    -- local children = children or {}
     if not children then
         table_clear(temp_children)
         children = temp_children
     end
-    -- local unit_children = unit_get_child_units(unit)
     local unit_children = attachment_units_by_unit[unit]
     for _, unit in pairs(unit_children) do
         children[#children+1] = unit

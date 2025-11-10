@@ -82,29 +82,6 @@ local function _register_vfx_spawner_from_attachments(parent_unit, attachments_b
 	return spawners
 end
 
-mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments_by_unit, attachment_name_lookup, node_name, should_add_3p_node, ...)
-	if attachments_by_unit and not table_is_empty(attachments_by_unit[parent_unit]) then
-		local spawner = _register_vfx_spawner_from_attachments(parent_unit, attachments_by_unit, attachment_name_lookup, node_name, spawner_name)
-
-		spawners[spawner_name] = spawner
-	else
-		spawners[spawner_name] = {}
-
-		local node = unit_has_node(parent_unit, node_name) and unit_node(parent_unit, node_name) or 1
-		local node_3p
-
-		if should_add_3p_node then
-			node_3p = unit_has_node(self._unit, node_name) and unit_node(self._unit, node_name) or 1
-		end
-
-		spawners[spawner_name][VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
-			unit = parent_unit,
-			node = node,
-			node_3p = node_3p,
-		}
-	end
-end)
-
 local function _register_sound_source(wwise_source_node_cache, unit, node_name, wwise_world, source_name)
 	if not wwise_source_node_cache[unit] then
 		wwise_source_node_cache[unit] = {}
@@ -175,26 +152,39 @@ local function _register_sound_sources(wwise_source_node_cache, parent_unit, att
 	return sources
 end
 
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
+
+mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments_by_unit, attachment_name_lookup, node_name, should_add_3p_node, ...)
+	if attachments_by_unit and not table_is_empty(attachments_by_unit[parent_unit]) then
+		local spawner = _register_vfx_spawner_from_attachments(parent_unit, attachments_by_unit, attachment_name_lookup, node_name, spawner_name)
+
+		spawners[spawner_name] = spawner
+	else
+		spawners[spawner_name] = {}
+
+		local node = unit_has_node(parent_unit, node_name) and unit_node(parent_unit, node_name) or 1
+		local node_3p
+
+		if should_add_3p_node then
+			node_3p = unit_has_node(self._unit, node_name) and unit_node(self._unit, node_name) or 1
+		end
+
+		spawners[spawner_name][VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
+			unit = parent_unit,
+			node = node,
+			node_3p = node_3p,
+		}
+	end
+end)
+
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name, ...)
 	local wwise_source_node_cache = self._wwise_source_node_cache
 	local wwise_world = self._wwise_world
 	local source_by_attachment = _register_sound_sources(wwise_source_node_cache, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name or 1, wwise_world, source_name)
 
 	sources[source_name] = source_by_attachment
-end)
-
-mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "resolve_gear_sound", function(func, self, sound_alias, optional_external_properties, ...)
-	local allow_default, event, has_husk_events = func(self, sound_alias, optional_external_properties, ...)
-	local inventory_component = self._inventory_component
-	local current_wielded_slot = inventory_component.wielded_slot
-	local item = self:item_from_slot(current_wielded_slot)
-	local gear_id = mod:gear_id(item)
-
-	if gear_id and mod.fx_overrides[gear_id] and mod.fx_overrides[gear_id][sound_alias] then
-		event = mod.fx_overrides[gear_id][sound_alias]
-	end
-
-	return allow_default, event, has_husk_events
 end)
 
 mod:hook(CLASS.PlayerUnitFxExtension, "spawn_unit_particles", function(func, self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, all_clients, create_network_index, optional_attachment_name, ...)

@@ -71,7 +71,7 @@ local function _damage_type_active(action)
     local item = action._weapon.item
     local gear_id = item and mod:gear_id(item)
     local damage_type_active_list = mod:get(damage_type_active_setting)
-    local use_damage_type = damage_type_active_list and gear_id and damage_type_active_list[gear_id]
+    return damage_type_active_list and gear_id and damage_type_active_list[gear_id]
 end
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -79,7 +79,6 @@ end
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 local shoot_hook = function(func, self, position, rotation, power_level, charge_level, t, fire_config, ...)
-
     local hit_minion = nil
     local hit_scan_template = fire_config.hit_scan_template
     if hit_scan_template then
@@ -135,20 +134,16 @@ local shoot_hook = function(func, self, position, rotation, power_level, charge_
             end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, hits, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
         end
     end
-
     -- Get damage type
     local damage_type = _damage_type(self)
     local use_damage_type = _damage_type_active(self)
-
     -- Check item and damage type
     if hit_minion and use_damage_type and damage_type then
         -- Override damage type
         mod.enemy_unit_damage_type_override[hit_minion] = damage_type.game_damage_type
     end
-
     -- Original function
     func(self, position, rotation, power_level, charge_level, t, fire_config, ...)
-
 end
 
 mod:hook(CLASS.ActionShoot, "_shoot", shoot_hook)
@@ -157,7 +152,6 @@ mod:hook(CLASS.ActionShootPellets, "_shoot", shoot_hook)
 mod:hook(CLASS.ActionShootProjectile, "_shoot", shoot_hook)
 
 local line_fx_hook = function(func, self, line_effect, position, end_position, optional_attachment_id, ...)
-
     -- Get aiming
     local aiming = _get_aiming(self)
     -- Get damage type
@@ -176,7 +170,6 @@ local line_fx_hook = function(func, self, line_effect, position, end_position, o
         line_effect = new_effect or line_effect
 
     end
-
     -- Original function
     func(self, line_effect, position, end_position, optional_attachment_id, ...)
 end
@@ -185,13 +178,11 @@ mod:hook(CLASS.ActionShootHitScan, "_play_line_fx", line_fx_hook)
 mod:hook(CLASS.ActionShootPellets, "_play_line_fx", line_fx_hook)
 
 local shoot_sound_hook = function(func, self, fire_config, ...)
-
     -- Get aiming
     local aiming = _get_aiming(self)
     -- Get weapon item
     local item = self._weapon.item
     local gear_id = item and mod:gear_id(item)
-
     -- Check item and attachments
     if gear_id then
         -- Get damage type
@@ -241,10 +232,8 @@ local shoot_sound_hook = function(func, self, fire_config, ...)
             mod:clear_fx_overrides(gear_id)
         end
     end
-
     -- Original function
     func(self, fire_config, ...)
-
 end
 
 mod:hook(CLASS.ActionShoot, "_play_shoot_sound", shoot_sound_hook)
@@ -253,7 +242,6 @@ mod:hook(CLASS.ActionShootPellets, "_play_shoot_sound", shoot_sound_hook)
 mod:hook(CLASS.ActionShootProjectile, "_play_shoot_sound", shoot_sound_hook)
 
 local update_sound_hook = function(func, self, fire_config, ...)
-
     -- Get time
     local t = mod:time()
     -- Get damage type
@@ -328,10 +316,8 @@ local update_sound_hook = function(func, self, fire_config, ...)
         end
 
     end
-
     -- Original function
     func(self, fire_config, ...)
-
 end
 
 mod:hook(CLASS.ActionShoot, "_update_looping_shoot_sound", update_sound_hook)
@@ -341,7 +327,6 @@ mod:hook(CLASS.ActionShootProjectile, "_update_looping_shoot_sound", update_soun
 
 local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, charge_level, ...)
     -- Get weapon item
-    local effect_to_play = nil
     local item = self._weapon.item
     local gear_id = item and mod:gear_id(item)
     -- Check item and attachments
@@ -405,7 +390,6 @@ local muzzle_flash_hook = function(func, self, fire_config, shoot_rotation, char
     end
     -- Original function
     func(self, fire_config, shoot_rotation, charge_level, ...)
-
 end
 
 mod:hook(CLASS.ActionShoot, "_play_muzzle_flash_vfx", muzzle_flash_hook)

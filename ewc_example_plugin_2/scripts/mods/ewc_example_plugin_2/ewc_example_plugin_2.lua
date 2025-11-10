@@ -21,6 +21,7 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
 local _empty_item = "content/items/weapons/player/trinkets/unused_trinket"
+local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
 local infantry_receivers = "autogun_rifle_receiver_01|autogun_rifle_receiver_ml01"
@@ -351,5 +352,7 @@ mod.extended_weapon_customization_plugin = {
 -- Kitbashs are not defined for a specific weapon
 mod.extended_weapon_customization_plugin.attachments.autogun_p2_m2 = table_clone(mod.extended_weapon_customization_plugin.attachments.autogun_p2_m1)
 mod.extended_weapon_customization_plugin.attachments.autogun_p2_m3 = table_clone(mod.extended_weapon_customization_plugin.attachments.autogun_p2_m1)
+-- mod.extended_weapon_customization_plugin.attachment_slots.autogun_p2_m2 = table_clone(mod.extended_weapon_customization_plugin.attachment_slots.autogun_p2_m1)
+-- mod.extended_weapon_customization_plugin.attachment_slots.autogun_p2_m3 = table_clone(mod.extended_weapon_customization_plugin.attachment_slots.autogun_p2_m1)
 mod.extended_weapon_customization_plugin.fixes.autogun_p2_m2 = table_clone(mod.extended_weapon_customization_plugin.fixes.autogun_p2_m1)
 mod.extended_weapon_customization_plugin.fixes.autogun_p2_m3 = table_clone(mod.extended_weapon_customization_plugin.fixes.autogun_p2_m1)

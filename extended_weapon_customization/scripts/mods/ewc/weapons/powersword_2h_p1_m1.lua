@@ -25,7 +25,6 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
 
 local _item = "content/items/weapons/player"
 local _item_melee = _item.."/melee"
-local _item_ranged = _item.."/ranged"
 
 return {
     attachments = {

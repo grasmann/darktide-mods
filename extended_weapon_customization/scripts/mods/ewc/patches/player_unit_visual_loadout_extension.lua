@@ -242,3 +242,17 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "destroy", function(func, self,
     -- Original function
     func(self, ...)
 end)
+
+mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "resolve_gear_sound", function(func, self, sound_alias, optional_external_properties, ...)
+	local allow_default, event, has_husk_events = func(self, sound_alias, optional_external_properties, ...)
+	local inventory_component = self._inventory_component
+	local current_wielded_slot = inventory_component.wielded_slot
+	local item = self:item_from_slot(current_wielded_slot)
+	local gear_id = mod:gear_id(item)
+
+	if gear_id and mod.fx_overrides[gear_id] and mod.fx_overrides[gear_id][sound_alias] then
+		event = mod.fx_overrides[gear_id][sound_alias]
+	end
+
+	return allow_default, event, has_husk_events
+end)

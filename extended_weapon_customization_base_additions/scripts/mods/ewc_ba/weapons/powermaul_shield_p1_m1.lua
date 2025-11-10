@@ -31,22 +31,9 @@ local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
-local ogryn_shields = "ogryn_shield_01|ogryn_shield_02|ogryn_shield_03|ogryn_shield_04|ogryn_shield_05|ogryn_shield_06|ogryn_shield_07"
-
-local short_heads = "human_power_maul_short_head_01|human_power_maul_short_head_ml01|human_power_maul_short_head_deluxe01"
-local medium_heads = "human_power_maul_short_head_02|human_power_maul_short_head_ml02|human_power_maul_short_head_deluxe02"
-local long_heads = "human_power_maul_short_head_03"
-
-local short_connectors = "human_power_maul_short_connector_03"
-local medium_connectors = "human_power_maul_short_connector_02|human_power_maul_short_connector_ml02|human_power_maul_short_connector_deluxe02"
-local long_connectors = "human_power_maul_short_connector_01|human_power_maul_short_connector_ml01|human_power_maul_short_connector_deluxe01"
-
-local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
-local scopes = "scope_01"
+local ogryn_shields = "ogryn_shield_01|ogryn_shield_02|ogryn_shield_03|ogryn_shield_04|ogryn_shield_05|ogryn_shield_06|ogryn_shield_07|bulwark_shield_01"
 
 local attachments = {
     powermaul_shield_p1_m1 = {
@@ -66,6 +53,24 @@ attachment_slots.powermaul_shield_p1_m2 = table_clone_safe(attachment_slots.powe
 
 local fixes = {
     powermaul_shield_p1_m1 = {
+        -- Adjust shield scale and position when using bulwark shield
+        {attachment_slot = "left",
+            requirements = {
+                left = {
+                    has = "bulwark_shield_01",
+                },
+            },
+            fix = {
+                only_in_ui = true,
+                offset = {
+                    position = vector3_box(0, -.1, -.1),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.5, .5, .5),
+                    node = 1,
+                },
+            },
+        },
+        -- Adjust shield scale when using ogryn shields but no bulwark shield
         {attachment_slot = "left",
             requirements = {
                 left = {
@@ -77,129 +82,6 @@ local fixes = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(.5, .5, .5),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "left",
-            requirements = {
-                left = {
-                    has = "bulwark_shield_01",
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.025),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(.5, .5, .5),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "head",
-            requirements = {
-                connector = {
-                    has = short_connectors,
-                },
-                head = {
-                    has = short_heads,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.175),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "head",
-            requirements = {
-                connector = {
-                    has = short_connectors,
-                },
-                head = {
-                    has = medium_heads,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.11),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "head",
-            requirements = {
-                connector = {
-                    has = medium_connectors,
-                },
-                head = {
-                    has = short_heads,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, -.06),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "head",
-            requirements = {
-                connector = {
-                    has = medium_connectors,
-                },
-                head = {
-                    has = long_heads,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, .12),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "head",
-            requirements = {
-                connector = {
-                    has = long_connectors,
-                },
-                head = {
-                    has = medium_heads,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, .064),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
-        },
-        {attachment_slot = "head",
-            requirements = {
-                connector = {
-                    has = long_connectors,
-                },
-                head = {
-                    has = long_heads,
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, .172),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
                     node = 1,
                 },
             },

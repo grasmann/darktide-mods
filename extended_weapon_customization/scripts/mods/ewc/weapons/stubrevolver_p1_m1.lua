@@ -27,9 +27,6 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
 
-local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
-local scopes = "scope_01"
-
 return {
     attachments = {
         emblem_left = emblem_left,

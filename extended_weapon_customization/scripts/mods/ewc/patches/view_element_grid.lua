@@ -22,12 +22,11 @@ local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local WEAPON_OPTIONS_VIEW = "inventory_weapons_view_weapon_options"
--- local panel_size = UIWorkspaceSettings.top_panel.size
 local button_size = ViewElementTabMenuSettings.button_size
 
--- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
--- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
--- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.view_element_grid_find_button = function(self, view_element_grid, layout)
     for _, button in pairs(layout) do
@@ -63,40 +62,6 @@ mod.view_element_grid_cb_on_customize_pressed = function(self, view_element_grid
         })
     end
 end
-
-mod:hook_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu_definitions", function(instance)
-
-    instance.scenegraph_definition.grid_interaction = {
-        horizontal_alignment = "left",
-        parent = "entry_pivot",
-        vertical_alignment = "top",
-        size = {
-            button_size[1],
-            900,
-        },
-        position = {
-            0,
-            0,
-            0,
-        },
-    }
-
-    instance.widget_definitions.grid_interaction = UIWidget.create_definition({
-        {
-            content_id = "hotspot",
-            pass_type = "hotspot",
-        },
-    }, "grid_interaction")
-
-end)
-
-mod:hook_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu", function(instance)
-
-    instance.hovered = function(self)
-        return mod:view_element_tab_menu_is_hovered(self)
-    end
-
-end)
 
 mod.view_element_tab_menu_is_hovered = function (self, view_element_tab_menu)
 	local widgets_by_name = view_element_tab_menu._widgets_by_name

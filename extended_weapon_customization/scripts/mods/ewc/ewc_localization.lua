@@ -41,6 +41,10 @@ mod:add_global_localize_strings({
 		en = "Damage Type",
 	},
 
+	loc_weapon_inventory_tip_1_button = {
+		en = "Okay",
+	},
+
 	attachment_slot_pommel = {
 		en = "Pommel",
 		["zh-cn"] = "配重球",
@@ -163,6 +167,44 @@ return {
 	mod_customize_button = {
 		en = "Customize",
 		["zh-cn"] = "自定义",
+	},
+
+	customization_menu_finished_tutorial = {
+		en = "Hide Customization Menu Tutorial",
+	},
+	customization_menu_finished_tutorial_tooltip = {
+		en = "Switch this off to see the tutorial in the weapon customization menu.",
+	},
+
+	mod_tips_01 = {
+		en = "Welcome to the {#color(226, 199, 126)}extended weapon customization menu{#reset()}.\n\nIn this menu you will customize all your weapons.\n\nThis little tutorial will explain the {#color(226, 199, 126)}controls{#reset()} and what they are for.",
+	},
+	mod_tips_title_01 = {
+		en = "Welcome",
+	},
+	mod_tips_02 = {
+		en = "The {#color(226, 199, 126)}attachment slot menu{#reset()} provides a list of attachment slots that apply to the customized weapon.\n\n{#color(226, 199, 126)}Click{#reset()} on an entry to open the corresponding {#color(226, 199, 126)}attachment selection grid{#reset()}.\n\nYou can click one right now!",
+	},
+	mod_tips_title_02 = {
+		en = "Attachment Slot Menu",
+	},
+	mod_tips_03 = {
+		en = "The {#color(226, 199, 126)}attachment selection grid{#reset()} provides a list of attachments that can be applied to the selected attachment slot.\n\n{#color(226, 199, 126)}Click{#reset()} on an entry to {#color(226, 199, 126)}preview{#reset()} the attachment on the customized weapon or {#color(226, 199, 126)}right click{#reset()} an entry to immediately {#color(226, 199, 126)}equip{#reset()} it.\n\nYou can click one right now!",
+	},
+	mod_tips_title_03 = {
+		en = "Attachment Selection Grid",
+	},
+	mod_tips_04 = {
+		en = "The {#color(226, 199, 126)}feature toggle buttons{#reset()} are used to toggle features that attachments define.\nAttachments can define various {#color(226, 199, 126)}overwrites{#reset()} for crosshair, alternate fire mode or damage types and such.\n{#color(226, 199, 126)}Click{#reset()} on the button to {#color(226, 199, 126)}toggle{#reset()} the feature on and off.\nIf the text is red it is disabled.\n\nYou can click one right now!",
+	},
+	mod_tips_title_04 = {
+		en = "Feature Toggle Buttons",
+	},
+	mod_tips_05 = {
+		en = "{#color(226, 199, 126)}Equip{#reset()} to apply the currently selected attachment.\n\n{#color(226, 199, 126)}Reset{#reset()} to remove all customized attachments and return the weapon to its default state.\n\n{#color(226, 199, 126)}Random{#reset()} to randomize the attachments on the weapon.\n\nYou can click {#color(226, 199, 126)}Random{#reset()} right now!",
+	},
+	mod_tips_title_05 = {
+		en = "Control Buttons",
 	},
 
 	group_debug = {

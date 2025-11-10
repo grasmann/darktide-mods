@@ -285,3 +285,16 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_equip_item_from_pro
 	self:_equip_item_to_slot(slot_name, item, optional_existing_unit_3p)
 
 end)
+
+mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "resolve_gear_sound", function(func, self, sound_alias, optional_external_properties, ...)
+	local allow_default, event, has_husk_events = func(self, sound_alias, optional_external_properties, ...)
+    local current_wielded_slot = self._wielded_slot or "unarmed"
+	local item = self:item_from_slot(current_wielded_slot)
+	local gear_id = mod:gear_id(item)
+
+	if gear_id and mod.fx_overrides[gear_id] and mod.fx_overrides[gear_id][sound_alias] then
+		event = mod.fx_overrides[gear_id][sound_alias]
+	end
+
+	return allow_default, event, has_husk_events
+end)

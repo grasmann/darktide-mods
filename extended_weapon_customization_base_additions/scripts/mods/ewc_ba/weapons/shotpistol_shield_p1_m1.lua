@@ -52,8 +52,7 @@ local _item_melee = _item.."/melee"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 local _minion = "content/items/weapons/minions"
 
-local _ogryn_shields = "ogryn_shield_01|ogryn_shield_02|ogryn_shield_03|ogryn_shield_04|ogryn_shield_05|ogryn_shield_06|ogryn_shield_07"
-
+local ogryn_shields = "ogryn_shield_01|ogryn_shield_02|ogryn_shield_03|ogryn_shield_04|ogryn_shield_05|ogryn_shield_06|ogryn_shield_07|bulwark_shield_01"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
@@ -209,23 +208,6 @@ local fixes = {
                 },
             },
         },
-        -- Adjust shield scale when using ogryn shields but no bulwark shield
-        {attachment_slot = "left",
-            requirements = {
-                left = {
-                    has = _ogryn_shields,
-                    missing = "bulwark_shield_01",
-                },
-            },
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, 0),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(.5, .5, .5),
-                    node = 1,
-                },
-            },
-        },
         -- Adjust shield scale and position when using bulwark shield
         {attachment_slot = "left",
             requirements = {
@@ -243,6 +225,22 @@ local fixes = {
                 },
             },
         },
+        -- Adjust shield scale when using ogryn shields but no bulwark shield
+        {attachment_slot = "left",
+            requirements = {
+                left = {
+                    has = ogryn_shields,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(-.025, 0, .015),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.5, .5, .5),
+                    node = 1,
+                },
+            },
+        },
     },
 }
 
@@ -252,17 +250,8 @@ fixes.shotpistol_shield_p1_m3 = table_clone_safe(fixes.shotpistol_shield_p1_m1)
 local kitbashs = {
     [_item.."/shields/bulwark_shield_01"] = {
         attachments = {
-            left = {
+            shield = {
                 item = _minion.."/shields/chaos_ogryn_bulwark_shield_01",
-                fix = {
-                    only_in_ui = true,
-                    offset = {
-                        node = 1,
-                        position = vector3_box(0, -.1, -.1),
-                        rotation = vector3_box(0, 0, 0),
-                        scale = vector3_box(.5, .5, .5),
-                    },
-                },
                 children = {},
             },
             zzz_shared_material_overrides = {
@@ -290,13 +279,13 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_powermaul_shield_p1_02",
+        name = _item.."/shields/bulwark_shield_01",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
     [_item.."/shields/ogryn_shield_01"] = {
         attachments = {
-            left = {
+            shield = {
                 item = _item_melee.."/ogryn_slabshield_p1_m1",
                 children = {},
             },
@@ -325,13 +314,13 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_powermaul_shield_p1_02",
+        name = _item.."/shields/ogryn_shield_01",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
     [_item.."/shields/ogryn_shield_02"] = {
         attachments = {
-            left = {
+            shield = {
                 item = _item_melee.."/ogryn_slabshield_p1_m2",
                 children = {},
             },
@@ -360,13 +349,13 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_powermaul_shield_p1_02",
+        name = _item.."/shields/ogryn_shield_02",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
     [_item.."/shields/ogryn_shield_03"] = {
         attachments = {
-            left = {
+            shield = {
                 item = _item_melee.."/ogryn_slabshield_p1_m3",
                 children = {},
             },
@@ -395,13 +384,13 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_powermaul_shield_p1_02",
+        name = _item.."/shields/ogryn_shield_03",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
     [_item.."/shields/ogryn_shield_04"] = {
         attachments = {
-            left = {
+            shield = {
                 item = _item_melee.."/ogryn_slabshield_p1_04",
                 children = {},
             },
@@ -430,13 +419,13 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_powermaul_shield_p1_02",
+        name = _item.."/shields/ogryn_shield_04",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
     [_item.."/shields/ogryn_shield_05"] = {
         attachments = {
-            left = {
+            shield = {
                 item = _item_melee.."/ogryn_slabshield_p1_05",
                 children = {},
             },
@@ -465,13 +454,13 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_powermaul_shield_p1_02",
+        name = _item.."/shields/ogryn_shield_05",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
     [_item.."/shields/ogryn_shield_06"] = {
         attachments = {
-            left = {
+            shield = {
                 item = _item_melee.."/ogryn_slabshield_p1_06",
                 children = {},
             },
@@ -500,13 +489,13 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_powermaul_shield_p1_02",
+        name = _item.."/shields/ogryn_shield_06",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },
     [_item.."/shields/ogryn_shield_07"] = {
         attachments = {
-            left = {
+            shield = {
                 item = _item_melee.."/ogryn_slabshield_p1_ml01",
                 children = {},
             },
@@ -535,7 +524,7 @@ local kitbashs = {
         workflow_checklist = {
         },
         display_name = "n/a",
-        name = _item_melee.."/blades/laser_blade_green_powermaul_shield_p1_02",
+        name = _item.."/shields/ogryn_shield_07",
         workflow_state = "RELEASABLE",
         is_full_item = true,
     },

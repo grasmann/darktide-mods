@@ -57,7 +57,6 @@ local damage_type_slots = {"magazine", "head", "blade"}
 local empty_position = {0, 0, 0}
 local alternate_fire_setting = "alternate_fire"
 local crosshair_list_setting = "crosshair"
--- local damage_type_setting = "damage_type"
 local damage_type_active_setting = "damage_type_active"
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
@@ -184,11 +183,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
             self["_equipped_"..attachment_slot] = attachment_item
             self["_selected_"..attachment_slot] = attachment_item
 
-            -- if attachment_slot == "magazine" then
-            --     local attachment_data = mod.settings.attachment_data_by_item_string[attachment_item_path]
-            --     self:save_damage_type(gear_id, attachment_data)
-            -- end
-
         end
 
 
@@ -208,6 +202,10 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     instance.cb_on_random_pressed = function(self)
 
+        if self.tutorial_step == 5 then
+            self.tutorial_step = 6
+        end
+
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
         table_clear(pt.items_originating_from_customization_menu)
@@ -225,7 +223,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         for attachment_slot, replacement_path in pairs(new_gear_settings) do
 
-            -- local attachment_item_path = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
             local attachment_item = master_items.get_item(replacement_path)
             
             self["_equipped_"..attachment_slot.."_name"] = replacement_path or "content/items/weapons/player/trinkets/unused_trinket"
@@ -233,11 +230,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
             self["_equipped_"..attachment_slot] = attachment_item
             self["_selected_"..attachment_slot] = attachment_item
-
-            -- if attachment_slot == "magazine" then
-            --     local attachment_data = mod.settings.attachment_data_by_item_string[replacement_path]
-            --     self:save_damage_type(gear_id, attachment_data)
-            -- end
 
         end
 
@@ -261,6 +253,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         local alternate_fire_list = mod:get(alternate_fire_setting) or {}
         alternate_fire_list[gear_id] = not alternate_fire_list[gear_id]
         mod:set(alternate_fire_setting, alternate_fire_list)
+
+        if self.tutorial_step == 4 then
+            self.tutorial_step = 5
+        end
+
     end
 
     instance.cb_on_crosshair_toggle_pressed = function(self)
@@ -268,6 +265,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         local crosshair_list = mod:get(crosshair_list_setting) or {}
         crosshair_list[gear_id] = not crosshair_list[gear_id]
         mod:set(crosshair_list_setting, crosshair_list)
+
+        if self.tutorial_step == 4 then
+            self.tutorial_step = 5
+        end
+
     end
 
     instance.cb_on_damage_type_toggle_pressed = function(self)
@@ -275,32 +277,158 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         local damage_type_active_list = mod:get(damage_type_active_setting) or {}
         damage_type_active_list[gear_id] = not damage_type_active_list[gear_id]
         mod:set(damage_type_active_setting, damage_type_active_list)
+
+        if self.tutorial_step == 4 then
+            self.tutorial_step = 5
+        end
+
     end
 
     instance.cb_on_grid_entry_right_pressed = function(self, widget, element)
         instance.super.cb_on_grid_entry_left_pressed(self, widget, element)
-        -- self._previewed_element = element
+        
+        if self.tutorial_step == 3 then
+            self.tutorial_step = 4
+        end
+
         self:_preview_element(element)
         self:cb_on_equip_pressed()
     end
 
-    -- instance.save_damage_type = function(self, gear_id, attachment_data)
-    --     local selected_tab_index = self._selected_tab_index
-    --     local content = selected_tab_index and self._tabs_content[selected_tab_index]
-    --     local slot_name = content and content.slot_name
+    instance.cb_on_grid_entry_left_pressed = function(self, widget, element)
+        instance.super.cb_on_grid_entry_left_pressed(self, widget, element)
 
-    --     if table_contains(damage_type_slots, slot_name) and attachment_data and attachment_data.damage_type then
-    --         mod:damage_type(gear_id, attachment_data.damage_type)
+        if self.tutorial_step == 3 then
+            self.tutorial_step = 4
+        end
+    end
 
-    --         local damage_type_active_list = mod:get(damage_type_active_setting) or {}
-    --         if not damage_type_active_list[gear_id] then
-    --             damage_type_active_list[gear_id] = true
-    --             mod:set(damage_type_active_setting, damage_type_active_list)
-    --         end
-    --     elseif table_contains(damage_type_slots, slot_name) then
-    --         mod:damage_type(gear_id, false)
-    --     end
-    -- end
+    instance.set_widget_alpha_multiplier = function(self, alpha_multiplier, tab_menu_alpha_multiplier, item_grid_alpha_multiplier, toggle_buttons_alpha_multiplier, control_buttons_alpha_multiplier)
+
+        -- Set widgets in inventory weapon cosmetics view
+        for _, widget in pairs(self._widgets_by_name) do
+            widget.alpha_multiplier = alpha_multiplier
+        end
+
+        local tab_menu_alpha_multiplier = tab_menu_alpha_multiplier or alpha_multiplier
+        -- Set tab menu widgets
+        if self._widgets_by_name.button_pivot_background then
+            -- Set background residing in inventory weapon cosmetics view
+            self._widgets_by_name.button_pivot_background.alpha_multiplier = tab_menu_alpha_multiplier
+            -- Check tab menu
+            if self._tab_menu_element then
+                -- Set widgets in tab menu
+                for _, widget in pairs(self._tab_menu_element._widgets_by_name) do
+                    widget.alpha_multiplier = tab_menu_alpha_multiplier
+                end
+            end
+        end
+
+        local item_grid_alpha_multiplier = item_grid_alpha_multiplier or alpha_multiplier
+        -- Set item grid widgets
+        if self._item_grid then
+            -- Set widgets in item grid
+            for _, widget in pairs(self._item_grid._widgets_by_name) do
+                widget.alpha_multiplier = item_grid_alpha_multiplier
+            end
+        end
+
+        local toggle_buttons_alpha_multiplier = toggle_buttons_alpha_multiplier or alpha_multiplier
+        -- Set toggle button widgets
+        if self._widgets_by_name.alternate_fire_toggle then
+            self._widgets_by_name.alternate_fire_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
+        end
+        if self._widgets_by_name.crosshair_toggle then
+            self._widgets_by_name.crosshair_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
+        end
+        if self._widgets_by_name.damage_type_toggle then
+            self._widgets_by_name.damage_type_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
+        end
+
+        local control_buttons_alpha_multiplier = control_buttons_alpha_multiplier or alpha_multiplier
+        -- Set random, reset and equip buttons
+        if self._widgets_by_name.equip_button then
+            self._widgets_by_name.equip_button.alpha_multiplier = control_buttons_alpha_multiplier
+        end
+        if self._widgets_by_name.reset_button then
+            self._widgets_by_name.reset_button.alpha_multiplier = control_buttons_alpha_multiplier
+        end
+        if self._widgets_by_name.random_button then
+            self._widgets_by_name.random_button.alpha_multiplier = control_buttons_alpha_multiplier
+        end
+
+    end
+
+    instance.cb_on_tip_1_pressed = function(self)
+        self.tutorial_step = self.tutorial_step + 1
+    end
+
+    instance.tutorial = function(self)
+
+        if self.finished_tutorial then
+
+            if self._widgets_by_name.tip_1 then
+                self._widgets_by_name.tip_1.alpha_multiplier = 0
+            end
+
+            if self._widgets_by_name.tip_1_button then
+                self._widgets_by_name.tip_1_button.alpha_multiplier = 0
+                self._widgets_by_name.tip_1_button.content.hotspot.disabled = true
+            end
+
+            return false
+
+        else
+
+            self.tutorial_step = self.tutorial_step or 1
+
+            self:set_widget_alpha_multiplier(.25, .25, .25, .25, .25)
+
+            if self.tutorial_step == 1 then
+                self:set_widget_alpha_multiplier(.25, .25, .25, .25, .25)
+                self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_01")
+                self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_01")
+
+            elseif self.tutorial_step == 2 then
+                self:set_widget_alpha_multiplier(.25, 1, .25, .25, .25)
+                self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_02")
+                self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_02")
+
+            elseif self.tutorial_step == 3 then
+                self:set_widget_alpha_multiplier(.25, .25, 1, .25, .25)
+                self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_03")
+                self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_03")
+
+            elseif self.tutorial_step == 4 then
+                self:set_widget_alpha_multiplier(.25, .25, .25, 1, .25)
+                self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_04")
+                self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_04")
+
+            elseif self.tutorial_step == 5 then
+                self:set_widget_alpha_multiplier(.25, .25, .25, .25, 1)
+                self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_05")
+                self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_05")
+
+            elseif self.tutorial_step == 6 then
+                self:set_widget_alpha_multiplier(1, 1, 1, 1)
+                self.finished_tutorial = true
+                mod:set("customization_menu_finished_tutorial", true)
+            end
+
+            if self._widgets_by_name.tip_1 then
+                self._widgets_by_name.tip_1.alpha_multiplier = 1
+            end
+
+            if self._widgets_by_name.tip_1_button then
+                self._widgets_by_name.tip_1_button.alpha_multiplier = 1
+                self._widgets_by_name.tip_1_button.content.hotspot.disabled = false
+            end
+
+            return true
+
+        end
+
+    end
 
 end)
 
@@ -309,11 +437,6 @@ end)
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
-    if context.customize_attachments then
-        -- settings.shading_environment = "content/shading_environments/ui_default"
-        -- settings.wwise_states = {options = WwiseGameSyncSettings.state_groups.options.none}
-        -- settings.world_name = "level_world"
-    end
     -- Original function
     func(self, settings, context, ...)
     -- Modding tools
@@ -353,20 +476,14 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
         local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
         local id = "tab_menu"
         local layer = 10
-        local button_size = {
-            230,
-            40,
-        }
+        local button_size = {230, 40}
         local button_spacing = 10
         local tab_menu_settings = {
             grow_vertically = true,
             vertical_alignment = "top",
             button_size = button_size,
             button_spacing = button_spacing,
-            input_label_offset = {
-                25,
-                30,
-            },
+            input_label_offset = {25, 30},
             fixed_button_size = true,
         }
         local tab_menu_element = self:_add_element(ViewElementTabMenu, id, layer, tab_menu_settings)
@@ -416,10 +533,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
     table_clear(temp_mod_count)
 
     if self.customize_attachments and self._tabs_content then
-
-        -- self.attachment_selection_rotation_offset = 0
-        -- self.current_default_rotation_angle = 0
-
         local weapon_template = self._presentation_item.weapon_template
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
         local content = self._tabs_content[index]
@@ -503,16 +616,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                                 real_item = attachment_item,
                                 attachment_data = attachment_data,
                                 slot_name = slot_name,
-                                -- new_item_marker = attachment_data.replacement_path == self["_equipped_"..slot_name.."_name"],
-                                -- offer = {
-                                --     price = {
-                                --         amount = {
-                                --             type = "credits",
-                                --             amount = 0,
-                                --         }
-                                --     },
-                                --     state = attachment_data.replacement_path == self["_equipped_"..slot_name.."_name"] and "owned",
-                                -- },
                                 sort_data = {
                                     display_name = group_name.."_"..tostring(temp_mod_count[group_name]),
                                 },
@@ -524,8 +627,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                 end
 
                 for group_name, count in pairs(temp_mod_count) do
-                    -- local group_name = type(plugin_mod) == "table" and plugin_mod:get_name() or plugin_mod
-                    -- local custom_sort = string_sub(group_name, 1, 2) == "z_" and "_99999" or "_00000"
                     local localization_name = "loc_ewc_"..string_gsub(tostring(group_name), "z_", "")
 
                     layout[#layout+1] = {
@@ -546,11 +647,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 
             end
 
+            if self.tutorial_step == 2 then
+                self.tutorial_step = 3
+            end
+
             return
         end
     end
     -- Original function
     func(self, index, ...)
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_sort_options", function(func, self, ...)
@@ -616,11 +722,18 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "draw", function(func, self, dt, t,
         local crosshair_toggle_hovered = self._widgets_by_name.crosshair_toggle and self._widgets_by_name.crosshair_toggle.content.hotspot.is_hover
         local damage_type_toggle_hovered = self._widgets_by_name.damage_type_toggle and self._widgets_by_name.damage_type_toggle.content.hotspot.is_hover
 
-        if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered and not equip_button_hovered and not reset_button_hovered and not random_button_hovered and not alternate_fire_toggle_hovered and not crosshair_toggle_hovered and not damage_type_toggle_hovered then
-            self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, .3, dt * 4)
-        else
-            self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, 1, dt * 4)
+        -- local finished_tutorial = mod:get("finished_tutorial")
+
+        if not self:tutorial() then
+
+            if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered and not equip_button_hovered and not reset_button_hovered and not random_button_hovered and not alternate_fire_toggle_hovered and not crosshair_toggle_hovered and not damage_type_toggle_hovered then
+                self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, .3, dt * 4)
+            else
+                self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, 1, dt * 4)
+            end
+
         end
+
     end
     -- Original function
     func(self, dt, t, input_service, layer, ...)
@@ -683,7 +796,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
             end
         end
 
-        local has_alternate_fire = mod:item_has(self._selected_item, "alternate_fire")
+        local has_alternate_fire = mod:item_has(self._selected_item, "alternate_fire") or not self.finished_tutorial
         local alternate_fire_toggle = self._widgets_by_name.alternate_fire_toggle
         if has_alternate_fire and alternate_fire_toggle then
             local gear_id = mod:gear_id(self._selected_item)
@@ -697,7 +810,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
         local alternate_fire_toggle_widget = widgets_by_name and widgets_by_name.alternate_fire_toggle
         if alternate_fire_toggle then alternate_fire_toggle.visible = has_alternate_fire end
 
-        local has_crosshair = mod:item_has(self._selected_item, "crosshair_type")
+        local has_crosshair = mod:item_has(self._selected_item, "crosshair_type") or not self.finished_tutorial
         local crosshair_toggle = self._widgets_by_name.crosshair_toggle
         if has_crosshair and crosshair_toggle then
             local gear_id = mod:gear_id(self._selected_item)
@@ -711,7 +824,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
         local crosshair_toggle_widget = widgets_by_name and widgets_by_name.crosshair_toggle
         if crosshair_toggle_widget then crosshair_toggle_widget.visible = has_crosshair end
 
-        local has_damage_type = mod:item_has(self._selected_item, "damage_type")
+        local has_damage_type = mod:item_has(self._selected_item, "damage_type") or not self.finished_tutorial
         local damage_type_toggle = self._widgets_by_name.damage_type_toggle
         if has_damage_type and damage_type_toggle then
             local gear_id = mod:gear_id(self._selected_item)
@@ -773,6 +886,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
         CLASS.InventoryWeaponCosmeticsView.super.on_enter(self)
 
         mod.is_in_customization_menu = true
+
+        self.finished_tutorial = mod:get("customization_menu_finished_tutorial")
 
         self._render_settings.alpha_multiplier = 0
 
@@ -892,6 +1007,11 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
         if weapon_preview then
             weapon_preview:center_align(1, {-.3, 0, -.2})
+        end
+
+        if self._widgets_by_name.tip_1 then
+            self._widgets_by_name.tip_1.content.title = "title test title"
+            self._widgets_by_name.tip_1.content.text = "test test text"
         end
 
         return
@@ -1023,8 +1143,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
 
             local widgets_by_name = self._widgets_by_name
 
-            -- local origin_mod = pt.attachment_data_origin[attachment_data] or mod
-            -- local attachment_name = mod:localize(real_item and real_item.name or "")
             if not attachment_name or attachment_name == "" then
                 attachment_name = mod.settings.attachment_name_by_item_string[real_item and real_item.name] or "empty"
                 attachment_name = string_gsub(attachment_name, "_", " ")
@@ -1042,18 +1160,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
     end
     -- Original function
     func(self, element, ...)
+
 end)
-
--- mod:hook(CLASS.UIWeaponSpawner, "_mouse_rotation_input", function(func, self, input_service, dt, ...)
---     -- Original function
---     func(self, input_service, dt, ...)
-
---     if self.customize_attachments then
---         if input_service:get("right_pressed") then
---             self:_set_rotation(self._default_rotation_angle)
---         end
---     end
--- end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, self, item, ...)
     -- Original function
@@ -1064,46 +1172,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, sel
         local weapon_preview = self._weapon_preview
         local ui_weapon_spawner = weapon_preview and weapon_preview._ui_weapon_spawner
 
-        -- if weapon_preview then
-        --     local ui_weapon_spawner = weapon_preview._ui_weapon_spawner
+        if ui_weapon_spawner then
 
-            if ui_weapon_spawner then
-
-                -- local offset_position = self.attachment_selection_position_offset or empty_position
-                -- weapon_preview:center_align(1, {
-                --     -0.3 + position[1],
-                --     0 + position[2],
-                --     -0.2 + position[3],
-                -- })
-
-                -- local rotation = self.attachment_selection_rotation_offset or 0
-                -- local ui_weapon_spawner = weapon_preview._ui_weapon_spawner
-                -- if ui_weapon_spawner then
-
-                if self.current_default_rotation_angle then
-                    ui_weapon_spawner._default_rotation_angle = self.current_default_rotation_angle
-                    ui_weapon_spawner._rotation_angle = self.current_default_rotation_angle
-                end
-
-                self.current_default_rotation_angle = self.attachment_selection_rotation_offset or 0
-
-                -- ui_weapon_spawner._default_rotation_angle = current_rotation
-
-                -- if self.current_default_rotation_angle then
-                --     ui_weapon_spawner._rotation_angle = current_rotation
-                -- end
-
-                -- self.current_default_rotation_angle = current_rotation
-                    -- ui_weapon_spawner:_set_rotation(rotation)
-                -- end
-
-                -- local zoom = self.attachment_selection_zoom_offset or 0
-                -- local fraction = weapon_preview._weapon_zoom_fraction or 1
-                -- self:_set_weapon_zoom(fraction + zoom)
-
+            if self.current_default_rotation_angle then
+                ui_weapon_spawner._default_rotation_angle = self.current_default_rotation_angle
+                ui_weapon_spawner._rotation_angle = self.current_default_rotation_angle
             end
 
-        -- end
+            self.current_default_rotation_angle = self.attachment_selection_rotation_offset or 0
+
+        end
 
     end
 
@@ -1126,57 +1204,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
             gear_settings[attachment_slot] = self["_selected_"..attachment_slot.."_name"] or "content/items/weapons/player/trinkets/unused_trinket"
             self["_equipped_"..attachment_slot.."_name"] = gear_settings[attachment_slot]
         end
-
-        -- local element = self._previewed_element
-        -- local real_item = element and element.real_item
-        -- local attachment_data = element.attachment_data
-
-        -- local damage_type = nil
-
-        -- for attachment_slot, attachment_name in pairs(attachments) do
-        --     local attachment_item = self["_equipped_"..attachment_slot]
-        --     if attachment_item then
-
-        --     end
-        -- end
-
-        -- local selected_tab_index = self._selected_tab_index
-        -- local content = selected_tab_index and self._tabs_content[selected_tab_index]
-        -- local slot_name = content and content.slot_name
-
-        -- if slot_name == "magazine" and attachment_data and attachment_data.damage_type then
-        --     mod:damage_type(gear_id, attachment_data.damage_type)
-        -- elseif slot_name == "magazine" then
-        --     mod:damage_type(gear_id, false)
-        -- end
-
-        -- mod:clear_fx_overrides(gear_id)
-
-        -- self:save_damage_type(gear_id, attachment_data)
-
-        -- local attachment_slots = mod:fetch_attachment_slots(item.attachments)
-        
-        -- for attachment_slot, data in pairs(attachment_slots) do
-            
-        --     -- mod:echo(attachment_slot)
-
-        --     -- Get attachment item string
-        --     -- local attachment_item_string = mod:fetch_attachment(item.attachments, "sight")
-        --     local attachment_item_string = data.item
-        --     -- Get attachment data
-        --     local attachment_data = mod.settings.attachment_data_by_item_string[attachment_item_string]
-        --     -- Check attachment data and crosshair type
-        --     if attachment_data and attachment_data.damage_type then
-        --         -- -- Check if can be overwritten
-        --         -- if OVERRIDABLE_CROSSHAIRS[crosshair_type] then
-        --         --     -- Overwrite crosshair type
-        --         --     crosshair_type = attachment_data.crosshair_type
-        --         -- end
-        --         mod:echo("override damage type "..tostring(damage_type).." to "..tostring(attachment_data.damage_type))
-        --         damage_type = attachment_data.damage_type
-        --     end
-
-        -- end
 
         mod:gear_settings(gear_id, gear_settings, true)
 
@@ -1226,12 +1253,14 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", funct
     local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
     local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
     local damage_type_toggle = widgets_by_name and widgets_by_name.damage_type_toggle
+    local tip_1_button = widgets_by_name and widgets_by_name.tip_1_button
     if self.customize_attachments then
         if reset_button then reset_button.content.hotspot.pressed_callback = callback(self, "cb_on_reset_pressed") end
         if random_button then random_button.content.hotspot.pressed_callback = callback(self, "cb_on_random_pressed") end
         if alternate_fire_toggle then alternate_fire_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_alternate_fire_toggle_pressed") end
         if crosshair_toggle then crosshair_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_crosshair_toggle_pressed") end
         if damage_type_toggle then damage_type_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_damage_type_toggle_pressed") end
+        if tip_1_button then tip_1_button.content.hotspot.pressed_callback = callback(self, "cb_on_tip_1_pressed") end
     else
         if reset_button then reset_button.visible = false end
         if random_button then random_button.visible = false end

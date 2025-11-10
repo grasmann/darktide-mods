@@ -256,7 +256,9 @@ SightExtension.update = function(self, dt, t)
     end
 
     if self.sight_unit and unit_alive(self.sight_unit) then
-        unit_set_local_scale(self.sight_unit, 1, vector3(1, self.scale, 1))
+        local default_scale = self.sight_default_scale and vector3_unbox(self.sight_default_scale) or vector3(1, 1, 1)
+        unit_set_local_scale(self.sight_unit, 1, vector3(default_scale.x, default_scale.y * self.scale, default_scale.z))
+        -- unit_set_local_scale(self.sight_unit, 1, vector3(1, self.scale, 1))
     end
 
     self.current_offset.position:store(current_position)
@@ -318,6 +320,7 @@ SightExtension.fetch_sight_offset = function(self, item)
     self.lense_1_unit = nil
     self.lense_2_unit = nil
     self.sight_unit = nil
+    self.sight_default_scale = nil
 
     pt.debug_sight = {0, 0, 0, 0, 0, 0}
 
@@ -337,6 +340,18 @@ SightExtension.fetch_sight_offset = function(self, item)
             self.offset = self.sight_fix.offset
         else
             self.offset = empty_offset
+        end
+
+        local sight_unit_fixes = mod:collect_fixes(self.weapon, "sight")
+        if sight_unit_fixes then
+            for fix, attachment_slot in pairs(sight_unit_fixes) do
+                -- self.sight_unit_fix = fix
+                self.sight_default_scale = fix.scale or self.sight_default_scale
+            end
+        end
+
+        if not self.sight_default_scale then
+            self.sight_default_scale = vector3_box(vector3(1, 1, 1))
         end
 
         local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = self.visual_loadout_extension:unit_and_attachments_from_slot(SLOT_SECONDARY)

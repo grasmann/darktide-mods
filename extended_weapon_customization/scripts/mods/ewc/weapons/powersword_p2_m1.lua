@@ -24,10 +24,7 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _minion = "content/items/weapons/minions"
 local _item_melee = _item.."/melee"
-local _item_ranged = _item.."/ranged"
-local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 return {
     attachments = {
@@ -80,12 +77,5 @@ return {
                 icon_render_camera_position_offset = {0, -.5, .075},
             },
         },
-        -- hilt = {
-        --     power_sword_hilt_01 = {
-        --         replacement_path = _item_melee.."/hilts/power_sword_hilt_01",
-        --         icon_render_unit_rotation_offset = {90, 45, 0},
-        --         icon_render_camera_position_offset = {-.025, -.75, .275},
-        --     },
-        -- },
     },
 }

@@ -25,7 +25,6 @@ local emblem_right = mod:io_dofile("extended_weapon_customization/scripts/mods/e
 
 local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
-local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 
 local short_receivers = "assault_shotgun_receiver_01|assault_shotgun_receiver_03|assault_shotgun_receiver_deluxe01|assault_shotgun_receiver_ml01"
 local long_receivers = "assault_shotgun_receiver_02"

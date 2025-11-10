@@ -4,8 +4,10 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local CheckboxPassTemplates = mod:original_require("scripts/ui/pass_templates/checkbox_pass_templates")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
+local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -29,6 +31,7 @@ local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local WEAPON_OPTIONS_VIEW = "inventory_weapons_view_weapon_options"
 local equip_button_size = {374, 76}
 local default_button_size = {200, 38}
+local tip_size = {600, 400}
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -73,6 +76,22 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		position = {-140 - default_button_size[1] * 2, -default_button_size[2], 1},
 	}
 
+	instance.scenegraph_definition.tip_1 = {
+		horizontal_alignment = "center",
+		parent = "canvas",
+		vertical_alignment = "center",
+		size = tip_size,
+		position = {200, 0, 1},
+	}
+
+	instance.scenegraph_definition.tip_1_button = {
+		horizontal_alignment = "center",
+		parent = "tip_1",
+		vertical_alignment = "bottom",
+		size = default_button_size,
+		position = {0, -30, 1},
+	}
+
 	instance.widget_definitions.reset_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.default_button), "reset_button", {
 		gamepad_action = "secondary_action_pressed",
 		original_text = utf8_upper(localize("loc_weapon_inventory_reset_button")),
@@ -108,6 +127,76 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.widget_definitions.damage_type_toggle = UIWidget.create_definition(table_clone(ButtonPassTemplates.terminal_button_small), "damage_type_toggle", {
 		gamepad_action = "secondary_action_pressed",
 		text = utf8_upper(localize("loc_weapon_inventory_damage_type_toggle")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+	local simple_button_font_setting_name = "button_medium"
+	local simple_button_font_settings = UIFontSettings[simple_button_font_setting_name]
+	local simple_button_font_color = simple_button_font_settings.text_color
+
+	local tip_template = {
+		{
+			pass_type = "texture",
+			style_id = "background",
+			value = "content/ui/materials/backgrounds/terminal_basic",
+			style = {
+				horizontal_alignment = "center",
+				scale_to_material = true,
+				vertical_alignment = "center",
+				color = Color.terminal_grid_background(255, true),
+				offset = {0, -8, 0},
+			},
+		},
+		{
+			pass_type = "text",
+			style_id = "title",
+			value_id = "title",
+			style = {
+				drop_shadow = true,
+				font_size = 34,
+				font_type = "proxima_nova_bold",
+				horizontal_alignment = "left",
+				scale_to_material = true,
+				vertical_alignment = "top",
+				default_color = Color.terminal_text_header(255, true),
+				text_color = Color.terminal_text_header(255, true),
+				hover_color = Color.white(255, true),
+				disabled_color = Color.ui_grey_light(255, true),
+				offset = {25, 10, 2},
+				size_addition = {-40, 0},
+			},
+		},
+		{
+			pass_type = "text",
+			style_id = "text",
+			value_id = "text",
+			style = {
+				drop_shadow = true,
+				font_size = 24,
+				font_type = "proxima_nova_bold",
+				horizontal_alignment = "left",
+				scale_to_material = true,
+				vertical_alignment = "top",
+				text_color = Color.text_default(255, true),
+				offset = {25, 60, 2},
+				size_addition = {-40, 0},
+			},
+		},
+	}
+
+	instance.widget_definitions.tip_1 = UIWidget.create_definition(tip_template, "tip_1", {
+		-- gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_tip_1")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+	instance.widget_definitions.tip_1_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.terminal_button_small), "tip_1_button", {
+		-- gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_tip_1_button")),
 		hotspot = {
 			on_pressed_sound = UISoundEvents.system_popup_enter,
 		},

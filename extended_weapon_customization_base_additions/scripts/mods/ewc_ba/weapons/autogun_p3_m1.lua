@@ -75,6 +75,7 @@ local headhunter_receivers = "autogun_rifle_killshot_receiver_01|autogun_rifle_k
 local braced_receivers = "autogun_rifle_ak_receiver_01|autogun_rifle_ak_receiver_02|autogun_rifle_ak_receiver_03|autogun_rifle_ak_receiver_ml01"
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
 local laser_magazines = "autogun_rifle_laser_magazine_01|autogun_rifle_laser_magazine_02|autogun_rifle_laser_magazine_03"
+local bolter_magazines = "boltgun_rifle_magazine_01|boltgun_rifle_magazine_02|boltgun_rifle_magazine_01_double|boltgun_rifle_magazine_02_double"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scopes = "scope_01"
 
@@ -90,7 +91,7 @@ local attachments = {
         receiver = table_merge_recursive_n(nil, receiver_autogun_braced, receiver_autogun_infantry),
         grip = table_merge_recursive_n(nil, grip_common, grip_autogun_infantry, grip_autogun_braced),
         stock = table_merge_recursive_n(nil, stock_common, stock_autogun_infantry, stock_autogun_braced),
-        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_braced, magazine_laser, magazine_bolter, magazine_bolter_double),
+        magazine = table_merge_recursive_n(nil, magazine_autopistol, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_braced, magazine_laser, magazine_bolter, magazine_bolter_double, magazine_autogun_infantry),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, sight_autogun_braced, sight_autogun_infantry),
     },
 }
@@ -196,6 +197,21 @@ local fixes = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(1.15, 1.15, 1.15),
+                },
+            },
+        },
+        -- Adjust magazine scale when using bolter magazines
+        {attachment_slot = "magazine",
+            requirements = {
+                magazine = {
+                    has = bolter_magazines,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, -.025),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.8, 1, 1),
                 },
             },
         },

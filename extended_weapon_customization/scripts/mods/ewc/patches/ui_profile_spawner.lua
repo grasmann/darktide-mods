@@ -42,8 +42,6 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
         local visual_item = data and data.profile.visual_loadout and data.profile.visual_loadout[slot_name]
         if (not loadout_item or not loadout_item.__master_item) and visual_item then
             data.profile.loadout[slot_name] = visual_item
-            -- if data.equipped_items then data.equipped_items[slot_name] = visual_item end
-            -- if data.loading_items then data.loading_items[slot_name] = visual_item and visual_item.name end
         end
     end
 

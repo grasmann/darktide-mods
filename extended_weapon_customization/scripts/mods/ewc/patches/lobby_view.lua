@@ -33,10 +33,6 @@ mod:hook(CLASS.LobbyView, "_assign_player_to_slot", function(func, self, player,
         -- Replace equipment
         mod:lobby_view_randomize(profile.loadout[SLOT_PRIMARY])
         mod:lobby_view_randomize(profile.loadout[SLOT_SECONDARY])
-        -- profile.loadout[SLOT_PRIMARY] = mod:lobby_view_randomize(profile.loadout[SLOT_PRIMARY])
-        -- profile.visual_loadout[SLOT_PRIMARY] = profile.loadout[SLOT_PRIMARY]
-        -- profile.loadout[SLOT_SECONDARY] = mod:lobby_view_randomize(profile.loadout[SLOT_SECONDARY])
-        -- profile.visual_loadout[SLOT_SECONDARY] = profile.loadout[SLOT_SECONDARY]
 
         mod:print("reevaluate_packages "..tostring(player))
         mod:reevaluate_packages(player)
