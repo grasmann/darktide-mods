@@ -1,0 +1,194 @@
+Date : 2025-11-16 10:20:05
+Directory : i:\Darktide\darktide-mods\extended_weapon_customization_base_additions
+Total : 160 files,  19267 codes, 2247 comments, 1551 blanks, all 23065 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Lua      |        158 |     19,243 |      2,247 |      1,549 |     23,039 |
+| XML      |          1 |         23 |          0 |          2 |         25 |
+| Batch    |          1 |          1 |          0 |          0 |          1 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                             | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                                |        160 |     19,267 |      2,247 |      1,551 |     23,065 |
+| . (Files)                                                                                                                                        |          1 |         23 |          0 |          2 |         25 |
+| scripts                                                                                                                                          |        159 |     19,244 |      2,247 |      1,549 |     23,040 |
+| scripts\mods                                                                                                                                     |        159 |     19,244 |      2,247 |      1,549 |     23,040 |
+| scripts\mods\ewc_ba                                                                                                                              |        159 |     19,244 |      2,247 |      1,549 |     23,040 |
+| scripts\mods\ewc_ba (Files)                                                                                                                      |          4 |      1,666 |         34 |         34 |      1,734 |
+| scripts\mods\ewc_ba\attachments                                                                                                                  |        120 |      6,868 |      1,249 |        927 |      9,044 |
+| scripts\mods\ewc_ba\extensions                                                                                                                   |          1 |         56 |          9 |          4 |         69 |
+| scripts\mods\ewc_ba\weapons                                                                                                                      |         34 |     10,654 |        955 |        584 |     12,193 |
++--------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                                                         | language | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\extended_weapon_customization_base_additions.mod                          | XML      |         23 |          0 |          2 |         25 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_autogun.lua                        | Lua      |         10 |          8 |          5 |         23 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_autogun_braced.lua                 | Lua      |         53 |          8 |          5 |         66 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_autogun_headhunter.lua             | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_autogun_infantry.lua               | Lua      |         43 |          8 |          5 |         56 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_common.lua                         | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_lasgun.lua                         | Lua      |         10 |          8 |          5 |         23 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_lasgun_helbore.lua                 | Lua      |         48 |          8 |          5 |         61 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_lasgun_infantry.lua                | Lua      |         58 |          8 |          5 |         71 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\barrel_lasgun_recon.lua                   | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\bayonet_common.lua                        | Lua      |         28 |          8 |          5 |         41 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\bayonet_rippergun.lua                     | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_2h_force_sword.lua                  | Lua      |         44 |          8 |          5 |         57 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_2h_power_sword.lua                  | Lua      |         32 |          8 |          5 |         45 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_combat_sword.lua                    | Lua      |         56 |          8 |          5 |         69 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_falchion.lua                        | Lua      |         50 |          8 |          5 |         63 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_force_sword.lua                     | Lua      |         50 |          8 |          5 |         63 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser.lua                           | Lua      |        384 |         50 |        129 |        563 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_2h_force_sword_p1_human.lua   | Lua      |        183 |         30 |         13 |        226 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_2h_power_sword_p1_human.lua   | Lua      |        184 |         15 |         15 |        214 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_chain_axe_p1_human.lua        | Lua      |        184 |         11 |         15 |        210 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_combat_knife_p1_human.lua     | Lua      |        184 |         15 |         15 |        214 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_combat_sword_p1_human.lua     | Lua      |        184 |         15 |         15 |        214 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_combat_sword_p2_human.lua     | Lua      |        184 |         15 |         15 |        214 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_combat_sword_p3_human.lua     | Lua      |        184 |         15 |         15 |        214 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_force_sword_p1_human.lua      | Lua      |        184 |         15 |         15 |        214 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_power_sword_p1_human.lua      | Lua      |        184 |         15 |         15 |        214 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_power_sword_p2_human.lua      | Lua      |        184 |         15 |         15 |        214 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_powermaul_shield_p1_human.lua | Lua      |        180 |         15 |         15 |        210 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_laser_thunderhammer_2h_p1_human.lua | Lua      |        180 |         15 |         15 |        210 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_power_falchion.lua                  | Lua      |         27 |          8 |          5 |         40 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_power_sword.lua                     | Lua      |         58 |         10 |          5 |         73 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\blade_sabre.lua                           | Lua      |         57 |          8 |          5 |         70 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\decal_left.lua                            | Lua      |         23 |          8 |          5 |         36 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\decal_right.lua                           | Lua      |         23 |          8 |          5 |         36 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\emblem_left.lua                           | Lua      |         98 |          8 |          5 |        111 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\emblem_right.lua                          | Lua      |        138 |          8 |          5 |        151 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\flashlight.lua                            | Lua      |         65 |          8 |          7 |         80 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\flashlight_human.lua                      | Lua      |         34 |         11 |          7 |         52 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\flashlight_modded_human.lua               | Lua      |         15 |         11 |          7 |         33 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\flashlight_modded_ogryn.lua               | Lua      |         15 |         11 |          7 |         33 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\flashlight_ogryn.lua                      | Lua      |         25 |         11 |          7 |         43 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_2h_force_sword.lua                   | Lua      |         40 |          8 |          5 |         53 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_2h_power_sword.lua                   | Lua      |         25 |          8 |          5 |         38 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_autogun.lua                          | Lua      |         12 |         11 |          7 |         30 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_autogun_braced.lua                   | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_autogun_headhunter.lua               | Lua      |         18 |          8 |          5 |         31 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_autogun_infantry.lua                 | Lua      |         28 |          8 |          5 |         41 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_axe.lua                              | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_combat_sword.lua                     | Lua      |         44 |          8 |          5 |         57 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_common.lua                           | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_falchion.lua                         | Lua      |         44 |          8 |          5 |         57 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_force_sword.lua                      | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_hatchet.lua                          | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_lasgun.lua                           | Lua      |         43 |         12 |          5 |         60 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_power_sword.lua                      | Lua      |         43 |          8 |          5 |         56 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_sabre.lua                            | Lua      |         54 |          8 |          5 |         67 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\grip_shovel.lua                           | Lua      |         39 |          8 |          5 |         52 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\hilt_2h_force_sword.lua                   | Lua      |         40 |          8 |          5 |         53 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\hilt_2h_power_sword.lua                   | Lua      |         30 |          8 |          5 |         43 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\hilt_force_sword.lua                      | Lua      |         48 |          8 |          5 |         61 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\hilt_power_sword.lua                      | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\laser_pointer.lua                         | Lua      |        321 |        101 |         58 |        480 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\laser_pointer_human.lua                   | Lua      |        288 |         12 |          7 |        307 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\laser_pointer_ogryn.lua                   | Lua      |        147 |         11 |          7 |        165 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_autogun.lua                      | Lua      |         13 |         11 |          7 |         31 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_autogun_braced.lua               | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_autogun_double.lua               | Lua      |         28 |          8 |          5 |         41 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_autogun_headhunter.lua           | Lua      |         23 |          8 |          5 |         36 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_autogun_infantry.lua             | Lua      |         23 |          8 |          5 |         36 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_autopistol.lua                   | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_autopistol_double.lua            | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_bolter.lua                       | Lua      |         20 |          8 |          5 |         33 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_bolter_double.lua                | Lua      |         20 |          8 |          5 |         33 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_laser_autogun.lua                | Lua      |         26 |          8 |          5 |         39 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_lasgun.lua                       | Lua      |         12 |         11 |          7 |         30 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_lasgun_helbore.lua               | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_lasgun_infantry.lua              | Lua      |         18 |          8 |          5 |         31 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_lasgun_recon.lua                 | Lua      |         18 |          8 |          5 |         31 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_laspistol.lua                    | Lua      |         40 |          8 |          5 |         53 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\magazine_plasma_bolter.lua                | Lua      |         26 |          8 |          5 |         39 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle.lua                                | Lua      |         93 |         14 |          5 |        112 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_autogun.lua                        | Lua      |         12 |         11 |          7 |         30 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_autogun_braced.lua                 | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_autogun_headhunter.lua             | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_autogun_infantry.lua               | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_lasgun.lua                         | Lua      |         12 |         11 |          7 |         30 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_lasgun_helbore.lua                 | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_lasgun_infantry.lua                | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_lasgun_recon.lua                   | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\muzzle_laspistol.lua                      | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\ogryn_flashlight.lua                      | Lua      |         53 |          8 |          7 |         68 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\pommel_2h_force_sword.lua                 | Lua      |         40 |          8 |          5 |         53 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\pommel_2h_power_sword.lua                 | Lua      |         30 |          8 |          5 |         43 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\pommel_force_sword.lua                    | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\pommel_power_sword.lua                    | Lua      |         38 |          8 |          5 |         51 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\rail.lua                                  | Lua      |         26 |          8 |          5 |         39 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\receiver_autogun.lua                      | Lua      |         12 |         11 |          7 |         30 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\receiver_autogun_braced.lua               | Lua      |         28 |          8 |          5 |         41 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\receiver_autogun_headhunter.lua           | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\receiver_autogun_infantry.lua             | Lua      |         18 |          8 |          5 |         31 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\shaft_2h_power_maul.lua                   | Lua      |         48 |          8 |          5 |         61 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\shaft_upper_forcestaff.lua                | Lua      |         43 |          8 |          5 |         56 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\shield_ogryn_human.lua                    | Lua      |         48 |          8 |          5 |         61 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight.lua                                 | Lua      |         23 |          8 |          5 |         36 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight_autogun.lua                         | Lua      |         12 |         11 |          7 |         30 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight_autogun_braced.lua                  | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight_autogun_headhunter.lua              | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight_autogun_infantry.lua                | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight_reflex.lua                          | Lua      |         26 |          8 |          5 |         39 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight_reflex_show.lua                     | Lua      |         23 |          8 |          5 |         36 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight_scope.lua                           | Lua      |         15 |          8 |          5 |         28 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\sight_scope_show.lua                      | Lua      |         13 |          8 |          5 |         26 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\stock_autogun.lua                         | Lua      |         12 |         11 |          7 |         30 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\stock_autogun_braced.lua                  | Lua      |         48 |          8 |          5 |         61 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\stock_autogun_headhunter.lua              | Lua      |         23 |          8 |          5 |         36 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\stock_autogun_infantry.lua                | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\stock_common.lua                          | Lua      |         33 |          8 |          5 |         46 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\stock_lasgun.lua                          | Lua      |         58 |         12 |          5 |         75 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\stock_shotgun_double_barrel.lua           | Lua      |         28 |          8 |          5 |         41 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\attachments\trinket_hook.lua                          | Lua      |        123 |          8 |          5 |        136 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\copy.cmd                                              | Batch    |          1 |          0 |          0 |          1 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\ewc_ba.lua                                            | Lua      |      1,464 |         34 |         26 |      1,524 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\ewc_ba_data.lua                                       | Lua      |         30 |          0 |          2 |         32 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\ewc_ba_localization.lua                               | Lua      |        171 |          0 |          6 |        177 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\extensions\common.lua                                 | Lua      |         56 |          9 |          4 |         69 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\autogun_p1_m1.lua                             | Lua      |        800 |         49 |         21 |        870 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\autogun_p2_m1.lua                             | Lua      |        550 |         35 |         21 |        606 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\autogun_p3_m1.lua                             | Lua      |        457 |         33 |         20 |        510 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\autopistol_p1_m1.lua                          | Lua      |        378 |         36 |         15 |        429 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\bolter_p1_m1.lua                              | Lua      |        553 |         72 |         21 |        646 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\boltpistol_p1_m1.lua                          | Lua      |        339 |         30 |         20 |        389 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\chainaxe_p1_m1.lua                            | Lua      |        492 |         60 |         33 |        585 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\combatknife_p1_m1.lua                         | Lua      |        227 |         19 |         10 |        256 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\combatsword_p1_m1.lua                         | Lua      |        759 |         32 |         23 |        814 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\combatsword_p2_m1.lua                         | Lua      |        759 |         32 |         23 |        814 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\combatsword_p3_m1.lua                         | Lua      |        756 |         32 |         23 |        811 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\flamer_p1_m1.lua                              | Lua      |         48 |         68 |         14 |        130 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\forcesword_2h_p1_m1.lua                       | Lua      |        435 |         27 |         18 |        480 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\forcesword_p1_m1.lua                          | Lua      |        233 |         67 |         17 |        317 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\lasgun_p1_m1.lua                              | Lua      |        145 |         11 |         16 |        172 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\lasgun_p2_m1.lua                              | Lua      |        123 |         11 |         17 |        151 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\lasgun_p3_m1.lua                              | Lua      |        179 |         11 |         15 |        205 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\laspistol_p1_m1.lua                           | Lua      |        128 |         15 |         17 |        160 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\ogryn_gauntlet_p1_m1.lua                      | Lua      |         39 |         11 |         11 |         61 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\ogryn_heavystubber_p1_m1.lua                  | Lua      |        110 |         11 |         14 |        135 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\ogryn_heavystubber_p2_m1.lua                  | Lua      |        111 |         12 |         14 |        137 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\ogryn_rippergun_p1_m1.lua                     | Lua      |         23 |         11 |          9 |         43 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\ogryn_thumper_p1_m1.lua                       | Lua      |         41 |         11 |         11 |         63 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\plasmagun_p1_m1.lua                           | Lua      |        123 |         15 |         14 |        152 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\powermaul_shield_p1_m1.lua                    | Lua      |        281 |         21 |         17 |        319 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\powersword_2h_p1_m1.lua                       | Lua      |        438 |         27 |         18 |        483 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\powersword_p1_m1.lua                          | Lua      |        313 |         19 |         16 |        348 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\powersword_p2_m1.lua                          | Lua      |        231 |         19 |         11 |        261 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\shotgun_p1_m1.lua                             | Lua      |        161 |         21 |         15 |        197 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\shotgun_p2_m1.lua                             | Lua      |         72 |         17 |         11 |        100 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\shotgun_p4_m1.lua                             | Lua      |        221 |         29 |         18 |        268 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\shotpistol_shield_p1_m1.lua                   | Lua      |        556 |         19 |         20 |        595 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\stubrevolver_p1_m1.lua                        | Lua      |        222 |         18 |         20 |        260 |
+| i:\Darktide\darktide-mods\extended_weapon_customization_base_additions\scripts\mods\ewc_ba\weapons\thunderhammer_2h_p1_m1.lua                    | Lua      |        351 |         54 |         21 |        426 |
+| Total                                                                                                                                            |          |     19,267 |      2,247 |      1,551 |     23,065 |
++--------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

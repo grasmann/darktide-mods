@@ -105,6 +105,17 @@ local context = {
     vent_particle = {},
 }
 
+local function laser_node(attachment_data)          return attachment_data.laser_node           or attachment_data.fire_node        or 1 end
+local function vent_offset(attachment_data)         return attachment_data.vent_offset          or attachment_data.laser_1_offset   or attachment_data.laser_offset     or vector3_box(vector3_zero()) end
+local function distortion_offset(attachment_data)   return attachment_data.distortion_offset                                                                            or vector3_box(vector3_zero()) end
+local function laser_1_offset(attachment_data)      return attachment_data.laser_1_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
+local function laser_2_offset(attachment_data)      return attachment_data.laser_2_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
+local function laser_3_offset(attachment_data)      return attachment_data.laser_3_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
+local function distortion_size(attachment_data)     return attachment_data.distortion_size                                                                              or vector3_box(vector3_zero()) end
+local function laser_1_size(attachment_data)        return attachment_data.laser_1_size         or attachment_data.fire_size                                            or vector3_box(vector3_zero()) end
+local function laser_2_size(attachment_data)        return attachment_data.laser_2_size         or attachment_data.tip_size_1                                           or vector3_box(vector3_zero()) end
+local function laser_3_size(attachment_data)        return attachment_data.laser_3_size         or attachment_data.tip_size_2                                           or vector3_box(vector3_zero()) end
+
 -- ##### ┌─┐┌─┐┬ ┬┌┐┌┌┬┐┌─┐ ###########################################################################################
 -- ##### └─┐│ ││ ││││ ││└─┐ ###########################################################################################
 -- ##### └─┘└─┘└─┘┘└┘─┴┘└─┘ ###########################################################################################
@@ -121,17 +132,6 @@ end
 -- ##### ┌─┐┌─┐┌─┐┬ ┬┌┐┌  ┌─┐┌─┐┬─┐┌┬┐┬┌─┐┬  ┌─┐┌─┐ ###################################################################
 -- ##### └─┐├─┘├─┤││││││  ├─┘├─┤├┬┘ │ ││  │  ├┤ └─┐ ###################################################################
 -- ##### └─┘┴  ┴ ┴└┴┘┘└┘  ┴  ┴ ┴┴└─ ┴ ┴└─┘┴─┘└─┘└─┘ ###################################################################
-
-local function laser_node(attachment_data)          return attachment_data.laser_node           or attachment_data.fire_node        or 1 end
-local function vent_offset(attachment_data)         return attachment_data.vent_offset          or attachment_data.laser_1_offset   or attachment_data.laser_offset     or vector3_box(vector3_zero()) end
-local function distortion_offset(attachment_data)   return attachment_data.distortion_offset                                                                            or vector3_box(vector3_zero()) end
-local function laser_1_offset(attachment_data)      return attachment_data.laser_1_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
-local function laser_2_offset(attachment_data)      return attachment_data.laser_2_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
-local function laser_3_offset(attachment_data)      return attachment_data.laser_3_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
-local function distortion_size(attachment_data)     return attachment_data.distortion_size                                                                              or vector3_box(vector3_zero()) end
-local function laser_1_size(attachment_data)        return attachment_data.laser_1_size         or attachment_data.fire_size                                            or vector3_box(vector3_zero()) end
-local function laser_2_size(attachment_data)        return attachment_data.laser_2_size         or attachment_data.tip_size_1                                           or vector3_box(vector3_zero()) end
-local function laser_3_size(attachment_data)        return attachment_data.laser_3_size         or attachment_data.tip_size_2                                           or vector3_box(vector3_zero()) end
 
 local function spawn_lingering_flame(world, attachment_unit, attachment_data, hit_unit, hit_position)
     if hit_unit and unit_alive(hit_unit) then

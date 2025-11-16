@@ -162,6 +162,13 @@ end
 
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view", function(instance)
 
+    instance.selected_slot_name = function(self)
+        local tab_content = self._tabs_content and self._selected_tab_index and self._tabs_content[self._selected_tab_index]
+        return tab_content and tab_content.slot_name
+    end
+
+    -- ##### Update items #############################################################################################
+
     instance.update_presentation_item = function(self, optional_item)
 
         -- Get item
@@ -202,6 +209,105 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         mod:redo_weapon_attachments(self._selected_item)
 
     end
+
+    instance.reload_gear_settings = function(self)
+        -- Clear material overrides for item
+        mod:clear_gear_material_overrides(self._selected_item)
+        -- Get gear id
+        local gear_id = mod:gear_id(self._selected_item)
+        -- Reload gear settings from file
+        mod:gear_settings(gear_id, nil, true)
+    end
+
+    -- ##### Hover alpha fade #########################################################################################
+
+    instance.set_widget_alpha_multiplier = function(self, alpha_multiplier, tab_menu_alpha_multiplier, item_grid_alpha_multiplier, toggle_buttons_alpha_multiplier, control_buttons_alpha_multiplier, material_override_alpha_multiplier)
+
+        -- Set widgets in inventory weapon cosmetics view
+        for _, widget in pairs(self._widgets_by_name) do
+            widget.alpha_multiplier = alpha_multiplier
+        end
+
+        local tab_menu_alpha_multiplier = tab_menu_alpha_multiplier or alpha_multiplier
+        -- Set tab menu widgets
+        if self._widgets_by_name.button_pivot_background then
+            -- Set background residing in inventory weapon cosmetics view
+            self._widgets_by_name.button_pivot_background.alpha_multiplier = tab_menu_alpha_multiplier
+            -- Check tab menu
+            if self._tab_menu_element then
+                -- Set widgets in tab menu
+                for _, widget in pairs(self._tab_menu_element._widgets_by_name) do
+                    widget.alpha_multiplier = tab_menu_alpha_multiplier
+                end
+            end
+        end
+
+        local item_grid_alpha_multiplier = item_grid_alpha_multiplier or alpha_multiplier
+        -- Set item grid widgets
+        if self._item_grid then
+            -- Set widgets in item grid
+            for _, widget in pairs(self._item_grid._widgets_by_name) do
+                widget.alpha_multiplier = item_grid_alpha_multiplier
+            end
+        end
+
+        local toggle_buttons_alpha_multiplier = toggle_buttons_alpha_multiplier or alpha_multiplier
+        -- Set toggle button widgets
+        if self._widgets_by_name.alternate_fire_toggle then
+            self._widgets_by_name.alternate_fire_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
+        end
+        if self._widgets_by_name.crosshair_toggle then
+            self._widgets_by_name.crosshair_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
+        end
+        if self._widgets_by_name.damage_type_toggle then
+            self._widgets_by_name.damage_type_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
+        end
+
+        local control_buttons_alpha_multiplier = control_buttons_alpha_multiplier or alpha_multiplier
+        -- Set random, reset and equip buttons
+        if self._widgets_by_name.equip_button then
+            self._widgets_by_name.equip_button.alpha_multiplier = control_buttons_alpha_multiplier
+        end
+        if self._widgets_by_name.reset_button then
+            self._widgets_by_name.reset_button.alpha_multiplier = control_buttons_alpha_multiplier
+        end
+        if self._widgets_by_name.random_button then
+            self._widgets_by_name.random_button.alpha_multiplier = control_buttons_alpha_multiplier
+        end
+
+        local material_override_alpha_multiplier = material_override_alpha_multiplier or alpha_multiplier
+        -- Set color, pattern and wear
+        if self._widgets_by_name.color_dropdown then
+            self._widgets_by_name.color_dropdown.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.pattern_dropdown then
+            self._widgets_by_name.pattern_dropdown.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.wear_dropdown then
+            self._widgets_by_name.wear_dropdown.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.color_button then
+            self._widgets_by_name.color_button.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.pattern_button then
+            self._widgets_by_name.pattern_button.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.wear_button then
+            self._widgets_by_name.wear_button.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.color_text then
+            self._widgets_by_name.color_text.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.pattern_text then
+            self._widgets_by_name.pattern_text.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.wear_text then
+            self._widgets_by_name.wear_text.alpha_multiplier = material_override_alpha_multiplier
+        end
+
+    end
+
+    -- ##### Control button callbacks #################################################################################
 
     instance.cb_on_reset_pressed = function(self)
 
@@ -318,6 +424,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     end
 
+    -- ##### Toggle overrides buttons callbacks #######################################################################
+
     instance.cb_on_alternate_fire_toggle_pressed = function(self)
         
         -- Get gear id
@@ -372,6 +480,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     end
 
+    -- ##### Item grid callbacks ######################################################################################
+
     instance.cb_on_grid_entry_right_pressed = function(self, widget, element)
         instance.super.cb_on_grid_entry_left_pressed(self, widget, element)
         
@@ -398,111 +508,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     end
 
-    instance.selected_slot_name = function(self)
-        local tab_content = self._tabs_content and self._selected_tab_index and self._tabs_content[self._selected_tab_index]
-        return tab_content and tab_content.slot_name
-    end
-
-    instance.cb_on_color_pressed = function(self)
-        self.selected_color_override = ""
-        self:_preview_item(self._presentation_item)
-    end
-
-    instance.cb_on_pattern_pressed = function(self)
-        self.selected_pattern_override = ""
-        self:_preview_item(self._presentation_item)
-    end
-
-    instance.cb_on_wear_pressed = function(self)
-        self.selected_wear_override = ""
-        self:_preview_item(self._presentation_item)
-    end
-
-    instance.set_widget_alpha_multiplier = function(self, alpha_multiplier, tab_menu_alpha_multiplier, item_grid_alpha_multiplier, toggle_buttons_alpha_multiplier, control_buttons_alpha_multiplier, material_override_alpha_multiplier)
-
-        -- Set widgets in inventory weapon cosmetics view
-        for _, widget in pairs(self._widgets_by_name) do
-            widget.alpha_multiplier = alpha_multiplier
-        end
-
-        local tab_menu_alpha_multiplier = tab_menu_alpha_multiplier or alpha_multiplier
-        -- Set tab menu widgets
-        if self._widgets_by_name.button_pivot_background then
-            -- Set background residing in inventory weapon cosmetics view
-            self._widgets_by_name.button_pivot_background.alpha_multiplier = tab_menu_alpha_multiplier
-            -- Check tab menu
-            if self._tab_menu_element then
-                -- Set widgets in tab menu
-                for _, widget in pairs(self._tab_menu_element._widgets_by_name) do
-                    widget.alpha_multiplier = tab_menu_alpha_multiplier
-                end
-            end
-        end
-
-        local item_grid_alpha_multiplier = item_grid_alpha_multiplier or alpha_multiplier
-        -- Set item grid widgets
-        if self._item_grid then
-            -- Set widgets in item grid
-            for _, widget in pairs(self._item_grid._widgets_by_name) do
-                widget.alpha_multiplier = item_grid_alpha_multiplier
-            end
-        end
-
-        local toggle_buttons_alpha_multiplier = toggle_buttons_alpha_multiplier or alpha_multiplier
-        -- Set toggle button widgets
-        if self._widgets_by_name.alternate_fire_toggle then
-            self._widgets_by_name.alternate_fire_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
-        end
-        if self._widgets_by_name.crosshair_toggle then
-            self._widgets_by_name.crosshair_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
-        end
-        if self._widgets_by_name.damage_type_toggle then
-            self._widgets_by_name.damage_type_toggle.alpha_multiplier = toggle_buttons_alpha_multiplier
-        end
-
-        local control_buttons_alpha_multiplier = control_buttons_alpha_multiplier or alpha_multiplier
-        -- Set random, reset and equip buttons
-        if self._widgets_by_name.equip_button then
-            self._widgets_by_name.equip_button.alpha_multiplier = control_buttons_alpha_multiplier
-        end
-        if self._widgets_by_name.reset_button then
-            self._widgets_by_name.reset_button.alpha_multiplier = control_buttons_alpha_multiplier
-        end
-        if self._widgets_by_name.random_button then
-            self._widgets_by_name.random_button.alpha_multiplier = control_buttons_alpha_multiplier
-        end
-
-        local material_override_alpha_multiplier = material_override_alpha_multiplier or alpha_multiplier
-        -- Set color, pattern and wear
-        if self._widgets_by_name.color_dropdown then
-            self._widgets_by_name.color_dropdown.alpha_multiplier = material_override_alpha_multiplier
-        end
-        if self._widgets_by_name.pattern_dropdown then
-            self._widgets_by_name.pattern_dropdown.alpha_multiplier = material_override_alpha_multiplier
-        end
-        if self._widgets_by_name.wear_dropdown then
-            self._widgets_by_name.wear_dropdown.alpha_multiplier = material_override_alpha_multiplier
-        end
-        if self._widgets_by_name.color_button then
-            self._widgets_by_name.color_button.alpha_multiplier = material_override_alpha_multiplier
-        end
-        if self._widgets_by_name.pattern_button then
-            self._widgets_by_name.pattern_button.alpha_multiplier = material_override_alpha_multiplier
-        end
-        if self._widgets_by_name.wear_button then
-            self._widgets_by_name.wear_button.alpha_multiplier = material_override_alpha_multiplier
-        end
-        if self._widgets_by_name.color_text then
-            self._widgets_by_name.color_text.alpha_multiplier = material_override_alpha_multiplier
-        end
-        if self._widgets_by_name.pattern_text then
-            self._widgets_by_name.pattern_text.alpha_multiplier = material_override_alpha_multiplier
-        end
-        if self._widgets_by_name.wear_text then
-            self._widgets_by_name.wear_text.alpha_multiplier = material_override_alpha_multiplier
-        end
-
-    end
+    -- ##### Tutorial functions #######################################################################################
 
     instance.cb_on_tip_1_pressed = function(self)
         self.tutorial_step = self.tutorial_step + 1
@@ -590,6 +596,25 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         end
 
     end
+
+    -- ##### Remove overrides callbacks ###############################################################################
+
+    instance.cb_on_color_pressed = function(self)
+        self.selected_color_override = ""
+        self:_preview_item(self._presentation_item)
+    end
+
+    instance.cb_on_pattern_pressed = function(self)
+        self.selected_pattern_override = ""
+        self:_preview_item(self._presentation_item)
+    end
+
+    instance.cb_on_wear_pressed = function(self)
+        self.selected_wear_override = ""
+        self:_preview_item(self._presentation_item)
+    end
+
+    -- ##### Dropdown functions #######################################################################################
 
     instance.update_dropdown = function(self, widget, input_service, dt, t)
 		local content = widget.content
@@ -897,6 +922,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     end
 
+    -- ##### Create specific dropdowns ################################################################################
+
     instance.create_color_dropdown = function(self)
 
         local color_options = {}
@@ -1121,14 +1148,15 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
     -- Check customization menu and tab content
     if self.customize_attachments and self._tabs_content then
 
-        -- ##### This must be done, to reload saved material overrides #####
-        -- Clear material overrides for item
-        mod:clear_gear_material_overrides(self._selected_item)
-        -- Get gear id
-        local gear_id = mod:gear_id(self._selected_item)
-        -- Reload gear settings from file
-        mod:gear_settings(gear_id, nil, true)
-        -- #################################################################
+        -- -- ##### This must be done, to reload saved material overrides #####
+        -- -- Clear material overrides for item
+        -- mod:clear_gear_material_overrides(self._selected_item)
+        -- -- Get gear id
+        -- local gear_id = mod:gear_id(self._selected_item)
+        -- -- Reload gear settings from file
+        -- mod:gear_settings(gear_id, nil, true)
+        -- -- #################################################################
+        self:reload_gear_settings()
 
         self.selected_color_override = nil
         self.selected_pattern_override = nil
@@ -1629,12 +1657,13 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_destroy_forward_gui", function(fu
 
         -- Check selected material overrides
         if self.selected_color_override or self.selected_pattern_override or self.selected_wear_override then
-            -- Clear material overrides for item
-            mod:clear_gear_material_overrides(self._selected_item)
-            -- Get gear id
-            local gear_id = mod:gear_id(self._selected_item)
-            -- Reload gear settings from file
-            mod:gear_settings(gear_id, nil, true)
+            -- -- Clear material overrides for item
+            -- mod:clear_gear_material_overrides(self._selected_item)
+            -- -- Get gear id
+            -- local gear_id = mod:gear_id(self._selected_item)
+            -- -- Reload gear settings from file
+            -- mod:gear_settings(gear_id, nil, true)
+            self:reload_gear_settings()
             -- Reset selected material overrides
             self.selected_color_override = nil
             self.selected_pattern_override = nil
