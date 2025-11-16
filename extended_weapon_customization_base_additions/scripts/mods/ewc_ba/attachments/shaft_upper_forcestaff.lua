@@ -14,49 +14,42 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _item_melee = _item.."/melee"
+local _item_ranged = _item.."/ranged"
 
 return {
-    falchion_blade_01 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_01",
+    force_staff_shaft_upper_01 = {
+        replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_01",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {0, -1.5, .5},
     },
-    falchion_blade_02 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_02",
+    force_staff_shaft_upper_02 = {
+        replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_02",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {0, -1.5, .5},
     },
-    falchion_blade_03 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_03",
+    force_staff_shaft_upper_03 = {
+        replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_03",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {0, -1.5, .5},
     },
-    falchion_blade_04 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_04",
+    force_staff_shaft_upper_04 = {
+        replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_04",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {0, -1.5, .5},
     },
-    falchion_blade_05 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_05",
+    force_staff_shaft_upper_05 = {
+        replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_05",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {0, -1.5, .5},
     },
-    falchion_blade_06 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_06",
+    force_staff_shaft_upper_06 = {
+        replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_06",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {0, -1.5, .5},
     },
-    falchion_blade_ml01 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_ml01",
+    force_staff_shaft_upper_ml01 = {
+        replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_ml01",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {0, -1.5, .5},
     },
 }

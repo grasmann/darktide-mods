@@ -87,7 +87,7 @@ local extended_weapon_customization_plugin = {
             feature_flags = {
                 "ROTATION_ursula"
             },
-            attach_node = "ap_bullet_01",
+            attach_node = 1,
             resource_dependencies = {
                 ["content/weapons/player/ranged/rippergun_rifle/ammunition/ammunition_01/ammunition_01"] = true,
             },
@@ -118,17 +118,14 @@ local extended_weapon_customization_plugin = {
             feature_flags = {
                 "ROTATION_ursula"
             },
-            attach_node = "ap_bullet_01",
+            attach_node = 1,
             resource_dependencies = {
                 ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_02/muzzle_02"] = true,
             },
             attachments = {
                 zzz_shared_material_overrides = {
-                    leaf_attach_node_override = "",
-                    link_map_mode_override = "",
                     item = "",
                     children = {},
-                    material_overrides = {},
                 },
             },
             workflow_checklist = {
@@ -149,7 +146,7 @@ local extended_weapon_customization_plugin = {
             feature_flags = {
                 "ROTATION_ursula"
             },
-            attach_node = "ap_bullet_01",
+            attach_node = 1,
             resource_dependencies = {
                 ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_04/muzzle_04"] = true,
             },
@@ -1484,6 +1481,7 @@ local load_weapons = {
     "autopistol_p1_m1",
     "laspistol_p1_m1",
     "plasmagun_p1_m1",
+    "chainaxe_p1_m1",
     "autogun_p1_m1",
     "autogun_p2_m1",
     "autogun_p3_m1",

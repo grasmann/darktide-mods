@@ -20,7 +20,6 @@ mod:merge_attachment_data(autogun_infantry_group, muzzle_autogun_infantry)
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
-local grip_common = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/grip_common")
 local rails = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/rail")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -52,7 +51,6 @@ local scopes = "scope_01"
 local attachments = {
     shotgun_p4_m1 = {
         rail2 = rails,
-        grip = grip_common,
         muzzle = table_merge_recursive_n(nil, muzzle_autogun_headhunter, muzzle_autogun_braced, muzzle_autogun_infantry),
         flashlight = flashlight_human,
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope),
@@ -67,14 +65,14 @@ local attachment_slots = {
         flashlight = {
             parent_slot = "receiver",
             default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(.075, .8, .3),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
+            -- fix = {
+            --     offset = {
+            --         position = vector3_box(.075, .8, .3),
+            --         rotation = vector3_box(0, 0, 0),
+            --         scale = vector3_box(1, 1, 1),
+            --         node = 1,
+            --     },
+            -- },
         },
         muzzle = {
             parent_slot = "receiver",
@@ -87,14 +85,14 @@ local attachment_slots = {
         rail2 = {
             parent_slot = "receiver",
             default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(-.035, -.25, 0),
-                    rotation = vector3_box(0, -45, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
+            -- fix = {
+            --     offset = {
+            --         position = vector3_box(-.035, -.25, 0),
+            --         rotation = vector3_box(0, -45, 0),
+            --         scale = vector3_box(1, 1, 1),
+            --         node = 1,
+            --     },
+            -- },
         },
     },
 }
@@ -200,6 +198,12 @@ local fixes = {
                 attach = {
                     rail2 = "lasgun_pistol_rail_01",
                 },
+                offset = {
+                    position = vector3_box(-.035, -.25, 0),
+                    rotation = vector3_box(0, -45, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
             },
         },
         {attachment_slot = "rail2",
@@ -211,6 +215,12 @@ local fixes = {
             fix = {
                 attach = {
                     rail2 = "stubgun_pistol_rail_off",
+                },
+                offset = {
+                    position = vector3_box(-.035, -.25, 0),
+                    rotation = vector3_box(0, -45, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
                 },
             },
         },

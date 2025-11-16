@@ -170,11 +170,17 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                         local node = offset.node or 1
                         if type(node) == "string" then
                             node = unit_has_node(attachment_unit, node) and unit_node(attachment_unit, node) or 1
+                            -- mod:print("using node "..tostring(offset.node).." ("..tostring(node)..") for "..tostring(attachment_unit))
                         end
                         -- Check offset data
                         if offset.position then unit_set_local_position(attachment_unit, node, vector3_unbox(offset.position)) end
                         if offset.rotation then unit_set_local_rotation(attachment_unit, node, quaternion_from_vector(vector3_unbox(offset.rotation))) end
                         if offset.scale then unit_set_local_scale(attachment_unit, node, vector3_unbox(offset.scale)) end
+                        -- local parent_node = offset.parent_node
+                        -- if parent_node then
+                        --     world_unlink_unit(attachment_unit)
+                        --     world_link_unit(attachment_unit, 1, parent_node)
+                        -- end
                     end
                     -- Check alpha
                     if fix.alpha and attachment_unit and unit_alive(attachment_unit) then

@@ -6,7 +6,6 @@ local mod = get_mod("extended_weapon_customization")
 
 local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 local MultiFireModes = mod:original_require("scripts/settings/equipment/weapon_templates/multi_fire_modes")
-local damage_settings = mod:original_require("scripts/settings/damage/damage_settings")
 local HitScan = mod:original_require("scripts/utilities/attack/hit_scan")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################

@@ -10,6 +10,7 @@ return {
 	end,
 	load_before = {
         "GoToMastery",
+		"visible_equipment",
     },
 	require = {
 		"master_item_community_patch",

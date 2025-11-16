@@ -16,6 +16,8 @@ return {
 	},
 	load_after = {
 		"master_item_community_patch",
+		"extended_weapon_customization",
+		"extended_weapon_customization_base_additions",
 	},
 	packages = {},
 }

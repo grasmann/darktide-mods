@@ -4,18 +4,9 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
-    local type = type
-    local CLASS = CLASS
-    local pairs = pairs
     local table = table
-    local string = string
     local managers = Managers
-    local table_find = table.find
-    local script_unit = ScriptUnit
     local table_clear = table.clear
-    local string_format = string.format
-    local table_contains = table.contains
-    local script_unit_extension = script_unit.extension
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -29,6 +20,7 @@ mod:persistent_table(REFERENCE, {
     gear_files = mod:get("gear_files") or {},
     debug_sight = {0, 0, 0, 0, 0, 0},
     exclude_from_vfx_spawner = {},
+    gear_material_overrides = {},
     attachment_data_origin = {},
     attachment_slot_origin = {},
     gear_id_to_offer_id = {},
@@ -56,53 +48,56 @@ end
 local pt = mod:pt()
 
 mod.init = function(self)
-
     -- Clear mod items
     self:clear_mod_items()
     self:clear_all_alternate_fire_overrides()
-
     -- Load plugins
     self.loaded_plugins = self:load_plugins()
-
     -- If game already initialized ( mod reload )
     if pt.game_initialized then
         self:try_kitbash_load()
         self:find_missing_entries()
     end
-
     -- Load packages
     self:load_packages()
-
 end
 
 mod._on_all_mods_loaded = function(self)
+    -- Init
     self:init()
+    -- Trigger reload
     managers.event:trigger("ewc_reloaded")
 end
 
 mod._on_setting_changed = function(self, setting_id)
+    -- Trigger settings changed event
     managers.event:trigger("ewc_settings_changed")
 end
 
 mod._clear_chat = function(self)
+    -- Trigger clear notifications
 	managers.event:trigger("event_clear_notifications")
 end
 
 mod._on_game_state_changed = function(self, status, state_name)
+    -- Set game initialized
     if state_name == "StateTitle" and status == "exit" then
         pt.game_initialized = true
     end
+    -- Clear data
     table_clear(pt.exclude_from_vfx_spawner)
     table_clear(pt.items_originating_from_customization_menu)
 end
 
 mod._on_unload = function(self, exit_game)
+    -- Release packages
     if exit_game then
         self:release_packages()
     end
 end
 
 mod._update = function(self, dt)
+    -- Update cutscene
     self:update_cutscene()
 end
 

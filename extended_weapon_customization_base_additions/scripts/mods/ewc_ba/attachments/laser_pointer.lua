@@ -23,15 +23,16 @@ local Sway = mod:original_require("scripts/utilities/sway")
     local tostring = tostring
     local unit_node = unit.node
     local matrix4x4 = Matrix4x4
+    local unit_light = unit.light
     local quaternion = Quaternion
     local unit_alive = unit.alive
     local vector3_box = Vector3Box
     local script_unit = ScriptUnit
-    local unit_light = unit.light
     local table_clear = table.clear
     local vector3_zero = vector3.zero
     local physics_world = PhysicsWorld
     local table_contains = table.contains
+    local unit_num_lights = unit.num_lights
     local quaternion_look = quaternion.look
     local vector3_unbox = vector3_box.unbox
     local unit_local_pose = unit.local_pose
@@ -103,14 +104,16 @@ local context = {
 local function color_light_in_attachment(attachment_unit, attachment_data)
     -- Check unit
     if attachment_unit and unit_alive(attachment_unit) then
-        local light = unit_light(attachment_unit, 1)
-        local ewc = get_mod("extended_weapon_customization")
-        local flashlight_template_name = attachment_data.flashlight_template or "default"
-        local flashlight_template = ewc.settings.flashlight_templates[flashlight_template_name] or FlashlightTemplates[flashlight_template_name] or FlashlightTemplates.default
+        if unit_num_lights(attachment_unit) > 0 then
+            local light = unit_light(attachment_unit, 1)
+            local ewc = get_mod("extended_weapon_customization")
+            local flashlight_template_name = attachment_data.flashlight_template or "default"
+            local flashlight_template = ewc.settings.flashlight_templates[flashlight_template_name] or FlashlightTemplates[flashlight_template_name] or FlashlightTemplates.default
 
-        ewc:set_template_for_light(light, flashlight_template.light.third_person)
-        ewc:set_light_color_for_unit(light, attachment_unit)
-        ewc:set_light(light, true)
+            ewc:set_template_for_light(light, flashlight_template.light.third_person)
+            ewc:set_light_color_for_unit(light, attachment_unit)
+            ewc:set_light(light, true)
+        end
     end
 end
 

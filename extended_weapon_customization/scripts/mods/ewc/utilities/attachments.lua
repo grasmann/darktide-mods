@@ -56,7 +56,6 @@ mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_s
                 attachment_data_by_attachment_name[attachment_name] = attachment_data
 
                 if optional_mod_of_origin then
-                    -- local attachment_data = self.settings.attachments[weapon_template][attachment_slot][attachment_name]
                     attachment_data_origin[attachment_data] = optional_mod_of_origin
                 end
 
@@ -66,8 +65,9 @@ mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_s
 
 end
 
-mod.update_attachment_slot_lookup_tables = function(self, attachment_slots, attachment_slot_by_mod_by_weapon_by_name, mod_of_origin)
+mod.update_attachment_slot_lookup_tables = function(self, attachment_slots, attachment_slot_by_mod_by_weapon_by_name, optional_mod_of_origin)
 
+    local mod_of_origin = optional_mod_of_origin or mod
     local attachment_slot_by_mod_by_weapon_by_name = attachment_slot_by_mod_by_weapon_by_name or self.settings.attachment_slot_by_mod_by_weapon_by_name
     local attachment_slot_origin = pt.attachment_slot_origin
 
@@ -734,7 +734,7 @@ local attachment_slot_by_mod_by_weapon_by_name = {}
 mod:update_lookup_tables(attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name)
 
 -- Update attachment slots
-mod:update_attachment_slot_lookup_tables(attachment_slots, attachment_slot_by_mod_by_weapon_by_name, mod)
+mod:update_attachment_slot_lookup_tables(attachment_slots, attachment_slot_by_mod_by_weapon_by_name)
 
 -- Hide attachment slots
 local hide_attachment_slots_in_menu = {}

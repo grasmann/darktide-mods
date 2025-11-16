@@ -15,13 +15,17 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table = table
     local string = string
     local tostring = tostring
+    local unit_node = unit.node
     local table_size = table.size
     local unit_alive = unit.alive
     local table_clear = table.clear
     local string_find = string.find
+    local table_append = table.append
     local string_split = string.split
+    local table_reverse = table.reverse
     local unit_set_data = unit.set_data
     local table_combine = table.combine
+    local unit_has_node = unit.has_node
     local table_icombine = table.icombine
     local table_contains = table.contains
     local table_set_readonly = table.set_readonly
@@ -37,6 +41,7 @@ local empty_overrides_table = table_set_readonly({})
 local temp_children = {}
 local PROCESS_SLOTS = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
 local PROCESS_ITEM_TYPES = {"WEAPON_MELEE", "WEAPON_RANGED"}
+local dump_nodes = true
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -78,6 +83,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
             if kitbash_fixes then
                 fixes = table_merge_recursive(fixes, kitbash_fixes)
+                -- fixes = table_append(fixes, kitbash_fixes)
             end
 
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
@@ -88,6 +94,14 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                 -- Get item path
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+                local item = master_items.get_item(item_path)
+                local parent_attachment_slot_data = mod:fetch_attachment_data(item_data.attachments, attachment_slot)
+                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or item
+                if material_overrides_data then
+                    instance.apply_material_overrides(material_overrides_data, attachment_unit, item_unit, attach_settings)
+                end
+
+                -- if item and item.materials_overrides then instance.apply_material_overrides(item, attachment_unit, item_unit, attach_settings) end
 
                 -- Set attachment name
                 local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
@@ -114,6 +128,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                         local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                         if kitbash_fixes then
                             fixes = table_merge_recursive(fixes, kitbash_fixes)
+                            -- fixes = table_append(fixes, kitbash_fixes)
                         end
 
                         if attachment_units_by_unit[attachment_unit] then
@@ -127,8 +142,13 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                                 unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
 
                                 -- Get master item
-                                local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
-                                local item = master_items.get_item(item_path)
+                                local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
+                                local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
+                                local sub_item = master_items.get_item(item_path)
+                                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) or sub_item
+                                if material_overrides_data then
+                                    instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
+                                end
 
                                 -- Set attachment name
                                 local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
@@ -145,6 +165,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                     -- Get master item
                     local item = master_items.get_item(item_path)
+
+                    -- if item and item.materials_overrides then instance.apply_material_overrides(item, attachment_unit, item_unit, attach_settings) end
 
                     -- Execute ui item init function for attachment
                     -- Only execute if not from ui profile spawner or ui item preview
@@ -163,6 +185,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                         local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                         if kitbash_fixes then
                             fixes = table_merge_recursive(fixes, kitbash_fixes)
+                            -- fixes = table_append(fixes, kitbash_fixes)
                         end
 
                         -- Exlcude from vfx spawner
@@ -198,8 +221,13 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                                 unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
 
                                 -- Get master item
-                                local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
-                                local item = master_items.get_item(item_path)
+                                local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
+                                local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
+                                local sub_item = master_items.get_item(item_path)
+                                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) or sub_item
+                                if material_overrides_data then
+                                    instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
+                                end
 
                                 -- Set attachment name
                                 local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
@@ -216,7 +244,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 
             end
         end
-
+        -- fixes = table_reverse(fixes)
         -- Apply fixes
         mod:apply_unit_fixes(item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, fixes, is_ui_item_preview)
         -- Return
@@ -238,6 +266,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
             if kitbash_fixes then
                 fixes = table_merge_recursive(fixes, kitbash_fixes)
+                -- fixes = table_append(fixes, kitbash_fixes)
             end
 
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
@@ -249,6 +278,13 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 -- Get master item
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
                 local item = master_items.get_item(item_path)
+                local parent_attachment_slot_data = mod:fetch_attachment_data(item_data.attachments, attachment_slot)
+                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or item
+                if material_overrides_data then
+                    instance.apply_material_overrides(material_overrides_data, attachment_unit, item_unit, attach_settings)
+                end
+
+                -- if item and item.materials_overrides then instance.apply_material_overrides(item, attachment_unit, item_unit, attach_settings) end
 
                 -- Set attachment name
                 local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
@@ -260,6 +296,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     local kitbash_fixes = mod:fetch_attachment_fixes(item.structure or item.attachments)
                     if kitbash_fixes then
                         fixes = table_merge_recursive(fixes, kitbash_fixes)
+                        -- fixes = table_append(fixes, kitbash_fixes)
                     end
 
                     if item.is_kitbash and not item.disable_vfx_spawner_exclusion then
@@ -299,8 +336,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                             unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
 
                             -- Get master item
-                            local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
-                            local item = master_items.get_item(item_path)
+                            local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
+                            local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
+                            local sub_item = master_items.get_item(item_path)
+                            local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) or sub_item
+                            if material_overrides_data then
+                                instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
+                            end
+
+                            -- if item and item.materials_overrides then instance.apply_material_overrides(item, sub_attachment_unit, attachment_unit, attach_settings) end
 
                             -- Set attachment name
                             local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
@@ -316,7 +360,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             end
 
         end
-
+        -- fixes = table_reverse(fixes)
         -- Apply fixes
         mod:apply_unit_fixes(item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, fixes, true)
         -- Return
@@ -328,8 +372,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         -- Original function
         local override_lookup = func(item_data, override_item_data, ...)
         
-        if item_data.__gear_id and table_contains(PROCESS_ITEM_TYPES, item_data.item_type) then
-
+        if table_contains(PROCESS_ITEM_TYPES, item_data.item_type) then
             if override_lookup and table_size(override_lookup) > 0 then
                 for attachment_slot, replacement_path in pairs(override_lookup) do
                     if not string_find(replacement_path, "skins") then
@@ -337,7 +380,6 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                     end
                 end
             end
-
         end
 
         -- Return

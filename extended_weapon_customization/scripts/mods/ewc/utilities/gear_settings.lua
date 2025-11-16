@@ -1,5 +1,13 @@
 local mod = get_mod("extended_weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local ItemMaterialOverridesGearMaterials = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_materials")
+local ItemMaterialOverridesGearPatterns = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_patterns")
+local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_colors")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
@@ -14,10 +22,106 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local pt = mod:pt()
+local OVERRIDE_TYPE = table.enum("color", "pattern", "wear")
+local ALL_OVERRIDE_TYPES = {OVERRIDE_TYPE.color, OVERRIDE_TYPE.pattern, OVERRIDE_TYPE.wear}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+mod.clear_gear_material_overrides = function(self, item, fake_gear_id, optional_slot_name, optional_override_types)
+    local gear_id = self:gear_id(item, fake_gear_id)
+
+    -- Check if gear id has material overrides
+    if pt.gear_material_overrides[gear_id] then
+
+        -- Get attachment slots from item
+        local attachment_slots = mod:fetch_attachment_slots(item.attachments)
+        -- Iterate through attachment slots
+        for attachment_slot, data in pairs(attachment_slots) do
+
+            -- Check if optional slot name matches attachment slot
+            if not optional_slot_name or optional_slot_name == attachment_slot then
+
+                -- Check if attachment slot has material overrides
+                if pt.gear_material_overrides[gear_id][attachment_slot] then
+
+                    -- Get override types
+                    local override_types = optional_override_types or ALL_OVERRIDE_TYPES
+                    -- Iterate through override types
+                    for _, override_type in pairs(override_types) do
+
+                        -- Get material overrides
+                        local material_overrides = pt.gear_material_overrides[gear_id][attachment_slot].material_overrides
+                        -- Iterate through material overrides
+                        for index, material_override in pairs(material_overrides) do
+                            -- Check if override type matches
+                            if self:override_type(material_override) == override_type then
+                                -- Remove material override
+                                material_overrides[index] = nil
+                            end
+                        end
+
+                    end
+
+                end
+
+            end
+
+        end
+
+    end
+
+end
+
+mod.override_type = function(self, material_override)
+    if ItemMaterialOverridesGearColors[material_override] then return OVERRIDE_TYPE.color end
+    if ItemMaterialOverridesGearPatterns[material_override] then return OVERRIDE_TYPE.pattern end
+    if ItemMaterialOverridesGearMaterials[material_override] then return OVERRIDE_TYPE.wear end
+end
+
+mod.remove_override_type = function(self, material_overrides, remove_type)
+    for index, material_override in pairs(material_overrides) do
+        if self:override_type(material_override) == remove_type then
+            material_overrides[index] = nil
+            return
+        end
+    end
+end
+
+mod.gear_material_overrides = function(self, item, fake_gear_id, slot_name, optional_material_overrides)
+    local gear_id = self:gear_id(item, fake_gear_id)
+    if optional_material_overrides then
+
+        pt.gear_material_overrides[gear_id] = pt.gear_material_overrides[gear_id] or {}
+
+        if optional_material_overrides == false then
+
+            pt.gear_material_overrides[gear_id][slot_name] = nil
+
+        else
+
+            pt.gear_material_overrides[gear_id][slot_name] = pt.gear_material_overrides[gear_id][slot_name] or {
+                material_overrides = {},
+            }
+
+            if optional_material_overrides.material_overrides then
+                for _, material_override in pairs(optional_material_overrides.material_overrides) do
+
+                    local override_type = self:override_type(material_override)
+                    self:remove_override_type(pt.gear_material_overrides[gear_id][slot_name].material_overrides, override_type)
+
+                    -- Set setting
+                    pt.gear_material_overrides[gear_id][slot_name].material_overrides[#pt.gear_material_overrides[gear_id][slot_name].material_overrides+1] = material_override
+
+                end
+            end
+
+        end
+    else
+        return pt.gear_material_overrides[gear_id] and pt.gear_material_overrides[gear_id][slot_name]
+    end
+end
 
 mod.gear_id = function(self, item, fake_gear_id)
     local gear_id = nil
@@ -56,6 +160,10 @@ end
 mod.gear_settings = function(self, gear_id, settings, file)
     -- Check settings and gear id
     if settings and gear_id then
+        -- Add material overrides
+        if settings and pt.gear_material_overrides[gear_id] then
+            settings.material_overrides = pt.gear_material_overrides[gear_id]
+        end
         -- Set gear settings
         pt.gear_settings[gear_id] = settings
         local data = pt.gear_settings[gear_id]
@@ -75,6 +183,10 @@ mod.gear_settings = function(self, gear_id, settings, file)
             pt.gear_settings[gear_id] = mod.save_lua:load_entry(gear_id)
             -- Get gear settings
             data = pt.gear_settings[gear_id]
+        end
+        -- Add material overrides
+        if data and data.material_overrides then
+            pt.gear_material_overrides[gear_id] = data.material_overrides
         end
         -- Return gear settings
         return data

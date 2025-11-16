@@ -14,9 +14,7 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
-local _item_npc = "content/items/weapons/npc"
 
 return {
     ["2h_force_sword_blade_01"] = {

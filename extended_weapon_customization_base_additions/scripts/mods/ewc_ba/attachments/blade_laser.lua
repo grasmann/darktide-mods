@@ -122,6 +122,17 @@ end
 -- ##### └─┐├─┘├─┤││││││  ├─┘├─┤├┬┘ │ ││  │  ├┤ └─┐ ###################################################################
 -- ##### └─┘┴  ┴ ┴└┴┘┘└┘  ┴  ┴ ┴┴└─ ┴ ┴└─┘┴─┘└─┘└─┘ ###################################################################
 
+local function laser_node(attachment_data)          return attachment_data.laser_node           or attachment_data.fire_node        or 1 end
+local function vent_offset(attachment_data)         return attachment_data.vent_offset          or attachment_data.laser_1_offset   or attachment_data.laser_offset     or vector3_box(vector3_zero()) end
+local function distortion_offset(attachment_data)   return attachment_data.distortion_offset                                                                            or vector3_box(vector3_zero()) end
+local function laser_1_offset(attachment_data)      return attachment_data.laser_1_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
+local function laser_2_offset(attachment_data)      return attachment_data.laser_2_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
+local function laser_3_offset(attachment_data)      return attachment_data.laser_3_offset       or attachment_data.laser_offset                                         or vector3_box(vector3_zero()) end
+local function distortion_size(attachment_data)     return attachment_data.distortion_size                                                                              or vector3_box(vector3_zero()) end
+local function laser_1_size(attachment_data)        return attachment_data.laser_1_size         or attachment_data.fire_size                                            or vector3_box(vector3_zero()) end
+local function laser_2_size(attachment_data)        return attachment_data.laser_2_size         or attachment_data.tip_size_1                                           or vector3_box(vector3_zero()) end
+local function laser_3_size(attachment_data)        return attachment_data.laser_3_size         or attachment_data.tip_size_2                                           or vector3_box(vector3_zero()) end
+
 local function spawn_lingering_flame(world, attachment_unit, attachment_data, hit_unit, hit_position)
     if hit_unit and unit_alive(hit_unit) then
         local scale_offset = vector3(.1, .1, .1)
@@ -145,14 +156,16 @@ end
 
 local function spawn_distortion_particle_effect(world, attachment_unit, attachment_data, optional_custom_fov, customization_item)
     local custom_fov = not not optional_custom_fov
-    local fire_node = attachment_data.fire_node or 1
+    -- local fire_node = attachment_data._fire_node or 1
+    local laser_node = laser_node(attachment_data)
 
-    local attachment_position = unit_local_position(attachment_unit, fire_node)
-    local attachment_rotation = unit_local_rotation(attachment_unit, fire_node)
+    local attachment_position = unit_local_position(attachment_unit, laser_node)
+    local attachment_rotation = unit_local_rotation(attachment_unit, laser_node)
 
     local mat = quaternion_matrix4x4(attachment_rotation)
 
-    local distortion_offset = attachment_data.distortion_offset and vector3_unbox(attachment_data.distortion_offset) or vector3(0, 0, -.8)
+    -- local distortion_offset = attachment_data._distortion_offset and vector3_unbox(attachment_data._distortion_offset) or vector3(0, 0, -.8)
+    local distortion_offset = vector3_unbox(distortion_offset(attachment_data))
     local position_offset = attachment_position + matrix4x4_transform(mat, distortion_offset)
 
     if customization_item then
@@ -170,7 +183,7 @@ local function spawn_distortion_particle_effect(world, attachment_unit, attachme
     world_set_particles_use_custom_fov(world, particle_id, custom_fov)
 
     matrix4x4_set_scale(pose, distortion_size)
-    world_link_particles(world, particle_id, attachment_unit, fire_node, pose, "destroy")
+    world_link_particles(world, particle_id, attachment_unit, laser_node, pose, "destroy")
 
     return particle_id
 end
@@ -178,15 +191,18 @@ end
 local function spawn_laser_particle_effect(world, attachment_unit, attachment_data, optional_custom_fov, customization_item)
     local particle_name = attachment_data.particle_effect_name or LASER_PARTICLE
     local custom_fov = not not optional_custom_fov
-    local fire_node = attachment_data.fire_node or 1
-    local fire_size = attachment_data.fire_size and vector3_unbox(attachment_data.fire_size) or FIRE_SIZE
+    -- local fire_node = attachment_data._fire_node or 1
+    local laser_node = laser_node(attachment_data)
+    -- local fire_size = attachment_data._fire_size and vector3_unbox(attachment_data._fire_size) or FIRE_SIZE
+    local fire_size = vector3_unbox(laser_1_size(attachment_data))
 
-    local attachment_position = unit_local_position(attachment_unit, fire_node)
-    local attachment_rotation = unit_local_rotation(attachment_unit, fire_node)
+    local attachment_position = unit_local_position(attachment_unit, laser_node)
+    local attachment_rotation = unit_local_rotation(attachment_unit, laser_node)
 
     local mat = quaternion_matrix4x4(attachment_rotation)
 
-    local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, -.625)
+    -- local laser_offset = attachment_data._laser_offset and vector3_unbox(attachment_data._laser_offset) or vector3(0, 0, -.625)
+    local laser_offset = vector3_unbox(laser_1_offset(attachment_data))
     local position_offset = attachment_position + matrix4x4_transform(mat, laser_offset)
 
     if customization_item then
@@ -203,7 +219,7 @@ local function spawn_laser_particle_effect(world, attachment_unit, attachment_da
     local laser_particle_effect = world_create_particles(world, particle_name, position_offset, rotation_offset, scale_offset)
     world_set_particles_use_custom_fov(world, laser_particle_effect, custom_fov)
 
-    world_link_particles(world, laser_particle_effect, attachment_unit, fire_node, pose, "destroy")
+    world_link_particles(world, laser_particle_effect, attachment_unit, laser_node, pose, "destroy")
 
     local laser_variable_index = world_find_particles_variable(world, particle_name, LASER_LENGTH_VARIABLE_NAME)
     world_set_particles_variable(world, laser_particle_effect, laser_variable_index, fire_size)
@@ -215,15 +231,17 @@ local function spawn_laser_tip_particle_effects(world, attachment_unit, attachme
     local no_animation = not not optional_no_animation
     local particle_name = attachment_data.particle_effect_name or LASER_PARTICLE
     local custom_fov = not not optional_custom_fov
-    local fire_node = attachment_data.fire_node or 1
+    -- local fire_node = attachment_data._fire_node or 1
+    local laser_node = laser_node(attachment_data)
 
-    local attachment_position = unit_local_position(attachment_unit, fire_node)
-    local attachment_rotation = unit_local_rotation(attachment_unit, fire_node)
+    local attachment_position = unit_local_position(attachment_unit, laser_node)
+    local attachment_rotation = unit_local_rotation(attachment_unit, laser_node)
 
     local mat = quaternion_matrix4x4(attachment_rotation)
 
     -- local position_offset = attachment_position + matrix4x4_transform(mat, vector3(0, 0, .025))
-    local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, -.625)
+    -- local laser_offset = attachment_data._laser_offset and vector3_unbox(attachment_data._laser_offset) or vector3(0, 0, -.625)
+    local laser_offset = vector3_unbox(laser_2_offset(attachment_data))
     local position_offset = attachment_position + matrix4x4_transform(mat, laser_offset)
 
     if customization_item then
@@ -241,22 +259,32 @@ local function spawn_laser_tip_particle_effects(world, attachment_unit, attachme
 
     world_set_particles_use_custom_fov(world, laser_point_dot_particle, custom_fov)
 
-    world_link_particles(world, laser_point_dot_particle, attachment_unit, fire_node, pose, "destroy")
+    world_link_particles(world, laser_point_dot_particle, attachment_unit, laser_node, pose, "destroy")
 
     local laser_variable_index = world_find_particles_variable(world, particle_name, LASER_LENGTH_VARIABLE_NAME)
-    local tip_size_1 = attachment_data.tip_size_1 and vector3_unbox(attachment_data.tip_size_1) or vector3(.25, .02, .25)
+    -- local tip_size_1 = attachment_data._tip_size_1 and vector3_unbox(attachment_data._tip_size_1) or vector3(.25, .02, .25)
+    local tip_size_1 = vector3_unbox(laser_2_size(attachment_data))
     local offset = no_animation and tip_size_1 or vector3(0, 0, 0)
     world_set_particles_variable(world, laser_point_dot_particle, laser_variable_index, offset)
     
+
+    -- local laser_offset = attachment_data._laser_offset and vector3_unbox(attachment_data._laser_offset) or vector3(0, 0, -.625)
+    local laser_offset = vector3_unbox(laser_3_offset(attachment_data))
+    local position_offset = attachment_position + matrix4x4_transform(mat, laser_offset)
+
+    local pose = matrix4x4_from_quaternion_position(rotation_offset, position_offset)
+    local scale_offset = vector3(1, 1, 1)
+    matrix4x4_set_scale(pose, scale_offset)
 
     local laser_point_dot_particle2 = world_create_particles(world, particle_name, position_offset, rotation_offset, scale_offset)
 
     world_set_particles_use_custom_fov(world, laser_point_dot_particle2, custom_fov)
 
-    world_link_particles(world, laser_point_dot_particle2, attachment_unit, fire_node, pose, "destroy")
+    world_link_particles(world, laser_point_dot_particle2, attachment_unit, laser_node, pose, "destroy")
 
     local laser_variable_index = world_find_particles_variable(world, particle_name, LASER_LENGTH_VARIABLE_NAME)
-    local tip_size_2 = attachment_data.tip_size_2 and vector3_unbox(attachment_data.tip_size_2) or vector3(.175, .03, .175)
+    -- local tip_size_2 = attachment_data._tip_size_2 and vector3_unbox(attachment_data._tip_size_2) or vector3(.175, .03, .175)
+    local tip_size_2 = vector3_unbox(laser_3_size(attachment_data))
     local offset = no_animation and tip_size_2 or vector3(0, 0, 0)
     world_set_particles_variable(world, laser_point_dot_particle2, laser_variable_index, offset)
 
@@ -266,14 +294,16 @@ end
 
 local function spawn_vent_particle_effect(world, attachment_unit, attachment_data, optional_custom_fov, customization_item)
     local custom_fov = not not optional_custom_fov
-    local fire_node = attachment_data.fire_node or 1
+    -- local fire_node = attachment_data._fire_node or 1
+    local laser_node = laser_node(attachment_data)
 
-    local attachment_position = unit_local_position(attachment_unit, fire_node)
-    local attachment_rotation = unit_local_rotation(attachment_unit, fire_node)
+    local attachment_position = unit_local_position(attachment_unit, laser_node)
+    local attachment_rotation = unit_local_rotation(attachment_unit, laser_node)
 
     local mat = quaternion_matrix4x4(attachment_rotation)
 
-    local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, -.625)
+    -- local laser_offset = attachment_data.laser_offset and vector3_unbox(attachment_data.laser_offset) or vector3(0, 0, -.625)
+    local laser_offset = vector3_unbox(vent_offset(attachment_data))
     local position_offset = attachment_position + matrix4x4_transform(mat, laser_offset)
 
     if customization_item then
@@ -292,7 +322,7 @@ local function spawn_vent_particle_effect(world, attachment_unit, attachment_dat
     world_set_particles_use_custom_fov(world, vent_particle, custom_fov)
     world_set_particles_life_time(world, vent_particle, FADE_IN_TIME)
 
-    world_link_particles(world, vent_particle, attachment_unit, fire_node, pose, "destroy")
+    world_link_particles(world, vent_particle, attachment_unit, laser_node, pose, "destroy")
 
     return vent_particle
 end
@@ -400,9 +430,10 @@ local function spawn_blade(attachment_callback_extension, attachment_slot_data, 
 
             attachment_callback_extension.laser_point_dot_particle, attachment_callback_extension.laser_point_dot_particle2 = spawn_laser_tip_particle_effects(world, attachment_unit, attachment_data, false, false, optional_no_animation)
 
-            local fire_node = attachment_data.fire_node or 1
-            play_sound_effect(LASER_ON, attachment_callback_extension.unit, attachment_unit, fire_node, no_sound)
-            play_sound_effect(PLAY_LASER_LOOP, attachment_callback_extension.unit, attachment_unit, fire_node, no_sound)
+            -- local fire_node = attachment_data._fire_node or 1
+            local laser_node = laser_node(attachment_data)
+            play_sound_effect(LASER_ON, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
+            play_sound_effect(PLAY_LASER_LOOP, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
 
             if not no_animation then
                 attachment_callback_extension.laser_start_fade_in = true
@@ -421,7 +452,8 @@ local function update_blade(attachment_callback_extension, attachment_slot_data,
         local attachment_data = attachment_slot_data.attachment_data
         local particle_name = attachment_data.particle_effect_name or LASER_PARTICLE
         local world = attachment_callback_extension.world
-        local fire_size = attachment_data.fire_size and vector3_unbox(attachment_data.fire_size) or FIRE_SIZE
+        -- local fire_size = attachment_data._fire_size and vector3_unbox(attachment_data._fire_size) or FIRE_SIZE
+        local fire_size = laser_1_size(attachment_data)
 
         if t > attachment_callback_extension.laser_start_fade_t then
 
@@ -432,12 +464,14 @@ local function update_blade(attachment_callback_extension, attachment_slot_data,
             end
 
             if attachment_callback_extension.laser_point_dot_particle and attachment_callback_extension.laser_variable_index then
-                local tip_size_1 = attachment_data.tip_size_1 and vector3_unbox(attachment_data.tip_size_1) or vector3(.25, .02, .25)
+                -- local tip_size_1 = attachment_data._tip_size_1 and vector3_unbox(attachment_data._tip_size_1) or vector3(.25, .02, .25)
+                local tip_size_1 = laser_2_size(attachment_data)
                 world_set_particles_variable(world, attachment_callback_extension.laser_point_dot_particle, attachment_callback_extension.laser_variable_index, tip_size_1)
             end
 
             if attachment_callback_extension.laser_point_dot_particle2 and attachment_callback_extension.laser_variable_index then
-                local tip_size_2 = attachment_data.tip_size_2 and vector3_unbox(attachment_data.tip_size_2) or vector3(.175, .03, .175)
+                -- local tip_size_2 = attachment_data.tip_size_2 and vector3_unbox(attachment_data.tip_size_2) or vector3(.175, .03, .175)
+                local tip_size_2 = laser_3_size(attachment_data)
                 world_set_particles_variable(world, attachment_callback_extension.laser_point_dot_particle2, attachment_callback_extension.laser_variable_index, tip_size_2)
             end
 
@@ -494,8 +528,9 @@ local function impact_blade(attachment_callback_extension, attachment_slot_data,
 
         spawn_lingering_flame(world, attachment_unit, attachment_data, hit_unit, hit_position)
 
-        local fire_node = attachment_data.fire_node or 1
-        play_sound_effect(IMPACT_SOUND, attachment_callback_extension.unit, attachment_unit, fire_node, no_sound)
+        -- local fire_node = attachment_data._fire_node or 1
+        local laser_node = laser_node(attachment_data)
+        play_sound_effect(IMPACT_SOUND, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
 
     end
 
@@ -508,8 +543,9 @@ local function attack_blade(attachment_callback_extension, attachment_slot_data,
     if attachment_callback_extension.wielded_slot == attachment_slot_data.slot_name and attachment_unit and unit_alive(attachment_unit) then
 
         local attachment_data = attachment_slot_data.attachment_data
-        local fire_node = attachment_data.fire_node or 1
-        play_sound_effect(SWING_SOUND, attachment_callback_extension.unit, attachment_unit, fire_node, no_sound)
+        -- local fire_node = attachment_data._fire_node or 1
+        local laser_node = laser_node(attachment_data)
+        play_sound_effect(SWING_SOUND, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
 
     end
 end

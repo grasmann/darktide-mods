@@ -5,6 +5,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local master_items = mod:original_require("scripts/backend/master_items")
+local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -64,27 +65,70 @@ mod.kitbash_item = function(self, name, data)
                 template = table_merge_recursive(template, data)
 
                 -- Set attachments
-                template.attachments = data.attachments
-
-                -- Add shared material overrides
-                if not template.attachments.zzz_shared_material_overrides then
-                    template.attachments.zzz_shared_material_overrides = {
-                        item = "",
-                        children = {},
-                    }
-                end
+                -- template.attachments = data.attachments
 
                 -- Add resource dependencies
-                local resource_dependencies = {
+                local resource_dependencies = template.resource_dependencies or {
                     ["content/characters/empty_item/empty_item"] = true,
                 }
-                local attachment_slots = self:fetch_attachment_slots(template.attachments)
-                for attachment_slot, data in pairs(attachment_slots) do
-                    local item = master_items.get_item(data.item)
-                    if item then
-                        resource_dependencies = table_merge_recursive(resource_dependencies, item.resource_dependencies)
+
+                if data.material_overrides then
+                    for _, material_override_name in pairs(data.material_overrides) do
+
+                        local material_override_data = ItemMaterialOverrides[material_override_name]
+
+                        if material_override_data and material_override_data.texture_overrides then
+
+                            for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+                                resource_dependencies[texture_override_data.resource] = true
+                                mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
+                            end
+
+                        end
+
                     end
                 end
+
+                -- Add shared material overrides
+                if template.attachments then
+
+                    if not data.disable_shared_material_overrides and not template.attachments.zzz_shared_material_overrides then
+                        template.attachments.zzz_shared_material_overrides = {
+                            item = "",
+                            children = {},
+                        }
+                    else
+                        template.attachments.zzz_shared_material_overrides = nil
+                    end
+
+                    local attachment_slots = self:fetch_attachment_slots(template.attachments)
+                    for attachment_slot, data in pairs(attachment_slots) do
+                        local item = master_items.get_item(data.item)
+                        if item then
+
+                            resource_dependencies = table_merge_recursive(resource_dependencies, item.resource_dependencies)
+
+                            if item.material_overrides then
+                                for _, material_override_name in pairs(item.material_overrides) do
+
+                                    local material_override_data = ItemMaterialOverrides[material_override_name]
+
+                                    if material_override_data and material_override_data.texture_overrides then
+
+                                        for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+                                            resource_dependencies[texture_override_data.resource] = true
+                                            mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
+                                        end
+
+                                    end
+
+                                end
+                            end
+                        end
+                    end
+
+                end
+
                 template.resource_dependencies = resource_dependencies
 
                 -- Other attributes
@@ -97,7 +141,6 @@ mod.kitbash_item = function(self, name, data)
                 template.feature_flags = {
                     "FEATURE_item_retained",
                 }
-                template.slots = nil
                 template.item_type = nil --"KITBASH"
                 template.name = name
                 template.is_fallback_item = false
@@ -111,6 +154,68 @@ mod.kitbash_item = function(self, name, data)
         else
 
             data.is_kitbash = true
+
+            local resource_dependencies = data.resource_dependencies or {}
+
+            if data.material_overrides then
+                for _, material_override_name in pairs(data.material_overrides) do
+
+                    local material_override_data = ItemMaterialOverrides[material_override_name]
+
+                    if material_override_data and material_override_data.texture_overrides then
+
+                        for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+                            resource_dependencies[texture_override_data.resource] = true
+                            mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
+                        end
+
+                    end
+
+                end
+            end
+
+            if data.attachments then
+
+                -- Add shared material overrides
+                if not data.disable_shared_material_overrides and not data.attachments.zzz_shared_material_overrides then
+                    data.attachments.zzz_shared_material_overrides = {
+                        item = "",
+                        children = {},
+                    }
+                else
+                    data.attachments.zzz_shared_material_overrides = nil
+                end
+
+                local attachment_slots = self:fetch_attachment_slots(data.attachments)
+                for attachment_slot, attachment_slot_data in pairs(attachment_slots) do
+                    local item = master_items.get_item(attachment_slot_data.item)
+                    if item then
+
+                        resource_dependencies = table_merge_recursive(resource_dependencies, item.resource_dependencies)
+
+                        if item.material_overrides then
+                            for _, material_override_name in pairs(item.material_overrides) do
+
+                                local material_override_data = ItemMaterialOverrides[material_override_name]
+
+                                if material_override_data and material_override_data.texture_overrides then
+
+                                    for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+                                        resource_dependencies[texture_override_data.resource] = true
+                                        mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
+                                    end
+
+                                end
+
+                            end
+                        end
+                    end
+                end
+
+            end
+
+            data.resource_dependencies = resource_dependencies
+
             -- Inject item into master items
             master_items.get_cached()[data.name] = data
 

@@ -5,7 +5,9 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local CheckboxPassTemplates = mod:original_require("scripts/ui/pass_templates/checkbox_pass_templates")
+local DefaultPassTemplates = mod:original_require("scripts/ui/pass_templates/default_pass_templates")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
+local DropdownTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
@@ -31,7 +33,11 @@ local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local WEAPON_OPTIONS_VIEW = "inventory_weapons_view_weapon_options"
 local equip_button_size = {374, 76}
 local default_button_size = {200, 38}
+local color_size = {350, 38}
+local pattern_size = {350, 38}
+local wear_size = {300, 38}
 local tip_size = {600, 400}
+local button_size = {30, 30}
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -76,6 +82,72 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		position = {-140 - default_button_size[1] * 2, -default_button_size[2], 1},
 	}
 
+	instance.scenegraph_definition.color_text = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = color_size,
+		position = {-90, 12, 1},
+	}
+	instance.scenegraph_definition.pattern_text = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = pattern_size,
+		position = {-110 - color_size[1], 12, 1},
+	}
+	instance.scenegraph_definition.wear_text = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = wear_size,
+		position = {-130 - color_size[1] - pattern_size[1], 12, 1},
+	}
+
+	instance.scenegraph_definition.color_button = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = button_size,
+		position = {-100, 6, 1},
+	}
+	instance.scenegraph_definition.pattern_button = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = button_size,
+		position = {-120 - color_size[1], 6, 1},
+	}
+	instance.scenegraph_definition.wear_button = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = button_size,
+		position = {-140 - color_size[1] - pattern_size[1], 6, 1},
+	}
+
+	instance.scenegraph_definition.color_dropdown = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = color_size,
+		position = {-100, 40, 1},
+	}
+	instance.scenegraph_definition.pattern_dropdown = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = pattern_size,
+		position = {-120 - color_size[1], 40, 1},
+	}
+	instance.scenegraph_definition.wear_dropdown = {
+		horizontal_alignment = "right",
+		parent = "weapon_preview",
+		vertical_alignment = "top",
+		size = wear_size,
+		position = {-140 - color_size[1] - pattern_size[1], 40, 1},
+	}
+
 	instance.scenegraph_definition.tip_1 = {
 		horizontal_alignment = "center",
 		parent = "canvas",
@@ -91,6 +163,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		size = default_button_size,
 		position = {0, -30, 1},
 	}
+
+
 
 	instance.widget_definitions.reset_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.default_button), "reset_button", {
 		gamepad_action = "secondary_action_pressed",
@@ -127,6 +201,59 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.widget_definitions.damage_type_toggle = UIWidget.create_definition(table_clone(ButtonPassTemplates.terminal_button_small), "damage_type_toggle", {
 		gamepad_action = "secondary_action_pressed",
 		text = utf8_upper(localize("loc_weapon_inventory_damage_type_toggle")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+
+	local terminal_button_small = table_clone(ButtonPassTemplates.terminal_button_small)
+	terminal_button_small.size = button_size
+
+	instance.widget_definitions.color_button = UIWidget.create_definition(terminal_button_small, "color_button", {
+		gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_color_button")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+	instance.widget_definitions.pattern_button = UIWidget.create_definition(terminal_button_small, "pattern_button", {
+		gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_pattern_button")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+	instance.widget_definitions.wear_button = UIWidget.create_definition(terminal_button_small, "wear_button", {
+		gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_wear_button")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+
+	instance.widget_definitions.color_text = UIWidget.create_definition(table_clone(DefaultPassTemplates.body_text), "color_text", {
+		gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_color_text")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+	instance.widget_definitions.pattern_text = UIWidget.create_definition(table_clone(DefaultPassTemplates.body_text), "pattern_text", {
+		gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_pattern_text")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+	instance.widget_definitions.wear_text = UIWidget.create_definition(table_clone(DefaultPassTemplates.body_text), "wear_text", {
+		gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_wear_text")),
 		hotspot = {
 			on_pressed_sound = UISoundEvents.system_popup_enter,
 		},

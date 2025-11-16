@@ -5,8 +5,12 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
+local ItemMaterialOverridesGearMaterials = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_materials")
+local ItemMaterialOverridesGearPatterns = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_patterns")
+local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_colors")
 local ViewElementTabMenu = mod:original_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu")
 local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
+local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
 local ButtonPassTemplates = mod:original_require("scripts/ui/pass_templates/button_pass_templates")
 local ScriptCamera = mod:original_require("scripts/foundation/utilities/script_camera")
 local UISoundEvents = mod:original_require("scripts/settings/ui/ui_sound_events")
@@ -26,13 +30,19 @@ local items = mod:original_require("scripts/utilities/items")
     local CLASS = CLASS
     local color = Color
     local string = string
+    local vector3 = Vector3
+    local vector2 = Vector2
     local get_mod = get_mod
     local callback = callback
     local managers = Managers
     local localize = Localize
     local tostring = tostring
+    local math_max = math.max
+    local math_min = math.min
+    local math_ceil = math.ceil
     local math_lerp = math.lerp
     local math_uuid = math.uuid
+    local string_len = string.len
     local utf8_upper = utf8.upper
     local string_sub = string.sub
     local table_clear = table.clear
@@ -53,26 +63,35 @@ local pt = mod:pt()
 local temp_detached = {}
 local temp_validated = {}
 local temp_mod_count = {}
-local damage_type_slots = {"magazine", "head", "blade"}
+local temp_group_index = {}
+local empty_table = {}
 local empty_position = {0, 0, 0}
 local alternate_fire_setting = "alternate_fire"
 local crosshair_list_setting = "crosshair"
 local damage_type_active_setting = "damage_type_active"
+local dropdown_size = {400, 38}
+local OVERRIDE_TYPE = table.enum("color", "pattern", "wear")
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+-- Get selectable attachment count from attachment data list
 mod.selectable_attachment_count = function(self, attachment_entries)
     local count = 0
+    -- Iterate through attachment entries
     for attachment_name, attachment_data in pairs(attachment_entries) do
+        -- Check if attachment is selectable
         if not attachment_data.hide_from_selection then
+            -- Increment count
             count = count + 1
         end
     end
+    -- Return count
     return count
 end
 
+-- Modify inventory weapon cosmetics view definitions
 mod.inventory_weapon_cosmetics_view_adjust_definitions = function(self, instance)
 
     instance.scenegraph_definition.item_grid_pivot.position[1] = 320
@@ -122,6 +141,21 @@ mod.inventory_weapon_cosmetics_view_adjust_definitions = function(self, instance
 
 end
 
+local compare_item_name = function(a, b)
+    local a_display_name, b_display_name = a.id or "", b.id or ""
+
+    a_display_name = a_display_name:gsub("[\n\r]", "")
+    b_display_name = b_display_name:gsub("[\n\r]", "")
+
+    if a_display_name < b_display_name then
+        return true
+    elseif b_display_name < a_display_name then
+        return false
+    end
+
+    return nil
+end
+
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
@@ -129,131 +163,173 @@ end
 mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view", function(instance)
 
     instance.update_presentation_item = function(self, optional_item)
+
+        -- Get item
         local item = optional_item or self._selected_item
-        
+        -- Create presentation item from item
         self._presentation_item = master_items.create_preview_item_instance(item, true)
-
+        -- Generate gear id
         local gear_id = math_uuid()
-
+        -- Set presentation item gear id
         self._presentation_item.gear_id = gear_id
         self._presentation_item.__gear_id = gear_id
         self._presentation_item.__original_gear_id = gear_id
         self._presentation_item.__attachment_customization = true
 
+        -- Mark gear id origin
         pt.items_originating_from_customization_menu[gear_id] = true
-
+        -- Preview presentation item
         self:_preview_item(self._presentation_item)
+
+        -- Switch tab
         self:cb_switch_tab(1)
+
     end
 
     instance.update_real_world_item = function(self, optional_item)
+
+        -- Get item
         local item = optional_item or self._selected_item
+
+        -- Trigger item icon update
         managers.ui:item_icon_updated(item)
         managers.event:trigger("event_item_icon_updated", item)
         managers.event:trigger("event_replace_list_item", item)
-        -- Redo weapon attachments
+
+        -- Reevaluate packages
         mod:reevaluate_packages()
+        -- Redo weapon attachments
         mod:redo_weapon_attachments(self._selected_item)
+
     end
 
     instance.cb_on_reset_pressed = function(self)
 
+        -- Toggle flags
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
+
+        -- Clear item origin table
         table_clear(pt.items_originating_from_customization_menu)
 
+        -- Reset item
         local gear_id = mod:gear_id(self._selected_item)
         mod:delete_gear_settings(gear_id, true)
-
-        local fake_gear_id = mod:gear_id(self._presentation_item, true)
-        mod:delete_gear_settings(gear_id, true)
-
         mod:reset_item(self._selected_item, true)
+
+        -- Reset presentation item
+        local fake_gear_id = mod:gear_id(self._presentation_item, true)
+        mod:delete_gear_settings(fake_gear_id, true)
         mod:reset_item(self._presentation_item, true)
 
+        -- Get attachment slots from item
         local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
+        -- Iterate through attachment slots
         for attachment_slot, data in pairs(attachment_slots) do
-
+            -- Attachment info
             local attachment_item_path = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
             local attachment_item = master_items.get_item(attachment_item_path)
-            
+            -- Set selected element name
             self["_equipped_"..attachment_slot.."_name"] = attachment_item_path or "content/items/weapons/player/trinkets/unused_trinket"
             self["_selected_"..attachment_slot.."_name"] = attachment_item_path or "content/items/weapons/player/trinkets/unused_trinket"
-
+            -- Set selected element
             self["_equipped_"..attachment_slot] = attachment_item
             self["_selected_"..attachment_slot] = attachment_item
 
         end
 
-
+        -- Update real world item
         self:update_real_world_item()
-
+        -- Update presentation item
         self:update_presentation_item()
 
+        -- Mark gear id origin
         pt.items_originating_from_customization_menu[fake_gear_id] = true
 
+        -- Preview presentation item
         self:_preview_item(self._presentation_item)
+
+        -- Switch tab
         local index = self._selected_tab_index
         self._selected_tab_index = nil
         self:cb_switch_tab(index)
 
+        -- Toggle flags
         mod.is_in_customization_menu = true
+
     end
 
     instance.cb_on_random_pressed = function(self)
 
+        -- Advance tutorial
         if self.tutorial_step == 5 then
             self.tutorial_step = 6
         end
 
+        -- Toggle flags
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
+
+        -- Clear item origin table
         table_clear(pt.items_originating_from_customization_menu)
 
+        -- Randomize item
         local new_gear_settings = mod:randomize_item(self._selected_item)
-
+        -- Apply new gear settings to item
         local gear_id = mod:gear_id(self._selected_item)
         mod:gear_settings(gear_id, new_gear_settings, true)
-
-        local fake_gear_id = mod:gear_id(self._presentation_item, true)
-
+        -- Modify item
         mod:modify_item(self._selected_item, false, new_gear_settings)
-        -- Fixes
+        -- Apply fixes
         mod:apply_attachment_fixes(self._selected_item)
 
+        -- Iterate through gear settings
         for attachment_slot, replacement_path in pairs(new_gear_settings) do
-
+            -- Attachment info
             local attachment_item = master_items.get_item(replacement_path)
-            
+            -- Set selected element name
             self["_equipped_"..attachment_slot.."_name"] = replacement_path or "content/items/weapons/player/trinkets/unused_trinket"
             self["_selected_"..attachment_slot.."_name"] = replacement_path or "content/items/weapons/player/trinkets/unused_trinket"
-
+            -- Set selected element
             self["_equipped_"..attachment_slot] = attachment_item
             self["_selected_"..attachment_slot] = attachment_item
-
         end
 
+        -- Update real world item
         self:update_real_world_item()
-
+        -- Update presentation item
         self:update_presentation_item()
 
+        -- Mark gear id origin
+        local fake_gear_id = mod:gear_id(self._presentation_item, true)
         pt.items_originating_from_customization_menu[fake_gear_id] = true
 
+        -- Preview presentation item
         self:_preview_item(self._presentation_item)
+
+        -- Switch tab
         local index = self._selected_tab_index
         self._selected_tab_index = nil
         self:cb_switch_tab(index)
 
+        -- Toggle flags
         mod.is_in_customization_menu = true
+
 
     end
 
     instance.cb_on_alternate_fire_toggle_pressed = function(self)
+        
+        -- Get gear id
         local gear_id = mod:gear_id(self._selected_item)
+        -- Get alternate fire setting
         local alternate_fire_list = mod:get(alternate_fire_setting) or {}
+        -- Toggle alternate fire
         alternate_fire_list[gear_id] = not alternate_fire_list[gear_id]
+        -- Set alternate fire setting
         mod:set(alternate_fire_setting, alternate_fire_list)
 
+        -- Advance tutorial
         if self.tutorial_step == 4 then
             self.tutorial_step = 5
         end
@@ -261,11 +337,17 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
     end
 
     instance.cb_on_crosshair_toggle_pressed = function(self)
+
+        -- Get gear id
         local gear_id = mod:gear_id(self._selected_item)
+        -- Get crosshair setting
         local crosshair_list = mod:get(crosshair_list_setting) or {}
+        -- Toggle crosshair
         crosshair_list[gear_id] = not crosshair_list[gear_id]
+        -- Set crosshair setting
         mod:set(crosshair_list_setting, crosshair_list)
 
+        -- Advance tutorial
         if self.tutorial_step == 4 then
             self.tutorial_step = 5
         end
@@ -273,11 +355,17 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
     end
 
     instance.cb_on_damage_type_toggle_pressed = function(self)
+
+        -- Get gear id
         local gear_id = mod:gear_id(self._selected_item)
+        -- Get damage type active setting
         local damage_type_active_list = mod:get(damage_type_active_setting) or {}
+        -- Toggle damage type
         damage_type_active_list[gear_id] = not damage_type_active_list[gear_id]
+        -- Set damage type setting
         mod:set(damage_type_active_setting, damage_type_active_list)
 
+        -- Advance tutorial
         if self.tutorial_step == 4 then
             self.tutorial_step = 5
         end
@@ -287,23 +375,50 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
     instance.cb_on_grid_entry_right_pressed = function(self, widget, element)
         instance.super.cb_on_grid_entry_left_pressed(self, widget, element)
         
+        -- Advance tutorial
         if self.tutorial_step == 3 then
             self.tutorial_step = 4
         end
 
+        -- Preview element
         self:_preview_element(element)
+
+        -- Equip
         self:cb_on_equip_pressed()
+
     end
 
     instance.cb_on_grid_entry_left_pressed = function(self, widget, element)
         instance.super.cb_on_grid_entry_left_pressed(self, widget, element)
 
+        -- Advance tutorial
         if self.tutorial_step == 3 then
             self.tutorial_step = 4
         end
+
     end
 
-    instance.set_widget_alpha_multiplier = function(self, alpha_multiplier, tab_menu_alpha_multiplier, item_grid_alpha_multiplier, toggle_buttons_alpha_multiplier, control_buttons_alpha_multiplier)
+    instance.selected_slot_name = function(self)
+        local tab_content = self._tabs_content and self._selected_tab_index and self._tabs_content[self._selected_tab_index]
+        return tab_content and tab_content.slot_name
+    end
+
+    instance.cb_on_color_pressed = function(self)
+        self.selected_color_override = ""
+        self:_preview_item(self._presentation_item)
+    end
+
+    instance.cb_on_pattern_pressed = function(self)
+        self.selected_pattern_override = ""
+        self:_preview_item(self._presentation_item)
+    end
+
+    instance.cb_on_wear_pressed = function(self)
+        self.selected_wear_override = ""
+        self:_preview_item(self._presentation_item)
+    end
+
+    instance.set_widget_alpha_multiplier = function(self, alpha_multiplier, tab_menu_alpha_multiplier, item_grid_alpha_multiplier, toggle_buttons_alpha_multiplier, control_buttons_alpha_multiplier, material_override_alpha_multiplier)
 
         -- Set widgets in inventory weapon cosmetics view
         for _, widget in pairs(self._widgets_by_name) do
@@ -357,6 +472,36 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
             self._widgets_by_name.random_button.alpha_multiplier = control_buttons_alpha_multiplier
         end
 
+        local material_override_alpha_multiplier = material_override_alpha_multiplier or alpha_multiplier
+        -- Set color, pattern and wear
+        if self._widgets_by_name.color_dropdown then
+            self._widgets_by_name.color_dropdown.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.pattern_dropdown then
+            self._widgets_by_name.pattern_dropdown.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.wear_dropdown then
+            self._widgets_by_name.wear_dropdown.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.color_button then
+            self._widgets_by_name.color_button.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.pattern_button then
+            self._widgets_by_name.pattern_button.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.wear_button then
+            self._widgets_by_name.wear_button.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.color_text then
+            self._widgets_by_name.color_text.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.pattern_text then
+            self._widgets_by_name.pattern_text.alpha_multiplier = material_override_alpha_multiplier
+        end
+        if self._widgets_by_name.wear_text then
+            self._widgets_by_name.wear_text.alpha_multiplier = material_override_alpha_multiplier
+        end
+
     end
 
     instance.cb_on_tip_1_pressed = function(self)
@@ -365,12 +510,15 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     instance.tutorial = function(self)
 
+        -- Check if tutorial is finished
         if self.finished_tutorial then
 
+            -- Hide tutorial window
             if self._widgets_by_name.tip_1 then
                 self._widgets_by_name.tip_1.alpha_multiplier = 0
             end
 
+            -- Hide tutorial button
             if self._widgets_by_name.tip_1_button then
                 self._widgets_by_name.tip_1_button.alpha_multiplier = 0
                 self._widgets_by_name.tip_1_button.content.hotspot.disabled = true
@@ -380,45 +528,58 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
         else
 
+            -- Set tutorial step
             self.tutorial_step = self.tutorial_step or 1
 
-            self:set_widget_alpha_multiplier(.25, .25, .25, .25, .25)
+            -- Set base alpha
+            self:set_widget_alpha_multiplier(.25, .25, .25, .25, .25, .25)
 
+            -- Set tutorial text
             if self.tutorial_step == 1 then
-                self:set_widget_alpha_multiplier(.25, .25, .25, .25, .25)
+                self:set_widget_alpha_multiplier(.25, .25, .25, .25, .25, .25)
                 self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_01")
                 self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_01")
 
             elseif self.tutorial_step == 2 then
-                self:set_widget_alpha_multiplier(.25, 1, .25, .25, .25)
+                self:set_widget_alpha_multiplier(.25, 1, .25, .25, .25, .25)
                 self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_02")
                 self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_02")
 
             elseif self.tutorial_step == 3 then
-                self:set_widget_alpha_multiplier(.25, .25, 1, .25, .25)
+                self:set_widget_alpha_multiplier(.25, .25, 1, .25, .25, .25)
                 self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_03")
                 self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_03")
 
             elseif self.tutorial_step == 4 then
-                self:set_widget_alpha_multiplier(.25, .25, .25, 1, .25)
+                self:set_widget_alpha_multiplier(.25, .25, .25, 1, .25, .25)
                 self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_04")
                 self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_04")
 
             elseif self.tutorial_step == 5 then
-                self:set_widget_alpha_multiplier(.25, .25, .25, .25, 1)
+                self:set_widget_alpha_multiplier(.25, .25, .25, .25, .25, 1)
                 self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_05")
                 self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_05")
 
             elseif self.tutorial_step == 6 then
-                self:set_widget_alpha_multiplier(1, 1, 1, 1)
+                self:set_widget_alpha_multiplier(.25, .25, .25, .25, 1, .25)
+                self._widgets_by_name.tip_1.content.title = mod:localize("mod_tips_title_06")
+                self._widgets_by_name.tip_1.content.text = mod:localize("mod_tips_06")
+
+            elseif self.tutorial_step == 7 then
+                -- Reset alpha
+                self:set_widget_alpha_multiplier(1, 1, 1, 1, 1, 1)
+                -- Finish tutorial
                 self.finished_tutorial = true
+                -- Save tutorial finished
                 mod:set("customization_menu_finished_tutorial", true)
             end
 
+            -- Show tutorial window
             if self._widgets_by_name.tip_1 then
                 self._widgets_by_name.tip_1.alpha_multiplier = 1
             end
 
+            -- Show tutorial button
             if self._widgets_by_name.tip_1_button then
                 self._widgets_by_name.tip_1_button.alpha_multiplier = 1
                 self._widgets_by_name.tip_1_button.content.hotspot.disabled = false
@@ -430,47 +591,472 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     end
 
+    instance.update_dropdown = function(self, widget, input_service, dt, t)
+		local content = widget.content
+		local entry = content.entry
+		local value = entry.get_function and entry:get_function() or content.internal_value or "<not selected>"
+		local selected_option = content.options[content.selected_index]
+	
+		if content.close_setting then
+			content.close_setting = nil
+	
+			content.exclusive_focus = false
+			local hotspot = content.hotspot or content.button_hotspot
+	
+			if hotspot then
+				hotspot.is_selected = false
+			end
+
+            self.dropdown_open = false
+
+			return
+		end
+
+        local size = vector2(content.dropdown_size[1], content.dropdown_size[2])
+		local using_gamepad = not managers.ui:using_cursor_navigation()
+		local offset = widget.offset
+		local style = widget.style
+		local options = content.options
+		local options_by_id = content.options_by_id
+		local num_visible_options = content.num_visible_options
+		local num_options = #options
+		local focused = content.exclusive_focus --and not is_disabled
+	
+		if focused then
+			offset[3] = 90
+		else
+			offset[3] = 0
+		end
+	
+		local selected_index = content.selected_index
+		local new_value, real_value = nil, nil
+		local hotspot = content.hotspot
+		local hotspot_style = style.hotspot
+	
+		if selected_index and focused then
+			if using_gamepad and hotspot.on_pressed then
+				new_value = options[selected_index].id
+				real_value = options[selected_index].value
+			end
+	
+			hotspot_style.on_pressed_sound = hotspot_style.on_pressed_fold_in_sound
+		else
+			hotspot_style.on_pressed_sound = hotspot_style.on_pressed_fold_out_sound
+		end
+	
+		
+	
+		local localization_manager = managers.localization
+		local preview_option = options_by_id[value]
+		local preview_option_id = preview_option and preview_option.id
+		local preview_value = preview_option and preview_option.display_name or "loc_settings_option_unavailable"
+		local ignore_localization = preview_option and preview_option.ignore_localization
+		content.value_text = ignore_localization and preview_value or localization_manager:localize(preview_value)
+		local always_keep_order = true
+		local grow_downwards = content.grow_downwards
+		local new_selection_index = nil
+	
+		if not selected_index or not focused then
+			for i = 1, #options do
+				local option = options[i]
+	
+				if option.id == preview_option_id then
+					selected_index = i
+	
+					break
+				end
+			end
+	
+			selected_index = selected_index or 1
+		end
+	
+		if selected_index and focused then
+            local scroll_axis = input_service:get("scroll_axis") or vector3(0, 0, 0)
+			if input_service:get("navigate_up_continuous") or scroll_axis[2] > 0 then
+				if grow_downwards or not grow_downwards and always_keep_order then
+					new_selection_index = math_max(selected_index - 1, 1)
+				else
+					new_selection_index = math_min(selected_index + 1, num_options)
+				end
+			elseif input_service:get("navigate_down_continuous") or scroll_axis[2] < 0 then
+				if grow_downwards or not grow_downwards and always_keep_order then
+					new_selection_index = math_min(selected_index + 1, num_options)
+				else
+					new_selection_index = math_max(selected_index - 1, 1)
+				end
+			end
+		end
+	
+		if new_selection_index or not content.selected_index then
+			if new_selection_index then
+				selected_index = new_selection_index
+			end
+	
+			if num_visible_options < num_options then
+				local step_size = 1 / num_options
+				local new_scroll_percentage = math_min(selected_index - 1, num_options) * step_size
+				content.scroll_percentage = new_scroll_percentage
+				content.scroll_add = nil
+			end
+	
+			content.selected_index = selected_index
+		end
+
+        if num_visible_options < num_options then
+            local step_size = 1 / num_options
+            local new_scroll_percentage = math_min(selected_index - 1, num_options) * step_size
+            content.scroll_percentage = new_scroll_percentage
+            content.scroll_add = nil
+        end
+	
+		local scroll_percentage = content.scroll_percentage
+	
+		if scroll_percentage then
+			local step_size = 1 / (num_options - (num_visible_options - 1))
+			content.start_index = math_max(1, math_ceil(scroll_percentage / step_size))
+		end
+
+        local option_hovered = false
+		local option_index = 1
+		local start_index = content.start_index or 1
+		local end_index = math_min(start_index + num_visible_options - 1, num_options)
+		local using_scrollbar = num_visible_options < num_options
+	
+        content.hovered_option = nil
+
+		for i = start_index, end_index do
+			local actual_i = i
+	
+			if not grow_downwards and always_keep_order then
+				actual_i = end_index - i + start_index
+			end
+	
+			local option_text_id = "option_text_" .. option_index
+			local option_hotspot_id = "option_hotspot_" .. option_index
+			local outline_style_id = "outline_" .. option_index
+			local option_hotspot = content[option_hotspot_id]
+			option_hovered = option_hovered or option_hotspot.is_hover
+			option_hotspot.is_selected = actual_i == selected_index
+			local option = options[actual_i]
+	
+			if option_hotspot.is_hover then
+                content.hovered_option = option
+			end
+	
+			if option_hotspot.on_pressed and not option.disabled then
+				-- if not mod.build_animation:is_busy() then
+					option_hotspot.on_pressed = nil
+					new_value = option.id
+					real_value = option.value
+					content.selected_index = actual_i
+					content.option_disabled = false
+				-- end
+			elseif option_hotspot.on_pressed and option.disabled then
+				content.option_disabled = true
+			end
+	
+			local option_display_name = option.display_name
+			local option_ignore_localization = option.ignore_localization
+			content[option_text_id] = option_ignore_localization and option_display_name or localization_manager:localize(option_display_name)
+			option_index = option_index + 1
+		end
+
+        local value_changed = new_value ~= nil
+
+        if value_changed and new_value ~= value then
+			local on_activated = entry.on_activated
+
+			on_activated(new_value, entry)
+		end
+	
+		local scrollbar_hotspot = content.scrollbar_hotspot
+		local scrollbar_hovered = scrollbar_hotspot.is_hover
+	
+		if (input_service:get("left_pressed") or input_service:get("confirm_pressed") or input_service:get("back")) and content.exclusive_focus and not content.wait_next_frame then
+            content.wait_next_frame = true
+            content.reset = true
+	
+			return
+		end
+	
+		if content.wait_next_frame and not content.option_disabled then
+			content.wait_next_frame = nil
+			content.close_setting = true
+			self.dropdown_closing = false
+	
+			return
+		elseif content.wait_next_frame and content.option_disabled then
+			content.option_disabled = nil
+			content.wait_next_frame = nil
+	
+			return
+		end
+
+    end
+
+    instance.create_dropdown = function(self, dropdown_name, options, size)
+
+        local dropdown_size = size or dropdown_size
+        local num_visible_options = math_min(10, #options)
+        local template = DropdownPassTemplates.settings_dropdown(dropdown_size[1], dropdown_size[2], dropdown_size[1], num_visible_options, true)
+        for index, pass in pairs(template) do
+            if pass.style_id == "text" then
+                pass.style.font_size = 16
+            end
+        end
+        local definition = UIWidget.create_definition(template, dropdown_name, nil, dropdown_size)
+        local widget = self:_create_widget(dropdown_name, definition)
+
+		self._widgets[#self._widgets+1] = widget
+        self._widgets_by_name[dropdown_name] = widget
+
+        table.sort(options, compare_item_name)
+
+        local content = widget.content
+        local options_by_id = {}
+		for index, option in pairs(options) do
+			options_by_id[option.id] = option
+		end
+        content.dropdown_size = size
+		content.options_by_id = options_by_id
+		content.options = options
+        content.num_visible_options = num_visible_options
+        content.grow_downwards = true
+        content.entry = {
+			options = options,
+			widget_type = "dropdown",
+			on_activated = function(new_value, entry)
+                -- local tab_content = self._tabs_content[self._selected_tab_index]
+                -- local slot_name = tab_content.slot_name
+                local slot_name = self:selected_slot_name()
+                local selected_option = content.options[content.selected_index]
+                if selected_option then
+
+                    if dropdown_name == "color_dropdown" then
+                        self.selected_color_override = new_value
+                    elseif dropdown_name == "pattern_dropdown" then
+                        self.selected_pattern_override = new_value
+                    elseif dropdown_name == "wear_dropdown" then
+                        self.selected_wear_override = new_value
+                    end
+
+                    mod:gear_material_overrides(self._presentation_item, nil, slot_name, selected_option.material_overrides)
+                    mod:gear_material_overrides(self._selected_item, nil, slot_name, selected_option.material_overrides)
+
+                    self:_preview_item(self._presentation_item)
+
+                end
+			end,
+			get_function = function()
+
+                if content.selected_index then
+
+                    -- local tab_content = self._tabs_content[self._selected_tab_index]
+                    -- local slot_name = tab_content.slot_name
+
+                    local slot_name = self:selected_slot_name()
+                    local material_override = mod:gear_material_overrides(self._presentation_item, nil, slot_name)
+                    if material_override then
+                        for _, option in pairs(options) do
+                            if material_override.material_overrides and table_contains(material_override.material_overrides, option.value) then
+                                return option.value
+                            end
+                        end
+                    end
+
+                end
+			end,
+		}
+
+        content.hotspot.pressed_callback = function ()
+
+            local selected_widget = nil
+            local selected = true
+            content.exclusive_focus = selected
+            local hotspot = content.hotspot or content.button_hotspot
+            if hotspot then
+                hotspot.is_selected = selected
+            end
+
+            self.dropdown_open = true
+
+		end
+
+        local num_options = #options
+
+        content.area_length = dropdown_size[2] * content.num_visible_options
+
+        local scroll_length = math.max(dropdown_size[2] * num_options - content.area_length, 0)
+
+        content.scroll_length = scroll_length
+
+        local spacing = 0
+        local scroll_amount = scroll_length > 0 and (dropdown_size[2] + spacing) / scroll_length or 0
+
+        content.scroll_amount = scroll_amount
+
+    end
+
+    instance.create_color_dropdown = function(self)
+
+        local color_options = {}
+        -- Get color options
+        local gear_colors = ItemMaterialOverridesGearColors
+        -- Iterate through color options
+        for material_override_name, data in pairs(gear_colors) do
+            -- Generate display name
+            local display_name = material_override_name
+            display_name = string_gsub(display_name, "color_", "")
+            display_name = string_gsub(display_name, "colour_", "")
+            display_name = string_gsub(display_name, "_", " ")
+            display_name = string_gsub(display_name, "%f[%a].", string_upper)
+            -- Add color option
+            color_options[#color_options+1] = {
+                id = material_override_name,
+                display_name = display_name,
+                ignore_localization = true,
+                value = material_override_name,
+                disabled = false,
+                material_overrides = {
+                    material_overrides = {
+                        material_override_name,
+                    }
+                },
+            }
+        end
+
+        -- Create dropdown
+        self:create_dropdown("color_dropdown", color_options, {350, 38})
+
+    end
+
+    instance.create_pattern_dropdown = function(self)
+
+        local pattern_options = {}
+        -- Get pattern options
+        local gear_patterns = ItemMaterialOverridesGearPatterns
+        -- Iterate through pattern options
+        for material_override_name, data in pairs(gear_patterns) do
+            -- Check for supported pattern
+            if data.texture_overrides and data.texture_overrides.coat_pattern then
+                -- Generate display name
+                local display_name = material_override_name
+                display_name = string_gsub(display_name, "pattern_", "")
+                display_name = string_gsub(display_name, "_", " ")
+                display_name = string_gsub(display_name, "%f[%a].", string_upper)
+                -- Add pattern option
+                pattern_options[#pattern_options+1] = {
+                    id = material_override_name,
+                    display_name = display_name,
+                    ignore_localization = true,
+                    value = material_override_name,
+                    disabled = false,
+                    material_overrides = {
+                        material_overrides = {
+                            material_override_name,
+                        }
+                    },
+                }
+            end
+        end
+
+        -- Create dropdown
+        self:create_dropdown("pattern_dropdown", pattern_options, {350, 38})
+
+    end
+
+    instance.create_wear_dropdown = function(self)
+
+        local wear_options = {}
+        -- Get wear options
+        local gear_wears = ItemMaterialOverridesGearMaterials
+        -- Iterate through wear options
+        for property_override_name, data in pairs(gear_wears) do
+            -- Check for supported wear
+            if data.property_overrides and data.property_overrides.chip_dirt then
+                -- Generate display name
+                local display_name = property_override_name
+                display_name = string_gsub(display_name, "wear_", "")
+                display_name = string_gsub(display_name, "_", " ")
+                display_name = string_gsub(display_name, "%f[%a].", string_upper)
+                -- Add wear option
+                wear_options[#wear_options+1] = {
+                    id = property_override_name,
+                    display_name = display_name,
+                    ignore_localization = true,
+                    value = property_override_name,
+                    disabled = false,
+                    material_overrides = {
+                        material_overrides = {
+                            property_override_name,
+                        }
+                    },
+                }
+            end
+        end
+
+        -- Create dropdown
+        self:create_dropdown("wear_dropdown", wear_options, {300, 38})
+
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
+-- Initialize view
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settings, context, ...)
+
     -- Original function
     func(self, settings, context, ...)
+
     -- Modding tools
     self.modding_tools = get_mod("modding_tools")
+
     -- Custom init
     self.customize_attachments = context.customize_attachments
+
+    -- Check customization menu
     if self.customize_attachments then
 
+        -- Modify view definitions
         mod:inventory_weapon_cosmetics_view_adjust_definitions(self._definitions)
 
+        -- Get selected item template
         local weapon_template = self._selected_item.weapon_template
+        -- Get supported attachment slots
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
+        -- Check attachments
         if attachments then
+            -- Iterate through attachments
             for attachment_slot, attachment_entries in pairs(attachments) do
+                -- Attachment ino
                 local attachment_item_path = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
-
+                -- Set selected element name
                 self["_equipped_"..attachment_slot.."_name"] = attachment_item_path or "content/items/weapons/player/trinkets/unused_trinket"
                 self["_selected_"..attachment_slot.."_name"] = attachment_item_path or "content/items/weapons/player/trinkets/unused_trinket"
-
+                -- Check attachment path
                 if attachment_item_path then
+                    -- Get attachment item
                     local attachment_item = master_items.get_item(attachment_item_path)
-
+                    -- Set selected element
                     self["_equipped_"..attachment_slot] = attachment_item
                     self["_selected_"..attachment_slot] = attachment_item
-
                 end
             end
         end
 
     end
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, self, content, ...)
+
+    -- Check customization menu
     if self.customize_attachments and content then
+
         self._tabs_content = content
 
         local grid_size = inventory_weapon_cosmetics_view_definitions.grid_settings.grid_size
@@ -524,92 +1110,171 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
 
         return
     end
+
     -- Original function
     func(self, content, ...)
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, self, index, ...)
 
-    table_clear(temp_mod_count)
-
+    -- Check customization menu and tab content
     if self.customize_attachments and self._tabs_content then
-        local weapon_template = self._presentation_item.weapon_template
+
+        -- ##### This must be done, to reload saved material overrides #####
+        -- Clear material overrides for item
+        mod:clear_gear_material_overrides(self._selected_item)
+        -- Get gear id
+        local gear_id = mod:gear_id(self._selected_item)
+        -- Reload gear settings from file
+        mod:gear_settings(gear_id, nil, true)
+        -- #################################################################
+
+        self.selected_color_override = nil
+        self.selected_pattern_override = nil
+        self.selected_wear_override = nil
+
+        -- Get weapon template
+        local weapon_template = self._selected_item.weapon_template
+        -- Get supported attachment
         local attachments = weapon_template and mod.settings.attachments[weapon_template]
+
+        -- Get tab content
         local content = self._tabs_content[index]
         if content then
+
+            -- Get slot name
             local slot_name = content.slot_name
+            -- Set flags
             mod.customization_menu_slot_name = slot_name
 
-            if index ~= self._selected_tab_index then
-                if self._selected_tab_index then
-                    self["_selected_"..slot_name.."_name"] = mod:fetch_attachment(self._selected_item.attachments, slot_name)
+            -- Get mod name
+            local mod_name = mod:get_name()
 
+            -- Get original item and attachment and check if empty
+            local original_item = master_items.get_item(self._selected_item.name)
+            local original_attachment = original_item and original_item.attachments and mod:fetch_attachment(original_item.attachments, slot_name)
+            local original_attachment_is_empty = original_attachment == "content/items/weapons/player/trinkets/unused_trinket" or original_attachment == ""
+
+            -- Check index changed
+            if index ~= self._selected_tab_index then
+
+                -- Check selected index
+                if self._selected_tab_index then
+
+                    -- Set selected element name
+                    self["_selected_"..slot_name.."_name"] = mod:fetch_attachment(self._selected_item.attachments, slot_name)
+                    -- Get selected element
                     local real_item = master_items.get_item(self["_selected_"..slot_name.."_name"])
 
+                    -- Apply on preview
                     self._tabs_content[self._selected_tab_index].apply_on_preview(real_item, self._presentation_item)
 
+                    -- Set originating from customization menu
                     local gear_id = mod:gear_id(self._presentation_item, true)
                     pt.items_originating_from_customization_menu[gear_id] = true
 
+                    -- Preview presentation item
                     self:_preview_item(self._presentation_item)
+
                 end
 
+                -- Set selected index
                 self._selected_tab_index = index
 
+                -- Set selected tab
                 self._tab_menu_element:set_selected_index(index)
 
                 local generate_visual_item_function = content.generate_visual_item_function
                 local get_empty_item_function = content.get_empty_item
 
+                -- Set grid display name
                 self._grid_display_name = content.display_name
 
+                -- Check not using cursor navigation
                 if not self._using_cursor_navigation then
+                    -- Play sound
                     self:_play_sound(UISoundEvents.tab_secondary_button_pressed)
                 end
 
+                -- Create layout
                 local layout = {}
+                local current_group_index = 1
 
-                local mod_name = mod:get_name()
+                -- Clear mod count
+                table_clear(temp_mod_count)
+                table_clear(temp_group_index)
 
-                local original_item = master_items.get_item(self._selected_item.name)
-                local original_attachment = original_item and original_item.attachments and mod:fetch_attachment(original_item.attachments, slot_name)
-                local original_attachment_is_empty = original_attachment == "content/items/weapons/player/trinkets/unused_trinket" or original_attachment == ""
-
+                -- Add empty item when original item doesn't have attachment slot or nothing equipped
                 if original_attachment_is_empty and get_empty_item_function then
+
+                    -- Create empty item
                     local empty_item = get_empty_item_function(self._selected_item, self._presentation_item)
 
+                    -- Increaes mod count
                     temp_mod_count[mod_name] = temp_mod_count[mod_name] or 0
                     temp_mod_count[mod_name] = temp_mod_count[mod_name] + 1
 
+                    -- Increase group index
+                    if not temp_group_index[mod_name] then
+                        temp_group_index[mod_name] = current_group_index
+                        current_group_index = current_group_index + 1
+                    end
+
+                    -- Indices
+                    local group_index = string_format("%04d", temp_group_index[mod_name])
+                    local attachment_index = string_format("%04d", temp_mod_count[mod_name])
+                    -- Generate sort string
+                    local sort_string = mod_name.."_"..group_index.."_"..attachment_index
+
+                    -- Add to layout
                     layout[#layout + 1] = {
                         is_empty = true,
                         item = empty_item,
                         slot_name = slot_name,
                         sort_data = {
-                            display_name = mod:get_name().."_99999",
+                            display_name = sort_string,
                         },
                     }
 
                 end
 
+                -- Add attachments
                 local attachment_entries = attachments[slot_name]
+                -- Check attachment entries and count bigger 1
                 if attachment_entries and mod:selectable_attachment_count(attachment_entries) > 1 then
+                    -- Iterate through attachment entries
                     for attachment_name, attachment_data in pairs(attachment_entries) do
-
+                        -- Check if attachment is not hidden
                         if not attachment_data.hide_from_selection then
 
+                            -- Get attachment item
                             local attachment_item = master_items.get_item(attachment_data.replacement_path)
-                            local item = generate_visual_item_function(slot_name, attachment_item, attachment_data) --, self._selected_item, self._presentation_item)
+                            -- Create visual item
+                            local item = generate_visual_item_function(slot_name, attachment_item, attachment_data)
 
+                            -- Get mod of origin
                             local origin_mod = pt.attachment_data_origin[attachment_data] or mod
-
+                            -- Get group name
                             local group_name = attachment_data.custom_selection_group or origin_mod:get_name()
-                            -- local prefix = ""
-                            if origin_mod ~= mod then group_name = "_z_"..group_name..tostring(origin_mod:get_name()) end
 
+                            -- Increaes mod count
                             temp_mod_count[group_name] = temp_mod_count[group_name] or 0
                             temp_mod_count[group_name] = temp_mod_count[group_name] + 1
 
+                            -- Increase group index
+                            if not temp_group_index[group_name] then
+                                temp_group_index[group_name] = current_group_index
+                                current_group_index = current_group_index + 1
+                            end
+
+                            -- Indices
+                            local group_index = string_format("%04d", temp_group_index[group_name])
+                            local attachment_index = string_format("%04d", attachment_data.selection_index or temp_mod_count[group_name])
+                            -- Generate sort string
+                            local sort_string = group_name.."_"..group_index.."_"..attachment_index
+
+                            -- Add to layout
                             layout[#layout+1] = {
                                 widget_type = "gear_set",
                                 item = item,
@@ -617,7 +1282,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                                 attachment_data = attachment_data,
                                 slot_name = slot_name,
                                 sort_data = {
-                                    display_name = group_name.."_"..tostring(temp_mod_count[group_name]),
+                                    display_name = sort_string,
                                 },
                             }
 
@@ -626,27 +1291,40 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
                     end
                 end
 
+                -- Add selection group headers
                 for group_name, count in pairs(temp_mod_count) do
-                    local localization_name = "loc_ewc_"..string_gsub(tostring(group_name), "z_", "")
 
+                    -- Localize group name
+                    local localization_name = "loc_ewc_"..tostring(group_name)
+
+                    -- Indices
+                    local group_index = string_format("%04d", temp_group_index[group_name])
+                    local attachment_index = string_format("%04d", 0)
+                    -- Generate sort string
+                    local sort_string = group_name.."_"..group_index.."_"..attachment_index
+
+                    -- Add to layout
                     layout[#layout+1] = {
                         widget_type = "sub_header",
                         slot_name = slot_name,
                         display_name = localization_name,
                         sort_data = {
-                            display_name = group_name.."_0"..group_name,
+                            display_name = sort_string,
                         },
                     }
+
                 end
 
+                -- Set layout
                 self._offer_items_layout = layout
-
+                -- Sort layout
                 self:_sort_grid_layout(self._sort_options[1].sort_function)
-
+                -- Present layout
                 self:_present_layout_by_slot_filter()
 
             end
 
+            -- Advance tutorial
             if self.tutorial_step == 2 then
                 self.tutorial_step = 3
             end
@@ -654,89 +1332,96 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
             return
         end
     end
+
     -- Original function
     func(self, index, ...)
 
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_sort_options", function(func, self, ...)
+
+    -- Check customization menu
     if self.customize_attachments then
 
-        local function sort_function_generator(item_comparator)
-            return function (a, b)
-                if a.sort_group ~= b.sort_group then
-                    return a.sort_group < b.sort_group
-                end
-
-                if a.widget_type == "divider" and b.widget_type == "divider" then
-                    return false
-                end
-
-                return item_comparator(a, b)
-            end
-        end
-
+        -- Set sort options
         if not self._sort_options then
             self._sort_options = {
                 {
                     display_name = localize("loc_inventory_item_grid_sort_title_format_increasing_letters", true, {
                         sort_name = localize("loc_inventory_item_grid_sort_title_name"),
                     }),
-                    sort_function = items.sort_element_key_comparator({
-                        "<",
-                        "sort_data",
-                        items.compare_item_name,
-                    }),
+                    sort_function = items.sort_element_key_comparator({"<", "sort_data", items.compare_item_name}),
                 },
                 {
                     display_name = localize("loc_inventory_item_grid_sort_title_format_decreasing_letters", true, {
                         sort_name = localize("loc_inventory_item_grid_sort_title_name"),
                     }),
-                    sort_function = items.sort_element_key_comparator({
-                        ">",
-                        "sort_data",
-                        items.compare_item_name,
-                    }),
+                    sort_function = items.sort_element_key_comparator({">", "sort_data", items.compare_item_name}),
                 },
             }
         end
 
+        -- Set sort button callback
         local sort_callback = callback(self, "cb_on_sort_button_pressed")
 
+        -- Set sort button
         self._item_grid:setup_sort_button(self._sort_options, sort_callback)
 
         return
     end
+
     -- Original function
     func(self, ...)
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "draw", function(func, self, dt, t, input_service, layer, ...)
+
+    -- Check customization menu
     if self.customize_attachments then
+
+        -- Get hovered value for view widgets
         local item_grid_hovered = self._item_grid and self._item_grid:hovered()
         local tab_menu_hovered = self._tab_menu_element and self._tab_menu_element:hovered()
         local equip_button_hovered = self._widgets_by_name.equip_button and self._widgets_by_name.equip_button.content.hotspot.is_hover
+
+        -- Get hovered value for custom widgets
         local reset_button_hovered = self._widgets_by_name.reset_button and self._widgets_by_name.reset_button.content.hotspot.is_hover
         local random_button_hovered = self._widgets_by_name.random_button and self._widgets_by_name.random_button.content.hotspot.is_hover
+
         local alternate_fire_toggle_hovered = self._widgets_by_name.alternate_fire_toggle and self._widgets_by_name.alternate_fire_toggle.content.hotspot.is_hover
         local crosshair_toggle_hovered = self._widgets_by_name.crosshair_toggle and self._widgets_by_name.crosshair_toggle.content.hotspot.is_hover
         local damage_type_toggle_hovered = self._widgets_by_name.damage_type_toggle and self._widgets_by_name.damage_type_toggle.content.hotspot.is_hover
 
-        -- local finished_tutorial = mod:get("finished_tutorial")
+        local color_override_hovered = self._widgets_by_name.color_dropdown and self._widgets_by_name.color_dropdown.content.hotspot.is_hover or self._widgets_by_name.color_dropdown.content.hovered_option
+        local pattern_override_hovered = self._widgets_by_name.pattern_dropdown and self._widgets_by_name.pattern_dropdown.content.hotspot.is_hover or self._widgets_by_name.pattern_dropdown.content.hovered_option
+        local wear_override_hovered = self._widgets_by_name.wear_dropdown and self._widgets_by_name.wear_dropdown.content.hotspot.is_hover or self._widgets_by_name.wear_dropdown.content.hovered_option
 
+        local color_button_hovered = self._widgets_by_name.color_button and self._widgets_by_name.color_button.visible and self._widgets_by_name.color_button.content.hotspot.is_hover
+        local pattern_button_hovered = self._widgets_by_name.pattern_button and self._widgets_by_name.pattern_button.visible and self._widgets_by_name.pattern_button.content.hotspot.is_hover
+        local wear_button_hovered = self._widgets_by_name.wear_button and self._widgets_by_name.wear_button.visible and self._widgets_by_name.wear_button.content.hotspot.is_hover
+
+        -- Check if tutorial is active
         if not self:tutorial() then
-
-            if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered and not equip_button_hovered and not reset_button_hovered and not random_button_hovered and not alternate_fire_toggle_hovered and not crosshair_toggle_hovered and not damage_type_toggle_hovered then
+            -- Check if any custom widgets are hovered
+            if self.customize_attachments and not item_grid_hovered and not tab_menu_hovered
+                    and not equip_button_hovered and not reset_button_hovered and not random_button_hovered
+                    and not alternate_fire_toggle_hovered and not crosshair_toggle_hovered and not damage_type_toggle_hovered
+                    and not color_override_hovered and not pattern_override_hovered and not wear_override_hovered
+                    and not color_button_hovered and not pattern_button_hovered and not wear_button_hovered then
+                -- Fade out custom widgets when no custom widgets are hovered
                 self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, .3, dt * 4)
             else
+                -- Fade in custom widgets when any custom widgets are hovered
                 self.animated_alpha_multiplier = math_lerp(self.animated_alpha_multiplier, 1, dt * 4)
             end
-
         end
 
     end
+
     -- Original function
     func(self, dt, t, input_service, layer, ...)
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, t, input_service, ...)
@@ -744,10 +1429,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
     func(self, dt, t, input_service, ...)
 
     if self.customize_attachments and self._tabs_content and self._selected_tab_index and self._tabs_content[self._selected_tab_index] then
-        local content = self._tabs_content[self._selected_tab_index]
-        local slot_name = content.slot_name
+        -- local content = self._tabs_content[self._selected_tab_index]
+        -- local slot_name = content.slot_name
+        local slot_name = self:selected_slot_name()
+
         local disable_button = true
-        if self["_selected_"..slot_name.."_name"] ~= self["_equipped_"..slot_name.."_name"] then
+        if self["_selected_"..slot_name.."_name"] ~= self["_equipped_"..slot_name.."_name"] or self.selected_color_override or self.selected_pattern_override or self.selected_wear_override then
             disable_button = false
         end
         local button = self._widgets_by_name.equip_button
@@ -840,43 +1527,122 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
         local damage_type_toggle_widget = widgets_by_name and widgets_by_name.damage_type_toggle
         if damage_type_toggle_widget then damage_type_toggle_widget.visible = has_damage_type end
 
+        local color_dropdown = widgets_by_name.color_dropdown
+        self:update_dropdown(color_dropdown, input_service, dt, t)
+        local pattern_dropdown = widgets_by_name.pattern_dropdown
+        self:update_dropdown(pattern_dropdown, input_service, dt, t)
+        local wear_dropdown = widgets_by_name.wear_dropdown
+        self:update_dropdown(wear_dropdown, input_service, dt, t)
+
+        local color_button = widgets_by_name and widgets_by_name.color_button
+        local pattern_button = widgets_by_name and widgets_by_name.pattern_button
+        local wear_button = widgets_by_name and widgets_by_name.wear_button
+
+        if color_button then color_button.visible = self._widgets_by_name.color_dropdown.content.entry.get_function() end
+        if pattern_button then pattern_button.visible = self._widgets_by_name.pattern_dropdown.content.entry.get_function() end
+        if wear_button then wear_button.visible = self._widgets_by_name.wear_dropdown.content.entry.get_function() end
+
     else
         local widgets_by_name = self._widgets_by_name
+
         local reset_button = widgets_by_name and widgets_by_name.reset_button
         local random_button = widgets_by_name and widgets_by_name.random_button
+
         local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
         local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
         local damage_type_toggle = widgets_by_name and widgets_by_name.damage_type_toggle
+
+        local tip_1 = widgets_by_name and widgets_by_name.tip_1
+        local tip_1_button = widgets_by_name and widgets_by_name.tip_1_button
+
+        local color_dropdown = widgets_by_name and widgets_by_name.color_dropdown
+        local pattern_dropdown = widgets_by_name and widgets_by_name.pattern_dropdown
+        local wear_dropdown = widgets_by_name and widgets_by_name.wear_dropdown
+
+        local color_button = widgets_by_name and widgets_by_name.color_button
+        local pattern_button = widgets_by_name and widgets_by_name.pattern_button
+        local wear_button = widgets_by_name and widgets_by_name.wear_button
+
+        local color_text = widgets_by_name and widgets_by_name.color_text
+        local pattern_text = widgets_by_name and widgets_by_name.pattern_text
+        local wear_text = widgets_by_name and widgets_by_name.wear_text
+
         if reset_button then reset_button.visible = false end
         if random_button then random_button.visible = false end
+        
         if alternate_fire_toggle then alternate_fire_toggle.visible = false end
         if crosshair_toggle then crosshair_toggle.visible = false end
         if damage_type_toggle then damage_type_toggle.visible = false end
+        
+        if tip_1 then tip_1.visible = false end
+        if tip_1_button then tip_1_button.visible = false end
+        
+        if color_dropdown then color_dropdown.visible = false end
+        if pattern_dropdown then pattern_dropdown.visible = false end
+        if wear_dropdown then wear_dropdown.visible = false end
+        
+        if color_text then color_text.visible = false end
+        if pattern_text then pattern_text.visible = false end
+        if wear_text then wear_text.visible = false end
+
+        if color_button then color_button.visible = false end
+        if pattern_button then pattern_button.visible = false end
+        if wear_button then wear_button.visible = false end
     end
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "selected_item_name_in_slot", function(func, self, slot_name, ...)
+
+    -- Check customization menu and slot name
     if slot_name and self.customize_attachments then
+        -- Return selected name
         return self["_selected_"..slot_name.."_name"]
     end
+
     -- Original function
     return func(self, slot_name, ...)
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "equipped_item_name_in_slot", function(func, self, slot_name, ...)
+
+    -- Check customization menu and slot name
     if slot_name and self.customize_attachments then
+        -- Return equipped name
         return self["_equipped_"..slot_name.."_name"]
     end
+
     -- Original function
     return func(self, slot_name, ...)
+
 end)
 
-mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_exit", function(func, self, ...)
+mod:hook(CLASS.InventoryWeaponCosmeticsView, "_destroy_forward_gui", function(func, self, ...)
+
+    -- Check customization menu
     if self.customize_attachments then
+        -- Set flags
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
+        -- Clear item origin table
         table_clear(pt.items_originating_from_customization_menu)
+
+        -- Check selected material overrides
+        if self.selected_color_override or self.selected_pattern_override or self.selected_wear_override then
+            -- Clear material overrides for item
+            mod:clear_gear_material_overrides(self._selected_item)
+            -- Get gear id
+            local gear_id = mod:gear_id(self._selected_item)
+            -- Reload gear settings from file
+            mod:gear_settings(gear_id, nil, true)
+            -- Reset selected material overrides
+            self.selected_color_override = nil
+            self.selected_pattern_override = nil
+            self.selected_wear_override = nil
+        end
+
     end
+    
     -- Original function
     func(self, ...)
 end)
@@ -944,7 +1710,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
                                 item.empty_item = true
                                 return item
                             end,
-                            generate_visual_item_function = function (slot_name, real_item, attachment_data) --, selected_item, presentation_item)
+                            generate_visual_item_function = function (slot_name, real_item, attachment_data)
 
                                 local real_item = real_item or self["_selected_"..slot_name]
                                 local attachment_item = master_items.get_item(real_item.name)
@@ -1014,6 +1780,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             self._widgets_by_name.tip_1.content.text = "test test text"
         end
 
+        self:create_color_dropdown()
+        self:create_pattern_dropdown()
+        self:create_wear_dropdown()
+
         return
     end
     -- Original function
@@ -1021,8 +1791,14 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, self, element, ...)
+
+    -- Check customization menu and content tabs
     if self.customize_attachments and self._tabs_content then
+
+        -- Check element
         if element then
+
+            -- Variables
             local selected_tab_index = self._selected_tab_index
             local content = self._tabs_content[selected_tab_index]
             local apply_on_preview = content.apply_on_preview
@@ -1032,13 +1808,16 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
             local item = element.item
             local real_item = element.real_item
 
+            -- Set preview item and element
             self._previewed_item = item
             self._previewed_element = element
 
-            local attachment_name
+            local attachment_display_name
 
+            -- Check real item
             if real_item then
 
+                -- Get attachment data
                 local attachment_data = mod.settings.attachment_data_by_item_string[real_item.name]
                 local attachments = mod.settings.attachments[presentation_item.weapon_template]
 
@@ -1054,25 +1833,34 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
                 end
 
                 -- Detach attachments
+                -- Automatic attachment conflict management
                 if attachment_data and attachment_data.detach_attachments then
+                    -- Iterate through detach attachments
                     for _, attachment_slot_or_attachment_name in pairs(attachment_data.detach_attachments) do
-                        
+                        -- Check attachment
                         if attachments[attachment_slot_or_attachment_name] then
                             -- Remove attachment slot
                             mod:modify_item(presentation_item, nil, {
                                 [attachment_slot_or_attachment_name] = "content/items/weapons/player/trinkets/unused_trinket"
                             })
+                            -- Temp detached
                             temp_detached[attachment_slot_or_attachment_name] = true
+                            -- Set selected element name
                             self["_selected_"..attachment_slot_or_attachment_name.."_name"] = "content/items/weapons/player/trinkets/unused_trinket"
                         else
                             -- Iterate through attachments and remove attachment with specific name
                             for attachment_slot, attachment_entries in pairs(attachments) do
+                                -- Check attachment name
                                 if self["_selected_"..attachment_slot.."_name"] == attachment_slot_or_attachment_name then
+                                    -- Remove attachment slot
                                     mod:modify_item(presentation_item, nil, {
                                         [attachment_slot] = "content/items/weapons/player/trinkets/unused_trinket"
                                     })
+                                    -- Temp detached
                                     temp_detached[attachment_slot] = true
+                                    -- Set selected element name
                                     self["_selected_"..attachment_slot.."_name"] = "content/items/weapons/player/trinkets/unused_trinket"
+                                    -- Specific attachment detached; break
                                     break
                                 end
                             end
@@ -1082,51 +1870,63 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
 
                 -- Overwrite selected
                 for attachment_slot, attachment_entries in pairs(attachments) do
-                    local current = mod:fetch_attachment(self._selected_item.attachments, attachment_slot)
-                    local selected_or_saved = (slot_name == attachment_slot and self["_selected_"..attachment_slot.."_name"]) or self["_equipped_"..attachment_slot.."_name"] --or current
-                    if selected_or_saved and not temp_detached[attachment_slot] then --and not validated[attachment_slot] then
+                    -- Get selected or saved attachment
+                    local selected_or_saved = (slot_name == attachment_slot and self["_selected_"..attachment_slot.."_name"]) or self["_equipped_"..attachment_slot.."_name"]
+                    -- Check attachment name and not detached
+                    if selected_or_saved and not temp_detached[attachment_slot] then
+                        -- Set attachment
                         mod:modify_item(presentation_item, nil, {
                             [attachment_slot] = selected_or_saved
                         })
+                        -- Set selected element name
                         self["_selected_"..attachment_slot.."_name"] = selected_or_saved
+                        -- Temp validated
                         temp_validated[attachment_slot] = true
                     end
                 end
 
                 -- Validate attachments
                 if attachment_data and attachment_data.validate_attachments then
+                    -- Iterate through validate attachment slots
                     for _, attachment_slot in pairs(attachment_data.validate_attachments) do
-                        local current_attachment = self["_selected_"..attachment_slot.."_name"]
+                        -- Check attachment and not validated and empty item
                         if attachments and attachments[attachment_slot] and (not temp_validated[attachment_slot] or self["_selected_"..attachment_slot.."_name"] == "content/items/weapons/player/trinkets/unused_trinket") then
+                            -- Get replacement path
                             local replacement_path = self["_equipped_"..attachment_slot.."_name"]
-                            -- Iterate through attachments and set first
+                            -- Iterate through attachments and set first with validation default
                             for attachment_name, attachment_data in pairs(attachments[attachment_slot]) do
+                                -- Check validation default
                                 if attachment_data.validation_default then
+                                    -- Set replacement path
                                     replacement_path = attachment_data.replacement_path
+                                    -- Validation target found; break
                                     break
                                 end
                             end
-                            -- Validate
+                            -- Set attachment
                             mod:modify_item(presentation_item, nil, {
                                 [attachment_slot] = replacement_path
                             })
+                            -- Set selected element name
                             self["_selected_"..attachment_slot.."_name"] = replacement_path
                         end
                     end
                 end
 
+                -- Check display name for localization
                 if real_item.display_name and real_item.display_name ~= "" and real_item.display_name ~= "n/a" then
+                    -- Test localize display name
                     local test_localize = localize(real_item.display_name)
                     -- if has_localization(real_item.display_name) then
-                    if test_localize ~= "<"..real_item.display_name..">" then
-                        attachment_name = test_localize
+                    -- if test_localize ~= "<"..real_item.display_name..">" then
+                    if string_sub(test_localize, 1, 1) ~= "<" and string_sub(test_localize, -1) ~= ">" then
+                        attachment_display_name = test_localize
                     end
                 end
 
             else
-
+                -- Set selected element name to empty item
                 self["_selected_"..slot_name.."_name"] = "content/items/weapons/player/trinkets/unused_trinket"
-
             end
 
             -- Set selected element
@@ -1134,88 +1934,166 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
                 [slot_name] = real_item and real_item.name or "content/items/weapons/player/trinkets/unused_trinket"
             })
 
+            -- Apply on preview callback
             apply_on_preview(real_item, presentation_item)
 
+            -- Set originating from customization menu
             local gear_id = mod:gear_id(presentation_item, true)
             pt.items_originating_from_customization_menu[gear_id] = true
 
+            -- Preview presentation item
             self:_preview_item(presentation_item)
 
             local widgets_by_name = self._widgets_by_name
-
-            if not attachment_name or attachment_name == "" then
-                attachment_name = mod.settings.attachment_name_by_item_string[real_item and real_item.name] or "empty"
-                attachment_name = string_gsub(attachment_name, "_", " ")
-                attachment_name = string_gsub(attachment_name, "%f[%a].", string_upper)
+            -- Generate attachment name
+            if not attachment_display_name or attachment_display_name == "" then
+                attachment_display_name = mod.settings.attachment_name_by_item_string[real_item and real_item.name] or "empty"
+                attachment_display_name = string_gsub(attachment_display_name, "_", " ")
+                attachment_display_name = string_gsub(attachment_display_name, "%f[%a].", string_upper)
             end
-
+            -- Set display name
             widgets_by_name.sub_display_name.content.text = string_format("%s • %s", items.weapon_card_display_name(self._selected_item), items.weapon_card_sub_display_name(self._selected_item))
-            widgets_by_name.display_name.content.text = attachment_name
+            widgets_by_name.display_name.content.text = attachment_display_name
 
             return
         end
     end
+
+    -- Check element
     if not element then
+        -- Return; prevent crash
         return
     end
+
     -- Original function
     func(self, element, ...)
 
 end)
 
+-- Handle material overrides and rotation angle when in customization menu
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, self, item, ...)
+
     -- Original function
     func(self, item, ...)
 
+    -- Check customization menu
     if self.customize_attachments then
 
+        -- local tab_content = self._tabs_content and self._tabs_content[self._selected_tab_index]
+        -- local slot_name = tab_content and tab_content.slot_name
+        local slot_name = self:selected_slot_name()
+
+        -- Get attachment slots from item
+        local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
+        -- Iterate through attachment slots
+        for attachment_slot, data in pairs(attachment_slots) do
+            -- Get material overrides from item
+            local material_overrides = mod:gear_material_overrides(self._selected_item, nil, attachment_slot)
+            -- Check material overrides
+            if material_overrides then
+                -- Apply material overrides to presentation item
+                mod:gear_material_overrides(self._presentation_item, nil, attachment_slot, material_overrides)
+            end
+        end
+
+        if slot_name and self.selected_color_override == "" then
+            mod:clear_gear_material_overrides(self._presentation_item, nil, slot_name, {OVERRIDE_TYPE.color})
+        end
+
+        if slot_name and self.selected_pattern_override == "" then
+            mod:clear_gear_material_overrides(self._presentation_item, nil, slot_name, {OVERRIDE_TYPE.pattern})
+        end
+
+        if slot_name and self.selected_wear_override == "" then
+            mod:clear_gear_material_overrides(self._presentation_item, nil, slot_name, {OVERRIDE_TYPE.wear})
+        end
+
+        -- Get weapon preview
         local weapon_preview = self._weapon_preview
+        -- Get ui weapon spawner
         local ui_weapon_spawner = weapon_preview and weapon_preview._ui_weapon_spawner
-
+        -- Check ui weapon spawner
         if ui_weapon_spawner then
-
+            -- Set default rotation angle
             if self.current_default_rotation_angle then
                 ui_weapon_spawner._default_rotation_angle = self.current_default_rotation_angle
                 ui_weapon_spawner._rotation_angle = self.current_default_rotation_angle
             end
-
+            -- Set current default rotation angle
             self.current_default_rotation_angle = self.attachment_selection_rotation_offset or 0
-
         end
 
     end
 
 end)
 
+-- Save attachment settings when in customization menu
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(func, self, ...)
+
+    -- Check customization menu
     if self.customize_attachments then
 
+        -- local tab_content = self._tabs_content and self._tabs_content[self._selected_tab_index]
+        -- local slot_name = tab_content and tab_content.slot_name
+        local slot_name = self:selected_slot_name()
+        
+        -- Set flags
         mod.is_in_customization_menu = nil
         mod.customization_menu_slot_name = nil
+
+        -- Clear item origin table
         table_clear(pt.items_originating_from_customization_menu)
 
+        -- Get gear id
         local gear_id = mod:gear_id(self._selected_item)
 
+        -- Create new gear settings
         local gear_settings = {}
 
+        -- Get possible attachment slots
         local attachments = mod.settings.attachments[self._selected_item.weapon_template]
 
+        -- Iterate through attachment slots
         for attachment_slot, attachment_name in pairs(attachments) do
+            -- Set gear setting for attachment slot
             gear_settings[attachment_slot] = self["_selected_"..attachment_slot.."_name"] or "content/items/weapons/player/trinkets/unused_trinket"
+            -- Set equipped name
             self["_equipped_"..attachment_slot.."_name"] = gear_settings[attachment_slot]
         end
 
+        if slot_name and self.selected_color_override == "" then
+            mod:clear_gear_material_overrides(self._selected_item, nil, slot_name, {OVERRIDE_TYPE.color})
+        end
+
+        if slot_name and self.selected_pattern_override == "" then
+            mod:clear_gear_material_overrides(self._selected_item, nil, slot_name, {OVERRIDE_TYPE.pattern})
+        end
+
+        if slot_name and self.selected_wear_override == "" then
+            mod:clear_gear_material_overrides(self._selected_item, nil, slot_name, {OVERRIDE_TYPE.wear})
+        end
+
+        -- Clear selected material overrides
+        self.selected_color_override = nil
+        self.selected_pattern_override = nil
+        self.selected_wear_override = nil
+
+        -- Set new gear settings
         mod:gear_settings(gear_id, gear_settings, true)
 
+        -- Update real world item
         self:update_real_world_item()
 
+        -- Update inventory background view
         local inventory_background_view = mod:get_view("inventory_background_view")
         if inventory_background_view then
             inventory_background_view:event_force_refresh_inventory()
         end
 
+        -- Set flag
         mod.is_in_customization_menu = true
 
+        -- Switch tab
         self:cb_switch_tab(self._selected_tab_index)
 
         return
@@ -1224,48 +2102,89 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
         local gear_id = mod:gear_id(self._selected_item)
         mod:clear_mod_item(gear_id)
     end
+
     -- Original function
     func(self, ...)
+
 end)
 
+-- Only fetch inventory items if not in customization menu; prevent crash
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_fetch_inventory_items", function(func, self, tabs_content, ...)
+
+    -- Check customization menu
 	if self.customize_attachments then
-        self._items_by_slot = {}
+        -- Set empty table
+        self._items_by_slot = empty_table
         return
     end
+
+    -- Original function
     return func(self, tabs_content, ...)
+
 end)
 
+-- Only handle input if item grid is not hovered or dropdown open
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_handle_input", function(func, self, input_service, dt, t, ...)
-    if not self._item_grid:hovered() then
+
+    -- Check item grid hovered or dropdown open
+    if not self._item_grid:hovered() and not self.dropdown_open then
         -- Original function
         func(self, input_service, dt, t, ...)
     end
+
 end)
 
+-- Register button callbacks for custom widgets or hide custom widgets
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", function(func, self, ...)
+
     -- Original function
     func(self, ...)
-    -- Custom
+
+    -- Get custom widgets
     local widgets_by_name = self._widgets_by_name
+    
     local reset_button = widgets_by_name and widgets_by_name.reset_button
     local random_button = widgets_by_name and widgets_by_name.random_button
+
+    local color_button = widgets_by_name and widgets_by_name.color_button
+    local pattern_button = widgets_by_name and widgets_by_name.pattern_button
+    local wear_button = widgets_by_name and widgets_by_name.wear_button
+    
     local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
     local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
     local damage_type_toggle = widgets_by_name and widgets_by_name.damage_type_toggle
+
     local tip_1_button = widgets_by_name and widgets_by_name.tip_1_button
+
+    -- Check customization menu
     if self.customize_attachments then
+        -- Set callbacks for custom widgets
         if reset_button then reset_button.content.hotspot.pressed_callback = callback(self, "cb_on_reset_pressed") end
         if random_button then random_button.content.hotspot.pressed_callback = callback(self, "cb_on_random_pressed") end
+
+        if color_button then color_button.content.hotspot.pressed_callback = callback(self, "cb_on_color_pressed") end
+        if pattern_button then pattern_button.content.hotspot.pressed_callback = callback(self, "cb_on_pattern_pressed") end
+        if wear_button then wear_button.content.hotspot.pressed_callback = callback(self, "cb_on_wear_pressed") end
+        
         if alternate_fire_toggle then alternate_fire_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_alternate_fire_toggle_pressed") end
         if crosshair_toggle then crosshair_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_crosshair_toggle_pressed") end
         if damage_type_toggle then damage_type_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_damage_type_toggle_pressed") end
+        
         if tip_1_button then tip_1_button.content.hotspot.pressed_callback = callback(self, "cb_on_tip_1_pressed") end
     else
+        -- Hide custom widgets
         if reset_button then reset_button.visible = false end
         if random_button then random_button.visible = false end
+
+        if color_button then color_button.visible = false end
+        if pattern_button then pattern_button.visible = false end
+        if wear_button then wear_button.visible = false end
+        
         if alternate_fire_toggle then alternate_fire_toggle.visible = false end
         if crosshair_toggle then crosshair_toggle.visible = false end
         if damage_type_toggle then damage_type_toggle.visible = false end
+
+        if tip_1_button then tip_1_button.visible = false end
     end
+
 end)

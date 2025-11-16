@@ -79,9 +79,29 @@ mod:add_global_localize_strings({
 	},
 	loc_ewc_force_sword = {
 		en = "EWC:BA - Force Sword",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 力场剑",
 	},
 	loc_ewc_slab_shield = {
 		en = "EWC:BA - Slab Shield",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 板状护盾",
+	},
+	loc_ewc_force_staff = {
+		en = "EWC:BA - Force Staff",
+	},
+	loc_ewc_chain_sword = {
+		en = "EWC:BA - Chain Sword",
+	},
+	loc_ewc_2h_power_maul = {
+		en = "EWC:BA - 2H Power Maul",
+	},
+	loc_ewc_shovel = {
+		en = "EWC:BA - Shovel",
+	},
+	loc_ewc_axe = {
+		en = "EWC:BA - Axe",
+	},
+	loc_ewc_hatchet = {
+		en = "EWC:BA - Hatchet",
 	},
 	loc_ewc_2h_force_sword = {
 		en = "EWC:BA - 2H Force Sword",
@@ -97,9 +117,11 @@ mod:add_global_localize_strings({
 	},
 	loc_ewc_magazine_laser = {
 		en = "EWC:BA - Laser Magazines",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 激光弹匣",
 	},
 	loc_ewc_bolter = {
 		en = "EWC:BA - Bolter",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 爆弹枪",
 	},
 
 	attachment_slot_sight_2 = {
@@ -137,14 +159,18 @@ return {
 	},
 	mod_option_laser_pointer_randomization = {
 		en = "Randomize Red Laser Pointer",
+		["zh-cn"] = "随机化红色激光指针",
 	},
 	mod_option_laser_pointer_randomization_tooltip = {
 		en = "Allows randomized weapons to have red laser pointers.",
+		["zh-cn"] = "允许随机生成的武器带有红色激光指针",
 	},
 	mod_option_laser_pointer_randomization_green = {
 		en = "Randomize Green Laser Pointer",
+		["zh-cn"] = "随机化绿色激光指针",
 	},
 	mod_option_laser_pointer_randomization_green_tooltip = {
 		en = "Allows randomized weapons to have green laser pointers.",
+		["zh-cn"] = "允许随机生成的武器带有绿色激光指针",
 	},
 }

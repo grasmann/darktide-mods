@@ -10,12 +10,15 @@ return {
 	end,
 	load_before = {
         "GoToMastery",
+		"visible_equipment",
     },
 	require = {
 		"master_item_community_patch",
+		"extended_weapon_customization",
 	},
 	load_after = {
 		"master_item_community_patch",
+		"extended_weapon_customization",
 	},
 	packages = {},
 }

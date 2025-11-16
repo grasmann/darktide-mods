@@ -56,6 +56,8 @@ mod.overwrite_attachment = function(self, attachments, target_slot, replacement_
     for slot, data in pairs(attachments) do
         if slot == target_slot then
             data.item = replacement_path
+            local attachment_item = pt.master_items_loaded and master_items.get_item(replacement_path)
+            data.material_overrides = attachment_item and attachment_item.material_overrides or data.material_overrides
         end
         if data.children then
             self:overwrite_attachment(data.children, target_slot, replacement_path)
@@ -63,24 +65,76 @@ mod.overwrite_attachment = function(self, attachments, target_slot, replacement_
     end
 end
 
+mod.inject_attachment_slot_info = function(self, attachments, target_slot, slot_info)
+    for slot, data in pairs(attachments) do
+        if slot == target_slot then
+            data.attachment_slot = target_slot
+        end
+        if data.children then
+            self:inject_attachment_slot_info(data.children, target_slot, slot_info)
+        end
+    end
+end
+
+mod.clear_attachment = function(self, attachments, target_slot)
+    for slot, data in pairs(attachments) do
+        if slot == target_slot then
+            attachments[slot] = nil
+            mod:print("clearing attachment slot "..tostring(slot))
+        elseif data.children then
+            self:clear_attachment_fixes(data.children, target_slot)
+        end
+    end
+end
+
+mod.inject_material_overrides = function(self, attachments, target_slot, material_overrides)
+    for slot, data in pairs(attachments) do
+        if slot == target_slot then
+            data.material_overrides = material_overrides
+        end
+        if data.children then
+            self:overwrite_attachment(data.children, target_slot, material_overrides)
+        end
+    end
+end
+
 mod.inject_attachment = function(self, attachments, slot_name, inject_data)
+    
+    -- self:clear_attachment(attachments, slot_name)
+
     for slot, attachment_data in pairs(attachments) do
         if slot == inject_data.parent_slot then
 
             attachment_data.children = attachment_data.children or {}
 
-            local existing_children = attachment_data.children[slot_name] and attachment_data.children[slot_name].children and table_clone_safe(attachment_data.children[slot_name].children) or {}
+            local existing_children = attachment_data.children[slot_name] and attachment_data.children[slot_name].children and table_clone_safe(attachment_data.children[slot_name].children)
             local existing_item = attachment_data.children and attachment_data.children[slot_name] and attachment_data.children[slot_name].item or inject_data.default_path
+            local item = existing_item and pt.master_items_loaded and master_items.get_item(existing_item)
+            local material_overrides = item and item.material_overrides or inject_data.material_overrides
+
             -- attachment_data.children[slot_name] = attachment_data.children[slot_name] or {
             --     item = inject_data.default_path,
             --     children = {},
             --     fix = inject_data.fix,
             -- }
 
+            -- mod:print("injecting attachment slot "..tostring(slot_name).." into "..tostring(slot))
+            -- if inject_data.fix and inject_data.fix.offset then
+            --     mod:print("fix: p:"..tostring(inject_data.fix.offset.position)..", r:"..tostring(inject_data.fix.offset.rotation)..", s:"..tostring(inject_data.fix.offset.scale)..", n:"..tostring(inject_data.fix.offset.node))
+            -- end
+
+            -- local material_overrides = inject_data.material_overrides
+
+            -- if existing_item and existing_item ~= "" then
+            --     local item = master_items.get_item(existing_item)
+            --     material_overrides = item and item.material_overrides
+            -- end
+
             attachment_data.children[slot_name] = {
-                item = existing_item,
-                children = existing_children,
+                item = existing_item or "",
+                children = existing_children or {},
                 fix = inject_data.fix,
+                material_overrides = material_overrides or {},
             }
             break
         end
@@ -343,8 +397,8 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     if table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
 
         -- Get gear settings
-        -- local gear_id = mod:gear_id(item, fake_gear_id)
-        -- local gear_settings = optional_settings or gear_id and mod:gear_settings(gear_id)
+        local gear_id = mod:gear_id(item, fake_gear_id)
+        local gear_settings = optional_settings or gear_id and mod:gear_settings(gear_id)
 
         -- Inject custom attachments
         local weapon_template = item.weapon_template
@@ -353,32 +407,41 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
             -- Iterate through custom attachment slots
             for slot_name, inject_data in pairs(custom_attachment_slots) do
                 -- Get - mod of origin - weapon - slot - specific attachment slot definition
-                local attachment_string = mod:fetch_attachment(item.attachments, slot_name)
+                local attachment_string = mod:fetch_attachment(item.attachments, slot_name) or gear_settings and gear_settings[slot_name]
                 local attachment_data = attachment_string and self.settings.attachment_data_by_item_string[attachment_string]
-                local mod_of_origin = attachment_data and pt.attachment_data_origin[attachment_data]
+                local mod_of_origin = attachment_data and pt.attachment_data_origin[attachment_data] or mod
                 local attachment_slot_by_mod_by_weapon_by_name = self.settings.attachment_slot_by_mod_by_weapon_by_name
                 local weapon_attachment_slots = mod_of_origin and attachment_slot_by_mod_by_weapon_by_name[mod_of_origin] and attachment_slot_by_mod_by_weapon_by_name[mod_of_origin][weapon_template]
                 local mod_inject_data = weapon_attachment_slots and weapon_attachment_slots[slot_name] --or inject_data
                 if mod_inject_data then
                     -- If an attachment slot was found use it
                     inject_data = mod_inject_data
+                    -- mod:print("mod-specific attachment slot "..tostring(slot_name).." found in mod "..tostring(mod_of_origin:get_name()).." for item "..tostring(attachment_string).." for weapon "..tostring(weapon_template))
+                    -- if inject_data.fix and inject_data.fix.offset then
+                    --     mod:print("fix: p:"..tostring(inject_data.fix.offset.position)..", r:"..tostring(inject_data.fix.offset.rotation)..", s:"..tostring(inject_data.fix.offset.scale)..", n:"..tostring(inject_data.fix.offset.node))
+                    -- end
                 else
                     -- If no attachment slot was found delete fix
-                    inject_data.fix = nil
+                    -- inject_data.fix = nil
                 end
                 -- Inject attachment
                 self:inject_attachment(item.attachments, slot_name, inject_data)
             end
         end
 
+        local all_attachment_slots = self:fetch_attachment_slots(item.attachments)
+        for attachment_slot, data in pairs(all_attachment_slots) do
+            self:inject_attachment_slot_info(item.attachments, attachment_slot)
+        end
+
         -- Overwrite attachments
-        local gear_id = mod:gear_id(item, fake_gear_id)
-        local gear_settings = optional_settings or gear_id and mod:gear_settings(gear_id)
         if gear_settings then
             -- Iterate through gear settings
             for slot, replacement_path in pairs(gear_settings) do
-                -- Overwrite attachment
-                mod:overwrite_attachment(item.attachments, slot, replacement_path)
+                if slot ~= "material_overrides" then
+                    -- Overwrite attachment
+                    mod:overwrite_attachment(item.attachments, slot, replacement_path)
+                end
             end
         end
 

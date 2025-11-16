@@ -17,46 +17,34 @@ local _item = "content/items/weapons/player"
 local _item_melee = _item.."/melee"
 
 return {
-    falchion_blade_01 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_01",
+    hatchet_grip_01 = {
+        replacement_path = _item_melee.."/grips/hatchet_grip_01",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {-.05, -1.5, .2},
     },
-    falchion_blade_02 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_02",
+    hatchet_grip_02 = {
+        replacement_path = _item_melee.."/grips/hatchet_grip_02",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {-.05, -1.5, .2},
     },
-    falchion_blade_03 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_03",
+    hatchet_grip_03 = {
+        replacement_path = _item_melee.."/grips/hatchet_grip_03",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {-.05, -1.5, .2},
     },
-    falchion_blade_04 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_04",
+    hatchet_grip_04 = {
+        replacement_path = _item_melee.."/grips/hatchet_grip_04",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {-.05, -1.5, .2},
     },
-    falchion_blade_05 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_05",
+    hatchet_grip_05 = {
+        replacement_path = _item_melee.."/grips/hatchet_grip_05",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {-.05, -1.5, .2},
     },
-    falchion_blade_06 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_06",
+    hatchet_grip_06 = {
+        replacement_path = _item_melee.."/grips/hatchet_grip_06",
         icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
-    },
-    falchion_blade_ml01 = {
-        replacement_path = _item_melee.."/blades/falchion_blade_ml01",
-        icon_render_unit_rotation_offset = {90, -30, 0},
-        icon_render_camera_position_offset = {0, -2.5, .8},
-        damage_type = "metal_slashing_medium",
+        icon_render_camera_position_offset = {-.05, -1.5, .2},
     },
 }

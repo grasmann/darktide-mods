@@ -83,6 +83,28 @@ local fixes = {
                 },
             },
         },
+        {attachment_slot = "rail",
+            requirements = {
+                sight = {
+                    has = reflex_sights,
+                },
+            },
+            fix = {
+                attach = {
+                    rail = "stubgun_pistol_rail_off",
+                },
+            },
+        },
+        {attachment_slot = "rail",
+            fix = {
+                offset = {
+                    position = vector3_box(-.07, .2, .16),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(3, 3, 3),
+                    node = 1,
+                },
+            },
+        },
     },
 }
 
@@ -94,26 +116,10 @@ local attachment_slots = {
         rail = {
             parent_slot = "receiver",
             default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(-.07, .2, .16),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(3, 3, 3),
-                    node = 1,
-                },
-            },
         },
         sight = {
             parent_slot = "rail",
             default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, 0),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
         },
     },
 }

@@ -14,7 +14,6 @@ local mod = get_mod("extended_weapon_customization_base_additions")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local _item = "content/items/weapons/player"
-local _item_ranged = _item.."/ranged"
 local _item_melee = _item.."/melee"
 
 return {
