@@ -29,11 +29,11 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
     local vector3_box = Vector3Box
-    local string_split = string.split
+    -- local string_split = string.split
     local vector3_zero = vector3.zero
     local vector3_lerp = vector3.lerp
     local unit_get_data = unit.get_data
-    local table_contains = table.contains
+    -- local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local shading_environment = ShadingEnvironment
     local unit_set_local_scale = unit.set_local_scale
@@ -180,7 +180,8 @@ end
 
 SightExtension.is_charging = function(self, optional_weapon_action)
     local weapon_action = optional_weapon_action or self:weapon_action()
-    return table_contains(AIM_ACTIONS, weapon_action)
+    -- return table_contains(AIM_ACTIONS, weapon_action)
+    return mod:cached_table_contains(AIM_ACTIONS, weapon_action)
 end
 
 SightExtension.update_zoom = function(self, viewport_name, default_vertical_fov, default_custom_vertical_fov)
@@ -276,7 +277,8 @@ SightExtension.update = function(self, dt, t)
     end
 
     -- Dof
-    if table_contains(DOF_SLOTS, self.wielded_slot) then
+    -- if table_contains(DOF_SLOTS, self.wielded_slot) then
+    if mod:cached_table_contains(DOF_SLOTS, self.wielded_slot) then
         local target_dof = self:is_aiming() and self.dof_aim_target or self.dof_target
         self.dof_near_scale = math_lerp(self.dof_near_scale, target_dof, dt * 10) * (0 + self.dof_strength / 2)
     else
@@ -361,7 +363,8 @@ SightExtension.fetch_sight_offset = function(self, item)
                 local attachment_unit = attachments_1p[i]
                 if attachment_unit and unit_alive(attachment_unit) then
                     local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
-                    local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                    -- local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                    local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
                     local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
 
                     if attachment_slot == "lense_1" then

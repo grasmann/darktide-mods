@@ -145,7 +145,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                                 local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
                                 local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
                                 local sub_item = master_items.get_item(item_path)
-                                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) or sub_item
+                                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
                                 if material_overrides_data then
                                     instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
                                 end
@@ -224,7 +224,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                                 local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
                                 local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
                                 local sub_item = master_items.get_item(item_path)
-                                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) or sub_item
+                                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
                                 if material_overrides_data then
                                     instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
                                 end
@@ -339,7 +339,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                             local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
                             local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
                             local sub_item = master_items.get_item(item_path)
-                            local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) or sub_item
+                            local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
                             if material_overrides_data then
                                 instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
                             end

@@ -17,8 +17,8 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local get_mod = get_mod
     local managers = Managers
     local tostring = tostring
-    local string_gsub = string.gsub
-    local string_split = string.split
+    -- local string_gsub = string.gsub
+    -- local string_split = string.split
     local unit_get_data = unit.get_data
 --#endregion
 
@@ -98,7 +98,8 @@ mod:hook(CLASS.UIWeaponSpawner, "init", function(func, self, reference_name, wor
     if self.modding_tools then
         -- Forward Gui
         local class_name = self.__class_name
-        self._unique_id = class_name .. "_" .. string_gsub(tostring(self), "table: ", "")
+        -- self._unique_id = class_name .. "_" .. string_gsub(tostring(self), "table: ", "")
+        self._unique_id = class_name .. "_" .. mod:cached_gsub(tostring(self), "table: ", "")
         self:_setup_forward_gui()
     end
     -- Original function
@@ -136,7 +137,8 @@ mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(fun
             local attachment_name = unit_get_data(attachment_unit, "attachment_name")
             local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
 
-            local attachment_slot_parts = string_split(attachment_slot, ".")
+            -- local attachment_slot_parts = string_split(attachment_slot, ".")
+            local attachment_slot_parts = mod:cached_split(attachment_slot, ".")
             local weapon_attachment_slot = attachment_slot_parts and attachment_slot_parts[1]
 
             local inventory_weapon_cosmetics_view = mod:get_view("inventory_weapon_cosmetics_view")

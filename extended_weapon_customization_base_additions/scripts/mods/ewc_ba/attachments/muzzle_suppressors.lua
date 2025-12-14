@@ -17,34 +17,25 @@ local _item = "content/items/weapons/player"
 local _item_ranged = _item.."/ranged"
 
 return {
-    autogun_rifle_killshot_muzzle_01 = {
-        replacement_path = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_01",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.15, -1, .15},
-    },
-    autogun_rifle_killshot_muzzle_03 = {
-        replacement_path = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_03",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.15, -1, .15},
-    },
-    autogun_rifle_killshot_muzzle_04 = {
-        replacement_path = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_04",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.15, -1, .15},
-    },
-    autogun_rifle_killshot_muzzle_05 = {
-        replacement_path = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_05",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.15, -1, .15},
-    },
-    autogun_rifle_killshot_muzzle_ml01 = {
-        replacement_path = _item_ranged.."/muzzles/autogun_rifle_killshot_muzzle_ml01",
-        icon_render_unit_rotation_offset = {90, 0, 30},
-        icon_render_camera_position_offset = {-.15, -1, .15},
-    },
-    autogun_rifle_invisible_muzzle_01 = {
-        replacement_path = _item_ranged.."/muzzles/autogun_rifle_invisible_muzzle_01",
+    autogun_rifle_suppressed_muzzle_01 = {
+        replacement_path = _item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_01",
         icon_render_unit_rotation_offset = {90, 0, 30},
         icon_render_camera_position_offset = {-.225, -2.25, .15},
+        damage_type = "suppressed",
+        custom_selection_group = "suppressors",
+    },
+    autogun_rifle_suppressed_muzzle_02 = {
+        replacement_path = _item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_02",
+        icon_render_unit_rotation_offset = {90, 0, 30},
+        icon_render_camera_position_offset = {-.225, -2.25, .15},
+        damage_type = "suppressed",
+        custom_selection_group = "suppressors",
+    },
+    autogun_rifle_suppressed_muzzle_03 = {
+        replacement_path = _item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_03",
+        icon_render_unit_rotation_offset = {90, 0, 30},
+        icon_render_camera_position_offset = {-.225, -2.25, .15},
+        damage_type = "suppressed",
+        custom_selection_group = "suppressors",
     },
 }

@@ -37,6 +37,10 @@ local magazine_laser_group = {custom_selection_group = "magazine_laser"}
 local magazine_laser = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_laser_autogun")
 mod:merge_attachment_data(magazine_laser_group, magazine_laser)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
@@ -87,7 +91,7 @@ local attachments = {
         emblem_right = decals_right,
         flashlight = flashlight_human,
         barrel = table_merge_recursive_n(nil, barrel_autogun_infantry, barrel_autogun_braced),
-        muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_braced),
+        muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_braced, muzzle_suppressors),
         receiver = table_merge_recursive_n(nil, receiver_autogun_braced, receiver_autogun_infantry),
         grip = table_merge_recursive_n(nil, grip_common, grip_autogun_infantry, grip_autogun_braced),
         stock = table_merge_recursive_n(nil, stock_common, stock_autogun_infantry, stock_autogun_braced),
@@ -196,7 +200,7 @@ local fixes = {
                 offset = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1.15, 1.15, 1.15),
+                    scale = vector3_box(1.15, 1.05, 1.15),
                 },
             },
         },

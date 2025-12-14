@@ -11,14 +11,17 @@ local mod = get_mod("extended_weapon_customization")
     local table = table
     local string = string
     local vector3 = Vector3
+    local tostring = tostring
     local unit_node = unit.node
+    local string_sub = string.sub
     local unit_alive = unit.alive
     local quaternion = Quaternion
     local vector3_box = Vector3Box
     local table_clear = table.clear
-    local string_split = string.split
+    -- local string_find = string.find
+    -- local string_split = string.split
     local unit_has_node = unit.has_node
-    local table_contains = table.contains
+    -- local table_contains = table.contains
     local world_link_unit = world.link_unit
     local unit_num_meshes = unit.num_meshes
     local vector3_unbox = vector3_box.unbox
@@ -42,11 +45,47 @@ local PROCESS_SLOTS = {"WEAPON_MELEE", "WEAPON_RANGED", "KITBASH"}
 local temp_fixes = {}
 local temp_attachments = {}
 local temp_requirement_parts = {}
-local split_cache = {}
+-- local split_cache = {}
+local temp_query_params = {}
+local temp_inner_query_params = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+-- local function pull_cache(query, seperator)
+--     local cache = split_cache[query]
+--     local result = cache or string_split(query, seperator)
+--     if not split_cache[query] then split_cache[query] = result end
+--     return result
+-- end
+
+mod.handle_attachment_query = function(self, query)
+    if string_sub(query, 1, 6) == "query:" then
+        -- local debug = string_find(query, "debug")
+        local debug = self:cached_find(query, "debug")
+        if debug then
+            self:print("")
+            self:print("handling attachment query:")
+        end
+        -- Split string with cache
+        -- temp_query_params = pull_cache(query, ":")
+        temp_query_params = self:cached_split(query, ":")
+        -- Check parameters
+        if temp_query_params and temp_query_params[2] then
+            -- Split string with cache
+            -- temp_inner_query_params = pull_cache(temp_query_params[2], ",")
+            temp_inner_query_params = self:cached_split(temp_query_params[2], ",")
+            -- Check parameters
+            if temp_inner_query_params and temp_inner_query_params[1] and temp_inner_query_params[1] ~= "debug" then
+                -- Pull attachment list and return
+                return self:pull_attachment_list_string(temp_inner_query_params[1], temp_inner_query_params[2], temp_inner_query_params[3], temp_inner_query_params[4], debug)
+            end
+        end
+    end
+    -- Return query
+    return query
+end
 
 mod.collect_fixes = function(self, item_data, target_slot)
     -- Get item data
@@ -55,7 +94,8 @@ mod.collect_fixes = function(self, item_data, target_slot)
     -- Clear temp
     table_clear(temp_fixes)
     -- Check item type
-    if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
+    -- if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
+    if mod:cached_table_contains(PROCESS_SLOTS, item_type) and item.attachments then
         -- Get weapon data
         local weapon_template = item.weapon_template
         local weapon_fixes = mod.settings.fixes[weapon_template]
@@ -95,22 +135,34 @@ mod.collect_fixes = function(self, item_data, target_slot)
                                 
                                 if requirement_data.has then
                                     local requirement_string = requirement_data.has
-                                    local cache = split_cache[requirement_string]
-                                    temp_requirement_parts = cache or string_split(requirement_string, "|")
-                                    split_cache[requirement_string] = temp_requirement_parts
+                                    -- Attachment query
+                                    requirement_string = self:handle_attachment_query(requirement_string)
+                                    -- Cache
+                                    -- local cache = split_cache[requirement_string]
+                                    -- temp_requirement_parts = cache or string_split(requirement_string, "|")
+                                    -- split_cache[requirement_string] = temp_requirement_parts
+                                    -- local temp_requirement_parts = pull_cache(requirement_string, "|")
+                                    local temp_requirement_parts = self:cached_split(requirement_string, "|")
                                     -- Check validity
-                                    if not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                    -- if not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                    if not mod:cached_table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                         requirement_met = false
                                     end
                                 end
 
                                 if requirement_data.missing then
                                     local requirement_string = requirement_data.missing
-                                    local cache = split_cache[requirement_string]
-                                    temp_requirement_parts = cache or string_split(requirement_string, "|")
-                                    split_cache[requirement_string] = temp_requirement_parts
+                                    -- Attachment query
+                                    requirement_string = self:handle_attachment_query(requirement_string)
+                                    -- Cache
+                                    -- local cache = split_cache[requirement_string]
+                                    -- temp_requirement_parts = cache or string_split(requirement_string, "|")
+                                    -- split_cache[requirement_string] = temp_requirement_parts
+                                    -- local temp_requirement_parts = pull_cache(requirement_string, "|")
+                                    local temp_requirement_parts = self:cached_split(requirement_string, "|")
                                     -- Check validity
-                                    if table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                    -- if table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
+                                    if mod:cached_table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                         requirement_met = false
                                     end
                                 end
@@ -235,7 +287,8 @@ mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
     local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
     local item_type = item and item.item_type
     -- Check data
-    if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
+    -- if table_contains(PROCESS_SLOTS, item_type) and item.attachments then
+    if mod:cached_table_contains(PROCESS_SLOTS, item_type) and item.attachments then
         -- Get fixes
         local fixes = optional_fixes or self:collect_fixes(item)
         if fixes then
@@ -258,11 +311,12 @@ mod.apply_attachment_fixes = function(self, item_data, optional_fixes)
                         -- Iterate through attach entries
                         for attachment_slot, attachment_name in pairs(attach) do
                             -- Get attachment path
-                            local attachment_item_path = attachments[attachment_slot][attachment_name].replacement_path
-                            -- Apply fix
-                            mod:modify_item(item, nil, {
-                                [attachment_slot] = attachment_item_path
-                            })
+                            local slot_data = attachments[attachment_slot]
+                            local attachment_data = slot_data and slot_data[attachment_name]
+                            if attachment_data then
+                                local attachment_item_path = attachment_data.replacement_path
+                                mod:modify_item(item, nil, {[attachment_slot] = attachment_item_path})
+                            end
                         end
                     end
                 end

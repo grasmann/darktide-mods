@@ -30,7 +30,7 @@ local LagCompensation = mod:original_require("scripts/utilities/lag_compensation
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
     local vector3_box = Vector3Box
-    local string_split = string.split
+    -- local string_split = string.split
     local physics_world = PhysicsWorld
     local unit_get_data = unit.get_data
     local vector3_unbox = vector3_box.unbox
@@ -193,7 +193,8 @@ FlashlightExtension.find_in_units = function(self, attachment_units, optional_ta
                 -- Get attachment slot
                 local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
                 -- Shorten to last part
-                local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                -- local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
                 local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
                 -- Check attachment slot and light in attachment unit
                 if attachment_slot == target_slot then

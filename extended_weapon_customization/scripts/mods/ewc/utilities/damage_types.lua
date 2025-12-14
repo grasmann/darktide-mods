@@ -70,7 +70,7 @@ mod.damage_types = {
         gibbing_type = gibbing_types.laser,
         gibbing_power = gibbing_power.infinite,
         -- Line effect
-        line_effect = LineEffects.lasbeam,
+        line_effect = LineEffects.lasbeam_pistol,
         -- Sounds
         play_ranged_shooting = "wwise/events/weapon/play_lasgun_p3_m2_fire_auto",
         stop_ranged_shooting = "wwise/events/weapon/stop_lasgun_p3_m2_fire_auto",
@@ -79,6 +79,16 @@ mod.damage_types = {
         -- Muzzle flash
         muzzle_flash = "content/fx/particles/weapons/rifles/lasgun/lasgun_muzzle_elysian",
         muzzle_flash_crit = "content/fx/particles/weapons/rifles/lasgun/lasgun_muzzle_elysian",
+    },
+    suppressed = {
+        -- Sounds
+        play_ranged_shooting = "wwise/events/weapon/play_weapon_silence",
+        stop_ranged_shooting = "wwise/events/weapon/stop_weapon_silence",
+        ranged_pre_loop_shot = "wwise/events/weapon/play_heavy_swing_hit",
+        ranged_single_shot = "wwise/events/weapon/play_heavy_swing_hit",
+        -- Muzzle flash
+        muzzle_flash = "content/fx/particles/weapons/rifles/bolter/bolter_muzzle_secondary",
+        muzzle_flash_crit = "content/fx/particles/weapons/rifles/bolter/bolter_muzzle_secondary",
     },
     plasma = {
         game_damage_type = "plasma",

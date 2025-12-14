@@ -830,8 +830,7 @@ VisibleEquipmentExtension.play_equipment_slot_sound = function(self, slot, effec
         end
         -- Testing
         -- group = group or "sfx_ads_up"
-        local sound = player_character_sound_event_aliases[group].events[weapon_template] or
-            player_character_sound_event_aliases[group].events.default
+        local sound = group and player_character_sound_event_aliases[group] and (player_character_sound_event_aliases[group].events[weapon_template] or player_character_sound_event_aliases[group].events.default)
         -- Check sound and extension
         if sound and self.fx_extension then
             -- Play sound

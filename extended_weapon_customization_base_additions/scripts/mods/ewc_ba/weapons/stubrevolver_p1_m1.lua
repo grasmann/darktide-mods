@@ -29,6 +29,10 @@ mod:merge_attachment_data(autogun_braced_group, muzzle_autogun_braced)
 local muzzle_autogun_headhunter = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_headhunter")
 mod:merge_attachment_data(autogun_headhunter_group, muzzle_autogun_headhunter)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
@@ -65,7 +69,7 @@ local attachments = {
         flashlight = flashlight_human,
         stock = stock_shotgun_double_barrel,
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope),
-        muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_braced, muzzle_autogun_headhunter),
+        muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_braced, muzzle_autogun_headhunter, muzzle_suppressors),
     },
 }
 
@@ -77,26 +81,10 @@ local attachment_slots = {
         sight = {
             parent_slot = "rail",
             default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(0, 0, 0),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
         },
         flashlight = {
             parent_slot = "sight",
             default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(.02, .095, -.07),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(.5, .5, .5),
-                    node = 1,
-                },
-            },
         },
         muzzle = {
             parent_slot = "rail",
@@ -105,14 +93,6 @@ local attachment_slots = {
         stock = {
             parent_slot = "body",
             default_path = _item_empty_trinket,
-            fix = {
-                offset = {
-                    position = vector3_box(0, -.1, -.1),
-                    rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1, 1, 1),
-                    node = 1,
-                },
-            },
         },
     },
 }
@@ -122,6 +102,26 @@ attachment_slots.stubrevolver_p1_m3 = table_clone(attachment_slots.stubrevolver_
 
 local fixes = {
     stubrevolver_p1_m1 = {
+        {attachment_slot = "stock",
+            fix = {
+                offset = {
+                    position = vector3_box(0, -.1, -.1),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
+        {attachment_slot = "flashlight",
+            fix = {
+                offset = {
+                    position = vector3_box(.02, .095, -.07),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.5, .5, .5),
+                    node = 1,
+                },
+            },
+        },
         {attachment_slot = "sight_offset",
             requirements = {
                 sight = {

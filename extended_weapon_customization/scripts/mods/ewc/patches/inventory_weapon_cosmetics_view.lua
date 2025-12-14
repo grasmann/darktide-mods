@@ -47,10 +47,10 @@ local items = mod:original_require("scripts/utilities/items")
     local string_sub = string.sub
     local table_clear = table.clear
     local color_white = color.white
-    local string_gsub = string.gsub
+    -- local string_gsub = string.gsub
     local string_upper = string.upper
     local string_format = string.format
-    local table_contains = table.contains
+    -- local table_contains = table.contains
     local has_localization = HasLocalization
     local color_terminal_grid_background = color.terminal_grid_background
 --#endregion
@@ -198,6 +198,11 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         -- Get item
         local item = optional_item or self._selected_item
 
+        -- -- Gear id
+        -- local gear_id = mod:gear_id(item)
+        -- -- Clear cached item
+        -- mod:clear_mod_item(gear_id)
+
         -- Trigger item icon update
         managers.ui:item_icon_updated(item)
         managers.event:trigger("event_item_icon_updated", item)
@@ -216,7 +221,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         -- Get gear id
         local gear_id = mod:gear_id(self._selected_item)
         -- Reload gear settings from file
-        mod:gear_settings(gear_id, nil, true)
+        if not mod:gear_settings(gear_id, nil, true) then
+            mod:clear_gear_material_overrides(self._presentation_item)
+        end
     end
 
     -- ##### Hover alpha fade #########################################################################################
@@ -426,14 +433,18 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     -- ##### Toggle overrides buttons callbacks #######################################################################
 
-    instance.cb_on_alternate_fire_toggle_pressed = function(self)
+    instance.cb_on_alternate_fire_toggle_pressed = function(self, init)
         
         -- Get gear id
         local gear_id = mod:gear_id(self._selected_item)
         -- Get alternate fire setting
         local alternate_fire_list = mod:get(alternate_fire_setting) or {}
-        -- Toggle alternate fire
-        alternate_fire_list[gear_id] = not alternate_fire_list[gear_id]
+        if not init then
+            -- Toggle alternate fire
+            alternate_fire_list[gear_id] = not alternate_fire_list[gear_id]
+        elseif not alternate_fire_list[gear_id] then
+            alternate_fire_list[gear_id] = true
+        end
         -- Set alternate fire setting
         mod:set(alternate_fire_setting, alternate_fire_list)
 
@@ -444,14 +455,18 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     end
 
-    instance.cb_on_crosshair_toggle_pressed = function(self)
+    instance.cb_on_crosshair_toggle_pressed = function(self, init)
 
         -- Get gear id
         local gear_id = mod:gear_id(self._selected_item)
         -- Get crosshair setting
         local crosshair_list = mod:get(crosshair_list_setting) or {}
-        -- Toggle crosshair
-        crosshair_list[gear_id] = not crosshair_list[gear_id]
+        if not init then
+            -- Toggle crosshair
+            crosshair_list[gear_id] = not crosshair_list[gear_id]
+        elseif not crosshair_list[gear_id] then
+            crosshair_list[gear_id] = true
+        end
         -- Set crosshair setting
         mod:set(crosshair_list_setting, crosshair_list)
 
@@ -462,14 +477,18 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
     end
 
-    instance.cb_on_damage_type_toggle_pressed = function(self)
+    instance.cb_on_damage_type_toggle_pressed = function(self, init)
 
         -- Get gear id
         local gear_id = mod:gear_id(self._selected_item)
         -- Get damage type active setting
         local damage_type_active_list = mod:get(damage_type_active_setting) or {}
-        -- Toggle damage type
-        damage_type_active_list[gear_id] = not damage_type_active_list[gear_id]
+        if not init then
+            -- Toggle damage type
+            damage_type_active_list[gear_id] = not damage_type_active_list[gear_id]
+        elseif not damage_type_active_list[gear_id] then
+            damage_type_active_list[gear_id] = true
+        end
         -- Set damage type setting
         mod:set(damage_type_active_setting, damage_type_active_list)
 
@@ -883,7 +902,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
                     local material_override = mod:gear_material_overrides(self._presentation_item, nil, slot_name)
                     if material_override then
                         for _, option in pairs(options) do
-                            if material_override.material_overrides and table_contains(material_override.material_overrides, option.value) then
+                            -- if material_override.material_overrides and table_contains(material_override.material_overrides, option.value) then
+                            if material_override.material_overrides and mod:cached_table_contains(material_override.material_overrides, option.value) then
                                 return option.value
                             end
                         end
@@ -933,10 +953,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         for material_override_name, data in pairs(gear_colors) do
             -- Generate display name
             local display_name = material_override_name
-            display_name = string_gsub(display_name, "color_", "")
-            display_name = string_gsub(display_name, "colour_", "")
-            display_name = string_gsub(display_name, "_", " ")
-            display_name = string_gsub(display_name, "%f[%a].", string_upper)
+            -- display_name = string_gsub(display_name, "color_", "")
+            display_name = mod:cached_gsub(display_name, "color_", "")
+            -- display_name = string_gsub(display_name, "colour_", "")
+            display_name = mod:cached_gsub(display_name, "colour_", "")
+            -- display_name = string_gsub(display_name, "_", " ")
+            display_name = mod:cached_gsub(display_name, "_", " ")
+            -- display_name = string_gsub(display_name, "%f[%a].", string_upper)
+            display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
             -- Add color option
             color_options[#color_options+1] = {
                 id = material_override_name,
@@ -968,9 +992,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
             if data.texture_overrides and data.texture_overrides.coat_pattern then
                 -- Generate display name
                 local display_name = material_override_name
-                display_name = string_gsub(display_name, "pattern_", "")
-                display_name = string_gsub(display_name, "_", " ")
-                display_name = string_gsub(display_name, "%f[%a].", string_upper)
+                -- display_name = string_gsub(display_name, "pattern_", "")
+                display_name = mod:cached_gsub(display_name, "pattern_", "")
+                -- display_name = string_gsub(display_name, "_", " ")
+                display_name = mod:cached_gsub(display_name, "_", " ")
+                -- display_name = string_gsub(display_name, "%f[%a].", string_upper)
+                display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
                 -- Add pattern option
                 pattern_options[#pattern_options+1] = {
                     id = material_override_name,
@@ -1003,9 +1030,12 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
             if data.property_overrides and data.property_overrides.chip_dirt then
                 -- Generate display name
                 local display_name = property_override_name
-                display_name = string_gsub(display_name, "wear_", "")
-                display_name = string_gsub(display_name, "_", " ")
-                display_name = string_gsub(display_name, "%f[%a].", string_upper)
+                -- display_name = string_gsub(display_name, "wear_", "")
+                display_name = mod:cached_gsub(display_name, "wear_", "")
+                -- display_name = string_gsub(display_name, "_", " ")
+                display_name = mod:cached_gsub(display_name, "_", " ")
+                -- display_name = string_gsub(display_name, "%f[%a].", string_upper)
+                display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
                 -- Add wear option
                 wear_options[#wear_options+1] = {
                     id = property_override_name,
@@ -1148,16 +1178,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
     -- Check customization menu and tab content
     if self.customize_attachments and self._tabs_content then
 
-        -- -- ##### This must be done, to reload saved material overrides #####
-        -- -- Clear material overrides for item
-        -- mod:clear_gear_material_overrides(self._selected_item)
-        -- -- Get gear id
-        -- local gear_id = mod:gear_id(self._selected_item)
-        -- -- Reload gear settings from file
-        -- mod:gear_settings(gear_id, nil, true)
-        -- -- #################################################################
+        -- Reload gear settings
         self:reload_gear_settings()
 
+        -- Reset overrides
         self.selected_color_override = nil
         self.selected_pattern_override = nil
         self.selected_wear_override = nil
@@ -1361,6 +1385,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
         end
     end
 
+    -- Check element
+    if not self._tabs_content[index] then
+        -- Return; prevent crash
+        return
+    end
+
     -- Original function
     func(self, index, ...)
 
@@ -1465,15 +1495,17 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
         if self["_selected_"..slot_name.."_name"] ~= self["_equipped_"..slot_name.."_name"] or self.selected_color_override or self.selected_pattern_override or self.selected_wear_override then
             disable_button = false
         end
-        local button = self._widgets_by_name.equip_button
-        local button_content = button.content
+
+        local widgets_by_name = self._widgets_by_name
+        -- local button = widgets_by_name.equip_button
+        local button_content = widgets_by_name.equip_button.content
 
         button_content.hotspot.disabled = disable_button
         button_content.text = utf8_upper(disable_button and localize("loc_weapon_inventory_equipped_button") or localize("loc_weapon_inventory_equip_button"))
 
-        local reset_button = self._widgets_by_name.reset_button
-        if reset_button then
-            local button_content = reset_button.content
+        -- local reset_button = widgets_by_name.reset_button
+        if widgets_by_name.reset_button then
+            local button_content = widgets_by_name.reset_button.content
             local gear_id = mod:gear_id(self._selected_item)
             button_content.hotspot.disabled = not mod:gear_settings(gear_id)
         end
@@ -1512,36 +1544,36 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
         end
 
         local has_alternate_fire = mod:item_has(self._selected_item, "alternate_fire") or not self.finished_tutorial
-        local alternate_fire_toggle = self._widgets_by_name.alternate_fire_toggle
-        if has_alternate_fire and alternate_fire_toggle then
+        -- local alternate_fire_toggle = widgets_by_name.alternate_fire_toggle
+        if has_alternate_fire and widgets_by_name.alternate_fire_toggle then
             local gear_id = mod:gear_id(self._selected_item)
             local alternate_fire_list = mod:get(alternate_fire_setting)
             local alternate_fire_value = alternate_fire_list and alternate_fire_list[gear_id]
             if alternate_fire_value == nil then alternate_fire_value = true end
             local text_color = not alternate_fire_value and {255, 0, 0} or {255, 255, 255}
-            alternate_fire_toggle.content.text = string_format("{#color(%d,%d,%d)}%s{#reset()}", text_color[1], text_color[2], text_color[3], localize("loc_weapon_inventory_alternate_fire_toggle"))
+            widgets_by_name.alternate_fire_toggle.content.text = string_format("{#color(%d,%d,%d)}%s{#reset()}", text_color[1], text_color[2], text_color[3], localize("loc_weapon_inventory_alternate_fire_toggle"))
         end
-        local widgets_by_name = self._widgets_by_name
-        local alternate_fire_toggle_widget = widgets_by_name and widgets_by_name.alternate_fire_toggle
-        if alternate_fire_toggle then alternate_fire_toggle.visible = has_alternate_fire end
+        
+        -- local alternate_fire_toggle_widget = widgets_by_name and widgets_by_name.alternate_fire_toggle
+        if widgets_by_name.alternate_fire_toggle then widgets_by_name.alternate_fire_toggle.visible = has_alternate_fire end
 
         local has_crosshair = mod:item_has(self._selected_item, "crosshair_type") or not self.finished_tutorial
-        local crosshair_toggle = self._widgets_by_name.crosshair_toggle
-        if has_crosshair and crosshair_toggle then
+        -- local crosshair_toggle = widgets_by_name.crosshair_toggle
+        if has_crosshair and widgets_by_name.crosshair_toggle then
             local gear_id = mod:gear_id(self._selected_item)
             local crosshair_list = mod:get(crosshair_list_setting)
             local crosshair_value = crosshair_list and crosshair_list[gear_id]
             if crosshair_value == nil then crosshair_value = true end
             local text_color = not crosshair_value and {255, 0, 0} or {255, 255, 255}
-            crosshair_toggle.content.text = string_format("{#color(%d,%d,%d)}%s{#reset()}", text_color[1], text_color[2], text_color[3], localize("loc_weapon_inventory_crosshair_toggle"))
+            widgets_by_name.crosshair_toggle.content.text = string_format("{#color(%d,%d,%d)}%s{#reset()}", text_color[1], text_color[2], text_color[3], localize("loc_weapon_inventory_crosshair_toggle"))
         end
-        local widgets_by_name = self._widgets_by_name
-        local crosshair_toggle_widget = widgets_by_name and widgets_by_name.crosshair_toggle
-        if crosshair_toggle_widget then crosshair_toggle_widget.visible = has_crosshair end
+        
+        -- local crosshair_toggle_widget = widgets_by_name and widgets_by_name.crosshair_toggle
+        if widgets_by_name.crosshair_toggle then widgets_by_name.crosshair_toggle.visible = has_crosshair end
 
         local has_damage_type = mod:item_has(self._selected_item, "damage_type") or not self.finished_tutorial
-        local damage_type_toggle = self._widgets_by_name.damage_type_toggle
-        if has_damage_type and damage_type_toggle then
+        -- local damage_type_toggle = widgets_by_name.damage_type_toggle
+        if has_damage_type and widgets_by_name.damage_type_toggle then
             local gear_id = mod:gear_id(self._selected_item)
             -- local damage_type_list = mod:get(damage_type_setting)
             -- local damage_type_value = damage_type_list and damage_type_list[gear_id]
@@ -1549,73 +1581,73 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
             local damage_type_value = damage_type_active_list and damage_type_active_list[gear_id]
             if damage_type_value == nil then damage_type_value = true end
             local text_color = not damage_type_value and {255, 0, 0} or {255, 255, 255}
-            damage_type_toggle.content.text = string_format("{#color(%d,%d,%d)}%s{#reset()}", text_color[1], text_color[2], text_color[3], localize("loc_weapon_inventory_damage_type_toggle"))
+            widgets_by_name.damage_type_toggle.content.text = string_format("{#color(%d,%d,%d)}%s{#reset()}", text_color[1], text_color[2], text_color[3], localize("loc_weapon_inventory_damage_type_toggle"))
         end
-        local widgets_by_name = self._widgets_by_name
-        local damage_type_toggle_widget = widgets_by_name and widgets_by_name.damage_type_toggle
-        if damage_type_toggle_widget then damage_type_toggle_widget.visible = has_damage_type end
+        
+        -- local damage_type_toggle_widget = widgets_by_name and widgets_by_name.damage_type_toggle
+        if widgets_by_name.damage_type_toggle then widgets_by_name.damage_type_toggle.visible = has_damage_type end
 
-        local color_dropdown = widgets_by_name.color_dropdown
-        self:update_dropdown(color_dropdown, input_service, dt, t)
-        local pattern_dropdown = widgets_by_name.pattern_dropdown
-        self:update_dropdown(pattern_dropdown, input_service, dt, t)
-        local wear_dropdown = widgets_by_name.wear_dropdown
-        self:update_dropdown(wear_dropdown, input_service, dt, t)
+        -- local color_dropdown = widgets_by_name.color_dropdown
+        self:update_dropdown(widgets_by_name.color_dropdown, input_service, dt, t)
+        -- local pattern_dropdown = widgets_by_name.pattern_dropdown
+        self:update_dropdown(widgets_by_name.pattern_dropdown, input_service, dt, t)
+        -- local wear_dropdown = widgets_by_name.wear_dropdown
+        self:update_dropdown(widgets_by_name.wear_dropdown, input_service, dt, t)
 
-        local color_button = widgets_by_name and widgets_by_name.color_button
-        local pattern_button = widgets_by_name and widgets_by_name.pattern_button
-        local wear_button = widgets_by_name and widgets_by_name.wear_button
+        -- local color_button = widgets_by_name and widgets_by_name.color_button
+        -- local pattern_button = widgets_by_name and widgets_by_name.pattern_button
+        -- local wear_button = widgets_by_name and widgets_by_name.wear_button
 
-        if color_button then color_button.visible = self._widgets_by_name.color_dropdown.content.entry.get_function() end
-        if pattern_button then pattern_button.visible = self._widgets_by_name.pattern_dropdown.content.entry.get_function() end
-        if wear_button then wear_button.visible = self._widgets_by_name.wear_dropdown.content.entry.get_function() end
+        if widgets_by_name.color_button then widgets_by_name.color_button.visible = widgets_by_name.color_dropdown.content.entry.get_function() end
+        if widgets_by_name.pattern_button then widgets_by_name.pattern_button.visible = widgets_by_name.pattern_dropdown.content.entry.get_function() end
+        if widgets_by_name.wear_button then widgets_by_name.wear_button.visible = widgets_by_name.wear_dropdown.content.entry.get_function() end
 
     else
         local widgets_by_name = self._widgets_by_name
 
-        local reset_button = widgets_by_name and widgets_by_name.reset_button
-        local random_button = widgets_by_name and widgets_by_name.random_button
+        -- local reset_button = widgets_by_name and widgets_by_name.reset_button
+        -- local random_button = widgets_by_name and widgets_by_name.random_button
 
-        local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
-        local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
-        local damage_type_toggle = widgets_by_name and widgets_by_name.damage_type_toggle
+        -- local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
+        -- local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
+        -- local damage_type_toggle = widgets_by_name and widgets_by_name.damage_type_toggle
 
-        local tip_1 = widgets_by_name and widgets_by_name.tip_1
-        local tip_1_button = widgets_by_name and widgets_by_name.tip_1_button
+        -- local tip_1 = widgets_by_name and widgets_by_name.tip_1
+        -- local tip_1_button = widgets_by_name and widgets_by_name.tip_1_button
 
-        local color_dropdown = widgets_by_name and widgets_by_name.color_dropdown
-        local pattern_dropdown = widgets_by_name and widgets_by_name.pattern_dropdown
-        local wear_dropdown = widgets_by_name and widgets_by_name.wear_dropdown
+        -- local color_dropdown = widgets_by_name and widgets_by_name.color_dropdown
+        -- local pattern_dropdown = widgets_by_name and widgets_by_name.pattern_dropdown
+        -- local wear_dropdown = widgets_by_name and widgets_by_name.wear_dropdown
 
-        local color_button = widgets_by_name and widgets_by_name.color_button
-        local pattern_button = widgets_by_name and widgets_by_name.pattern_button
-        local wear_button = widgets_by_name and widgets_by_name.wear_button
+        -- local color_button = widgets_by_name and widgets_by_name.color_button
+        -- local pattern_button = widgets_by_name and widgets_by_name.pattern_button
+        -- local wear_button = widgets_by_name and widgets_by_name.wear_button
 
-        local color_text = widgets_by_name and widgets_by_name.color_text
-        local pattern_text = widgets_by_name and widgets_by_name.pattern_text
-        local wear_text = widgets_by_name and widgets_by_name.wear_text
+        -- local color_text = widgets_by_name and widgets_by_name.color_text
+        -- local pattern_text = widgets_by_name and widgets_by_name.pattern_text
+        -- local wear_text = widgets_by_name and widgets_by_name.wear_text
 
-        if reset_button then reset_button.visible = false end
-        if random_button then random_button.visible = false end
+        if widgets_by_name.reset_button then widgets_by_name.reset_button.visible = false end
+        if widgets_by_name.random_button then widgets_by_name.random_button.visible = false end
         
-        if alternate_fire_toggle then alternate_fire_toggle.visible = false end
-        if crosshair_toggle then crosshair_toggle.visible = false end
-        if damage_type_toggle then damage_type_toggle.visible = false end
+        if widgets_by_name.alternate_fire_toggle then widgets_by_name.alternate_fire_toggle.visible = false end
+        if widgets_by_name.crosshair_toggle then widgets_by_name.crosshair_toggle.visible = false end
+        if widgets_by_name.damage_type_toggle then widgets_by_name.damage_type_toggle.visible = false end
         
-        if tip_1 then tip_1.visible = false end
-        if tip_1_button then tip_1_button.visible = false end
+        if widgets_by_name.tip_1 then widgets_by_name.tip_1.visible = false end
+        if widgets_by_name.tip_1_button then widgets_by_name.tip_1_button.visible = false end
         
-        if color_dropdown then color_dropdown.visible = false end
-        if pattern_dropdown then pattern_dropdown.visible = false end
-        if wear_dropdown then wear_dropdown.visible = false end
+        if widgets_by_name.color_dropdown then widgets_by_name.color_dropdown.visible = false end
+        if widgets_by_name.pattern_dropdown then widgets_by_name.pattern_dropdown.visible = false end
+        if widgets_by_name.wear_dropdown then widgets_by_name.wear_dropdown.visible = false end
         
-        if color_text then color_text.visible = false end
-        if pattern_text then pattern_text.visible = false end
-        if wear_text then wear_text.visible = false end
+        if widgets_by_name.color_text then widgets_by_name.color_text.visible = false end
+        if widgets_by_name.pattern_text then widgets_by_name.pattern_text.visible = false end
+        if widgets_by_name.wear_text then widgets_by_name.wear_text.visible = false end
 
-        if color_button then color_button.visible = false end
-        if pattern_button then pattern_button.visible = false end
-        if wear_button then wear_button.visible = false end
+        if widgets_by_name.color_button then widgets_by_name.color_button.visible = false end
+        if widgets_by_name.pattern_button then widgets_by_name.pattern_button.visible = false end
+        if widgets_by_name.wear_button then widgets_by_name.wear_button.visible = false end
     end
 end)
 
@@ -1657,23 +1689,22 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_destroy_forward_gui", function(fu
 
         -- Check selected material overrides
         if self.selected_color_override or self.selected_pattern_override or self.selected_wear_override then
-            -- -- Clear material overrides for item
-            -- mod:clear_gear_material_overrides(self._selected_item)
-            -- -- Get gear id
-            -- local gear_id = mod:gear_id(self._selected_item)
-            -- -- Reload gear settings from file
-            -- mod:gear_settings(gear_id, nil, true)
+
+            -- Reload gear settings
             self:reload_gear_settings()
+
             -- Reset selected material overrides
             self.selected_color_override = nil
             self.selected_pattern_override = nil
             self.selected_wear_override = nil
+
         end
 
     end
     
     -- Original function
     func(self, ...)
+
 end)
 
 mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ...)
@@ -1718,7 +1749,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             if attachments then
                 for attachment_slot, attachment_entries in pairs(attachments) do
                     
-                    if mod:selectable_attachment_count(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
+                    -- if mod:selectable_attachment_count(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
+                    if mod:selectable_attachment_count(attachment_entries) > 1 and not mod:cached_table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
                         tabs_content[#tabs_content+1] = {
                             display_name = attachment_slot,
                             slot_name = attachment_slot,
@@ -1977,8 +2009,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_element", function(func, 
             -- Generate attachment name
             if not attachment_display_name or attachment_display_name == "" then
                 attachment_display_name = mod.settings.attachment_name_by_item_string[real_item and real_item.name] or "empty"
-                attachment_display_name = string_gsub(attachment_display_name, "_", " ")
-                attachment_display_name = string_gsub(attachment_display_name, "%f[%a].", string_upper)
+                -- attachment_display_name = string_gsub(attachment_display_name, "_", " ")
+                attachment_display_name = mod:cached_gsub(attachment_display_name, "_", " ")
+                -- attachment_display_name = string_gsub(attachment_display_name, "%f[%a].", string_upper)
+                attachment_display_name = mod:cached_gsub(attachment_display_name, "%f[%a].", string_upper)
             end
             -- Set display name
             widgets_by_name.sub_display_name.content.text = string_format("%s • %s", items.weapon_card_display_name(self._selected_item), items.weapon_card_sub_display_name(self._selected_item))
@@ -2007,6 +2041,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, sel
 
     -- Check customization menu
     if self.customize_attachments then
+
+        -- self.ewc_view_settings = mod:collect_fixes(self._presentation_item, "view_settings")
+        -- mod:echo("view_settings: "..tostring(self.ewc_view_settings))
+        -- self._max_zoom = self.ewc_view_settings and self.ewc_view_settings.max_zoom or 4
+        -- mod:echo("zoom: "..tostring(self._max_zoom))
+        -- self:_update_weapon_preview_viewport()
 
         -- local tab_content = self._tabs_content and self._tabs_content[self._selected_tab_index]
         -- local slot_name = tab_content and tab_content.slot_name
@@ -2062,8 +2102,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
     -- Check customization menu
     if self.customize_attachments then
 
-        -- local tab_content = self._tabs_content and self._tabs_content[self._selected_tab_index]
-        -- local slot_name = tab_content and tab_content.slot_name
+        -- Get slot name
         local slot_name = self:selected_slot_name()
         
         -- Set flags
@@ -2090,14 +2129,32 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
             self["_equipped_"..attachment_slot.."_name"] = gear_settings[attachment_slot]
         end
 
+        -- Get attachment slots from item
+        local attachment_slots = mod:fetch_attachment_slots(self._presentation_item.attachments)
+        -- Iterate through attachment slots
+        for attachment_slot, data in pairs(attachment_slots) do
+            -- Get material overrides from item
+            local material_overrides = mod:gear_material_overrides(self._presentation_item, nil, attachment_slot)
+            -- Check material overrides
+            if material_overrides then
+                -- Apply material overrides to presentation item
+                mod:gear_material_overrides(self._selected_item, nil, attachment_slot, material_overrides)
+                -- gear_settings.material_overrides = gear_settings.material_overrides or {}
+                -- gear_settings.material_overrides[attachment_slot] = material_overrides
+            end
+        end
+
+        -- Reset color overrides
         if slot_name and self.selected_color_override == "" then
             mod:clear_gear_material_overrides(self._selected_item, nil, slot_name, {OVERRIDE_TYPE.color})
         end
 
+        -- Reset pattern overrides
         if slot_name and self.selected_pattern_override == "" then
             mod:clear_gear_material_overrides(self._selected_item, nil, slot_name, {OVERRIDE_TYPE.pattern})
         end
 
+        -- Reset wear overrides
         if slot_name and self.selected_wear_override == "" then
             mod:clear_gear_material_overrides(self._selected_item, nil, slot_name, {OVERRIDE_TYPE.wear})
         end
@@ -2106,6 +2163,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_on_equip_pressed", function(fun
         self.selected_color_override = nil
         self.selected_pattern_override = nil
         self.selected_wear_override = nil
+
+        self:cb_on_alternate_fire_toggle_pressed(true)
+        self:cb_on_crosshair_toggle_pressed(true)
+        self:cb_on_damage_type_toggle_pressed(true)
 
         -- Set new gear settings
         mod:gear_settings(gear_id, gear_settings, true)
@@ -2144,6 +2205,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_fetch_inventory_items", function(
 	if self.customize_attachments then
         -- Set empty table
         self._items_by_slot = empty_table
+        -- Prevent original function; prevent crash;
         return
     end
 
@@ -2172,48 +2234,48 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", funct
     -- Get custom widgets
     local widgets_by_name = self._widgets_by_name
     
-    local reset_button = widgets_by_name and widgets_by_name.reset_button
-    local random_button = widgets_by_name and widgets_by_name.random_button
+    -- local reset_button = widgets_by_name and widgets_by_name.reset_button
+    -- local random_button = widgets_by_name and widgets_by_name.random_button
 
-    local color_button = widgets_by_name and widgets_by_name.color_button
-    local pattern_button = widgets_by_name and widgets_by_name.pattern_button
-    local wear_button = widgets_by_name and widgets_by_name.wear_button
+    -- local color_button = widgets_by_name and widgets_by_name.color_button
+    -- local pattern_button = widgets_by_name and widgets_by_name.pattern_button
+    -- local wear_button = widgets_by_name and widgets_by_name.wear_button
     
-    local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
-    local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
-    local damage_type_toggle = widgets_by_name and widgets_by_name.damage_type_toggle
+    -- local alternate_fire_toggle = widgets_by_name and widgets_by_name.alternate_fire_toggle
+    -- local crosshair_toggle = widgets_by_name and widgets_by_name.crosshair_toggle
+    -- local damage_type_toggle = widgets_by_name and widgets_by_name.damage_type_toggle
 
-    local tip_1_button = widgets_by_name and widgets_by_name.tip_1_button
+    -- local tip_1_button = widgets_by_name and widgets_by_name.tip_1_button
 
     -- Check customization menu
     if self.customize_attachments then
-        -- Set callbacks for custom widgets
-        if reset_button then reset_button.content.hotspot.pressed_callback = callback(self, "cb_on_reset_pressed") end
-        if random_button then random_button.content.hotspot.pressed_callback = callback(self, "cb_on_random_pressed") end
-
-        if color_button then color_button.content.hotspot.pressed_callback = callback(self, "cb_on_color_pressed") end
-        if pattern_button then pattern_button.content.hotspot.pressed_callback = callback(self, "cb_on_pattern_pressed") end
-        if wear_button then wear_button.content.hotspot.pressed_callback = callback(self, "cb_on_wear_pressed") end
-        
-        if alternate_fire_toggle then alternate_fire_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_alternate_fire_toggle_pressed") end
-        if crosshair_toggle then crosshair_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_crosshair_toggle_pressed") end
-        if damage_type_toggle then damage_type_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_damage_type_toggle_pressed") end
-        
-        if tip_1_button then tip_1_button.content.hotspot.pressed_callback = callback(self, "cb_on_tip_1_pressed") end
+        -- Set callbacks for control buttons
+        if widgets_by_name.reset_button then widgets_by_name.reset_button.content.hotspot.pressed_callback = callback(self, "cb_on_reset_pressed") end
+        if widgets_by_name.random_button then widgets_by_name.random_button.content.hotspot.pressed_callback = callback(self, "cb_on_random_pressed") end
+        -- Set callbacks for material override buttons
+        if widgets_by_name.color_button then widgets_by_name.color_button.content.hotspot.pressed_callback = callback(self, "cb_on_color_pressed") end
+        if widgets_by_name.pattern_button then widgets_by_name.pattern_button.content.hotspot.pressed_callback = callback(self, "cb_on_pattern_pressed") end
+        if widgets_by_name.wear_button then widgets_by_name.wear_button.content.hotspot.pressed_callback = callback(self, "cb_on_wear_pressed") end
+        -- Set callbacks for override toggle buttons
+        if widgets_by_name.alternate_fire_toggle then widgets_by_name.alternate_fire_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_alternate_fire_toggle_pressed") end
+        if widgets_by_name.crosshair_toggle then widgets_by_name.crosshair_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_crosshair_toggle_pressed") end
+        if widgets_by_name.damage_type_toggle then widgets_by_name.damage_type_toggle.content.hotspot.pressed_callback = callback(self, "cb_on_damage_type_toggle_pressed") end
+        -- Set callbacks for tip
+        if widgets_by_name.tip_1_button then widgets_by_name.tip_1_button.content.hotspot.pressed_callback = callback(self, "cb_on_tip_1_pressed") end
     else
-        -- Hide custom widgets
-        if reset_button then reset_button.visible = false end
-        if random_button then random_button.visible = false end
-
-        if color_button then color_button.visible = false end
-        if pattern_button then pattern_button.visible = false end
-        if wear_button then wear_button.visible = false end
-        
-        if alternate_fire_toggle then alternate_fire_toggle.visible = false end
-        if crosshair_toggle then crosshair_toggle.visible = false end
-        if damage_type_toggle then damage_type_toggle.visible = false end
-
-        if tip_1_button then tip_1_button.visible = false end
+        -- Hide control buttons
+        if widgets_by_name.reset_button then widgets_by_name.reset_button.visible = false end
+        if widgets_by_name.random_button then widgets_by_name.random_button.visible = false end
+        -- Hide material override buttons
+        if widgets_by_name.color_button then widgets_by_name.color_button.visible = false end
+        if widgets_by_name.pattern_button then widgets_by_name.pattern_button.visible = false end
+        if widgets_by_name.wear_button then widgets_by_name.wear_button.visible = false end
+        -- Hide override toggle buttons
+        if widgets_by_name.alternate_fire_toggle then widgets_by_name.alternate_fire_toggle.visible = false end
+        if widgets_by_name.crosshair_toggle then widgets_by_name.crosshair_toggle.visible = false end
+        if widgets_by_name.damage_type_toggle then widgets_by_name.damage_type_toggle.visible = false end
+        -- Hide tip
+        if widgets_by_name.tip_1_button then widgets_by_name.tip_1_button.visible = false end
     end
 
 end)

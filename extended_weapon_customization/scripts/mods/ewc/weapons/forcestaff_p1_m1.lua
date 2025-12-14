@@ -196,4 +196,11 @@ return {
             },
         },
     },
+    fixes = {
+        {attachment_slot = "view_settings",
+            fix = {
+                max_zoom = 12,
+            },
+        },
+    },
 }

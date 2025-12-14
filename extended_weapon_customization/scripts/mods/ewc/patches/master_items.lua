@@ -18,13 +18,13 @@ local mod = get_mod("extended_weapon_customization")
     local tostring = tostring
     local math_uuid = math.uuid
     local log_error = log.error
-    local string_find = string.find
+    -- local string_find = string.find
     local table_clear = table.clear
-    local string_gsub = string.gsub
+    -- local string_gsub = string.gsub
     local json_encode = json_encode
     local table_clone = table.clone
     local log_warning = log.warning
-    local string_split = string.split
+    -- local string_split = string.split
     local cjson_encode = cjson.encode
     local setmetatable = setmetatable
     local string_format = string.format
@@ -92,7 +92,8 @@ mod.find_missing_items = function(self)
         local filter_ok = true
 
         for _, filter_name in pairs(filter) do
-            if string_find(item.weapon_template, filter_name) then
+            -- if string_find(item.weapon_template, filter_name) then
+            if self:cached_find(item.weapon_template, filter_name) then
                 filter_ok = false
                 break
             end
@@ -129,7 +130,8 @@ mod.find_missing_attachments = function(self)
 
     for name, item in pairs(items) do
 
-        local parts = string_split(name, "/")
+        -- local parts = string_split(name, "/")
+        local parts = self:cached_split(name, "/")
         local item_name = parts[#parts]
 
         local attachment_found = false
@@ -159,7 +161,8 @@ mod.find_missing_attachments = function(self)
         local filter_ok = true
 
         for _, filter_name in pairs(filter) do
-            if string_find(item_name, filter_name) then
+            -- if string_find(item_name, filter_name) then
+            if self:cached_find(item_name, filter_name) then
                 filter_ok = false
                 break
             end
@@ -169,7 +172,8 @@ mod.find_missing_attachments = function(self)
         local search_ok = search and false or true
 
         if search then
-            search_ok = string_find(item_name, search)
+            -- search_ok = string_find(item_name, search)
+            search_ok = self:cached_find(item_name, search)
         end
 
         if search_ok and filter_ok and not attachment_found and not item.is_kitbash then
@@ -206,8 +210,10 @@ mod.find_master_item_entries = function(self, identifications)
 
                 local identification_valid = true
 
-                local negative = string_find(name, "!")
-                local name_str = string_gsub(name, "!", "")
+                -- local negative = string_find(name, "!")
+                local negative = self:cached_find(name, "!")
+                -- local name_str = string_gsub(name, "!", "")
+                local name_str = mod:cached_gsub(name, "!", "")
                 local table_value = item[name_str]
 
                 if type(value) == "table" and table_value and type(table_value) == "table" then
@@ -216,12 +222,15 @@ mod.find_master_item_entries = function(self, identifications)
 
                 elseif type(value) == "string" then
 
-                    local negative = string_find(value, "!")
+                    -- local negative = string_find(value, "!")
+                    local negative = self:cached_find(value, "!")
                     if not negative then
                         identification_valid = false
                     end
-                    local parts_str = string_gsub(value, "!", "")
-                    local parts = string_split(parts_str, "|")
+                    -- local parts_str = string_gsub(value, "!", "")
+                    local parts_str = mod:cached_gsub(value, "!", "")
+                    -- local parts = string_split(parts_str, "|")
+                    local parts = self:cached_split(parts_str, "|")
 
                     for _, part in pairs(parts) do
 

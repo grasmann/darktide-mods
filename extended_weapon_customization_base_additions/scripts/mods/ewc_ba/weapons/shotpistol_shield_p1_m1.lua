@@ -24,6 +24,10 @@ local autogun_infantry_group = {custom_selection_group = "autogun_infantry"}
 local muzzle_autogun_infantry = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_autogun_infantry")
 mod:merge_attachment_data(autogun_infantry_group, muzzle_autogun_infantry)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
@@ -59,7 +63,7 @@ local scopes = "scope_01"
 local attachments = {
     shotpistol_shield_p1_m1 = {
         bayonet = bayonets,
-        muzzle = table_merge_recursive_n(nil, muzzle_autogun_headhunter, muzzle_autogun_braced, muzzle_autogun_infantry),
+        muzzle = table_merge_recursive_n(nil, muzzle_autogun_headhunter, muzzle_autogun_braced, muzzle_autogun_infantry, muzzle_suppressors),
         flashlight = flashlight_human,
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope),
         rail = {

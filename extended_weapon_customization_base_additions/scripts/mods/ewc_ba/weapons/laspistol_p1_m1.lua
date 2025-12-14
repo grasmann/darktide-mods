@@ -21,6 +21,10 @@ mod:merge_attachment_data(lasgun_helbore_group, magazine_lasgun_helbore, muzzle_
 local muzzle_lasgun_recon = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_lasgun_recon")
 mod:merge_attachment_data(lasgun_recon_group, muzzle_lasgun_recon)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 -- local muzzle_laspistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_laspistol")
 -- mod:modify_customization_groups(magazine_lasgun_helbore, "laspistol")
 
@@ -52,7 +56,7 @@ local scopes = "scope_01"
 
 local attachments = {
     laspistol_p1_m1 = {
-        muzzle = table_merge_recursive_n(nil, muzzle_lasgun_infantry, muzzle_lasgun_helbore),
+        muzzle = table_merge_recursive_n(nil, muzzle_lasgun_infantry, muzzle_lasgun_helbore, muzzle_suppressors),
         sight = sight_scope,
         flashlight = flashlight_human,
         magazine = table_merge_recursive_n(nil, magazine_lasgun_infantry, magazine_lasgun_helbore),

@@ -21,6 +21,10 @@ local magazine_bolter = mod:io_dofile("extended_weapon_customization_base_additi
 local magazine_bolter_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_bolter_double")
 mod:merge_attachment_data(bolter_group, magazine_bolter, magazine_bolter_double)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local flashlight_modded_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_modded_human")
@@ -60,6 +64,7 @@ local scopes = "scope_01"
 local attachments = {
     autopistol_p1_m1 = {
         grip = grip_common,
+        muzzle = table_merge_recursive_n(nil, muzzle_suppressors),
         flashlight = table_merge_recursive_n(nil, laser_pointer_human, flashlight_modded_human),
         magazine = table_merge_recursive_n(nil, magazine_autogun_double, magazine_autopistol_double, magazine_autogun_infantry, magazine_autogun_braced, magazine_laser, magazine_bolter, magazine_bolter_double),
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope, {

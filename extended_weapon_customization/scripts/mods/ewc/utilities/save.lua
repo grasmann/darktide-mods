@@ -34,7 +34,7 @@ local DMF = get_mod("DMF")
 	local tostring = tostring
 	local unit_alive = Unit.alive
 	local table_clear = table.clear
-	local table_contains = table.contains
+	-- local table_contains = table.contains
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -257,7 +257,8 @@ SaveLua._save_entry = function(self, gear_id, data)
 	-- Add to cache
 	local cache = self:_get_entries_cache()
 	if not cache or type(cache) ~= "table" then cache = {} end
-	if not table_contains(cache, file_name) then
+	-- if not table_contains(cache, file_name) then
+	if not mod:cached_table_contains(cache, file_name) then
 		cache[#cache+1] = file_name
 		self:_set_cache(cache)
 	end

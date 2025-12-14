@@ -23,6 +23,10 @@ local autopistol_group = {custom_selection_group = "autopistol"}
 local magazine_autopistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol")
 mod:merge_attachment_data(autopistol_group, magazine_autopistol)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local flashlight_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_human")
@@ -86,7 +90,7 @@ local attachments = {
                 icon_render_camera_position_offset = {.035, -.1, .125},
             },
         }),
-        muzzle = muzzle_autogun,
+        muzzle = table_merge_recursive_n(nil, muzzle_autogun, muzzle_suppressors),
     },
 }
 

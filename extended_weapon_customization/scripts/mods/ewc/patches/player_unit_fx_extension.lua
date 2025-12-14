@@ -35,6 +35,37 @@ local pt = mod:pt()
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+-- local function _register_vfx_spawner_from_attachment_list(attachments_by_unit, attachment_name_lookup, node_name, spawners)
+-- 	local spawners = spawners or {}
+-- 	local exclude_from_vfx_spawner = pt.exclude_from_vfx_spawner
+-- 	for unit, attachments in pairs(attachments_by_unit) do
+-- 		for i = 1, #attachments do
+-- 			local attachment_unit = attachments[i]
+
+--             if not exclude_from_vfx_spawner[attachment_unit] then
+
+--                 if unit_has_node(attachment_unit, node_name) then
+--                     local attachment_name = attachment_name_lookup[unit]
+--                     local node = unit_node(attachment_unit, node_name)
+
+--                     spawners[attachment_name] = {
+--                         unit = attachment_unit,
+--                         node = node,
+--                     }
+
+--                     break
+--                 end
+--             end
+
+-- 			-- Sub-attachments
+-- 			if attachments_by_unit[attachment_unit] then
+-- 				_register_vfx_spawner_from_attachment_list(attachments_by_unit[attachment_unit], attachment_name_lookup, node_name, spawners)
+-- 			end
+-- 		end
+-- 	end
+-- 	return spawners
+-- end
+
 local function _register_vfx_spawner_from_attachments(parent_unit, attachments_by_unit, attachment_name_lookup, node_name, spawner_name)
 	local spawners = {}
 	local exclude_from_vfx_spawner = pt.exclude_from_vfx_spawner
@@ -56,9 +87,29 @@ local function _register_vfx_spawner_from_attachments(parent_unit, attachments_b
 
                     break
                 end
+
+				if attachments_by_unit[attachment_unit] then
+
+					for _, sub_attachment_unit in pairs(attachments_by_unit[attachment_unit]) do
+						if unit_has_node(sub_attachment_unit, node_name) then
+							local sub_attachment_name = attachment_name_lookup[sub_attachment_unit]
+							local sub_node = unit_node(sub_attachment_unit, node_name)
+
+							spawners[sub_attachment_name] = {
+								unit = sub_attachment_unit,
+								node = sub_node,
+							}
+
+						end
+					end
+
+				end
+
             end
 		end
 	end
+
+	-- local spawners = _register_vfx_spawner_from_attachment_list(attachments_by_unit, attachment_name_lookup, node_name)
 
 	if unit_has_node(parent_unit, node_name) then
 		local parent_id_name = attachment_name_lookup[parent_unit]
@@ -133,6 +184,20 @@ local function _register_sound_sources(wwise_source_node_cache, parent_unit, att
 
 					break
 				end
+
+				if attachments_by_unit[attachment_unit] then
+
+					for _, sub_attachment_unit in pairs(attachments_by_unit[attachment_unit]) do
+						if unit_has_node(sub_attachment_unit, node_name) then
+							local attachment_name = attachment_name_lookup[unit]
+
+							sources[attachment_name] = _register_sound_source(wwise_source_node_cache, sub_attachment_unit, node_name, wwise_world, source_name)
+
+						end
+					end
+
+				end
+
 			end
 		end
 	end
@@ -157,26 +222,27 @@ end
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments_by_unit, attachment_name_lookup, node_name, should_add_3p_node, ...)
+
+    local result
+
 	if attachments_by_unit and not table_is_empty(attachments_by_unit[parent_unit]) then
-		local spawner = _register_vfx_spawner_from_attachments(parent_unit, attachments_by_unit, attachment_name_lookup, node_name, spawner_name)
+        result = _register_vfx_spawner_from_attachments(parent_unit, attachments_by_unit, attachment_name_lookup, node_name, spawner_name)
+    end
 
-		spawners[spawner_name] = spawner
-	else
-		spawners[spawner_name] = {}
-
+    if not result or table_is_empty(result) then
 		local node = unit_has_node(parent_unit, node_name) and unit_node(parent_unit, node_name) or 1
-		local node_3p
 
-		if should_add_3p_node then
-			node_3p = unit_has_node(self._unit, node_name) and unit_node(self._unit, node_name) or 1
-		end
-
-		spawners[spawner_name][VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
+        result = {}
+        result[VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
 			unit = parent_unit,
 			node = node,
-			node_3p = node_3p,
+            node_3p = should_add_3p_node and (
+                unit_has_node(self._unit, node_name) and unit_node(self._unit, node_name) or 1
+            ) or nil,
 		}
 	end
+
+    spawners[spawner_name] = result
 end)
 
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name, ...)

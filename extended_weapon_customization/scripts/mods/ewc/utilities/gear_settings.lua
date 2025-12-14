@@ -14,7 +14,7 @@ local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/e
 -- #region Performance
     local pairs = pairs
     local table = table
-    local table_contains = table.contains
+    -- local table_contains = table.contains
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -157,28 +157,29 @@ mod.delete_gear_id_relays = function(self, gear_id)
     end
 end
 
-mod.gear_settings = function(self, gear_id, settings, file)
+mod.gear_settings = function(self, gear_id, optional_settings, optional_file)
     -- Check settings and gear id
-    if settings and gear_id then
+    if optional_settings and gear_id then
         -- Add material overrides
-        if settings and pt.gear_material_overrides[gear_id] then
-            settings.material_overrides = pt.gear_material_overrides[gear_id]
+        if pt.gear_material_overrides[gear_id] then
+            optional_settings.material_overrides = pt.gear_material_overrides[gear_id]
         end
         -- Set gear settings
-        pt.gear_settings[gear_id] = settings
-        local data = pt.gear_settings[gear_id]
+        pt.gear_settings[gear_id] = optional_settings or pt.gear_settings[gear_id]
+        -- local data = pt.gear_settings[gear_id]
         -- Save gear settings
-        if file then
-            mod.save_lua:save_entry(gear_id, settings)
+        if optional_file and pt.gear_settings[gear_id] then
+            mod.save_lua:save_entry(gear_id, pt.gear_settings[gear_id])
         end
-        -- Set gear id settings
-        data = settings
+        -- -- Set gear id settings
+        -- data = optional_settings
     -- Check gear id
     elseif gear_id then
         -- Get gear settings
         local data = pt.gear_settings[gear_id]
         -- Check gear settings and file
-        if (not data or file) and table_contains(pt.gear_files, gear_id..".lua") then
+        -- if (not data or file) and table_contains(pt.gear_files, gear_id..".lua") then
+        if (not data or optional_file) and mod:cached_table_contains(pt.gear_files, gear_id..".lua") then
             -- Load gear settings
             pt.gear_settings[gear_id] = mod.save_lua:load_entry(gear_id)
             -- Get gear settings

@@ -30,20 +30,32 @@ local PROCESS_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 
 mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
 
-    instance.change_equipment = function(self)
-        self:change_item(SLOT_SECONDARY)
-        self:change_item(SLOT_PRIMARY)
-        self:_sync_profile_changes()
+    instance.change_equipment = function(self, profile)
+        self:change_item(profile, SLOT_SECONDARY)
+        self:change_item(profile, SLOT_PRIMARY)
+        -- self:_sync_profile_changes()
     end
 
-    instance.change_item = function(self, slot_name)
-        local data = self._loading_profile_data or self._character_spawn_data
-        local loadout_item = data and data.profile.loadout and data.profile.loadout[slot_name]
-        local visual_item = data and data.profile.visual_loadout and data.profile.visual_loadout[slot_name]
-        if (not loadout_item or not loadout_item.__master_item) and visual_item then
-            data.profile.loadout[slot_name] = visual_item
+    instance.change_item = function(self, profile, slot_name)
+        if profile and profile.loadout and profile.visual_loadout then
+            local loadout_item = profile.loadout and profile.loadout[slot_name]
+            local visual_item = profile.visual_loadout and profile.visual_loadout[slot_name]
+            if (not loadout_item or not loadout_item.__master_item) and visual_item then
+                profile.loadout[slot_name] = visual_item
+            end
         end
     end
+
+    -- instance.change_item = function(self, slot_name)
+    --     local data = self._loading_profile_data or self._character_spawn_data
+    --     if data then
+    --         local loadout_item = data.profile.loadout and data.profile.loadout[slot_name]
+    --         local visual_item = data.profile.visual_loadout and data.profile.visual_loadout[slot_name]
+    --         if (not loadout_item or not loadout_item.__master_item) and visual_item then
+    --             data.profile.loadout[slot_name] = visual_item
+    --         end
+    --     end
+    -- end
 
 end)
 
@@ -66,22 +78,22 @@ mod:hook(CLASS.UIProfileSpawner, "spawn_profile", function(func, self, profile, 
         self._ignored_slots[SLOT_SECONDARY] = nil
         self._ignored_slots[SLOT_PRIMARY] = nil
     end
+
+    -- Real equipment
+    self:change_equipment(profile)
     
     -- Original function
     func(self, profile, position, rotation, scale, state_machine_or_nil, animation_event_or_nil, face_state_machine_key_or_nil, face_animation_event_or_nil, force_highest_mip_or_nil, disable_hair_state_machine_or_nil, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
-
-    -- Real equipment
-    self:change_equipment()
 
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
     
+    -- Real equipment
+    self:change_equipment(profile)
+
     -- Original function
     func(self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
-
-    -- Real equipment
-    self:change_equipment()
 
 end)
 

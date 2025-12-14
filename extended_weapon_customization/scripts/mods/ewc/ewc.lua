@@ -27,6 +27,7 @@ mod:persistent_table(REFERENCE, {
     game_initialized = false,
     loading_packages = {},
     kitbash_entries = {},
+    weapon_packages = {},
     loaded_packages = {},
     gear_id_relays = {},
     gear_settings = {},
@@ -138,6 +139,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/damage_t
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/packages")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/plugins")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/kitbash")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/cache")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/items")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/fixes")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/debug")

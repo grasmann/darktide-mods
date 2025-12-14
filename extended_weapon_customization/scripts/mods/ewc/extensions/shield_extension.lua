@@ -16,7 +16,7 @@ local mod = get_mod("extended_weapon_customization")
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
     local table_clear = table.clear
-    local string_split = string.split
+    -- local string_split = string.split
     local unit_get_data = unit.get_data
     local script_unit_extension = script_unit.extension
     local unit_set_scalar_for_materials = unit.set_scalar_for_materials
@@ -160,7 +160,8 @@ ShieldTransparencyExtension.fetch_shield_units = function(self)
                     local attachment_unit = attachments_1p[i]
                     if attachment_unit and unit_alive(attachment_unit) then
                         local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
-                        local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                        -- local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                        local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
                         local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
 
                         if attachment_slot == "left" then

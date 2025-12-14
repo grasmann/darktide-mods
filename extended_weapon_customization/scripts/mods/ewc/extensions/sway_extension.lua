@@ -19,7 +19,7 @@ local mod = get_mod("extended_weapon_customization")
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
     local vector3_lerp = vector3.lerp
-    local table_contains = table.contains
+    -- local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local quaternion_multiply = quaternion.multiply
     local unit_local_position = unit.local_position
@@ -156,7 +156,8 @@ end
 
 SwayExtension.weapon_action_allowed = function(self, optional_current_action_name)
     local current_action_name = optional_current_action_name or self:weapon_action()
-    return not table_contains(LOCKED_ACTIONS, current_action_name)
+    -- return not table_contains(LOCKED_ACTIONS, current_action_name)
+    return not mod:cached_table_contains(LOCKED_ACTIONS, current_action_name)
 end
 
 SwayExtension.update = function(self, dt, t)

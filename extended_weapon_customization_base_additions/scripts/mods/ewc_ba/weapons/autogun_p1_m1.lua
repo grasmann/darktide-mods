@@ -37,6 +37,10 @@ local magazine_bolter = mod:io_dofile("extended_weapon_customization_base_additi
 local magazine_bolter_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_bolter_double")
 mod:merge_attachment_data(bolter_group, magazine_bolter, magazine_bolter_double)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 local magazine_autopistol_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autopistol_double")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
 local flashlight_modded_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_modded_human")
@@ -88,7 +92,7 @@ local attachments = {
         emblem_left = decals_left,
         emblem_right = decals_right,
         flashlight = table_merge_recursive_n(nil, laser_pointer_human, flashlight_modded_human),
-        muzzle = table_merge_recursive_n(nil, muzzle_autogun_braced, muzzle_autogun_headhunter),
+        muzzle = table_merge_recursive_n(nil, muzzle_autogun_braced, muzzle_autogun_headhunter, muzzle_suppressors),
         barrel = table_merge_recursive_n(nil, barrel_autogun_braced, barrel_autogun_headhunter),
         receiver = table_merge_recursive_n(nil, receiver_autogun_braced, receiver_autogun_headhunter),
         grip = table_merge_recursive_n(nil, grip_common, grip_autogun_braced, grip_autogun_headhunter),
@@ -199,7 +203,7 @@ local fixes = {
                 offset = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1.15, 1.15, 1.15),
+                    scale = vector3_box(1.15, 1.05, 1.15),
                 },
             },
         },
@@ -513,6 +517,9 @@ attachment_slots.autogun_npc_02 = table_clone(attachment_slots.autogun_p1_m1)
 attachment_slots.autogun_npc_03 = table_clone(attachment_slots.autogun_p1_m1)
 
 local kitbashs = {
+
+    -- ##### Double magazines #########################################################################################
+
     [_item_ranged.."/magazines/autogun_rifle_magazine_01_double"] = {
         attachments = {
             zzz_shared_material_overrides = {
@@ -727,6 +734,9 @@ local kitbashs = {
         is_full_item = true,
         disable_vfx_spawner_exclusion = true,
     },
+
+    -- ##### Laser magazines ##########################################################################################
+
     [_item_ranged.."/magazines/autogun_rifle_laser_magazine_01"] = {
         attachments = {
             zzz_shared_material_overrides = {
@@ -859,11 +869,275 @@ local kitbashs = {
         is_full_item = true,
         disable_vfx_spawner_exclusion = true,
     },
+
+    -- ##### Muzzles ##################################################################################################
+
+    [_item_ranged.."/muzzles/autogun_rifle_invisible_muzzle_01"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+            muzzle = {
+                item = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_05",
+                fix = {
+                    offset = {
+                        node = 1,
+                        position = vector3_box(0, 0, 0),
+                        rotation = vector3_box(0, 0, 0),
+                        scale = vector3_box(1, 1, 1),
+                    },
+                    alpha = 1,
+                },
+                children = {},
+            },
+        },
+        display_name = "",
+        description = "loc_description_autogun_rifle_suppressed_muzzle_01",
+        attach_node = "ap_muzzle_01",
+        -- dev_name = "loc_autogun_rifle_suppressed_muzzle_01",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/characters/empty_item/empty_item",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/characters/empty_item/empty_item"] = true,
+            ["content/weapons/player/ranged/autogun_rifle_ak/attachments/muzzle_05/muzzle_05"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/muzzles/autogun_rifle_invisible_muzzle_01",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+
+    -- ##### Suppressors ##############################################################################################
+
+    [_item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_01"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+            inv_muzzle = {
+                item = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_05",
+                fix = {
+                    offset = {
+                        node = 1,
+                        position = vector3_box(0, 0, 0),
+                        rotation = vector3_box(0, 0, 0),
+                        scale = vector3_box(1.5, 2, 1.5),
+                    },
+                },
+                children = {
+                    inv_muzzle2 = {
+                        item = _item_ranged.."/muzzles/lasgun_rifle_muzzle_04",
+                        fix = {
+                            offset = {
+                                node = 1,
+                                position = vector3_box(0, 0, 0),
+                                rotation = vector3_box(0, 0, 0),
+                                scale = vector3_box(1, 1, 1),
+                            },
+                        },
+                        children = {},
+                    },
+                },
+            },
+        },
+        display_name = "",
+        description = "loc_description_autogun_rifle_suppressed_muzzle_01",
+        attach_node = "ap_muzzle_01",
+        -- dev_name = "loc_autogun_rifle_suppressed_muzzle_01",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/characters/empty_item/empty_item",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/characters/empty_item/empty_item"] = true,
+            ["content/weapons/player/ranged/autogun_rifle_ak/attachments/muzzle_05/muzzle_05"] = true,
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/muzzle_04/muzzle_04"] = true,
+            -- Muzzle flash
+            ["content/fx/particles/weapons/rifles/bolter/bolter_muzzle_secondary"] = true,
+            -- Line effect
+            ["content/fx/particles/weapons/rifles/autogun/autogun_tracer_trail"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_smoke_trail"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_smoke_trail_3p"] = true,
+            ["content/fx/particles/weapons/rifles/ogryn_heavystubber/heavystubber_tracer_trail"] = true,
+            -- Sounds
+            ["wwise/events/weapon/play_weapon_silence"] = true,
+            ["wwise/events/weapon/stop_weapon_silence"] = true,
+            ["wwise/events/weapon/play_heavy_swing_hit"] = true,
+            -- ["wwise/events/weapon/play_shotgun_p1_m2_special"] = true,
+            -- ["wwise/events/weapon/play_shotgun_p4_m2_special"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_01",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+    [_item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_02"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+            inv_muzzle = {
+                item = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_03",
+                fix = {
+                    offset = {
+                        node = 1,
+                        position = vector3_box(0, 0, 0),
+                        rotation = vector3_box(0, 0, 0),
+                        scale = vector3_box(1.5, 2, 1.5),
+                    },
+                },
+                children = {
+                    inv_muzzle2 = {
+                        item = _item_ranged.."/muzzles/lasgun_rifle_muzzle_03",
+                        fix = {
+                            offset = {
+                                node = 1,
+                                position = vector3_box(0, 0, 0),
+                                rotation = vector3_box(0, 0, 0),
+                                scale = vector3_box(1, 1, 1),
+                            },
+                        },
+                        children = {},
+                    },
+                },
+            },
+        },
+        display_name = "",
+        description = "loc_description_autogun_rifle_suppressed_muzzle_01",
+        attach_node = "ap_muzzle_01",
+        -- dev_name = "loc_autogun_rifle_suppressed_muzzle_01",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/characters/empty_item/empty_item",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/characters/empty_item/empty_item"] = true,
+            ["content/weapons/player/ranged/autogun_rifle_ak/attachments/muzzle_03/muzzle_03"] = true,
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/muzzle_03/muzzle_03"] = true,
+            -- Muzzle flash
+            ["content/fx/particles/weapons/rifles/bolter/bolter_muzzle_secondary"] = true,
+            -- Line effect
+            ["content/fx/particles/weapons/rifles/autogun/autogun_tracer_trail"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_smoke_trail"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_smoke_trail_3p"] = true,
+            ["content/fx/particles/weapons/rifles/ogryn_heavystubber/heavystubber_tracer_trail"] = true,
+            -- Sounds
+            ["wwise/events/weapon/play_weapon_silence"] = true,
+            ["wwise/events/weapon/stop_weapon_silence"] = true,
+            ["wwise/events/weapon/play_heavy_swing_hit"] = true,
+            -- ["wwise/events/weapon/play_shotgun_p1_m2_special"] = true,
+            -- ["wwise/events/weapon/play_shotgun_p4_m2_special"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_02",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
+    [_item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_03"] = {
+        attachments = {
+            zzz_shared_material_overrides = {
+                item = "",
+                children = {},
+            },
+            inv_muzzle = {
+                item = _item_ranged.."/muzzles/autogun_rifle_muzzle_02",
+                fix = {
+                    offset = {
+                        node = 1,
+                        position = vector3_box(0, 0, 0),
+                        rotation = vector3_box(0, 0, 0),
+                        scale = vector3_box(1.5, 2, 1.5),
+                    },
+                },
+                children = {
+                    inv_muzzle2 = {
+                        item = _item_ranged.."/muzzles/lasgun_rifle_muzzle_01",
+                        fix = {
+                            offset = {
+                                node = 1,
+                                position = vector3_box(0, 0, 0),
+                                rotation = vector3_box(0, 0, 0),
+                                scale = vector3_box(1, 1, 1),
+                            },
+                        },
+                        children = {},
+                    },
+                },
+            },
+        },
+        display_name = "",
+        description = "loc_description_autogun_rifle_suppressed_muzzle_01",
+        attach_node = "ap_muzzle_01",
+        -- dev_name = "loc_autogun_rifle_suppressed_muzzle_01",
+        is_fallback_item = false,
+        show_in_1p = true,
+        base_unit = "content/characters/empty_item/empty_item",
+        item_list_faction = "Player",
+        tags = {
+        },
+        only_show_in_1p = false,
+        feature_flags = {
+            "FEATURE_item_retained",
+        },
+        resource_dependencies = {
+            ["content/characters/empty_item/empty_item"] = true,
+            ["content/weapons/player/ranged/autogun_rifle/attachments/muzzle_02/muzzle_02"] = true,
+            ["content/weapons/player/ranged/lasgun_rifle/attachments/muzzle_01/muzzle_01"] = true,
+            -- Muzzle flash
+            ["content/fx/particles/weapons/rifles/bolter/bolter_muzzle_secondary"] = true,
+            -- Line effect
+            ["content/fx/particles/weapons/rifles/autogun/autogun_tracer_trail"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_smoke_trail"] = true,
+            ["content/fx/particles/weapons/rifles/autogun/autogun_smoke_trail_3p"] = true,
+            ["content/fx/particles/weapons/rifles/ogryn_heavystubber/heavystubber_tracer_trail"] = true,
+            -- Sounds
+            ["wwise/events/weapon/play_weapon_silence"] = true,
+            ["wwise/events/weapon/stop_weapon_silence"] = true,
+            ["wwise/events/weapon/play_heavy_swing_hit"] = true,
+            -- ["wwise/events/weapon/play_shotgun_p1_m2_special"] = true,
+            -- ["wwise/events/weapon/play_shotgun_p4_m2_special"] = true,
+        },
+        workflow_checklist = {
+        },
+        name = _item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_03",
+        workflow_state = "RELEASABLE",
+        is_full_item = true,
+        disable_vfx_spawner_exclusion = true,
+    },
 }
 
 return {
-    attachments = attachments,
     attachment_slots = attachment_slots,
-    fixes = fixes,
+    attachments = attachments,
     kitbashs = kitbashs,
+    fixes = fixes,
 }

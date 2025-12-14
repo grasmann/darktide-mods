@@ -241,80 +241,120 @@ mod:hook(CLASS.ActionShootPellets, "_play_shoot_sound", shoot_sound_hook)
 mod:hook(CLASS.ActionShootProjectile, "_play_shoot_sound", shoot_sound_hook)
 
 local update_sound_hook = function(func, self, fire_config, ...)
-    -- Get time
-    local t = mod:time()
-    -- Get damage type
-    local damage_type = _damage_type(self)
-    local use_damage_type = _damage_type_active(self)
-    -- Get aiming
-    local aiming = _get_aiming(self)
+    -- Get weapon item
+    local item = self._weapon.item
+    local gear_id = item and mod:gear_id(item)
+    -- Check item and attachments
+    if gear_id then
+        -- Get time
+        local t = mod:time()
+        -- Get damage type
+        local damage_type = _damage_type(self)
+        local use_damage_type = _damage_type_active(self)
+        -- Get aiming
+        local aiming = _get_aiming(self)
+        -- Check damage type
+        if use_damage_type and damage_type then
 
-    if self.fake_looping_shoot_sfx_alias and use_damage_type and damage_type then
+            mod:clear_fx_override(gear_id, "ranged_single_shot")
+            mod:clear_fx_override(gear_id, "play_ranged_shooting")
+            mod:clear_fx_override(gear_id, "stop_ranged_shooting")
+            mod:clear_fx_override(gear_id, "ranged_pre_loop_shot")
 
-        local action_component = self._action_component
-        local fx_extension = self._fx_extension
-        local action_settings = self._action_settings
-        local muzzle_fx_source_name = self:_muzzle_fx_source()
-        local fx_settings = action_settings.fx or EMPTY_TABLE
-        local post_loop_tail_alias = fx_settings.post_loop_shoot_tail_sfx_alias
-        local num_pre_loop_events = fx_settings.num_pre_loop_events or 0
-        local reference_attachment_id, has_ammo
-
-        if self._multi_fire_mode == MultiFireModes.simultaneous then
-            reference_attachment_id = VisualLoadoutCustomization.ROOT_ATTACH_NAME
-
-            for i = 1, #self._fire_configurations do
-                if self:_has_ammo(self._fire_configurations[i]) then
-                    has_ammo = true
-
-                    break
-                end
-            end
-        else
-            reference_attachment_id = self:_reference_attachment_id(fire_config)
-            has_ammo = self:_has_ammo(fire_config)
-        end
-
-        local fire_state = action_component.fire_state
-        local is_looping_shoot_sfx_playing = self._run_looping_sound
-        local automatic_fire = is_looping_shoot_sfx_playing and (fire_state == "waiting_to_shoot" or fire_state == "shooting" or fire_state == "prepare_shooting" or fire_state == "prepare_simultaneous_shot")
-        local shooting = fire_state == "start_shooting" or fire_state == "shooting" or automatic_fire
-        local num_shots_fired = action_component.num_shots_fired
-        local started_shooting = shooting and has_ammo
-
-        if started_shooting then
-
-            self.fake_timer = self.fake_timer or t
-
-            local fire_rate_settings = self:_fire_rate_settings()
-            local auto_fire_time = fire_rate_settings.auto_fire_time
-            local parameter_name = fx_settings.auto_fire_time_parameter_name
-
-            if auto_fire_time then
-
-                local shoot_sfx = aiming and (damage_type.ranged_single_shot_aiming or damage_type.ranged_pre_loop_shot_aiming) or damage_type.ranged_single_shot or damage_type.ranged_pre_loop_shot
-
-                table.clear(EXTERNAL_PROPERTIES)
-                local action_module_charge_component = self._action_module_charge_component
-                if action_module_charge_component then
-                    local charge_level = action_module_charge_component.charge_level
-                    EXTERNAL_PROPERTIES.charge_level = charge_level >= 1 and "fully_charged"
-                end
-
-                if shoot_sfx and t - self.fake_timer >= auto_fire_time then
-
-                    self.fake_timer = t
-
-                    fx_extension:trigger_wwise_event_with_source(shoot_sfx, muzzle_fx_source_name, true, false, reference_attachment_id)
-                end
-
+            if aiming and damage_type.play_ranged_shooting_aiming then
+                mod:set_fx_override(gear_id, "play_ranged_shooting", damage_type.play_ranged_shooting_aiming)
+            elseif damage_type.play_ranged_shooting then
+                mod:set_fx_override(gear_id, "play_ranged_shooting", damage_type.play_ranged_shooting)
             end
 
-        else
-            self.fake_timer = nil
-        end
+            if aiming and damage_type.ranged_single_shot_aiming then
+                mod:set_fx_override(gear_id, "ranged_single_shot", damage_type.ranged_single_shot_aiming)
+            elseif damage_type.ranged_single_shot then
+                mod:set_fx_override(gear_id, "ranged_single_shot", damage_type.ranged_single_shot)
+            end
 
+            if aiming and damage_type.stop_ranged_shooting_aiming then
+                mod:set_fx_override(gear_id, "stop_ranged_shooting", damage_type.stop_ranged_shooting_aiming)
+            elseif damage_type.stop_ranged_shooting then
+                mod:set_fx_override(gear_id, "stop_ranged_shooting", damage_type.stop_ranged_shooting)
+            end
+
+            if aiming and damage_type.ranged_pre_loop_shot_aiming then
+                mod:set_fx_override(gear_id, "ranged_pre_loop_shot", damage_type.ranged_pre_loop_shot_aiming)
+            elseif damage_type.ranged_pre_loop_shot then
+                mod:set_fx_override(gear_id, "ranged_pre_loop_shot", damage_type.ranged_pre_loop_shot)
+            end
+
+            if self.fake_looping_shoot_sfx_alias and use_damage_type and damage_type then
+
+                local action_component = self._action_component
+                local fx_extension = self._fx_extension
+                local action_settings = self._action_settings
+                local muzzle_fx_source_name = self:_muzzle_fx_source()
+                local fx_settings = action_settings.fx or EMPTY_TABLE
+                local post_loop_tail_alias = fx_settings.post_loop_shoot_tail_sfx_alias
+                local num_pre_loop_events = fx_settings.num_pre_loop_events or 0
+                local reference_attachment_id, has_ammo
+
+                if self._multi_fire_mode == MultiFireModes.simultaneous then
+                    reference_attachment_id = VisualLoadoutCustomization.ROOT_ATTACH_NAME
+
+                    for i = 1, #self._fire_configurations do
+                        if self:_has_ammo(self._fire_configurations[i]) then
+                            has_ammo = true
+
+                            break
+                        end
+                    end
+                else
+                    reference_attachment_id = self:_reference_attachment_id(fire_config)
+                    has_ammo = self:_has_ammo(fire_config)
+                end
+
+                local fire_state = action_component.fire_state
+                local is_looping_shoot_sfx_playing = self._run_looping_sound
+                local automatic_fire = is_looping_shoot_sfx_playing and (fire_state == "waiting_to_shoot" or fire_state == "shooting" or fire_state == "prepare_shooting" or fire_state == "prepare_simultaneous_shot")
+                local shooting = fire_state == "start_shooting" or fire_state == "shooting" or automatic_fire
+                local num_shots_fired = action_component.num_shots_fired
+                local started_shooting = shooting and has_ammo
+
+                if started_shooting then
+
+                    self.fake_timer = self.fake_timer or t
+
+                    local fire_rate_settings = self:_fire_rate_settings()
+                    local auto_fire_time = fire_rate_settings.auto_fire_time
+                    local parameter_name = fx_settings.auto_fire_time_parameter_name
+
+                    if auto_fire_time then
+
+                        local shoot_sfx = aiming and (damage_type.ranged_single_shot_aiming or damage_type.ranged_pre_loop_shot_aiming) or damage_type.ranged_single_shot or damage_type.ranged_pre_loop_shot
+
+                        table.clear(EXTERNAL_PROPERTIES)
+                        local action_module_charge_component = self._action_module_charge_component
+                        if action_module_charge_component then
+                            local charge_level = action_module_charge_component.charge_level
+                            EXTERNAL_PROPERTIES.charge_level = charge_level >= 1 and "fully_charged"
+                        end
+
+                        if shoot_sfx and t - self.fake_timer >= auto_fire_time then
+
+                            self.fake_timer = t
+
+                            fx_extension:trigger_wwise_event_with_source(shoot_sfx, muzzle_fx_source_name, true, false, reference_attachment_id)
+                        end
+
+                    end
+
+                else
+                    self.fake_timer = nil
+                end
+
+            end
+
+        end
     end
+
     -- Original function
     func(self, fire_config, ...)
 end

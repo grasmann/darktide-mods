@@ -25,9 +25,9 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local script_unit = ScriptUnit
     local table_clear = table.clear
     local math_random = math.random
-    local string_split = string.split
+    -- local string_split = string.split
     local unit_get_data = unit.get_data
-    local table_contains = table.contains
+    -- local table_contains = table.contains
     local table_clone_safe = table.clone_safe
     local unit_sight_callback = unit.sight_callback
     local unit_shield_callback = unit.shield_callback
@@ -53,13 +53,14 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 -- ##### ┴└─└─┘└─┘└─┘┴└─└─┘┴ └┘ └─┘  ┴ ┴ ┴  ┴ ┴ ┴└─┘┴ ┴┴ ┴└─┘┘└┘ ┴   └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ########################
 
 mod.overwrite_attachment = function(self, attachments, target_slot, replacement_path)
+    if not attachments then return end
     for slot, data in pairs(attachments) do
-        if slot == target_slot then
+        if slot == target_slot and data then
             data.item = replacement_path
             local attachment_item = pt.master_items_loaded and master_items.get_item(replacement_path)
-            data.material_overrides = attachment_item and attachment_item.material_overrides or data.material_overrides
+            data.material_overrides = attachment_item and attachment_item.material_overrides or (data.material_overrides or {})
         end
-        if data.children then
+        if data and data.children then
             self:overwrite_attachment(data.children, target_slot, replacement_path)
         end
     end
@@ -181,15 +182,18 @@ mod.clear_attachment_fixes = function(self, attachments)
 end
 
 mod.fetch_attachment = function(self, attachments, target_slot)
+    if not attachments then return nil end
     local attachment_item_path = nil
     for slot, data in pairs(attachments) do
-        if type(data.item) == "table" and data.item.attachments then
-            attachment_item_path = self:fetch_attachment(data.item.attachments, target_slot)
-        end
-        if slot == target_slot then
-            attachment_item_path = data.item
-        elseif data.children then
-            attachment_item_path = self:fetch_attachment(data.children, target_slot)
+        if data then
+            if type(data.item) == "table" and data.item.attachments then
+                attachment_item_path = self:fetch_attachment(data.item.attachments, target_slot)
+            end
+            if slot == target_slot then
+                attachment_item_path = data.item
+            elseif data.children then
+                attachment_item_path = self:fetch_attachment(data.children, target_slot)
+            end
         end
         if attachment_item_path then break end
     end
@@ -374,7 +378,8 @@ mod.mod_item = function(self, gear_id, item_data)
         local item = self:item_data(item_data)
         local item_type = item and item.item_type or "unknown"
         -- Check supported item type
-        if table_contains(PROCESS_ITEM_TYPES, item_type) then
+        -- if table_contains(PROCESS_ITEM_TYPES, item_type) then
+        if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) then
             mod:print("cloning item "..tostring(gear_id))
             -- Clone item to mod items
             pt.items[gear_id] = table_clone_instance_safe(item_data)
@@ -394,7 +399,8 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     local item = self:item_data(item_data)
     local item_type = item and item.item_type
     -- Check supported item type
-    if table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
+    -- if table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
+    if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
 
         -- Get gear settings
         local gear_id = mod:gear_id(item, fake_gear_id)
@@ -424,8 +430,9 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
                     -- If no attachment slot was found delete fix
                     -- inject_data.fix = nil
                 end
-                -- Inject attachment
-                self:inject_attachment(item.attachments, slot_name, inject_data)
+                if item.attachments then
+                    self:inject_attachment(item.attachments, slot_name, inject_data)
+                end
             end
         end
 
@@ -461,7 +468,8 @@ mod.find_in_units = function(self, attachment_units, target_attachment_slot)
                 -- Get attachment slot
                 local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
                 -- Shorten to last part
-                local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                -- local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
                 local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
 
                 -- Check attachment slot and light in attachment unit
@@ -502,26 +510,41 @@ mod.husk_item = function(self, gear_id)
 end
 
 mod.handle_husk_item = function(self, item)
+    if not item then
+        return nil
+    end
     -- Check if slot is supported, random players is enabled and item is valid
     local item_type = item and item.item_type or "unknown"
     -- Check conditions - correct item type, random players and item
-    if table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_players") and item and item.attachments then
+    -- if table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_players") and item and item.attachments then
+    if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_players") and item and item.attachments then
         -- Get gear id
         local gear_id = mod:gear_id(item)
-        -- Create husk item
-        mod:print("cloning husk item "..tostring(gear_id))
+        if not gear_id then
+            return item
+        end
+
         local mod_item = mod:create_husk_item(gear_id, item)
-        -- Randomize item
-        mod:print("randomizing husk item "..tostring(gear_id))
-        -- Use existing gear settings, when the weapon was already randomized
+        if not mod_item then
+            return item
+        end
+
+        local master_item = master_items.get_item(mod_item.name)
+        if not master_item then
+            return item
+        end
+
         local old_gear_settings = mod:gear_settings(gear_id)
         local random_gear_settings = old_gear_settings or mod:randomize_item(mod_item)
         -- Set gear settings
-        mod:gear_settings(gear_id, random_gear_settings)
-        -- Modify item
-        mod:modify_item(mod_item, nil, random_gear_settings)
-        -- Attachment fixes
-        mod:apply_attachment_fixes(mod_item)
+        if random_gear_settings then
+            mod:gear_settings(gear_id, random_gear_settings)
+            -- Modify item
+            mod:modify_item(mod_item, nil, random_gear_settings)
+            -- Attachment fixes
+            mod:apply_attachment_fixes(mod_item)
+        end
+
         -- Return mod item
         return mod_item
     end
@@ -529,28 +552,42 @@ mod.handle_husk_item = function(self, item)
 end
 
 mod.handle_store_item = function(self, item, offer_id)
-    -- Check if slot is supported, random players is enabled and item is valid
-    local item_type = item and item.item_type or "unknown"
-    -- Get gear id
-    local gear_id = mod:gear_id(item)
-    -- Check conditions - correct item type, random players and item
-    if table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_store") and item and item.attachments then
-        -- Create mod item
-        mod:print("create store item "..tostring(gear_id))
-        -- local mod_item = mod:mod_item(gear_id, item)
-        local mod_item = mod:mod_item(gear_id, item)
-        -- Randomize item
-        mod:print("randomizing store item "..tostring(gear_id))
-        -- Use existing gear settings, when the weapon was already randomized
+    if not item then
+        return nil
+    end
+
+    local item_type = item.item_type or "unknown"
+
+    -- if table_contains(PROCESS_ITEM_TYPES, item_type) 
+    if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_store") and item.attachments then
+
+        local gear_id = mod:gear_id(item)
+        if not gear_id then
+            return item
+        end
+
+        local mod_item = mod:create_husk_item(gear_id, item)
+        if not mod_item then
+            return item
+        end
+
+        local master_item = master_items.get_item(mod_item.name)
+        if not master_item then
+            return item
+        end
+
         local old_gear_settings = mod:gear_settings(offer_id)
         local random_gear_settings = old_gear_settings or mod:randomize_item(mod_item)
         -- Set gear settings
-        mod:gear_settings(gear_id, random_gear_settings)
-        mod:gear_settings(offer_id, random_gear_settings)
-        -- Modify item
-        mod:modify_item(mod_item, nil, random_gear_settings)
-        -- Attachment fixes
-        mod:apply_attachment_fixes(mod_item)
+        if random_gear_settings then
+            mod:gear_settings(gear_id, random_gear_settings)
+            mod:gear_settings(offer_id, random_gear_settings)
+            -- Modify item
+            mod:modify_item(mod_item, nil, random_gear_settings)
+            -- Attachment fixes
+            mod:apply_attachment_fixes(mod_item)
+        end
+        
         -- Return mod item
         return mod_item
     end

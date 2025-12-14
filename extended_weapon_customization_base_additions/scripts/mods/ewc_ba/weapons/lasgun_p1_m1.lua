@@ -20,6 +20,10 @@ local magazine_laspistol = mod:io_dofile("extended_weapon_customization_base_add
 local muzzle_laspistol = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_laspistol")
 mod:merge_attachment_data(laspistol_group, magazine_laspistol, muzzle_laspistol)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 local flashlight_modded_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/flashlight_modded_human")
 local laser_pointer_human = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/laser_pointer_human")
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
@@ -53,7 +57,7 @@ local attachments = {
         grip = grip_common,
         sight = sight_scope,
         magazine = magazine_laspistol,
-        muzzle = table_merge_recursive_n(nil, muzzle_lasgun_helbore, muzzle_lasgun_recon, muzzle_laspistol),
+        muzzle = table_merge_recursive_n(nil, muzzle_lasgun_helbore, muzzle_lasgun_recon, muzzle_laspistol, muzzle_suppressors),
         flashlight = table_merge_recursive_n(nil, laser_pointer_human, flashlight_modded_human),
         barrel = table_merge_recursive_n(nil, barrel_lasgun_recon, barrel_lasgun_helbore),
     },

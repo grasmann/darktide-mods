@@ -43,7 +43,7 @@ mod:hook(CLASS.ActionSweep, "_do_damage_to_unit", function(func, self, damage_pr
     -- Check damage type
     if damage_type_t and use_damage_type then
         -- Override damage type
-        -- damage_type = damage_type_t.game_damage_type or damage_type
+        damage_type = damage_type_t.game_damage_type or damage_type
         -- Set unit override
         mod.enemy_unit_damage_type_override[hit_unit] = damage_type_t.game_damage_type or damage_type
     end

@@ -123,6 +123,9 @@ mod:add_global_localize_strings({
 		en = "EWC:BA - Bolter",
 		["zh-cn"] = "扩展武器自定义：基础增补 - 爆弹枪",
 	},
+	loc_ewc_suppressors = {
+		en = "EWC:BA - Suppressors",
+	},
 
 	attachment_slot_sight_2 = {
 		en = "Sight",

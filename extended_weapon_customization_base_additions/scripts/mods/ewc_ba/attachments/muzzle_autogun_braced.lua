@@ -47,4 +47,9 @@ return {
         icon_render_unit_rotation_offset = {90, 0, 30},
         icon_render_camera_position_offset = {-.15, -1, .15},
     },
+    autogun_rifle_invisible_muzzle_01 = {
+        replacement_path = _item_ranged.."/muzzles/autogun_rifle_invisible_muzzle_01",
+        icon_render_unit_rotation_offset = {90, 0, 30},
+        icon_render_camera_position_offset = {-.225, -2.25, .15},
+    },
 }

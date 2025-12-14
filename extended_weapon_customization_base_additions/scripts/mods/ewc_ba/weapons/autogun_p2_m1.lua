@@ -42,6 +42,10 @@ local magazine_bolter = mod:io_dofile("extended_weapon_customization_base_additi
 local magazine_bolter_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_bolter_double")
 mod:merge_attachment_data(bolter_group, magazine_bolter, magazine_bolter_double)
 
+local suppressor_group = {custom_selection_group = "suppressors"}
+local muzzle_suppressors = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/muzzle_suppressors")
+mod:merge_attachment_data(suppressor_group, muzzle_suppressors)
+
 local sight_scope = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_scope")
 local sight_reflex = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/sight_reflex")
 local magazine_autogun_double = mod:io_dofile("extended_weapon_customization_base_additions/scripts/mods/ewc_ba/attachments/magazine_autogun_double")
@@ -92,7 +96,7 @@ local attachments = {
         emblem_left = decals_left,
         emblem_right = decals_right,
         flashlight = flashlight_human,
-        muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_headhunter),
+        muzzle = table_merge_recursive_n(nil, muzzle_autogun_infantry, muzzle_autogun_headhunter, muzzle_suppressors),
         barrel = table_merge_recursive_n(nil, barrel_autogun_infantry, barrel_autogun_headhunter),
         receiver = table_merge_recursive_n(nil, receiver_autogun_infantry, receiver_autogun_headhunter),
         grip = table_merge_recursive_n(nil, grip_common, grip_autogun_infantry, grip_autogun_headhunter),
@@ -202,7 +206,7 @@ local fixes = {
                 offset = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(1.15, 1.15, 1.15),
+                    scale = vector3_box(1.15, 1.05, 1.15),
                 },
             },
         },

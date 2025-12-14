@@ -176,7 +176,8 @@ local function spawn_distortion_particle_effect(world, attachment_unit, attachme
     local rotation_offset = quaternion_multiply(attachment_rotation, quaternion_from_vector(vector3(-90, 0, 0)))
 
     local pose = matrix4x4_from_quaternion_position(rotation_offset, position_offset)
-    local distortion_size = attachment_data.distortion_size and vector3_unbox(attachment_data.distortion_size) or vector3(1, 1, 1)
+    -- local distortion_size = attachment_data.distortion_size and vector3_unbox(attachment_data.distortion_size) or vector3(1, 1, 1)
+    local distortion_size = vector3_unbox(distortion_size(attachment_data))
 
     local particle_id = world_create_particles(world, DISTORTION_EFFECT, position_offset, rotation_offset, distortion_size)
 
@@ -453,25 +454,25 @@ local function update_blade(attachment_callback_extension, attachment_slot_data,
         local particle_name = attachment_data.particle_effect_name or LASER_PARTICLE
         local world = attachment_callback_extension.world
         -- local fire_size = attachment_data._fire_size and vector3_unbox(attachment_data._fire_size) or FIRE_SIZE
-        local fire_size = laser_1_size(attachment_data)
+        local laser_size = vector3_unbox(laser_1_size(attachment_data))
 
         if t > attachment_callback_extension.laser_start_fade_t then
 
             attachment_callback_extension.laser_start_fade_t = nil
 
             if attachment_callback_extension.laser_blade_laser_particle and attachment_callback_extension.laser_variable_index then
-                world_set_particles_variable(world, attachment_callback_extension.laser_blade_laser_particle, attachment_callback_extension.laser_variable_index, fire_size)
+                world_set_particles_variable(world, attachment_callback_extension.laser_blade_laser_particle, attachment_callback_extension.laser_variable_index, laser_size)
             end
 
             if attachment_callback_extension.laser_point_dot_particle and attachment_callback_extension.laser_variable_index then
                 -- local tip_size_1 = attachment_data._tip_size_1 and vector3_unbox(attachment_data._tip_size_1) or vector3(.25, .02, .25)
-                local tip_size_1 = laser_2_size(attachment_data)
+                local tip_size_1 = vector3_unbox(laser_2_size(attachment_data))
                 world_set_particles_variable(world, attachment_callback_extension.laser_point_dot_particle, attachment_callback_extension.laser_variable_index, tip_size_1)
             end
 
             if attachment_callback_extension.laser_point_dot_particle2 and attachment_callback_extension.laser_variable_index then
                 -- local tip_size_2 = attachment_data.tip_size_2 and vector3_unbox(attachment_data.tip_size_2) or vector3(.175, .03, .175)
-                local tip_size_2 = laser_3_size(attachment_data)
+                local tip_size_2 = vector3_unbox(laser_3_size(attachment_data))
                 world_set_particles_variable(world, attachment_callback_extension.laser_point_dot_particle2, attachment_callback_extension.laser_variable_index, tip_size_2)
             end
 
@@ -480,7 +481,7 @@ local function update_blade(attachment_callback_extension, attachment_slot_data,
             local progress = 1 - (attachment_callback_extension.laser_start_fade_t - t) / FADE_IN_TIME
 
             if attachment_callback_extension.laser_blade_laser_particle and attachment_callback_extension.laser_variable_index then
-                local current_value = fire_size * progress
+                local current_value = laser_size * progress
                 world_set_particles_variable(world, attachment_callback_extension.laser_blade_laser_particle, attachment_callback_extension.laser_variable_index, current_value)
             end
 

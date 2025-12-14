@@ -22,7 +22,7 @@ local Sway = mod:original_require("scripts/utilities/sway")
     local tostring = tostring
     local script_unit = ScriptUnit
     local table_clear = table.clear
-    local table_contains = table.contains
+    -- local table_contains = table.contains
     local script_unit_extension = script_unit.extension
     local math_degrees_to_radians = math.degrees_to_radians
     local script_unit_has_extension = script_unit.has_extension
@@ -159,7 +159,8 @@ mod.alternate_fire_override = function(self, unit, value_name)
             local alternate_fire_override = sight_attachment and sight_attachment.alternate_fire and alternate_fire_overrides[sight_attachment.alternate_fire]
             if alternate_fire_override and alternate_fire_override[value_name] then
                 local item = visual_loadout_extension:item_from_slot("slot_secondary")
-                if item and not table_contains(alternate_fire_override.exclude_weapons, item.weapon_template) then
+                -- if item and not table_contains(alternate_fire_override.exclude_weapons, item.weapon_template) then
+                if item and not mod:cached_table_contains(alternate_fire_override.exclude_weapons, item.weapon_template) then
                     return alternate_fire_override[value_name]
                 end
             end
@@ -272,7 +273,7 @@ mod:hook_require("scripts/utilities/alternate_fire", function(instance)
         return vertical_fov, custom_vertical_fov, near_range
     end
 
-    instance.start = function (alternate_fire_component, weapon_tweak_templates_component, spread_control_component, sway_control_component, sway_component, movement_state_component, peeking_component, first_person_extension, animation_extension, weapon_extension, weapon_template, player_unit, t)
+    instance.start = function (alternate_fire_component, weapon_tweak_templates_component, spread_control_component, sway_control_component, sway_component, movement_state_component, locomotion_component, inair_state_component, peeking_component, first_person_extension, animation_extension, weapon_extension, weapon_template, player_unit, t)
         local alternate_fire_settings = weapon_template.alternate_fire_settings
         local spread_template_name, recoil_template_name, sway_template_name, suppression_template_name, toughness_template_name
 
@@ -319,8 +320,9 @@ mod:hook_require("scripts/utilities/alternate_fire", function(instance)
         local spread_template = weapon_extension:spread_template()
         local sway_template = weapon_extension:sway_template()
 
-        Sway.add_immediate_sway(sway_template, sway_control_component, sway_component, movement_state_component, "alternate_fire_start")
-        Spread.add_immediate_spread(t, spread_template, spread_control_component, movement_state_component, "alternate_fire_start")
+        Sway.add_immediate_sway(sway_template, sway_control_component, sway_component, movement_state_component, locomotion_component, inair_state_component, "alternate_fire_start")
+
+        Spread.add_immediate_spread(t, spread_template, spread_control_component, movement_state_component, locomotion_component, inair_state_component, "alternate_fire_start")
 
         local player = managers.state.player_unit_spawn:owner(player_unit)
 

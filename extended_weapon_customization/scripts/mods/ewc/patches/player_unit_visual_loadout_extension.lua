@@ -15,7 +15,7 @@ local Promise = mod:original_require("scripts/foundation/utilities/promise")
     local table = table
     local CLASS = CLASS
     local script_unit = ScriptUnit
-    local table_contains = table.contains
+    -- local table_contains = table.contains
     local unit_sight_callback = unit.sight_callback
     local unit_shield_callback = unit.shield_callback
     local script_unit_extension = script_unit.extension
@@ -162,7 +162,8 @@ mod:hook(CLASS.PlayerUnitVisualLoadoutExtension, "equip_item_to_slot", function(
         mod:reset_flashlight_input_timer()
     end
 
-    if table_contains(PROCESS_SLOTS, slot_name) then
+    -- if table_contains(PROCESS_SLOTS, slot_name) then
+    if mod:cached_table_contains(PROCESS_SLOTS, slot_name) then
         self.attachment_callback_extension_update = true
         self.shield_extension_update = true
         self.damage_type_extension_update = true

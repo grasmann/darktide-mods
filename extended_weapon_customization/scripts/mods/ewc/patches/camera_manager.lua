@@ -29,12 +29,16 @@ mod:hook(CLASS.CameraManager, "post_update", function(func, self, dt, t, viewpor
     -- Get unit
     local camera_nodes = self._camera_nodes[viewport_name]
     local current_node = self:_current_node(camera_nodes)
+    local camera_data = self:_update_transition(viewport_name, camera_nodes, dt)
     local root_unit = current_node:root_unit()
-    if root_unit and unit_alive(root_unit) then
-        local viewport = ScriptWorld.viewport(self._world, viewport_name)
-        local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
+    if camera_data and root_unit and unit_alive(root_unit) then
+        -- local viewport = ScriptWorld.viewport(self._world, viewport_name)
+        -- local camera_data = self._viewport_camera_data[viewport] or self._viewport_camera_data[Viewport.get_data(viewport, "overridden_viewport")]
+        -- local camera_nodes = self._camera_nodes[viewport_name]
+	    -- local camera_data = self:_update_transition(viewport_name, camera_nodes, dt)
         -- Sight update zoom callback
-        if camera_data then unit_sight_callback(root_unit, "update_zoom", viewport_name, camera_data.vertical_fov, camera_data.custom_vertical_fov) end
+        -- if camera_data then unit_sight_callback(root_unit, "update_zoom", viewport_name, camera_data.vertical_fov, camera_data.custom_vertical_fov) end
+        unit_sight_callback(root_unit, "update_zoom", viewport_name, camera_data.vertical_fov * self._fov_multiplier, camera_data.custom_vertical_fov)
     end
 end)
 
