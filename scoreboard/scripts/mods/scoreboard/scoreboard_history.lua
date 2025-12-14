@@ -220,7 +220,7 @@ mod.save_scoreboard_history_entry = function(self, sorted_rows)
 
 	-- Mission
 	local timer = (_os.time() or 0) - (self.timer or 0)
-	file:write("#mission;"..tostring(self.mission_name)..";"..tostring(self.mission_challenge)..";"..tostring(self.mission_circumstance)..";"..tostring(self.victory_defeat)..";"..tostring(timer).."\n")
+	file:write("#mission;"..tostring(self.mission_name)..";"..tostring(self.mission_resistance)..";"..tostring(self.mission_circumstance)..";"..tostring(self.victory_defeat)..";"..tostring(timer).."\n")
 
 	-- Players
 	local count = 0
@@ -363,11 +363,11 @@ mod.load_scoreboard_history_entry = function(self, path, date, only_head)
 			-- Read mission info
 			local name = info[2]
 			entry.mission_name = name
-			entry.mission_challenge = ""
+			entry.mission_resistance = ""
 			entry.mission_circumstance = ""
 			entry.victory_defeat = ""
 			entry.timer = ""
-			if info[3] ~= nil then entry.mission_challenge = info[3] end
+			if info[3] ~= nil then entry.mission_resistance = info[3] end
 			if info[4] ~= nil then entry.mission_circumstance = info[4] end
 			if info[5] ~= nil then entry.victory_defeat = info[5] end
 			if ( info[6] ~= nil and tonumber(info[6]) ~= nil ) then
