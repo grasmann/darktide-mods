@@ -1462,6 +1462,7 @@ local load_weapons = {
     "ogryn_heavystubber_p1_m1",
     "ogryn_heavystubber_p2_m1",
     "shotpistol_shield_p1_m1",
+    "dual_stubpistols_p1_m1",
     "powermaul_shield_p1_m1",
     "thunderhammer_2h_p1_m1",
     "ogryn_rippergun_p1_m1",

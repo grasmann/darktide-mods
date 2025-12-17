@@ -428,7 +428,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
         -- Toggle flags
         mod.is_in_customization_menu = true
 
-
     end
 
     -- ##### Toggle overrides buttons callbacks #######################################################################
@@ -885,7 +884,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
                     end
 
                     mod:gear_material_overrides(self._presentation_item, nil, slot_name, selected_option.material_overrides)
-                    mod:gear_material_overrides(self._selected_item, nil, slot_name, selected_option.material_overrides)
+                    -- mod:gear_material_overrides(self._selected_item, nil, slot_name, selected_option.material_overrides)
 
                     self:_preview_item(self._presentation_item)
 
@@ -1149,7 +1148,11 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
 
         for i = 1, #content do
             local tab_content = content[i]
-            local display_name = "attachment_slot_"..tab_content.display_name
+            local localize_name = tab_content.display_name
+            if localize_name == "left" and mod:is_shield(self._selected_item) then
+                localize_name = "shield"
+            end
+            local display_name = "attachment_slot_"..localize_name
             local display_icon = tab_content.icon
             local pressed_callback = callback(self, "cb_switch_tab", i)
             local tab_id = tab_menu_element:add_entry(display_name, pressed_callback, tab_button_template, display_icon)
@@ -1748,9 +1751,13 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             local attachments = weapon_template and mod.settings.attachments[weapon_template]
             if attachments then
                 for attachment_slot, attachment_entries in pairs(attachments) do
+
+                    -- local attachment_slot_name_parts = string.split(attachment_slot, "/")
+                    -- local attachment_slot_name = attachment_slot_name_parts[#attachment_slot_name_parts]
                     
                     -- if mod:selectable_attachment_count(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
                     if mod:selectable_attachment_count(attachment_entries) > 1 and not mod:cached_table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
+
                         tabs_content[#tabs_content+1] = {
                             display_name = attachment_slot,
                             slot_name = attachment_slot,
@@ -1802,6 +1809,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
 
                             end,
                         }
+                        
                     end
                 end
             end
@@ -2061,9 +2069,11 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, sel
             -- Check material overrides
             if material_overrides then
                 -- Apply material overrides to presentation item
-                mod:gear_material_overrides(self._presentation_item, nil, attachment_slot, material_overrides)
+                -- mod:gear_material_overrides(self._presentation_item, nil, attachment_slot, material_overrides)
             end
         end
+
+        -- mod:gear_material_overrides(self._presentation_item, nil, slot_name, selected_option.material_overrides)
 
         if slot_name and self.selected_color_override == "" then
             mod:clear_gear_material_overrides(self._presentation_item, nil, slot_name, {OVERRIDE_TYPE.color})

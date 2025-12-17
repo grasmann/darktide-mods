@@ -31,6 +31,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table_clone_safe = table.clone_safe
     local unit_sight_callback = unit.sight_callback
     local unit_shield_callback = unit.shield_callback
+    local table_merge_recursive = table.merge_recursive
     local script_unit_extension = script_unit.extension
     local unit_attachment_callback = unit.attachment_callback
     local unit_flashlight_callback = unit.flashlight_callback
@@ -47,6 +48,14 @@ local temp_random_attachment_list = {}
 local PROCESS_ITEM_TYPES = {"WEAPON_MELEE", "WEAPON_RANGED"}
 local _item = "content/items/weapons/player"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
+local SHIELD_WEAPONS = {
+    "ogryn_powermaul_slabshield_p1_m1",
+    "powermaul_shield_p1_m1",
+    "powermaul_shield_p1_m2",
+    "shotpistol_shield_p1_m1",
+    "shotpistol_shield_p1_m2",
+    "shotpistol_shield_p1_m3",
+}
 
 -- ##### ┬─┐┌─┐┌─┐┬ ┬┬─┐┌─┐┬┬  ┬┌─┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ########################
 -- ##### ├┬┘├┤ │  │ │├┬┘└─┐│└┐┌┘├┤   ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │   ├┤ │ │││││   │ ││ ││││└─┐ ########################
@@ -55,11 +64,15 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 mod.overwrite_attachment = function(self, attachments, target_slot, replacement_path)
     if not attachments then return end
     for slot, data in pairs(attachments) do
+        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
         if slot == target_slot and data then
             data.item = replacement_path
             local attachment_item = pt.master_items_loaded and master_items.get_item(replacement_path)
             data.material_overrides = attachment_item and attachment_item.material_overrides or (data.material_overrides or {})
         end
+        -- if master_item and master_item.attachments then
+        --     self:overwrite_attachment(master_item.attachments, target_slot, replacement_path)
+        -- end
         if data and data.children then
             self:overwrite_attachment(data.children, target_slot, replacement_path)
         end
@@ -74,14 +87,21 @@ mod.inject_attachment_slot_info = function(self, attachments, target_slot, slot_
         if data.children then
             self:inject_attachment_slot_info(data.children, target_slot, slot_info)
         end
+        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
+        -- if master_item and master_item.attachments then
+        --     self:inject_attachment_slot_info(master_item.attachments, target_slot, slot_info)
+        -- end
     end
 end
 
 mod.clear_attachment = function(self, attachments, target_slot)
     for slot, data in pairs(attachments) do
+        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
         if slot == target_slot then
             attachments[slot] = nil
             mod:print("clearing attachment slot "..tostring(slot))
+        -- elseif master_item and master_item.attachments then
+        --     self:clear_attachment_fixes(master_item.attachments, target_slot)
         elseif data.children then
             self:clear_attachment_fixes(data.children, target_slot)
         end
@@ -96,6 +116,10 @@ mod.inject_material_overrides = function(self, attachments, target_slot, materia
         if data.children then
             self:overwrite_attachment(data.children, target_slot, material_overrides)
         end
+        -- local master_item = data.item and master_items.get_item(data.item)
+        -- if master_item and master_item.attachments then
+        --     self:fetch_attachment_fixes(master_item.attachments, target_slot, material_overrides)
+        -- end
     end
 end
 
@@ -103,53 +127,68 @@ mod.inject_attachment = function(self, attachments, slot_name, inject_data)
     
     -- self:clear_attachment(attachments, slot_name)
 
+    local parent_slots = mod:cached_split(inject_data.parent_slot, "|")
+
     for slot, attachment_data in pairs(attachments) do
-        if slot == inject_data.parent_slot then
 
-            attachment_data.children = attachment_data.children or {}
+        for _, parent_slot in pairs(parent_slots) do
 
-            local existing_children = attachment_data.children[slot_name] and attachment_data.children[slot_name].children and table_clone_safe(attachment_data.children[slot_name].children)
-            local existing_item = attachment_data.children and attachment_data.children[slot_name] and attachment_data.children[slot_name].item or inject_data.default_path
-            local item = existing_item and pt.master_items_loaded and master_items.get_item(existing_item)
-            local material_overrides = item and item.material_overrides or inject_data.material_overrides
+            if slot == parent_slot then
 
-            -- attachment_data.children[slot_name] = attachment_data.children[slot_name] or {
-            --     item = inject_data.default_path,
-            --     children = {},
-            --     fix = inject_data.fix,
-            -- }
+                attachment_data.children = attachment_data.children or {}
 
-            -- mod:print("injecting attachment slot "..tostring(slot_name).." into "..tostring(slot))
-            -- if inject_data.fix and inject_data.fix.offset then
-            --     mod:print("fix: p:"..tostring(inject_data.fix.offset.position)..", r:"..tostring(inject_data.fix.offset.rotation)..", s:"..tostring(inject_data.fix.offset.scale)..", n:"..tostring(inject_data.fix.offset.node))
+                local existing_children = attachment_data.children[slot_name] and attachment_data.children[slot_name].children and table_clone_safe(attachment_data.children[slot_name].children)
+                local existing_item = attachment_data.children and attachment_data.children[slot_name] and attachment_data.children[slot_name].item or inject_data.default_path
+                local item = existing_item and pt.master_items_loaded and master_items.get_item(existing_item)
+                local material_overrides = item and item.material_overrides or inject_data.material_overrides
+
+                -- attachment_data.children[slot_name] = attachment_data.children[slot_name] or {
+                --     item = inject_data.default_path,
+                --     children = {},
+                --     fix = inject_data.fix,
+                -- }
+
+                -- mod:print("injecting attachment slot "..tostring(slot_name).." into "..tostring(slot))
+                -- if inject_data.fix and inject_data.fix.offset then
+                --     mod:print("fix: p:"..tostring(inject_data.fix.offset.position)..", r:"..tostring(inject_data.fix.offset.rotation)..", s:"..tostring(inject_data.fix.offset.scale)..", n:"..tostring(inject_data.fix.offset.node))
+                -- end
+
+                -- local material_overrides = inject_data.material_overrides
+
+                -- if existing_item and existing_item ~= "" then
+                --     local item = master_items.get_item(existing_item)
+                --     material_overrides = item and item.material_overrides
+                -- end
+
+                attachment_data.children[slot_name] = {
+                    item = existing_item or inject_data.default_path or "",
+                    children = existing_children or {},
+                    fix = inject_data.fix,
+                    material_overrides = material_overrides or {},
+                }
+                break
+            end
+            if attachment_data.children then
+                self:inject_attachment(attachment_data.children, slot_name, inject_data)
+            end
+            -- local master_item = attachment_data.item and master_items.get_item(attachment_data.item)
+            -- if master_item and master_item.attachments then
+            --     self:fetch_attachment_fixes(master_item.attachments, slot_name, inject_data)
             -- end
 
-            -- local material_overrides = inject_data.material_overrides
-
-            -- if existing_item and existing_item ~= "" then
-            --     local item = master_items.get_item(existing_item)
-            --     material_overrides = item and item.material_overrides
-            -- end
-
-            attachment_data.children[slot_name] = {
-                item = existing_item or "",
-                children = existing_children or {},
-                fix = inject_data.fix,
-                material_overrides = material_overrides or {},
-            }
-            break
         end
-        if attachment_data.children then
-            self:inject_attachment(attachment_data.children, slot_name, inject_data)
-        end
+
     end
 end
 
 mod.fetch_attachment_parent = function(self, attachments, target_slot)
     local attachment_parent = nil
     for slot, data in pairs(attachments) do
+        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
         if table_find(data, target_slot) then
             attachment_parent = slot
+        -- elseif master_item and master_item.attachments then
+        --     attachment_parent = self:fetch_attachment_fixes(master_item.attachments, target_slot)
         elseif data.children then
             attachment_parent = self:fetch_attachment_parent(data.children, target_slot)
         end
@@ -167,6 +206,10 @@ mod.fetch_attachment_fixes = function(self, attachments, attachment_fixes)
         if data.children then
             self:fetch_attachment_fixes(data.children, attachment_fixes)
         end
+        local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
+        if master_item and master_item.attachments then
+            self:fetch_attachment_fixes(master_item.attachments, attachment_fixes)
+        end
     end
     return attachment_fixes
 end
@@ -177,6 +220,10 @@ mod.clear_attachment_fixes = function(self, attachments)
         if data.children then
             self:clear_attachment_fixes(data.children)
         end
+        -- local master_item = data.item and master_items.get_item(data.item)
+        -- if master_item and master_item.attachments then
+        --     self:clear_attachment_fixes(master_item.attachments)
+        -- end
     end
     return attachments
 end
@@ -189,8 +236,11 @@ mod.fetch_attachment = function(self, attachments, target_slot)
             if type(data.item) == "table" and data.item.attachments then
                 attachment_item_path = self:fetch_attachment(data.item.attachments, target_slot)
             end
+            -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
             if slot == target_slot then
                 attachment_item_path = data.item
+            -- elseif master_item and master_item.attachments then
+            --     attachment_item_path = self:fetch_attachment(master_item.attachments, target_slot)
             elseif data.children then
                 attachment_item_path = self:fetch_attachment(data.children, target_slot)
             end
@@ -203,8 +253,11 @@ end
 mod.fetch_attachment_data = function(self, attachments, target_slot)
     local attachment_item_data = nil
     for slot, data in pairs(attachments) do
+        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
         if slot == target_slot then
             attachment_item_data = data
+        -- elseif master_item and master_item.attachments then
+        --     attachment_item_data = self:fetch_attachment_data(master_item.attachments, target_slot)
         elseif data.children then
             attachment_item_data = self:fetch_attachment_data(data.children, target_slot)
         end
@@ -220,6 +273,10 @@ mod.fetch_attachment_slots = function(self, attachments, attachment_slots)
         if data.children then
             self:fetch_attachment_slots(data.children, attachment_slots)
         end
+        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
+        -- if master_item and master_item.attachments then
+        --     self:fetch_attachment_slots(master_item.attachments, attachment_slots)
+        -- end
     end
     return attachment_slots
 end
@@ -227,6 +284,13 @@ end
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+mod.is_shield = function(self, item)
+    if item then
+        local weapon_template = item.weapon_template
+        return self:cached_table_contains(SHIELD_WEAPONS, weapon_template)
+    end
+end
 
 mod.item_has = function(self, item, attribute_name)
     if item and item.attachments then
@@ -439,6 +503,14 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
         local all_attachment_slots = self:fetch_attachment_slots(item.attachments)
         for attachment_slot, data in pairs(all_attachment_slots) do
             self:inject_attachment_slot_info(item.attachments, attachment_slot)
+
+            -- -- Copy sub attachments
+            -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
+            -- if master_item and master_item.attachments then
+            --     table_merge_recursive(data.children, master_item.attachments)
+            --     data.fix = {hide = {node = 1}}
+            -- end
+
         end
 
         -- Overwrite attachments

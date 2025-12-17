@@ -149,7 +149,7 @@ ShieldTransparencyExtension.fetch_shield_units = function(self)
     for _, slot_name in pairs(PROCESS_SLOTS) do
         
         local weapon = self.visual_loadout_extension:item_from_slot(slot_name)
-        if weapon and weapon.attachments then
+        if weapon and weapon.attachments and mod:is_shield(weapon) then
             local shield_name = mod:fetch_attachment(weapon.attachments, "left")
             mod:print("shield name: "..tostring(shield_name))
 

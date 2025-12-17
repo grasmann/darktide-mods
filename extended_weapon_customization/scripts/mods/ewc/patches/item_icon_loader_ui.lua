@@ -7,15 +7,26 @@ local mod = get_mod("extended_weapon_customization")
     local CLASS = CLASS
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local WEAPON_RANGED = "WEAPON_RANGED"
+local WEAPON_MELEE = "WEAPON_MELEE"
+local VALID_ITEM_TYPES = {WEAPON_MELEE, WEAPON_RANGED}
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.ItemIconLoaderUI, "load_icon", function(func, self, item, on_load_callback, on_unload_callback, ...)
-    -- Modify item
-    mod:modify_item(item)
-    -- Fixes
-    mod:apply_attachment_fixes(item)
+    -- Check item
+    if item and mod:cached_table_contains(VALID_ITEM_TYPES, item.item_type) then
+        -- Modify item
+        mod:modify_item(item)
+        -- Fixes
+        mod:apply_attachment_fixes(item)
+    end
     -- Original function
     return func(self, item, on_load_callback, on_unload_callback, ...)
 end)

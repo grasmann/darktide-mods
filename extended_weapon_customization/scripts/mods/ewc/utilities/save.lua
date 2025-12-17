@@ -230,12 +230,12 @@ SaveLua._save_entry = function(self, gear_id, data)
 	if data then
 		for slot, replacement_path_or_material_overrides in pairs(data) do
 			if type(replacement_path_or_material_overrides) == "string" then
-				file:write(ttt..slot.." = '"..replacement_path_or_material_overrides.."',\n")
+				file:write(ttt.."['"..slot.."'] = '"..replacement_path_or_material_overrides.."',\n")
 			elseif slot == "material_overrides" then
-				file:write(ttt.."material_overrides = {\n")
+				file:write(ttt.."['material_overrides'] = {\n")
 				for attachment_slot, material_overrides in pairs(replacement_path_or_material_overrides) do
-					file:write(tttt..attachment_slot.." = {\n")
-						file:write(ttttt.."material_overrides = {\n")
+					file:write(tttt.."['"..attachment_slot.."'] = {\n")
+						file:write(ttttt.."['material_overrides'] = {\n")
 						for _, material_override in pairs(material_overrides.material_overrides) do
 							file:write(tttttt.."'"..material_override.."',\n")
 						end

@@ -114,8 +114,8 @@ local fixes = {
                     has = braced_receivers,
                 },
                 barrel = {
-                    missing = braced_barrels,
-                }
+                    has = "query:autogun_p3_m1,barrel,extended_weapon_customization|extended_weapon_customization_base_additions,"..braced_barrels,
+                },
             },
             fix = {
                 offset = {
@@ -129,7 +129,7 @@ local fixes = {
         {attachment_slot = "barrel",
             requirements = {
                 receiver = {
-                    missing = braced_receivers,
+                    has = "query:autogun_p3_m1,receiver,extended_weapon_customization|extended_weapon_customization_base_additions,"..braced_receivers,
                 },
                 barrel = {
                     has = braced_barrels,

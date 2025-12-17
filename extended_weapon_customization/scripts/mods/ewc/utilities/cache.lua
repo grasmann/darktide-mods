@@ -27,10 +27,11 @@ local table_contains_cache = {}
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.cached_split = function(self, query, optional_seperator)
-    local cache = split_cache[query]
     local seperator = optional_seperator or "|"
+    local cache = split_cache[query] and split_cache[query][seperator]
     local result = cache or string_split(query, seperator)
-    if not split_cache[query] then split_cache[query] = result end
+    if not split_cache[query] then split_cache[query] = {} end
+    if not split_cache[query][seperator] then split_cache[query][seperator] = result end
     return result
 end
 
@@ -51,8 +52,10 @@ mod.cached_gsub = function(self, query, term, replacement)
 end
 
 mod.cached_table_contains = function(self, t, v)
-    local cache = table_contains_cache[t]
-    local result = cache or table_contains(t, v)
-    if not table_contains_cache[t] then table_contains_cache[t] = result end
-    return result
+    return table_contains(t, v)
+    -- local cache = table_contains_cache[t] and v and table_contains_cache[t][v]
+    -- local result = cache or (v and table_contains(t, v))
+    -- if result and not table_contains_cache[t] then table_contains_cache[t] = {} end
+    -- if result and not table_contains_cache[t][v] then table_contains_cache[t][v] = result end
+    -- return result
 end

@@ -60,6 +60,32 @@ mod.recursive_children = function(self, unit, attachment_units_by_unit, children
     return children
 end
 
+mod.implement_units = function(self, item_unit, attachments, attachment_units_by_unit, attachment_id_lookup, units)
+    local units = units or attachment_units_by_unit[item_unit]
+    if units then
+        for _, unit in pairs(units) do
+            -- Set attachment slot
+            local slot = attachment_id_lookup[unit]
+            unit_set_data(unit, "attachment_slot", slot)
+            -- Get item path
+            local item_path = mod:fetch_attachment(attachments, slot)
+            -- Set attachment name
+            local name = self.settings.attachment_name_by_item_string[item_path]
+            unit_set_data(unit, "attachment_name", name)
+
+            -- if attachment_units_by_unit[unit] then
+
+                local item = master_items.get_item(item_path)
+                if item and item.attachments then
+                    self:implement_units(item_unit, item.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_units_by_unit[unit])
+                end
+
+            -- end
+
+        end
+    end
+end
+
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################
@@ -67,11 +93,15 @@ end
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
     mod:hook(instance, "spawn_item_attachments", function(func, item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment, ...)
-        -- Modify item
-        mod:modify_item(item_data)
+        -- Check item
+        if item_data and mod:cached_table_contains(PROCESS_ITEM_TYPES, item_data.item_type) then
+            -- Modify item
+            mod:modify_item(item_data)
+        end
         -- Fixes
         local fixes = mod:collect_fixes(item_data)
         mod:apply_attachment_fixes(item_data, fixes)
+        
         -- Original function
         local attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, bind_poses_by_unit, item_name_by_unit = func(item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment, ...)
 
@@ -85,6 +115,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 fixes = table_merge_recursive(fixes, kitbash_fixes)
                 -- fixes = table_append(fixes, kitbash_fixes)
             end
+
+            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup)
 
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
 
@@ -252,11 +284,15 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
     end)
 
     mod:hook(instance, "spawn_item", function(func, item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment, ...)
-        -- Modify item
-        mod:modify_item(item_data)
+        -- Check item
+        if item_data and mod:cached_table_contains(PROCESS_ITEM_TYPES, item_data.item_type) then
+            -- Modify item
+            mod:modify_item(item_data)
+        end
         -- Fixes
         local fixes = mod:collect_fixes(item_data)
         mod:apply_attachment_fixes(item_data, fixes)
+
         -- Original function
         local item_unit, attachment_units_by_unit, bind_pose, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit = func(item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment, ...)
 
@@ -358,6 +394,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
             end
+
+            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup)
 
         end
         -- fixes = table_reverse(fixes)

@@ -156,7 +156,6 @@ end
 
 SwayExtension.weapon_action_allowed = function(self, optional_current_action_name)
     local current_action_name = optional_current_action_name or self:weapon_action()
-    -- return not table_contains(LOCKED_ACTIONS, current_action_name)
     return not mod:cached_table_contains(LOCKED_ACTIONS, current_action_name)
 end
 

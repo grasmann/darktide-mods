@@ -233,6 +233,7 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, se
 		local node = unit_has_node(parent_unit, node_name) and unit_node(parent_unit, node_name) or 1
 
         result = {}
+
         result[VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
 			unit = parent_unit,
 			node = node,
@@ -267,4 +268,20 @@ mod:hook(CLASS.PlayerUnitFxExtension, "spawn_unit_particles", function(func, sel
 
 	-- Original function
 	return func(self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, all_clients, create_network_index, optional_attachment_name, ...)
+end)
+
+mod:hook(CLASS.PlayerUnitFxExtension, "_spawn_unit_particles", function(func, self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, optional_attachment_name, ...)
+
+	local spawner = self._vfx_spawners[spawner_name]
+	local reference_attachment_name = optional_attachment_name or VisualLoadoutCustomization.ROOT_ATTACH_NAME
+
+	if not spawner[reference_attachment_name] then
+
+		spawner[reference_attachment_name] = spawner[VisualLoadoutCustomization.ROOT_ATTACH_NAME]
+
+	end
+
+	-- Original function
+	return func(self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, optional_attachment_name, ...)
+
 end)

@@ -105,6 +105,9 @@ mod:add_global_localize_strings({
 		en = "Sight",
 		["zh-cn"] = "瞄具",
 	},
+	attachment_slot_addon = {
+		en = "Addon",
+	},
 	attachment_slot_stock = {
 		en = "Stock",
 		["zh-cn"] = "枪托",
@@ -161,7 +164,13 @@ mod:add_global_localize_strings({
 		en = "Connector",
 		["zh-cn"] = "连接器",
 	},
+	attachment_slot_right = {
+		en = "Right",
+	},
 	attachment_slot_left = {
+		en = "Left",
+	},
+	attachment_slot_shield = {
 		en = "Shield",
 		["zh-cn"] = "盾牌",
 	},

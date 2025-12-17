@@ -458,13 +458,13 @@ local offsets = {
     default = {
         right = {
             node = "j_spine2",
-            position = vector3_box(.1, .16, -.18),
-            rotation = vector3_box(-10, -50, -90),
+            position = vector3_box(.37, .08, -.14),
+            rotation = vector3_box(-45, -55, -120),
         },
         left = {
             node = "j_spine2",
-            position = vector3_box(0, .16, .18),
-            rotation = vector3_box(-170, 50, 90),
+            position = vector3_box(.37, .08, .14),
+            rotation = vector3_box(-145, -55, 120),
         },
     },
     hip_front = {

@@ -22,6 +22,7 @@ local mod = get_mod("extended_weapon_customization")
     -- local string_split = string.split
     local unit_has_node = unit.has_node
     -- local table_contains = table.contains
+    local unit_get_data = unit.get_data
     local world_link_unit = world.link_unit
     local unit_num_meshes = unit.num_meshes
     local vector3_unbox = vector3_box.unbox
@@ -195,29 +196,24 @@ mod.collect_fixes = function(self, item_data, target_slot)
 
 end
 
-mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, optional_fixes, is_ui_item_preview)
-    -- Item data
-    local item = self:item_data(item_data)
-    local is_ui_item_preview = is_ui_item_preview or (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
-    -- Check data
-    if item and item.attachments and attachment_name_lookup then
-        -- Get fixes
-        local fixes = optional_fixes or self:collect_fixes(item)
-        if fixes then
-            -- Iterate through fixes
-            for fix, attachment_slot in pairs(fixes) do
-                -- Check fix valid
-                local active = true
-                if fix.active_function then
-                    local gear_id = mod:gear_id(item, true)
-                    local is_customization_menu = pt.items_originating_from_customization_menu[gear_id]
-                    active = fix.active_function(item, item_data.__is_ui_item_preview, item_data.__is_preview_item, is_customization_menu, self.customization_menu_slot_name)
-                end
-                if active and (not fix.disable_in_ui or not is_ui_item_preview) and (not fix.only_in_ui or is_ui_item_preview) then
-                    -- Current attachment unit
-                    local attachment_unit = attachment_name_lookup[item_unit][attachment_slot]
+-- local already_used_slot = {}
+
+mod.apply_unit_fix_recursive = function(self, fix, parent_unit, attachment_units_by_unit, attachment_slot, attachment_name_lookup)
+
+    for _, attachment_unit in pairs(attachment_units_by_unit[parent_unit]) do
+
+        -- mod:echo("applying fix "..tostring(fix).." to "..tostring(attachment_unit).." ("..tostring(attachment_slot)..")")
+
+        if attachment_unit and unit_alive(attachment_unit) then
+            
+            if (unit_get_data(attachment_unit, "attachment_slot") == attachment_slot or attachment_name_lookup[parent_unit][attachment_slot] == attachment_unit) then
+                -- attachment_unit = unit
+                -- already_used_slot[unit] = true
+
+                -- if attachment_unit and unit_alive(attachment_unit) then
+
                     -- Check fix offset
-                    if fix.offset and attachment_unit and unit_alive(attachment_unit) then
+                    if fix.offset then --and attachment_unit and unit_alive(attachment_unit) then
                         local offset = fix.offset
                         local node = offset.node or 1
                         if type(node) == "string" then
@@ -235,12 +231,12 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                         -- end
                     end
                     -- Check alpha
-                    if fix.alpha and attachment_unit and unit_alive(attachment_unit) then
+                    if fix.alpha then --and attachment_unit and unit_alive(attachment_unit) then
                         unit_set_shader_pass_flag_for_meshes(attachment_unit, "one_bit_alpha", true, true)
                         unit_set_scalar_for_materials(attachment_unit, "inv_jitter_alpha", fix.alpha, true)
                     end
                     -- Check fix hide
-                    if fix.hide and attachment_unit and unit_alive(attachment_unit) then
+                    if fix.hide then --and attachment_unit and unit_alive(attachment_unit) then
                         local hide = fix.hide
                         if hide.node then
                             local node = hide.node
@@ -275,6 +271,124 @@ mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_
                             end
                         end
                     end
+
+                -- end
+
+                -- break
+            end
+
+            if (attachment_units_by_unit[attachment_unit]) then
+
+                self:apply_unit_fix_recursive(fix, attachment_unit, attachment_units_by_unit, attachment_slot, attachment_name_lookup)
+
+            end
+
+        end
+    end
+
+end
+
+mod.apply_unit_fixes = function(self, item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, optional_fixes, is_ui_item_preview)
+    -- Item data
+    -- table_clear(already_used_slot)
+    local item = self:item_data(item_data)
+    local is_ui_item_preview = is_ui_item_preview or (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
+    -- Check data
+    if item and item.attachments and attachment_name_lookup then
+        -- Get fixes
+        local fixes = optional_fixes or self:collect_fixes(item)
+        if fixes then
+            -- Iterate through fixes
+            for fix, attachment_slot in pairs(fixes) do
+                -- Check fix valid
+                local active = true
+                if fix.active_function then
+                    local gear_id = mod:gear_id(item, true)
+                    local is_customization_menu = pt.items_originating_from_customization_menu[gear_id]
+                    active = fix.active_function(item, item_data.__is_ui_item_preview, item_data.__is_preview_item, is_customization_menu, self.customization_menu_slot_name)
+                end
+                if active and (not fix.disable_in_ui or not is_ui_item_preview) and (not fix.only_in_ui or is_ui_item_preview) then
+
+                    self:apply_unit_fix_recursive(fix, item_unit, attachment_units_by_unit, attachment_slot, attachment_name_lookup)
+
+                    -- Current attachment unit
+                    -- local attachment_unit --= attachment_name_lookup[item_unit][attachment_slot]
+                    -- for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
+
+                    --     -- mod:echo("applying fix "..tostring(fix).." to "..tostring(attachment_unit).." ("..tostring(attachment_slot)..")")
+
+                    --     if attachment_unit and unit_alive(attachment_unit) and (unit_get_data(attachment_unit, "attachment_slot") == attachment_slot or attachment_name_lookup[item_unit][attachment_slot] == attachment_unit) then
+                    --         -- attachment_unit = unit
+                    --         -- already_used_slot[unit] = true
+
+                    --         -- if attachment_unit and unit_alive(attachment_unit) then
+
+                    --             -- Check fix offset
+                    --             if fix.offset then --and attachment_unit and unit_alive(attachment_unit) then
+                    --                 local offset = fix.offset
+                    --                 local node = offset.node or 1
+                    --                 if type(node) == "string" then
+                    --                     node = unit_has_node(attachment_unit, node) and unit_node(attachment_unit, node) or 1
+                    --                     -- mod:print("using node "..tostring(offset.node).." ("..tostring(node)..") for "..tostring(attachment_unit))
+                    --                 end
+                    --                 -- Check offset data
+                    --                 if offset.position then unit_set_local_position(attachment_unit, node, vector3_unbox(offset.position)) end
+                    --                 if offset.rotation then unit_set_local_rotation(attachment_unit, node, quaternion_from_vector(vector3_unbox(offset.rotation))) end
+                    --                 if offset.scale then unit_set_local_scale(attachment_unit, node, vector3_unbox(offset.scale)) end
+                    --                 -- local parent_node = offset.parent_node
+                    --                 -- if parent_node then
+                    --                 --     world_unlink_unit(attachment_unit)
+                    --                 --     world_link_unit(attachment_unit, 1, parent_node)
+                    --                 -- end
+                    --             end
+                    --             -- Check alpha
+                    --             if fix.alpha then --and attachment_unit and unit_alive(attachment_unit) then
+                    --                 unit_set_shader_pass_flag_for_meshes(attachment_unit, "one_bit_alpha", true, true)
+                    --                 unit_set_scalar_for_materials(attachment_unit, "inv_jitter_alpha", fix.alpha, true)
+                    --             end
+                    --             -- Check fix hide
+                    --             if fix.hide then --and attachment_unit and unit_alive(attachment_unit) then
+                    --                 local hide = fix.hide
+                    --                 if hide.node then
+                    --                     local node = hide.node
+                    --                     if type(node) == "string" then
+                    --                         node = unit_has_node(attachment_unit, node) and unit_node(attachment_unit, node)
+                    --                     end
+                    --                     if type(node) == "table" then
+                    --                         for i = 1, #node do
+                    --                             local table_node = node[i]
+                    --                             if type(table_node) == "string" then
+                    --                                 local node_id = unit_has_node(attachment_unit, table_node) and unit_node(attachment_unit, table_node)
+                    --                                 if node_id then unit_set_local_scale(attachment_unit, node_id, vector3(0, 0, 0)) end
+                    --                             else
+                    --                                 unit_set_local_scale(attachment_unit, table_node, vector3(0, 0, 0))
+                    --                             end
+                    --                         end
+                    --                     elseif node then
+                    --                         unit_set_local_scale(attachment_unit, node, vector3(0, 0, 0))
+                    --                     end
+                    --                 end
+                    --                 if hide.mesh then
+                    --                     local mesh = hide.mesh
+                    --                     local num_meshes = unit_num_meshes(attachment_unit)
+                    --                     if type(mesh) == "table" then
+                    --                         for i = 1, #mesh do
+                    --                             if num_meshes >= mesh[i] then
+                    --                                 unit_set_mesh_visibility(attachment_unit, mesh[i], false)
+                    --                             end
+                    --                         end
+                    --                     elseif num_meshes >= mesh then
+                    --                         unit_set_mesh_visibility(attachment_unit, mesh, false)
+                    --                     end
+                    --                 end
+                    --             end
+
+                    --         -- end
+
+                    --         -- break
+                    --     end
+                    -- end
+
                 end
             end
         end

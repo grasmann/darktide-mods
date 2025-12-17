@@ -119,7 +119,9 @@ mod.gear_material_overrides = function(self, item, fake_gear_id, slot_name, opti
 
         end
     else
+
         return pt.gear_material_overrides[gear_id] and pt.gear_material_overrides[gear_id][slot_name]
+        
     end
 end
 

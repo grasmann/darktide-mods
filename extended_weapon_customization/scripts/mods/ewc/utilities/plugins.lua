@@ -26,7 +26,8 @@ local mod = get_mod("extended_weapon_customization")
 local REFERENCE = "extended_weapon_customization"
 local pt = mod:pt()
 -- local split_cache = {}
-local temp_exclude = {}
+-- local temp_exclude = {}
+-- local temp_plugins = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -41,63 +42,97 @@ local temp_exclude = {}
 
 mod.pull_attachment_list_string = function(self, weapon_template, optional_target_slot, optional_target_plugin, optional_exclude, debug)
     local attachment_names = {}
+    local excluded_names = {}
+    local plugin_list = {}
     -- Get attachment slot parameter
     local target_slot = optional_target_slot ~= "debug" and optional_target_slot or false
     -- Get plugins parameter
-    local target_plugin = optional_target_plugin ~= "debug" and optional_target_plugin or false
+    -- local target_plugin = optional_target_plugin ~= "debug" and optional_target_plugin or false
+    -- if type(target_plugins) == "string" then target_plugins = {target_plugins} end
     -- Get mods
     local dmf = get_mod("DMF")
     -- Check dmf
     if dmf then
 
+        -- Compile plugin list
+        -- table_clear(temp_plugins)
+        -- Check exclude parameter
+        if optional_target_plugin and optional_target_plugin ~= "debug" then
+            -- Check string or table
+            if type(optional_target_plugin) == "string" then
+                -- Split string with cache
+                -- temp_exclude = pull_cache(optional_target_plugin, "|")
+                plugin_list = self:cached_split(optional_target_plugin, "|")
+            elseif type(optional_target_plugin) == "table" then
+                -- Use table
+                plugin_list = optional_target_plugin
+            end
+        else
+            for _, plugin_mod in pairs(dmf.mods) do
+                -- Check if the mod has a extended_weapon_customization_plugin
+                if type(plugin_mod) == "table" and (plugin_mod.extended_weapon_customization_plugin or plugin_mod == self) then
+                    plugin_list[#plugin_list+1] = plugin_mod:get_name()
+                end
+            end
+        end
+
         -- Compile exclude list
-        table_clear(temp_exclude)
+        -- table_clear(excluded_names)
         -- Check exclude parameter
         if optional_exclude and optional_exclude ~= "debug" then
             -- Check string or table
             if type(optional_exclude) == "string" then
                 -- Split string with cache
                 -- temp_exclude = pull_cache(optional_exclude, "|")
-                temp_exclude = self:cached_split(optional_exclude, "|")
+                excluded_names = self:cached_split(optional_exclude, "|")
             elseif type(optional_exclude) == "table" then
                 -- Use table
-                temp_exclude = optional_exclude
+                excluded_names = optional_exclude
             end
         end
 
         if debug then
             self:print("weapon_template: "..tostring(weapon_template))
             self:print("attachment_slot: "..tostring(target_slot))
-            self:print("plugin_name: "..tostring(target_plugin))
-            self:print("exclude: "..tostring(table_concat(temp_exclude, "|")))
+            self:print("plugin_name: "..tostring(optional_target_plugin))
+            for index, target_plugin in pairs(plugin_list) do
+                self:print("plugin_name "..tostring(index)..": "..tostring(target_plugin))
+            end
+            self:print("exclude: "..tostring(optional_exclude))
+            for index, exclude in pairs(excluded_names) do
+                self:print("exclude "..tostring(index)..": "..tostring(exclude))
+            end
         end
 
         -- Iterate through all mods
         for _, plugin_mod in pairs(dmf.mods) do
             -- Check if the mod has a extended_weapon_customization_plugin
             if type(plugin_mod) == "table" and (plugin_mod.extended_weapon_customization_plugin or plugin_mod == self) then
-                -- Check target plugin
-                if not target_plugin or target_plugin == plugin_mod:get_name() then
-                    -- Check if the mod has a extended_weapon_customization_plugin
-                    local plugin = plugin_mod.extended_weapon_customization_plugin or plugin_mod.settings
-                    if plugin then
-                        -- Get weapon attachments
-                        local attachments = plugin.attachments[weapon_template]
-                        if attachments then
-                            -- Iterate through attachments
-                            for attachment_slot, attachment_list in pairs(attachments) do
-                                -- Check if target slot
-                                -- if not target_slot or (target_slot == attachment_slot and not table_contains(temp_exclude, attachment_slot)) then
-                                if not target_slot or (target_slot == attachment_slot and not mod:cached_table_contains(temp_exclude, attachment_slot)) then
-                                    -- Iterate through attachment list
-                                    for attachment_name, attachment_data in pairs(attachment_list) do
-                                        -- Origin
-                                        local is_mod_of_origin = pt.attachment_data_origin[attachment_data] == plugin_mod
-                                        -- Check exclude
-                                        -- if not table_contains(temp_exclude, attachment_name) then
-                                        if not mod:cached_table_contains(temp_exclude, attachment_name) and is_mod_of_origin then
-                                            -- Add attachment
-                                            attachment_names[#attachment_names+1] = attachment_name
+                -- Iterate through target plugins
+                for _, target_plugin in pairs(plugin_list) do
+                    -- Check target plugin
+                    if not target_plugin or target_plugin == "all" or target_plugin == plugin_mod:get_name() then
+                        -- Check if the mod has a extended_weapon_customization_plugin
+                        local plugin = plugin_mod.extended_weapon_customization_plugin or plugin_mod.settings
+                        if plugin then
+                            -- Get weapon attachments
+                            local attachments = plugin.attachments[weapon_template]
+                            if attachments then
+                                -- Iterate through attachments
+                                for attachment_slot, attachment_list in pairs(attachments) do
+                                    -- Check if target slot
+                                    -- if not target_slot or (target_slot == attachment_slot and not table_contains(excluded_names, attachment_slot)) then
+                                    if not mod:cached_table_contains(excluded_names, attachment_slot) and (not target_slot or target_slot == attachment_slot) then
+                                        -- Iterate through attachment list
+                                        for attachment_name, attachment_data in pairs(attachment_list) do
+                                            -- Origin
+                                            -- local is_mod_of_origin = pt.attachment_data_origin[attachment_data] == plugin_mod
+                                            -- Check exclude
+                                            -- if not table_contains(temp_exclude, attachment_name) then
+                                            if not mod:cached_table_contains(excluded_names, attachment_name) then --and is_mod_of_origin then
+                                                -- Add attachment
+                                                attachment_names[#attachment_names+1] = attachment_name
+                                            end
                                         end
                                     end
                                 end

@@ -383,11 +383,15 @@ local function update_laser_pointer(flashlight_extension, dt, t)
                 local recoil_template = weapon_extension:recoil_template()
                 local recoil_component = unit_data_extension:read_component("recoil")
                 local movement_state_component = unit_data_extension:read_component("movement_state")
-                aim_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, movement_state_component, aim_rotation)
+                -- local first_person_component = unit_data_extension:read_component("first_person")
+                local inair_state_component = unit_data_extension:read_component("inair_state")
+                local locomotion_component = unit_data_extension:read_component("locomotion")
+                -- local rotation = first_person_component.rotation
+                aim_rotation = Recoil.apply_weapon_recoil_rotation(recoil_template, recoil_component, movement_state_component, locomotion_component, inair_state_component, aim_rotation)
                 -- Apply game sway
                 local sway_component = unit_data_extension:read_component("sway")
                 local sway_template = weapon_extension:sway_template()
-                aim_rotation = Sway.apply_sway_rotation(sway_template, sway_component, movement_state_component, aim_rotation)
+                aim_rotation = Sway.apply_sway_rotation(sway_template, sway_component, aim_rotation)
             end
 
             -- Aim rotation

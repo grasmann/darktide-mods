@@ -22,15 +22,26 @@ local ItemPackage = mod:original_require("scripts/foundation/managers/package/ut
     local application_resource_package = application.resource_package
 --#endregion
 
+-- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
+-- #####  ││├─┤ │ ├─┤ #################################################################################################
+-- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
+
+local WEAPON_RANGED = "WEAPON_RANGED"
+local WEAPON_MELEE = "WEAPON_MELEE"
+local VALID_ITEM_TYPES = {WEAPON_MELEE, WEAPON_RANGED}
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.MispredictPackageHandler, "_load_item_packages", function(func, self, item, ...)
-    -- Modify item
-    mod:modify_item(item)
-    -- Fixes
-    mod:apply_attachment_fixes(item)
+    -- Check item
+    if item and mod:cached_table_contains(VALID_ITEM_TYPES, item.item_type) then
+        -- Modify item
+        mod:modify_item(item)
+        -- Fixes
+        mod:apply_attachment_fixes(item)
+    end
 
     -- ##### Original function ########################################################################################
 	local mission = self._mission
@@ -52,10 +63,13 @@ mod:hook(CLASS.MispredictPackageHandler, "_load_item_packages", function(func, s
 end)
 
 mod:hook(CLASS.MispredictPackageHandler, "_unload_item_packages", function(func, self, item, ...)
-    -- Modify item
-    mod:modify_item(item)
-    -- Fixes
-    mod:apply_attachment_fixes(item)
+    -- Check item
+    if item and mod:cached_table_contains(VALID_ITEM_TYPES, item.item_type) then
+        -- Modify item
+        mod:modify_item(item)
+        -- Fixes
+        mod:apply_attachment_fixes(item)
+    end
 
     -- ##### Original function ########################################################################################
 	local mission = self._mission

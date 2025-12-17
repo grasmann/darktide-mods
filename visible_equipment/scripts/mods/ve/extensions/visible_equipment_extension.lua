@@ -115,6 +115,14 @@ local SLOT_ATTACHMENTS = {
     "left",
     "right"
 }
+local SHIELD_WEAPONS = {
+    "ogryn_powermaul_slabshield_p1_m1",
+    "powermaul_shield_p1_m1",
+    "powermaul_shield_p1_m2",
+    "shotpistol_shield_p1_m1",
+    "shotpistol_shield_p1_m2",
+    "shotpistol_shield_p1_m3",
+}
 local ANIMATION_TABLE = {
     current = {},
     previous = {},
@@ -305,7 +313,7 @@ end
 
 VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_template)
     -- Check for valid slot
-    if (not self.loaded[slot] and table_contains(SLOTS, slot.name) and slot.item) then
+    if not self.loaded[slot] and table_contains(SLOTS, slot.name) and slot.item then
         -- Spawn visible equipment
         local item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p, fixes = self:spawn_slot(slot, optional_mission_template)
         -- Init script
@@ -366,10 +374,13 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
             self.anim[slot].end_rotation[obj] = vector3_box(vector3_zero())
             self.anim[slot].current_position[obj] = vector3_box(vector3_zero())
             self.anim[slot].current_rotation[obj] = vector3_box(vector3_zero())
+            -- -- Show
+            -- unit_set_unit_visibility(obj, true, true)
             -- Center point
             self.unit_center_point[slot][obj] = world_spawn_unit_ex(self.world, EMPTY_UNIT, nil, unit_world_pose(obj, 1))
             world_link_unit(self.world, self.unit_center_point[slot][obj], 1, obj, 1)
         end
+        -- mod:dtf(self.objects, "objects", 10)
         -- Set loaded
         self.loaded[slot] = true
         -- Position slot objects
@@ -533,6 +544,14 @@ VisibleEquipmentExtension.position_objects = function(self, apply_center_mass_of
     end
 end
 
+
+VisibleEquipmentExtension.is_shield = function(self, slot)
+    if slot and slot.item then
+        local weapon_template = slot.item.weapon_template
+        return table_contains(SHIELD_WEAPONS, weapon_template)
+    end
+end
+
 VisibleEquipmentExtension.is_ogryn = function(self)
     return self.profile and self.profile.archetype.name == "ogryn"
 end
@@ -557,9 +576,11 @@ VisibleEquipmentExtension.slot_placement = function(self, obj, slot)
         local count = table_size(item_offset)
         placement = table_keys(item_offset)[math_random(1, count)]
     end
-    placement = SPECIAL_SLOT_PLACEMENTS[item_type] or SPECIAL_SLOT_PLACEMENTS[name] or placement
+    placement = self.is_shield(slot) and (SPECIAL_SLOT_PLACEMENTS[item_type] or SPECIAL_SLOT_PLACEMENTS[name]) or placement
     if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
     if placement == "backpack" and backpack_group == "default" then placement = "default" end
+
+    -- mod:echo("placement "..tostring(weapon_template).." "..tostring(name).." "..tostring(placement))
 
     return placement
 
@@ -590,15 +611,24 @@ VisibleEquipmentExtension.slot_offset = function(self, obj, slot)
     local breed_item_offsets = self.settings.offsets[breed_name][item_type]
 
     local offset = item_offset and item_offset[placement] and item_offset[placement][name]
+
+    -- if not offset then
+    --      mod:echo("offset "..tostring(weapon_template).." "..tostring(placement).." "..tostring(name).." "..tostring(offset and offset.position))
+    -- end
+
     offset = offset or (item_offset and item_offset[backpack_group] and item_offset[backpack_group][name]) or
         (item_type_offsets and item_type_offsets[backpack_group] and item_type_offsets[backpack_group][name]) or
         (breed_item_offsets and breed_item_offsets[backpack_group] and breed_item_offsets[backpack_group][name]) or
         (item_type_offsets and item_type_offsets[name])
     
     -- Breed offsets
-    local breed_item_offsets = self.settings.offsets[breed_name][item_type]
+    -- local breed_item_offsets = self.settings.offsets[breed_name][item_type]
     offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
     offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
+
+    -- if offset then
+    --     mod:echo("offset "..tostring(placement).." "..tostring(name).." "..tostring(offset.position))
+    -- end
 
     return offset, backpack_values
 end
@@ -654,6 +684,8 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         world_unlink_unit(world, obj)
         world_link_unit(world, obj, 1, self.unit, self.node[slot][obj])
         -- Set offset
+        local name = self.names[slot][obj]
+        -- mod:echo("offset "..tostring(name).." "..tostring(position))
         unit_set_local_position(obj, 1, position)
         unit_set_local_rotation(obj, 1, quaternion_from_vector(rotation))
         unit_set_local_scale(obj, 1, scale)
@@ -725,17 +757,17 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, opt
                 -- Hidden?
                 local old_value = self.visible[slot]
                 self.visible[slot] = (slot_name ~= self.wielded_slot and true) or false
-
+                local is_shield = self:is_shield(slot)
                 if player_invisible or in_first_person then self.visible[slot] = false end
                 -- Iterate through objects
                 for index, obj in pairs(self.objects[slot]) do
                     local name = self.names[slot][obj]
                     -- Shield Visibility
-                    if self.shield_visibility == "one_on_back" and name == "left" and self.visible[slot] then
+                    if is_shield and self.shield_visibility == "one_on_back" and name == "left" and self.visible[slot] then
                         -- If shield is already showing; don't show
                         if showing_shield then unit_set_unit_visibility(obj, false, true) end
                         showing_shield = true
-                    elseif self.shield_visibility == "one_visible" and name == "left" and self.visible[slot] then
+                    elseif is_shield and self.shield_visibility == "one_visible" and name == "left" and self.visible[slot] then
                         -- If shield is currently wielded or is already showing; don't show
                         if showing_shield or (item_attachments_by_name and table_find(item_attachments_by_name, "left")) then unit_set_unit_visibility(obj, false, true) end
                         showing_shield = true
@@ -972,189 +1004,193 @@ VisibleEquipmentExtension.animate_slot = function(self, slot, animation, strengt
 end
 
 VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
-    -- Iterate through objects
-    for index, obj in pairs(self.objects[slot]) do
-        -- Swing
-        local angle = self.momentum
-        -- reduce the angle
-        angle = angle % 360
-        -- force it to be the positive remainder, so that 0 <= angle < 360
-        angle = (angle + 360) % 360
-        -- force into the minimum absolute value residue class, so that -180 < angle <= 180
-        if angle > 180 then angle = angle - 360 end
-        -- angle = angle * weight_factor
-        if not self.from_ui_profile_spawner then
-            angle = angle * -1
-        end
-        -- Momentum vector
-        local item_momentum = self.settings.momentum[slot.item.weapon_template]
-        local side_momentum = item_momentum and item_momentum[self.names[slot][obj]]
-        local item_type_momentum = self.settings.momentum[slot.item.item_type] or
-            self.settings.momentum.default
-        local default_momentum = item_type_momentum and item_type_momentum[self.names[slot][obj]]
-        local momentum = (side_momentum and side_momentum.momentum) or
-            (default_momentum and default_momentum.momentum)
-        local momentum_vector = momentum and vector3_unbox(momentum) or vector3_zero()
-
-        local placement = self:slot_placement(obj, slot)
-
-        -- Calculate momentum_drag 
-        -- local momentum_drag = vector3_zero()
-        local multiplier = self.from_ui_profile_spawner and -2 or 2
-        if self.wielded_slot == slot.name then multiplier = multiplier * 2 end
-        local momentum_drag = (momentum_vector * angle) * multiplier
-        momentum_drag[1] = math_abs(momentum_drag[1])
-        -- Get foot side
-        local right_foot_next = self.right_foot_next
-        -- Check if first person extension is set up
-        if self.first_person_extension and self.first_person_extension:is_in_first_person_mode() then
-            -- Get foot side
-            right_foot_next = self.first_person_extension._right_foot_next
-        end
+    self.modding_tools_were_busy = self.modding_tools_were_busy or (self.modding_tools and self.modding_tools:unit_manipulation_busy())
+    if not self.modding_tools_were_busy then
         
-        local anim = self.anim[slot]
-        -- Check for current active animation
-        if anim.current[obj] then
-            -- Check if not started yet
-            if not anim.started[obj] then
-                -- Get start state
-                local start_state = anim.current[obj].start
-                -- Set start state
-                anim.state[obj] = anim.current[obj][start_state] and anim.current[obj][start_state][placement] or anim.current[obj][start_state]
-            -- Check if started
-            elseif anim.started[obj] then
-                -- Check timer if elapsed
-                if anim.ending[obj] < t then
-                    -- Get next state
-                    local next_state = anim.state[obj].next
-                    -- Set next state
-                    anim.state[obj] = anim.current[obj][next_state] and anim.current[obj][next_state][placement] or anim.current[obj][next_state]
-                    -- Reset timer
+        -- Iterate through objects
+        for index, obj in pairs(self.objects[slot]) do
+            -- Swing
+            local angle = self.momentum
+            -- reduce the angle
+            angle = angle % 360
+            -- force it to be the positive remainder, so that 0 <= angle < 360
+            angle = (angle + 360) % 360
+            -- force into the minimum absolute value residue class, so that -180 < angle <= 180
+            if angle > 180 then angle = angle - 360 end
+            -- angle = angle * weight_factor
+            if not self.from_ui_profile_spawner then
+                angle = angle * -1
+            end
+            -- Momentum vector
+            local item_momentum = self.settings.momentum[slot.item.weapon_template]
+            local side_momentum = item_momentum and item_momentum[self.names[slot][obj]]
+            local item_type_momentum = self.settings.momentum[slot.item.item_type] or
+                self.settings.momentum.default
+            local default_momentum = item_type_momentum and item_type_momentum[self.names[slot][obj]]
+            local momentum = (side_momentum and side_momentum.momentum) or
+                (default_momentum and default_momentum.momentum)
+            local momentum_vector = momentum and vector3_unbox(momentum) or vector3_zero()
+
+            local placement = self:slot_placement(obj, slot)
+
+            -- Calculate momentum_drag 
+            -- local momentum_drag = vector3_zero()
+            local multiplier = self.from_ui_profile_spawner and -2 or 2
+            if self.wielded_slot == slot.name then multiplier = multiplier * 2 end
+            local momentum_drag = (momentum_vector * angle) * multiplier
+            momentum_drag[1] = math_abs(momentum_drag[1])
+            -- Get foot side
+            local right_foot_next = self.right_foot_next
+            -- Check if first person extension is set up
+            if self.first_person_extension and self.first_person_extension:is_in_first_person_mode() then
+                -- Get foot side
+                right_foot_next = self.first_person_extension._right_foot_next
+            end
+            
+            local anim = self.anim[slot]
+            -- Check for current active animation
+            if anim.current[obj] then
+                -- Check if not started yet
+                if not anim.started[obj] then
+                    -- Get start state
+                    local start_state = anim.current[obj].start
+                    -- Set start state
+                    anim.state[obj] = anim.current[obj][start_state] and anim.current[obj][start_state][placement] or anim.current[obj][start_state]
+                -- Check if started
+                elseif anim.started[obj] then
+                    -- Check timer if elapsed
+                    if anim.ending[obj] < t then
+                        -- Get next state
+                        local next_state = anim.state[obj].next
+                        -- Set next state
+                        anim.state[obj] = anim.current[obj][next_state] and anim.current[obj][next_state][placement] or anim.current[obj][next_state]
+                        -- Reset timer
+                        anim.started[obj] = nil
+                        -- Reset strength
+                        anim.strength_override[obj] = nil
+                    end
+                end
+
+                -- Get interval
+                local states = anim.current[obj].states
+                local interval = anim.current[obj].interval or self:footstep_interval(slot) / states --anim.interval[obj] / states
+                -- if self.sheathing[slot] then interval = 2 end
+                -- local interval = anim.interval[obj] / states
+                -- Get state
+                local state = anim.state[obj]
+
+                -- Check state is valid and not started yet
+                if state and not anim.started[obj] then
+                    -- Set timer
+                    anim.started[obj] = t
+                    anim.ending[obj] = t + interval
+                    -- Set start and end positions and rotations
+                    anim.start_position[obj] = state.start_position
+                    anim.start_rotation[obj] = state.start_rotation
+                    anim.end_position[obj] = state.end_position
+                    anim.end_rotation[obj] = state.end_rotation
+
+                    -- self.sheathing[slot] = nil
+
+                -- Check state is not valid
+                elseif not state then
+                    -- Reset animation
+                    anim.current[obj] = nil
                     anim.started[obj] = nil
-                    -- Reset strength
-                    anim.strength_override[obj] = nil
+                    anim.ending[obj] = nil
+                    self.sheathing[slot] = nil
                 end
-            end
 
-            -- Get interval
-            local states = anim.current[obj].states
-            local interval = anim.current[obj].interval or self:footstep_interval(slot) / states --anim.interval[obj] / states
-            -- if self.sheathing[slot] then interval = 2 end
-            -- local interval = anim.interval[obj] / states
-            -- Get state
-            local state = anim.state[obj]
-
-            -- Check state is valid and not started yet
-            if state and not anim.started[obj] then
-                -- Set timer
-                anim.started[obj] = t
-                anim.ending[obj] = t + interval
-                -- Set start and end positions and rotations
-                anim.start_position[obj] = state.start_position
-                anim.start_rotation[obj] = state.start_rotation
-                anim.end_position[obj] = state.end_position
-                anim.end_rotation[obj] = state.end_rotation
-
-                -- self.sheathing[slot] = nil
-
-            -- Check state is not valid
-            elseif not state then
-                -- Reset animation
-                anim.current[obj] = nil
-                anim.started[obj] = nil
-                anim.ending[obj] = nil
-                self.sheathing[slot] = nil
-            end
-
-            -- Check if any animation is started
-            if anim.started[obj] then
-                self.sheathing[slot] = nil
-                -- Calculate progress
-                local progress = ((anim.started[obj] + interval) - t) / interval
-                local anim_progress = math_ease_cubic(1 - progress)
-                -- Get move speed multiplier
-                local move_speed = self.locomotion_extension and self.locomotion_extension:move_speed() or 1
-                -- Get foot multiplier
-                local foot_multiplier = 1
-                if move_speed == 0 then
-                    move_speed = 1
-                elseif slot.item.item_type == WEAPON_MELEE or slot.item.item_type == POCKETABLE_SMALL then
-                    foot_multiplier = right_foot_next and 1 or .25
-                elseif slot.item.item_type == WEAPON_RANGED or slot.item.item_type == POCKETABLE then
-                    foot_multiplier = right_foot_next and .25 or 1
-                end
-                -- Get strength multiplier
-                local start_strength = move_speed * foot_multiplier
-                local end_strength = move_speed * foot_multiplier
-                if anim.strength_override[obj] then
-                    if state.name == "step" then
-                        end_strength = anim.strength_override[obj]
-                    elseif state.name == "back" then
-                        start_strength = anim.strength_override[obj]
+                -- Check if any animation is started
+                if anim.started[obj] then
+                    self.sheathing[slot] = nil
+                    -- Calculate progress
+                    local progress = ((anim.started[obj] + interval) - t) / interval
+                    local anim_progress = math_ease_cubic(1 - progress)
+                    -- Get move speed multiplier
+                    local move_speed = self.locomotion_extension and self.locomotion_extension:move_speed() or 1
+                    -- Get foot multiplier
+                    local foot_multiplier = 1
+                    if move_speed == 0 then
+                        move_speed = 1
+                    elseif slot.item.item_type == WEAPON_MELEE or slot.item.item_type == POCKETABLE_SMALL then
+                        foot_multiplier = right_foot_next and 1 or .25
+                    elseif slot.item.item_type == WEAPON_RANGED or slot.item.item_type == POCKETABLE then
+                        foot_multiplier = right_foot_next and .25 or 1
                     end
-                end
-                -- No modifier
-                if state.no_modifiers then
-                    start_strength = 1
-                    end_strength = 1
-                    move_speed = 1
-                end
-                -- Calculate start and end positions and rotations
-                local start_position = vector3_unbox(anim.start_position[obj]) * start_strength
-                local start_rotation = vector3_unbox(anim.start_rotation[obj]) * start_strength
-                local end_position = vector3_unbox(anim.end_position[obj]) * end_strength
-                local end_rotation = vector3_unbox(anim.end_rotation[obj]) * end_strength
-                -- Calculate current target positions and rotations
-                local _current_position = vector3_unbox(anim.current_position[obj])
-                local _current_rotation = vector3_unbox(anim.current_rotation[obj])
+                    -- Get strength multiplier
+                    local start_strength = move_speed * foot_multiplier
+                    local end_strength = move_speed * foot_multiplier
+                    if anim.strength_override[obj] then
+                        if state.name == "step" then
+                            end_strength = anim.strength_override[obj]
+                        elseif state.name == "back" then
+                            start_strength = anim.strength_override[obj]
+                        end
+                    end
+                    -- No modifier
+                    if state.no_modifiers then
+                        start_strength = 1
+                        end_strength = 1
+                        move_speed = 1
+                    end
+                    -- Calculate start and end positions and rotations
+                    local start_position = vector3_unbox(anim.start_position[obj]) * start_strength
+                    local start_rotation = vector3_unbox(anim.start_rotation[obj]) * start_strength
+                    local end_position = vector3_unbox(anim.end_position[obj]) * end_strength
+                    local end_rotation = vector3_unbox(anim.end_rotation[obj]) * end_strength
+                    -- Calculate current target positions and rotations
+                    local _current_position = vector3_unbox(anim.current_position[obj])
+                    local _current_rotation = vector3_unbox(anim.current_rotation[obj])
 
-                local target_position = vector3_lerp(start_position, end_position, progress)
-                local target_rotation = vector3_lerp(start_rotation, end_rotation, progress)
-                -- Calculate current positions and rotations
-                local current_position = vector3_lerp(_current_position, target_position, anim_progress)
-                local current_rotation = vector3_lerp(_current_rotation, target_rotation, anim_progress)
-                -- Store current positions and rotations
-                anim.current_position[obj]:store(current_position)
-                anim.current_rotation[obj]:store(current_rotation)
-                -- Calculate final positions and rotations
-                local position = vector3_unbox(anim.default_position[obj]) + current_position
-                local rotation = quaternion_from_vector(vector3_unbox(anim.default_rotation[obj]) + current_rotation)
-                -- Set final positions and rotations
-                unit_set_local_position(obj, 1, position)
-                unit_set_local_rotation(obj, 1, rotation)
-                -- Always visible
-                if anim.name[obj] ~= "sheath" then
-                    for attachment_unit, _ in pairs(self.always_visible[slot]) do
-                        local offset = self.always_visible_offset[slot][attachment_unit]
-                        local mat = quaternion_matrix4x4(rotation)
-                        offset = offset and matrix4x4_transform(mat, vector3_unbox(offset)) or vector3_zero()
-                        unit_set_local_position(attachment_unit, 1, position + offset)
-                        unit_set_local_rotation(attachment_unit, 1, rotation)
+                    local target_position = vector3_lerp(start_position, end_position, progress)
+                    local target_rotation = vector3_lerp(start_rotation, end_rotation, progress)
+                    -- Calculate current positions and rotations
+                    local current_position = vector3_lerp(_current_position, target_position, anim_progress)
+                    local current_rotation = vector3_lerp(_current_rotation, target_rotation, anim_progress)
+                    -- Store current positions and rotations
+                    anim.current_position[obj]:store(current_position)
+                    anim.current_rotation[obj]:store(current_rotation)
+                    -- Calculate final positions and rotations
+                    local position = vector3_unbox(anim.default_position[obj]) + current_position
+                    local rotation = quaternion_from_vector(vector3_unbox(anim.default_rotation[obj]) + current_rotation)
+                    -- Set final positions and rotations
+                    unit_set_local_position(obj, 1, position)
+                    unit_set_local_rotation(obj, 1, rotation)
+                    -- Always visible
+                    if anim.name[obj] ~= "sheath" then
+                        for attachment_unit, _ in pairs(self.always_visible[slot]) do
+                            local offset = self.always_visible_offset[slot][attachment_unit]
+                            local mat = quaternion_matrix4x4(rotation)
+                            offset = offset and matrix4x4_transform(mat, vector3_unbox(offset)) or vector3_zero()
+                            unit_set_local_position(attachment_unit, 1, position + offset)
+                            unit_set_local_rotation(attachment_unit, 1, rotation)
+                        end
                     end
                 end
             end
-        end
 
-        -- Get momentum drag
-        local current_position = vector3_unbox(anim.current_position[obj])
-        local current_rotation = vector3_unbox(anim.current_rotation[obj])
-        -- Calculate final positions and rotations
-        -- local position = vector3_unbox(anim.default_position[obj]) + unit_local_position(self.unit, 1)
-        local position = vector3_unbox(anim.default_position[obj]) + current_position
-        local rotation = vector3_unbox(anim.default_rotation[obj]) + current_rotation
-        -- Set final positions and rotations
-        unit_set_local_position(obj, 1, position)
-        local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
-        local rotated_pos = matrix4x4_transform(mat, momentum_drag) --* 4
-        rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(rotated_pos))
-        unit_set_local_rotation(obj, 1, rotation)
-        -- Always visible
-        for attachment_unit, _ in pairs(self.always_visible[slot]) do
-            unit_set_local_rotation(attachment_unit, 1, rotation)
+            -- Get momentum drag
+            local current_position = vector3_unbox(anim.current_position[obj])
+            local current_rotation = vector3_unbox(anim.current_rotation[obj])
+            -- Calculate final positions and rotations
+            -- local position = vector3_unbox(anim.default_position[obj]) + unit_local_position(self.unit, 1)
+            local position = vector3_unbox(anim.default_position[obj]) + current_position
+            local rotation = vector3_unbox(anim.default_rotation[obj]) + current_rotation
+            -- Set final positions and rotations
+            unit_set_local_position(obj, 1, position)
+            local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
+            local rotated_pos = matrix4x4_transform(mat, momentum_drag) --* 4
+            rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(rotated_pos))
+            unit_set_local_rotation(obj, 1, rotation)
+            -- Always visible
+            for attachment_unit, _ in pairs(self.always_visible[slot]) do
+                unit_set_local_rotation(attachment_unit, 1, rotation)
+            end
+
         end
 
     end
-
 end
 
 -- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐┌─┐┬┌┐┌┌─┐  ┌─┐┌┐┌┌┬┐  ┌┬┐┌─┐┬  ┬┌─┐┬  ┌─┐┌─┐┌┬┐┌─┐┌┐┌┌┬┐ #####################################
