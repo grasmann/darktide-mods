@@ -7,6 +7,7 @@ local mod = get_mod("extended_weapon_customization")
     local table = table
     local managers = Managers
     local table_clear = table.clear
+    local table_clone = table.clone
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -146,6 +147,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/debug")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/game")
 mod.save_lua = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/save")
 mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/settings")
+pt.extended_weapon_customization_plugin = table_clone(mod.settings)
 mod:update_flashlight_templates(mod.settings.flashlight_templates)
 
 -- ##### ┌─┐┌─┐┌┬┐┌─┐┬ ┬┌─┐┌─┐ ########################################################################################

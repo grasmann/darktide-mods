@@ -1813,6 +1813,20 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
                     end
                 end
             end
+
+            -- Get attachment slots from item
+            local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
+            -- Iterate through attachment slots
+            for attachment_slot, data in pairs(attachment_slots) do
+                -- Get material overrides from item
+                local material_overrides = mod:gear_material_overrides(self._selected_item, nil, attachment_slot)
+                -- Check material overrides
+                if material_overrides then
+                    -- Apply material overrides to presentation item
+                    mod:gear_material_overrides(self._presentation_item, nil, attachment_slot, material_overrides)
+                end
+            end
+
         end
 
         if not self._on_enter_anim_id then
@@ -2060,18 +2074,18 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_preview_item", function(func, sel
         -- local slot_name = tab_content and tab_content.slot_name
         local slot_name = self:selected_slot_name()
 
-        -- Get attachment slots from item
-        local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
-        -- Iterate through attachment slots
-        for attachment_slot, data in pairs(attachment_slots) do
-            -- Get material overrides from item
-            local material_overrides = mod:gear_material_overrides(self._selected_item, nil, attachment_slot)
-            -- Check material overrides
-            if material_overrides then
-                -- Apply material overrides to presentation item
-                -- mod:gear_material_overrides(self._presentation_item, nil, attachment_slot, material_overrides)
-            end
-        end
+        -- -- Get attachment slots from item
+        -- local attachment_slots = mod:fetch_attachment_slots(self._selected_item.attachments)
+        -- -- Iterate through attachment slots
+        -- for attachment_slot, data in pairs(attachment_slots) do
+        --     -- Get material overrides from item
+        --     local material_overrides = mod:gear_material_overrides(self._selected_item, nil, attachment_slot)
+        --     -- Check material overrides
+        --     if material_overrides then
+        --         -- Apply material overrides to presentation item
+        --         mod:gear_material_overrides(self._presentation_item, nil, attachment_slot, material_overrides)
+        --     end
+        -- end
 
         -- mod:gear_material_overrides(self._presentation_item, nil, slot_name, selected_option.material_overrides)
 

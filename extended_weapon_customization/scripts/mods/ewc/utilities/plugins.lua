@@ -113,7 +113,7 @@ mod.pull_attachment_list_string = function(self, weapon_template, optional_targe
                     -- Check target plugin
                     if not target_plugin or target_plugin == "all" or target_plugin == plugin_mod:get_name() then
                         -- Check if the mod has a extended_weapon_customization_plugin
-                        local plugin = plugin_mod.extended_weapon_customization_plugin or plugin_mod.settings
+                        local plugin = plugin_mod.extended_weapon_customization_plugin or pt.extended_weapon_customization_plugin
                         if plugin then
                             -- Get weapon attachments
                             local attachments = plugin.attachments[weapon_template]

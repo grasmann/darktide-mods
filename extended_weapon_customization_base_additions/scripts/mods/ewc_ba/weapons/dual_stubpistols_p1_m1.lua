@@ -106,6 +106,7 @@ local fixes = {
     }
 }
 
+fixes.dual_stubpistols_p1_m1 = table_clone(fixes.dual_stubpistols_p1_m1)
 fixes.dual_stubpistols_p1_m2 = table_clone(fixes.dual_stubpistols_p1_m1)
 fixes.dual_stubpistols_p1_m3 = table_clone(fixes.dual_stubpistols_p1_m1)
 fixes.dual_stubpistols_p1_m4 = table_clone(fixes.dual_stubpistols_p1_m1)
