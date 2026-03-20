@@ -354,7 +354,11 @@ mod.drop_crate = function(self, event_name, event_index, unit, first_person, con
 		local account_id = player:account_id() or player:name()
 		if mod.crates_equiped[unit] then
 			local crate = mod.crates_equiped[unit]
-			local text = Localize(mod.pickups_text[crate])
+			-- @Backup158: prevents crash from localizing nil, if they add more pocketables
+			local text = ""
+			if mod.pickups_text[crate] then
+				text = Localize(mod.pickups_text[crate])
+			end
 			if crate == "med_crate_pocketable" then
 				-- Message
 				if mod:get("message_health_placed") then
@@ -408,12 +412,14 @@ mod.pickups = {
 	loc_pickup_pocketable_ammo_crate_01 = "ammo_cache_pocketable",
 	loc_pickup_side_mission_pocketable_01 = "grimoire_pocketable",
 	loc_pickup_side_mission_pocketable_02 = "scripture_pocketable",
+	loc_game_mode_expedition_pickup_price_desc = "expedition_pocketable",
 }
 mod.pickups_text = {
 	med_crate_pocketable = "loc_pickup_pocketable_medical_crate_01",
 	ammo_cache_pocketable = "loc_pickup_pocketable_ammo_crate_01",
 	grimoire_pocketable = "loc_pickup_side_mission_pocketable_01",
 	scripture_pocketable = "loc_pickup_side_mission_pocketable_02",
+	expedition_pocketable = "loc_game_mode_expedition_pickup_price_desc",
 }
 mod.forge_material = {
 	loc_pickup_small_metal = "small_metal",
