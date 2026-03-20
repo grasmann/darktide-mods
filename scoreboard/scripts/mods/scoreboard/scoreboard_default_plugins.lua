@@ -492,6 +492,9 @@ mod:hook(CLASS.InteracteeExtension, "stopped", function(func, self, result, ...)
 					elseif pickup == "scripture_pocketable" then
 						option = "scripture_grimoire_pickup"
 						color = Color.citadel_dawnstone(255, true)
+					elseif pickup == "expedition_pocketable" then
+						option = "message_expedition_pocketable_pickup"
+						color = Color.citadel_dawnstone(255, true)
 					end
 					-- Message
 					if mod:get(option) then

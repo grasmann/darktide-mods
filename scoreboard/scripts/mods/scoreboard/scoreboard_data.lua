@@ -197,6 +197,10 @@ return {
 						["type"] = "checkbox",
 						["default_value"] = false
 					},
+					{["setting_id"] = "message_expedition_pocketable_pickup",
+						["type"] = "checkbox",
+						["default_value"] = false
+					},
 				},
 			},
 		},

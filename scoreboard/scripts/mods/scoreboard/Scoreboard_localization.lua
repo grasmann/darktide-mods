@@ -958,6 +958,21 @@ return {
 		ru = "Показывает сообщение когда игрок подбирает писание или гримуар",
 		["zh-cn"] = "玩家拾取圣经或魔法书时显示消息",
 	},
+	-- Pick up pocketables from Expeditions game mode
+	message_expedition_pocketable_pickup = {
+		en = "Expeditions Pocketable picked up",
+		--de = "",
+		--fr = "",
+		--ru = "",
+		--["zh-cn"] = "",
+	},
+	message_expedition_pocketable_pickup = {
+		en = "Shows message when a player picks up a pocketable from the Expeditions game mode",
+		--de = "",
+		--fr = "",
+		--ru = "",
+		--["zh-cn"] = "",
+	},
 	row_team_score = {
 		en = "Team Score",
 		de = "Team Punkte",
