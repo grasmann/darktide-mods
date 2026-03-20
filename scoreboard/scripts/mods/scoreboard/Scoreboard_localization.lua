@@ -966,7 +966,7 @@ return {
 		--ru = "",
 		--["zh-cn"] = "",
 	},
-	message_expedition_pocketable_pickup = {
+	message_expedition_pocketable_pickup_description = {
 		en = "Shows message when a player picks up a pocketable from the Expeditions game mode",
 		--de = "",
 		--fr = "",
