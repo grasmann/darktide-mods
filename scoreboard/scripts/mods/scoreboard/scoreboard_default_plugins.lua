@@ -726,6 +726,9 @@ mod.bosses = {
 	"renegade_captain",
 	"renegade_twin_captain",
 	"renegade_twin_captain_two",
+	"cultist_captain",
+    "chaos_mutator_daemonhost",
+    "chaos_ogryn_houndmaster",
 }
 mod.current_health = {}
 mod.last_enemy_interaction = {}
