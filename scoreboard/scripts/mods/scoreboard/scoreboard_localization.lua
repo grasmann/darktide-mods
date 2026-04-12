@@ -12,14 +12,14 @@ mod:add_global_localize_strings({
 		en = "Scoreboard History",
 		de = "Scoreboard Historie",
 		fr = "Historique des scores",
-		ru = "История результатов",
+		ru = "История таблицы результатов",
 		["zh-cn"] = "记分板历史记录",
 	},
 	loc_scoreboard_save = {
 		en = "Save Scoreboard",
 		de = "Scoreboard Speichern",
 		fr = "Sauvegarder le tableau",
-		ru = "Сохранить Таблицу результатов",
+		ru = "Сохранить таблицу результатов",
 		["zh-cn"] = "保存记分板",
 	},
 	loc_scoreboard_scan = {
@@ -33,7 +33,7 @@ mod:add_global_localize_strings({
 		en = "Delete Scoreboard",
 		de = "Scoreboard löschen",
 		fr = "Supprimer le tableau",
-		ru = "Удалить Таблицу результатов",
+		ru = "Удалить таблицу результатов",
 		["zh-cn"] = "删除记分板",
 	},
 	-- Fix unlocalized vanilla training grounds name
@@ -74,7 +74,7 @@ return {
 		en = "Scoreboard History",
 		de = "Scoreboard Historie",
 		fr = "Historique des tableaux des scores",
-		ru = "История результатов",
+		ru = "История таблицы результатов",
 		["zh-cn"] = "记分板历史记录",
 	},
 	mod_save_scoreboard_to_history = {
@@ -93,11 +93,11 @@ return {
 		["zh-cn"] = "开发者模式",
 	},
 	scoreboard_tactical_overlay_x = {
-		en = "Scoreboard Horizontal position",
-		-- de = "",
-		-- fr = "",
-		ru = "Позиция Таблицы по горизонтали",
-		-- ["zh-cn"] = "",
+		en = "Scoreboard Tactical Overlay Position (Horizontal)",
+		-- de = "Maximale Scoreboardgröße",
+		-- fr = "Taille maximale du tableau de bord", -- ?
+		ru = "Позиция таблицы по горизонтали",
+		-- ["zh-cn"] = "最大记分板高度",
 	},
 	scoreboard_tactical_overlay_x_description = {
 		en = "Change the Horizontal position of the Scoreboard in the Tactical Overview [TAB].\n{#color(255, 155, 55)}But you have to Reload mods by pressing CTRL+SHIFT+R!{#reset()}{#color(100, 100, 100)} (by default)\n* To enable this feature, you need to go to the Darktide Mod Framework options and enable Developer Mode.{#reset()}",
@@ -107,11 +107,11 @@ return {
 		-- ["zh-cn"] = "",
 	},
 	scoreboard_tactical_overlay_y = {
-		en = "Scoreboard Vertical position",
-		-- de = "",
-		-- fr = "",
-		ru = "Позиция Таблицы по вертикали",
-		-- ["zh-cn"] = "",
+		en = "Scoreboard Tactical Overlay Position (Vertical)",
+		-- de = "Maximale Scoreboardgröße",
+		-- fr = "Taille maximale du tableau de bord", -- ?
+		ru = "Позиция таблицы по вертикали",
+		-- ["zh-cn"] = "最大记分板高度",
 	},
 	scoreboard_tactical_overlay_y_description = {
 		en = "Change the Vertical position of the Scoreboard in the Tactical Overview [TAB]. Negative numbers move the Scoreboard Up, Positive numbers move it Down.\n{#color(255, 155, 55)}But you have to Reload mods by pressing CTRL+SHIFT+R!{#reset()}{#color(100, 100, 100)} (by default)\n* To enable this feature, you need to go to the Darktide Mod Framework options and enable Developer Mode.{#reset()}",
@@ -124,7 +124,7 @@ return {
 		en = "Maximum Scoreboard Height",
 		de = "Maximale Scoreboardgröße",
 		fr = "Taille maximale du tableau de bord", -- ?
-		ru = "Максимальный размер таблицы", -- +
+		ru = "Максимальная высота таблицы",
 		["zh-cn"] = "最大记分板高度",
 	},
 	tactical_overview = {
@@ -152,7 +152,7 @@ return {
 		en = "Save all Scoreboards",
 		de = "Alle Scoreboards speichern",
 		fr = "Sauvegarder tous les tableaux des scores",
-		ru = "Сохранять все таблицы результатов",
+		ru = "Сохранить все таблицы результатов",
 		["zh-cn"] = "保存所有记分板",
 	},
 	scoreboard_history_cached = {
@@ -309,28 +309,28 @@ return {
 		en = "Machinery / Gadget operated",
 		de = "Maschine / Gadget bedient",
 		fr = "Machine / Gadget utilisés",
-		ru = "Управление механизмами/гаджетами",
+		ru = "Использование Механизмов/Гаджетов",
 		["zh-cn"] = "操作机器 / 装置",
 	},
 	row_operated = {
 		en = "Machinery / Gadget operated",
 		de = "Maschine / Gadget bedient",
 		fr = "Machine / Gadget utilisés",
-		ru = "Управлял Механизмами/Гаджетами",
+		ru = "Использовано Механизмов/Гаджетов",
 		["zh-cn"] = "操作机器 / 装置",
 	},
 	row_machinery_operated = {
 		en = "Machinery",
 		de = "Maschine",
 		fr = "Machine",
-		ru = "Механизмами",
+		ru = "Механизмов",
 		["zh-cn"] = "机器",
 	},
 	row_gadget_operated = {
 		en = "Gadget",
 		de = "Gadget",
 		fr = "Gadget",
-		ru = "Гаджетами",
+		ru = "Гаджетов",
 		["zh-cn"] = "装置",
 	},
 	-- Buttons etc
@@ -338,7 +338,7 @@ return {
 		en = "Buttons Operated",
 		de = "Schalter betätigt",
 		fr = "Boutons utilisés",
-		ru = "Нажатия кнопок",
+		ru = "Нажатие кнопок",
 		["zh-cn"] = "操作按钮",
 	},
 	message_default_text = {
@@ -381,7 +381,7 @@ return {
 		en = "Servoskull",
 		de = "Servoskull",
 		fr = "Servo-crânes",
-		ru = "Сервочереп",
+		ru = "Сервочерепом",
 		["zh-cn"] = "伺服颅骨",
 	},
 	message_decoded_scanner = {
@@ -417,21 +417,21 @@ return {
 		en = "Ammo Packs",
 		de = "Munitionspakete",
 		fr = "Packs de munitions", -- ?
-		ru = "Коробки с патронами",
+		ru = "Пачки с патронами",
 		["zh-cn"] = "弹药补给",
 	},
 	plugin_ammo_off = {
 		en = "Off",
 		de = "Aus",
 		fr = "Désactivé",
-		ru = "Выключены",
+		ru = "Выключен",
 		["zh-cn"] = "关",
 	},
 	row_ammo_1 = {
 		en = "Ammo Picked Up / Wasted",
 		de = "Munition Genommen / Verschwendet",
 		fr = "Munitions Rammassées / Gâchées",
-		ru = "Патронов Взято/Выброшено",
+		ru = "Патронов Взято/Протранжирено",
 		["zh-cn"] = "拾取 / 浪费弹药",
 	},
 	row_ammo_2 = {
@@ -452,7 +452,7 @@ return {
 		en = "Wasted",
 		de = "Verschwendet",
 		fr = "Gâchées",
-		ru = "Выброшено",
+		ru = "Протранжирено",
 		["zh-cn"] = "浪费",
 	},
 	-- Carrying
@@ -496,14 +496,14 @@ return {
 		en = "Coherency Efficiency",
 		de = "Kohärenz Effizienz",
 		fr = "Efficacité de syntonie",
-		ru = "Эффективность сплочённости",
+		ru = "Эффективность Сплочённости",
 		["zh-cn"] = "连携效率",
 	},
 	row_coherency_efficiency = {
 		en = "Coherency Efficiency",
 		de = "Kohärenz Effizienz",
 		fr = "Efficacité de syntonie",
-		ru = "Эффективность сплочённости",
+		ru = "Эффективность Сплочённости",
 		["zh-cn"] = "连携效率",
 	},
 	-- Revive / Rescue
@@ -511,8 +511,7 @@ return {
 		en = "Revived / Rescued",
 		de = "Wiederbelebt / Gerettet",
 		-- fr = "Réanimés / Secourus", --> ?
-		-- ru = "Возрождено/Спасено",
-		ru = "Поднятие и Спасение",
+		ru = "Возрождено/Спасено",
 		["zh-cn"] = "复苏 / 营救",
 	},
 	message_rescued_text = {
@@ -526,35 +525,35 @@ return {
 		en = " revived :subject:",
 		de = " hat :subject: wiederbelebt",
 		-- fr = " a rammassé :subject:",
-		ru = " поднимает :subject:",
+		ru = " возрождает :subject:",
 		["zh-cn"] = "复苏了:subject:",
 	},
 	message_revived_rescued_description = {
 		en = "Shows message when a player revives / rescues another player",
 		de = "Zeigt eine Nachricht wenn ein Spieler einen anderen Spieler wiederbelebt / rettet",
 		-- fr = "Affiche un message lorsqu'un joueur ramasse un Plastacier ou de la Diamantine",
-		ru = "Показывает сообщение когда игрок поднимает упавшего игрока или спасает игрока из плена после смерти",
+		ru = "Показывает сообщение когда игрок возрождает/спасает другого игрока",
 		["zh-cn"] = "玩家复苏 / 营救另一名玩家时显示消息",
 	},
 	plugin_revived_rescued = {
 		en = "Revived / Rescued Operatives",
 		de = "Operator Wiederbelebt / Gerettet",
 		fr = "Opérateur Réanimés / Secourus",
-		ru = "Поднятие и Спасение оперативников",
+		ru = "Возрождение/\nСпасение оперативников",
 		["zh-cn"] = "复苏 / 营救特工",
 	},
 	row_revived_rescued = {
 		en = "Revived / Rescued Operatives",
 		de = "Operator Wiederbelebt / Gerettet",
 		fr = "Opérateurs Réanimés / Secourus",
-		ru = "Оперативников Поднято/Спасено",
+		ru = "Оперативников Возрождено/Спасено",
 		["zh-cn"] = "复苏 / 营救特工",
 	},
 	row_revived_operative = {
 		en = "Revived",
 		de = "Wiederbelebt",
 		fr = "Réanimés",
-		ru = "Поднято",
+		ru = "Возрождено",
 		["zh-cn"] = "复苏",
 	},
 	row_rescued_operative = {
@@ -576,7 +575,7 @@ return {
 		en = "Damage Taken / Health Station Used",
 		de = "Genommener Schaden / Heilstation benutzt",
 		fr = "Dégâts Subis / Stations de soin utilisées",
-		ru = "Урона получено/Активаций медстанций",
+		ru = "Урона получено/Использ. медстанций",
 		["zh-cn"] = "受到伤害 / 使用医疗站",
 	},
 	row_damage_taken = {
@@ -590,21 +589,21 @@ return {
 		en = "Health Station Used",
 		de = "Heilstation benutzt",
 		fr = "Stations de soin utilisées",
-		ru = "Активаций медстанций",
+		ru = "Использ. медстанций",
 		["zh-cn"] = "使用医疗站",
 	},
 	message_health_station = {
 		en = "Health Station",
 		de = "Heilstation",
 		fr = "Station de soin",
-		ru = "Активации медстанций",
+		ru = "Медстанция",
 		["zh-cn"] = "医疗站",
 	},
 	message_health_station_text = {
 		en = " used :subject:",
 		de = " hat :subject: benutzt",
 		fr = " a utilisé :subject:",
-		ru = " активирует :subject:",
+		ru = " использует :subject:",
 		["zh-cn"] = "使用了:subject:",
 	},
 	message_health_station_health_station = {
@@ -618,7 +617,7 @@ return {
 		en = "Shows message when a player uses a health station",
 		de = "Zeigt eine Nachricht wenn ein Spieler eine Heilstation benutzt",
 		fr = "Affiche un message lorsqu'un joueur utilise une station de soin",
-		ru = "Показывает сообщение, когда игрок активирует медстанцию",
+		ru = "Показывает сообщение, когда игрок использует Медстанцию",
 		["zh-cn"] = "玩家使用医疗站时显示消息",
 	},
 	-- Damage dealt
@@ -690,7 +689,7 @@ return {
 		en = "Lesser Enemies Killed",
 		de = "Schwache Gegner Getötet",
 		fr = "Ennemis mineurs tués",
-		ru = "Убийство слабых врагов",
+		ru = "Убийство Слабых врагов",
 		["zh-cn"] = "普通敌人击杀",
 	},
 	row_lesser_enemies = {
@@ -742,7 +741,7 @@ return {
 		en = "Attacks blocked",
 		de = "Attacken geblockt",
 		fr = "Attaques bloquées",
-		ru = "Заблокировано атак",
+		ru = "Атак заблокировано",
 		["zh-cn"] = "格挡攻击",
 	},
 	-- Special hits
@@ -750,14 +749,14 @@ return {
 		en = "Weakspot / Critical Hits Dealt",
 		de = "Schwachpunkt- / Kritische Treffer",
 		fr = "Coups aux Points Faibles / Critiques",
-		ru = "Удары в уязвимые места/\nКритические удары",
+		ru = "Удары По слабым местам/\nКритические",
 		["zh-cn"] = "弱点 / 暴击命中",
 	},
 	row_special_hits = {
 		en = "Weakspot / Critical Hits Dealt",
 		de = "Schwachpunkt- / Kritische Treffer",
 		fr = "Coups aux Points Faibles / Critiques",
-		ru = "Ударов В уязвимые места/Критических",
+		ru = "Ударов По слабым местам/Критических",
 		["zh-cn"] = "弱点 / 暴击命中",
 	},
 	row_weakspot_hits = {
@@ -779,7 +778,7 @@ return {
 		en = "Melee / Ranged Elites Killed",
 		de = "Nah- / Fernkampf Elite getötet",
 		fr = "Élites de Mêlée / Distance tués",
-		ru = "Убийство элитных врагов ближнего боя и стрелков",
+		ru = "Убийство Элитных врагов\nБлижнего боя/Стрелков",
 		["zh-cn"] = "近战 / 远程精英击杀",
 	},
 	row_melee_ranged_threats = {
@@ -808,7 +807,7 @@ return {
 		en = "Specials Killed",
 		de = "Spezialeinheiten Getötet",
 		fr = "Spéciaux tués",
-		ru = "Убийство специалистов: Снайпер,\nБомбардир, Огневик, Взрывун",
+		ru = "Убийство Специалистов: Снайпер,\nБомбардир, Огневик, Взрывун",
 		["zh-cn"] = "专家击杀",
 	},
 	row_special_threats = {
@@ -860,7 +859,7 @@ return {
 		en = " picked up :count: :subject: wasted :count2:",
 		de = " hat :count: :subject: aufgesammelt :count2: verschwendet",
 		fr = " a rammassé :count: :subject: et gaspillé :count2:",
-		ru = " подбирает :subject:: :count:, \nвыбрасывает: :count2:",
+		ru = " подбирает :subject:: :count:, \nтратит напрасно: :count2:",
 		["zh-cn"] = "拾取了 :count: :subject: 浪费 :count2:",
 	},
 	message_ammo_crate_text = {
@@ -874,14 +873,14 @@ return {
 		en = "Ammo",
 		de = "Munition",
 		fr = "Munitions",
-		ru = "патрона(ов)",
+		ru = "патронов",
 		["zh-cn"] = "弹药",
 	},
 	message_ammo_description = {
 		en = "Shows message when a player picks up ammo",
 		de = "Zeigt eine Nachricht wenn ein Spieler Munition einsammelt",
 		fr = "Affiche un message lorsqu'un joueur rammasse des munitions",
-		ru = "Показывает сообщение, когда игрок подбирает боеприпасы",
+		ru = "Показывает сообщение, когда игрок подбирает Патроны",
 		["zh-cn"] = "玩家拾取弹药时显示消息",
 	},
 	-- Deploy
@@ -889,7 +888,7 @@ return {
 		en = "Medipacks / Ammocaches deployed",
 		de = "Medipack / Munition aufgestellt",
 		fr = "Caisses de soin / munitions déployés",
-		ru = "Размещение контейнеров с медикаментами и боеприпасами",
+		ru = "Размещение Контейнеров с медикаментами/боеприпасами",
 		["zh-cn"] = "部署医疗包 / 弹药箱",
 	},
 	row_health_ammo_placed = {
@@ -918,7 +917,7 @@ return {
 		en = "Medipack deployed",
 		de = "Medipack platziert",
 		fr = "Caisse de soin déployée",
-		ru = "Размещение ящика с медикаментами",
+		ru = "Размещение Контейнера с медикаментами",
 		["zh-cn"] = "部署医疗包",
 	},
 	message_health_placed_text = {
@@ -932,7 +931,7 @@ return {
 		en = "Shows message when a player deployes medipack",
 		de = "Zeigt eine Nachicht wenn ein Spieler ein Medipack platziert",
 		fr = "Affiche un message lorsqu'un joueur déploie une caisse de soin",
-		ru = "Показывает сообщение, когда игрок размещает ящик с медикаментами",
+		ru = "Показывает сообщение, когда игрок размещает Контейнер с медикаментами",
 		["zh-cn"] = "玩家部署医疗包时显示消息",
 	},
 	-- Deploy ammocache
@@ -940,14 +939,14 @@ return {
 		en = "Ammocache deployed",
 		de = "Munitionskiste",
 		fr = "Caisse de munitions déployée",
-		ru = "Размещение ящика с боеприпасами",
+		ru = "Размещение Контейнера с боеприпасами",
 		["zh-cn"] = "部署弹药箱",
 	},
 	message_ammo_placed_description = {
 		en = "Shows message when a player deployes ammocache",
 		de = "Zeigt eine Nachricht wenn ein Spieler eine Munitionskiste platziert",
 		fr = "Affiche un message lorsqu'un joueur déploie une caisse de munitions",
-		ru = "Показывает сообщение, когда игрок размещает ящик с боеприпасами",
+		ru = "Показывает сообщение, когда игрок размещает Контейнер с боеприпасами",
 		["zh-cn"] = "玩家部署弹药箱时显示消息",
 	},
 	-- Pick up ammocache / medipack
@@ -955,7 +954,7 @@ return {
 		en = "Medipack / Ammocache picked up",
 		de = "Medipack / Munitionskiste",
 		fr = "Caisse de soin / munitions récupérées",
-		ru = "Подбор ящиков с медикаментами и боеприпасами",
+		ru = "Подбор Контейнеров с\nмедикаментами/боеприпасами",
 		["zh-cn"] = "拾取医疗包 / 弹药箱",
 	},
 	message_ammo_health_pickup_text = {
@@ -969,7 +968,7 @@ return {
 		en = "Shows message when a player picks up medipack or ammocache",
 		de = "Zeigt eine Nachricht wenn ein Spieler Medipack oder Munitionskiste einsammelt",
 		fr = "Affiche un message lorsqu'un joueur ramasse une caisse de soin ou une caisse de munitions",
-		ru = "Показывает сообщение, когда игрок подбирает ящики с медикаментами или боеприпасами",
+		ru = "Показывает сообщение, когда игрок подбирает Контейнеры с медикаментами или боеприпасами",
 		["zh-cn"] = "玩家拾取医疗包或弹药箱时显示消息",
 	},
 	-- Pick up scripture / grimoire
@@ -992,14 +991,14 @@ return {
 		en = "Expeditions Pocketable picked up",
 		--de = "",
 		--fr = "",
-		--ru = "",
+		ru = "Подбор предметов в экспедиции",
 		--["zh-cn"] = "",
 	},
 	message_expedition_pocketable_pickup_description = {
 		en = "Shows message when a player picks up a pocketable from the Expeditions game mode",
 		--de = "",
 		--fr = "",
-		--ru = "",
+		ru = "Отображает сообщение, когда игрок подбирает предметы в экспедиции",
 		--["zh-cn"] = "",
 	},
 	row_team_score = {
