@@ -14,7 +14,7 @@ local ScoreboardViewSettings = mod:io_dofile("scoreboard/scripts/mods/scoreboard
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
 local base_z = 100
-local base_x = 135
+local base_x = -1
 
 mod.tactical_overview = mod:get("tactical_overview")
 
