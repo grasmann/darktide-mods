@@ -101,6 +101,8 @@ mod.kitbash_item = function(self, name, data)
                         template.attachments.zzz_shared_material_overrides = nil
                     end
 
+                    -- template.attachments.zzz_shared_material_overrides = nil
+
                     local attachment_slots = self:fetch_attachment_slots(template.attachments)
                     for attachment_slot, data in pairs(attachment_slots) do
                         local item = master_items.get_item(data.item)
@@ -141,7 +143,8 @@ mod.kitbash_item = function(self, name, data)
                 template.feature_flags = {
                     "FEATURE_item_retained",
                 }
-                template.item_type = nil --"KITBASH"
+                template.item_type = "WEAPON_ATTACHMENT" --"KITBASH"
+                -- template.leaf_attach_node_override = 1
                 template.name = name
                 template.is_fallback_item = false
                 template.is_kitbash = true
@@ -154,6 +157,8 @@ mod.kitbash_item = function(self, name, data)
         else
 
             data.is_kitbash = true
+            data.item_type = "WEAPON_ATTACHMENT"
+            -- data.leaf_attach_node_override = 1
 
             local resource_dependencies = data.resource_dependencies or {}
 
@@ -185,6 +190,7 @@ mod.kitbash_item = function(self, name, data)
                 else
                     data.attachments.zzz_shared_material_overrides = nil
                 end
+                -- data.attachments.zzz_shared_material_overrides = nil
 
                 local attachment_slots = self:fetch_attachment_slots(data.attachments)
                 for attachment_slot, attachment_slot_data in pairs(attachment_slots) do

@@ -5,6 +5,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
+local VisualLoadoutExtractData = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_extract_data")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -100,6 +101,8 @@ local function _register_vfx_spawner_from_attachments(parent_unit, attachments_b
 								node = sub_node,
 							}
 
+							break
+
 						end
 					end
 
@@ -125,7 +128,7 @@ local function _register_vfx_spawner_from_attachments(parent_unit, attachments_b
 		return spawners
 	end
 
-	spawners[VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
+	spawners[VisualLoadoutExtractData.ROOT_ATTACH_NAME] = {
 		node = 1,
 		unit = parent_unit,
 	}
@@ -203,7 +206,7 @@ local function _register_sound_sources(wwise_source_node_cache, parent_unit, att
 	end
 
 	if unit_has_node(parent_unit, node_name) then
-		local parent_id_name = attachment_name_lookup and attachment_name_lookup[parent_unit] or VisualLoadoutCustomization.ROOT_ATTACH_NAME
+		local parent_id_name = attachment_name_lookup and attachment_name_lookup[parent_unit] or VisualLoadoutExtractData.ROOT_ATTACH_NAME
 
 		sources[parent_id_name] = _register_sound_source(wwise_source_node_cache, parent_unit, node_name, wwise_world, source_name)
 	end
@@ -212,7 +215,7 @@ local function _register_sound_sources(wwise_source_node_cache, parent_unit, att
 		return sources
 	end
 
-	sources[VisualLoadoutCustomization.ROOT_ATTACH_NAME] = _register_sound_source(wwise_source_node_cache, parent_unit, 1, wwise_world, source_name)
+	sources[VisualLoadoutExtractData.ROOT_ATTACH_NAME] = _register_sound_source(wwise_source_node_cache, parent_unit, 1, wwise_world, source_name)
 
 	return sources
 end
@@ -231,15 +234,17 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, se
 
     if not result or table_is_empty(result) then
 		local node = unit_has_node(parent_unit, node_name) and unit_node(parent_unit, node_name) or 1
+		local node_3p
+		if should_add_3p_node then
+			node_3p = unit_has_node(self._unit, node_name) and unit_node(self._unit, node_name) or 1
+		end
 
         result = {}
 
-        result[VisualLoadoutCustomization.ROOT_ATTACH_NAME] = {
+        result[VisualLoadoutExtractData.ROOT_ATTACH_NAME] = {
 			unit = parent_unit,
 			node = node,
-            node_3p = should_add_3p_node and (
-                unit_has_node(self._unit, node_name) and unit_node(self._unit, node_name) or 1
-            ) or nil,
+            node_3p = node_3p,
 		}
 	end
 
@@ -270,15 +275,61 @@ mod:hook(CLASS.PlayerUnitFxExtension, "spawn_unit_particles", function(func, sel
 	return func(self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, all_clients, create_network_index, optional_attachment_name, ...)
 end)
 
+mod:hook(CLASS.PlayerUnitFxExtension, "_spawn_unit_fx_line", function(func, self, line_effect, is_critical_strike, spawner_name, end_position, link, orphaned_policy, scale, append_husk_to_event_name, optional_attachment_name, ...)
+
+	-- Check if spawner group exists
+	if not self._vfx_spawners[spawner_name] then
+		-- Create new spawner group
+		self._vfx_spawners[spawner_name] = {}
+	else
+		-- Find first attachment from spawner group
+		for k, v in pairs(self._vfx_spawners[spawner_name]) do
+			optional_attachment_name = k
+			break
+		end
+	end
+
+	local reference_attachment_name = optional_attachment_name or VisualLoadoutExtractData.ROOT_ATTACH_NAME
+
+	-- Check if reference attachment exists
+	if not self._vfx_spawners[spawner_name][reference_attachment_name] then
+		-- Create new reference attachment
+		self._vfx_spawners[spawner_name][reference_attachment_name] = {
+			node = 1,
+			node_3p = 1,
+			unit = self._unit,
+		}
+	end
+
+	-- Original function
+	return func(self, line_effect, is_critical_strike, spawner_name, end_position, link, orphaned_policy, scale, append_husk_to_event_name, optional_attachment_name, ...)
+
+end)
+
 mod:hook(CLASS.PlayerUnitFxExtension, "_spawn_unit_particles", function(func, self, particle_name, spawner_name, link, orphaned_policy, position_offset, rotation_offset, scale, create_network_index, optional_attachment_name, ...)
 
-	local spawner = self._vfx_spawners[spawner_name]
-	local reference_attachment_name = optional_attachment_name or VisualLoadoutCustomization.ROOT_ATTACH_NAME
+	-- Check if spawner group exists
+	if not self._vfx_spawners[spawner_name] then
+		-- Create new spawner group
+		self._vfx_spawners[spawner_name] = {}
+	else
+		-- Find first attachment from spawner group
+		for k, v in pairs(self._vfx_spawners[spawner_name]) do
+			optional_attachment_name = k
+			break
+		end
+	end
 
-	if not spawner[reference_attachment_name] then
+	local reference_attachment_name = optional_attachment_name or VisualLoadoutExtractData.ROOT_ATTACH_NAME
 
-		spawner[reference_attachment_name] = spawner[VisualLoadoutCustomization.ROOT_ATTACH_NAME]
-
+	-- Check if reference attachment exists
+	if not self._vfx_spawners[spawner_name][reference_attachment_name] then
+		-- Create new reference attachment
+		self._vfx_spawners[spawner_name][reference_attachment_name] = {
+			node = 1,
+			node_3p = 1,
+			unit = self._unit,
+		}
 	end
 
 	-- Original function

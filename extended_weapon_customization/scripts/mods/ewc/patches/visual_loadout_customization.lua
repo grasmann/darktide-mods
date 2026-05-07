@@ -5,6 +5,8 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local master_items = mod:original_require("scripts/backend/master_items")
+local VisualLoadoutExtractData = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_extract_data")
+local ItemSlotUtils = mod:original_require("scripts/utilities/item_slot_utils")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -15,6 +17,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local table = table
     local string = string
     local tostring = tostring
+    local tonumber = tonumber
     local unit_node = unit.node
     local table_size = table.size
     local unit_alive = unit.alive
@@ -24,6 +27,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local string_split = string.split
     local table_reverse = table.reverse
     local unit_set_data = unit.set_data
+    local unit_get_data = unit.get_data
     local table_combine = table.combine
     local unit_has_node = unit.has_node
     local table_icombine = table.icombine
@@ -37,32 +41,44 @@ local master_items = mod:original_require("scripts/backend/master_items")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local pt = mod:pt()
-local empty_overrides_table = table_set_readonly({})
-local temp_children = {}
 local PROCESS_SLOTS = {"WEAPON_SKIN", "WEAPON_MELEE", "WEAPON_RANGED"}
 local PROCESS_ITEM_TYPES = {"WEAPON_MELEE", "WEAPON_RANGED"}
-local dump_nodes = true
+local TEMP_CHILDREN = {}
+-- local check_strings = {
+--     "content/items/material_overrides/gear_materials/",
+--     "content/items/material_overrides/gear_colors/",
+--     "content/items/material_overrides/gear_patterns/",
+-- }
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 mod.recursive_children = function(self, unit, attachment_units_by_unit, children)
+    -- Table
     if not children then
-        table_clear(temp_children)
-        children = temp_children
+        table_clear(TEMP_CHILDREN)
+        children = TEMP_CHILDREN
     end
+    -- Get children
     local unit_children = attachment_units_by_unit[unit]
+    -- Iterate through children
     for _, unit in pairs(unit_children) do
+        -- Add child
         children[#children+1] = unit
+        -- Recursive
         self:recursive_children(unit, attachment_units_by_unit, children)
     end
+    -- Return
     return children
 end
 
 mod.implement_units = function(self, item_unit, attachments, attachment_units_by_unit, attachment_id_lookup, units)
+    -- Get sub-attachment units
     local units = units or attachment_units_by_unit[item_unit]
+    -- Check units
     if units then
+        -- Iterate through units
         for _, unit in pairs(units) do
             -- Set attachment slot
             local slot = attachment_id_lookup[unit]
@@ -72,16 +88,13 @@ mod.implement_units = function(self, item_unit, attachments, attachment_units_by
             -- Set attachment name
             local name = self.settings.attachment_name_by_item_string[item_path]
             unit_set_data(unit, "attachment_name", name)
-
-            -- if attachment_units_by_unit[unit] then
-
-                local item = master_items.get_item(item_path)
-                if item and item.attachments then
-                    self:implement_units(item_unit, item.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_units_by_unit[unit])
-                end
-
-            -- end
-
+            -- Get attachment master item
+            local item = master_items.get_item(item_path)
+            -- Check item
+            if item and item.attachments then
+                -- Implement units
+                self:implement_units(item_unit, item.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_units_by_unit[unit])
+            end
         end
     end
 end
@@ -92,12 +105,126 @@ end
 
 mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization", function(instance)
 
+    instance.handle_sub_attachments_recursive = function(self, item_data, attachment_name, attachment_unit, attach_settings, attachment_units_by_unit, attachment_id_lookup)
+
+        if item_data.attachments and attachment_units_by_unit[attachment_unit] then
+
+            for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
+
+                -- Set attachment slot
+                local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
+                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
+                unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
+
+                -- Get master item
+                local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+                -- local item = master_items.get_item(item_path)
+                -- if item and item.attachments then
+                --     local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
+                    local attachment_slot_data = mod:fetch_attachment_data(item_data.attachments, attachment_slot)
+                    local sub_item = master_items.get_item(item_path)
+                    local parent_attachment_slot_data = mod:fetch_attachment_parent(item_data.attachments, attachment_slot)
+                    -- local parent_attachment_slot_data = mod:fetch_attachment_data(item_data.attachments, attachment_slot)
+                    -- local parent_slot_data = mod:fetch_attachment_data(item_data.attachments, parent_attachment_slot)
+                    local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
+                    if material_overrides_data then
+                        instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
+                    end
+
+                    -- Set attachment name
+                    local sub_attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                    unit_set_data(sub_attachment_unit, "attachment_name", sub_attachment_name)
+
+                    mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(sub_attachment_name).." slot: "..tostring(attachment_slot))
+
+                    -- local parent_attachment_slot_data = mod:fetch_attachment_data(item_data.attachments, attachment_slot)
+                    instance:handle_sub_attachments_recursive(item_data, attachment_name, sub_attachment_unit, attach_settings, attachment_units_by_unit, attachment_id_lookup)
+                -- end
+
+            end
+        end
+
+    end
+
+    -- instance.reparent_attachments_recursive = function(self, item_data, attach_settings, item_unit, target_unit, attachment_units_by_unit, attachment_id_lookup)
+
+    --     if item_data.attachments and attachment_units_by_unit[target_unit] then
+    --         for _, attachment_unit in pairs(attachment_units_by_unit[target_unit]) do
+
+    --             -- local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
+    --             local attachment_slot_parts = string_split(attachment_id_lookup[attachment_unit], ".")
+    --             local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+    --             -- local attachment_name = unit_get_data(attachment_unit, "attachment_name")
+    --             local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+    --             local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+
+    --             -- Reparent
+    --             local parent_attachment_slot = mod:fetch_attachment_parent(item_data.attachments, attachment_slot)
+    --             -- mod:echo("attachment slot "..tostring(attachment_slot).." parent slot "..tostring(parent_slot))
+    --             -- local parent_slot_data = mod:fetch_attachment_data(item_data.attachments, parent_attachment_slot)
+    --             local is_custom_slot = mod:is_custom_slot(item_data, attachment_slot)
+    --             -- local is_custom_attachment = mod:is_custom_attachment(item_data, attachment_name)
+    --             local parent_is_custom_slot = mod:is_custom_slot(item_data, parent_attachment_slot)
+    --             -- local parent_is_custom_attachment = mod:is_custom_attachment(item_data, attachment_slot)
+    --             if is_custom_slot or parent_is_custom_slot then
+    --                 -- local parent_name = parent_slot_data.name
+    --                 local lookup_parent_unit = attachment_id_lookup[parent_attachment_slot]
+    --                 local parent_unit = lookup_parent_unit or item_unit
+    --                 -- local parent_unit = target_unit
+    --                 -- local parent_unit = item_unit
+    --                 -- mod:echo("parent name "..tostring(parent_name))
+    --                 if parent_unit then
+    --                     local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
+    --                     local item = master_items.get_item(item_path)
+    --                     if item then
+    --                         -- mod:echo("attachment unit "..tostring(attachment_unit).." parent unit "..tostring(parent_unit))
+    --                         local attach_node = item.attach_node
+    --                         local attach_node_index = nil
+    --                         if tonumber(attach_node) ~= nil then
+    --                             attach_node_index = tonumber(attach_node)
+    --                         elseif attach_node then
+    --                             if lookup_parent_unit then
+    --                                 attach_node_index = attach_node and Unit.has_node(lookup_parent_unit, attach_node) and Unit.node(lookup_parent_unit, attach_node)
+    --                                 if attach_node_index then parent_unit = lookup_parent_unit end
+    --                             end
+    --                             -- if not attach_node_index then
+    --                             --     attach_node_index = attach_node and Unit.has_node(target_unit, attach_node) and Unit.node(target_unit, attach_node)
+    --                             --     if attach_node_index then parent_unit = target_unit end
+    --                             -- end
+    --                             -- if not attach_node_index then
+    --                             --     attach_node_index = attach_node and Unit.has_node(item_unit, attach_node) and Unit.node(item_unit, attach_node)
+    --                             --     if attach_node_index then parent_unit = item_unit end
+    --                             -- end
+    --                         end
+    --                         if not attach_node_index then
+    --                             parent_unit = item_unit
+    --                             attach_node_index = 1
+    --                         end
+    --                         -- -- unit_set_parent(attachment_unit, parent_unit)
+    --                         World.unlink_unit(attach_settings.world, attachment_unit, false, false)
+    --                         World.link_unit(attach_settings.world, attachment_unit, 1, parent_unit, attach_node_index)
+    --                     end
+    --                 end
+    --             end
+
+    --             -- instance:reparent_attachments_recursive(item_data, attach_settings, item_unit, attachment_unit, attachment_units_by_unit, attachment_id_lookup)
+
+    --         end
+    --     end
+
+    -- end
+
     mod:hook(instance, "spawn_item_attachments", function(func, item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment, ...)
+
         -- Check item
         if item_data and mod:cached_table_contains(PROCESS_ITEM_TYPES, item_data.item_type) then
             -- Modify item
             mod:modify_item(item_data)
         end
+
+        -- mod:echo("weapon_template: "..tostring(item_data.weapon_template))
+
         -- Fixes
         local fixes = mod:collect_fixes(item_data)
         mod:apply_attachment_fixes(item_data, fixes)
@@ -109,6 +236,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
         if attachment_id_lookup and item_data.attachments then
 
+            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup)
+
             -- Collect attachment fixes
             local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
             if kitbash_fixes then
@@ -116,21 +245,65 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 -- fixes = table_append(fixes, kitbash_fixes)
             end
 
-            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup)
-
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
 
                 -- Set attachment slot
-                local attachment_slot = attachment_id_lookup[attachment_unit]
+                -- local attachment_slot = attachment_id_lookup[attachment_unit]
+                local attachment_slot_parts = string_split(attachment_id_lookup[attachment_unit], ".")
+                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
                 unit_set_data(attachment_unit, "attachment_slot", attachment_slot)
+
+                -- -- Reparent
+                -- local parent_attachment_slot = mod:fetch_attachment_parent(item_data.attachments, attachment_slot)
+                -- -- mod:echo("attachment slot "..tostring(attachment_slot).." parent slot "..tostring(parent_slot))
+                -- local parent_slot_data = mod:fetch_attachment_data(item_data.attachments, parent_attachment_slot)
+                -- local is_custom_slot = mod:is_custom_slot(item_data, attachment_slot)
+                -- local parent_is_custom_slot = mod:is_custom_slot(item_data, parent_attachment_slot)
+                -- if parent_attachment_slot and parent_slot_data and is_custom_slot or parent_is_custom_slot then
+                --     -- local parent_name = parent_slot_data.name
+                --     local parent_unit = attachment_id_lookup[parent_attachment_slot] or item_unit
+                --     -- mod:echo("parent name "..tostring(parent_name))
+                --     if parent_unit then
+                --         -- mod:echo("attachment unit "..tostring(attachment_unit).." parent unit "..tostring(parent_unit))
+                --         local attach_node = item_data.attach_node
+                --         local attach_node_index
+                --         if tonumber(attach_node) ~= nil then
+                --             attach_node_index = tonumber(attach_node)
+                --         elseif attach_node then
+                --             attach_node_index = attach_node and Unit.has_node(parent_unit, attach_node) and Unit.node(parent_unit, attach_node)
+                --         end
+                --         if tonumber(attach_node_index) == nil then
+                --             attach_node_index = attach_node and Unit.has_node(item_unit, attach_node) and Unit.node(item_unit, attach_node)
+                --             if tonumber(attach_node_index) ~= nil then parent_unit = item_unit end
+                --         end
+                --         if tonumber(attach_node_index) == nil then
+                --             attach_node_index = 1
+                --         end
+                --         -- -- unit_set_parent(attachment_unit, parent_unit)
+                --         World.unlink_unit(attach_settings.world, attachment_unit, false)
+                --         World.link_unit(attach_settings.world, attachment_unit, 1, parent_unit, attach_node_index)
+                --     end
+                -- end
 
                 -- Get item path
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
                 local item = master_items.get_item(item_path)
                 local parent_attachment_slot_data = mod:fetch_attachment_data(item_data.attachments, attachment_slot)
                 local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or item
-                if material_overrides_data then
+                mod:generate_material_override_items(material_overrides_data)
+                if material_overrides_data and material_overrides_data.material_override_items then
                     instance.apply_material_overrides(material_overrides_data, attachment_unit, item_unit, attach_settings)
+                    -- for index, material_item in pairs(material_overrides_data.material_override_items) do
+                    --     mod:echo("overwrite item: "..material_item)
+                    --     -- for _, check_string in pairs(check_strings) do
+                    --         -- local material_item = master_items.get_item(check_string..material_override)
+                    --         -- if material_item then
+                    --             -- items[index] = check_string..material_override
+                    --     instance.apply_material_overrides(material_item, attachment_unit, item_unit, attach_settings)
+                    --             -- break
+                    --         -- end
+                    --     -- end
+                    -- end
                 end
 
                 -- if item and item.materials_overrides then instance.apply_material_overrides(item, attachment_unit, item_unit, attach_settings) end
@@ -163,33 +336,35 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                             -- fixes = table_append(fixes, kitbash_fixes)
                         end
 
-                        if attachment_units_by_unit[attachment_unit] then
+                        -- if attachment_units_by_unit[attachment_unit] then
 
-                            for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
+                        --     for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
 
-                                -- Set attachment slot
-                                local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
-                                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
-                                -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
-                                unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
+                        --         -- Set attachment slot
+                        --         local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
+                        --         local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                        --         -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
+                        --         unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
 
-                                -- Get master item
-                                local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
-                                local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
-                                local sub_item = master_items.get_item(item_path)
-                                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
-                                if material_overrides_data then
-                                    instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
-                                end
+                        --         -- Get master item
+                        --         local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
+                        --         local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
+                        --         local sub_item = master_items.get_item(item_path)
+                        --         local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
+                        --         if material_overrides_data then
+                        --             instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
+                        --         end
 
-                                -- Set attachment name
-                                local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
-                                unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
+                        --         -- Set attachment name
+                        --         local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                        --         unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
 
-                                mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
+                        --         mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
 
-                            end
-                        end
+                        --     end
+                        -- end
+
+                        instance:handle_sub_attachments_recursive(item_data, attachment_name, attachment_unit, attach_settings, attachment_units_by_unit, attachment_id_lookup)
 
                     end
 
@@ -242,53 +417,68 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                         end
 
-                        if attachment_units_by_unit[attachment_unit] then
+                        -- if attachment_units_by_unit[attachment_unit] then
 
-                            for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
+                        --     for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
 
-                                -- Set attachment slot
-                                local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
-                                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
-                                -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
-                                unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
+                        --         -- Set attachment slot
+                        --         local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
+                        --         local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                        --         -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
+                        --         unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
 
-                                -- Get master item
-                                local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
-                                local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
-                                local sub_item = master_items.get_item(item_path)
-                                local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
-                                if material_overrides_data then
-                                    instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
-                                end
+                        --         -- Get master item
+                        --         local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
+                        --         local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
+                        --         local sub_item = master_items.get_item(item_path)
+                        --         local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
+                        --         if material_overrides_data then
+                        --             instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
+                        --         end
 
-                                -- Set attachment name
-                                local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
-                                unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
+                        --         -- Set attachment name
+                        --         local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                        --         unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
 
-                                mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
+                        --         mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
 
-                            end
-                        end
+                        --     end
+                        -- end
+
+                        instance:handle_sub_attachments_recursive(item_data, attachment_name, attachment_unit, attach_settings, attachment_units_by_unit, attachment_id_lookup)
 
                     end
 
                 end
                 
             end
+
+            -- instance:reparent_attachments_recursive(item_data, attach_settings, item_unit, item_unit, attachment_units_by_unit, attachment_id_lookup)
+
         end
+
         -- fixes = table_reverse(fixes)
         -- Apply fixes
         mod:apply_unit_fixes(item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, fixes, is_ui_item_preview)
+
         -- Return
         return attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, bind_poses_by_unit, item_name_by_unit
+
     end)
 
     mod:hook(instance, "spawn_item", function(func, item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment, ...)
+
         -- Check item
         if item_data and mod:cached_table_contains(PROCESS_ITEM_TYPES, item_data.item_type) then
             -- Modify item
             mod:modify_item(item_data)
         end
+
+        -- mod:echo("weapon_template: "..tostring(item_data.weapon_template))
+        if item_data.item_type == "WEAPON_RANGED" then
+            -- mod:dtf(item_data, "spawn_item", 20)
+        end
+
         -- Fixes
         local fixes = mod:collect_fixes(item_data)
         mod:apply_attachment_fixes(item_data, fixes)
@@ -297,6 +487,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         local item_unit, attachment_units_by_unit, bind_pose, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit = func(item_data, attach_settings, parent_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment, ...)
 
         if attachment_id_lookup and item_data.attachments then
+
+            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup)
 
             -- Collect current attachment names
             local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
@@ -308,16 +500,32 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             for _, attachment_unit in pairs(attachment_units_by_unit[item_unit]) do
 
                 -- Set attachment slot
-                local attachment_slot = attachment_id_lookup[attachment_unit]
+                -- local attachment_slot = attachment_id_lookup[attachment_unit]
+                local attachment_slot_parts = string_split(attachment_id_lookup[attachment_unit], ".")
+                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
                 unit_set_data(attachment_unit, "attachment_slot", attachment_slot)
+
+                -- instance:reparent_attachments_recursive(item_data, attach_settings, item_unit, attachment_unit, attachment_units_by_unit, attachment_id_lookup)
                 
                 -- Get master item
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
                 local item = master_items.get_item(item_path)
                 local parent_attachment_slot_data = mod:fetch_attachment_data(item_data.attachments, attachment_slot)
                 local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or item
-                if material_overrides_data then
+                mod:generate_material_override_items(material_overrides_data)
+                if material_overrides_data and material_overrides_data.material_override_items then
                     instance.apply_material_overrides(material_overrides_data, attachment_unit, item_unit, attach_settings)
+                    -- for index, material_item in pairs(material_overrides_data.material_override_items) do
+                    --     mod:echo("overwrite item: "..material_item)
+                    --     -- for _, check_string in pairs(check_strings) do
+                    --         -- local material_item = master_items.get_item(check_string..material_override)
+                    --         -- if material_item then
+                    --             -- items[index] = check_string..material_override
+                    --     instance.apply_material_overrides(material_item, attachment_unit, item_unit, attach_settings)
+                    --             -- break
+                    --         -- end
+                    --     -- end
+                    -- end
                 end
 
                 -- if item and item.materials_overrides then instance.apply_material_overrides(item, attachment_unit, item_unit, attach_settings) end
@@ -361,48 +569,53 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
                     end
 
-                    if attachment_units_by_unit[attachment_unit] then
+                    -- if attachment_units_by_unit[attachment_unit] then
 
-                        for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
+                    --     for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
 
-                            -- Set attachment slot
-                            local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
-                            local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
-                            -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
-                            unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
+                    --         -- Set attachment slot
+                    --         local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
+                    --         local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                    --         -- local attachment_slot = attachment_id_lookup[sub_attachment_unit]
+                    --         unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
 
-                            -- Get master item
-                            local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
-                            local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
-                            local sub_item = master_items.get_item(item_path)
-                            local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
-                            if material_overrides_data then
-                                instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
-                            end
+                    --         -- Get master item
+                    --         local item_path = mod:fetch_attachment(item.attachments, attachment_slot)
+                    --         local attachment_slot_data = mod:fetch_attachment_data(item.attachments, attachment_slot)
+                    --         local sub_item = master_items.get_item(item_path)
+                    --         local material_overrides_data = mod:gear_material_overrides(item_data, nil, attachment_slot) or (attachment_slot_data and attachment_slot_data.material_overrides and attachment_slot_data) or (parent_attachment_slot_data and parent_attachment_slot_data.material_overrides and parent_attachment_slot_data) --or sub_item
+                    --         if material_overrides_data then
+                    --             instance.apply_material_overrides(material_overrides_data, sub_attachment_unit, attachment_unit, attach_settings)
+                    --         end
 
-                            -- if item and item.materials_overrides then instance.apply_material_overrides(item, sub_attachment_unit, attachment_unit, attach_settings) end
+                    --         -- if item and item.materials_overrides then instance.apply_material_overrides(item, sub_attachment_unit, attachment_unit, attach_settings) end
 
-                            -- Set attachment name
-                            local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
-                            unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
+                    --         -- Set attachment name
+                    --         local attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                    --         unit_set_data(sub_attachment_unit, "attachment_name", attachment_name)
 
-                            mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
+                    --         mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(attachment_name).." slot: "..tostring(attachment_slot))
 
-                        end
-                    end
+                    --     end
+                    -- end
+
+                    instance:handle_sub_attachments_recursive(item_data, attachment_name, attachment_unit, attach_settings, attachment_units_by_unit, attachment_id_lookup)
 
                 end
 
             end
 
-            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup)
+            -- instance:reparent_attachments_recursive(item_data, attach_settings, item_unit, item_unit, attachment_units_by_unit, attachment_id_lookup)
 
         end
+
         -- fixes = table_reverse(fixes)
         -- Apply fixes
         mod:apply_unit_fixes(item_data, item_unit, attachment_units_by_unit, attachment_name_lookup, fixes, true)
+
         -- Return
         return item_unit, attachment_units_by_unit, bind_pose, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit
+
     end)
 
     mod:hook(instance, "generate_attachment_overrides_lookup", function(func, item_data, override_item_data, ...)
@@ -422,6 +635,101 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
         -- Return
         return override_lookup
+    end)
+
+    mod:hook(instance, "_find_unit_node_recursive", function(func, unit, attach_node, item, item_data, attach_settings, ...)
+
+        -- local unit, attach_node_index = func(unit, attach_node, item_data, attach_settings, ...)
+
+        -- local item_path = item_data.name
+        -- local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+        -- local attachment_name = mod:fetch_attachment(item_data.attachments, attach_node)
+        -- if mod:is_custom_attachment(item, attachment_name) then
+        --     mod:echo("custom attachment: "..tostring(attachment_name))
+        -- else
+        --     mod:echo("default attachment: "..tostring(attachment_name))
+        -- end
+
+            local attach_node_index
+
+            if tonumber(attach_node) ~= nil then
+                attach_node_index = tonumber(attach_node)
+            elseif attach_node then
+                attach_node_index = unit_has_node(unit, attach_node) and unit_node(unit, attach_node) or 1
+            else
+                attach_node_index = 1
+            end
+
+            -- local item_path = item_data.name
+            -- local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+            -- if mod:is_custom_attachment(item_data, attachment_name) then
+            --     mod:echo("custom attachment: "..tostring(attachment_name))
+            -- else
+            --     mod:echo("default attachment: "..tostring(attachment_name))
+            -- end
+
+            -- if attach_node_index then
+            return unit, attach_node_index
+        -- end
+
+        -- return func(unit, attach_node, item_data, attach_settings, ...)
+
+        -- end
+
+        -- -- local attachment_slot = unit_get_data(unit, "attachment_slot")
+        -- -- local attachment_name = unit_get_data(unit, "attachment_name")
+        -- local item_path = item_data.name
+        -- -- local attachment_slot = attach_settings.attachment_slot
+        -- local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+        
+        -- -- if mod:is_custom_slot(item_data, attachment_slot) or mod:is_custom_attachment(item_data, attachment_name) then
+        -- if mod:is_custom_attachment(item_data, attachment_name) then
+
+        --     mod:echo("custom attachment: "..tostring(attachment_name))
+
+        --     local attach_node_index
+
+        --     if tonumber(attach_node) ~= nil then
+        --         attach_node_index = tonumber(attach_node)
+        --     elseif attach_node then
+        --         attach_node_index = unit_has_node(unit, attach_node) and unit_node(unit, attach_node) or 1
+        --     else
+        --         attach_node_index = 1
+        --     end
+
+        --     if attach_node_index then
+        --         return unit, attach_node_index
+        --     end
+
+        -- end
+
+        -- mod:echo("NOO custom attachment: "..tostring(attachment_name))
+
+        -- return func(unit, attach_node, item_data, attach_settings, ...)
+
+        -- -- else
+
+        -- --     mod:echo("NO! custom attachment: "..tostring(unit).." slot: "..tostring(attachment_slot).." name: "..tostring(attachment_name))
+
+        -- --     -- local parent_unit = unit
+        -- --     -- local attach_node_index = 1
+
+        -- --     -- if unit_has_node(unit, attach_node) then
+        -- --     --     attach_node_index = unit_node(unit, attach_node)
+        -- --     -- else
+        -- --     --     local child_units = Unit.get_child_units(unit)
+
+        -- --     --     for _, child_unit in pairs(child_units) do
+        -- --     --         parent_unit, attach_node_index = instance._find_unit_node_recursive(child_unit, attach_node)
+        -- --     --     end
+        -- --     -- end
+
+        -- --     -- return parent_unit, attach_node_index
+
+        -- --     return func(unit, attach_node, item_data, attach_settings, ...)
+
+        -- -- end
+
     end)
 
 end)

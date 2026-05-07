@@ -9,4 +9,10 @@ return {
 		})
 	end,
 	packages = {},
+	load_after = {
+		"master_item_community_patch",
+	},
+	require = {
+		"master_item_community_patch",
+	},
 }

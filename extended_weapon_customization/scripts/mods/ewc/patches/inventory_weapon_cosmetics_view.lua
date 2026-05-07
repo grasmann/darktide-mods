@@ -50,7 +50,7 @@ local items = mod:original_require("scripts/utilities/items")
     -- local string_gsub = string.gsub
     local string_upper = string.upper
     local string_format = string.format
-    -- local table_contains = table.contains
+    local table_contains = table.contains
     local has_localization = HasLocalization
     local color_terminal_grid_background = color.terminal_grid_background
 --#endregion
@@ -901,8 +901,8 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
                     local material_override = mod:gear_material_overrides(self._presentation_item, nil, slot_name)
                     if material_override then
                         for _, option in pairs(options) do
-                            -- if material_override.material_overrides and table_contains(material_override.material_overrides, option.value) then
-                            if material_override.material_overrides and mod:cached_table_contains(material_override.material_overrides, option.value) then
+                            if material_override.material_overrides and table_contains(material_override.material_overrides, option.value) then
+                            -- if material_override.material_overrides and mod:cached_table_contains(material_override.material_overrides, option.value) then
                                 return option.value
                             end
                         end
@@ -1095,6 +1095,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "init", function(func, self, settin
                 self["_selected_"..attachment_slot.."_name"] = attachment_item_path or "content/items/weapons/player/trinkets/unused_trinket"
                 -- Check attachment path
                 if attachment_item_path then
+                    -- First equipped slot_name
+                    if attachment_item_path and not self.first_equipped_slot_name then
+                        self.first_equipped_slot_name = attachment_slot
+                    end
                     -- Get attachment item
                     local attachment_item = master_items.get_item(attachment_item_path)
                     -- Set selected element
@@ -1156,6 +1160,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_setup_menu_tabs", function(func, 
             local display_icon = tab_content.icon
             local pressed_callback = callback(self, "cb_switch_tab", i)
             local tab_id = tab_menu_element:add_entry(display_name, pressed_callback, tab_button_template, display_icon)
+
+            if self.first_equipped_slot_name and self.first_equipped_slot_name == tab_content.display_name and not self.initial_tab_index then
+                self.initial_tab_index = i
+            end
 
             tab_ids[i] = tab_id
         end
@@ -1389,7 +1397,7 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
     end
 
     -- Check element
-    if not self._tabs_content[index] then
+    if not self._tabs_content or not self._tabs_content[index] then
         -- Return; prevent crash
         return
     end
@@ -1745,6 +1753,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             self._presentation_item.__original_gear_id = gear_id
             self._presentation_item.__attachment_customization = true
 
+            self:update_presentation_item()
+
             pt.items_originating_from_customization_menu[gear_id] = true
 
             local weapon_template = self._presentation_item.weapon_template
@@ -1866,6 +1876,10 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
         self:create_color_dropdown()
         self:create_pattern_dropdown()
         self:create_wear_dropdown()
+
+        -- Preview presentation item
+        -- Fix weapon not showing modified after opening menu
+        self:_preview_item(self._selected_item)
 
         return
     end

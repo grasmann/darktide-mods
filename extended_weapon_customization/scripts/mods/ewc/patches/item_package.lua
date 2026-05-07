@@ -24,6 +24,10 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
     mod:hook(instance, "compile_item_instance_dependencies", function(func, item, items_dictionary, out_result, optional_mission_template, ...)
         -- Check item
         if item and mod:cached_table_contains(VALID_ITEM_TYPES, item.item_type) then
+            if not mod:player_owns_item(item) then
+                -- Randomize item
+                item = mod:handle_husk_item(item)
+            end
             -- Modify item
             mod:modify_item(item)
             -- Fixes
@@ -36,6 +40,10 @@ mod:hook_require("scripts/foundation/managers/package/utilities/item_package", f
     mod:hook(instance, "compile_resource_dependencies", function(func, item_entry_data, resource_dependencies, ...)
         -- Check item
         if item_entry_data and mod:cached_table_contains(VALID_ITEM_TYPES, item_entry_data.item_type) then
+            if not mod:player_owns_item(item_entry_data) then
+                -- Randomize item
+                item_entry_data = mod:handle_husk_item(item_entry_data)
+            end
             -- Modify item
             mod:modify_item(item_entry_data)
             -- Fixes

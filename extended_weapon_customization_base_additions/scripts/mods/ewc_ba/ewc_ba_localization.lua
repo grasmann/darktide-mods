@@ -87,21 +87,27 @@ mod:add_global_localize_strings({
 	},
 	loc_ewc_force_staff = {
 		en = "EWC:BA - Force Staff",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 力场法杖",
 	},
 	loc_ewc_chain_sword = {
 		en = "EWC:BA - Chain Sword",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 链锯剑",
 	},
 	loc_ewc_2h_power_maul = {
 		en = "EWC:BA - 2H Power Maul",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 双手动力锤",
 	},
 	loc_ewc_shovel = {
 		en = "EWC:BA - Shovel",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 铲子",
 	},
 	loc_ewc_axe = {
 		en = "EWC:BA - Axe",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 斧头",
 	},
 	loc_ewc_hatchet = {
 		en = "EWC:BA - Hatchet",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 短柄斧",
 	},
 	loc_ewc_2h_force_sword = {
 		en = "EWC:BA - 2H Force Sword",
@@ -125,11 +131,21 @@ mod:add_global_localize_strings({
 	},
 	loc_ewc_suppressors = {
 		en = "EWC:BA - Suppressors",
+		["zh-cn"] = "扩展武器自定义：基础增补 - 消音器",
 	},
 
 	attachment_slot_sight_2 = {
 		en = "Sight",
 		["zh-cn"] = "瞄具",
+	},
+	attachment_slot_fake_blade = {
+		en = "Blade",
+		["zh-cn"] = "刀刃",
+	},
+
+	attachment_slot_fake_magazine = {
+		en = "Magazine",
+		["zh-cn"] = "弹匣",
 	},
 
 	loc_scope_01 = {

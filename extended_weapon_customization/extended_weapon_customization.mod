@@ -14,9 +14,11 @@ return {
     },
 	require = {
 		"master_item_community_patch",
+		"visual_loadout_customization_community_patch",
 	},
 	load_after = {
 		"master_item_community_patch",
+		"visual_loadout_customization_community_patch",
 	},
 	packages = {},
 }

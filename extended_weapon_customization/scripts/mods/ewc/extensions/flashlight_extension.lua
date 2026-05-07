@@ -182,6 +182,10 @@ end
 
 FlashlightExtension.find_in_units = function(self, attachment_units, optional_target_slot, optional_settings_slot, optional_flashlight_name)
     local target_slot = optional_target_slot or "flashlight"
+    local units = {}
+    local names = {}
+    local templates = {}
+    local data = {}
     -- Check
     if attachment_units then
         -- Iterate through attachments
@@ -209,7 +213,11 @@ FlashlightExtension.find_in_units = function(self, attachment_units, optional_ta
 
                         -- Return data
                         local template_name = flashlight_attachment_data.flashlight_template or "default"
-                        return attachment_unit, flashlight_name, template_name, flashlight_attachment_data
+                        -- return attachment_unit, flashlight_name, template_name, flashlight_attachment_data
+                        units[#units + 1] = attachment_unit
+                        names[#names + 1] = flashlight_name
+                        templates[#templates + 1] = template_name
+                        data[#data + 1] = flashlight_attachment_data
 
                     elseif flashlight_attachment_data and flashlight_attachment_data.flashlight_attachment_slot then
 
@@ -222,6 +230,8 @@ FlashlightExtension.find_in_units = function(self, attachment_units, optional_ta
             end
         end
     end
+    -- Return 
+    return units, names, templates, data
 end
 
 FlashlightExtension.current_flashlight_unit = function(self)
@@ -289,53 +299,79 @@ FlashlightExtension.fetch_flashlight = function(self, item)
     self.weapon = item or self.visual_loadout_extension:item_from_slot(SLOT_SECONDARY)
     -- Check item and attachments
     if self.weapon and self.weapon.attachments then
+
         -- Get units for attachment slot
         -- Search for the flashlight unit
         local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = self.visual_loadout_extension:unit_and_attachments_from_slot(SLOT_SECONDARY)
         local attachments_1p = attachments_by_unit_1p and attachments_by_unit_1p[unit_1p]
         local attachments_3p = attachments_by_unit_3p and attachments_by_unit_3p[unit_3p]
+
         -- Get flashlight units
-        local flashlight_template_name, flashlight_attachment_data
-        self.flashlight_unit_1p, self.flashlight_name, flashlight_template_name, flashlight_attachment_data = self:find_in_units(attachments_1p)
+        -- local flashlight_template_name, flashlight_attachment_data
+        self.flashlight_unit_1p, self.flashlight_name, self.flashlight_template_names, self.flashlight_attachment_data = self:find_in_units(attachments_1p)
         self.flashlight_unit_3p = self:find_in_units(attachments_3p)
+
         -- Debug
-        mod:print("flashlight unit 1p: "..tostring(self.flashlight_unit_1p))
-        mod:print("flashlight unit 3p: "..tostring(self.flashlight_unit_3p))
-        mod:print("flashlight name: "..tostring(self.flashlight_name))
-        mod:print("flashlight template name: "..tostring(flashlight_template_name))
-        -- Check template
-        if flashlight_template_name then
-            -- Get flashlight template
-            self.flashlight_template = mod.settings.flashlight_templates[flashlight_template_name] or FlashlightTemplates[flashlight_template_name] or FlashlightTemplates.default
-            -- Get lights
-            self.flashlight_1p = unit_light(self.flashlight_unit_1p, 1)
-            self.flashlight_3p = unit_light(self.flashlight_unit_3p, 1)
-            -- Check lights
-            if self.flashlight_1p then
-                -- Set active
-                self.active = true
-                -- Check original item for a flashlight
-                local original_item = master_items.get_item(self.weapon.name)
-                local original_flashlight = mod:fetch_attachment(original_item.attachments, "flashlight")
-                -- Set original has flashlight
-                self.original_has_flashlight = original_flashlight and original_flashlight ~= "" and original_flashlight ~= _item_empty_trinket
-                -- Input reminder
-                if self.is_local_unit and not self.original_has_flashlight then
-                    if self.modded_reminder then
-                        mod:echo(mod:localize("mod_flashlight_input_reminder_text"))
-                    end
-                end
-                -- Init light
-                self:init_light(self.flashlight_1p)
-                self:init_light(self.flashlight_3p)
-                -- Set attachment data
-                self.attachment_data = flashlight_attachment_data
-                -- Set light in profile spawner
-                if self.from_ui_profile_spawner then
-                    self:set_light(true)
-                end
+        for _, unit in pairs(self.flashlight_unit_1p) do
+            mod:print("flashlight unit 1p: "..tostring(unit))
+        end
+        for _, unit in pairs(self.flashlight_unit_3p) do
+            mod:print("flashlight unit 3p: "..tostring(unit))
+        end
+        for _, name in pairs(self.flashlight_name) do
+            mod:print("flashlight name: "..tostring(name))
+        end
+
+        -- Set active
+        self.active = true
+        -- Check original item for a flashlight
+        local original_item = master_items.get_item(self.weapon.name)
+        local original_flashlight = mod:fetch_attachment(original_item.attachments, "flashlight")
+        -- Set original has flashlight
+        self.original_has_flashlight = original_flashlight and original_flashlight ~= "" and original_flashlight ~= _item_empty_trinket
+        -- Input reminder
+        if self.is_local_unit and not self.original_has_flashlight then
+            if self.modded_reminder then
+                mod:echo(mod:localize("mod_flashlight_input_reminder_text"))
             end
         end
+
+        for index, template in pairs(self.flashlight_template_names) do
+            mod:print("flashlight template name: "..tostring(template))
+
+            -- Check template
+            if template then
+                -- Get flashlight template
+                self.flashlight_template = self.flashlight_template or {}
+                self.flashlight_template[index] = mod.settings.flashlight_templates[template] or FlashlightTemplates[template] or FlashlightTemplates.default
+                -- Get lights
+                self.flashlight_1p = self.flashlight_1p or {}
+                self.flashlight_1p[index] = unit_light(self.flashlight_unit_1p[index], 1)
+                self.flashlight_3p = self.flashlight_3p or {}
+                self.flashlight_3p[index] = unit_light(self.flashlight_unit_3p[index], 1)
+
+                for index2, unit in pairs(self.flashlight_1p) do
+
+                    -- Check lights
+                    if self.flashlight_1p[index2] and self.flashlight_3p[index2] then
+                        
+                        -- Init light
+                        self:init_light(self.flashlight_1p[index2])
+                        self:init_light(self.flashlight_3p[index2])
+                        -- Set attachment data
+                        self.attachment_data = self.flashlight_attachment_data[index]
+                        -- Set light in profile spawner
+                        if self.from_ui_profile_spawner then
+                            self:set_light(true)
+                        end
+
+                    end
+
+                end
+            end
+
+        end
+        
     end
 end
 
@@ -353,8 +389,16 @@ FlashlightExtension.set_light = function(self, value, optional_no_sound)
 
     if not self:is_in_hub() then
 
-        if self.flashlight_1p then self:_set_light(self.flashlight_unit_1p, self.flashlight_1p, self.on, optional_no_sound) end
-        if self.flashlight_3p then self:_set_light(self.flashlight_unit_3p, self.flashlight_3p, self.on, optional_no_sound) end
+        if self.flashlight_unit_1p and self.flashlight_1p then
+            for index, unit in pairs(self.flashlight_1p) do
+                self:_set_light(self.flashlight_unit_1p[index], self.flashlight_1p[index], self.on, optional_no_sound)
+            end
+        end
+        if self.flashlight_unit_3p and self.flashlight_3p then
+            for index, unit in pairs(self.flashlight_3p) do
+                self:_set_light(self.flashlight_unit_3p[index], self.flashlight_3p[index], self.on, optional_no_sound)
+            end
+        end
 
     end
 end
@@ -381,17 +425,22 @@ FlashlightExtension._set_light = function(self, flashlight_unit, flashlight, val
 end
 
 FlashlightExtension.init_light = function(self, light)
-    if not self:is_in_hub() then
-        if self.flashlight_1p then self:_init_light(self.flashlight_1p) end
-        if self.flashlight_3p then self:_init_light(self.flashlight_3p) end
+    if not self:is_in_hub() and self.flashlight_1p and self.flashlight_template then
+
+        for index, unit in pairs(self.flashlight_1p) do
+
+            if self.flashlight_1p[index] and self.flashlight_template[index] then self:_init_light(self.flashlight_1p[index], self.flashlight_template[index]) end
+            if self.flashlight_3p[index] and self.flashlight_template[index] then self:_init_light(self.flashlight_3p[index], self.flashlight_template[index]) end
+
+        end
     end
 end
 
-FlashlightExtension._init_light = function(self, light)
-    if self.flashlight_template and light then
-        local template = self.flashlight_template.light.third_person
+FlashlightExtension._init_light = function(self, light, flashlight_template)
+    if flashlight_template and light then
+        local template = flashlight_template.light.third_person
         if self:is_in_first_person_mode() then
-            template = self.flashlight_template.light.first_person
+            template = flashlight_template.light.first_person
         end
         mod:set_template_for_light(light, template)
     end
@@ -404,11 +453,11 @@ end
 FlashlightExtension.aim_position = function(self)
     local flashlight_unit = self:current_flashlight_unit()
 
-    if flashlight_unit and unit_alive(flashlight_unit) then
+    if flashlight_unit and #flashlight_unit > 0 and flashlight_unit[1] and unit_alive(flashlight_unit[1]) then
         
         -- Flashlight rotation / position
-        local flashlight_rotation = unit_world_rotation(flashlight_unit, 2)
-        local flashlight_position = unit_world_position(flashlight_unit, 2)
+        local flashlight_rotation = unit_world_rotation(flashlight_unit[1], 2)
+        local flashlight_position = unit_world_position(flashlight_unit[1], 2)
 
         local first_person_unit = self:first_person_unit()
 

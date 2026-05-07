@@ -41,6 +41,23 @@ local attachment_slots = {
         flashlight = {
             parent_slot = "receiver",
             default_path = _item_empty_trinket,
+            -- fix = {
+            --     offset = {
+            --         position = vector3_box(.03, .19, .146),
+            --         rotation = vector3_box(0, -60, 0),
+            --         scale = vector3_box(1, 1, 1),
+            --         node = 1,
+            --     },
+            -- },
+        },
+    },
+}
+
+attachment_slots.flamer_npc_01 = table_clone(attachment_slots.flamer_p1_m1)
+
+local fixes = {
+    flamer_p1_m1 = {
+        {attachment_slot = "flashlight",
             fix = {
                 offset = {
                     position = vector3_box(.03, .19, .146),
@@ -51,12 +68,6 @@ local attachment_slots = {
             },
         },
     },
-}
-
-attachment_slots.flamer_npc_01 = table_clone(attachment_slots.flamer_p1_m1)
-
-local fixes = {
-    flamer_p1_m1 = {},
 }
 
 fixes.flamer_npc_01 = table_clone(fixes.flamer_p1_m1)

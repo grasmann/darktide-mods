@@ -92,13 +92,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/ranged/rippergun_rifle/ammunition/ammunition_01/ammunition_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    leaf_attach_node_override = "",
-                    link_map_mode_override = "",
-                    item = "",
-                    children = {},
-                    material_overrides = {},
-                },
             },
             workflow_checklist = {
             },
@@ -123,10 +116,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_02/muzzle_02"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -151,13 +140,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/ranged/lasgun_rifle_krieg/attachments/muzzle_04/muzzle_04"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    leaf_attach_node_override = "",
-                    link_map_mode_override = "",
-                    item = "",
-                    children = {},
-                    material_overrides = {},
-                },
             },
             workflow_checklist = {
             },
@@ -185,10 +167,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/ranged/rippergun_rifle/ammunition/ammunition_01/ammunition_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
                 base = {
                     item = _item_ranged.."/sights/reflex_sight_03",
                     fix = {
@@ -262,10 +240,6 @@ local extended_weapon_customization_plugin = {
                 ["content/characters/empty_item/empty_item"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -291,10 +265,6 @@ local extended_weapon_customization_plugin = {
                 ["content/characters/empty_item/empty_item"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -321,10 +291,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/sights/sight_reflex_01/sight_reflex_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -349,10 +315,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/sights/sight_reflex_02/sight_reflex_02"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -377,10 +339,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/sights/sight_reflex_03/sight_reflex_03"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -391,10 +349,6 @@ local extended_weapon_customization_plugin = {
         },
         [_item_ranged.."/sights/scope_show_01"] = {
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
                 base = {
                     item = _item_ranged.."/sights/reflex_sight_03",
                     fix = {
@@ -473,10 +427,6 @@ local extended_weapon_customization_plugin = {
         -- ##### Invisible Flashlights ################################################################################
         [_item_ranged.."/flashlights/invisible_flashlight"] = {
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
                 flashlight_light = {
                     item = _item_ranged.."/flashlights/flashlight_01",
                     fix = {
@@ -517,10 +467,6 @@ local extended_weapon_customization_plugin = {
         },
         [_item_ranged.."/flashlights/invisible_flashlight_ogryn"] = {
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
                 flashlight_light = {
                     item = _item_ranged.."/flashlights/flashlight_ogryn_01",
                     fix = {
@@ -576,10 +522,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -604,10 +546,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -632,10 +570,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -660,10 +594,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -689,10 +619,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_01/flashlight_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -717,10 +643,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_02/flashlight_02"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -745,10 +667,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_03/flashlight_03"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -773,10 +691,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_05/flashlight_05"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -802,10 +716,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -830,10 +740,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_long_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -859,10 +765,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -887,10 +789,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/attachments/flashlights/flashlight_ogryn_01/flashlight_ogryn_long_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -916,10 +814,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/ranged/flamer_rifle/attachments/magazine_01/magazine_01"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -944,10 +838,6 @@ local extended_weapon_customization_plugin = {
                 ["content/weapons/player/ranged/flamer_rifle/attachments/magazine_03/magazine_03"] = true,
             },
             attachments = {
-                zzz_shared_material_overrides = {
-                    item = "",
-                    children = {},
-                },
             },
             workflow_checklist = {
             },
@@ -1465,11 +1355,13 @@ local load_weapons = {
     "dual_stubpistols_p1_m1",
     "powermaul_shield_p1_m1",
     "thunderhammer_2h_p1_m1",
+    "dual_autopistols_p1_m1",
     "ogryn_rippergun_p1_m1",
     "ogryn_gauntlet_p1_m1",
     "ogryn_thumper_p1_m1",
     "forcesword_2h_p1_m1",
     "powersword_2h_p1_m1",
+    "needlepistol_p1_m1",
     "stubrevolver_p1_m1",
     "combatsword_p1_m1",
     "combatsword_p2_m1",
@@ -1480,6 +1372,7 @@ local load_weapons = {
     "powersword_p2_m1",
     "boltpistol_p1_m1",
     "autopistol_p1_m1",
+    "dual_shivs_p1_m1",
     "laspistol_p1_m1",
     "plasmagun_p1_m1",
     "chainaxe_p1_m1",
@@ -1494,6 +1387,7 @@ local load_weapons = {
     "lasgun_p1_m1",
     "lasgun_p2_m1",
     "lasgun_p3_m1",
+    "saw_p1_m1",
 }
 
 for _, file_name in pairs(load_weapons) do

@@ -86,6 +86,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local unit_set_local_rotation = unit.set_local_rotation
     local unit_set_unit_visibility = unit.set_unit_visibility
     local script_unit_has_extension = script_unit.has_extension
+    local world_update_unit_and_children = world.update_unit_and_children
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -251,11 +252,28 @@ VisibleEquipmentExtension.add_object = function(self, slot, attachments, name)
     end
 end
 
+VisibleEquipmentExtension.hide_in_units = function(self, units_by_unit, units, attachment_slot)
+
+    for _, unit in pairs(units) do
+        
+        if unit_get_data(unit, "attachment_slot") == attachment_slot then
+            unit_set_unit_visibility(unit, false, true)
+        end
+
+        if units_by_unit[unit] then
+            self:hide_in_units(units_by_unit, units_by_unit[unit], attachment_slot)
+        end
+
+    end
+
+end
+
 VisibleEquipmentExtension.spawn_slot = function(self, slot, optional_mission_template)
     -- Get into and settings
     local attach_settings = self:attach_settings(slot)
     -- Spawn visible equipment
     local weapon_skin_item = slot.item.slot_weapon_skin
+    local visual_loadout_extension = script_unit_extension(self.unit, "visual_loadout_system")
     local skin_data = weapon_skin_item and weapon_skin_item ~= "" and rawget(attach_settings.item_definitions, weapon_skin_item)
     local skin_overrides = visual_loadout_customization.generate_attachment_overrides_lookup(slot.item, skin_data)
     local item_unit_3p = visual_loadout_customization.spawn_base_unit(slot.item, attach_settings, self.unit, optional_mission_template)
@@ -265,6 +283,37 @@ VisibleEquipmentExtension.spawn_slot = function(self, slot, optional_mission_tem
     if self.extended_weapon_customization then
 
         if unit_attachment_id_3p and slot.item.attachments then
+
+            -- Scabbard
+            local visual_loadout_extension = script_unit_extension(self.unit, "visual_loadout_system")
+            local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = visual_loadout_extension and visual_loadout_extension:unit_and_attachments_from_slot(slot.name)
+            if unit_1p and unit_3p and attachments_by_unit_1p and attachments_by_unit_3p then
+                self:hide_in_units(attachments_by_unit_1p, attachments_by_unit_1p[unit_1p], "scabbard")
+                self:hide_in_units(attachments_by_unit_3p, attachments_by_unit_3p[unit_3p], "scabbard")
+            end
+
+            -- if slot.item.attachments and visual_loadout_extension then
+            --     local scabbard = mod:fetch_attachment(slot.item.attachments, "scabbard")
+            --     local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = visual_loadout_extension:unit_and_attachments_from_slot(slot.name)
+            --     if scabbard and unit_1p and unit_3p and attachments_by_unit_1p and attachments_by_unit_3p then
+            --         local sub_attachment_unit = attachments_by_unit_3p[unit_3p]["scabbard"]
+            --         if sub_attachment_unit then
+            --             -- mod:echo("scabbard: "..tostring(sub_attachment_unit))
+            --             -- self.always_visible[slot][attachment_unit] = true
+            --             -- unit_set_unit_visibility(sub_attachment_unit, false, true)
+            --             -- unit_set_local_scale(sub_attachment_unit, 1, vector3_zero())
+            --             self.always_hidden[slot][sub_attachment_unit] = true
+            --         end
+            --         local sub_attachment_unit = attachments_by_unit_1p[unit_1p]["scabbard"]
+            --         if sub_attachment_unit then
+            --             -- mod:echo("scabbard: "..tostring(sub_attachment_unit))
+            --             -- self.always_visible[slot][attachment_unit] = true
+            --             -- unit_set_unit_visibility(sub_attachment_unit, false, true)
+            --             -- unit_set_local_scale(sub_attachment_unit, 1, vector3_zero())
+            --             self.always_hidden[slot][sub_attachment_unit] = true
+            --         end
+            --     end
+            -- end
 
             fixes = self.extended_weapon_customization:collect_fixes(slot.item)
 
@@ -282,6 +331,35 @@ VisibleEquipmentExtension.spawn_slot = function(self, slot, optional_mission_tem
                 local item = master_items.get_item(item_path)
 
                 if item and item.attachments then
+
+                    -- -- Scabbard
+                    -- local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = visual_loadout_extension:unit_and_attachments_from_slot(slot.name)
+                    -- if unit_1p and unit_3p and attachments_by_unit_1p and attachments_by_unit_3p then
+                    --     self:hide_in_units(unit_attachment_id_3p, "scabbard")
+                    -- end
+                    -- if item.attachments and visual_loadout_extension then
+                    --     local scabbard = mod:fetch_attachment(item.attachments, "scabbard")
+                    --     local unit_1p, unit_3p, attachments_by_unit_1p, attachments_by_unit_3p = visual_loadout_extension:unit_and_attachments_from_slot(slot.name)
+                    --     if scabbard and unit_1p and unit_3p and attachments_by_unit_1p and attachments_by_unit_3p then
+                    --         local sub_attachment_unit = attachments_by_unit_3p[unit_3p]["scabbard"]
+                    --         if sub_attachment_unit then
+                    --             -- mod:echo("scabbard: "..tostring(sub_attachment_unit))
+                    --             -- self.always_visible[slot][attachment_unit] = true
+                    --             -- unit_set_unit_visibility(sub_attachment_unit, false, true)
+                    --             -- unit_set_local_scale(sub_attachment_unit, 1, vector3_zero())
+                    --             self.always_hidden[slot][sub_attachment_unit] = true
+                    --         end
+                    --         local sub_attachment_unit = attachments_by_unit_1p[unit_1p]["scabbard"]
+                    --         if sub_attachment_unit then
+                    --             -- mod:echo("scabbard: "..tostring(sub_attachment_unit))
+                    --             -- self.always_visible[slot][attachment_unit] = true
+                    --             -- unit_set_unit_visibility(sub_attachment_unit, false, true)
+                    --             -- unit_set_local_scale(sub_attachment_unit, 1, vector3_zero())
+                    --             self.always_hidden[slot][sub_attachment_unit] = true
+                    --         end
+                    --     end
+                    -- end
+
                     -- Collect current attachment names
                     local kitbash_fixes = self.extended_weapon_customization:fetch_attachment_fixes(item.structure or item.attachments)
                     if kitbash_fixes then
@@ -317,74 +395,80 @@ VisibleEquipmentExtension.load_slot = function(self, slot, optional_mission_temp
         -- Spawn visible equipment
         local item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p, fixes = self:spawn_slot(slot, optional_mission_template)
         -- Init script
-        local scripts = self.settings.scripts
-        local item_script = slot.item and scripts[slot.item.weapon_template]
-        if item_script and item_script.init then
-            item_script.init(slot.item, item_unit_3p, attachment_units_3p[item_unit_3p], unit_attachment_name_3p[item_unit_3p])
-        end
-        -- Reset equipment component tables
-        self:reset_slot_tables(slot)
-        -- Save visible equipment to pt
-        self:set_pt_tables(slot, item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p)
-        -- Get left and right objects
-        for index, name in pairs(SLOT_ATTACHMENTS) do
-            self:add_object(slot, unit_attachment_name_3p[item_unit_3p], name)
-        end
-        -- Fixes
-        self.fixes[slot] = table_clone(fixes)
-        -- Item unit as sole object when no attachments
-        if #self.objects == 0 then
-            self.objects[slot][#self.objects[slot]+1] = item_unit_3p
-            self.names[slot][item_unit_3p] = "right"
-        end
-        -- Scabbard
-        if slot.item and slot.item.attachments then
-            local scabbard = mod:fetch_attachment(slot.item.attachments, "scabbard")
-            if scabbard then
-                local attachment_unit = unit_attachment_name_3p[item_unit_3p]["scabbard"]
-                if attachment_unit then
-                    self.always_visible[slot][attachment_unit] = true
+        local item = slot.item
+        local weapon_template = item and item.weapon_template
+        -- Check for valid template
+        if weapon_template then
+            local scripts = self.settings.scripts
+            local item_script = item and scripts[weapon_template]
+            if item_script and item_script.init then
+                item_script.init(item, item_unit_3p, attachment_units_3p[item_unit_3p], unit_attachment_name_3p[item_unit_3p])
+            end
+            -- Reset equipment component tables
+            self:reset_slot_tables(slot)
+            -- Save visible equipment to pt
+            self:set_pt_tables(slot, item_unit_3p, attachment_units_3p, unit_attachment_id_3p, unit_attachment_name_3p, item_name_by_unit_3p)
+            -- Get left and right objects
+            for index, name in pairs(SLOT_ATTACHMENTS) do
+                self:add_object(slot, unit_attachment_name_3p[item_unit_3p], name)
+            end
+            -- Fixes
+            self.fixes[slot] = table_clone(fixes)
+            -- Item unit as sole object when no attachments
+            if #self.objects == 0 then
+                self.objects[slot][#self.objects[slot]+1] = item_unit_3p
+                self.names[slot][item_unit_3p] = "right"
+            end
+            -- Scabbard
+            if item.attachments then
+                local scabbard = mod:fetch_attachment(item.attachments, "scabbard")
+                if scabbard then
+                    local attachment_unit = unit_attachment_name_3p[item_unit_3p]["scabbard"]
+                    if attachment_unit then
+                        -- mod:echo("scabbard: "..tostring(attachment_unit))
+                        self.always_visible[slot][attachment_unit] = true
+                    end
                 end
             end
-        end
-        -- Hide attachments
-        local weapon_template = slot.item and slot.item.weapon_template
-        local hide_attachments = weapon_template and mod.settings.hide_attachments[weapon_template]
-        if hide_attachments then
-            for _, attachment_slot in pairs(hide_attachments) do
-                local attachment_unit = unit_attachment_name_3p[item_unit_3p][attachment_slot]
-                if attachment_unit and not self.always_visible[slot][attachment_unit] then
-                    self.always_hidden[slot][attachment_unit] = true
+            -- Hide attachments
+            -- local weapon_template = slot.item and slot.item.weapon_template
+            local hide_attachments = mod.settings.hide_attachments[weapon_template]
+            if hide_attachments then
+                for _, attachment_slot in pairs(hide_attachments) do
+                    local attachment_unit = unit_attachment_name_3p[item_unit_3p][attachment_slot]
+                    if attachment_unit and not self.always_visible[slot][attachment_unit] then
+                        self.always_hidden[slot][attachment_unit] = true
+                    end
                 end
             end
-        end
 
-        -- Setup animation tables
-        self.anim[slot] = table_clone(ANIMATION_TABLE)
-        -- Sheathed
-        self.sheathed[slot] = true
-        -- Iterate through objects
-        for index, obj in pairs(self.objects[slot]) do
-            -- Anim values
-            self.anim[slot].default_position[obj] = vector3_box(vector3_zero())
-            self.anim[slot].default_rotation[obj] = vector3_box(vector3_zero())
-            self.anim[slot].start_position[obj] = vector3_box(vector3_zero())
-            self.anim[slot].start_rotation[obj] = vector3_box(vector3_zero())
-            self.anim[slot].end_position[obj] = vector3_box(vector3_zero())
-            self.anim[slot].end_rotation[obj] = vector3_box(vector3_zero())
-            self.anim[slot].current_position[obj] = vector3_box(vector3_zero())
-            self.anim[slot].current_rotation[obj] = vector3_box(vector3_zero())
-            -- -- Show
-            -- unit_set_unit_visibility(obj, true, true)
-            -- Center point
-            self.unit_center_point[slot][obj] = world_spawn_unit_ex(self.world, EMPTY_UNIT, nil, unit_world_pose(obj, 1))
-            world_link_unit(self.world, self.unit_center_point[slot][obj], 1, obj, 1)
+            -- Setup animation tables
+            self.anim[slot] = table_clone(ANIMATION_TABLE)
+            -- Sheathed
+            self.sheathed[slot] = true
+            -- Iterate through objects
+            for index, obj in pairs(self.objects[slot]) do
+                -- Anim values
+                self.anim[slot].default_position[obj] = vector3_box(vector3_zero())
+                self.anim[slot].default_rotation[obj] = vector3_box(vector3_zero())
+                self.anim[slot].start_position[obj] = vector3_box(vector3_zero())
+                self.anim[slot].start_rotation[obj] = vector3_box(vector3_zero())
+                self.anim[slot].end_position[obj] = vector3_box(vector3_zero())
+                self.anim[slot].end_rotation[obj] = vector3_box(vector3_zero())
+                self.anim[slot].current_position[obj] = vector3_box(vector3_zero())
+                self.anim[slot].current_rotation[obj] = vector3_box(vector3_zero())
+                -- -- Show
+                -- unit_set_unit_visibility(obj, true, true)
+                -- Center point
+                self.unit_center_point[slot][obj] = world_spawn_unit_ex(self.world, EMPTY_UNIT, nil, unit_world_pose(obj, 1))
+                world_link_unit(self.world, self.unit_center_point[slot][obj], 1, obj, 1)
+            end
+            -- mod:dtf(self.objects, "objects", 10)
+            -- Set loaded
+            self.loaded[slot] = true
+            -- Position slot objects
+            self:position_slot_objects(slot, true)
         end
-        -- mod:dtf(self.objects, "objects", 10)
-        -- Set loaded
-        self.loaded[slot] = true
-        -- Position slot objects
-        self:position_slot_objects(slot, true)
     end
 end
 
@@ -543,7 +627,6 @@ VisibleEquipmentExtension.position_objects = function(self, apply_center_mass_of
         self:position_slot_objects(slot, apply_center_mass_offset)
     end
 end
-
 
 VisibleEquipmentExtension.is_shield = function(self, slot)
     if slot and slot.item then
@@ -782,12 +865,23 @@ VisibleEquipmentExtension.update_item_visibility = function(self, equipment, opt
                 end
                 -- Always visible
                 for attachment_unit, _ in pairs(self.always_visible[slot]) do
+                    -- mod:echo("show: "..tostring(attachment_unit))
                     unit_set_unit_visibility(attachment_unit, true, true)
                 end
                 -- Always hidden
                 for attachment_unit, _ in pairs(self.always_hidden[slot]) do
                     unit_set_unit_visibility(attachment_unit, false, true)
                 end
+
+                -- -- Iterate through objects
+                -- for index, obj in pairs(self.objects[slot]) do
+                --     world_update_unit_and_children(self.world, obj)
+                -- end
+
+                -- local item_unit = self.pt.item_units_by_equipment_component[self.equipment_component][slot.name]
+                -- if item_unit and unit_alive(item_unit) then
+                --     world_update_unit_and_children(self.world, item_unit)
+                -- end
             end
         end
     end
@@ -935,6 +1029,11 @@ VisibleEquipmentExtension.update = function(self, dt, t)
     end
     
     self.rotation:store(rotation)
+
+    local player_visibility = script_unit_has_extension(self.unit, "player_visibility_system")
+    local player_invisible = player_visibility and not player_visibility:visible()
+    local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+
     -- Iterate through equipment
     for slot, units in pairs(self.objects) do
         -- Update accent
@@ -949,6 +1048,11 @@ VisibleEquipmentExtension.update = function(self, dt, t)
             end
             -- Update animation
             self:update_animation(dt, t, slot)
+        end
+        -- Always visible
+        for attachment_unit, _ in pairs(self.always_visible[slot]) do
+            -- mod:echo("show: "..tostring(attachment_unit))
+            unit_set_unit_visibility(attachment_unit, not player_invisible and not in_first_person, true)
         end
     end
 end

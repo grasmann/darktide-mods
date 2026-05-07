@@ -7,6 +7,7 @@ local mod = get_mod("extended_weapon_customization")
 local ItemMaterialOverridesGearMaterials = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_materials")
 local ItemMaterialOverridesGearPatterns = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_patterns")
 local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_colors")
+local master_items = mod:original_require("scripts/backend/master_items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -14,7 +15,7 @@ local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/e
 -- #region Performance
     local pairs = pairs
     local table = table
-    -- local table_contains = table.contains
+    local table_contains = table.contains
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -24,6 +25,11 @@ local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/e
 local pt = mod:pt()
 local OVERRIDE_TYPE = table.enum("color", "pattern", "wear")
 local ALL_OVERRIDE_TYPES = {OVERRIDE_TYPE.color, OVERRIDE_TYPE.pattern, OVERRIDE_TYPE.wear}
+local OVERRIDE_ITEM_STRINGS = {
+    wear = "content/items/material_overrides/gear_materials/",
+    color = "content/items/material_overrides/gear_colors/",
+    pattern = "content/items/material_overrides/gear_patterns/",
+}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -74,6 +80,27 @@ mod.clear_gear_material_overrides = function(self, item, fake_gear_id, optional_
 
 end
 
+mod.generate_material_override_items = function(self, material_overrides_data)
+    if material_overrides_data then
+        if material_overrides_data.material_overrides and #material_overrides_data.material_overrides > 0 then
+            if not material_overrides_data.material_override_items then
+                material_overrides_data.material_override_items = {}
+            end
+            for index, material_override in pairs(material_overrides_data.material_overrides) do
+                material_overrides_data.material_override_items[index] = self:item_from_material_name(material_override)
+            end
+        end
+    end
+end
+
+mod.item_from_material_name = function(self, material_override)
+    local override_type = self:override_type(material_override)
+    if OVERRIDE_ITEM_STRINGS[override_type] then
+        return OVERRIDE_ITEM_STRINGS[override_type]..material_override
+    end
+    return material_override
+end
+
 mod.override_type = function(self, material_override)
     if ItemMaterialOverridesGearColors[material_override] then return OVERRIDE_TYPE.color end
     if ItemMaterialOverridesGearPatterns[material_override] then return OVERRIDE_TYPE.pattern end
@@ -103,22 +130,51 @@ mod.gear_material_overrides = function(self, item, fake_gear_id, slot_name, opti
 
             pt.gear_material_overrides[gear_id][slot_name] = pt.gear_material_overrides[gear_id][slot_name] or {
                 material_overrides = {},
+                material_override_items = {},
             }
 
             if optional_material_overrides.material_overrides then
-                for _, material_override in pairs(optional_material_overrides.material_overrides) do
+
+                for index, material_override in pairs(optional_material_overrides.material_overrides) do
 
                     local override_type = self:override_type(material_override)
                     self:remove_override_type(pt.gear_material_overrides[gear_id][slot_name].material_overrides, override_type)
 
                     -- Set setting
                     pt.gear_material_overrides[gear_id][slot_name].material_overrides[#pt.gear_material_overrides[gear_id][slot_name].material_overrides+1] = material_override
-
                 end
+
+                -- local items = {}
+                -- if pt.gear_material_overrides[gear_id][slot_name].material_overrides then
+                --     for index, material_override in pairs(pt.gear_material_overrides[gear_id][slot_name].material_overrides) do
+                --         for _, check_string in pairs(check_strings) do
+                --             if master_items.get_item(check_string..material_override) then
+                --                 items[index] = check_string..material_override
+                --                 break
+                --             end
+                --         end
+                --     end
+                -- end
+                -- pt.gear_material_overrides[gear_id][slot_name].material_override_items = items
+
             end
 
         end
+
     else
+
+        -- local items = {}
+        -- if pt.gear_material_overrides[gear_id] and pt.gear_material_overrides[gear_id][slot_name] and pt.gear_material_overrides[gear_id][slot_name].material_overrides then
+        --     for index, material_override in pairs(pt.gear_material_overrides[gear_id][slot_name].material_overrides) do
+        --         for _, check_string in pairs(check_strings) do
+        --             if master_items.get_item(check_string..material_override) then
+        --                 items[index] = check_string..material_override
+        --                 break
+        --             end
+        --         end
+        --     end
+        --     pt.gear_material_overrides[gear_id][slot_name].material_override_items = items
+        -- end
 
         return pt.gear_material_overrides[gear_id] and pt.gear_material_overrides[gear_id][slot_name]
         
@@ -181,7 +237,8 @@ mod.gear_settings = function(self, gear_id, optional_settings, optional_file)
         local data = pt.gear_settings[gear_id]
         -- Check gear settings and file
         -- if (not data or file) and table_contains(pt.gear_files, gear_id..".lua") then
-        if (not data or optional_file) and mod:cached_table_contains(pt.gear_files, gear_id..".lua") then
+        -- if (not data or optional_file) and mod:cached_table_contains(pt.gear_files, gear_id..".lua") then
+        if (not data or optional_file) and table_contains(pt.gear_files, gear_id..".lua") then
             -- Load gear settings
             pt.gear_settings[gear_id] = mod.save_lua:load_entry(gear_id)
             -- Get gear settings

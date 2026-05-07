@@ -46,22 +46,28 @@ mod:add_global_localize_strings({
 
 	loc_weapon_inventory_color_text = {
 		en = "Color",
+		["zh-cn"] = "颜色",
 	},
 	loc_weapon_inventory_pattern_text = {
 		en = "Pattern",
+		["zh-cn"] = "图案",
 	},
 	loc_weapon_inventory_wear_text = {
 		en = "Wear",
+		["zh-cn"] = "磨损",
 	},
 
 	loc_weapon_inventory_color_button = {
 		en = "X",
+		["zh-cn"] = "X",
 	},
 	loc_weapon_inventory_pattern_button = {
 		en = "X",
+		["zh-cn"] = "X",
 	},
 	loc_weapon_inventory_wear_button = {
 		en = "X",
+		["zh-cn"] = "X",
 	},
 
 	loc_weapon_inventory_tip_1_button = {
@@ -107,6 +113,7 @@ mod:add_global_localize_strings({
 	},
 	attachment_slot_addon = {
 		en = "Addon",
+		["zh-cn"] = "附加组件",
 	},
 	attachment_slot_stock = {
 		en = "Stock",
@@ -245,9 +252,11 @@ return {
 	},
 	mod_tips_05 = {
 		en = "Material Overrides",
+		["zh-cn"] = "材质覆盖",
 	},
 	mod_tips_title_05 = {
 		en = "{#color(226, 199, 126)}Material Overrides{#reset()} can change the color, patterns and wear of attachments.\n\nSelected material overrides apply to the attachment they are chosen for and all sub-attachments.",
+		["zh-cn"] = "{#color(226, 199, 126)}材质覆盖{#reset()} 可以改变配件的颜色、图案和磨损程度。\n\n所选材质覆盖将应用于其选择的配件及其所有子配件。",
 	},
 	mod_tips_06 = {
 		en = "{#color(226, 199, 126)}Equip{#reset()} to apply the currently selected attachment.\n\n{#color(226, 199, 126)}Reset{#reset()} to remove all customized attachments and return the weapon to its default state.\n\n{#color(226, 199, 126)}Random{#reset()} to randomize the attachments on the weapon.\n\nYou can click {#color(226, 199, 126)}Random{#reset()} right now!",

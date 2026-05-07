@@ -34,12 +34,18 @@ local VALID_ITEM_TYPES = {WEAPON_MELEE, WEAPON_RANGED}
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 -- Update all requests that contain gear id
-local update_requests = function(weapon_icon_ui, request_id, item, prioritized)
+local weapon_icon_ui_update_requests = function(weapon_icon_ui, request_id, item, prioritized)
+    -- Check item and request id
     if item and request_id then
+        -- Iterate through request sizes
         for size_key, requests in pairs(weapon_icon_ui._requests_by_size) do
+            -- Iterate through requests
             for _, request in pairs(requests) do
+                -- Get combined id
                 local combined_id = tostring(request_id).."_"..tostring(size_key)
+                -- Check request id
                 if request.id == request_id or request.id == combined_id then
+                    -- Update request
                     weapon_icon_ui:_update_request(request, item, prioritized)
                 end
             end
@@ -56,12 +62,19 @@ mod:hook(CLASS.WeaponIconUI, "_spawn_weapon", function(func, self, item, render_
     func(self, item, render_context, ...)
     -- Update lights
     if self._world_spawner and self._world_spawner._level then
+        -- Get level units
         local level_units = level_units(self._world_spawner._level, true)
+        -- Check units
         if level_units then
+            -- Iterate through level units
             for _, unit in pairs(level_units) do
+                -- Get unit lights
                 local num_lights = unit_num_lights(unit)
+                -- Iterate through unit lights
                 for i = 1, num_lights do
+                    -- Get light
                     local light = unit_light(unit, i)
+                    -- Update light
                     light_set_ies_profile(light, "content/environment/ies_profiles/narrow/narrow_04")
                     light_set_spot_angle_start(light, 0)
                     light_set_spot_angle_end(light, 3)
@@ -75,8 +88,10 @@ mod:hook(CLASS.WeaponIconUI, "_spawn_weapon", function(func, self, item, render_
 end)
 
 mod:hook(CLASS.WeaponIconUI, "weapon_icon_updated", function(func, self, item, prioritized, ...)
+    -- Get request id
     local request_id = item.gear_id or item.name
-    update_requests(self, request_id, item, prioritized)
+    -- Update requests
+    weapon_icon_ui_update_requests(self, request_id, item, prioritized)
 end)
 
 mod:hook(CLASS.WeaponIconUI, "load_weapon_icon", function(func, self, item, on_load_callback, optional_render_context, prioritized, on_unload_callback, ...)

@@ -352,10 +352,6 @@ local function despwan_preview_blade(world, attachment_unit, attachment_data)
 
 end
 
--- ##### ┌─┐┌─┐ ┬ ┬┬┌─┐┌─┐┌─┐┌┬┐  ┌┐ ┬  ┌─┐┌┬┐┌─┐ #####################################################################
--- ##### ├┤ │─┼┐│ ││├─┘├─┘├┤  ││  ├┴┐│  ├─┤ ││├┤  #####################################################################
--- ##### └─┘└─┘└└─┘┴┴  ┴  └─┘─┴┘  └─┘┴─┘┴ ┴─┴┘└─┘ #####################################################################
-
 local function spawn_preview_blade(world, attachment_unit, attachment_data, customization_item)
 
     context.laser_blade_distortion_particles[attachment_unit] = spawn_distortion_particle_effect(world, attachment_unit, attachment_data, false, customization_item)
@@ -365,13 +361,28 @@ local function spawn_preview_blade(world, attachment_unit, attachment_data, cust
 
 end
 
+-- ##### ┌─┐┌─┐ ┬ ┬┬┌─┐┌─┐┌─┐┌┬┐  ┌┐ ┬  ┌─┐┌┬┐┌─┐ #####################################################################
+-- ##### ├┤ │─┼┐│ ││├─┘├─┘├┤  ││  ├┴┐│  ├─┤ ││├┤  #####################################################################
+-- ##### └─┘└─┘└└─┘┴┴  ┴  └─┘─┴┘  └─┘┴─┘┴ ┴─┴┘└─┘ #####################################################################
+
 local function despawn_blade_effect(attachment_callback_extension, particle_effect)
     if attachment_callback_extension[particle_effect] then
-        local world = attachment_callback_extension.world
-        if world_are_particles_playing(world, attachment_callback_extension[particle_effect]) then
-            world_stop_spawning_particles(world, attachment_callback_extension[particle_effect])
+
+        for attachment_unit, particle_id in pairs(attachment_callback_extension[particle_effect]) do
+
+            if attachment_unit and unit_alive(attachment_unit) and particle_id then
+
+                local world = attachment_callback_extension.world
+
+                if world_are_particles_playing(world, particle_id) then
+                    world_stop_spawning_particles(world, particle_id)
+                end
+
+                world_destroy_particles(world, particle_id)
+            end
+
         end
-        world_destroy_particles(world, attachment_callback_extension[particle_effect])
+
         attachment_callback_extension[particle_effect] = nil
     end
 end
@@ -411,33 +422,45 @@ local function spawn_blade(attachment_callback_extension, attachment_slot_data, 
     -- local player_invisible = player_visibility and not player_visibility:visible()
     -- local inventory_view = mod:get_view("inventory_view")
     -- if not attachment_callback_extension.laser_blade_distortion_particle and attachment_callback_extension.wielded_slot == attachment_slot_data.slot_name and not player_invisible and not inventory_view then
-    if not attachment_callback_extension.laser_blade_distortion_particle and can_spawn_blade(attachment_callback_extension, attachment_slot_data) then
+    if can_spawn_blade(attachment_callback_extension, attachment_slot_data) then
 
-        local attachment_unit = attachment_callback_extension:current_attachment_unit(attachment_slot_data.attachment_slot)
-        if attachment_unit and unit_alive(attachment_unit) then
+        local attachment_units = attachment_callback_extension:current_attachment_unit(attachment_slot_data.attachment_slot)
+        for index, attachment_unit in pairs(attachment_units) do
 
-            local custom_fov = attachment_callback_extension.first_person_extension:is_in_first_person_mode()
-            local attachment_data = attachment_slot_data.attachment_data
-            local world = attachment_callback_extension.world
-            local particle_name = attachment_data.particle_effect_name or LASER_PARTICLE
+            local laser_blade_distortion_particle = attachment_callback_extension.laser_blade_distortion_particle and attachment_callback_extension.laser_blade_distortion_particle[attachment_unit]
 
-            attachment_callback_extension.laser_blade_distortion_particle = spawn_distortion_particle_effect(world, attachment_unit, attachment_data, custom_fov)
+            if attachment_unit and unit_alive(attachment_unit) and not laser_blade_distortion_particle then
 
-            attachment_callback_extension.laser_variable_index = world_find_particles_variable(world, particle_name, LASER_LENGTH_VARIABLE_NAME)
+                local custom_fov = attachment_callback_extension.first_person_extension:is_in_first_person_mode()
+                local attachment_data = attachment_slot_data.attachment_data
+                local world = attachment_callback_extension.world
+                local particle_name = attachment_data.particle_effect_name or LASER_PARTICLE
 
-            attachment_callback_extension.laser_blade_laser_particle = spawn_laser_particle_effect(world, attachment_unit, attachment_data, custom_fov)
+                attachment_callback_extension.laser_blade_distortion_particle = attachment_callback_extension.laser_blade_distortion_particle or {}
+                attachment_callback_extension.laser_blade_distortion_particle[attachment_unit] = spawn_distortion_particle_effect(world, attachment_unit, attachment_data, custom_fov)
 
-            attachment_callback_extension.vent_particle = spawn_vent_particle_effect(world, attachment_unit, attachment_data, custom_fov)
+                attachment_callback_extension.laser_variable_index = attachment_callback_extension.laser_variable_index or {}
+                attachment_callback_extension.laser_variable_index[attachment_unit] = world_find_particles_variable(world, particle_name, LASER_LENGTH_VARIABLE_NAME)
 
-            attachment_callback_extension.laser_point_dot_particle, attachment_callback_extension.laser_point_dot_particle2 = spawn_laser_tip_particle_effects(world, attachment_unit, attachment_data, false, false, optional_no_animation)
+                attachment_callback_extension.laser_blade_laser_particle = attachment_callback_extension.laser_blade_laser_particle or {}
+                attachment_callback_extension.laser_blade_laser_particle[attachment_unit] = spawn_laser_particle_effect(world, attachment_unit, attachment_data, custom_fov)
 
-            -- local fire_node = attachment_data._fire_node or 1
-            local laser_node = laser_node(attachment_data)
-            play_sound_effect(LASER_ON, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
-            play_sound_effect(PLAY_LASER_LOOP, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
+                attachment_callback_extension.vent_particle = attachment_callback_extension.vent_particle or {}
+                attachment_callback_extension.vent_particle[attachment_unit] = spawn_vent_particle_effect(world, attachment_unit, attachment_data, custom_fov)
 
-            if not no_animation then
-                attachment_callback_extension.laser_start_fade_in = true
+                attachment_callback_extension.laser_point_dot_particle = attachment_callback_extension.laser_point_dot_particle or {}
+                attachment_callback_extension.laser_point_dot_particle2 = attachment_callback_extension.laser_point_dot_particle2 or {}
+                attachment_callback_extension.laser_point_dot_particle[attachment_unit], attachment_callback_extension.laser_point_dot_particle2[attachment_unit] = spawn_laser_tip_particle_effects(world, attachment_unit, attachment_data, false, false, optional_no_animation)
+
+                -- local fire_node = attachment_data._fire_node or 1
+                local laser_node = laser_node(attachment_data)
+                play_sound_effect(LASER_ON, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
+                play_sound_effect(PLAY_LASER_LOOP, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
+
+                if not no_animation then
+                    attachment_callback_extension.laser_start_fade_in = true
+                end
+
             end
 
         end
@@ -461,19 +484,25 @@ local function update_blade(attachment_callback_extension, attachment_slot_data,
             attachment_callback_extension.laser_start_fade_t = nil
 
             if attachment_callback_extension.laser_blade_laser_particle and attachment_callback_extension.laser_variable_index then
-                world_set_particles_variable(world, attachment_callback_extension.laser_blade_laser_particle, attachment_callback_extension.laser_variable_index, laser_size)
+                for attachment_unit, particle_id in pairs(attachment_callback_extension.laser_blade_laser_particle) do
+                    world_set_particles_variable(world, particle_id, attachment_callback_extension.laser_variable_index[attachment_unit], laser_size)
+                end
             end
 
             if attachment_callback_extension.laser_point_dot_particle and attachment_callback_extension.laser_variable_index then
                 -- local tip_size_1 = attachment_data._tip_size_1 and vector3_unbox(attachment_data._tip_size_1) or vector3(.25, .02, .25)
                 local tip_size_1 = vector3_unbox(laser_2_size(attachment_data))
-                world_set_particles_variable(world, attachment_callback_extension.laser_point_dot_particle, attachment_callback_extension.laser_variable_index, tip_size_1)
+                for attachment_unit, particle_id in pairs(attachment_callback_extension.laser_point_dot_particle) do
+                    world_set_particles_variable(world, particle_id, attachment_callback_extension.laser_variable_index[attachment_unit], tip_size_1)
+                end
             end
 
             if attachment_callback_extension.laser_point_dot_particle2 and attachment_callback_extension.laser_variable_index then
                 -- local tip_size_2 = attachment_data.tip_size_2 and vector3_unbox(attachment_data.tip_size_2) or vector3(.175, .03, .175)
                 local tip_size_2 = vector3_unbox(laser_3_size(attachment_data))
-                world_set_particles_variable(world, attachment_callback_extension.laser_point_dot_particle2, attachment_callback_extension.laser_variable_index, tip_size_2)
+                for attachment_unit, particle_id in pairs(attachment_callback_extension.laser_point_dot_particle2) do
+                    world_set_particles_variable(world, particle_id, attachment_callback_extension.laser_variable_index[attachment_unit], tip_size_2)
+                end
             end
 
         else
@@ -482,7 +511,9 @@ local function update_blade(attachment_callback_extension, attachment_slot_data,
 
             if attachment_callback_extension.laser_blade_laser_particle and attachment_callback_extension.laser_variable_index then
                 local current_value = laser_size * progress
-                world_set_particles_variable(world, attachment_callback_extension.laser_blade_laser_particle, attachment_callback_extension.laser_variable_index, current_value)
+                for attachment_unit, particle_id in pairs(attachment_callback_extension.laser_blade_laser_particle) do
+                    world_set_particles_variable(world, particle_id, attachment_callback_extension.laser_variable_index[attachment_unit], current_value)
+                end
             end
 
         end
@@ -515,23 +546,27 @@ end
 
 local function impact_blade(attachment_callback_extension, attachment_slot_data, hit_position, hit_unit, attack_type, damage_profile, optional_no_sound)
     
-    local attachment_unit = attachment_callback_extension:current_attachment_unit(attachment_slot_data.attachment_slot)
-    if attack_type == attack_types.melee and damage_profile.melee_attack_strength and attachment_unit and unit_alive(attachment_unit) and hit_unit and unit_alive(hit_unit) then
+    local attachment_units = attachment_callback_extension:current_attachment_unit(attachment_slot_data.attachment_slot)
+    for index, attachment_unit in pairs(attachment_units) do
 
-        local no_sound = not not optional_no_sound
-        local world = attachment_callback_extension.world
+        if attack_type == attack_types.melee and damage_profile.melee_attack_strength and attachment_unit and unit_alive(attachment_unit) and hit_unit and unit_alive(hit_unit) then
 
-        local has_hip = unit_has_node(hit_unit, "j_hips")
-        local attach_node = has_hip and unit_node(hit_unit, "j_hips") or 1
-        local attachment_data = attachment_slot_data.attachment_data
+            local no_sound = not not optional_no_sound
+            local world = attachment_callback_extension.world
 
-        hit_position = hit_position or unit_world_position(hit_unit, attach_node)
+            local has_hip = unit_has_node(hit_unit, "j_hips")
+            local attach_node = has_hip and unit_node(hit_unit, "j_hips") or 1
+            local attachment_data = attachment_slot_data.attachment_data
 
-        spawn_lingering_flame(world, attachment_unit, attachment_data, hit_unit, hit_position)
+            hit_position = hit_position or unit_world_position(hit_unit, attach_node)
 
-        -- local fire_node = attachment_data._fire_node or 1
-        local laser_node = laser_node(attachment_data)
-        play_sound_effect(IMPACT_SOUND, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
+            spawn_lingering_flame(world, attachment_unit, attachment_data, hit_unit, hit_position)
+
+            -- local fire_node = attachment_data._fire_node or 1
+            local laser_node = laser_node(attachment_data)
+            play_sound_effect(IMPACT_SOUND, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
+
+        end
 
     end
 
@@ -540,15 +575,20 @@ end
 local function attack_blade(attachment_callback_extension, attachment_slot_data, hit_units, optional_no_sound)
 
     local no_sound = not not optional_no_sound
-    local attachment_unit = attachment_callback_extension:current_attachment_unit(attachment_slot_data.attachment_slot)
-    if attachment_callback_extension.wielded_slot == attachment_slot_data.slot_name and attachment_unit and unit_alive(attachment_unit) then
+    local attachment_units = attachment_callback_extension:current_attachment_unit(attachment_slot_data.attachment_slot)
+    for index, attachment_unit in pairs(attachment_units) do
 
-        local attachment_data = attachment_slot_data.attachment_data
-        -- local fire_node = attachment_data._fire_node or 1
-        local laser_node = laser_node(attachment_data)
-        play_sound_effect(SWING_SOUND, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
+        if attachment_callback_extension.wielded_slot == attachment_slot_data.slot_name and attachment_unit and unit_alive(attachment_unit) then
+
+            local attachment_data = attachment_slot_data.attachment_data
+            -- local fire_node = attachment_data._fire_node or 1
+            local laser_node = laser_node(attachment_data)
+            play_sound_effect(SWING_SOUND, attachment_callback_extension.unit, attachment_unit, laser_node, no_sound)
+
+        end
 
     end
+
 end
 
 return {

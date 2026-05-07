@@ -68,6 +68,10 @@ local alternate_fire_overrides = {
             "ogryn_rippergun_p1_m3",
             "ogryn_thumper_p1_m1",
             "ogryn_thumper_p1_m2",
+            "dual_stubpistol_p1_m1",
+            "dual_stubpistol_p1_m2",
+            "dual_stubpistol_p1_m3",
+            "dual_stubpistol_p1_m4",
         },
     },
     reflex = {
@@ -100,6 +104,10 @@ local alternate_fire_overrides = {
             "ogryn_rippergun_p1_m3",
             "ogryn_thumper_p1_m1",
             "ogryn_thumper_p1_m2",
+            "dual_stubpistol_p1_m1",
+            "dual_stubpistol_p1_m2",
+            "dual_stubpistol_p1_m3",
+            "dual_stubpistol_p1_m4",
         },
     },
     braced = {

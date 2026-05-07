@@ -9,4 +9,7 @@ return {
 		})
 	end,
 	packages = {},
+	load_after = {
+		"dmf",
+	},
 }

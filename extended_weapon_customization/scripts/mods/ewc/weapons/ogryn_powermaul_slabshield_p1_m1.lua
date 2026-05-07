@@ -215,7 +215,7 @@ return {
                 offset = {
                     position = vector3_box(0, 0, 0),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(2, 2, 2),
+                    scale = vector3_box(1.5, 1.5, 1.5),
                     node = 1,
                 },
             },
@@ -227,6 +227,14 @@ return {
                 left = {
                     item = _item.."/shields/assault_shield_01",
                     children = {},
+                    fix = {
+                        offset = {
+                            position = vector3_box(0, 0, 0),
+                            rotation = vector3_box(0, 0, 0),
+                            scale = vector3_box(1.5, 1.5, 1.5),
+                            node = 1,
+                        },
+                    },
                 },
             },
             display_name = "loc_ogryn_assault_shield_01",
@@ -240,6 +248,14 @@ return {
                 left = {
                     item = _item.."/shields/assault_shield_ml01",
                     children = {},
+                    fix = {
+                        offset = {
+                            position = vector3_box(0, 0, 0),
+                            rotation = vector3_box(0, 0, 0),
+                            scale = vector3_box(1.5, 1.5, 1.5),
+                            node = 1,
+                        },
+                    },
                 },
             },
             display_name = "loc_ogryn_assault_shield_02",
@@ -253,6 +269,14 @@ return {
                 left = {
                     item = _item.."/shields/assault_shield_deluxe01",
                     children = {},
+                    fix = {
+                        offset = {
+                            position = vector3_box(0, 0, 0),
+                            rotation = vector3_box(0, 0, 0),
+                            scale = vector3_box(1.5, 1.5, 1.5),
+                            node = 1,
+                        },
+                    },
                 },
             },
             display_name = "loc_ogryn_assault_shield_03",

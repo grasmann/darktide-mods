@@ -10,12 +10,12 @@ local mod = get_mod("extended_weapon_customization")
     local string = string
     local get_mod = get_mod
     local tostring = tostring
+    local string_sub = string.sub
     local table_clear = table.clear
     local table_clone = table.clone
     local table_concat = table.concat
-    -- local string_split = string.split
     local table_combine = table.combine
-    -- local table_contains = table.contains
+    local table_contains = table.contains
     local table_merge_recursive = table.merge_recursive
 --#endregion
 
@@ -25,43 +25,65 @@ local mod = get_mod("extended_weapon_customization")
 
 local REFERENCE = "extended_weapon_customization"
 local pt = mod:pt()
--- local split_cache = {}
--- local temp_exclude = {}
--- local temp_plugins = {}
+local temp_requirement_parts = {}
+local temp_query_params = {}
+local temp_inner_query_params = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
--- local function pull_cache(query, seperator)
---     local cache = split_cache[query]
---     local result = cache or string_split(query, seperator)
---     if not split_cache[query] then split_cache[query] = result end
---     return result
--- end
+mod.handle_attachment_query = function(self, query)
+    -- Check query
+    if string_sub(query, 1, 6) == "query:" then
+
+        -- Check debug
+        local debug = self:cached_find(query, "debug")
+        if debug then
+            -- Debug
+            self:print("")
+            self:print("handling attachment query:")
+        end
+
+        -- Split string with cache
+        temp_query_params = self:cached_split(query, ":")
+
+        -- Check parameters
+        if temp_query_params and temp_query_params[2] then
+            -- Split string with cache
+            temp_inner_query_params = self:cached_split(temp_query_params[2], ",")
+            -- Check parameters
+            if temp_inner_query_params and temp_inner_query_params[1] and temp_inner_query_params[1] ~= "debug" then
+                -- Pull attachment list and return
+                return self:pull_attachment_list_string(temp_inner_query_params[1], temp_inner_query_params[2], temp_inner_query_params[3], temp_inner_query_params[4], debug)
+            end
+        end
+    end
+
+    -- Return query
+    return query
+
+end
 
 mod.pull_attachment_list_string = function(self, weapon_template, optional_target_slot, optional_target_plugin, optional_exclude, debug)
+
     local attachment_names = {}
     local excluded_names = {}
     local plugin_list = {}
+
     -- Get attachment slot parameter
     local target_slot = optional_target_slot ~= "debug" and optional_target_slot or false
-    -- Get plugins parameter
-    -- local target_plugin = optional_target_plugin ~= "debug" and optional_target_plugin or false
-    -- if type(target_plugins) == "string" then target_plugins = {target_plugins} end
     -- Get mods
     local dmf = get_mod("DMF")
+
     -- Check dmf
     if dmf then
 
-        -- Compile plugin list
-        -- table_clear(temp_plugins)
         -- Check exclude parameter
         if optional_target_plugin and optional_target_plugin ~= "debug" then
             -- Check string or table
             if type(optional_target_plugin) == "string" then
                 -- Split string with cache
-                -- temp_exclude = pull_cache(optional_target_plugin, "|")
                 plugin_list = self:cached_split(optional_target_plugin, "|")
             elseif type(optional_target_plugin) == "table" then
                 -- Use table
@@ -77,13 +99,10 @@ mod.pull_attachment_list_string = function(self, weapon_template, optional_targe
         end
 
         -- Compile exclude list
-        -- table_clear(excluded_names)
-        -- Check exclude parameter
         if optional_exclude and optional_exclude ~= "debug" then
             -- Check string or table
             if type(optional_exclude) == "string" then
                 -- Split string with cache
-                -- temp_exclude = pull_cache(optional_exclude, "|")
                 excluded_names = self:cached_split(optional_exclude, "|")
             elseif type(optional_exclude) == "table" then
                 -- Use table
@@ -91,7 +110,9 @@ mod.pull_attachment_list_string = function(self, weapon_template, optional_targe
             end
         end
 
+        -- Check debug
         if debug then
+            -- Debug query parameters
             self:print("weapon_template: "..tostring(weapon_template))
             self:print("attachment_slot: "..tostring(target_slot))
             self:print("plugin_name: "..tostring(optional_target_plugin))
@@ -121,15 +142,13 @@ mod.pull_attachment_list_string = function(self, weapon_template, optional_targe
                                 -- Iterate through attachments
                                 for attachment_slot, attachment_list in pairs(attachments) do
                                     -- Check if target slot
-                                    -- if not target_slot or (target_slot == attachment_slot and not table_contains(excluded_names, attachment_slot)) then
-                                    if not mod:cached_table_contains(excluded_names, attachment_slot) and (not target_slot or target_slot == attachment_slot) then
+                                    -- if not mod:cached_table_contains(excluded_names, attachment_slot) and (not target_slot or target_slot == attachment_slot) then
+                                    if not table_contains(excluded_names, attachment_slot) and (not target_slot or target_slot == attachment_slot) then
                                         -- Iterate through attachment list
                                         for attachment_name, attachment_data in pairs(attachment_list) do
-                                            -- Origin
-                                            -- local is_mod_of_origin = pt.attachment_data_origin[attachment_data] == plugin_mod
                                             -- Check exclude
-                                            -- if not table_contains(temp_exclude, attachment_name) then
-                                            if not mod:cached_table_contains(excluded_names, attachment_name) then --and is_mod_of_origin then
+                                            -- if not mod:cached_table_contains(excluded_names, attachment_name) then
+                                            if not table_contains(excluded_names, attachment_name) then
                                                 -- Add attachment
                                                 attachment_names[#attachment_names+1] = attachment_name
                                             end
@@ -143,7 +162,9 @@ mod.pull_attachment_list_string = function(self, weapon_template, optional_targe
             end
         end
 
+        -- Check debug
         if debug then
+            -- Debug attachment list
             for index, attachment_name in pairs(attachment_names) do
                 self:print("attachment "..tostring(index)..": "..tostring(attachment_name))
             end
@@ -191,7 +212,7 @@ mod.load_plugins = function(self)
                     -- Attachments are key based - merge table
                     self.settings.attachments = table_merge_recursive(self.settings.attachments, plugin.attachments)
                     -- Update lookup tables
-                    self:update_lookup_tables(plugin.attachments, nil, nil, nil, plugin_mod)
+                    self:update_lookup_tables(plugin.attachments, nil, nil, nil, nil, plugin_mod, true)
                 end
 
                 -- Load plugin attachment slots
@@ -199,7 +220,7 @@ mod.load_plugins = function(self)
                     -- Attachment slots are key based - merge table
                     self.settings.attachment_slots = table_merge_recursive(self.settings.attachment_slots, plugin.attachment_slots)
                     -- Update attachment slots
-                    mod:update_attachment_slot_lookup_tables(plugin.attachment_slots, nil, plugin_mod)
+                    mod:update_attachment_slot_lookup_tables(plugin.attachment_slots, nil, plugin_mod, true)
                 end
 
                 -- Load plugin kitbashs

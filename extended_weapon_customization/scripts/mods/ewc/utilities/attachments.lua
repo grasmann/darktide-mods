@@ -5,6 +5,7 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local FlashlightTemplates = mod:original_require("scripts/settings/equipment/flashlight_templates")
+local item_package = mod:original_require("scripts/foundation/managers/package/utilities/item_package")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -37,26 +38,37 @@ local extract_flicker = {
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
-mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name, optional_mod_of_origin)
+mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name, attachment_data_by_mod_by_weapon_by_name, optional_mod_of_origin, optional_force_custom_attachment)
 
+    local mod_of_origin = optional_mod_of_origin or mod
+    local force_custom_attachment = optional_force_custom_attachment or false
     local attachments = attachments or self.settings.attachments
     local attachment_data_by_item_string = attachment_data_by_item_string or self.settings.attachment_data_by_item_string
     local attachment_name_by_item_string = attachment_name_by_item_string or self.settings.attachment_name_by_item_string
     local attachment_data_by_attachment_name = attachment_data_by_attachment_name or self.settings.attachment_data_by_attachment_name
+    local attachment_data_by_mod_by_weapon_by_name = attachment_data_by_mod_by_weapon_by_name or self.settings.attachment_data_by_mod_by_weapon_by_name
     local attachment_data_origin = pt.attachment_data_origin
 
     for weapon_template, weapon_attachments in pairs(attachments) do
         for attachment_slot, attachment_entires in pairs(weapon_attachments) do
             for attachment_name, attachment_data in pairs(attachment_entires) do
+
+                local path = attachment_data.replacement_path
+
+                attachment_data.is_custom_attachment = force_custom_attachment or (mod_of_origin and mod_of_origin ~= mod)
                 
-                attachment_data_by_item_string[attachment_data.replacement_path] = attachment_data
+                attachment_data_by_item_string[path] = attachment_data
                 
-                attachment_name_by_item_string[attachment_data.replacement_path] = attachment_name
+                attachment_name_by_item_string[path] = attachment_name
                 
                 attachment_data_by_attachment_name[attachment_name] = attachment_data
 
-                if optional_mod_of_origin then
-                    attachment_data_origin[attachment_data] = optional_mod_of_origin
+                attachment_data_by_mod_by_weapon_by_name[mod_of_origin] = attachment_data_by_mod_by_weapon_by_name[mod_of_origin] or {}
+                attachment_data_by_mod_by_weapon_by_name[mod_of_origin][weapon_template] = attachment_data_by_mod_by_weapon_by_name[mod_of_origin][weapon_template] or {}
+                attachment_data_by_mod_by_weapon_by_name[mod_of_origin][weapon_template][attachment_name] = attachment_data
+
+                if mod_of_origin then
+                    attachment_data_origin[attachment_data] = mod_of_origin
                 end
 
             end
@@ -65,14 +77,17 @@ mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_s
 
 end
 
-mod.update_attachment_slot_lookup_tables = function(self, attachment_slots, attachment_slot_by_mod_by_weapon_by_name, optional_mod_of_origin)
+mod.update_attachment_slot_lookup_tables = function(self, attachment_slots, attachment_slot_by_mod_by_weapon_by_name, optional_mod_of_origin, optional_force_custom_slot)
 
     local mod_of_origin = optional_mod_of_origin or mod
+    local force_custom_slot = optional_force_custom_slot or false
     local attachment_slot_by_mod_by_weapon_by_name = attachment_slot_by_mod_by_weapon_by_name or self.settings.attachment_slot_by_mod_by_weapon_by_name
     local attachment_slot_origin = pt.attachment_slot_origin
 
     for weapon_template, weapon_attachments in pairs(attachment_slots) do
         for attachment_slot, attachment_slot_data in pairs(weapon_attachments) do
+
+            attachment_slot_data.is_custom_slot = force_custom_slot or (mod_of_origin and mod_of_origin ~= mod)
 
             attachment_slot_by_mod_by_weapon_by_name[mod_of_origin] = attachment_slot_by_mod_by_weapon_by_name[mod_of_origin] or {}
             attachment_slot_by_mod_by_weapon_by_name[mod_of_origin][weapon_template] = attachment_slot_by_mod_by_weapon_by_name[mod_of_origin][weapon_template] or {}
@@ -121,6 +136,7 @@ end
     local ogryn_pickaxe_2h_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_pickaxe_2h_p1_m1")
     local powermaul_shield_p1_m1 = mod:io_dofile(weapons_folder.."powermaul_shield_p1_m1")
     local thunderhammer_2h_p1_m1 = mod:io_dofile(weapons_folder.."thunderhammer_2h_p1_m1")
+    local dual_autopistols_p1_m1 = mod:io_dofile(weapons_folder.."dual_autopistols_p1_m1")
     local ogryn_rippergun_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_rippergun_p1_m1")
     local ogryn_powermaul_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_powermaul_p1_m1")
     local ogryn_gauntlet_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_gauntlet_p1_m1")
@@ -128,6 +144,7 @@ end
     local chainsword_2h_p1_m1 = mod:io_dofile(weapons_folder.."chainsword_2h_p1_m1")
     local ogryn_thumper_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_thumper_p1_m1")
     local powersword_2h_p1_m1 = mod:io_dofile(weapons_folder.."powersword_2h_p1_m1")
+    local needlepistol_p1_m1 = mod:io_dofile(weapons_folder.."needlepistol_p1_m1")
     local stubrevolver_p1_m1 = mod:io_dofile(weapons_folder.."stubrevolver_p1_m1")
     local powermaul_2h_p1_m1 = mod:io_dofile(weapons_folder.."powermaul_2h_p1_m1")
     local combatsword_p1_m1 = mod:io_dofile(weapons_folder.."combatsword_p1_m1")
@@ -143,6 +160,7 @@ end
     local autopistol_p1_m1 = mod:io_dofile(weapons_folder.."autopistol_p1_m1")
     local forcestaff_p1_m1 = mod:io_dofile(weapons_folder.."forcestaff_p1_m1")
     local ogryn_club_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_club_p1_m1")
+    local dual_shivs_p1_m1 = mod:io_dofile(weapons_folder.."dual_shivs_p1_m1")
     local powermaul_p1_m1 = mod:io_dofile(weapons_folder.."powermaul_p1_m1")
     local powermaul_p2_m1 = mod:io_dofile(weapons_folder.."powermaul_p2_m1")
     local plasmagun_p1_m1 = mod:io_dofile(weapons_folder.."plasmagun_p1_m1")
@@ -163,6 +181,7 @@ end
     local lasgun_p1_m1 = mod:io_dofile(weapons_folder.."lasgun_p1_m1")
     local lasgun_p2_m1 = mod:io_dofile(weapons_folder.."lasgun_p2_m1")
     local lasgun_p3_m1 = mod:io_dofile(weapons_folder.."lasgun_p3_m1")
+    local saw_p1_m1 = mod:io_dofile(weapons_folder.."saw_p1_m1")
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -179,6 +198,7 @@ local attachments = {
     ogryn_pickaxe_2h_p1_m1 = ogryn_pickaxe_2h_p1_m1.attachments,
     powermaul_shield_p1_m1 = powermaul_shield_p1_m1.attachments,
     thunderhammer_2h_p1_m1 = thunderhammer_2h_p1_m1.attachments,
+    dual_autopistols_p1_m1 = dual_autopistols_p1_m1.attachments,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.attachments,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.attachments,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.attachments,
@@ -186,6 +206,7 @@ local attachments = {
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.attachments,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.attachments,
     powersword_2h_p1_m1 = powersword_2h_p1_m1.attachments,
+    needlepistol_p1_m1 = needlepistol_p1_m1.attachments,
     powermaul_2h_p1_m1 = powermaul_2h_p1_m1.attachments,
     stubrevolver_p1_m1 = stubrevolver_p1_m1.attachments,
     combatsword_p1_m1 = combatsword_p1_m1.attachments,
@@ -201,6 +222,7 @@ local attachments = {
     boltpistol_p1_m1 = boltpistol_p1_m1.attachments,
     forcestaff_p1_m1 = forcestaff_p1_m1.attachments,
     ogryn_club_p1_m1 = ogryn_club_p1_m1.attachments,
+    dual_shivs_p1_m1 = dual_shivs_p1_m1.attachments,
     powermaul_p1_m1 = powermaul_p1_m1.attachments,
     powermaul_p2_m1 = powermaul_p2_m1.attachments,
     plasmagun_p1_m1 = plasmagun_p1_m1.attachments,
@@ -221,6 +243,7 @@ local attachments = {
     lasgun_p1_m1 = lasgun_p1_m1.attachments,
     lasgun_p2_m1 = lasgun_p2_m1.attachments,
     lasgun_p3_m1 = lasgun_p3_m1.attachments,
+    saw_p1_m1 = saw_p1_m1.attachments,
 }
 
 --#region Copies
@@ -269,6 +292,9 @@ local attachments = {
         attachments.powersword_p2_m2 = table_clone_safe(attachments.powersword_p2_m1)
         attachments.chainsword_p1_m2 = table_clone_safe(attachments.chainsword_p1_m1)
         attachments.forcesword_p1_m2 = table_clone_safe(attachments.forcesword_p1_m1)
+        attachments.dual_shivs_p1_m2 = table_clone_safe(attachments.dual_shivs_p1_m1)
+        attachments.dual_shivs_p1_m3 = table_clone_safe(attachments.dual_shivs_p1_m1)
+        attachments.dual_shivs_p1_m4 = table_clone_safe(attachments.dual_shivs_p1_m1)
         attachments.combataxe_p1_m2 = table_clone_safe(attachments.combataxe_p1_m1)
         attachments.combataxe_p1_m3 = table_clone_safe(attachments.combataxe_p1_m1)
         attachments.combataxe_p2_m2 = table_clone_safe(attachments.combataxe_p2_m1)
@@ -280,6 +306,9 @@ local attachments = {
         attachments.crowbar_p1_m2 = table_clone_safe(attachments.crowbar_p1_m1)
         attachments.crowbar_p1_m3 = table_clone_safe(attachments.crowbar_p1_m1)
         attachments.crowbar_p1_m4 = table_clone_safe(attachments.crowbar_p1_m1)
+        attachments.saw_p1_m2 = table_clone_safe(attachments.saw_p1_m1)
+        attachments.saw_p1_m3 = table_clone_safe(attachments.saw_p1_m1)
+        attachments.saw_p1_m4 = table_clone_safe(attachments.saw_p1_m1)
             attachments.bot_combataxe_linesman = table_clone_safe(attachments.combataxe_p1_m1)
             attachments.bot_combatsword_linesman_p1 = table_clone_safe(attachments.combatsword_p1_m1)
             attachments.bot_combatsword_linesman_p2 = table_clone_safe(attachments.combatsword_p2_m1)
@@ -294,6 +323,12 @@ local attachments = {
         attachments.dual_stubpistols_p1_m2 = table_clone_safe(attachments.dual_stubpistols_p1_m1)
         attachments.dual_stubpistols_p1_m3 = table_clone_safe(attachments.dual_stubpistols_p1_m1)
         attachments.dual_stubpistols_p1_m4 = table_clone_safe(attachments.dual_stubpistols_p1_m1)
+        attachments.dual_autopistols_p1_m2 = table_clone_safe(attachments.dual_autopistols_p1_m1)
+        attachments.dual_autopistols_p1_m3 = table_clone_safe(attachments.dual_autopistols_p1_m1)
+        attachments.dual_autopistols_p1_m4 = table_clone_safe(attachments.dual_autopistols_p1_m1)
+        attachments.needlepistol_p1_m2 = table_clone_safe(attachments.needlepistol_p1_m1)
+        attachments.needlepistol_p1_m3 = table_clone_safe(attachments.needlepistol_p1_m1)
+        attachments.needlepistol_p1_m4 = table_clone_safe(attachments.needlepistol_p1_m1)
         attachments.stubrevolver_p1_m3 = table_clone_safe(attachments.stubrevolver_p1_m1)
         attachments.stubrevolver_p1_m2 = table_clone_safe(attachments.stubrevolver_p1_m1)
         attachments.forcestaff_p2_m1 = table_clone_safe(attachments.forcestaff_p1_m1)
@@ -354,6 +389,7 @@ local fixes = {
     ogryn_pickaxe_2h_p1_m1 = ogryn_pickaxe_2h_p1_m1.fixes,
     powermaul_shield_p1_m1 = powermaul_shield_p1_m1.fixes,
     thunderhammer_2h_p1_m1 = thunderhammer_2h_p1_m1.fixes,
+    dual_autopistols_p1_m1 = dual_autopistols_p1_m1.fixes,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.fixes,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.fixes,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.fixes,
@@ -361,6 +397,7 @@ local fixes = {
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.fixes,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.fixes,
     powersword_2h_p1_m1 = powersword_2h_p1_m1.fixes,
+    needlepistol_p1_m1 = needlepistol_p1_m1.fixes,
     powermaul_2h_p1_m1 = powermaul_2h_p1_m1.fixes,
     stubrevolver_p1_m1 = stubrevolver_p1_m1.fixes,
     combatsword_p1_m1 = combatsword_p1_m1.fixes,
@@ -376,6 +413,7 @@ local fixes = {
     boltpistol_p1_m1 = boltpistol_p1_m1.fixes,
     forcestaff_p1_m1 = forcestaff_p1_m1.fixes,
     ogryn_club_p1_m1 = ogryn_club_p1_m1.fixes,
+    dual_shivs_p1_m1 = dual_shivs_p1_m1.fixes,
     powermaul_p1_m1 = powermaul_p1_m1.fixes,
     powermaul_p2_m1 = powermaul_p2_m1.fixes,
     plasmagun_p1_m1 = plasmagun_p1_m1.fixes,
@@ -396,6 +434,7 @@ local fixes = {
     lasgun_p1_m1 = lasgun_p1_m1.fixes,
     lasgun_p2_m1 = lasgun_p2_m1.fixes,
     lasgun_p3_m1 = lasgun_p3_m1.fixes,
+    saw_p1_m1 = saw_p1_m1.fixes,
 }
 
 --#region Copies
@@ -444,6 +483,9 @@ local fixes = {
         fixes.powersword_p2_m2 = table_clone_safe(fixes.powersword_p2_m1)
         fixes.chainsword_p1_m2 = table_clone_safe(fixes.chainsword_p1_m1)
         fixes.forcesword_p1_m2 = table_clone_safe(fixes.forcesword_p1_m1)
+        fixes.dual_shivs_p1_m2 = table_clone_safe(fixes.dual_shivs_p1_m1)
+        fixes.dual_shivs_p1_m3 = table_clone_safe(fixes.dual_shivs_p1_m1)
+        fixes.dual_shivs_p1_m4 = table_clone_safe(fixes.dual_shivs_p1_m1)
         fixes.combataxe_p1_m2 = table_clone_safe(fixes.combataxe_p1_m1)
         fixes.combataxe_p1_m3 = table_clone_safe(fixes.combataxe_p1_m1)
         fixes.combataxe_p2_m2 = table_clone_safe(fixes.combataxe_p2_m1)
@@ -455,6 +497,9 @@ local fixes = {
         fixes.crowbar_p1_m2 = table_clone_safe(fixes.crowbar_p1_m1)
         fixes.crowbar_p1_m3 = table_clone_safe(fixes.crowbar_p1_m1)
         fixes.crowbar_p1_m4 = table_clone_safe(fixes.crowbar_p1_m1)
+        fixes.saw_p1_m2 = table_clone_safe(fixes.saw_p1_m1)
+        fixes.saw_p1_m3 = table_clone_safe(fixes.saw_p1_m1)
+        fixes.saw_p1_m4 = table_clone_safe(fixes.saw_p1_m1)
             fixes.bot_combataxe_linesman = table_clone_safe(fixes.combataxe_p1_m1)
             fixes.bot_combatsword_linesman_p1 = table_clone_safe(fixes.combatsword_p1_m1)
             fixes.bot_combatsword_linesman_p2 = table_clone_safe(fixes.combatsword_p2_m1)
@@ -469,6 +514,12 @@ local fixes = {
         fixes.dual_stubpistols_p1_m2 = table_clone_safe(fixes.dual_stubpistols_p1_m1)
         fixes.dual_stubpistols_p1_m3 = table_clone_safe(fixes.dual_stubpistols_p1_m1)
         fixes.dual_stubpistols_p1_m4 = table_clone_safe(fixes.dual_stubpistols_p1_m1)
+        fixes.dual_autopistols_p1_m2 = table_clone_safe(fixes.dual_autopistols_p1_m1)
+        fixes.dual_autopistols_p1_m3 = table_clone_safe(fixes.dual_autopistols_p1_m1)
+        fixes.dual_autopistols_p1_m4 = table_clone_safe(fixes.dual_autopistols_p1_m1)
+        fixes.needlepistol_p1_m2 = table_clone_safe(fixes.needlepistol_p1_m1)
+        fixes.needlepistol_p1_m3 = table_clone_safe(fixes.needlepistol_p1_m1)
+        fixes.needlepistol_p1_m4 = table_clone_safe(fixes.needlepistol_p1_m1)
         fixes.stubrevolver_p1_m3 = table_clone_safe(fixes.stubrevolver_p1_m1)
         fixes.stubrevolver_p1_m2 = table_clone_safe(fixes.stubrevolver_p1_m1)
         fixes.forcestaff_p2_m1 = table_clone_safe(fixes.forcestaff_p1_m1)
@@ -529,6 +580,7 @@ local attachment_slots = {
     ogryn_pickaxe_2h_p1_m1 = ogryn_pickaxe_2h_p1_m1.attachment_slots,
     powermaul_shield_p1_m1 = powermaul_shield_p1_m1.attachment_slots,
     thunderhammer_2h_p1_m1 = thunderhammer_2h_p1_m1.attachment_slots,
+    dual_autopistols_p1_m1 = dual_autopistols_p1_m1.attachment_slots,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.attachment_slots,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.attachment_slots,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.attachment_slots,
@@ -536,6 +588,7 @@ local attachment_slots = {
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.attachment_slots,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.attachment_slots,
     powersword_2h_p1_m1 = powersword_2h_p1_m1.attachment_slots,
+    needlepistol_p1_m1 = needlepistol_p1_m1.attachment_slots,
     stubrevolver_p1_m1 = stubrevolver_p1_m1.attachment_slots,
     powermaul_2h_p1_m1 = powermaul_2h_p1_m1.attachment_slots,
     combatsword_p1_m1 = combatsword_p1_m1.attachment_slots,
@@ -551,6 +604,7 @@ local attachment_slots = {
     boltpistol_p1_m1 = boltpistol_p1_m1.attachment_slots,
     forcestaff_p1_m1 = forcestaff_p1_m1.attachment_slots,
     ogryn_club_p1_m1 = ogryn_club_p1_m1.attachment_slots,
+    dual_shivs_p1_m1 = dual_shivs_p1_m1.attachment_slots,
     powermaul_p1_m1 = powermaul_p1_m1.attachment_slots,
     powermaul_p2_m1 = powermaul_p2_m1.attachment_slots,
     plasmagun_p1_m1 = plasmagun_p1_m1.attachment_slots,
@@ -571,6 +625,7 @@ local attachment_slots = {
     lasgun_p1_m1 = lasgun_p1_m1.attachment_slots,
     lasgun_p2_m1 = lasgun_p2_m1.attachment_slots,
     lasgun_p3_m1 = lasgun_p3_m1.attachment_slots,
+    saw_p1_m1 = saw_p1_m1.attachment_slots,
 }
 
 --#region Copies
@@ -619,6 +674,9 @@ local attachment_slots = {
         attachment_slots.powersword_p2_m2 = table_clone_safe(attachment_slots.powersword_p2_m1)
         attachment_slots.chainsword_p1_m2 = table_clone_safe(attachment_slots.chainsword_p1_m1)
         attachment_slots.forcesword_p1_m2 = table_clone_safe(attachment_slots.forcesword_p1_m1)
+        attachment_slots.dual_shivs_p1_m2 = table_clone_safe(attachment_slots.dual_shivs_p1_m1)
+        attachment_slots.dual_shivs_p1_m3 = table_clone_safe(attachment_slots.dual_shivs_p1_m1)
+        attachment_slots.dual_shivs_p1_m4 = table_clone_safe(attachment_slots.dual_shivs_p1_m1)
         attachment_slots.combataxe_p1_m2 = table_clone_safe(attachment_slots.combataxe_p1_m1)
         attachment_slots.combataxe_p1_m3 = table_clone_safe(attachment_slots.combataxe_p1_m1)
         attachment_slots.combataxe_p2_m2 = table_clone_safe(attachment_slots.combataxe_p2_m1)
@@ -630,6 +688,9 @@ local attachment_slots = {
         attachment_slots.crowbar_p1_m2 = table_clone_safe(attachment_slots.crowbar_p1_m1)
         attachment_slots.crowbar_p1_m3 = table_clone_safe(attachment_slots.crowbar_p1_m1)
         attachment_slots.crowbar_p1_m4 = table_clone_safe(attachment_slots.crowbar_p1_m1)
+        attachment_slots.saw_p1_m2 = table_clone_safe(attachment_slots.saw_p1_m1)
+        attachment_slots.saw_p1_m3 = table_clone_safe(attachment_slots.saw_p1_m1)
+        attachment_slots.saw_p1_m4 = table_clone_safe(attachment_slots.saw_p1_m1)
             attachment_slots.bot_combataxe_linesman = table_clone_safe(attachment_slots.combataxe_p1_m1)
             attachment_slots.bot_combatsword_linesman_p1 = table_clone_safe(attachment_slots.combatsword_p1_m1)
             attachment_slots.bot_combatsword_linesman_p2 = table_clone_safe(attachment_slots.combatsword_p2_m1)
@@ -644,6 +705,12 @@ local attachment_slots = {
         attachment_slots.dual_stubpistols_p1_m2 = table_clone_safe(attachment_slots.dual_stubpistols_p1_m1)
         attachment_slots.dual_stubpistols_p1_m3 = table_clone_safe(attachment_slots.dual_stubpistols_p1_m1)
         attachment_slots.dual_stubpistols_p1_m4 = table_clone_safe(attachment_slots.dual_stubpistols_p1_m1)
+        attachment_slots.dual_autopistols_p1_m2 = table_clone_safe(attachment_slots.dual_autopistols_p1_m1)
+        attachment_slots.dual_autopistols_p1_m3 = table_clone_safe(attachment_slots.dual_autopistols_p1_m1)
+        attachment_slots.dual_autopistols_p1_m4 = table_clone_safe(attachment_slots.dual_autopistols_p1_m1)
+        attachment_slots.needlepistol_p1_m2 = table_clone_safe(attachment_slots.needlepistol_p1_m1)
+        attachment_slots.needlepistol_p1_m3 = table_clone_safe(attachment_slots.needlepistol_p1_m1)
+        attachment_slots.needlepistol_p1_m4 = table_clone_safe(attachment_slots.needlepistol_p1_m1)
         attachment_slots.stubrevolver_p1_m3 = table_clone_safe(attachment_slots.stubrevolver_p1_m1)
         attachment_slots.stubrevolver_p1_m2 = table_clone_safe(attachment_slots.stubrevolver_p1_m1)
         attachment_slots.forcestaff_p2_m1 = table_clone_safe(attachment_slots.forcestaff_p1_m1)
@@ -704,6 +771,7 @@ local kitbashs = {
     ogryn_pickaxe_2h_p1_m1 = ogryn_pickaxe_2h_p1_m1.kitbashs,
     powermaul_shield_p1_m1 = powermaul_shield_p1_m1.kitbashs,
     thunderhammer_2h_p1_m1 = thunderhammer_2h_p1_m1.kitbashs,
+    dual_autopistols_p1_m1 = dual_autopistols_p1_m1.kitbashs,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.kitbashs,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.kitbashs,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.kitbashs,
@@ -711,6 +779,7 @@ local kitbashs = {
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.kitbashs,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.kitbashs,
     powersword_2h_p1_m1 = powersword_2h_p1_m1.kitbashs,
+    needlepistol_p1_m1 = needlepistol_p1_m1.kitbashs,
     stubrevolver_p1_m1 = stubrevolver_p1_m1.kitbashs,
     powermaul_2h_p1_m1 = powermaul_2h_p1_m1.kitbashs,
     combatsword_p1_m1 = combatsword_p1_m1.kitbashs,
@@ -725,6 +794,7 @@ local kitbashs = {
     boltpistol_p1_m1 = boltpistol_p1_m1.kitbashs,
     forcestaff_p1_m1 = forcestaff_p1_m1.kitbashs,
     ogryn_club_p1_m1 = ogryn_club_p1_m1.kitbashs,
+    dual_shivs_p1_m1 = dual_shivs_p1_m1.kitbashs,
     powermaul_p1_m1 = powermaul_p1_m1.kitbashs,
     powermaul_p2_m1 = powermaul_p2_m1.kitbashs,
     plasmagun_p1_m1 = plasmagun_p1_m1.kitbashs,
@@ -745,6 +815,7 @@ local kitbashs = {
     lasgun_p1_m1 = lasgun_p1_m1.kitbashs,
     lasgun_p2_m1 = lasgun_p2_m1.kitbashs,
     lasgun_p3_m1 = lasgun_p3_m1.kitbashs,
+    saw_p1_m1 = saw_p1_m1.kitbashs,
 }
 
 -- Load kitbashes
@@ -757,9 +828,10 @@ local attachment_data_by_item_string = {}
 local attachment_name_by_item_string = {}
 local attachment_data_by_attachment_name = {}
 local attachment_slot_by_mod_by_weapon_by_name = {}
+local attachment_data_by_mod_by_weapon_by_name = {}
 
 -- Update lookup tables
-mod:update_lookup_tables(attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name)
+mod:update_lookup_tables(attachments, attachment_data_by_item_string, attachment_name_by_item_string, attachment_data_by_attachment_name, attachment_data_by_mod_by_weapon_by_name)
 
 -- Update attachment slots
 mod:update_attachment_slot_lookup_tables(attachment_slots, attachment_slot_by_mod_by_weapon_by_name)
@@ -777,6 +849,7 @@ local flashlight_templates = {
     ogryn_pickaxe_2h_p1_m1 = ogryn_pickaxe_2h_p1_m1.flashlight_templates,
     powermaul_shield_p1_m1 = powermaul_shield_p1_m1.flashlight_templates,
     thunderhammer_2h_p1_m1 = thunderhammer_2h_p1_m1.flashlight_templates,
+    dual_autopistols_p1_m1 = dual_autopistols_p1_m1.flashlight_templates,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.flashlight_templates,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.flashlight_templates,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.flashlight_templates,
@@ -784,6 +857,7 @@ local flashlight_templates = {
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.flashlight_templates,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.flashlight_templates,
     powersword_2h_p1_m1 = powersword_2h_p1_m1.flashlight_templates,
+    needlepistol_p1_m1 = needlepistol_p1_m1.flashlight_templates,
     stubrevolver_p1_m1 = stubrevolver_p1_m1.flashlight_templates,
     powermaul_2h_p1_m1 = powermaul_2h_p1_m1.flashlight_templates,
     combatsword_p1_m1 = combatsword_p1_m1.flashlight_templates,
@@ -799,6 +873,7 @@ local flashlight_templates = {
     boltpistol_p1_m1 = boltpistol_p1_m1.flashlight_templates,
     forcestaff_p1_m1 = forcestaff_p1_m1.flashlight_templates,
     ogryn_club_p1_m1 = ogryn_club_p1_m1.flashlight_templates,
+    dual_shivs_p1_m1 = dual_shivs_p1_m1.flashlight_templates,
     powermaul_p1_m1 = powermaul_p1_m1.flashlight_templates,
     powermaul_p2_m1 = powermaul_p2_m1.flashlight_templates,
     plasmagun_p1_m1 = plasmagun_p1_m1.flashlight_templates,
@@ -819,6 +894,7 @@ local flashlight_templates = {
     lasgun_p1_m1 = lasgun_p1_m1.flashlight_templates,
     lasgun_p2_m1 = lasgun_p2_m1.flashlight_templates,
     lasgun_p3_m1 = lasgun_p3_m1.flashlight_templates,
+    saw_p1_m1 = saw_p1_m1.flashlight_templates,
 }
 
 --#region Copies
@@ -867,6 +943,9 @@ local flashlight_templates = {
         flashlight_templates.powersword_p2_m2 = table_clone_safe(flashlight_templates.powersword_p2_m1)
         flashlight_templates.chainsword_p1_m2 = table_clone_safe(flashlight_templates.chainsword_p1_m1)
         flashlight_templates.forcesword_p1_m2 = table_clone_safe(flashlight_templates.forcesword_p1_m1)
+        flashlight_templates.dual_shivs_p1_m2 = table_clone_safe(flashlight_templates.dual_shivs_p1_m1)
+        flashlight_templates.dual_shivs_p1_m3 = table_clone_safe(flashlight_templates.dual_shivs_p1_m1)
+        flashlight_templates.dual_shivs_p1_m4 = table_clone_safe(flashlight_templates.dual_shivs_p1_m1)
         flashlight_templates.combataxe_p1_m2 = table_clone_safe(flashlight_templates.combataxe_p1_m1)
         flashlight_templates.combataxe_p1_m3 = table_clone_safe(flashlight_templates.combataxe_p1_m1)
         flashlight_templates.combataxe_p2_m2 = table_clone_safe(flashlight_templates.combataxe_p2_m1)
@@ -878,6 +957,9 @@ local flashlight_templates = {
         flashlight_templates.crowbar_p1_m2 = table_clone_safe(flashlight_templates.crowbar_p1_m1)
         flashlight_templates.crowbar_p1_m3 = table_clone_safe(flashlight_templates.crowbar_p1_m1)
         flashlight_templates.crowbar_p1_m4 = table_clone_safe(flashlight_templates.crowbar_p1_m1)
+        flashlight_templates.saw_p1_m2 = table_clone_safe(flashlight_templates.saw_p1_m1)
+        flashlight_templates.saw_p1_m3 = table_clone_safe(flashlight_templates.saw_p1_m1)
+        flashlight_templates.saw_p1_m4 = table_clone_safe(flashlight_templates.saw_p1_m1)
             flashlight_templates.bot_combataxe_linesman = table_clone_safe(flashlight_templates.combataxe_p1_m1)
             flashlight_templates.bot_combatsword_linesman_p1 = table_clone_safe(flashlight_templates.combatsword_p1_m1)
             flashlight_templates.bot_combatsword_linesman_p2 = table_clone_safe(flashlight_templates.combatsword_p2_m1)
@@ -892,6 +974,12 @@ local flashlight_templates = {
         flashlight_templates.dual_stubpistols_p1_m2 = table_clone_safe(flashlight_templates.dual_stubpistols_p1_m1)
         flashlight_templates.dual_stubpistols_p1_m3 = table_clone_safe(flashlight_templates.dual_stubpistols_p1_m1)
         flashlight_templates.dual_stubpistols_p1_m4 = table_clone_safe(flashlight_templates.dual_stubpistols_p1_m1)
+        flashlight_templates.dual_autopistols_p1_m2 = table_clone_safe(flashlight_templates.dual_autopistols_p1_m1)
+        flashlight_templates.dual_autopistols_p1_m3 = table_clone_safe(flashlight_templates.dual_autopistols_p1_m1)
+        flashlight_templates.dual_autopistols_p1_m4 = table_clone_safe(flashlight_templates.dual_autopistols_p1_m1)
+        flashlight_templates.needlepistol_p1_m2 = table_clone_safe(flashlight_templates.needlepistol_p1_m1)
+        flashlight_templates.needlepistol_p1_m3 = table_clone_safe(flashlight_templates.needlepistol_p1_m1)
+        flashlight_templates.needlepistol_p1_m4 = table_clone_safe(flashlight_templates.needlepistol_p1_m1)
         flashlight_templates.stubrevolver_p1_m3 = table_clone_safe(flashlight_templates.stubrevolver_p1_m1)
         flashlight_templates.stubrevolver_p1_m2 = table_clone_safe(flashlight_templates.stubrevolver_p1_m1)
         flashlight_templates.forcestaff_p2_m1 = table_clone_safe(flashlight_templates.forcestaff_p1_m1)
@@ -953,4 +1041,5 @@ return {
     attachment_name_by_item_string = attachment_name_by_item_string,
     attachment_data_by_attachment_name = attachment_data_by_attachment_name,
     attachment_slot_by_mod_by_weapon_by_name = attachment_slot_by_mod_by_weapon_by_name,
+    attachment_data_by_mod_by_weapon_by_name = attachment_data_by_mod_by_weapon_by_name,
 }

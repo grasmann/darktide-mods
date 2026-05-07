@@ -51,11 +51,16 @@ mod.cached_gsub = function(self, query, term, replacement)
     return result
 end
 
+-- Only useful for static tables
 mod.cached_table_contains = function(self, t, v)
-    return table_contains(t, v)
-    -- local cache = table_contains_cache[t] and v and table_contains_cache[t][v]
-    -- local result = cache or (v and table_contains(t, v))
-    -- if result and not table_contains_cache[t] then table_contains_cache[t] = {} end
-    -- if result and not table_contains_cache[t][v] then table_contains_cache[t][v] = result end
-    -- return result
+    -- return table_contains(t, v)
+    local cache = table_contains_cache[t] and v and table_contains_cache[t][v]
+    local result = cache or (v and table_contains(t, v))
+    if result and not table_contains_cache[t] then table_contains_cache[t] = {} end
+    if result and not table_contains_cache[t][v] then table_contains_cache[t][v] = result end
+    return result
+end
+
+mod.clear_table_contains = function(self, t)
+    table_contains_cache[t] = nil
 end

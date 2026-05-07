@@ -10,6 +10,7 @@ local mod = get_mod("extended_weapon_customization")
     local managers = Managers
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
+    local table_clear = table.clear
     local script_unit_extension = script_unit.extension
 --#endregion
 
@@ -157,7 +158,7 @@ AttachmentCallbackExtension.attachment_callback = function(self, callback_name, 
     -- Iterate through attachments
     for attachment_slot, attachment_slot_data in pairs(self.attachments) do
         -- Get data
-        local attachment_unit = self:current_attachment_unit(attachment_slot)
+        -- local attachment_unit = self:current_attachment_unit(attachment_slot)
         local attachment_data = attachment_slot_data.attachment_data
         -- Check callback
         if attachment_data[callback_name] then
@@ -181,10 +182,14 @@ mod.execute_attachment_callbacks_in_item = function(self, item, world, attachmen
                 -- Check attachment data and if it has function name
                 if attachment_data and attachment_data[function_name] then
                     -- Get attachment unit
-                    local attachment_unit = attachment_units and mod:find_in_units(attachment_units, attachment_slot)
-                    if attachment_unit and unit_alive(attachment_unit) then
-                        -- Execute
-                        attachment_data[function_name](world, attachment_unit, attachment_data, ...) -- Forward arguments
+                    local found_attachment_units = attachment_units and mod:find_in_units(attachment_units, attachment_slot)
+                    for index, attachment_unit in pairs(found_attachment_units) do
+
+                        if attachment_unit and unit_alive(attachment_unit) then
+                            -- Execute
+                            attachment_data[function_name](world, attachment_unit, attachment_data, ...) -- Forward arguments
+                        end
+
                     end
                 end
             end

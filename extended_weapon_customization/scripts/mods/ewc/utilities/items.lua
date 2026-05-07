@@ -56,6 +56,13 @@ local SHIELD_WEAPONS = {
     "shotpistol_shield_p1_m2",
     "shotpistol_shield_p1_m3",
 }
+local CUSTOM_SLOT_CACHE = {}
+local CUSTOM_ATTACHMENT_CACHE = {}
+-- local check_strings = {
+--     "content/items/material_overrides/gear_materials/",
+--     "content/items/material_overrides/gear_colors/",
+--     "content/items/material_overrides/gear_patterns/",
+-- }
 
 -- ##### ┬─┐┌─┐┌─┐┬ ┬┬─┐┌─┐┬┬  ┬┌─┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ########################
 -- ##### ├┬┘├┤ │  │ │├┬┘└─┐│└┐┌┘├┤   ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │   ├┤ │ │││││   │ ││ ││││└─┐ ########################
@@ -69,6 +76,18 @@ mod.overwrite_attachment = function(self, attachments, target_slot, replacement_
             data.item = replacement_path
             local attachment_item = pt.master_items_loaded and master_items.get_item(replacement_path)
             data.material_overrides = attachment_item and attachment_item.material_overrides or (data.material_overrides or {})
+            -- local items = {}
+            -- if data.material_overrides then
+            --     for index, material_override in pairs(data.material_overrides) do
+            --         for _, check_string in pairs(check_strings) do
+            --             if master_items.get_item(check_string..material_override) then
+            --                 items[index] = check_string..material_override
+            --                 break
+            --             end
+            --         end
+            --     end
+            --     data.material_override_items = items
+            -- end
         end
         -- if master_item and master_item.attachments then
         --     self:overwrite_attachment(master_item.attachments, target_slot, replacement_path)
@@ -112,6 +131,16 @@ mod.inject_material_overrides = function(self, attachments, target_slot, materia
     for slot, data in pairs(attachments) do
         if slot == target_slot then
             data.material_overrides = material_overrides
+            -- local items = {}
+            -- for index, material_override in pairs(material_overrides) do
+            --     for _, check_string in pairs(check_strings) do
+            --         if master_items.get_item(check_string..material_override) then
+            --             items[index] = check_string..material_override
+            --             break
+            --         end
+            --     end
+            -- end
+            -- data.material_override_items = items
         end
         if data.children then
             self:overwrite_attachment(data.children, target_slot, material_overrides)
@@ -132,6 +161,8 @@ mod.inject_attachment = function(self, attachments, slot_name, inject_data)
     for slot, attachment_data in pairs(attachments) do
 
         for _, parent_slot in pairs(parent_slots) do
+
+            -- mod:echo("inject slot "..tostring(slot_name).." into "..tostring(parent_slot))
 
             if slot == parent_slot then
 
@@ -160,11 +191,26 @@ mod.inject_attachment = function(self, attachments, slot_name, inject_data)
                 --     material_overrides = item and item.material_overrides
                 -- end
 
+                -- local items = {}
+                -- if material_overrides then
+                --     for index, material_override in pairs(material_overrides) do
+                --         for _, check_string in pairs(check_strings) do
+                --             if master_items.get_item(check_string..material_override) then
+                --                 items[index] = check_string..material_override
+                --                 break
+                --             end
+                --         end
+                --     end
+                --     -- data.material_override_items = items
+                -- end
+
                 attachment_data.children[slot_name] = {
                     item = existing_item or inject_data.default_path or "",
                     children = existing_children or {},
                     fix = inject_data.fix,
                     material_overrides = material_overrides or {},
+                    -- material_override_items = items,
+                    -- leaf_attach_node_override = 1,
                 }
                 break
             end
@@ -181,17 +227,144 @@ mod.inject_attachment = function(self, attachments, slot_name, inject_data)
     end
 end
 
+mod.is_custom_slot = function(self, item_data, target_slot)
+    -- Get gear settings
+    local item = self:item_data(item_data)
+    local weapon_template = item and item.weapon_template
+
+    if not target_slot then return false end
+
+    if weapon_template then
+        if CUSTOM_SLOT_CACHE[weapon_template] and CUSTOM_SLOT_CACHE[weapon_template][target_slot] then
+            return CUSTOM_SLOT_CACHE[weapon_template][target_slot]
+        end
+
+        local weapon_file = mod:io_dofile("scripts/mods/ewc/weapons/"..weapon_template)
+        if weapon_file then
+            for attachment_slot, attachments in pairs(weapon_file.attachments) do
+                if attachment_slot == target_slot then
+                    mod:print("found default slot "..tostring(target_slot).." for "..tostring(weapon_template))
+                    CUSTOM_SLOT_CACHE[weapon_template][target_slot] = false
+                    return false
+                end
+            end
+        end
+
+        mod:print("found custom slot "..tostring(target_slot).." for "..tostring(weapon_template))
+        CUSTOM_SLOT_CACHE[weapon_template][target_slot] = true
+        return true
+    end
+
+    mod:print("invalid weapon template "..tostring(weapon_template))
+    return false
+
+    -- local attachment_string = mod:fetch_attachment(item.attachments, target_slot)
+    -- -- local attachment_data = attachment_string and self.settings.attachment_data_by_item_string[attachment_string]
+    -- local attachment_slot_data = mod:fetch_attachment_data(item.attachments, target_slot)
+    -- -- local attachment_slot_data = self.settings.attachment_slot_by_mod_by_weapon_by_name[mod][weapon_template][target_slot]
+    -- return attachment_slot_data and attachment_slot_data.is_custom_slot
+    -- -- local mod_of_origin = attachment_data and pt.attachment_slot_origin[attachment_data] or mod
+    -- -- return mod_of_origin and mod_of_origin ~= mod
+
+    -- -- Get item info
+    -- -- local item = self:item_data(item_data)
+    -- -- local weapon_template = item.weapon_template
+    -- -- local custom_attachment_slots = weapon_template and self.settings.attachment_slots[weapon_template]
+    -- -- return custom_attachment_slots and custom_attachment_slots[target_slot]
+
+    -- -- for slot, data in pairs(attachments) do
+    -- --     if slot == target_slot then return true end
+    -- --     if data.children then return self:is_custom_slot(data.children, target_slot) end
+    -- --     -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
+    -- --     -- if master_item and master_item.attachments then
+    -- --     --     return self:is_custom_slot(master_item.attachments, target_slot)
+    -- --     -- end
+    -- -- end
+    -- -- return false
+end
+
+mod.is_custom_attachment = function(self, item_data, target_attachment_name)
+
+    local item = self:item_data(item_data)
+    local weapon_template = item and item.weapon_template
+
+    if not target_attachment_name then return false end
+
+    if weapon_template then
+        if CUSTOM_ATTACHMENT_CACHE[weapon_template] and CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] then
+            return CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name]
+        end
+
+        CUSTOM_ATTACHMENT_CACHE[weapon_template] = CUSTOM_ATTACHMENT_CACHE[weapon_template] or {}
+
+        local weapon_file = mod:io_dofile("scripts/mods/ewc/weapons/"..weapon_template)
+        if weapon_file then
+            for attachment_slot, attachments in pairs(weapon_file.attachments) do
+                for attachment_name, attachment_data in pairs(attachments) do
+                    if attachment_name == target_attachment_name then
+                        mod:print("found default attachment "..tostring(target_attachment_name).." for "..tostring(weapon_template))
+                        CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] = false
+                        return false
+                    end
+                end
+            end
+        end
+
+        mod:print("found custom attachment "..tostring(target_attachment_name).." for "..tostring(weapon_template))
+        CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] = true
+        return true
+    end
+
+    mod:print("invalid weapon template "..tostring(weapon_template))
+    return false
+
+    -- -- local item = self:item_data(item_data)
+    -- -- local weapon_template = item.weapon_template
+    -- -- local custom_attachment_slots = weapon_template and self.settings.attachments[weapon_template] --and self.settings.attachments[weapon_template][attachment_name]
+    -- -- return custom_attachment_slots and custom_attachment_slots[attachment_name]
+
+    -- -- local item = self:item_data(item_data)
+
+    -- -- attachment_name_by_item_string
+    -- local attachment_data = self.settings.attachment_data_by_attachment_name[attachment_name]
+    -- -- local attachment_data = self.settings.attachment_data_by_item_string[item_data.name]
+    -- -- local mod_attachments = self.settings.attachment_data_by_mod_by_weapon_by_name[mod]
+    -- -- local string_attachments = mod_attachments and mod_attachments[weapon_template]
+    -- -- local attachment_data = string_attachments and string_attachments[attachment_name]
+    -- return attachment_data and attachment_data.is_custom_attachment
+    -- -- local mod_of_origin = attachment_data and pt.attachment_data_origin[attachment_data] --or mod
+    -- -- return mod_of_origin and mod_of_origin ~= mod
+    -- -- local mod_attachments = item and self.settings.attachment_slot_by_mod_by_weapon_by_name[mod]
+    -- -- local weapon_attachments = mod_attachments and mod_attachments[item.weapon_template]
+    -- -- local attachment = weapon_attachments and weapon_attachments[attachment_name]
+    -- -- return attachment_data == nil
+
+    -- -- local attachment_data = attachment_name and self.settings.attachment_data_by_attachment_name[attachment_name]
+    -- -- local mod_of_origin = attachment_data and pt.attachment_data_origin[attachment_data] or mod
+    -- -- return mod_of_origin and mod_of_origin ~= mod
+
+    -- -- attachment_slot_by_mod_by_weapon_by_name
+
+    -- -- attachment_slot_by_mod_by_weapon_by_name[mod_of_origin][weapon_template][attachment_slot] = attachment_slot_data
+
+    -- -- attachment_slot_origin[attachment_slot_data] = mod_of_origin
+
+end
+
 mod.fetch_attachment_parent = function(self, attachments, target_slot)
     local attachment_parent = nil
     for slot, data in pairs(attachments) do
-        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
-        if table_find(data, target_slot) then
-            attachment_parent = slot
-        -- elseif master_item and master_item.attachments then
-        --     attachment_parent = self:fetch_attachment_fixes(master_item.attachments, target_slot)
-        elseif data.children then
-            attachment_parent = self:fetch_attachment_parent(data.children, target_slot)
-        end
+        -- Fetch
+        -- if data.children and table_find(data.children, target_slot) then attachment_parent = slot end
+        if data.children and data.children[target_slot] then attachment_parent = slot end
+        -- Fetch in children
+        if not attachment_parent and data.children then attachment_parent = self:fetch_attachment_parent(data.children, target_slot) end
+        -- Fetch in item
+        if not attachment_parent and data.item and type(data.item) == "table" and data.item.attachments then attachment_parent = self:fetch_attachment_parent(data.item.attachments, target_slot) end
+        -- Fetch in master item
+        local master_item = pt.master_items_loaded and data.item and type(data.item) == "string" and master_items.get_item(data.item)
+        if not attachment_parent and master_item and master_item.attachments then attachment_parent = self:fetch_attachment_parent(master_item.attachments, target_slot) end
+        -- Break if found
         if attachment_parent then break end
     end
     return attachment_parent
@@ -200,30 +373,25 @@ end
 mod.fetch_attachment_fixes = function(self, attachments, attachment_fixes)
     local attachment_fixes = attachment_fixes or {}
     for slot, data in pairs(attachments) do
-        if data.fix then
-            attachment_fixes[data.fix] = slot
-        end
-        if data.children then
-            self:fetch_attachment_fixes(data.children, attachment_fixes)
-        end
-        local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
-        if master_item and master_item.attachments then
-            self:fetch_attachment_fixes(master_item.attachments, attachment_fixes)
-        end
+        -- Fetch
+        if data.fix then attachment_fixes[data.fix] = slot end
+        -- Fetch in children
+        if data.children then self:fetch_attachment_fixes(data.children, attachment_fixes) end
+        -- Fetch in item
+        if data.item and type(data.item) == "table" and data.item.attachments then self:fetch_attachment_fixes(data.item.attachments, attachment_fixes) end
+        -- Fetch in master item
+        local master_item = pt.master_items_loaded and data.item and type(data.item) == "string" and master_items.get_item(data.item)
+        if master_item and master_item.attachments then self:fetch_attachment_fixes(master_item.attachments, attachment_fixes) end
     end
     return attachment_fixes
 end
 
 mod.clear_attachment_fixes = function(self, attachments)
     for slot, data in pairs(attachments) do
+        -- Clear
         data.fix = nil
-        if data.children then
-            self:clear_attachment_fixes(data.children)
-        end
-        -- local master_item = data.item and master_items.get_item(data.item)
-        -- if master_item and master_item.attachments then
-        --     self:clear_attachment_fixes(master_item.attachments)
-        -- end
+        -- Clear in children
+        if data.children then self:clear_attachment_fixes(data.children) end
     end
     return attachments
 end
@@ -233,18 +401,17 @@ mod.fetch_attachment = function(self, attachments, target_slot)
     local attachment_item_path = nil
     for slot, data in pairs(attachments) do
         if data then
-            if type(data.item) == "table" and data.item.attachments then
-                attachment_item_path = self:fetch_attachment(data.item.attachments, target_slot)
-            end
-            -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
-            if slot == target_slot then
-                attachment_item_path = data.item
-            -- elseif master_item and master_item.attachments then
-            --     attachment_item_path = self:fetch_attachment(master_item.attachments, target_slot)
-            elseif data.children then
-                attachment_item_path = self:fetch_attachment(data.children, target_slot)
-            end
+            -- Fetch
+            if slot == target_slot then attachment_item_path = data.item end
+            -- Fetch in children
+            if not attachment_item_path and data.children then attachment_item_path = self:fetch_attachment(data.children, target_slot) end
+            -- Fetch in item
+            if not attachment_item_path and data.item and type(data.item) == "table" and data.item.attachments then attachment_item_path = self:fetch_attachment(data.item.attachments, target_slot) end
+            -- Fetch in master item
+            local master_item = pt.master_items_loaded and data.item and type(data.item) == "string" and master_items.get_item(data.item)
+            if not attachment_item_path and master_item and master_item.attachments then attachment_item_path = self:fetch_attachment(master_item.attachments, target_slot) end
         end
+        -- Break if found
         if attachment_item_path then break end
     end
     return attachment_item_path
@@ -253,14 +420,16 @@ end
 mod.fetch_attachment_data = function(self, attachments, target_slot)
     local attachment_item_data = nil
     for slot, data in pairs(attachments) do
-        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
-        if slot == target_slot then
-            attachment_item_data = data
-        -- elseif master_item and master_item.attachments then
-        --     attachment_item_data = self:fetch_attachment_data(master_item.attachments, target_slot)
-        elseif data.children then
-            attachment_item_data = self:fetch_attachment_data(data.children, target_slot)
-        end
+        -- Fetch
+        if slot == target_slot then attachment_item_data = data end
+        -- Fetch in children
+        if not attachment_item_data and data.children then attachment_item_data = self:fetch_attachment_data(data.children, target_slot) end
+        -- Fetch in item
+        if not attachment_item_data and data.item and type(data.item) == "table" and data.item.attachments then attachment_item_data = self:fetch_attachment_data(data.item.attachments, target_slot) end
+        -- Fetch in master item
+        local master_item = pt.master_items_loaded and data.item and type(data.item) == "string" and master_items.get_item(data.item)
+        if not attachment_item_data and master_item and master_item.attachments then attachment_item_data = self:fetch_attachment_data(master_item.attachments, target_slot) end
+        -- Break if found
         if attachment_item_data then break end
     end
     return attachment_item_data
@@ -269,14 +438,15 @@ end
 mod.fetch_attachment_slots = function(self, attachments, attachment_slots)
     local attachment_slots = attachment_slots or {}
     for slot, data in pairs(attachments) do
+        -- Fetch
         attachment_slots[slot] = data
-        if data.children then
-            self:fetch_attachment_slots(data.children, attachment_slots)
-        end
-        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
-        -- if master_item and master_item.attachments then
-        --     self:fetch_attachment_slots(master_item.attachments, attachment_slots)
-        -- end
+        -- Fetch in children
+        if data.children then self:fetch_attachment_slots(data.children, attachment_slots) end
+        -- Fetch in item
+        if data.item and type(data.item) == "table" and data.item.attachments then self:fetch_attachment_slots(data.item.attachments, attachment_slots) end
+        -- Fetch in master item
+        local master_item = pt.master_items_loaded and data.item and type(data.item) == "string" and master_items.get_item(data.item)
+        if master_item and master_item.attachments then self:fetch_attachment_slots(master_item.attachments, attachment_slots) end
     end
     return attachment_slots
 end
@@ -528,6 +698,8 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
 end
 
 mod.find_in_units = function(self, attachment_units, target_attachment_slot)
+    -- Clear table
+    local units = {}
     -- Check
     if attachment_units then
         -- Iterate through attachments
@@ -547,12 +719,15 @@ mod.find_in_units = function(self, attachment_units, target_attachment_slot)
                 -- Check attachment slot and light in attachment unit
                 if attachment_slot == target_attachment_slot then --and unit_num_lights(attachment_unit) > 0 then
 
-                    return attachment_unit
+                    -- return attachment_unit
+                    units[#units+1] = attachment_unit
 
                 end
             end
         end
     end
+    -- Return table
+    return units
 end
 
 -- ##### ┬ ┬┬ ┬┌─┐┬┌─  ┬┌┬┐┌─┐┌┬┐┌─┐ ##################################################################################
@@ -596,6 +771,16 @@ mod.handle_husk_item = function(self, item)
             return item
         end
 
+        -- local husk_item = mod:husk_item(gear_id)
+        -- if husk_item then
+        --     return husk_item
+        -- end
+
+        local inventory_cosmetics_view = mod:get_view("inventory_cosmetics_view")
+        if inventory_cosmetics_view then
+            return item
+        end
+
         local mod_item = mod:create_husk_item(gear_id, item)
         if not mod_item then
             return item
@@ -635,6 +820,16 @@ mod.handle_store_item = function(self, item, offer_id)
 
         local gear_id = mod:gear_id(item)
         if not gear_id then
+            return item
+        end
+
+        -- local husk_item = mod:husk_item(gear_id)
+        -- if husk_item then
+        --     return husk_item
+        -- end
+
+        local inventory_cosmetics_view = mod:get_view("inventory_cosmetics_view")
+        if inventory_cosmetics_view then
             return item
         end
 

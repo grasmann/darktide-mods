@@ -8,6 +8,8 @@ local mod = get_mod("extended_weapon_customization")
     local managers = Managers
     local table_clear = table.clear
     local table_clone = table.clone
+    local table_clone_instance = table.clone_instance
+    local table_create_copy_instance = table.create_copy_instance
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -26,6 +28,7 @@ mod:persistent_table(REFERENCE, {
     attachment_slot_origin = {},
     gear_id_to_offer_id = {},
     game_initialized = false,
+    resource_packages = {},
     loading_packages = {},
     kitbash_entries = {},
     weapon_packages = {},
@@ -135,6 +138,7 @@ end
 -- ##### │ │ │ ││  │ │ │├┤ └─┐ ########################################################################################
 -- ##### └─┘ ┴ ┴┴─┘┴ ┴ ┴└─┘└─┘ ########################################################################################
 
+-- Load utilities
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/gear_settings")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/damage_types")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/packages")
@@ -145,15 +149,22 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/items")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/fixes")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/debug")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/game")
+-- Load save lua
 mod.save_lua = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/save")
+-- Load settings
 mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/settings")
-pt.extended_weapon_customization_plugin = table_clone(mod.settings)
+-- Clone settings of main mod
+-- pt.extended_weapon_customization_plugin = table_clone(mod.settings)
+pt.extended_weapon_customization_plugin = table_clone_instance(mod.settings)
+-- pt.extended_weapon_customization_plugin = table_create_copy_instance(nil, mod.settings)
+-- Update flashlight templates
 mod:update_flashlight_templates(mod.settings.flashlight_templates)
 
 -- ##### ┌─┐┌─┐┌┬┐┌─┐┬ ┬┌─┐┌─┐ ########################################################################################
 -- ##### ├─┘├─┤ │ │  ├─┤├┤ └─┐ ########################################################################################
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
 
+-- Load patches
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_cosmetics_view_definitions")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_unit_visual_loadout_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_husk_visual_loadout_extension")
@@ -178,6 +189,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/mission_in
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_element_grid")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_weapon_spawner")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/end_player_view")
+mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/package_manager")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/weapon_icon_ui")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/alternate_fire")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/camera_manager")
@@ -197,6 +209,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/lobby_view
 -- ##### ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││└─┐ ################################################################################
 -- ##### └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘└─┘ ################################################################################
 
+-- Load extensions
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/attachment_callback_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/damage_type_extension")
 mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/flashlight_extension")

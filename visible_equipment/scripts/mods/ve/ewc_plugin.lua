@@ -40,6 +40,11 @@ local extended_weapon_customization_plugin = {
                     icon_render_unit_rotation_offset = {90, -30, 0},
                     icon_render_camera_position_offset = {0, -2.25, .7},
                 },
+                scabbard_none = {
+                    replacement_path = _item_melee.."/scabbards/scabbard_none",
+                    icon_render_unit_rotation_offset = {90, -30, 0},
+                    icon_render_camera_position_offset = {0, -2.25, .7},
+                },
             },
         },
         forcesword_2h_p1_m1 = {
@@ -58,6 +63,11 @@ local extended_weapon_customization_plugin = {
                     replacement_path = _item_melee.."/scabbards/scabbard_big_03",
                     icon_render_unit_rotation_offset = {90, -30, 0},
                     icon_render_camera_position_offset = {0, -4, .95},
+                },
+                scabbard_none = {
+                    replacement_path = _item_melee.."/scabbards/scabbard_none",
+                    icon_render_unit_rotation_offset = {90, -30, 0},
+                    icon_render_camera_position_offset = {0, -2.25, .7},
                 },
             },
         },
@@ -78,6 +88,21 @@ local extended_weapon_customization_plugin = {
     },
     fixes = {
         forcesword_2h_p1_m1 = {
+            -- {attachment_slot = "scabbard",
+            --     fix = {
+            --         disable_in_ui = true,
+            --         active_function = function(item, is_ui_item_preview, is_preview_item, is_attachment_customization, attachment_customization_slot_name)
+            --             -- if is_attachment_customization then return attachment_customization_slot_name ~= "scabbard" end
+            --             return not is_preview_item and not is_ui_item_preview and not is_attachment_customization
+            --         end,
+            --         offset = {
+            --             position = vector3_box(0, .2, 0),
+            --             rotation = vector3_box(0, 0, 0),
+            --             scale = vector3_box(0, 0, 0),
+            --             node = 1,
+            --         },
+            --     },
+            -- },
             {attachment_slot = "scabbard",
                 fix = {
                     only_in_ui = true,
@@ -95,6 +120,21 @@ local extended_weapon_customization_plugin = {
             },
         },
         combatsword_p1_m1 = {
+            -- {attachment_slot = "scabbard",
+            --     fix = {
+            --         disable_in_ui = true,
+            --         active_function = function(item, is_ui_item_preview, is_preview_item, is_attachment_customization, attachment_customization_slot_name)
+            --             -- if is_attachment_customization then return attachment_customization_slot_name ~= "scabbard" end
+            --             return not is_preview_item and not is_ui_item_preview and not is_attachment_customization
+            --         end,
+            --         offset = {
+            --             position = vector3_box(0, .2, 0),
+            --             rotation = vector3_box(0, 0, 0),
+            --             scale = vector3_box(0, 0, 0),
+            --             node = 1,
+            --         },
+            --     },
+            -- },
             {attachment_slot = "scabbard",
                 fix = {
                     only_in_ui = true,
@@ -117,12 +157,12 @@ local extended_weapon_customization_plugin = {
             attachments = {
                 scabbard = {
                     item = _item_melee.."/full/chain_sword_full_01",
-                    fix = {
-                        disable_in_ui = true,
-                        hide = {
-                            node = 1,
-                        },
-                    },
+                    -- fix = {
+                    --     disable_in_ui = true,
+                        -- hide = {
+                        --     node = 1,
+                        -- },
+                    -- },
                     children = {},
                 },
             },
@@ -135,12 +175,12 @@ local extended_weapon_customization_plugin = {
             attachments = {
                 scabbard = {
                     item = _item_melee.."/full/chain_sword_full_02",
-                    fix = {
-                        disable_in_ui = true,
-                        hide = {
-                            node = 1,
-                        },
-                    },
+                    -- fix = {
+                    --     disable_in_ui = true,
+                    --     hide = {
+                    --         node = 1,
+                    --     },
+                    -- },
                     children = {},
                 },
             },
@@ -153,12 +193,12 @@ local extended_weapon_customization_plugin = {
             attachments = {
                 scabbard = {
                     item = _item_melee.."/full/chain_sword_full_03",
-                    fix = {
-                        disable_in_ui = true,
-                        hide = {
-                            node = 1,
-                        },
-                    },
+                    -- fix = {
+                    --     disable_in_ui = true,
+                    --     hide = {
+                    --         node = 1,
+                    --     },
+                    -- },
                     children = {},
                 },
             },
@@ -167,16 +207,28 @@ local extended_weapon_customization_plugin = {
             attach_node = "ap_blade_01",
             dev_name = "loc_scabbard_03",
         },
+        ["content/items/weapons/player/melee/scabbards/scabbard_none"] = {
+            attachments = {
+                scabbard = {
+                    item = "content/characters/empty_item/empty_item",
+                    children = {},
+                },
+            },
+            display_name = "loc_scabbard_none",
+            description = "loc_description_scabbard_none",
+            attach_node = "ap_blade_01",
+            dev_name = "loc_scabbard_none",
+        },
         ["content/items/weapons/player/melee/scabbards/scabbard_big_01"] = {
             attachments = {
                 scabbard = {
                     item = _item_melee.."/full/2h_chain_sword_body_01",
-                    fix = {
-                        disable_in_ui = true,
-                        hide = {
-                            node = 1,
-                        },
-                    },
+                    -- fix = {
+                    --     disable_in_ui = true,
+                    --     hide = {
+                    --         node = 1,
+                    --     },
+                    -- },
                     children = {},
                 },
             },
@@ -189,12 +241,12 @@ local extended_weapon_customization_plugin = {
             attachments = {
                 scabbard = {
                     item = _item_melee.."/full/2h_chain_sword_body_02",
-                    fix = {
-                        disable_in_ui = true,
-                        hide = {
-                            node = 1,
-                        },
-                    },
+                    -- fix = {
+                    --     disable_in_ui = true,
+                    --     hide = {
+                    --         node = 1,
+                    --     },
+                    -- },
                     children = {},
                 },
             },
@@ -207,12 +259,12 @@ local extended_weapon_customization_plugin = {
             attachments = {
                 scabbard = {
                     item = _item_melee.."/full/2h_chain_sword_body_03",
-                    fix = {
-                        disable_in_ui = true,
-                        hide = {
-                            node = 1,
-                        },
-                    },
+                    -- fix = {
+                    --     disable_in_ui = true,
+                    --     hide = {
+                    --         node = 1,
+                    --     },
+                    -- },
                     children = {},
                 },
             },

@@ -279,7 +279,7 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_equip_item_from_pro
         mod:print("rpc_player_equip_item_from_profile_to_slot item"..tostring(item.name).." gear_id "..tostring(mod:gear_id(item)))
         -- Replace visual loadout
         profile.visual_loadout[slot_name] = mod:player_husk_visual_loadout_extension_randomize(item)
-        mod:reevaluate_packages(player)
+        -- mod:reevaluate_packages(player)
         -- Reevaluate packages
         mod:print("reevaluate_packages "..tostring(player))
         mod:reevaluate_packages(player)
@@ -288,6 +288,18 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_equip_item_from_pro
 	self:_equip_item_to_slot(slot_name, item, optional_existing_unit_3p)
 
 end)
+
+-- mod:hook(CLASS.PlayerCustomization, "spawn_items", function(func, self, items, optional_mission_template, ...)
+--     for i = 1, #items do
+-- 		local item = items[i]
+
+-- 		if item and item.attachments then
+--             items[i] = mod:player_husk_visual_loadout_extension_randomize(item)
+--         end
+--     end
+
+--     return func(self, items, optional_mission_template, ...)
+-- end)
 
 mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "resolve_gear_sound", function(func, self, sound_alias, optional_external_properties, ...)
 	local allow_default, event, has_husk_events = func(self, sound_alias, optional_external_properties, ...)

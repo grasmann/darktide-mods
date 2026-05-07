@@ -260,6 +260,8 @@ local update_sound_hook = function(func, self, fire_config, ...)
             mod:clear_fx_override(gear_id, "play_ranged_shooting")
             mod:clear_fx_override(gear_id, "stop_ranged_shooting")
             mod:clear_fx_override(gear_id, "ranged_pre_loop_shot")
+            mod:clear_fx_override(gear_id, "play_ranged_braced_shooting")
+            mod:clear_fx_override(gear_id, "stop_ranged_braced_shooting")
 
             if aiming and damage_type.play_ranged_shooting_aiming then
                 mod:set_fx_override(gear_id, "play_ranged_shooting", damage_type.play_ranged_shooting_aiming)
@@ -283,6 +285,13 @@ local update_sound_hook = function(func, self, fire_config, ...)
                 mod:set_fx_override(gear_id, "ranged_pre_loop_shot", damage_type.ranged_pre_loop_shot_aiming)
             elseif damage_type.ranged_pre_loop_shot then
                 mod:set_fx_override(gear_id, "ranged_pre_loop_shot", damage_type.ranged_pre_loop_shot)
+            end
+
+            if damage_type.play_ranged_braced_shooting then
+                mod:set_fx_override(gear_id, "play_ranged_braced_shooting", damage_type.play_ranged_braced_shooting)
+            end
+            if damage_type.stop_ranged_braced_shooting then
+                mod:set_fx_override(gear_id, "stop_ranged_braced_shooting", damage_type.stop_ranged_braced_shooting)
             end
 
             if self.fake_looping_shoot_sfx_alias and use_damage_type and damage_type then

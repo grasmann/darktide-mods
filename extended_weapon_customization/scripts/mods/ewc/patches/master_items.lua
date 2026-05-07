@@ -296,6 +296,12 @@ mod.player_gear_list = function(self)
     return gear_data and gear_data._cached_gear_list
 end
 
+mod.player_owns_item = function(self, item)
+    local gear_id = mod:gear_id(item)
+    local gear_list = self:player_gear_list()
+    return gear_list and gear_list[gear_id]
+end
+
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘ ##################################################################

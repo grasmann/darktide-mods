@@ -68,11 +68,15 @@ local _item_empty_trinket = _item.."/trinkets/unused_trinket"
 local bolter_magazines = "boltgun_rifle_magazine_01_ba|boltgun_rifle_magazine_02_ba|boltgun_rifle_magazine_01_double|boltgun_rifle_magazine_02_double"
 local laser_magazines = "autogun_rifle_laser_magazine_01|autogun_rifle_laser_magazine_02|autogun_rifle_laser_magazine_03"
 local autopistol_magazines = "autogun_pistol_magazine_01|autogun_pistol_magazine_01_double"
+local braced_muzzles = "autogun_rifle_ak_muzzle_01|autogun_rifle_ak_muzzle_02|autogun_rifle_ak_muzzle_03|autogun_rifle_ak_muzzle_04|autogun_rifle_ak_muzzle_05|autogun_rifle_ak_muzzle_ml01|autogun_rifle_invisible_muzzle_01"
+local infantry_muzzles = "autogun_rifle_muzzle_01|autogun_rifle_muzzle_02|autogun_rifle_muzzle_03|autogun_rifle_muzzle_04|autogun_rifle_muzzle_05|autogun_rifle_muzzle_ml01|autogun_rifle_invisible_muzzle_01"
+local headhunter_muzzles = "autogun_rifle_killshot_muzzle_01|autogun_rifle_killshot_muzzle_03|autogun_rifle_killshot_muzzle_04|autogun_rifle_killshot_muzzle_05|autogun_rifle_killshot_muzzle_ml01"
+local suppressors = "autogun_rifle_suppressed_muzzle_01|autogun_rifle_suppressed_muzzle_02|autogun_rifle_suppressed_muzzle_03"
 local reflex_sights = "reflex_sight_01|reflex_sight_02|reflex_sight_03"
 local scope_sights = "scope_01"
 
 local attachments = {
-    dual_stubpistols_p1_m1 = {
+    dual_autopistols_p1_m1 = {
         rail = rails,
         flashlight = flashlight_human,
         sight = table_merge_recursive_n(nil, sight_reflex, sight_scope),
@@ -81,12 +85,12 @@ local attachments = {
     },
 }
 
-attachments.dual_stubpistols_p1_m2 = table_clone(attachments.dual_stubpistols_p1_m1)
-attachments.dual_stubpistols_p1_m3 = table_clone(attachments.dual_stubpistols_p1_m1)
-attachments.dual_stubpistols_p1_m4 = table_clone(attachments.dual_stubpistols_p1_m1)
+attachments.dual_autopistols_p1_m2 = table_clone(attachments.dual_autopistols_p1_m1)
+attachments.dual_autopistols_p1_m3 = table_clone(attachments.dual_autopistols_p1_m1)
+attachments.dual_autopistols_p1_m4 = table_clone(attachments.dual_autopistols_p1_m1)
 
 local attachment_slots = {
-    dual_stubpistols_p1_m1 = {
+    dual_autopistols_p1_m1 = {
         flashlight = {
             parent_slot = "left|right",
             default_path = _item_empty_trinket,
@@ -110,21 +114,21 @@ local attachment_slots = {
     },
 }
 
-attachment_slots.dual_stubpistols_p1_m2 = table_clone(attachment_slots.dual_stubpistols_p1_m1)
-attachment_slots.dual_stubpistols_p1_m3 = table_clone(attachment_slots.dual_stubpistols_p1_m1)
-attachment_slots.dual_stubpistols_p1_m4 = table_clone(attachment_slots.dual_stubpistols_p1_m1)
+attachment_slots.dual_autopistols_p1_m2 = table_clone(attachment_slots.dual_autopistols_p1_m1)
+attachment_slots.dual_autopistols_p1_m3 = table_clone(attachment_slots.dual_autopistols_p1_m1)
+attachment_slots.dual_autopistols_p1_m4 = table_clone(attachment_slots.dual_autopistols_p1_m1)
 
 local fixes = {
-    dual_stubpistols_p1_m1 = {
+    dual_autopistols_p1_m1 = {
         {attachment_slot = "flashlight",
             requirements = {
                 flashlight = {
-                    has = "query:dual_stubpistols_p1_m1,flashlight,extended_weapon_customization_base_additions",
+                    has = "query:dual_autopistols_p1_m1,flashlight,extended_weapon_customization_base_additions",
                 },
             },
             fix = {
                 offset = {
-                    position = vector3_box(.02, .215, .1),
+                    position = vector3_box(.03, .065, .006),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(.5, .5, .5),
                     node = 1,
@@ -134,18 +138,45 @@ local fixes = {
         {attachment_slot = "muzzle",
             requirements = {
                 muzzle = {
-                    has = "query:dual_stubpistols_p1_m1,muzzle,extended_weapon_customization_base_additions",
+                    has = "query:dual_autopistols_p1_m1,muzzle,extended_weapon_customization_base_additions,"..suppressors,
                 },
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, .285, .122),
+                    position = vector3_box(0, .06, .06),
                     rotation = vector3_box(0, 0, 0),
-                    scale = vector3_box(.5, .5, .5),
+                    scale = vector3_box(1.6, 1.6, 1.6),
                     node = 1,
                 },
             },
         },
+        {attachment_slot = "muzzle",
+            requirements = {
+                muzzle = {
+                    has = "query:dual_autopistols_p1_m1,muzzle,extended_weapon_customization_base_additions,"..headhunter_muzzles.."|"..braced_muzzles.."|"..infantry_muzzles,
+                },
+            },
+            fix = {
+                offset = {
+                    position = vector3_box(0, .06, .06),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
+        -- {attachment_slot = "barrel",
+        --     requirements = {
+        --         muzzle = {
+        --             has = "query:dual_autopistols_p1_m1,muzzle,extended_weapon_customization_base_additions",
+        --         },
+        --     },
+        --     fix = {
+        --         hide = {
+        --             node = 2,
+        --         }
+        --     },
+        -- },
         {attachment_slot = "rail",
             requirements = {
                 sight = {
@@ -178,7 +209,7 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, .034, .155),
+                    position = vector3_box(0, -.134, .113),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(1, 1, 1),
                     node = 1,
@@ -206,7 +237,7 @@ local fixes = {
         {attachment_slot = "magazine",
             requirements = {
                 fake_magazine = {
-                    has = "query:dual_stubpistols_p1_m1,fake_magazine,extended_weapon_customization_base_additions",
+                    has = "query:dual_autopistols_p1_m1,fake_magazine,extended_weapon_customization_base_additions",
                 },
             },
             fix = {
@@ -216,14 +247,14 @@ local fixes = {
         {attachment_slot = "fake_magazine",
             requirements = {
                 fake_magazine = {
-                    has = "query:dual_stubpistols_p1_m1,fake_magazine,extended_weapon_customization_base_additions,"..bolter_magazines.."|"..laser_magazines.."|"..autopistol_magazines.."|"..bolter_magazines,
+                    has = "query:dual_autopistols_p1_m1,fake_magazine,extended_weapon_customization_base_additions,"..bolter_magazines.."|"..laser_magazines.."|"..autopistol_magazines.."|"..bolter_magazines,
                 },
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.064, -.18),
-                    rotation = vector3_box(-20, 0, 0),
-                    scale = vector3_box(.5, .5, .5),
+                    position = vector3_box(0, .06, -.16),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.64, .5, .77),
                     node = 1,
                 },
             },
@@ -236,9 +267,9 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.064, -.18),
-                    rotation = vector3_box(-20, 0, 0),
-                    scale = vector3_box(.5, .815, .5),
+                    position = vector3_box(0, .06, -.182),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.62, .82, 1),
                     node = 1,
                 },
             },
@@ -251,9 +282,9 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.062, -.17),
-                    rotation = vector3_box(-20, 0, 0),
-                    scale = vector3_box(.5, .5, .5),
+                    position = vector3_box(0, .112, -.17),
+                    rotation = vector3_box(0, 0, 180),
+                    scale = vector3_box(.73, .544, .852),
                     node = 1,
                 },
             },
@@ -266,9 +297,9 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.064, -.18),
-                    rotation = vector3_box(-20, 0, 0),
-                    scale = vector3_box(.415, .485, .5),
+                    position = vector3_box(0, .06, -.19),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(.5, .475, .585),
                     node = 1,
                 },
             },
@@ -276,9 +307,9 @@ local fixes = {
     }
 }
 
-fixes.dual_stubpistols_p1_m2 = table_clone(fixes.dual_stubpistols_p1_m1)
-fixes.dual_stubpistols_p1_m3 = table_clone(fixes.dual_stubpistols_p1_m1)
-fixes.dual_stubpistols_p1_m4 = table_clone(fixes.dual_stubpistols_p1_m1)
+fixes.dual_autopistols_p1_m2 = table_clone(fixes.dual_autopistols_p1_m1)
+fixes.dual_autopistols_p1_m3 = table_clone(fixes.dual_autopistols_p1_m1)
+fixes.dual_autopistols_p1_m4 = table_clone(fixes.dual_autopistols_p1_m1)
 
 return {
     fixes = fixes,
