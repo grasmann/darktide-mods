@@ -29,7 +29,6 @@ local attack_settings = mod:original_require("scripts/settings/damage/attack_set
     local vector3_zero = vector3.zero
     local physics_world = PhysicsWorld
     local unit_has_node = unit.has_node
-    local table_contains = table.contains
     local quaternion_look = quaternion.look
     local vector3_unbox = vector3_box.unbox
     local unit_local_pose = unit.local_pose

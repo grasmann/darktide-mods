@@ -236,8 +236,6 @@ mod.gear_settings = function(self, gear_id, optional_settings, optional_file)
         -- Get gear settings
         local data = pt.gear_settings[gear_id]
         -- Check gear settings and file
-        -- if (not data or file) and table_contains(pt.gear_files, gear_id..".lua") then
-        -- if (not data or optional_file) and mod:cached_table_contains(pt.gear_files, gear_id..".lua") then
         if (not data or optional_file) and table_contains(pt.gear_files, gear_id..".lua") then
             -- Load gear settings
             pt.gear_settings[gear_id] = mod.save_lua:load_entry(gear_id)

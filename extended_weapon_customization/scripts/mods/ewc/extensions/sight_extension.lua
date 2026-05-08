@@ -29,11 +29,9 @@ local ScriptWorld = mod:original_require("scripts/foundation/utilities/script_wo
     local unit_alive = unit.alive
     local script_unit = ScriptUnit
     local vector3_box = Vector3Box
-    -- local string_split = string.split
     local vector3_zero = vector3.zero
     local vector3_lerp = vector3.lerp
     local unit_get_data = unit.get_data
-    -- local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local shading_environment = ShadingEnvironment
     local unit_set_local_scale = unit.set_local_scale
@@ -180,7 +178,6 @@ end
 
 SightExtension.is_charging = function(self, optional_weapon_action)
     local weapon_action = optional_weapon_action or self:weapon_action()
-    -- return table_contains(AIM_ACTIONS, weapon_action)
     return mod:cached_table_contains(AIM_ACTIONS, weapon_action)
 end
 
@@ -277,7 +274,6 @@ SightExtension.update = function(self, dt, t)
     end
 
     -- Dof
-    -- if table_contains(DOF_SLOTS, self.wielded_slot) then
     if mod:cached_table_contains(DOF_SLOTS, self.wielded_slot) then
         local target_dof = self:is_aiming() and self.dof_aim_target or self.dof_target
         self.dof_near_scale = math_lerp(self.dof_near_scale, target_dof, dt * 10) * (0 + self.dof_strength / 2)

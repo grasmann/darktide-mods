@@ -22,7 +22,6 @@ local Sway = mod:original_require("scripts/utilities/sway")
     local tostring = tostring
     local script_unit = ScriptUnit
     local table_clear = table.clear
-    -- local table_contains = table.contains
     local script_unit_extension = script_unit.extension
     local math_degrees_to_radians = math.degrees_to_radians
     local script_unit_has_extension = script_unit.has_extension
@@ -167,7 +166,6 @@ mod.alternate_fire_override = function(self, unit, value_name)
             local alternate_fire_override = sight_attachment and sight_attachment.alternate_fire and alternate_fire_overrides[sight_attachment.alternate_fire]
             if alternate_fire_override and alternate_fire_override[value_name] then
                 local item = visual_loadout_extension:item_from_slot("slot_secondary")
-                -- if item and not table_contains(alternate_fire_override.exclude_weapons, item.weapon_template) then
                 if item and not mod:cached_table_contains(alternate_fire_override.exclude_weapons, item.weapon_template) then
                     return alternate_fire_override[value_name]
                 end

@@ -142,12 +142,10 @@ mod.pull_attachment_list_string = function(self, weapon_template, optional_targe
                                 -- Iterate through attachments
                                 for attachment_slot, attachment_list in pairs(attachments) do
                                     -- Check if target slot
-                                    -- if not mod:cached_table_contains(excluded_names, attachment_slot) and (not target_slot or target_slot == attachment_slot) then
                                     if not table_contains(excluded_names, attachment_slot) and (not target_slot or target_slot == attachment_slot) then
                                         -- Iterate through attachment list
                                         for attachment_name, attachment_data in pairs(attachment_list) do
                                             -- Check exclude
-                                            -- if not mod:cached_table_contains(excluded_names, attachment_name) then
                                             if not table_contains(excluded_names, attachment_name) then
                                                 -- Add attachment
                                                 attachment_names[#attachment_names+1] = attachment_name

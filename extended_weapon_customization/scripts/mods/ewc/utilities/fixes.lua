@@ -105,7 +105,6 @@ mod.collect_fixes = function(self, item_data, target_slot)
                                     -- Cached split
                                     local temp_requirement_parts = self:cached_split(requirement_string, "|")
                                     -- Check validity
-                                    -- if not mod:cached_table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                     if not table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                         requirement_met = false
                                     end
@@ -118,7 +117,6 @@ mod.collect_fixes = function(self, item_data, target_slot)
                                     -- Cached split
                                     local temp_requirement_parts = self:cached_split(requirement_string, "|")
                                     -- Check validity
-                                    -- if mod:cached_table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                     if table_contains(temp_requirement_parts, temp_attachments[requirement_slot]) then
                                         requirement_met = false
                                     end

@@ -19,7 +19,6 @@ local mod = get_mod("extended_weapon_customization")
     local vector3_box = Vector3Box
     local vector3_zero = vector3.zero
     local vector3_lerp = vector3.lerp
-    -- local table_contains = table.contains
     local vector3_unbox = vector3_box.unbox
     local quaternion_multiply = quaternion.multiply
     local unit_local_position = unit.local_position

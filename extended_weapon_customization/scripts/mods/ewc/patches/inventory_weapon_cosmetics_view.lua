@@ -47,7 +47,6 @@ local items = mod:original_require("scripts/utilities/items")
     local string_sub = string.sub
     local table_clear = table.clear
     local color_white = color.white
-    -- local string_gsub = string.gsub
     local string_upper = string.upper
     local string_format = string.format
     local table_contains = table.contains
@@ -902,7 +901,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
                     if material_override then
                         for _, option in pairs(options) do
                             if material_override.material_overrides and table_contains(material_override.material_overrides, option.value) then
-                            -- if material_override.material_overrides and mod:cached_table_contains(material_override.material_overrides, option.value) then
                                 return option.value
                             end
                         end
@@ -1762,10 +1760,6 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             if attachments then
                 for attachment_slot, attachment_entries in pairs(attachments) do
 
-                    -- local attachment_slot_name_parts = string.split(attachment_slot, "/")
-                    -- local attachment_slot_name = attachment_slot_name_parts[#attachment_slot_name_parts]
-                    
-                    -- if mod:selectable_attachment_count(attachment_entries) > 1 and not table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
                     if mod:selectable_attachment_count(attachment_entries) > 1 and not mod:cached_table_contains(mod.settings.hide_attachment_slots_in_menu, attachment_slot) then
 
                         tabs_content[#tabs_content+1] = {

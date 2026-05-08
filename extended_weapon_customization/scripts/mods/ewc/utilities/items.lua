@@ -25,9 +25,7 @@ local master_items = mod:original_require("scripts/backend/master_items")
     local script_unit = ScriptUnit
     local table_clear = table.clear
     local math_random = math.random
-    -- local string_split = string.split
     local unit_get_data = unit.get_data
-    -- local table_contains = table.contains
     local table_clone_safe = table.clone_safe
     local unit_sight_callback = unit.sight_callback
     local unit_shield_callback = unit.shield_callback
@@ -76,6 +74,11 @@ mod.overwrite_attachment = function(self, attachments, target_slot, replacement_
             data.item = replacement_path
             local attachment_item = pt.master_items_loaded and master_items.get_item(replacement_path)
             data.material_overrides = attachment_item and attachment_item.material_overrides or (data.material_overrides or {})
+
+            local _attachment_data = replacement_path and self.settings.attachment_data_by_item_string[replacement_path]
+            local attachment_mod = _attachment_data and pt.attachment_data_origin[_attachment_data] or self
+            -- data.mod = attachment_mod
+            data.is_custom = attachment_mod and attachment_mod ~= self
             -- local items = {}
             -- if data.material_overrides then
             --     for index, material_override in pairs(data.material_overrides) do
@@ -204,11 +207,16 @@ mod.inject_attachment = function(self, attachments, slot_name, inject_data)
                 --     -- data.material_override_items = items
                 -- end
 
+                local _attachment_data = inject_data.default_path and self.settings.attachment_data_by_item_string[inject_data.default_path]
+                local attachment_mod = _attachment_data and pt.attachment_data_origin[_attachment_data] or self
+
                 attachment_data.children[slot_name] = {
                     item = existing_item or inject_data.default_path or "",
-                    children = existing_children or {},
-                    fix = inject_data.fix,
                     material_overrides = material_overrides or {},
+                    children = existing_children or {},
+                    is_custom = attachment_mod ~= mod,
+                    fix = inject_data.fix,
+                    -- mod = attachment_mod,
                     -- material_override_items = items,
                     -- leaf_attach_node_override = 1,
                 }
@@ -228,35 +236,39 @@ mod.inject_attachment = function(self, attachments, slot_name, inject_data)
 end
 
 mod.is_custom_slot = function(self, item_data, target_slot)
-    -- Get gear settings
+    -- -- Get gear settings
     local item = self:item_data(item_data)
-    local weapon_template = item and item.weapon_template
 
-    if not target_slot then return false end
+    local attachment_data = mod:fetch_attachment_data(item.attachments, target_slot)
+    return attachment_data and attachment_data.mod and attachment_data.mod ~= mod
 
-    if weapon_template then
-        if CUSTOM_SLOT_CACHE[weapon_template] and CUSTOM_SLOT_CACHE[weapon_template][target_slot] then
-            return CUSTOM_SLOT_CACHE[weapon_template][target_slot]
-        end
+    -- local weapon_template = item and item.weapon_template
 
-        local weapon_file = mod:io_dofile("scripts/mods/ewc/weapons/"..weapon_template)
-        if weapon_file then
-            for attachment_slot, attachments in pairs(weapon_file.attachments) do
-                if attachment_slot == target_slot then
-                    mod:print("found default slot "..tostring(target_slot).." for "..tostring(weapon_template))
-                    CUSTOM_SLOT_CACHE[weapon_template][target_slot] = false
-                    return false
-                end
-            end
-        end
+    -- if not target_slot then return false end
 
-        mod:print("found custom slot "..tostring(target_slot).." for "..tostring(weapon_template))
-        CUSTOM_SLOT_CACHE[weapon_template][target_slot] = true
-        return true
-    end
+    -- if weapon_template then
+    --     if CUSTOM_SLOT_CACHE[weapon_template] and CUSTOM_SLOT_CACHE[weapon_template][target_slot] then
+    --         return CUSTOM_SLOT_CACHE[weapon_template][target_slot]
+    --     end
 
-    mod:print("invalid weapon template "..tostring(weapon_template))
-    return false
+    --     local weapon_file = mod:io_dofile("scripts/mods/ewc/weapons/"..weapon_template)
+    --     if weapon_file then
+    --         for attachment_slot, attachments in pairs(weapon_file.attachments) do
+    --             if attachment_slot == target_slot then
+    --                 mod:print("found default slot "..tostring(target_slot).." for "..tostring(weapon_template))
+    --                 CUSTOM_SLOT_CACHE[weapon_template][target_slot] = false
+    --                 return false
+    --             end
+    --         end
+    --     end
+
+    --     mod:print("found custom slot "..tostring(target_slot).." for "..tostring(weapon_template))
+    --     CUSTOM_SLOT_CACHE[weapon_template][target_slot] = true
+    --     return true
+    -- end
+
+    -- mod:print("invalid weapon template "..tostring(weapon_template))
+    -- return false
 
     -- local attachment_string = mod:fetch_attachment(item.attachments, target_slot)
     -- -- local attachment_data = attachment_string and self.settings.attachment_data_by_item_string[attachment_string]
@@ -612,7 +624,6 @@ mod.mod_item = function(self, gear_id, item_data)
         local item = self:item_data(item_data)
         local item_type = item and item.item_type or "unknown"
         -- Check supported item type
-        -- if table_contains(PROCESS_ITEM_TYPES, item_type) then
         if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) then
             mod:print("cloning item "..tostring(gear_id))
             -- Clone item to mod items
@@ -633,7 +644,6 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
     local item = self:item_data(item_data)
     local item_type = item and item.item_type
     -- Check supported item type
-    -- if table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
     if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) and item.attachments then
 
         -- Get gear settings
@@ -763,7 +773,6 @@ mod.handle_husk_item = function(self, item)
     -- Check if slot is supported, random players is enabled and item is valid
     local item_type = item and item.item_type or "unknown"
     -- Check conditions - correct item type, random players and item
-    -- if table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_players") and item and item.attachments then
     if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_players") and item and item.attachments then
         -- Get gear id
         local gear_id = mod:gear_id(item)
@@ -815,7 +824,6 @@ mod.handle_store_item = function(self, item, offer_id)
 
     local item_type = item.item_type or "unknown"
 
-    -- if table_contains(PROCESS_ITEM_TYPES, item_type) 
     if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) and mod:get("mod_option_randomize_store") and item.attachments then
 
         local gear_id = mod:gear_id(item)

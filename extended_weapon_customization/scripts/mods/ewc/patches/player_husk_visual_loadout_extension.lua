@@ -21,8 +21,6 @@ local MasterItems = mod:original_require("scripts/backend/master_items")
     local managers = Managers
     local math_uuid = math.uuid
     local script_unit = ScriptUnit
-    -- local string_find = string.find
-    -- local table_contains = table.contains
     local unit_sight_callback = unit.sight_callback
     local unit_shield_callback = unit.shield_callback
     local table_clone_instance = table.clone_instance
@@ -170,7 +168,6 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "_equip_item_to_slot", function
         self.flashlight_extension_update = true
     end
 
-    -- if table_contains(PROCESS_SLOTS, slot_name) then
     if mod:cached_table_contains(PROCESS_SLOTS, slot_name) then
         self.attachment_callback_extension_update = true
         self.shield_extension_update = true
@@ -272,7 +269,6 @@ mod:hook(CLASS.PlayerHuskVisualLoadoutExtension, "rpc_player_equip_item_from_pro
     local item = profile.visual_loadout[slot_name]
     local optional_existing_unit_3p
 
-    -- if table_contains(PROCESS_SLOTS, slot_name) and item then
     if mod:cached_table_contains(PROCESS_SLOTS, slot_name) and item then
         -- Randomize weapon for other player
         mod:print("rpc_player_equip_item_from_profile_to_slot player "..tostring(player:name()).." slot "..tostring(slot_name))
