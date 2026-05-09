@@ -80,7 +80,8 @@ mod.implement_units = function(self, item_unit, attachments, attachment_units_by
             -- Get item path
             local item_path = mod:fetch_attachment(attachments, slot)
             -- Set attachment name
-            local name = self.settings.attachment_name_by_item_string[item_path]
+            -- local name = self.settings.attachment_name_by_item_string[item_path]
+            local name = attachment_id_lookup[unit]
             unit_set_data(unit, "attachment_name", name)
             -- Get attachment master item
             local item = master_items.get_item(item_path)
@@ -109,6 +110,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
                 local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
                 unit_set_data(sub_attachment_unit, "attachment_slot", attachment_slot)
+                unit_set_data(attachment_unit, "attachment_slot_long", attachment_id_lookup[sub_attachment_unit])
 
                 -- Get master item
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
@@ -122,7 +124,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 -- Set attachment name
-                local sub_attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                -- local sub_attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
+                local sub_attachment_name = attachment_id_lookup[sub_attachment_unit]
                 unit_set_data(sub_attachment_unit, "attachment_name", sub_attachment_name)
 
                 mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(sub_attachment_name).." slot: "..tostring(attachment_slot))
@@ -167,6 +170,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 local attachment_slot_parts = string_split(attachment_id_lookup[attachment_unit], ".")
                 local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
                 unit_set_data(attachment_unit, "attachment_slot", attachment_slot)
+                unit_set_data(attachment_unit, "attachment_slot_long", attachment_id_lookup[attachment_unit])
 
                 -- Get item path
                 local item_path = mod:fetch_attachment(item_data.attachments, attachment_slot)
@@ -179,7 +183,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 -- Set attachment name
-                local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+                -- local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+                local attachment_name = attachment_id_lookup[attachment_unit]
                 unit_set_data(attachment_unit, "attachment_name", attachment_name)
 
                 if item_data.attachments.slot_trinket_1 and item_data.attachments.slot_trinket_1.item then
@@ -304,6 +309,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 local attachment_slot_parts = string_split(attachment_id_lookup[attachment_unit], ".")
                 local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
                 unit_set_data(attachment_unit, "attachment_slot", attachment_slot)
+                unit_set_data(attachment_unit, "attachment_slot_long", attachment_id_lookup[attachment_unit])
 
                 
                 -- Get master item
@@ -317,7 +323,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 -- Set attachment name
-                local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+                -- local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
+                local attachment_name = attachment_id_lookup[attachment_unit]
                 unit_set_data(attachment_unit, "attachment_name", attachment_name)
 
                 if item and item.attachments then

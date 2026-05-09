@@ -86,6 +86,36 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
         end
     end
 
+    instance.modding_tools_attachment_manipulation = function(self, unit, attachment_units_3p)
+
+        for i, attachment_unit in pairs(attachment_units_3p[unit]) do
+
+            local add_manipulation = false
+
+            local attachment_name = unit_get_data(attachment_unit, "attachment_name")
+            local attachment_slot = unit_get_data(attachment_unit, "attachment_slot_long")
+            local attachment_slot_parts = mod:cached_split(attachment_slot, ".")
+            local weapon_attachment_slot = attachment_slot_parts and attachment_slot_parts[1]
+
+            local inventory_weapon_cosmetics_view = mod:get_view("inventory_weapon_cosmetics_view")
+            if inventory_weapon_cosmetics_view then
+                local selected_tab_index = inventory_weapon_cosmetics_view._selected_tab_index
+                local content = selected_tab_index and inventory_weapon_cosmetics_view._tabs_content[selected_tab_index]
+                local slot_name = content and content.slot_name
+
+                add_manipulation = slot_name == weapon_attachment_slot
+            end
+
+            if add_manipulation then
+                self:add_unit_manipulation(attachment_unit, attachment_name, attachment_slot)
+            else
+                self:remove_unit_manipulation(attachment_unit)
+            end
+
+        end
+
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
@@ -129,34 +159,6 @@ mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(fun
     -- Modding tools
     local weapon_spawn_data = self._weapon_spawn_data
     if weapon_spawn_data and weapon_spawn_data.streaming_complete and weapon_spawn_data.attachment_units_3p then
-        
-        for i, attachment_unit in pairs(weapon_spawn_data.attachment_units_3p[item_unit_3p]) do
-
-            local add_manipulation = false
-
-            local attachment_name = unit_get_data(attachment_unit, "attachment_name")
-            local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
-
-            -- local attachment_slot_parts = string_split(attachment_slot, ".")
-            local attachment_slot_parts = mod:cached_split(attachment_slot, ".")
-            local weapon_attachment_slot = attachment_slot_parts and attachment_slot_parts[1]
-
-            local inventory_weapon_cosmetics_view = mod:get_view("inventory_weapon_cosmetics_view")
-            if inventory_weapon_cosmetics_view then
-                local selected_tab_index = inventory_weapon_cosmetics_view._selected_tab_index
-                local content = selected_tab_index and inventory_weapon_cosmetics_view._tabs_content[selected_tab_index]
-                local slot_name = content and content.slot_name
-
-                add_manipulation = slot_name == weapon_attachment_slot
-            end
-
-            if add_manipulation then
-                self:add_unit_manipulation(attachment_unit, attachment_name, attachment_slot)
-            else
-                self:remove_unit_manipulation(attachment_unit)
-            end
-
-        end
-
+        self:modding_tools_attachment_manipulation(item_unit_3p, weapon_spawn_data.attachment_units_3p)
     end
 end)
