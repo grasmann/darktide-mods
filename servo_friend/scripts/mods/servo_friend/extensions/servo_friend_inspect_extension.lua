@@ -16,7 +16,6 @@ local math_huge = math.huge
 local matrix4x4 = Matrix4x4
 local math_clamp = math.clamp
 local quaternion = Quaternion
-local unit_alive = unit.alive
 local vector3_box = Vector3Box
 local script_unit = ScriptUnit
 local math_random = math.random
@@ -81,22 +80,52 @@ end
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
+ServoFriendInspectExtension.is_unit_alive = function(self, unit)
+    return mod:is_unit_alive(unit)
+end
+
+ServoFriendInspectExtension.filter_attachment_units = function(self, units)
+    local filtered_units = {}
+
+    if units then
+        for i = 1, #units do
+            local listed_unit = units[i]
+
+            if self:is_unit_alive(listed_unit) then
+                filtered_units[#filtered_units + 1] = listed_unit
+            end
+        end
+    end
+
+    return filtered_units
+end
+
 ServoFriendInspectExtension.closest_attachment = function(self)
     if self.attachments_1p and #self.attachments_1p > 0 then
         local current_position = vector3_unbox(self.current_position)
         local closest = math_huge
         local closest_unit = nil
-        for _, unit in pairs(self.attachments_1p) do
-            local attachment_position = unit_world_position(unit, 1)
-            local distance = vector3_distance(current_position, attachment_position)
-            if distance < closest then
-                closest = distance
-                closest_unit = unit
+
+        for i = 1, #self.attachments_1p do
+            local attachment_unit = self.attachments_1p[i]
+
+            if self:is_unit_alive(attachment_unit) then
+                local attachment_position = unit_world_position(attachment_unit, 1)
+                local distance = vector3_distance(current_position, attachment_position)
+
+                if distance < closest then
+                    closest = distance
+                    closest_unit = attachment_unit
+                end
             end
         end
-        return closest_unit, closest
+
+        if closest_unit then
+            return closest_unit, closest
+        end
     end
-    return self.weapon_unit_1p
+
+    return self:is_unit_alive(self.weapon_unit_1p) and self.weapon_unit_1p or nil
 end
 
 ServoFriendInspectExtension.update = function(self, dt, t)
@@ -104,7 +133,6 @@ ServoFriendInspectExtension.update = function(self, dt, t)
     ServoFriendInspectExtension.super.update(self, dt, t)
     -- Inspect
     if self:is_initialized() and self:servo_friend_alive() then
-
         if self.inspecting then
             self.was_inspecting = true
             -- Get first person extension rotation
@@ -124,7 +152,7 @@ ServoFriendInspectExtension.update = function(self, dt, t)
                 self.aim_target_timer = t + self.aim_target_time
             end
             -- Aim target unit
-            if self.aim_target_unit and unit_alive(self.aim_target_unit) then
+            if self:is_unit_alive(self.aim_target_unit) then
                 aim_position = unit_world_position(self.aim_target_unit, 1)
             end
             -- Rotate offset position
@@ -194,16 +222,18 @@ ServoFriendInspectExtension.on_servo_friend_inspect_started = function(self, ser
             local currently_wielded_slot = inventory.wielded_slot
             -- Check currently wielded slot
             if inventory and inventory.wielded_slot then
-                -- Get servo friend inspect extension
-                local servo_friend_inspect_extension = mod:servo_friend_extension(self.servo_friend_unit, "servo_friend_inspect_system")
-                -- Check servo friend inspect extension
+                -- Get servo_friend inspect extension
+                local servo_friend_inspect_extension = mod:servo_friend_extension(self.servo_friend_unit,
+                    "servo_friend_inspect_system")
+                -- Check servo_friend inspect extension
                 if servo_friend_inspect_extension then
                     -- Get unit and attachments
-                    local unit_1p, unit_3p, attachments_1p, attachments_3p = visual_loadout_extension:unit_and_attachments_from_slot(inventory.wielded_slot)
-                    servo_friend_inspect_extension.weapon_unit_1p = unit_1p
-                    servo_friend_inspect_extension.weapon_unit_3p = unit_3p
-                    servo_friend_inspect_extension.attachments_1p = attachments_1p
-                    servo_friend_inspect_extension.attachments_3p = attachments_3p
+                    local unit_1p, unit_3p, attachments_1p, attachments_3p = visual_loadout_extension
+                        :unit_and_attachments_from_slot(inventory.wielded_slot)
+                    servo_friend_inspect_extension.weapon_unit_1p = self:is_unit_alive(unit_1p) and unit_1p or nil
+                    servo_friend_inspect_extension.weapon_unit_3p = self:is_unit_alive(unit_3p) and unit_3p or nil
+                    servo_friend_inspect_extension.attachments_1p = self:filter_attachment_units(attachments_1p)
+                    servo_friend_inspect_extension.attachments_3p = self:filter_attachment_units(attachments_3p)
                 end
             end
         end
@@ -216,9 +246,10 @@ ServoFriendInspectExtension.on_servo_friend_inspect_finished = function(self, se
         -- Enable transparency
         managers.event:trigger("servo_friend_transparency_enabled", self.servo_friend_unit, self.player_unit)
         managers.event:trigger("servo_friend_roaming_enabled", self.servo_friend_unit, self.player_unit)
-        -- Get servo friend inspect extension
-        local servo_friend_inspect_extension = mod:servo_friend_extension(self.servo_friend_unit, "servo_friend_inspect_system")
-        -- Check servo friend inspect extension
+        -- Get servo_friend inspect extension
+        local servo_friend_inspect_extension = mod:servo_friend_extension(self.servo_friend_unit,
+            "servo_friend_inspect_system")
+        -- Check servo_friend inspect extension
         if servo_friend_inspect_extension then
             -- Reset
             servo_friend_inspect_extension.weapon_unit_1p = nil
@@ -250,14 +281,15 @@ end)
 mod:hook(CLASS.ThirdPersonLookDeltaAnimationControl, "update", function(func, self, dt, t, game_object_id, ...)
     -- Original function
     func(self, dt, t, game_object_id, ...)
-    -- Update servo friend
+    -- Update servo_friend
     local weapon_lock_view_component = self._weapon_lock_view_component
-	local weapon_lock_view_component_state = weapon_lock_view_component.state
+    local weapon_lock_view_component_state = weapon_lock_view_component.state
     if weapon_lock_view_component_state == "weapon_lock" or weapon_lock_view_component_state == "weapon_lock_no_delta" then
         -- local pt = mod:pt()
         local servo_friend_extension = script_unit_has_extension(self._unit, "player_unit_servo_friend_system")
         if servo_friend_extension then
-            local servo_friend_inspect_extension = mod:servo_friend_extension(servo_friend_extension.servo_friend_unit, "servo_friend_inspect_system")
+            local servo_friend_inspect_extension = mod:servo_friend_extension(servo_friend_extension.servo_friend_unit,
+                "servo_friend_inspect_system")
             if servo_friend_inspect_extension then
                 servo_friend_inspect_extension.look_delta_x = self._look_delta_x
                 servo_friend_inspect_extension.look_delta_y = self._look_delta_y

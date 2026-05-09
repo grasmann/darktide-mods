@@ -37,6 +37,7 @@ local color_size = {350, 38}
 local pattern_size = {350, 38}
 local wear_size = {300, 38}
 local tip_size = {600, 400}
+local warning_size = {600, 150}
 local button_size = {30, 30}
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
@@ -162,6 +163,14 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		vertical_alignment = "bottom",
 		size = default_button_size,
 		position = {0, -30, 1},
+	}
+
+	instance.scenegraph_definition.plugin_warning = {
+		horizontal_alignment = "center",
+		parent = "canvas",
+		vertical_alignment = "bottom",
+		size = warning_size,
+		position = {150, -50, 1},
 	}
 
 
@@ -324,6 +333,64 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 	instance.widget_definitions.tip_1_button = UIWidget.create_definition(table_clone(ButtonPassTemplates.terminal_button_small), "tip_1_button", {
 		-- gamepad_action = "secondary_action_pressed",
 		text = utf8_upper(localize("loc_weapon_inventory_tip_1_button")),
+		hotspot = {
+			on_pressed_sound = UISoundEvents.system_popup_enter,
+		},
+	})
+
+	local plugin_warning_template = {
+		{
+			pass_type = "texture",
+			style_id = "background",
+			value = "content/ui/materials/backgrounds/terminal_basic",
+			style = {
+				horizontal_alignment = "center",
+				scale_to_material = true,
+				vertical_alignment = "center",
+				color = Color.terminal_grid_background(255, true),
+				offset = {0, -8, 0},
+			},
+		},
+		{
+			pass_type = "text",
+			style_id = "title",
+			value_id = "title",
+			style = {
+				drop_shadow = true,
+				font_size = 24,
+				font_type = "proxima_nova_bold",
+				horizontal_alignment = "left",
+				scale_to_material = true,
+				vertical_alignment = "top",
+				default_color = Color.terminal_text_header(255, true),
+				text_color = Color.terminal_text_header(255, true),
+				hover_color = Color.white(255, true),
+				disabled_color = Color.ui_grey_light(255, true),
+				offset = {25, 10, 2},
+				size_addition = {-40, 0},
+			},
+		},
+		{
+			pass_type = "text",
+			style_id = "text",
+			value_id = "text",
+			style = {
+				drop_shadow = true,
+				font_size = 14,
+				font_type = "proxima_nova_bold",
+				horizontal_alignment = "left",
+				scale_to_material = true,
+				vertical_alignment = "top",
+				text_color = Color.text_default(255, true),
+				offset = {25, 60, 2},
+				size_addition = {-40, 0},
+			},
+		},
+	}
+
+	instance.widget_definitions.plugin_warning = UIWidget.create_definition(plugin_warning_template, "plugin_warning", {
+		-- gamepad_action = "secondary_action_pressed",
+		text = utf8_upper(localize("loc_weapon_inventory_plugin_warning_text")),
 		hotspot = {
 			on_pressed_sound = UISoundEvents.system_popup_enter,
 		},

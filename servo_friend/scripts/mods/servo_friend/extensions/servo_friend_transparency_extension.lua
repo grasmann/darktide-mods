@@ -8,7 +8,6 @@ local unit = Unit
 local class = class
 local vector3 = Vector3
 local managers = Managers
-local unit_alive = unit.alive
 local vector3_box = Vector3Box
 local vector3_unbox = vector3_box.unbox
 local vector3_distance = vector3.distance
@@ -60,26 +59,19 @@ ServoFriendTransparencyExtension.update = function(self, dt, t)
     -- Base class
     ServoFriendTransparencyExtension.super.update(self, dt, t)
     -- Update
-    -- local player_position = mod:player_position()
-    if self:is_initialized() and self:servo_friend_alive() then
-        local pt = self:pt()
-        -- local first_person_extension = mod.first_person_unit
+    if self:is_initialized() and self:servo_friend_alive() and self:is_unit_alive(self.first_person_unit) then
         local first_person_position = unit_world_position(self.first_person_unit, 1)
         local current_position = vector3_unbox(self.current_position)
         local distance = vector3_distance(first_person_position, current_position)
         local alpha = 0
+
         if not self.enabled then
             alpha = 0
         elseif distance <= 1 then
             alpha = 1 - distance
-            -- unit_set_scalar_for_materials(pt.servo_friend_unit, "inv_jitter_alpha", 1 - distance, true)
-        -- else
-        --     unit_set_scalar_for_materials(pt.servo_friend_unit, "inv_jitter_alpha", 1, true)
         end
+
         unit_set_scalar_for_materials(self.servo_friend_unit, "inv_jitter_alpha", alpha, true)
-        -- if pt.flashlight_unit and unit_alive(pt.flashlight_unit) then
-        --     unit_set_scalar_for_materials(pt.flashlight_unit, "inv_jitter_alpha", alpha, true)
-        -- end
     end
 end
 
@@ -98,11 +90,7 @@ ServoFriendTransparencyExtension.on_servo_friend_spawned = function(self, servo_
         ServoFriendTransparencyExtension.super.on_servo_friend_spawned(self)
         -- Shader flag
         if self:is_me(servo_friend_unit) and self:servo_friend_alive() then
-            local pt = self:pt()
             unit_set_shader_pass_flag_for_meshes(self.servo_friend_unit, "one_bit_alpha", true, true)
-            -- if pt.flashlight_unit and unit_alive(pt.flashlight_unit) then
-            --     unit_set_shader_pass_flag_for_meshes(pt.flashlight_unit, "one_bit_alpha", true, true)
-            -- end
         end
     end
 end

@@ -12,7 +12,6 @@ local light = Light
 local table = table
 local vector3 = Vector3
 local managers = Managers
-local unit_alive = unit.alive
 local quaternion = Quaternion
 local unit_light = unit.light
 local vector3_box = Vector3Box
@@ -66,7 +65,7 @@ local light_profile = {
     ies_profile = "content/environment/ies_profiles/narrow/flashlight_custom_03",
     color_temperature = 6200,
     spot_reflector = false,
-    intensity= 24,
+    intensity = 24,
     spot_angle_start = 0,
     spot_angle_end = 1.5,
     falloff_start = 0,
@@ -97,7 +96,8 @@ ServoFriendAlertExtension.init = function(self, extension_init_context, unit, ex
     self.units = {}
     self.lights = {}
     self.active = false
-    self.music_parameter_extension = script_unit_has_extension(self.player_unit, "music_parameter_system")
+    self.music_parameter_extension = self:is_unit_alive(self.player_unit) and
+        script_unit_has_extension(self.player_unit, "music_parameter_system") or nil
     -- Events
     -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
     -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
@@ -130,6 +130,21 @@ end
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
+ServoFriendAlertExtension.is_unit_alive = function(self, unit)
+    return mod:is_unit_alive(unit)
+end
+
+ServoFriendAlertExtension.music_parameter_system = function(self)
+    local extension = self:extension_valid(self.music_parameter_extension)
+
+    if not extension and self:is_unit_alive(self.player_unit) then
+        self.music_parameter_extension = script_unit_has_extension(self.player_unit, "music_parameter_system")
+        extension = self:extension_valid(self.music_parameter_extension)
+    end
+
+    return extension
+end
+
 ServoFriendAlertExtension.update = function(self, dt, t)
     -- Base class
     ServoFriendAlertExtension.super.update(self, dt, t)
@@ -138,7 +153,7 @@ ServoFriendAlertExtension.update = function(self, dt, t)
         self:update_lights(dt, t)
     end
     -- Activation
-    local has_found_something_valid = self.servo_friend_extension:has_found_something_valid()
+    local has_found_something_valid = self:found_something_valid()
     local only_when_idle = not self.alert_mode_only_when_idle or not has_found_something_valid
     if self:is_initialized() and self:wants_alert_active() and only_when_idle then
         self:start_alert()
@@ -149,8 +164,13 @@ end
 
 ServoFriendAlertExtension.update_lights = function(self, dt, t)
     for i = 1, NUM_LIGHTS_PER_FRIEND do
-        local new_rotation = quaternion_multiply(unit_local_rotation(self.units[i], 1), quaternion_from_euler_angles_xyz(dt * 100, 0, dt * 100))
-        unit_set_local_rotation(self.units[i], 1, new_rotation)
+        local light_unit_instance = self.units[i]
+
+        if self:is_unit_alive(light_unit_instance) then
+            local new_rotation = quaternion_multiply(unit_local_rotation(light_unit_instance, 1),
+                quaternion_from_euler_angles_xyz(dt * 100, 0, dt * 100))
+            unit_set_local_rotation(light_unit_instance, 1, new_rotation)
+        end
     end
 end
 
@@ -159,17 +179,30 @@ end
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
 ServoFriendAlertExtension.wants_alert_active = function(self)
-    if self.music_parameter_extension then
-        local vector_horde_near = self.music_parameter_extension:vector_horde_near()
-        local ambush_horde_near = self.music_parameter_extension:ambush_horde_near()
-        local last_man_standing = self.music_parameter_extension:last_man_standing()
-        local boss_near = self.music_parameter_extension:boss_near()
+    local music_parameter_extension = self:music_parameter_system()
+
+    if music_parameter_extension then
+        local vector_horde_near = music_parameter_extension:vector_horde_near()
+        local ambush_horde_near = music_parameter_extension:ambush_horde_near()
+        local last_man_standing = music_parameter_extension:last_man_standing()
+        local boss_near = music_parameter_extension:boss_near()
+
         return vector_horde_near or ambush_horde_near or last_man_standing or boss_near
     end
 end
 
 ServoFriendAlertExtension.light_units_alive = function(self)
-    return self.units and #self.units > 0 and self.units[1] and unit_alive(self.units[1])
+    if not self.units or #self.units < NUM_LIGHTS_PER_FRIEND then
+        return false
+    end
+
+    for i = 1, NUM_LIGHTS_PER_FRIEND do
+        if not self:is_unit_alive(self.units[i]) then
+            return false
+        end
+    end
+
+    return true
 end
 
 ServoFriendAlertExtension.light_rotation = function(self)
@@ -233,8 +266,8 @@ ServoFriendAlertExtension.respawn_lights = function(self)
 end
 
 ServoFriendAlertExtension.spawn_lights = function(self)
-
-    if self:is_initialized() and not self:light_units_alive() then
+    if self:is_initialized() and self:servo_friend_alive() and not self:light_units_alive() then
+        self:destroy_lights()
 
         local player_position = self:player_position()
         local rotation_per_unit = self:light_rotation()
@@ -246,22 +279,26 @@ ServoFriendAlertExtension.spawn_lights = function(self)
             world_link_unit(self._world, self.units[i], 1, self.servo_friend_unit, 1)
             -- Position / rotation
             unit_set_local_position(self.units[i], 1, vector3(0, 0, 0))
-            unit_set_local_rotation(self.units[i], 1, quaternion_from_euler_angles_xyz(0, (i - 1) * rotation_per_unit, 90))
+            unit_set_local_rotation(self.units[i], 1,
+                quaternion_from_euler_angles_xyz(0, (i - 1) * rotation_per_unit, 90))
             unit_set_local_scale(self.units[i], 1, vector3(0.1, 0.1, 0.1))
             -- Light
             self.lights[i] = unit_light(self.units[i], 1)
             self:set_light(self.lights[i])
         end
-
     end
-
 end
 
 ServoFriendAlertExtension.destroy_lights = function(self)
-    if self:light_units_alive() then
-        for i = NUM_LIGHTS_PER_FRIEND, 1, -1 do
-            world_unlink_unit(self._world, self.units[i])
-            world_destroy_unit(self._world, self.units[i])
+    if self.units and #self.units > 0 then
+        for i = #self.units, 1, -1 do
+            local light_unit_instance = self.units[i]
+
+            if self:is_unit_alive(light_unit_instance) then
+                world_unlink_unit(self._world, light_unit_instance)
+                world_destroy_unit(self._world, light_unit_instance)
+            end
+
             table_remove(self.units, i)
             table_remove(self.lights, i)
         end
@@ -285,9 +322,11 @@ ServoFriendAlertExtension.set_light = function(self, light)
 end
 
 ServoFriendAlertExtension.enable_light = function(self, enabled)
-    if self:light_units_alive() then
-        for i = 1, NUM_LIGHTS_PER_FRIEND do
-            light_set_enabled(self.lights[i], enabled)
+    if self.lights and #self.lights > 0 then
+        for i = 1, #self.lights do
+            if self.lights[i] then
+                light_set_enabled(self.lights[i], enabled)
+            end
         end
     end
 end
@@ -331,7 +370,7 @@ ServoFriendAlertExtension.on_servo_friend_alert_started = function(self, servo_f
     end
 end
 
-ServoFriendAlertExtension.servo_friend_alert_finished = function(self, servo_friend_unit, player_unit)
+ServoFriendAlertExtension.on_servo_friend_alert_finished = function(self, servo_friend_unit, player_unit)
     if self:is_me(servo_friend_unit) or not servo_friend_unit then
         -- Destroy
         self:stop_alert()

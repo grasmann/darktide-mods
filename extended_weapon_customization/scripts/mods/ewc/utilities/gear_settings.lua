@@ -144,37 +144,11 @@ mod.gear_material_overrides = function(self, item, fake_gear_id, slot_name, opti
                     pt.gear_material_overrides[gear_id][slot_name].material_overrides[#pt.gear_material_overrides[gear_id][slot_name].material_overrides+1] = material_override
                 end
 
-                -- local items = {}
-                -- if pt.gear_material_overrides[gear_id][slot_name].material_overrides then
-                --     for index, material_override in pairs(pt.gear_material_overrides[gear_id][slot_name].material_overrides) do
-                --         for _, check_string in pairs(check_strings) do
-                --             if master_items.get_item(check_string..material_override) then
-                --                 items[index] = check_string..material_override
-                --                 break
-                --             end
-                --         end
-                --     end
-                -- end
-                -- pt.gear_material_overrides[gear_id][slot_name].material_override_items = items
-
             end
 
         end
 
     else
-
-        -- local items = {}
-        -- if pt.gear_material_overrides[gear_id] and pt.gear_material_overrides[gear_id][slot_name] and pt.gear_material_overrides[gear_id][slot_name].material_overrides then
-        --     for index, material_override in pairs(pt.gear_material_overrides[gear_id][slot_name].material_overrides) do
-        --         for _, check_string in pairs(check_strings) do
-        --             if master_items.get_item(check_string..material_override) then
-        --                 items[index] = check_string..material_override
-        --                 break
-        --             end
-        --         end
-        --     end
-        --     pt.gear_material_overrides[gear_id][slot_name].material_override_items = items
-        -- end
 
         return pt.gear_material_overrides[gear_id] and pt.gear_material_overrides[gear_id][slot_name]
         

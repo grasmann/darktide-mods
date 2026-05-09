@@ -46,9 +46,7 @@ ServoFriendHoverParticleExtension.init = function(self, extension_init_context, 
     ServoFriendHoverParticleExtension.super.init(self, extension_init_context, unit, extension_init_data)
     -- Data
     self.hover_particle_effect_id = nil
-    -- Events
-    -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
-    -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
+    self.hover_particle_effect = false
     -- Settings
     self:on_settings_changed()
     -- Debug
@@ -56,9 +54,6 @@ ServoFriendHoverParticleExtension.init = function(self, extension_init_context, 
 end
 
 ServoFriendHoverParticleExtension.destroy = function(self)
-    -- Events
-    -- managers.event:unregister(self, "servo_friend_spawned")
-    -- managers.event:unregister(self, "servo_friend_destroyed")
     -- Destroy
     self:destroy_hover_particle_effect()
     -- Debug
@@ -83,11 +78,29 @@ end
 ServoFriendHoverParticleExtension.on_settings_changed = function(self, setting_id)
     -- Base class
     ServoFriendHoverParticleExtension.super.on_settings_changed(self)
-    -- Settings
-    self.hover_particle_effect = self.servo_friend_extension.hover_particle_effect --mod:get("mod_option_hover_particle_effect")
-    -- Respawn
-    if setting_id == "mod_option_hover_particle_effect" then
+
+    local extension = self:extension_valid(self.servo_friend_extension)
+    local enabled = extension and extension.hover_particle_effect or false
+    local changed = self.hover_particle_effect ~= enabled
+    local hover_particle_effect_setting_id = nil
+
+    if self.is_local_unit and extension and extension.archetype_name then
+        local archetype_name = extension:archetype_name()
+
+        if archetype_name then
+            hover_particle_effect_setting_id = mod:get_archetype_setting_id(archetype_name,
+                "mod_option_hover_particle_effect")
+        end
+    end
+
+    self.hover_particle_effect = enabled
+
+    if not self.hover_particle_effect then
+        self:destroy_hover_particle_effect()
+    elseif changed or setting_id == hover_particle_effect_setting_id then
         self:respawn_hover_particle_effect()
+    else
+        self:spawn_hover_particle_effect()
     end
 end
 
@@ -119,24 +132,35 @@ ServoFriendHoverParticleExtension.respawn_hover_particle_effect = function(self)
 end
 
 ServoFriendHoverParticleExtension.destroy_hover_particle_effect = function(self)
-    if self.hover_particle_effect_id then
+    if self.hover_particle_effect_id and self._world then
         if world_are_particles_playing(self._world, self.hover_particle_effect_id) then
             world_stop_spawning_particles(self._world, self.hover_particle_effect_id)
         end
+
         world_destroy_particles(self._world, self.hover_particle_effect_id)
         self.hover_particle_effect_id = nil
     end
 end
 
 ServoFriendHoverParticleExtension.spawn_hover_particle_effect = function(self)
-    if self:is_initialized() and self.hover_particle_effect and self:servo_friend_alive() and not self.hover_particle_effect_id then
+    if self:is_initialized() and self.hover_particle_effect and self:servo_friend_alive() and not self.hover_particle_effect_id and self._world then
         local player_position = self:player_position()
+
+        if not player_position then
+            return
+        end
+
         local unit_world_pose = matrix4x4_identity()
         local rotation = quaternion_identity()
-        self.hover_particle_effect_id = world_create_particles(self._world, hover_particle_effect, player_position, rotation)
+
+        self.hover_particle_effect_id = world_create_particles(self._world, hover_particle_effect, player_position,
+            rotation)
+
         matrix4x4_set_translation(unit_world_pose, vector3(0, 0, -.15))
         matrix4x4_set_scale(unit_world_pose, vector3(.001, .001, .001))
-        world_link_particles(self._world, self.hover_particle_effect_id, self.servo_friend_unit, 1, unit_world_pose, "destroy")
+
+        world_link_particles(self._world, self.hover_particle_effect_id, self.servo_friend_unit, 1, unit_world_pose,
+            "destroy")
     end
 end
 

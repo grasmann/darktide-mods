@@ -88,11 +88,17 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 ServoFriendTagExtension.event_smart_tag_created = function(self, tag)
+    if not self:is_valid_tag(tag) then
+        return
+    end
+
     self:print("Smart tag created")
+
     local enemy = self.focus_tagged_enemies and self:is_enemy(tag)
     local item = self.focus_tagged_items and self:is_item(tag)
     local own = not self.only_own_tags or self:is_owned(tag)
     local daemonhost = not self:is_daemonhost(tag)
+
     if own and (enemy or item) and daemonhost then
         local tag_type = self:type(tag)
         managers.event:trigger("servo_friend_point_of_interest_created", tag, tag_type)
@@ -100,6 +106,10 @@ ServoFriendTagExtension.event_smart_tag_created = function(self, tag)
 end
 
 ServoFriendTagExtension.event_smart_tag_removed = function(self, tag)
+    if not self:is_valid_tag(tag) then
+        return
+    end
+
     self:print("Smart tag removed")
     managers.event:trigger("servo_friend_point_of_interest_removed", tag)
 end
@@ -108,25 +118,32 @@ end
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+ServoFriendTagExtension.is_valid_tag = function(self, tag)
+    return tag and not tag.__deleted
+end
+
 ServoFriendTagExtension.type = function(self, tag)
-    if self:is_enemy(tag) then return "tag_enemy" end
+    if self:is_enemy(tag) then
+        return "tag_enemy"
+    end
+
     return "tag"
 end
 
 ServoFriendTagExtension.is_daemonhost = function(self, tag)
-    return tag and tag._breed and tag._breed.name == "chaos_daemonhost"
+    return self:is_valid_tag(tag) and tag._breed and tag._breed.name == "chaos_daemonhost"
 end
 
 ServoFriendTagExtension.is_enemy = function(self, tag)
-    return tag and tag._breed
+    return self:is_valid_tag(tag) and tag._breed
 end
 
 ServoFriendTagExtension.is_item = function(self, tag)
-    return tag and not tag._breed
+    return self:is_valid_tag(tag) and not tag._breed
 end
 
 ServoFriendTagExtension.is_owned = function(self, tag)
-    return self.player_unit and tag and tag._tagger_unit == self.player_unit
+    return self.player_unit and self:is_valid_tag(tag) and tag._tagger_unit == self.player_unit
 end
 
 return ServoFriendTagExtension

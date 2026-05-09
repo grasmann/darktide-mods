@@ -14,42 +14,64 @@ local script_unit_has_extension = script_unit.has_extension
 -- ##### └─┐├┤ ├┬┘└┐┌┘│ │  ├┤ ├┬┘│├┤ │││ ││  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││└─┐ ############################################
 -- ##### └─┘└─┘┴└─ └┘ └─┘  └  ┴└─┴└─┘┘└┘─┴┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘└─┘ ############################################
 
--- Get servo friend extension from unit
+-- Get servo_friend extension from unit
 mod.servo_friend_extension = function(self, unit, system_or_extension)
+    if not self:is_unit_alive(unit) then
+        return nil
+    end
+
     local pt = self:pt()
-    -- Wrap to system
     local system = pt.systems[system_or_extension] or system_or_extension
-    -- Get and return extension
+
+    if not system then
+        return nil
+    end
+
     return script_unit_has_extension(unit, system)
 end
 
--- Add servo friend extension to unit
+-- Add servo_friend extension to unit
 mod.servo_friend_add_extension = function(self, unit, system, extension_init_context, extension_init_data)
-    -- Add extension to unit and check if successful
+    if not self:is_unit_alive(unit) or not system then
+        return nil
+    end
+
     if self:add_extension(unit, system, extension_init_context, extension_init_data) then
         local pt = self:pt()
-        -- Get extension
         local extension = script_unit_extension(unit, system)
-        -- Add unit to loaded extensions
-        if not pt.loaded_extensions[unit] then pt.loaded_extensions[unit] = {} end
-        -- Add extension to loaded extensions
+
+        if not extension then
+            return nil
+        end
+
+        if not pt.loaded_extensions[unit] then
+            pt.loaded_extensions[unit] = {}
+        end
+
         pt.loaded_extensions[unit][system] = extension
-        -- Return extension
+
         return extension
     end
 end
 
--- Remove servo friend extension from unit
+-- Remove servo_friend extension from unit
 mod.servo_friend_remove_extension = function(self, unit, system)
-    -- Remove extension from unit and check if successful
-    if self:remove_extension(unit, system) then
-        local pt = self:pt()
-        -- Remove extension from loaded extensions
-        if pt.loaded_extensions[unit] then
+    local pt = self:pt()
+    local removed = false
+
+    if self:is_unit_alive(unit) and system then
+        removed = self:remove_extension(unit, system) and true or false
+    end
+
+    if pt.loaded_extensions[unit] then
+        if system then
             pt.loaded_extensions[unit][system] = nil
         end
-        -- Remove unit from loaded extensions
-        if table_size(pt.loaded_extensions[unit]) == 0 then pt.loaded_extensions[unit] = nil end
-        return true
+
+        if table_size(pt.loaded_extensions[unit]) == 0 then
+            pt.loaded_extensions[unit] = nil
+        end
     end
+
+    return removed
 end

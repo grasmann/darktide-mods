@@ -1867,6 +1867,12 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "on_enter", function(func, self, ..
             self._widgets_by_name.tip_1.content.text = "test test text"
         end
 
+        if self._widgets_by_name.plugin_warning then
+            local num_plugins = table.size(pt.loaded_plugins)
+            self._widgets_by_name.plugin_warning.content.title = localize("loc_weapon_inventory_plugin_warning")
+            self._widgets_by_name.plugin_warning.visible = num_plugins == 0
+        end
+
         self:create_color_dropdown()
         self:create_pattern_dropdown()
         self:create_wear_dropdown()
@@ -2308,6 +2314,8 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "_register_button_callbacks", funct
         if widgets_by_name.damage_type_toggle then widgets_by_name.damage_type_toggle.visible = false end
         -- Hide tip
         if widgets_by_name.tip_1_button then widgets_by_name.tip_1_button.visible = false end
+        -- Hide warning
+        if widgets_by_name.plugin_warning then widgets_by_name.plugin_warning.visible = false end
     end
 
 end)

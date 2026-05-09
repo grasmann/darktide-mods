@@ -89,13 +89,22 @@ end
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
 ServoFriendMarkerExtension.on_servo_friend_world_marker_created = function(self, marker)
+    if not self:is_valid_marker(marker) then
+        return
+    end
+
     local own = not self.only_own_tags or self:is_owned(marker)
+
     if self.focus_world_markers and own then
         managers.event:trigger("servo_friend_point_of_interest_created", marker, "marker")
     end
 end
 
 ServoFriendMarkerExtension.on_servo_friend_world_marker_destroyed = function(self, marker)
+    if not self:is_valid_marker(marker) then
+        return
+    end
+
     managers.event:trigger("servo_friend_point_of_interest_removed", marker)
 end
 
@@ -103,30 +112,35 @@ end
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+ServoFriendMarkerExtension.is_valid_marker = function(self, marker)
+    return marker and not marker.__deleted
+end
+
 ServoFriendMarkerExtension.is_owned = function(self, marker)
-    return marker and marker.data and marker.data.is_my_tag
+    return self:is_valid_marker(marker) and marker.data and marker.data.is_my_tag
 end
 
 -- ##### ┬ ┬┌─┐┌─┐┬┌─┌─┐ ##############################################################################################
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
 
-mod:hook(CLASS.HudElementWorldMarkers, "event_add_world_marker_position", function(func, self, marker_type, world_position, callback, data, ...)
-    -- Original function
-    func(self, marker_type, world_position, callback, data, ...)
-    -- Marker
-    local marker = self._markers[#self._markers]
-    if marker then
-        mod:print("add marker "..tostring(marker.id))
-        managers.event:trigger("servo_friend_world_marker_created", marker, "marker")
-    end
-end)
+mod:hook(CLASS.HudElementWorldMarkers, "event_add_world_marker_position",
+    function(func, self, marker_type, world_position, callback, data, ...)
+        -- Original function
+        func(self, marker_type, world_position, callback, data, ...)
+        -- Marker
+        local marker = self._markers[#self._markers]
+        if marker and not marker.__deleted then
+            mod:print("add marker " .. tostring(marker.id))
+            managers.event:trigger("servo_friend_world_marker_created", marker, "marker")
+        end
+    end)
 
 mod:hook(CLASS.HudElementWorldMarkers, "event_remove_world_marker", function(func, self, id, ...)
     -- Marker
     local marker = self._markers_by_id[id]
-    if marker then
-        mod:print("remove marker "..tostring(id))
+    if marker and not marker.__deleted then
+        mod:print("remove marker " .. tostring(id))
         managers.event:trigger("servo_friend_world_marker_destroyed", marker)
     end
     -- Original function

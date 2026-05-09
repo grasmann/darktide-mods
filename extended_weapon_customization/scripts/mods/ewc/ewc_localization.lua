@@ -70,6 +70,13 @@ mod:add_global_localize_strings({
 		["zh-cn"] = "X",
 	},
 
+	loc_weapon_inventory_plugin_warning = {
+		en = "No plugins detected",
+	},
+	loc_weapon_inventory_plugin_warning_text = {
+		en = "Extended Weapon Customization has detected no plugins.\nThe main mod only provides functionality and access to default weapon attachments.",
+	},
+
 	loc_weapon_inventory_tip_1_button = {
 		en = "Okay",
 		["zh-cn"] = "确定",

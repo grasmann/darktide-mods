@@ -30,9 +30,9 @@ mod:register_sounds({
 ServoFriendHoverSoundExtension.init = function(self, extension_init_context, unit, extension_init_data)
     -- Base class
     ServoFriendHoverSoundExtension.super.init(self, extension_init_context, unit, extension_init_data)
-    -- Events
-    -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
-    -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
+    -- Data
+    self.thruster_source_id = nil
+    self.hover_sound_effect = false
     -- Settings
     self:on_settings_changed()
     -- Debug
@@ -40,9 +40,6 @@ ServoFriendHoverSoundExtension.init = function(self, extension_init_context, uni
 end
 
 ServoFriendHoverSoundExtension.destroy = function(self)
-    -- Events
-    -- managers.event:unregister(self, "servo_friend_spawned")
-    -- managers.event:unregister(self, "servo_friend_destroyed")
     -- Destroy
     self:destroy_hover_sound()
     -- Debug
@@ -59,7 +56,7 @@ ServoFriendHoverSoundExtension.update = function(self, dt, t)
     -- Base class
     ServoFriendHoverSoundExtension.super.update(self, dt, t)
     -- Update
-    if self.thruster_source_id then
+    if self.thruster_source_id and self._wwise_world and self.current_position then
         wwise_world_set_source_position(self._wwise_world, self.thruster_source_id, vector3_unbox(self.current_position))
     end
 end
@@ -71,9 +68,10 @@ end
 ServoFriendHoverSoundExtension.on_settings_changed = function(self)
     -- Base class
     ServoFriendHoverSoundExtension.super.on_settings_changed(self)
-    -- Settings
-    self.hover_sound_effect = self.servo_friend_extension.hover_sound_effect --mod:get("mod_option_hover_sound_effect")
-    -- Respawn
+
+    local extension = self:extension_valid(self.servo_friend_extension)
+    self.hover_sound_effect = extension and extension.hover_sound_effect or false
+
     self:respawn_hover_sound()
 end
 
@@ -100,7 +98,7 @@ end
 -- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
 
 ServoFriendHoverSoundExtension.spawn_hover_sound = function(self)
-    if self:is_initialized() and self.hover_sound_effect and not self.thruster_source_id then
+    if self:is_initialized() and self.hover_sound_effect and self:servo_friend_alive() and self._wwise_world and not self.thruster_source_id then
         self.thruster_source_id = self:play_sound("start_thruster")
     end
 end
@@ -108,8 +106,8 @@ end
 ServoFriendHoverSoundExtension.destroy_hover_sound = function(self)
     if self.thruster_source_id then
         self:play_sound("stop_thruster", self.thruster_source_id)
+        self.thruster_source_id = nil
     end
-    self.thruster_source_id = nil
 end
 
 ServoFriendHoverSoundExtension.respawn_hover_sound = function(self)

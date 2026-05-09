@@ -33,6 +33,7 @@ mod:persistent_table(REFERENCE, {
     kitbash_entries = {},
     weapon_packages = {},
     loaded_packages = {},
+    loaded_plugins = {},
     gear_id_relays = {},
     gear_settings = {},
     cached_items = {},
@@ -153,6 +154,7 @@ mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/game")
 mod.save_lua = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/save")
 -- Load settings
 mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/settings")
+mod:dtf(mod.settings, "mod.settings", 10)
 -- Clone settings of main mod
 -- pt.extended_weapon_customization_plugin = table_clone(mod.settings)
 pt.extended_weapon_customization_plugin = table_clone_instance(mod.settings)

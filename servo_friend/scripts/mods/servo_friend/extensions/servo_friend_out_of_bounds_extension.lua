@@ -10,7 +10,6 @@ local pairs = pairs
 local CLASS = CLASS
 local vector3 = Vector3
 local managers = Managers
-local unit_alive = unit.alive
 local vector3_distance = vector3.distance
 local unit_local_position = unit.local_position
 local unit_set_local_position = unit.set_local_position
@@ -61,6 +60,10 @@ end
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
 
+ServoFriendOutOfBoundsExtension.is_unit_alive = function(self, unit)
+    return mod:is_unit_alive(unit)
+end
+
 ServoFriendOutOfBoundsExtension.update = function(self, dt, t)
     -- Base class
     ServoFriendOutOfBoundsExtension.super.update(self, dt, t)
@@ -97,18 +100,23 @@ end
 
 mod.servo_friend_out_of_bounds_check = function(self)
     local pt = self:pt()
+
     for unit, extension in pairs(pt.player_unit_extensions) do
-        self:execute_extension(extension.servo_friend_unit, "servo_friend_out_of_bounds_system", "on_servo_friend_out_of_bounds_check", extension.servo_friend_unit, extension.player_unit)
+        if self:extension_valid(extension) and self:is_unit_alive(extension.servo_friend_unit) then
+            self:execute_extension(extension.servo_friend_unit, "servo_friend_out_of_bounds_system",
+                "on_servo_friend_out_of_bounds_check", extension.servo_friend_unit, extension.player_unit)
+        end
     end
 end
 
 ServoFriendOutOfBoundsExtension.on_servo_friend_out_of_bounds_check = function(self, servo_friend_unit, player_unit)
-    if self.initialized and self:is_me(servo_friend_unit) and self:servo_friend_alive() and self.player_unit and unit_alive(self.player_unit) then
+    if self.initialized and self:is_me(servo_friend_unit) and self:servo_friend_alive() and self:is_unit_alive(self.player_unit) then
         local position = unit_local_position(self.servo_friend_unit, 1)
         local player_position = unit_local_position(self.player_unit, 1)
         local distance = vector3_distance(position, player_position)
+
         if distance > self.max_distance * 3 or position[1] ~= position[1] then
-            self:print("Servo friend was far away from player during out of bounds check")
+            self:print("servo_friend was far away from player during out of bounds check")
             self:execute_extension(self.servo_friend_unit, "servo_friend_point_of_interest_system", "clear")
             self.servo_friend_extension:on_servo_friend_set_target_position(player_position, player_position)
             unit_set_local_position(self.servo_friend_unit, 1, player_position)

@@ -37,6 +37,15 @@ local packages_to_load = {
     "wwise/events/minions/stop_minion_terror_event_group_sfx_cultists",
 }
 
+local function breed_from_callback_unit(target_unit)
+    if type(target_unit) ~= "userdata" then
+        return nil
+    end
+
+    local unit_data_extension = script_unit_has_extension(target_unit, "unit_data_system")
+    return unit_data_extension and unit_data_extension:breed()
+end
+
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
 -- ##### │  │  ├─┤└─┐└─┐ ##############################################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘ ##############################################################################################
@@ -81,6 +90,7 @@ ServoFriendVoiceExtension.init = function(self, extension_init_context, unit, ex
     self.voice_lines = {}
     self.audio_plugin = get_mod("servo_friend_audio_server_plugin")
     self.alert_playing = nil
+    self._archetype_name = nil
     -- Events
     -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
     -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
@@ -94,7 +104,7 @@ end
 
 ServoFriendVoiceExtension.destroy = function(self)
     if self.alert_playing then
-        self:stop_repeating_sound()
+        self:stop_repeating_sound(self.alert_playing)
         self.alert_playing = nil
     end
     -- Events
@@ -121,16 +131,56 @@ end
 -- ##### └─┐├┤ ├┬┘└┐┌┘│ │  ├┤ ├┬┘│├┤ │││ ││  ├┤ └┐┌┘├┤ │││ │ └─┐ ######################################################
 -- ##### └─┘└─┘┴└─ └┘ └─┘  └  ┴└─┴└─┘┘└┘─┴┘  └─┘ └┘ └─┘┘└┘ ┴ └─┘ ######################################################
 
-ServoFriendVoiceExtension.on_settings_changed = function(self)
+ServoFriendVoiceExtension.archetype_name = function(self)
+    if self._archetype_name then
+        return self._archetype_name
+    end
+
+    local player_unit = self.player_unit
+    local unit_data_extension = player_unit and script_unit_has_extension(player_unit, "unit_data_system")
+
+    if unit_data_extension and unit_data_extension.archetype then
+        local archetype = unit_data_extension:archetype()
+        self._archetype_name = archetype and archetype.name or nil
+    end
+
+    if not self._archetype_name and self.is_local_unit then
+        self._archetype_name = mod:get_local_archetype()
+    end
+
+    return self._archetype_name
+end
+
+ServoFriendVoiceExtension.on_settings_changed = function(self, setting_id)
     -- Base class
     ServoFriendVoiceExtension.super.on_settings_changed(self)
+
+    local archetype_name = self:archetype_name()
+    local voice_setting_id = nil
+
+    if self.is_local_unit and archetype_name then
+        voice_setting_id = mod:get_archetype_setting_id(archetype_name, "mod_option_voice")
+    end
+
     -- Settings
-    self.voice                    = mod:get("mod_option_voice")
-    self.use_audio_mod            = mod:get("mod_option_use_audio_mod")
-    self.victory_speech_frequency = mod:get("mod_option_victory_speech_frequency")
-    self.victory_speech_max       = (1 - self.victory_speech_frequency) * 100
-    -- Load
-    self:load_voice_lines(true)
+    if self.is_local_unit then
+        self.voice = mod:get_archetype_setting("mod_option_voice", archetype_name)
+    else
+        self.voice = "off"
+    end
+
+    self.use_audio_mod              = mod:get("mod_option_use_audio_mod")
+    self.victory_speech_frequency   = mod:get("mod_option_victory_speech_frequency")
+    self.victory_speech_max         = (1 - self.victory_speech_frequency) * 100
+
+    local should_reload_voice_lines = setting_id == nil or
+        setting_id == voice_setting_id or
+        setting_id == "mod_option_use_audio_mod" or
+        setting_id == "mod_option_victory_speech_frequency"
+
+    if should_reload_voice_lines then
+        self:load_voice_lines(true)
+    end
 end
 
 ServoFriendVoiceExtension.on_servo_friend_spawned = function(self, servo_friend_unit, player_unit)
@@ -164,21 +214,17 @@ ServoFriendVoiceExtension.talk = function(self, dt, t, optional_sound_event, ser
     if self:is_initialized() and self.is_local_unit and self:is_me(servo_friend_unit) then
         if self.use_audio_mod and self.audio_plugin and self:servo_friend_alive() then
             self.audio_plugin:talk(dt, t, optional_sound_event, self.servo_friend_unit)
-
         elseif optional_sound_event == "start_alert" then
-            -- self.alert_playing = self:play_sound("start_alert")
             self.alert_playing = self:start_repeating_sound("start_alert", 3)
-
         elseif optional_sound_event == "stop_alert" and self.alert_playing then
             self:stop_repeating_sound(self.alert_playing)
             self.alert_playing = nil
-
         elseif t > self.talk_timer or optional_sound_event == "spawned" then
             if self.voice ~= "off" then
                 if self:servo_friend_alive() and #self.voice_lines > 0 then
                     local random = math_random(1, #self.voice_lines)
                     local sound_event = self.voice_lines[random]
-                    local vo_file_path = "wwise/externals/"..sound_event
+                    local vo_file_path = "wwise/externals/" .. sound_event
                     local event = "wwise/events/vo/play_sfx_es_player_vo"
                     local prio = "es_vo_prio_1"
                     local source = self._wwise_world:make_auto_source(self.servo_friend_unit, 1)
@@ -195,28 +241,29 @@ ServoFriendVoiceExtension.talk = function(self, dt, t, optional_sound_event, ser
     end
 end
 
-ServoFriendVoiceExtension.victory_speech_accumulation = function(self, point_cost, is_boss, servo_friend_unit, player_unit)
-
+ServoFriendVoiceExtension.victory_speech_accumulation = function(self, point_cost, is_boss, servo_friend_unit,
+                                                                 player_unit)
     if self:is_initialized() and self.is_local_unit and player_unit == self.player_unit then
-        if is_boss then point_cost = self.victory_speech_max end
-        if point_cost == math_huge or point_cost ~= point_cost then point_cost = 6 end
+        if is_boss then
+            point_cost = self.victory_speech_max
+        end
+
+        if point_cost == math_huge or point_cost ~= point_cost then
+            point_cost = 6
+        end
 
         self.victory_speech_points = self.victory_speech_points + point_cost
 
         if self.victory_speech_points > self.victory_speech_max then
-
             local dt, t = self:delta_time(), self:time()
             managers.event:trigger("servo_friend_talk", dt, t, "victory", self.servo_friend_unit, self.player_unit)
 
             self.victory_speech_points = 0
-
         end
     end
-
 end
 
 ServoFriendVoiceExtension.load_voice_lines = function(self, clear)
-
     if not self.voice_lines then
         return
     end
@@ -232,7 +279,7 @@ ServoFriendVoiceExtension.load_voice_lines = function(self, clear)
         self.voice_lines_loaded = true
 
         if self.voice ~= "off" then
-            conversation_files[#conversation_files+1] = "dialogues/generated/"..self.voice
+            conversation_files[#conversation_files + 1] = "dialogues/generated/" .. self.voice
         end
 
         for _, conversation_file in pairs(conversation_files) do
@@ -241,7 +288,7 @@ ServoFriendVoiceExtension.load_voice_lines = function(self, clear)
                 for _, conversation_sub_data in pairs(conversation_data) do
                     if conversation_sub_data and conversation_sub_data.sound_events then
                         for _, sound_event in pairs(conversation_sub_data.sound_events) do
-                            self.voice_lines[#self.voice_lines+1] = sound_event
+                            self.voice_lines[#self.voice_lines + 1] = sound_event
                         end
                     end
                 end
@@ -257,60 +304,57 @@ end
 -- ##### ├─┤│ ││ │├┴┐└─┐ ##############################################################################################
 -- ##### ┴ ┴└─┘└─┘┴ ┴└─┘ ##############################################################################################
 
-mod:hook(CLASS.AttackReportManager, "rpc_add_attack_result", function(func, self, channel_id, damage_profile_id, attacked_unit_id, attacked_unit_is_level_unit,
-        attacking_unit_id, attack_direction, hit_world_position, hit_weakspot, damage, attack_result_id, attack_type_id, damage_efficiency_id, is_critical_strike, ...)
+mod:hook(CLASS.AttackReportManager, "rpc_add_attack_result",
+    function(func, self, channel_id, damage_profile_id, attacked_unit_id, attacked_unit_is_level_unit,
+             attacking_unit_id, attack_direction, hit_world_position, hit_weakspot, damage, attack_result_id,
+             attack_type_id, damage_efficiency_id, is_critical_strike, ...)
+        -- Original function
+        func(self, channel_id, damage_profile_id, attacked_unit_id, attacked_unit_is_level_unit,
+            attacking_unit_id, attack_direction, hit_world_position, hit_weakspot, damage, attack_result_id,
+            attack_type_id, damage_efficiency_id, is_critical_strike, ...)
 
-    -- Original function
-    func(self, channel_id, damage_profile_id, attacked_unit_id, attacked_unit_is_level_unit,
-        attacking_unit_id, attack_direction, hit_world_position, hit_weakspot, damage, attack_result_id, attack_type_id, damage_efficiency_id, is_critical_strike, ...)
+        local unit_spawner_manager = managers.state.unit_spawner
+        local attacked_unit = attacked_unit_id and
+            unit_spawner_manager:unit(attacked_unit_id, attacked_unit_is_level_unit)
+        local attacking_unit = attacking_unit_id and unit_spawner_manager:unit(attacking_unit_id)
+        local breed_or_nil = breed_from_callback_unit(attacked_unit)
 
-    -- local attacked_unit = buffer_data.attacked_unit
-    local unit_spawner_manager = managers.state.unit_spawner
-    local attacked_unit = attacked_unit_id and unit_spawner_manager:unit(attacked_unit_id, attacked_unit_is_level_unit)
-    local attacking_unit = attacking_unit_id and unit_spawner_manager:unit(attacking_unit_id)
-    local unit_data_extension = script_unit_has_extension(attacked_unit, "unit_data_system")
-	local breed_or_nil = unit_data_extension and unit_data_extension:breed()
+        if not breed_or_nil then
+            return
+        end
 
-    if not breed_or_nil then
-		return
-	end
+        local attack_result = network_lookup.attack_results[attack_result_id]
+        local tags = breed_or_nil and breed_or_nil.tags
+        local allowed_breed = tags and (tags.monster or tags.special or tags.elite)
 
-    local attack_result = network_lookup.attack_results[attack_result_id]
-    local tags = breed_or_nil and breed_or_nil.tags
-    local allowed_breed = tags and (tags.monster or tags.special or tags.elite)
-    if allowed_breed and attack_result == attack_results.died then
-
-        local point_cost = breed_or_nil.point_cost or 0
-        managers.event:trigger("servo_friend_victory_speech_accumulation", point_cost, breed_or_nil.is_boss, nil, attacking_unit)
-
-    end
-
-end)
+        if allowed_breed and attack_result == attack_results.died then
+            local point_cost = breed_or_nil.point_cost or 0
+            managers.event:trigger("servo_friend_victory_speech_accumulation", point_cost, breed_or_nil.is_boss, nil,
+                attacking_unit)
+        end
+    end)
 
 mod:hook(CLASS.AttackReportManager, "_process_attack_result", function(func, self, buffer_data, ...)
-
     -- Original function
     func(self, buffer_data, ...)
 
     local attacked_unit = buffer_data.attacked_unit
     local attacking_unit = buffer_data.attacking_unit
-    local unit_data_extension = script_unit_has_extension(attacked_unit, "unit_data_system")
-	local breed_or_nil = unit_data_extension and unit_data_extension:breed()
+    local breed_or_nil = breed_from_callback_unit(attacked_unit)
 
     if not breed_or_nil then
-		return
-	end
+        return
+    end
 
     local attack_result = buffer_data.attack_result
     local tags = breed_or_nil and breed_or_nil.tags
     local allowed_breed = tags and (tags.monster or tags.special or tags.elite)
+
     if allowed_breed and attack_result == attack_results.died then
-
         local point_cost = breed_or_nil.point_cost or 0
-        managers.event:trigger("servo_friend_victory_speech_accumulation", point_cost, breed_or_nil.is_boss, nil, attacking_unit)
-
+        managers.event:trigger("servo_friend_victory_speech_accumulation", point_cost, breed_or_nil.is_boss, nil,
+            attacking_unit)
     end
-
 end)
 
 return ServoFriendVoiceExtension

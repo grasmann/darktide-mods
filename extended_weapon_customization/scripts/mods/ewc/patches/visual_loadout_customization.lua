@@ -393,6 +393,16 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
     mod:hook(instance, "_find_unit_node_recursive", function(func, unit, attach_node, item, item_data, attach_settings, ...)
         local attach_node_index
 
+        -- local item_path = item_data.name
+        -- local attachment_name = item_path and mod.settings.attachment_name_by_item_string[item_path]
+        -- -- local attachment_name = unit_get_data(unit, "attachment_name")
+        -- -- mod:echo("attachment_name: "..tostring(attachment_name))
+        -- if mod:is_custom_attachment(item_data, attachment_name) then
+        --     mod:echo("attachment_name: "..tostring(attachment_name).." is custom")
+        -- else
+        --     mod:echo("attachment_name: "..tostring(attachment_name).." is default")
+        -- end
+
         if tonumber(attach_node) ~= nil then
             attach_node_index = tonumber(attach_node)
         elseif attach_node then

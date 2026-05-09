@@ -56,11 +56,6 @@ local SHIELD_WEAPONS = {
 }
 local CUSTOM_SLOT_CACHE = {}
 local CUSTOM_ATTACHMENT_CACHE = {}
--- local check_strings = {
---     "content/items/material_overrides/gear_materials/",
---     "content/items/material_overrides/gear_colors/",
---     "content/items/material_overrides/gear_patterns/",
--- }
 
 -- ##### ┬─┐┌─┐┌─┐┬ ┬┬─┐┌─┐┬┬  ┬┌─┐  ┌─┐┌┬┐┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ########################
 -- ##### ├┬┘├┤ │  │ │├┬┘└─┐│└┐┌┘├┤   ├─┤ │  │ ├─┤│  ├─┤│││├┤ │││ │   ├┤ │ │││││   │ ││ ││││└─┐ ########################
@@ -240,7 +235,7 @@ mod.is_custom_slot = function(self, item_data, target_slot)
     local item = self:item_data(item_data)
 
     local attachment_data = mod:fetch_attachment_data(item.attachments, target_slot)
-    return attachment_data and attachment_data.mod and attachment_data.mod ~= mod
+    return attachment_data and attachment_data.is_custom
 
     -- local weapon_template = item and item.weapon_template
 
@@ -297,53 +292,54 @@ end
 
 mod.is_custom_attachment = function(self, item_data, target_attachment_name)
 
-    local item = self:item_data(item_data)
-    local weapon_template = item and item.weapon_template
+    -- local item = self:item_data(item_data)
+    -- local weapon_template = item and item.weapon_template
 
-    if not target_attachment_name then return false end
+    -- if not target_attachment_name then return false end
 
-    if weapon_template then
-        if CUSTOM_ATTACHMENT_CACHE[weapon_template] and CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] then
-            return CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name]
-        end
+    -- if weapon_template then
+    --     if CUSTOM_ATTACHMENT_CACHE[weapon_template] and CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] then
+    --         return CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name]
+    --     end
 
-        CUSTOM_ATTACHMENT_CACHE[weapon_template] = CUSTOM_ATTACHMENT_CACHE[weapon_template] or {}
+    --     CUSTOM_ATTACHMENT_CACHE[weapon_template] = CUSTOM_ATTACHMENT_CACHE[weapon_template] or {}
 
-        local weapon_file = mod:io_dofile("scripts/mods/ewc/weapons/"..weapon_template)
-        if weapon_file then
-            for attachment_slot, attachments in pairs(weapon_file.attachments) do
-                for attachment_name, attachment_data in pairs(attachments) do
-                    if attachment_name == target_attachment_name then
-                        mod:print("found default attachment "..tostring(target_attachment_name).." for "..tostring(weapon_template))
-                        CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] = false
-                        return false
-                    end
-                end
-            end
-        end
+    --     local weapon_file = mod:io_dofile("scripts/mods/ewc/weapons/"..weapon_template)
+    --     if weapon_file then
+    --         for attachment_slot, attachments in pairs(weapon_file.attachments) do
+    --             for attachment_name, attachment_data in pairs(attachments) do
+    --                 if attachment_name == target_attachment_name then
+    --                     mod:print("found default attachment "..tostring(target_attachment_name).." for "..tostring(weapon_template))
+    --                     CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] = false
+    --                     return false
+    --                 end
+    --             end
+    --         end
+    --     end
 
-        mod:print("found custom attachment "..tostring(target_attachment_name).." for "..tostring(weapon_template))
-        CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] = true
-        return true
-    end
+    --     mod:print("found custom attachment "..tostring(target_attachment_name).." for "..tostring(weapon_template))
+    --     CUSTOM_ATTACHMENT_CACHE[weapon_template][target_attachment_name] = true
+    --     return true
+    -- end
 
-    mod:print("invalid weapon template "..tostring(weapon_template))
-    return false
+    -- mod:print("invalid weapon template "..tostring(weapon_template))
+    -- return false
 
-    -- -- local item = self:item_data(item_data)
+    -- local item = self:item_data(item_data)
     -- -- local weapon_template = item.weapon_template
     -- -- local custom_attachment_slots = weapon_template and self.settings.attachments[weapon_template] --and self.settings.attachments[weapon_template][attachment_name]
     -- -- return custom_attachment_slots and custom_attachment_slots[attachment_name]
 
-    -- -- local item = self:item_data(item_data)
+    local item = self:item_data(item_data)
+    local item_string = item and item.name
 
     -- -- attachment_name_by_item_string
-    -- local attachment_data = self.settings.attachment_data_by_attachment_name[attachment_name]
-    -- -- local attachment_data = self.settings.attachment_data_by_item_string[item_data.name]
+    -- local attachment_data = self.settings.attachment_data_by_item_string[item_string]
+    local attachment_data = self.settings.attachment_data_by_attachment_name[target_attachment_name]
     -- -- local mod_attachments = self.settings.attachment_data_by_mod_by_weapon_by_name[mod]
     -- -- local string_attachments = mod_attachments and mod_attachments[weapon_template]
     -- -- local attachment_data = string_attachments and string_attachments[attachment_name]
-    -- return attachment_data and attachment_data.is_custom_attachment
+    return attachment_data and attachment_data.is_custom_attachment
     -- -- local mod_of_origin = attachment_data and pt.attachment_data_origin[attachment_data] --or mod
     -- -- return mod_of_origin and mod_of_origin ~= mod
     -- -- local mod_attachments = item and self.settings.attachment_slot_by_mod_by_weapon_by_name[mod]

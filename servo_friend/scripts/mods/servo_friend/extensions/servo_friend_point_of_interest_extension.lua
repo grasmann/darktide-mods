@@ -15,7 +15,6 @@ local tostring = tostring
 local managers = Managers
 local math_max = math.max
 local math_huge = math.huge
-local unit_alive = unit.alive
 local vector3_box = Vector3Box
 local table_clear = table.clear
 local math_random = math.random
@@ -55,7 +54,8 @@ ServoFriendPointOfInterestExtension.init = function(self, extension_init_context
     managers.event:register(self, "servo_friend_point_of_interest_removed", "remove")
     -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
     -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
-    managers.event:register(self, "servo_friend_clear_current_point_of_interest", "on_servo_friend_clear_current_point_of_interest")
+    managers.event:register(self, "servo_friend_clear_current_point_of_interest",
+        "on_servo_friend_clear_current_point_of_interest")
     managers.event:register(self, "servo_friend_clear_points_of_interest", "on_servo_friend_clear_points_of_interest")
     -- Settings
     self:on_settings_changed()
@@ -80,6 +80,10 @@ end
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
 -- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
+
+ServoFriendPointOfInterestExtension.is_unit_alive = function(self, unit)
+    return mod:is_unit_alive(unit)
+end
 
 ServoFriendPointOfInterestExtension.update = function(self, dt, t)
     -- Base class
@@ -108,7 +112,7 @@ ServoFriendPointOfInterestExtension.update = function(self, dt, t)
                     if enemy or item then
                         -- Check tagged unit
                         local tag_unit = object:target_unit()
-                        if tag_unit and unit_alive(tag_unit) then
+                        if self:is_unit_alive(tag_unit) then
                             -- Get positions
                             local tag_position = unit_world_position(tag_unit, 1)
                             -- If enemy add offset
@@ -138,7 +142,9 @@ ServoFriendPointOfInterestExtension.update = function(self, dt, t)
                             -- Check minimum distance
                             if distance > self.min_distance then
                                 -- Move closer to unit
-                                local from_target = current_position - found_position
+                                local positioning_height = self:current_positioning_height() or 2
+                                local hover_anchor = player_position + vector3(0, 0, positioning_height)
+                                local from_target = hover_anchor - found_position
                                 local direction = vector3_normalize(from_target)
                                 target_position = found_position + (direction * self.min_distance)
                             end
@@ -158,7 +164,8 @@ ServoFriendPointOfInterestExtension.update = function(self, dt, t)
         if self.valid and found_position and found_object and found_type then
             -- Talk if different interest
             if not self:is_current(found_object) then
-                local event_name = found_type == "tag_enemy" and "tagged_enemy" or found_type == "tag" and "tagged_item" or "marker"
+                local event_name = found_type == "tag_enemy" and "tagged_enemy" or found_type == "tag" and "tagged_item" or
+                    "marker"
                 managers.event:trigger("servo_friend_talk", dt, t, event_name, self.servo_friend_unit, self.player_unit)
             end
             -- Set new interest
@@ -166,7 +173,8 @@ ServoFriendPointOfInterestExtension.update = function(self, dt, t)
             -- Set position
             self.servo_friend_extension:on_servo_friend_set_target_position(target_position, found_position, self.valid)
         elseif was_valid then
-            managers.event:trigger("servo_friend_talk", dt, t, "objective_canceled", self.servo_friend_unit, self.player_unit)
+            managers.event:trigger("servo_friend_talk", dt, t, "objective_canceled", self.servo_friend_unit, self
+                .player_unit)
             -- Set new interest
             self:set(nil, nil)
             -- Set position
@@ -194,7 +202,7 @@ ServoFriendPointOfInterestExtension.validate_point_of_interest = function(self, 
             if enemy or item then
                 -- Check tagged unit
                 local tag_unit = object:target_unit()
-                if tag_unit and unit_alive(tag_unit) then
+                if self:is_unit_alive(tag_unit) then
                     -- Get positions
                     local tag_position = unit_world_position(tag_unit, 1)
                     -- If enemy add offset
@@ -224,7 +232,9 @@ ServoFriendPointOfInterestExtension.validate_point_of_interest = function(self, 
                     -- Check minimum distance
                     if distance > self.min_distance then
                         -- Move closer to unit
-                        local from_target = current_position - found_position
+                        local positioning_height = self:current_positioning_height() or 2
+                        local hover_anchor = player_position + vector3(0, 0, positioning_height)
+                        local from_target = hover_anchor - found_position
                         local direction = vector3_normalize(from_target)
                         target_position = found_position + (direction * self.min_distance)
                     end
@@ -270,13 +280,15 @@ ServoFriendPointOfInterestExtension.on_servo_friend_destroyed = function(self, s
     end
 end
 
-ServoFriendPointOfInterestExtension.on_servo_friend_clear_current_point_of_interest = function(self, servo_friend_unit, player_unit)
+ServoFriendPointOfInterestExtension.on_servo_friend_clear_current_point_of_interest = function(self, servo_friend_unit,
+                                                                                               player_unit)
     if self:is_me(servo_friend_unit) then
         self:clear_current()
     end
 end
 
-ServoFriendPointOfInterestExtension.on_servo_friend_clear_points_of_interest = function(self, servo_friend_unit, player_unit)
+ServoFriendPointOfInterestExtension.on_servo_friend_clear_points_of_interest = function(self, servo_friend_unit,
+                                                                                        player_unit)
     if self:is_me(servo_friend_unit) then
         self:clear()
     end

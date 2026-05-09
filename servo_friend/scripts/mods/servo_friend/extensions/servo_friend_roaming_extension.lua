@@ -42,19 +42,9 @@ local quaternion_from_euler_angles_xyz = quaternion.from_euler_angles_xyz
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local close_proximity_checks = {
-    -- {offset = vector3_box(1, 0, 0),  move = vector3_box(-.75, 0, 0), side = 0},
-    -- {offset = vector3_box(-1, 0, 0), move = vector3_box(.75, 0, 0),  side = 1},
-    -- {offset = vector3_box(.5, 0, 0),  move = vector3_box(-.5, 0, 0), side = 0},
-    -- {offset = vector3_box(-.5, 0, 0), move = vector3_box(.5, 0, 0),  side = 1},
-    -- {offset = vector3_box(.25, 0, 0),  move = vector3_box(-.25, 0, 0), side = 0},
-    -- {offset = vector3_box(-.25, 0, 0), move = vector3_box(.25, 0, 0),  side = 1},
-    -- {offset = vector3_box(0, 0, .25),  move = vector3_box(0, 0, -.25)},
-    -- {offset = vector3_box(0, 0, -.25), move = vector3_box(0, 0, .25)},
-    -- {offset = vector3_box(0, 0, .5),  move = vector3_box(0, 0, -.25)},
-    -- {offset = vector3_box(0, 0, -.5), move = vector3_box(0, 0, .25)},
-    {offset = vector3_box(0, 0, 0)},
-    {offset = vector3_box(0, 0, 0),  direction = vector3_box(-1, 0, 0)},
-    {offset = vector3_box(0, 0, 0), direction = vector3_box(1, 0, 0)},
+    { offset = vector3_box(0, 0, 0) },
+    { offset = vector3_box(0, 0, 0), direction = vector3_box(-1, 0, 0) },
+    { offset = vector3_box(0, 0, 0), direction = vector3_box(1, 0, 0) },
 }
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -77,7 +67,9 @@ ServoFriendRoamingExtension.init = function(self, extension_init_context, unit, 
     self.enabled = true
     self.current_roam_side = 0
     self.roam_position = vector3_box(vector3_zero())
-    self.character_height = self.servo_friend_extension.character_height
+    self.character_height = self:extension_valid(self.servo_friend_extension) and
+        self.servo_friend_extension.character_height or
+        0
     -- Events
     -- managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
     -- managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
@@ -113,17 +105,21 @@ ServoFriendRoamingExtension.update = function(self, dt, t)
     -- Base class
     ServoFriendRoamingExtension.super.update(self, dt, t)
     -- Idle
-    if self:is_initialized() and self.enabled and self.use_free_roaming then
+    if self:is_initialized() and self.enabled and self.use_free_roaming and self:servo_friend_alive() and self:is_unit_alive(self.first_person_unit) then
         local found_something_valid = self:found_something_valid()
 
         if not self.enabled or (found_something_valid and self.roaming) then
             self.roaming = false
-
         elseif self.roaming and self.enabled then
-
             -- Player data
             local player_position = self:player_position()
             local player_rotation = self:player_rotation()
+
+            if not player_position or not player_rotation then
+                self.roaming = false
+                return
+            end
+
             local current_position = vector3_unbox(self.current_position)
             local first_person_position = unit_world_position(self.first_person_unit, 1)
 
@@ -135,6 +131,7 @@ ServoFriendRoamingExtension.update = function(self, dt, t)
             local distance_1 = vector3_distance(first_person_position + rotated_pos_1, current_position)
             local distance_2 = vector3_distance(first_person_position + rotated_pos_2, current_position)
             local rotated_pos = nil
+
             if distance_1 < distance_2 then
                 rotated_pos = rotated_pos_1
                 self.current_roam_side = 0
@@ -142,14 +139,15 @@ ServoFriendRoamingExtension.update = function(self, dt, t)
                 rotated_pos = rotated_pos_2
                 self.current_roam_side = 1
             end
-            local positioning_height = self:current_positioning_height()
+
+            local positioning_height = self:current_positioning_height() or self.character_height
             local current_roam_position = self.roam_position and vector3_unbox(self.roam_position) or player_position
             local new_roam_position = player_position + vector3(0, 0, positioning_height) + rotated_pos + direction * 3
 
             local move_distance = vector3_distance(current_roam_position, new_roam_position)
             local dynamic_speed = self:movement_speed() * math_clamp(move_distance, 0, 1)
-            -- local final_roam_position = vector3_lerp(current_roam_position, new_roam_position, dt * dynamic_speed)
-            local final_roam_position = vector3_lerp(current_roam_position, new_roam_position, self:clamped_dt(dt, dynamic_speed))
+            local final_roam_position = vector3_lerp(current_roam_position, new_roam_position,
+                self:clamped_dt(dt, dynamic_speed))
 
             -- Correct nan
             if final_roam_position[1] ~= final_roam_position[1] then
@@ -168,58 +166,67 @@ ServoFriendRoamingExtension.update = function(self, dt, t)
             end
 
             -- Set position
-            self.servo_friend_extension:on_servo_friend_set_target_position(final_roam_position, new_aim_target or aim_target, false, true)
-
+            self.servo_friend_extension:on_servo_friend_set_target_position(final_roam_position,
+                new_aim_target or aim_target,
+                false, true)
         elseif self.enabled and not found_something_valid then
             self.roaming = true
-
         end
     end
 end
 
 ServoFriendRoamingExtension.enemy_height = function(self, enemy_unit)
+    if not self:is_unit_alive(enemy_unit) then
+        return 0
+    end
+
     local unit_data_extension = script_unit_has_extension(enemy_unit, "unit_data_system")
     if unit_data_extension then
         local breed = unit_data_extension:breed()
         if breed then
-            return breed and breed.base_height or 2
+            return breed.base_height or 2
         end
     end
+
     return 0
 end
 
 ServoFriendRoamingExtension.close_proximity_change_position = function(self, dt, t, roam_position)
-    -- local pt = self:pt()
-    -- local servo_friend_unit = self:servo_friend_unit()
-    local current_rotation = unit_local_rotation(self.servo_friend_unit, 1)
-    local player_position = self:player_position() + vector3(0, 0, self.character_height)
+    if not self:servo_friend_alive() then
+        return roam_position, nil
+    end
+
+    local player_position = self:player_position()
     local player_rotation = self:player_rotation()
+
+    if not player_position or not player_rotation then
+        return roam_position, nil
+    end
+
+    local current_rotation = unit_local_rotation(self.servo_friend_unit, 1)
+    local player_position_with_height = player_position + vector3(0, 0, self.character_height)
     local player_forward = vector3_normalize(quaternion_forward(player_rotation))
     local player_mat = quaternion_matrix4x4(player_rotation)
     local new_aim_target = nil
+
     for _, check in pairs(close_proximity_checks) do
         local mat = quaternion_matrix4x4(current_rotation)
         local offset = check.offset and vector3_unbox(check.offset)
         local rotated_offset = matrix4x4_transform(mat, offset)
-        local aim_target, hit_unit = self:aim_target(rotated_offset) --, nil, 1)
-        -- local enemy_offset = vector3_zero()
-        -- if hit_unit then
-        --     local enemy_height = self:enemy_height(hit_unit)
-        --     if enemy_height then
-        --         local enemy_offset = vector3(0, 0, enemy_height)
-        --         enemy_offset = matrix4x4_transform(mat, enemy_offset)
-        --     end
-        -- end
-        local side = true --check.side and check.side == self.current_roam_side or false
+        local aim_target, hit_unit = self:aim_target(rotated_offset)
+        local side = true
         local additional_move = check.move and vector3_unbox(check.move) or vector3_zero()
         local rotated_additional_move = matrix4x4_transform(player_mat, additional_move)
+
         if side and aim_target then
-            local aim_distance = vector3_distance(player_position, aim_target)
-            local friend_distance = vector3_distance(player_position, roam_position)
+            local aim_distance = vector3_distance(player_position_with_height, aim_target)
+            local friend_distance = vector3_distance(player_position_with_height, roam_position)
+
             if aim_distance < friend_distance then
-                local from_player = vector3_normalize(roam_position - player_position)
-                roam_position = player_position + from_player * (aim_distance * .85) + rotated_additional_move --+ enemy_offset
-                new_aim_target = player_position + from_player * aim_distance
+                local from_player = vector3_normalize(roam_position - player_position_with_height)
+                roam_position = player_position_with_height + from_player * (aim_distance * .85) +
+                    rotated_additional_move
+                new_aim_target = player_position_with_height + from_player * aim_distance
             end
         end
     end

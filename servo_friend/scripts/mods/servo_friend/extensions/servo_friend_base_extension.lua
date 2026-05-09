@@ -17,7 +17,6 @@ local vector3_box = Vector3Box
 local vector3_zero = vector3.zero
 local physics_world = PhysicsWorld
 local world_physics_world = world.physics_world
-local script_unit_extension = script_unit.extension
 local script_unit_has_extension = script_unit.has_extension
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐ ##############################################################################################
@@ -38,30 +37,42 @@ ServoFriendBaseExtension.init = function(self, extension_init_context, unit, ext
     -- Data
     self.player_unit = extension_init_data.player_unit
     self.is_local_unit = extension_init_data.is_local_unit
-    self.servo_friend_extension = script_unit_has_extension(self.player_unit, "player_unit_servo_friend_system")
-    self.servo_friend_unit = self:servo_friend_unit()
-    self.first_person_extension = script_unit_extension(self.player_unit, "first_person_system")
-    self.first_person_unit = self.first_person_extension:first_person_unit()
+    self.servo_friend_extension = nil
+    self.servo_friend_unit = nil
+    self.first_person_extension = nil
+    self.first_person_unit = nil
     self.init_context = extension_init_context
     self.init_data = extension_init_data
     self.unit = unit
     self.max_distance = 20
     self.min_distance = 10
     self.current_position = vector3_box(vector3_zero())
+    -- Runtime references
+    self:refresh_runtime_references()
     -- Events
     managers.event:register(self, "servo_friend_sync_current_position", "on_sync_current_position")
     managers.event:register(self, "servo_friend_spawned", "on_servo_friend_spawned")
     managers.event:register(self, "servo_friend_destroyed", "on_servo_friend_destroyed")
     -- Initialize
     self.initialized = true
-    -- Settings
-    -- self:on_settings_changed()
     -- Debug
     self:print("ServoFriendBaseExtension initialized")
 end
 
 ServoFriendBaseExtension.p2p_command = function(self, command, target, data)
     return mod:p2p_command(command, target, data)
+end
+
+ServoFriendBaseExtension.refresh_runtime_references = function(self)
+    local player_unit_alive = self.player_unit and self:is_unit_alive(self.player_unit)
+
+    self.servo_friend_extension = player_unit_alive and
+        script_unit_has_extension(self.player_unit, "player_unit_servo_friend_system") or nil
+    self.servo_friend_unit = self:extension_valid(self.servo_friend_extension) and
+        self.servo_friend_extension.servo_friend_unit or nil
+    self.first_person_extension = player_unit_alive and
+        script_unit_has_extension(self.player_unit, "first_person_system") or nil
+    self.first_person_unit = self.first_person_extension and self.first_person_extension:first_person_unit() or nil
 end
 
 ServoFriendBaseExtension.destroy = function(self)
@@ -90,8 +101,9 @@ ServoFriendBaseExtension.is_me = function(self, unit)
     return unit == self.servo_friend_unit
 end
 
-ServoFriendBaseExtension.on_settings_changed = function(self, servo_friend_unit, player_unit)
-    self.debug_mode = self:extension_valid(self.servo_friend_extension) and self.servo_friend_extension.debug --mod:get("mod_option_debug")
+ServoFriendBaseExtension.on_settings_changed = function(self, setting_id)
+    self:refresh_runtime_references()
+    self.debug_mode = self:extension_valid(self.servo_friend_extension) and self.servo_friend_extension.debug
 end
 
 ServoFriendBaseExtension.on_sync_current_position = function(self, current_position_box, servo_friend_unit, player_unit)
@@ -101,7 +113,8 @@ ServoFriendBaseExtension.on_sync_current_position = function(self, current_posit
 end
 
 ServoFriendBaseExtension.is_initialized = function(self, servo_friend_unit, player_unit)
-    return self:extension_valid(self.servo_friend_extension) and self.servo_friend_extension:is_initialized() and self.initialized
+    return self:extension_valid(self.servo_friend_extension) and self.servo_friend_extension:is_initialized() and
+        self.initialized
 end
 
 ServoFriendBaseExtension.on_servo_friend_spawned = function(self, servo_friend_unit, player_unit)
@@ -126,12 +139,22 @@ ServoFriendBaseExtension.extension_valid = function(self, extension)
     return mod:extension_valid(extension)
 end
 
+ServoFriendBaseExtension.is_unit_alive = function(self, unit)
+    return mod:is_unit_alive(unit)
+end
+
 ServoFriendBaseExtension.servo_friend_alive = function(self)
     return self:extension_valid(self.servo_friend_extension) and self.servo_friend_extension:servo_friend_alive()
 end
 
 ServoFriendBaseExtension.servo_friend_unit = function(self)
     return self:extension_valid(self.servo_friend_extension) and self.servo_friend_extension.servo_friend_unit
+end
+
+ServoFriendBaseExtension.archetype_name = function(self)
+    return self:extension_valid(self.servo_friend_extension) and
+        self.servo_friend_extension.archetype_name and
+        self.servo_friend_extension:archetype_name() or nil
 end
 
 ServoFriendBaseExtension.player_position = function(self)
@@ -158,11 +181,14 @@ ServoFriendBaseExtension.movement_speed = function(self)
     return self:extension_valid(self.servo_friend_extension) and self.servo_friend_extension:movement_speed()
 end
 
-ServoFriendBaseExtension.aim_target = function(self, optional_offset, optional_unit, optional_length, optional_collision_filter)
-    return self:extension_valid(self.servo_friend_extension) and self.servo_friend_extension:aim_target(optional_offset, optional_unit or self.first_person_unit, optional_length, optional_collision_filter)
+ServoFriendBaseExtension.aim_target = function(self, optional_offset, optional_unit, optional_length,
+                                               optional_collision_filter)
+    return self:extension_valid(self.servo_friend_extension) and
+        self.servo_friend_extension:aim_target(optional_offset, optional_unit or self.first_person_unit, optional_length,
+            optional_collision_filter)
 end
 
--- ##### ┌┬┐┌─┐┌┐ ┬ ┬┌─┐ ##############################################################################################
+-- ##### ┌┬┐┌─┐├┤ ┬ ┬┌─┐ ##############################################################################################
 -- #####  ││├┤ ├┴┐│ ││ ┬ ##############################################################################################
 -- ##### ─┴┘└─┘└─┘└─┘└─┘ ##############################################################################################
 

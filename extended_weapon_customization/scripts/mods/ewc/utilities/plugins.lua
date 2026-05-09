@@ -179,6 +179,8 @@ mod.load_plugins = function(self)
     local DMF = get_mod("DMF")
     local plugins = {}
 
+    table_clear(pt.loaded_plugins)
+
     -- Iterate through all mods
     for _, plugin_mod in pairs(DMF.mods) do
         -- Check if the mod has a extended_weapon_customization_plugin
@@ -186,6 +188,11 @@ mod.load_plugins = function(self)
             -- Check if the mod has a extended_weapon_customization_plugin
             local plugin = plugin_mod.extended_weapon_customization_plugin
             if plugin then
+
+                -- Loaded plugins
+                if plugin_mod ~= self then
+                    pt.loaded_plugins[plugin_mod:get_name()] = plugin
+                end
 
                 -- Load plugin fixes
                 if plugin.fixes then
@@ -210,7 +217,7 @@ mod.load_plugins = function(self)
                     -- Attachments are key based - merge table
                     self.settings.attachments = table_merge_recursive(self.settings.attachments, plugin.attachments)
                     -- Update lookup tables
-                    self:update_lookup_tables(plugin.attachments, nil, nil, nil, nil, plugin_mod, true)
+                    self:update_lookup_tables(plugin.attachments, nil, nil, nil, nil, plugin_mod, plugin_mod ~= self)
                 end
 
                 -- Load plugin attachment slots

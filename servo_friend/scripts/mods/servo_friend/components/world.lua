@@ -11,24 +11,33 @@ local world_physics_world = world.physics_world
 -- ##### ││││ │├┬┘│   ││ ##############################################################################################
 -- ##### └┴┘└─┘┴└─┴─┘─┴┘ ##############################################################################################
 
--- Get world
 mod.world = function(self)
-    -- Return world
-    return self.world_manager and self.world_manager:world("level_world")
+    local world_manager = self.world_manager or Managers and Managers.world
+
+    if not world_manager then
+        return nil
+    end
+
+    return world_manager:world("level_world")
 end
 
--- Get wwise world
 mod.wwise_world = function(self)
-    -- Get world
-    local world = self:world()
-    -- Return wwise world
-    return world and self.world_manager and self.world_manager:wwise_world(world)
+    local current_world = self:world()
+    local world_manager = self.world_manager or Managers and Managers.world
+
+    if not current_world or not world_manager then
+        return nil
+    end
+
+    return world_manager:wwise_world(current_world)
 end
 
--- Get physics world
 mod.physics_world = function(self)
-    -- Get world
-    local world = self:world()
-    -- Return physics world
-    return world and world_physics_world(world)
+    local current_world = self:world()
+
+    if not current_world then
+        return nil
+    end
+
+    return world_physics_world(current_world)
 end
