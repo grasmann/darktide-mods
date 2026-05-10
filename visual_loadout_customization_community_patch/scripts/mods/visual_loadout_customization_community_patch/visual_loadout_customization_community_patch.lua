@@ -149,7 +149,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             end
         end
 
-        local item_unit, bind_pose = VisualLoadoutCustomization.spawn_base_unit(item_data, attach_settings, parent_unit, optional_mission_template, nil, item_data)
+        local item_unit, bind_pose = VisualLoadoutCustomization.spawn_base_unit(item_data, attach_settings, parent_unit, optional_mission_template)
         local skin_overrides = VisualLoadoutCustomization.generate_attachment_overrides_lookup(item_data, weapon_skin)
         local attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit = VisualLoadoutCustomization.spawn_item_attachments(item_data, skin_overrides, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment)
 
@@ -165,8 +165,8 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         return item_unit, attachment_units_by_unit, bind_pose, attachment_id_lookup, attachment_name_lookup, attachment_units_bind_poses, item_name_by_unit
     end
 
-    VisualLoadoutCustomization.spawn_base_unit = function (item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment, item)
-        return VisualLoadoutCustomization._spawn_attachment(item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment, nil, item)
+    VisualLoadoutCustomization.spawn_base_unit = function (item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment)
+        return VisualLoadoutCustomization._spawn_attachment(item_data, attach_settings, parent_unit, optional_mission_template, optional_equipment)
     end
 
     VisualLoadoutCustomization.spawn_item_attachments = function (item_data, override_lookup, attach_settings, item_unit, optional_map_attachment_name_to_unit, optional_extract_attachment_units_bind_poses, optional_extract_item_names, optional_mission_template, optional_equipment)
@@ -280,7 +280,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
     -- ##### Changed from local function ##############################################################################
     -- ##### Added parameters: item, item_data, attach_settings
-    VisualLoadoutCustomization._find_unit_node_recursive = function (unit, attach_node, item, item_data, attach_settings)
+    VisualLoadoutCustomization._find_unit_node_recursive = function (unit, attach_node, item_data, attach_settings, extract_data)
         local parent_unit = unit
         local attach_node_index = 1
 
@@ -290,7 +290,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             local child_units = Unit.get_child_units(unit)
 
             for _, child_unit in pairs(child_units) do
-                parent_unit, attach_node_index = VisualLoadoutCustomization._find_unit_node_recursive(child_unit, attach_node, item, item_data, attach_settings)
+                parent_unit, attach_node_index = VisualLoadoutCustomization._find_unit_node_recursive(child_unit, attach_node, item_data, attach_settings, extract_data)
             end
         end
 
@@ -308,7 +308,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
     -- ##### Changed from local function ##############################################################################
     -- ##### Added parameters: item
-    VisualLoadoutCustomization._spawn_attachment = function (item_data, attach_settings, parent_unit, optional_mission_template, optional_as_leaf_override_attach_node, optional_as_leaf_map_mode, item)
+    VisualLoadoutCustomization._spawn_attachment = function (item_data, attach_settings, parent_unit, optional_mission_template, optional_as_leaf_override_attach_node, optional_as_leaf_map_mode, extract_data)
         if not item_data then
             return nil
         end
@@ -348,7 +348,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 attach_node_index = unit_has_node(parent_unit, item_data.unwielded_attach_node or attach_node) and unit_node(parent_unit, item_data.unwielded_attach_node or attach_node) or 1
             end
         elseif attach_node then
-            parent_unit, attach_node_index = VisualLoadoutCustomization._find_unit_node_recursive(parent_unit, attach_node, item, item_data, attach_settings)
+            parent_unit, attach_node_index = VisualLoadoutCustomization._find_unit_node_recursive(parent_unit, attach_node, item_data, attach_settings, extract_data)
         else
             attach_node_index = 1
         end
@@ -492,7 +492,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
         local override_attach_node = attachment_slot_data.leaf_attach_node_override ~= "" and attachment_slot_data.leaf_attach_node_override or nil
         local override_map_mode = World[attachment_slot_data.link_map_mode_override]
-        local attachment_unit, bind_pose = VisualLoadoutCustomization._spawn_attachment(item, attach_settings, parent_unit, optional_mission_template, override_attach_node, override_map_mode, item)
+        local attachment_unit, bind_pose = VisualLoadoutCustomization._spawn_attachment(item, attach_settings, parent_unit, optional_mission_template, override_attach_node, override_map_mode, extract_data)
 
         if optional_equipment and item.slots then
             for _, slot_name in ipairs(item.slots) do

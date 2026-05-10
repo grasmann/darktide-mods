@@ -67,7 +67,7 @@ mod.recursive_children = function(self, unit, attachment_units_by_unit, children
     return children
 end
 
-mod.implement_units = function(self, item_unit, attachments, attachment_units_by_unit, attachment_id_lookup, units)
+mod.implement_units = function(self, item_unit, attachments, attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, units)
     -- Get sub-attachment units
     local units = units or attachment_units_by_unit[item_unit]
     -- Check units
@@ -76,19 +76,21 @@ mod.implement_units = function(self, item_unit, attachments, attachment_units_by
         for _, unit in pairs(units) do
             -- Set attachment slot
             local slot = attachment_id_lookup[unit]
-            unit_set_data(unit, "attachment_slot", slot)
+            local attachment_slot_parts = string_split(slot, ".")
+            local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+            unit_set_data(unit, "attachment_slot", attachment_slot)
+            unit_set_data(unit, "attachment_slot_long", attachment_id_lookup[unit])
             -- Get item path
-            local item_path = mod:fetch_attachment(attachments, slot)
+            local item_path = mod:fetch_attachment(attachments, attachment_slot)
             -- Set attachment name
-            -- local name = self.settings.attachment_name_by_item_string[item_path]
-            local name = attachment_id_lookup[unit]
-            unit_set_data(unit, "attachment_name", name)
+            local attachment_name = self.settings.attachment_name_by_item_string[item_path]
+            unit_set_data(unit, "attachment_name", attachment_name)
             -- Get attachment master item
             local item = master_items.get_item(item_path)
             -- Check item
             if item and item.attachments then
                 -- Implement units
-                self:implement_units(item_unit, item.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_units_by_unit[unit])
+                self:implement_units(item_unit, item.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, attachment_units_by_unit[unit])
             end
         end
     end
@@ -124,8 +126,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 -- Set attachment name
-                -- local sub_attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
-                local sub_attachment_name = attachment_id_lookup[sub_attachment_unit]
+                local sub_attachment_name = mod.settings.attachment_name_by_item_string[item_path] or attachment_name
                 unit_set_data(sub_attachment_unit, "attachment_name", sub_attachment_name)
 
                 mod:print("sub attachment: "..tostring(sub_attachment_unit).." name: "..tostring(sub_attachment_name).." slot: "..tostring(attachment_slot))
@@ -156,7 +157,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         local is_ui_item_preview = (item_data and (item_data.__is_ui_item_preview or item_data.__is_preview_item or item_data.__attachment_customization))
         if attachment_id_lookup and item_data.attachments then
 
-            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup)
+            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup)
 
             -- Collect attachment fixes
             local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
@@ -183,8 +184,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 -- Set attachment name
-                -- local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
-                local attachment_name = attachment_id_lookup[attachment_unit]
+                local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
                 unit_set_data(attachment_unit, "attachment_name", attachment_name)
 
                 if item_data.attachments.slot_trinket_1 and item_data.attachments.slot_trinket_1.item then
@@ -295,7 +295,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
         if attachment_id_lookup and item_data.attachments then
 
-            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup)
+            mod:implement_units(item_unit, item_data.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup)
 
             -- Collect current attachment names
             local kitbash_fixes = mod:fetch_attachment_fixes(item_data.structure or item_data.attachments)
@@ -323,8 +323,7 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
                 end
 
                 -- Set attachment name
-                -- local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
-                local attachment_name = attachment_id_lookup[attachment_unit]
+                local attachment_name = mod.settings.attachment_name_by_item_string[item_path]
                 unit_set_data(attachment_unit, "attachment_name", attachment_name)
 
                 if item and item.attachments then
@@ -397,28 +396,49 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
     end)
 
     -- Reset parent and node method to earlier game version
-    mod:hook(instance, "_find_unit_node_recursive", function(func, unit, attach_node, item, item_data, attach_settings, ...)
+    mod:hook(instance, "_find_unit_node_recursive", function(func, unit, attach_node, item_data, attach_settings, extract_data, ...)
         local attach_node_index
 
-        -- local item_path = item_data.name
-        -- local attachment_name = item_path and mod.settings.attachment_name_by_item_string[item_path]
-        -- -- local attachment_name = unit_get_data(unit, "attachment_name")
-        -- -- mod:echo("attachment_name: "..tostring(attachment_name))
-        -- if mod:is_custom_attachment(item_data, attachment_name) then
-        --     mod:echo("attachment_name: "..tostring(attachment_name).." is custom")
-        -- else
-        --     mod:echo("attachment_name: "..tostring(attachment_name).." is default")
-        -- end
-
-        if tonumber(attach_node) ~= nil then
-            attach_node_index = tonumber(attach_node)
-        elseif attach_node then
-            attach_node_index = unit_has_node(unit, attach_node) and unit_node(unit, attach_node) or 1
-        else
-            attach_node_index = 1
+        local item = nil
+        if extract_data then
+            local parent = extract_data.parents[1]
+            local item_string = parent and extract_data.item_name_by_unit and extract_data.item_name_by_unit[parent]
+            item = item_string and master_items.get_item(item_string)
         end
 
-        return unit, attach_node_index
+        local item_path = item_data.name
+        local attachment_name = item_path and mod.settings.attachment_name_by_item_string[item_path]
+
+        -- local attachment_name = unit_get_data(unit, "attachment_name")
+        -- mod:echo("attachment_name: "..tostring(attachment_name))
+        if mod:is_custom_attachment(item_data, attachment_name, item) then
+
+            if tonumber(attach_node) ~= nil then
+                attach_node_index = tonumber(attach_node)
+            elseif attach_node then
+                attach_node_index = unit_has_node(unit, attach_node) and unit_node(unit, attach_node) or 1
+            else
+                attach_node_index = 1
+            end
+
+            return unit, attach_node_index
+
+        --     mod:echo(tostring(attachment_name).." is CUSTOM")
+        -- else
+        --     mod:echo(tostring(attachment_name).." is default")
+        end
+
+        return func(unit, attach_node, item_data, attach_settings, extract_data, ...)
+
+        -- if tonumber(attach_node) ~= nil then
+        --     attach_node_index = tonumber(attach_node)
+        -- elseif attach_node then
+        --     attach_node_index = unit_has_node(unit, attach_node) and unit_node(unit, attach_node) or 1
+        -- else
+        --     attach_node_index = 1
+        -- end
+
+        -- return unit, attach_node_index
     end)
 
 end)

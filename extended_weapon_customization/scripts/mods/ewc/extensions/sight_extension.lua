@@ -358,10 +358,11 @@ SightExtension.fetch_sight_offset = function(self, item)
             for i = 1, #attachments_1p do
                 local attachment_unit = attachments_1p[i]
                 if attachment_unit and unit_alive(attachment_unit) then
-                    local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
+                    -- local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot_long")
                     -- local attachment_slot_parts = string_split(attachment_slot_string, ".")
-                    local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
-                    local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                    -- local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
+                    -- local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                    local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
 
                     if attachment_slot == "lense_1" then
                         self.lense_1_unit = attachment_unit

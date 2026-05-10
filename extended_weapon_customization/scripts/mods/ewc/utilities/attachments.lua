@@ -69,6 +69,9 @@ mod.update_lookup_tables = function(self, attachments, attachment_data_by_item_s
 
                 if mod_of_origin then
                     attachment_data_origin[attachment_data] = mod_of_origin
+                    attachment_data_origin[path] = attachment_data_origin[path] or {}
+                    -- attachment_data_origin[path][weapon_template] = attachment_data_origin[path][weapon_template] or {}
+                    attachment_data_origin[path][weapon_template] = mod_of_origin
                 end
 
             end

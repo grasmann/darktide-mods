@@ -290,7 +290,7 @@ mod.is_custom_slot = function(self, item_data, target_slot)
     -- -- return false
 end
 
-mod.is_custom_attachment = function(self, item_data, target_attachment_name)
+mod.is_custom_attachment = function(self, item_data, target_attachment_name, item)
 
     -- local item = self:item_data(item_data)
     -- local weapon_template = item and item.weapon_template
@@ -330,16 +330,30 @@ mod.is_custom_attachment = function(self, item_data, target_attachment_name)
     -- -- local custom_attachment_slots = weapon_template and self.settings.attachments[weapon_template] --and self.settings.attachments[weapon_template][attachment_name]
     -- -- return custom_attachment_slots and custom_attachment_slots[attachment_name]
 
-    local item = self:item_data(item_data)
-    local item_string = item and item.name
+    -- local item_data = self:item_data(item_data)
+    local item_string = item_data and item_data.name
+
+    -- local item = self:item_data(item)
+    local weapon_template = item and item.weapon_template
 
     -- -- attachment_name_by_item_string
     -- local attachment_data = self.settings.attachment_data_by_item_string[item_string]
-    local attachment_data = self.settings.attachment_data_by_attachment_name[target_attachment_name]
+    -- local attachment_data = self.settings.attachment_data_by_attachment_name[target_attachment_name]
+    local mod_of_origin = item_string and weapon_template and pt.attachment_data_origin[item_string] and pt.attachment_data_origin[item_string][weapon_template]
     -- -- local mod_attachments = self.settings.attachment_data_by_mod_by_weapon_by_name[mod]
     -- -- local string_attachments = mod_attachments and mod_attachments[weapon_template]
     -- -- local attachment_data = string_attachments and string_attachments[attachment_name]
-    return attachment_data and attachment_data.is_custom_attachment
+
+    -- mod:echo("item "..tostring(item).."weapon_template "..tostring(weapon_template))
+    -- mod:echo(item_string.." "..tostring(mod_of_origin:get_name()).."weapon_template "..tostring(weapon_template).." "..tostring(target_attachment_name))
+
+    -- if mod_of_origin ~= mod then
+    --     mod:echo(tostring(mod_of_origin:get_name()).." != "..tostring(mod:get_name()))
+    -- else
+    --     mod:echo(tostring(mod_of_origin:get_name()).." == "..tostring(mod:get_name()))
+    -- end
+
+    return mod_of_origin ~= mod
     -- -- local mod_of_origin = attachment_data and pt.attachment_data_origin[attachment_data] --or mod
     -- -- return mod_of_origin and mod_of_origin ~= mod
     -- -- local mod_attachments = item and self.settings.attachment_slot_by_mod_by_weapon_by_name[mod]
@@ -716,11 +730,12 @@ mod.find_in_units = function(self, attachment_units, target_attachment_slot)
             if attachment_unit and unit_alive(attachment_unit) then
 
                 -- Get attachment slot
-                local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot")
-                -- Shorten to last part
-                -- local attachment_slot_parts = string_split(attachment_slot_string, ".")
-                local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
-                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                -- local attachment_slot_string = unit_get_data(attachment_unit, "attachment_slot_long")
+                -- -- Shorten to last part
+                -- -- local attachment_slot_parts = string_split(attachment_slot_string, ".")
+                -- local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
+                -- local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
 
                 -- Check attachment slot and light in attachment unit
                 if attachment_slot == target_attachment_slot then --and unit_num_lights(attachment_unit) > 0 then

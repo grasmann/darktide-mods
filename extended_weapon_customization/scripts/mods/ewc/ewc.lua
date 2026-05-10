@@ -33,6 +33,7 @@ mod:persistent_table(REFERENCE, {
     kitbash_entries = {},
     weapon_packages = {},
     loaded_packages = {},
+    spawned_weapons = {},
     loaded_plugins = {},
     gear_id_relays = {},
     gear_settings = {},

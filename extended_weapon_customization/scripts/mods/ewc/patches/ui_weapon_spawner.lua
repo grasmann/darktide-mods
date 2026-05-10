@@ -94,6 +94,7 @@ mod:hook_require("scripts/managers/ui/ui_weapon_spawner", function(instance)
 
             local attachment_name = unit_get_data(attachment_unit, "attachment_name")
             local attachment_slot = unit_get_data(attachment_unit, "attachment_slot_long")
+            -- local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
             local attachment_slot_parts = mod:cached_split(attachment_slot, ".")
             local weapon_attachment_slot = attachment_slot_parts and attachment_slot_parts[1]
 
