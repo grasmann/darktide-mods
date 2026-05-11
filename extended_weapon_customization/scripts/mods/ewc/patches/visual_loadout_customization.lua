@@ -397,21 +397,20 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
 
     -- Reset parent and node method to earlier game version
     mod:hook(instance, "_find_unit_node_recursive", function(func, unit, attach_node, item_data, attach_settings, extract_data, ...)
-        local attach_node_index
 
-        local item = nil
-        if extract_data then
-            local parent = extract_data.parents[1]
-            local item_string = parent and extract_data.item_name_by_unit and extract_data.item_name_by_unit[parent]
-            item = item_string and master_items.get_item(item_string)
-        end
+        -- local item = nil
+        -- if extract_data then
+        --     local parent = extract_data.parents[1]
+        --     local item_string = parent and extract_data.item_name_by_unit and extract_data.item_name_by_unit[parent]
+        --     item = item_string and master_items.get_item(item_string)
+        -- end
 
-        local item_path = item_data.name
-        local attachment_name = item_path and mod.settings.attachment_name_by_item_string[item_path]
+        -- local item_path = item_data.name
+        -- local attachment_name = item_path and mod.settings.attachment_name_by_item_string[item_path]
 
-        -- local attachment_name = unit_get_data(unit, "attachment_name")
-        -- mod:echo("attachment_name: "..tostring(attachment_name))
-        if mod:is_custom_attachment(item_data, attachment_name, item) then
+        -- if mod:is_custom_attachment(item_data, attachment_name, item) then
+
+            local attach_node_index
 
             if tonumber(attach_node) ~= nil then
                 attach_node_index = tonumber(attach_node)
@@ -422,23 +421,13 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             end
 
             return unit, attach_node_index
-
-        --     mod:echo(tostring(attachment_name).." is CUSTOM")
-        -- else
-        --     mod:echo(tostring(attachment_name).." is default")
-        end
-
-        return func(unit, attach_node, item_data, attach_settings, extract_data, ...)
-
-        -- if tonumber(attach_node) ~= nil then
-        --     attach_node_index = tonumber(attach_node)
-        -- elseif attach_node then
-        --     attach_node_index = unit_has_node(unit, attach_node) and unit_node(unit, attach_node) or 1
-        -- else
-        --     attach_node_index = 1
+        -- --     mod:echo(tostring(attachment_name).." is CUSTOM")
+        -- -- else
+        -- --     mod:echo(tostring(attachment_name).." is default")
         -- end
 
-        -- return unit, attach_node_index
+        -- return func(unit, attach_node, item_data, attach_settings, extract_data, ...)
+
     end)
 
 end)
